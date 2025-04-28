@@ -9,12 +9,16 @@
   background-color: #0a0a1a;
 }
 
-/* Removed all animation layers and background effects */
+/* Removed all animation layers and background effects except for main background */
 .animation-bg-layer,
-.bg-space-background,
 .stars-container,
 .stars {
   display: none !important;
+}
+
+/* Keep the main background visible but simplify it */
+.bg-space-background {
+  background-color: #0a0a1a;
 }
 
 /* All star related classes and animations removed to prevent blinking */

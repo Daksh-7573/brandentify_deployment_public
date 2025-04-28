@@ -130,8 +130,9 @@ const AnimatedOdyssey: React.FC<AnimatedOdysseyProps> = ({
             <div className="relative profile-orbit">
               <motion.div
                 className="absolute"
-                animate={{ rotate: 360 }}
-                transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+                // Animation disabled to prevent blinking
+                // animate={{ rotate: 360 }}
+                // transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
               >
                 <motion.div 
                   className="profile-photo-container"
@@ -233,8 +234,9 @@ const AnimatedOdyssey: React.FC<AnimatedOdysseyProps> = ({
               >
                 <motion.div
                   className="looking-for-badge"
-                  animate={{ boxShadow: ['0 0 10px #4f46e5', '0 0 20px #4f46e5', '0 0 10px #4f46e5'] }}
-                  transition={{ duration: 2, repeat: Infinity }}
+                  // Animation disabled to prevent blinking
+                  // animate={{ boxShadow: ['0 0 10px #4f46e5', '0 0 20px #4f46e5', '0 0 10px #4f46e5'] }}
+                  // transition={{ duration: 2, repeat: Infinity }}
                 >
                   {lookingFor.replace(/_/g, ' ')}
                 </motion.div>
@@ -393,8 +395,9 @@ const AnimatedOdyssey: React.FC<AnimatedOdysseyProps> = ({
                       {/* Price Badge */}
                       <div className="price-badge">
                         <motion.div
-                          animate={{ scale: [1, 1.05, 1] }}
-                          transition={{ duration: 2, repeat: Infinity }}
+                          // Animation disabled to prevent blinking
+                          // animate={{ scale: [1, 1.05, 1] }}
+                          // transition={{ duration: 2, repeat: Infinity }}
                         >
                           {service.isHourly ? (
                             <span>
@@ -586,8 +589,9 @@ const AnimatedOdyssey: React.FC<AnimatedOdysseyProps> = ({
                   <div className="timeline-dot">
                     <motion.div 
                       className="timeline-dot-pulse"
-                      animate={{ scale: [1, 1.3, 1] }}
-                      transition={{ duration: 2, repeat: Infinity }}
+                      // Animation disabled to prevent blinking
+                      // animate={{ scale: [1, 1.3, 1] }}
+                      // transition={{ duration: 2, repeat: Infinity }}
                     />
                   </div>
                   
@@ -715,8 +719,9 @@ const AnimatedOdyssey: React.FC<AnimatedOdysseyProps> = ({
                   <div className="education-card-inner">
                     <div className="education-icon">
                       <motion.div
-                        animate={{ y: [0, -10, 0] }}
-                        transition={{ duration: 2, repeat: Infinity }}
+                        // Animation disabled to prevent blinking
+                        // animate={{ y: [0, -10, 0] }}
+                        // transition={{ duration: 2, repeat: Infinity }}
                         className="education-icon-inner"
                       >
                         📚
