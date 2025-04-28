@@ -2033,7 +2033,11 @@ export default function FreelancerHub({
                       {/* Direct display of the thumbnail image */}
                       {project.thumbnailUrl && (
                         <img
-                          src={project.thumbnailUrl.startsWith('http') ? project.thumbnailUrl : `${window.location.origin}${project.thumbnailUrl}`}
+                          src={project.thumbnailUrl.startsWith('http') 
+                            ? project.thumbnailUrl 
+                            : project.thumbnailUrl.startsWith('/uploads') 
+                              ? `${window.location.origin}${project.thumbnailUrl}` 
+                              : `${window.location.origin}/uploads${project.thumbnailUrl}`}
                           alt={project.title}
                           className="absolute inset-0 w-full h-full object-cover z-10"
                           onError={(e) => {
@@ -2041,8 +2045,11 @@ export default function FreelancerHub({
                             // Try to get the first item from mediaUrls as fallback
                             if (project.mediaUrls && Array.isArray(project.mediaUrls) && project.mediaUrls.length > 0) {
                               const fallbackUrl = project.mediaUrls[0];
-                              e.currentTarget.src = fallbackUrl.startsWith('http') ? 
-                                fallbackUrl : `${window.location.origin}${fallbackUrl}`;
+                              e.currentTarget.src = fallbackUrl.startsWith('http') 
+                                ? fallbackUrl 
+                                : fallbackUrl.startsWith('/uploads') 
+                                  ? `${window.location.origin}${fallbackUrl}` 
+                                  : `${window.location.origin}/uploads${fallbackUrl}`;
                             } else {
                               e.currentTarget.style.opacity = '0';
                             }
@@ -2053,7 +2060,11 @@ export default function FreelancerHub({
                       {/* If no thumbnailUrl, try mediaUrls[0] */}
                       {!project.thumbnailUrl && project.mediaUrls && Array.isArray(project.mediaUrls) && project.mediaUrls.length > 0 && (
                         <img
-                          src={project.mediaUrls[0].startsWith('http') ? project.mediaUrls[0] : `${window.location.origin}${project.mediaUrls[0]}`}
+                          src={project.mediaUrls[0].startsWith('http') 
+                            ? project.mediaUrls[0]
+                            : project.mediaUrls[0].startsWith('/uploads')
+                              ? `${window.location.origin}${project.mediaUrls[0]}`
+                              : `${window.location.origin}/uploads${project.mediaUrls[0]}`}
                           alt={project.title}
                           className="absolute inset-0 w-full h-full object-cover z-10"
                           onError={(e) => {
