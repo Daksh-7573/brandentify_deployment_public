@@ -21,7 +21,7 @@ import {
 import { 
   Download, Palette, Heart, Music, Video, Film, 
   Briefcase, GraduationCap, Calendar, MapPin, 
-  ChevronRight, Code, 
+  ChevronRight, Code, Layers,
   Mail, Instagram, Twitter, Linkedin, Youtube, Camera, 
   FileText, PenTool, Coffee, Star, Zap, Headphones,
   Radio, Sparkles, Scissors, Pencil, Book, Gift, 
@@ -650,44 +650,71 @@ export default function FreelancerHub({
           
           <div className="p-7 relative z-10 bg-white/80 backdrop-blur-sm">
             <div className="bg-white rounded-2xl p-6 shadow-lg">
-              {/* Duration */}
-              {selectedProject.startDate && (
-                <motion.div 
-                  className="flex items-center text-violet-600 mb-4"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <div className="bg-violet-100 p-2 rounded-full mr-3">
-                    <Calendar className="h-4 w-4" />
-                  </div>
-                  <span className="text-sm font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                    {formatDate(selectedProject.startDate, true)}
-                  </span>
-                </motion.div>
-              )}
-              
-              {/* Industry/Category */}
-              <div className="flex flex-wrap gap-4 mb-5">
+              {/* Project Title - Separate section to highlight importance */}
+              <motion.div 
+                className="mb-6"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <h3 className="text-xl font-bold text-violet-700 mb-1" style={{ fontFamily: 'Fredoka, sans-serif' }}>
+                  {selectedProject.title}
+                </h3>
+                <div className="h-1 w-16 bg-gradient-to-r from-violet-500 to-pink-500 rounded-full"></div>
+              </motion.div>
+
+              {/* Category and Industry - Horizontal badges layout */}
+              <div className="flex flex-wrap gap-3 mb-5">
+                {/* Category Badge */}
+                {selectedProject.category && (
+                  <motion.div 
+                    className="flex items-center bg-violet-100 px-3 py-1.5 rounded-full"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: 0.05 }}
+                  >
+                    <Layers className="h-4 w-4 mr-2 text-violet-600" />
+                    <span className="text-sm font-medium text-violet-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                      {selectedProject.category}
+                    </span>
+                  </motion.div>
+                )}
+                
+                {/* Industry Badge */}
                 {selectedProject.industry && (
                   <motion.div 
-                    className="flex items-center bg-blue-50 px-3 py-1.5 rounded-full"
+                    className="flex items-center bg-blue-100 px-3 py-1.5 rounded-full"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3, delay: 0.1 }}
                   >
-                    <Briefcase className="h-4 w-4 mr-2 text-blue-500" />
+                    <Briefcase className="h-4 w-4 mr-2 text-blue-600" />
                     <span className="text-sm font-medium text-blue-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
                       {selectedProject.industry}
                     </span>
                   </motion.div>
                 )}
+                
+                {/* Date Badge */}
+                {selectedProject.startDate && (
+                  <motion.div 
+                    className="flex items-center bg-amber-100 px-3 py-1.5 rounded-full"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: 0.15 }}
+                  >
+                    <Calendar className="h-4 w-4 mr-2 text-amber-600" />
+                    <span className="text-sm font-medium text-amber-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                      {formatDate(selectedProject.startDate, true)}
+                    </span>
+                  </motion.div>
+                )}
               </div>
               
-              {/* Description */}
+              {/* Description section */}
               {selectedProject.description && (
                 <motion.div 
-                  className="mb-6 bg-gradient-to-r from-amber-50 to-white p-4 rounded-xl border border-amber-100"
+                  className="mb-6 bg-gradient-to-r from-amber-50 to-white p-5 rounded-xl border border-amber-100"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3, delay: 0.2 }}
@@ -698,6 +725,30 @@ export default function FreelancerHub({
                   <p className="text-gray-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
                     {selectedProject.description}
                   </p>
+                </motion.div>
+              )}
+              
+              {/* Project URL section */}
+              {selectedProject.projectUrl && (
+                <motion.div 
+                  className="mb-6 bg-gradient-to-r from-blue-50 to-white p-4 rounded-xl border border-blue-100"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: 0.25 }}
+                >
+                  <h4 className="text-sm font-bold mb-2 text-gray-700 flex items-center" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    <span className="text-blue-500 mr-2">🔗</span> Project Link
+                  </h4>
+                  <a 
+                    href={selectedProject.projectUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="text-blue-600 hover:text-blue-700 underline break-all inline-flex items-center"
+                    style={{ fontFamily: 'Poppins, sans-serif' }}
+                  >
+                    {selectedProject.projectUrl}
+                    <ExternalLink className="h-3 w-3 ml-1 flex-shrink-0" />
+                  </a>
                 </motion.div>
               )}
               
@@ -751,7 +802,7 @@ export default function FreelancerHub({
               )}
               
               {/* Actions */}
-              <div className="flex justify-end gap-3 mt-6">
+              <div className="flex justify-end gap-3 mt-8">
                 {selectedProject.projectUrl && (
                   <motion.a 
                     href={selectedProject.projectUrl} 
