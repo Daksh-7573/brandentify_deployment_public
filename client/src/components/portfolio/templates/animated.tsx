@@ -87,6 +87,10 @@ export default function AnimatedTemplate({
   
   // Extra debug for "What I'm All About" section rendering conditions
   console.log("- 'What I'm All About' section will render:", whatIOffer ? "whatIOffer" : aboutMe ? "aboutMe" : "fallback text");
+  
+  // Add a local state to track which field is being used
+  const contentToShow = whatIOffer || aboutMe || "I'm a passionate professional with a focus on digital solutions within the creative industry.";
+  console.log("- Content that will actually be displayed:", contentToShow);
   // Use Lumos Animation hook
   const { initAmbientAuras, animateCardStack, addSparkleEffect, addTypingEffect } = useLumosAnimations();
   
@@ -556,27 +560,10 @@ export default function AnimatedTemplate({
                   What I'm All About
                 </h3>
                 
-                {whatIOffer ? (
-                  <div className="text-gray-300 text-lg leading-relaxed mb-6">
-                    {whatIOffer}
-                  </div>
-                ) : aboutMe ? (
-                  <div className="text-gray-300 text-lg leading-relaxed mb-6">
-                    {aboutMe}
-                  </div>
-                ) : (
-                  <>
-                    <p className="text-gray-300 text-lg leading-relaxed mb-6">
-                      I'm a passionate professional with a focus on {domain || 'digital solutions'} within the {industry || 'creative'} industry. 
-                      My work combines expertise and innovation to create impactful results.
-                    </p>
-                    
-                    <p className="text-gray-300 text-lg leading-relaxed mb-6">
-                      With a background in {domain || 'digital arts'} and an eye for detail, I specialize in delivering 
-                      high-quality work that meets the needs of clients and stakeholders.
-                    </p>
-                  </>
-                )}
+                {/* Use the pre-computed contentToShow variable for simpler rendering */}
+                <div className="text-gray-300 text-lg leading-relaxed mb-6">
+                  {contentToShow}
+                </div>
                 
                 <blockquote className="relative border-l-4 border-purple-500 pl-6 italic text-gray-300 my-8">
                   <motion.span 
