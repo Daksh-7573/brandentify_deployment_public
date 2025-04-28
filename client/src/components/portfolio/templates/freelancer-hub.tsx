@@ -646,9 +646,11 @@ export default function FreelancerHub({
             {!selectedProject.thumbnailUrl && selectedProject.mediaUrls && 
              Array.isArray(selectedProject.mediaUrls) && selectedProject.mediaUrls.length > 0 && (
               <img
-                src={selectedProject.mediaUrls[0].startsWith('http') ? 
-                    selectedProject.mediaUrls[0] : 
-                    `${window.location.origin}${selectedProject.mediaUrls[0]}`}
+                src={selectedProject.mediaUrls[0].startsWith('http') 
+                  ? selectedProject.mediaUrls[0] 
+                  : selectedProject.mediaUrls[0].startsWith('/uploads')
+                    ? `${window.location.origin}${selectedProject.mediaUrls[0]}` 
+                    : `${window.location.origin}/uploads${selectedProject.mediaUrls[0]}`}
                 alt={`${selectedProject.title} media`}
                 className="absolute inset-0 w-full h-full object-cover z-10"
                 onError={(e) => {
@@ -864,7 +866,11 @@ export default function FreelancerHub({
                             }}
                           />
                           <img 
-                            src={url.startsWith('http') ? url : `${window.location.origin}${url}`}
+                            src={url.startsWith('http') 
+                              ? url 
+                              : url.startsWith('/uploads')
+                                ? `${window.location.origin}${url}` 
+                                : `${window.location.origin}/uploads${url}`}
                             alt={`Project image ${index + 1}`}
                             className="absolute inset-0 w-full h-full object-cover z-10"
                             onError={(e) => {
