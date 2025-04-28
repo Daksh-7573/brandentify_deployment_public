@@ -32,6 +32,47 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Skill, Service } from "@shared/schema";
 import { UserExperience, UserEducation } from "@/types";
 
+// Direct Image component that renders a div with a background image
+// This bypasses React's image handling which may be causing issues
+const DirectImageBackground = ({ 
+  imageUrl, 
+  className = "",
+  fallbackUrl = ""
+}: { 
+  imageUrl: string | null, 
+  className?: string,
+  fallbackUrl?: string
+}) => {
+  const [url, setUrl] = useState<string>("");
+  
+  useEffect(() => {
+    if (!imageUrl) {
+      setUrl(fallbackUrl);
+      return;
+    }
+    
+    const directUrl = imageUrl.startsWith("/uploads") 
+      ? `http://localhost:5000${imageUrl}` 
+      : `http://localhost:5000/uploads${imageUrl}`;
+      
+    setUrl(directUrl);
+    
+    // Log the URL being used
+    console.log("DirectImageBackground using URL:", directUrl);
+  }, [imageUrl, fallbackUrl]);
+  
+  return (
+    <div 
+      className={`${className}`}
+      style={{ 
+        backgroundImage: `url('${url}')`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }}
+    />
+  );
+};
+
 // Define Project interface to ensure all fields are recognized
 interface Project {
   id: number;
@@ -2043,45 +2084,19 @@ export default function FreelancerHub({
                         }}
                       />
                       
-                      {/* Direct display of the thumbnail image */}
+                      {/* Using our new DirectImageBackground component for the thumbnail */}
                       {project.thumbnailUrl && (
-                        <img
-                          src={`http://localhost:5000${project.thumbnailUrl.startsWith('/uploads') ? project.thumbnailUrl : '/uploads' + project.thumbnailUrl}`}
-                          alt={project.title}
-                          className="absolute inset-0 w-full h-full object-cover z-10"
-                          onLoad={() => {
-                            console.log('Successfully loaded thumbnail image using direct localhost URL:', project.thumbnailUrl);
-                          }}
-                          onError={(e) => {
-                            console.error('Error loading thumbnail with direct localhost URL:', project.thumbnailUrl);
-                            console.log('Full URL attempted:', e.currentTarget.src);
-                            // Try to get the first item from mediaUrls as fallback
-                            if (project.mediaUrls && Array.isArray(project.mediaUrls) && project.mediaUrls.length > 0) {
-                              const fallbackUrl = project.mediaUrls[0];
-                              const fallbackImageUrl = `http://localhost:5000${fallbackUrl.startsWith('/uploads') ? fallbackUrl : '/uploads' + fallbackUrl}`;
-                              console.log('Trying fallback direct URL:', fallbackImageUrl);
-                              e.currentTarget.src = fallbackImageUrl;
-                            } else {
-                              e.currentTarget.style.opacity = '0';
-                            }
-                          }}
+                        <DirectImageBackground 
+                          imageUrl={project.thumbnailUrl}
+                          className="absolute inset-0 z-10"
                         />
                       )}
                       
-                      {/* If no thumbnailUrl, try mediaUrls[0] */}
+                      {/* If no thumbnailUrl, try mediaUrls[0] with DirectImageBackground */}
                       {!project.thumbnailUrl && project.mediaUrls && Array.isArray(project.mediaUrls) && project.mediaUrls.length > 0 && (
-                        <img
-                          src={`http://localhost:5000${project.mediaUrls[0].startsWith('/uploads') ? project.mediaUrls[0] : '/uploads' + project.mediaUrls[0]}`}
-                          alt={project.title}
-                          className="absolute inset-0 w-full h-full object-cover z-10"
-                          onLoad={() => {
-                            console.log('Successfully loaded mediaUrl as thumbnail using direct localhost URL:', project.mediaUrls[0]);
-                          }}
-                          onError={(e) => {
-                            console.error('Error loading media as thumbnail with direct localhost URL:', project.mediaUrls[0]);
-                            console.log('Full URL attempted:', e.currentTarget.src);
-                            e.currentTarget.style.opacity = '0';
-                          }}
+                        <DirectImageBackground 
+                          imageUrl={project.mediaUrls[0]}
+                          className="absolute inset-0 z-10"
                         />
                       )}
                       
