@@ -582,7 +582,8 @@ export default function FreelancerHub({
             }}
           />
           
-          <div className="relative aspect-square overflow-hidden">
+          {/* Square Thumbnail - Fixed height using aspect ratio */}
+          <div className="relative w-full aspect-square overflow-hidden">
             {/* Gradient background as fallback */}
             <div 
               className="absolute w-full h-full"
@@ -670,7 +671,7 @@ export default function FreelancerHub({
             </div>
           </div>
           
-          <div className="p-7 relative z-10 bg-white/80 backdrop-blur-sm">
+          <div className="p-7 relative z-10 bg-white/80 backdrop-blur-sm overflow-y-auto" style={{ maxHeight: "50vh" }}>
             <div className="bg-white rounded-2xl p-6 shadow-lg">
               {/* Duration */}
               {selectedProject.startDate && (
@@ -835,7 +836,6 @@ export default function FreelancerHub({
                               background: `linear-gradient(135deg, ${getCategoryGradient(selectedProject.category || 'design')})`,
                             }}
                           />
-                          
                           <img 
                             src={url.startsWith('http') ? url : `${window.location.origin}${url}`}
                             alt={`Project image ${index + 1}`}
@@ -850,7 +850,7 @@ export default function FreelancerHub({
                     })
                   ) : (
                     // Placeholder media items when no media is available
-                    Array.from({ length: 2 }).map((_, index) => (
+                    Array(4).fill(0).map((_, index) => (
                       <motion.div 
                         key={index} 
                         className="rounded-xl overflow-hidden h-32 relative shadow-md"
@@ -961,7 +961,7 @@ export default function FreelancerHub({
             </motion.div>
           </div>
           
-          <div className="p-7 relative z-10 bg-white/80 backdrop-blur-sm">
+          <div className="p-7 relative z-10 bg-white/80 backdrop-blur-sm overflow-y-auto" style={{ maxHeight: "50vh" }}>
             <div className="bg-white rounded-2xl p-6 shadow-lg">
               <motion.div 
                 className="mb-6"
