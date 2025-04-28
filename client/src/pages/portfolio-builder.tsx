@@ -38,7 +38,6 @@ import VisualExpert from "@/components/portfolio/templates/visual-expert";
 import CorporateExecutive from "@/components/portfolio/templates/corporate-executive";
 import { DynamicInnovator } from "@/components/portfolio/templates/dynamic-innovator";
 import Animated from "@/components/portfolio/templates/animated";
-import AnimatedOdyssey from "@/components/portfolio/templates/animated-odyssey"; // Import the new AnimatedOdyssey template
 import Scholar from "@/components/portfolio/templates/scholar";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
@@ -72,7 +71,7 @@ const portfolioFormSchema = z.object({
   layout: z.enum([
     "professional", "creative", "minimal", "technical", "executive", "minimalist_pro",
     "minimalist-pro", "timeline-storyteller-2", "visual-expert", "corporate-executive", 
-    "dynamic-innovator", "freelancer-hub", "animated", "animated-odyssey", "scholar"
+    "dynamic-innovator", "freelancer-hub", "animated", "scholar"
   ]),
   isPublished: z.boolean().default(false),
   publicUrl: z.string().nullable().optional(),
@@ -474,13 +473,6 @@ export default function PortfolioBuilder() {
       description: `✔ Theme: Fully Animated, Motion-Driven, Interactive
 ✔ Best For: Motion Designers, VFX Artists, Web Animators, AR/VR & Game Designers`,
       theme: "#00E5FF"
-    },
-    { 
-      id: "animated-odyssey", 
-      name: "The Animated Odyssey", 
-      description: `✔ Theme: Space-Themed, Aurora Effects, Immersive Animations
-✔ Best For: Tech Innovators, Futurists, Creative Technologists, 3D Designers`,
-      theme: "#915eff"
     }
   ];
 
@@ -980,41 +972,6 @@ export default function PortfolioBuilder() {
                       mediaUrls: p.mediaUrls || [],
                       updatedAt: null
                     })) || []}
-                  />
-                </CardContent>
-              </Card>
-            )}
-            
-            {form.watch("layout") === "animated-odyssey" && (
-              <Card className="overflow-hidden bg-[#050816] border-[#915eff] border shadow-lg">
-                <CardContent className="p-0">
-                  <AnimatedOdyssey 
-                    name={userData?.name || user?.name || ''}
-                    title={userData?.title || ''}
-                    industry={userData?.industry || ''}
-                    domain={userData?.domain || ''}
-                    location={userData?.location || ''}
-                    email={userData?.email || user?.email || ''}
-                    photoURL={userData?.photoURL || user?.photoURL || null}
-                    lookingFor={userData?.lookingFor || ''}
-                    skills={userSkills || []}
-                    projects={userProjects?.map(p => ({
-                      id: p.id,
-                      title: p.title,
-                      description: p.description,
-                      userId: p.userId,
-                      startDate: p.startDate,
-                      projectUrl: p.projectUrl || null,
-                      category: p.category || null,
-                      thumbnailUrl: p.thumbnailUrl || null,
-                      thumbnailFile: null,
-                      mediaUrls: p.mediaUrls || [],
-                    })) || []}
-                    experiences={userExperiences || []}
-                    educations={userEducations || []}
-                    services={userServices || []}
-                    aboutMe={userData?.aboutMe || whatIOfferValue || 'I am a passionate professional with a focus on innovation and creativity.'}
-                    whatIOffer={userData?.whatIOffer || whatIOfferValue || 'My background combines technical expertise with a keen eye for design.'}
                   />
                 </CardContent>
               </Card>

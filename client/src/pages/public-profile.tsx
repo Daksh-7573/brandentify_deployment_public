@@ -20,7 +20,6 @@ import VisualExpert from "@/components/portfolio/templates/visual-expert";
 import CorporateExecutive from "@/components/portfolio/templates/corporate-executive";
 import { DynamicInnovator } from "@/components/portfolio/templates/dynamic-innovator";
 import Animated from "@/components/portfolio/templates/animated";
-import AnimatedOdyssey from "@/components/portfolio/templates/animated-odyssey"; // New animated, immersive template with advanced motion effects
 
 // Type for our user data
 interface UserData {
@@ -173,12 +172,9 @@ const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
     enabled: !!userData?.id
   });
   
-  // Check if the AnimatedOdyssey component is defined
-  console.log("Imported AnimatedOdyssey component:", typeof AnimatedOdyssey);
-  
   // Construct portfolio data from all fetched components
   const portfolioData: PortfolioData | null = userData ? {
-    layout: 'animated-odyssey', // Using the new animated-odyssey template
+    layout: 'visual-expert', // Default to visual-expert template
     publicUrl: null,
     isPublished: true,
     customTitle: userData.name || userData.username,
@@ -246,9 +242,6 @@ const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
   
   // Render the appropriate portfolio template based on user's selected layout
   const renderPortfolio = (portfolioData: PortfolioData) => {
-    // Debug layout selection
-    console.log("Selected layout:", portfolioData.layout);
-    
     // Map our portfolio data to the format each template expects
     const templateProps = {
       userInfo: {
@@ -310,34 +303,6 @@ const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
             email={templateProps.userInfo.email}
             aboutMe={aboutMeContent}
             whatIOffer={aboutMeContent}
-          />
-        );
-        
-      case 'animated-odyssey':
-        console.log("ENTERING ANIMATED ODYSSEY CASE!");
-        console.log("Animated Odyssey template userInfo:", templateProps.userInfo);
-        
-        // Use the same content for aboutMe and whatIOffer if they're null
-        const odysseyContent = templateProps.userInfo.aboutMe || templateProps.userInfo.whatIOffer || 
-          "I am a passionate professional with a focus on innovation and creativity. My background combines technical expertise with a keen eye for design, allowing me to deliver comprehensive solutions that meet client needs.";
-        
-        return (
-          <AnimatedOdyssey
-            name={templateProps.userInfo.name}
-            title={templateProps.userInfo.title || ''}
-            industry={templateProps.userInfo.industry || ''}
-            domain={templateProps.userInfo.domain || ''}
-            location={templateProps.userInfo.location || ''}
-            photoURL={templateProps.userInfo.photoURL}
-            skills={templateProps.userSkills}
-            projects={templateProps.userProjects}
-            experiences={templateProps.userExperiences}
-            educations={templateProps.userEducations}
-            services={templateProps.userServices}
-            lookingFor={templateProps.userInfo.lookingFor || ''}
-            email={templateProps.userInfo.email}
-            aboutMe={odysseyContent}
-            whatIOffer={odysseyContent}
           />
         );
       default:
@@ -431,25 +396,7 @@ const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
     );
   }
   
-  // Print portfolio data for debugging
-  console.log("Portfolio Data:", portfolioData);
-  console.log("Selected Layout:", portfolioData?.layout);
-
   // Return the portfolio
-  // Special case for full-width templates
-  if (portfolioData && (portfolioData.layout === 'animated-odyssey')) {
-    console.log("USING FULL WIDTH CONTAINER FOR ANIMATED ODYSSEY");
-    return (
-      <div className="min-h-screen">
-        <Header />
-        <div className="w-full">
-          {renderPortfolio(portfolioData as PortfolioData)}
-        </div>
-      </div>
-    );
-  }
-  
-  // Standard container for other templates
   return (
     <div className="min-h-screen bg-background">
       <Header />
