@@ -38,7 +38,6 @@ import VisualExpert from "@/components/portfolio/templates/visual-expert";
 import CorporateExecutive from "@/components/portfolio/templates/corporate-executive";
 import { DynamicInnovator } from "@/components/portfolio/templates/dynamic-innovator";
 import Animated from "@/components/portfolio/templates/animated";
-import AnimatedOdyssey from "@/components/portfolio/templates/animated-odyssey";
 import Scholar from "@/components/portfolio/templates/scholar";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
@@ -72,7 +71,7 @@ const portfolioFormSchema = z.object({
   layout: z.enum([
     "professional", "creative", "minimal", "technical", "executive", "minimalist_pro",
     "minimalist-pro", "timeline-storyteller-2", "visual-expert", "corporate-executive", 
-    "dynamic-innovator", "freelancer-hub", "animated", "animated-odyssey", "scholar"
+    "dynamic-innovator", "freelancer-hub", "animated", "scholar"
   ]),
   isPublished: z.boolean().default(false),
   publicUrl: z.string().nullable().optional(),
@@ -474,13 +473,6 @@ export default function PortfolioBuilder() {
       description: `✔ Theme: Fully Animated, Motion-Driven, Interactive
 ✔ Best For: Motion Designers, VFX Artists, Web Animators, AR/VR & Game Designers`,
       theme: "#00E5FF"
-    },
-    { 
-      id: "animated-odyssey", 
-      name: "Animated Odyssey", 
-      description: `✔ Theme: Immersive Space-Themed Interactive Experience
-✔ Best For: Technology Visionaries, Futurists, Digital Pioneers`,
-      theme: "#6a0dad"  // Deep purple
     }
   ];
 
@@ -980,43 +972,6 @@ export default function PortfolioBuilder() {
                       mediaUrls: p.mediaUrls || [],
                       updatedAt: null
                     })) || []}
-                  />
-                </CardContent>
-              </Card>
-            )}
-            
-            {form.watch("layout") === "animated-odyssey" && (
-              <Card className="overflow-hidden bg-gray-900 border-indigo-800 shadow-lg">
-                <CardContent className="p-0">
-                  <AnimatedOdyssey 
-                    name={userData?.name || user?.name || ''}
-                    title={userData?.title || ''}
-                    industry={userData?.industry || ''}
-                    domain={userData?.domain || ''}
-                    location={userData?.location || ''}
-                    email={userData?.email || user?.email || ''}
-                    photoURL={userData?.photoURL || user?.photoURL || null}
-                    lookingFor={userData?.lookingFor || ''}
-                    skills={userSkills || []}
-                    services={userServices || []}
-                    experiences={userExperiences || []}
-                    educations={userEducations || []}
-                    projects={userProjects?.map(p => ({
-                      id: p.id,
-                      title: p.title,
-                      description: p.description,
-                      userId: p.userId,
-                      startDate: p.startDate,
-                      createdAt: null,
-                      projectUrl: p.projectUrl || null,
-                      category: p.category || null,
-                      thumbnailUrl: p.thumbnailUrl || null,
-                      thumbnailFile: null,
-                      mediaUrls: p.mediaUrls || [],
-                      updatedAt: null
-                    })) || []}
-                    aboutMe={userData?.aboutMe || ''}
-                    whatIOffer={userData?.whatIOffer || userData?.aboutMe || ''}
                   />
                 </CardContent>
               </Card>
