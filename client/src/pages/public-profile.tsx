@@ -310,6 +310,30 @@ const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
         // For debugging
         console.log("Animated Odyssey template userInfo:", templateProps.userInfo);
         
+        // Use same content handling as Animated template
+        const odysseyAboutMeContent = templateProps.userInfo.aboutMe || 
+          "I am a passionate professional with a focus on innovation and creativity. My background combines technical expertise with a keen eye for design, allowing me to deliver comprehensive solutions that meet client needs.";
+          
+        return (
+          <AnimatedOdyssey 
+            name={templateProps.userInfo.name}
+            title={templateProps.userInfo.title || ''}
+            industry={templateProps.userInfo.industry || ''}
+            domain={templateProps.userInfo.domain || ''}
+            location={templateProps.userInfo.location || ''}
+            photoURL={templateProps.userInfo.photoURL}
+            skills={templateProps.userSkills}
+            projects={templateProps.userProjects}
+            experiences={templateProps.userExperiences}
+            educations={templateProps.userEducations}
+            services={templateProps.userServices}
+            lookingFor={templateProps.userInfo.lookingFor || ''}
+            email={templateProps.userInfo.email}
+            aboutMe={odysseyAboutMeContent}
+          />
+        );
+        console.log("Animated Odyssey template userInfo:", templateProps.userInfo);
+        
         // Use the same content for both about and whatIOffer if either is missing
         const contentForOdyssey = templateProps.userInfo.whatIOffer || templateProps.userInfo.aboutMe || 
           "I am a passionate professional with a focus on innovation and creativity. My background combines technical expertise with a keen eye for design, allowing me to deliver comprehensive solutions that meet client needs.";
