@@ -494,7 +494,7 @@ export default function AnimatedTemplate({
         </div>
       </section>
       
-      {/* About Me Section */}
+      {/* What I'm All About Section */}
       <section id="about" className="py-20 relative animated-about" ref={aboutRef}>
         <div className="container mx-auto px-6 relative z-10">
           <motion.div
@@ -505,7 +505,7 @@ export default function AnimatedTemplate({
           >
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 section-title">
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-blue-500">
-                About Me
+                What I'm All About
               </span>
             </h2>
             <p className="text-gray-400 text-lg max-w-2xl mx-auto">
