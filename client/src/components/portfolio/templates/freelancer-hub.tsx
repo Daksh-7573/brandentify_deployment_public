@@ -26,7 +26,8 @@ import {
   FileText, PenTool, Coffee, Star, Zap, Headphones,
   Radio, Sparkles, Scissors, Pencil, Book, Gift, 
   MessageCircle, Smile, Upload, X, ExternalLink,
-  MessageSquare, PlusCircle
+  MessageSquare, PlusCircle, Layers, Box, Check,
+  BookOpen, Clock, List, Lightbulb, ArrowRight, User, Award
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Skill, Service } from "@shared/schema";
@@ -2196,6 +2197,43 @@ export default function FreelancerHub({
                         <p className="text-gray-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
                           {exp.description}
                         </p>
+                      </div>
+                    )}
+                    
+                    {/* Industry and Domain section */}
+                    <div className="flex flex-col gap-2 mt-3 mb-4">
+                      {exp.industry && (
+                        <div className="flex items-center text-gray-600">
+                          <Briefcase className="h-4 w-4 mr-2 text-blue-500" />
+                          <span className="text-sm font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                            Industry: <span className="text-gray-800">{exp.industry}</span>
+                          </span>
+                        </div>
+                      )}
+                      
+                      {exp.domain && (
+                        <div className="flex items-center text-gray-600">
+                          <Layers className="h-4 w-4 mr-2 text-purple-500" />
+                          <span className="text-sm font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                            Domain: <span className="text-gray-800">{exp.domain}</span>
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Key Responsibilities section */}
+                    {exp.keyResponsibilities && Array.isArray(exp.keyResponsibilities) && exp.keyResponsibilities.length > 0 && (
+                      <div className="bg-blue-50 rounded-xl p-4 mb-3">
+                        <h4 className="text-sm font-bold mb-2 text-blue-700" style={{ fontFamily: 'Fredoka, sans-serif' }}>
+                          Key Responsibilities
+                        </h4>
+                        <ul className="list-disc pl-5 space-y-1">
+                          {exp.keyResponsibilities.map((responsibility, idx) => (
+                            <li key={idx} className="text-gray-700 text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                              {responsibility}
+                            </li>
+                          ))}
+                        </ul>
                       </div>
                     )}
                     
