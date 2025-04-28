@@ -21,7 +21,7 @@ import {
 import { 
   Download, Palette, Heart, Music, Video, Film, 
   Briefcase, GraduationCap, Calendar, MapPin, 
-  ChevronRight, Code, 
+  ChevronRight, Code, Globe,
   Mail, Instagram, Twitter, Linkedin, Youtube, Camera, 
   FileText, PenTool, Coffee, Star, Zap, Headphones,
   Radio, Sparkles, Scissors, Pencil, Book, Gift, 
@@ -682,7 +682,45 @@ export default function FreelancerHub({
                     </span>
                   </motion.div>
                 )}
+                
+                {/* Category Display */}
+                {selectedProject.category && (
+                  <motion.div 
+                    className="flex items-center bg-pink-50 px-3 py-1.5 rounded-full"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: 0.15 }}
+                  >
+                    <Palette className="h-4 w-4 mr-2 text-pink-500" />
+                    <span className="text-sm font-medium text-pink-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                      {selectedProject.category}
+                    </span>
+                  </motion.div>
+                )}
               </div>
+              
+              {/* Project URL */}
+              {selectedProject.projectUrl && (
+                <motion.div 
+                  className="mb-5"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: 0.2 }}
+                >
+                  <div className="flex items-center bg-violet-50 px-3 py-2 rounded-lg">
+                    <Globe className="h-4 w-4 mr-2 text-violet-500 flex-shrink-0" />
+                    <a 
+                      href={selectedProject.projectUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm font-medium text-violet-700 hover:text-violet-900 hover:underline truncate"
+                      style={{ fontFamily: 'Poppins, sans-serif' }}
+                    >
+                      {selectedProject.projectUrl}
+                    </a>
+                  </div>
+                </motion.div>
+              )}
               
               {/* Description */}
               {selectedProject.description && (
@@ -690,7 +728,7 @@ export default function FreelancerHub({
                   className="mb-6 bg-gradient-to-r from-amber-50 to-white p-4 rounded-xl border border-amber-100"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, delay: 0.2 }}
+                  transition={{ duration: 0.3, delay: 0.25 }}
                 >
                   <h4 className="text-sm font-bold mb-2 text-gray-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
                     <span className="text-amber-500 mr-2">✨</span> About this project
