@@ -1272,7 +1272,7 @@ export function DynamicInnovator({
             Education & Certifications
           </h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+          <div className="grid grid-cols-1 gap-6 mt-8">
             {sortedEducations.length > 0 ? (
               sortedEducations.map((education) => (
                 <div key={education.id} className="tech-card p-5">
@@ -1299,78 +1299,61 @@ export function DynamicInnovator({
                     </div>
                   </div>
                   
-                  {/* Field of Study */}
-                  {education.fieldOfStudy && (
-                    <div className="flex items-center text-[#fe53bb] mt-2 text-sm font-medium">
-                      <GraduationCap className="h-4 w-4 mr-1 text-[#fe53bb]" />
-                      <span>Field: {education.fieldOfStudy}</span>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      {/* Field of Study */}
+                      {education.fieldOfStudy && (
+                        <div className="flex items-center text-[#fe53bb] mt-2 text-sm font-medium">
+                          <GraduationCap className="h-4 w-4 mr-1 text-[#fe53bb]" />
+                          <span>Field: {education.fieldOfStudy}</span>
+                        </div>
+                      )}
+                      
+                      {/* Location */}
+                      {education.location && (
+                        <div className="flex items-center text-gray-400 mt-2 text-sm">
+                          <MapPin className="h-4 w-4 mr-1 text-[#08f7fe]" />
+                          <span>{education.location}</span>
+                        </div>
+                      )}
+                      
+                      {/* Industry & Domain Section */}
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        {education.industry && (
+                          <Badge className="bg-[#080E24] border border-[#08f7fe]/20 text-[#08f7fe]">
+                            Industry: {education.industry}
+                          </Badge>
+                        )}
+                        
+                        {education.domain && (
+                          <Badge className="bg-[#080E24] border border-[#08f7fe]/20 text-[#08f7fe]">
+                            Domain: {education.domain}
+                          </Badge>
+                        )}
+                      </div>
                     </div>
-                  )}
-                  
-                  {/* Location */}
-                  {education.location && (
-                    <div className="flex items-center text-gray-400 mt-2 text-sm">
-                      <MapPin className="h-4 w-4 mr-1 text-[#08f7fe]" />
-                      <span>{education.location}</span>
-                    </div>
-                  )}
-                  
-                  {/* Industry & Domain Section */}
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {education.industry && (
-                      <Badge className="bg-[#080E24] border border-[#08f7fe]/20 text-[#08f7fe]">
-                        Industry: {education.industry}
-                      </Badge>
-                    )}
-                    
-                    {education.domain && (
-                      <Badge className="bg-[#080E24] border border-[#08f7fe]/20 text-[#08f7fe]">
-                        Domain: {education.domain}
-                      </Badge>
-                    )}
-                  </div>
 
-                  {/* Skills Acquired Section */}
-                  {education.skillsAcquired && Array.isArray(education.skillsAcquired) && education.skillsAcquired.length > 0 && (
-                    <div className="mt-4 pt-4 border-t border-[#08f7fe]/10">
-                      <h4 className="text-sm font-medium text-[#08f7fe] mb-3 flex items-center">
-                        <Briefcase className="h-4 w-4 mr-1.5 text-[#fe53bb]" />
-                        Skills Acquired:
-                      </h4>
-                      <ul className="text-gray-300 text-sm space-y-2">
-                        {education.skillsAcquired.map((skill, index) => (
-                          <li key={index} className="flex items-start">
-                            <div className="flex-shrink-0 mr-2 mt-0.5 h-4 w-4 rounded-full bg-[#0c162d] border border-[#fe53bb]/30 flex items-center justify-center">
-                              <Check className="h-3 w-3 text-[#fe53bb]" />
-                            </div>
-                            <span>{skill}</span>
-                          </li>
-                        ))}
-                      </ul>
+                    {/* Skills Acquired Section */}
+                    <div>
+                      {education.skillsAcquired && Array.isArray(education.skillsAcquired) && education.skillsAcquired.length > 0 && (
+                        <div className="mt-2 md:mt-0">
+                          <h4 className="text-sm font-medium text-[#08f7fe] mb-3 flex items-center">
+                            <Briefcase className="h-4 w-4 mr-1.5 text-[#fe53bb]" />
+                            Skills Acquired:
+                          </h4>
+                          <ul className="text-gray-300 text-sm space-y-2">
+                            {education.skillsAcquired.map((skill, index) => (
+                              <li key={index} className="flex items-start">
+                                <div className="flex-shrink-0 mr-2 mt-0.5 h-4 w-4 rounded-full bg-[#0c162d] border border-[#fe53bb]/30 flex items-center justify-center">
+                                  <Check className="h-3 w-3 text-[#fe53bb]" />
+                                </div>
+                                <span>{skill}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
                     </div>
-                  )}
-                  
-                  {/* Academic Achievements - Using mock data for now */}
-                  <div className="mt-4 pt-4 border-t border-[#08f7fe]/10">
-                    <div className="flex items-center text-[#08f7fe] text-sm">
-                      <Cpu className="h-4 w-4 mr-2" />
-                      <span>Academic Achievements</span>
-                    </div>
-                    <p className="text-gray-300 text-sm mt-1">
-                      {education.degree?.includes("Computer") || education.degree?.includes("Tech") || education.degree?.includes("Engineering") 
-                        ? "Computer Science & Algorithm Optimization" 
-                        : "Advanced Research & Technical Analysis"}
-                    </p>
-                  </div>
-                  
-                  {/* Debug Field: Display all education data */}
-                  <div className="mt-4 pt-4 border-t border-[#08f7fe]/10">
-                    <div className="flex items-center text-[#08f7fe] text-sm">
-                      <span>Debug: Education Data</span>
-                    </div>
-                    <pre className="text-xs text-gray-400 mt-1 overflow-hidden">
-                      {JSON.stringify(education, null, 2)}
-                    </pre>
                   </div>
                 </div>
               ))
