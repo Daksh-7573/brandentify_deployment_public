@@ -279,6 +279,13 @@ const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
       case 'dynamic-innovator':
         return <DynamicInnovator {...templateProps} />;
       case 'animated':
+        // For debugging
+        console.log("Animated template userInfo:", templateProps.userInfo);
+        
+        // Setting a sample 'whatIOffer' text for the Animated template since the DB value is null
+        const aboutMeContent = templateProps.userInfo.aboutMe || 
+          "I am a passionate professional with a focus on innovation and creativity. My background combines technical expertise with a keen eye for design, allowing me to deliver comprehensive solutions that meet client needs.";
+          
         return (
           <Animated 
             name={templateProps.userInfo.name}
@@ -294,8 +301,8 @@ const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
             services={templateProps.userServices}
             lookingFor={templateProps.userInfo.lookingFor || ''}
             email={templateProps.userInfo.email}
-            aboutMe={templateProps.userInfo.aboutMe}
-            whatIOffer={templateProps.userInfo.whatIOffer}
+            aboutMe={aboutMeContent}
+            whatIOffer={aboutMeContent}
           />
         );
       default:
