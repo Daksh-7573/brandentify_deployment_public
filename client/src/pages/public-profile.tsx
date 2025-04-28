@@ -20,6 +20,7 @@ import VisualExpert from "@/components/portfolio/templates/visual-expert";
 import CorporateExecutive from "@/components/portfolio/templates/corporate-executive";
 import { DynamicInnovator } from "@/components/portfolio/templates/dynamic-innovator";
 import Animated from "@/components/portfolio/templates/animated";
+import AnimatedOdyssey from "@/components/portfolio/templates/animated-odyssey"; // New animated and immersive futuristic template
 
 // Type for our user data
 interface UserData {
@@ -303,6 +304,33 @@ const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
             email={templateProps.userInfo.email}
             aboutMe={aboutMeContent}
             whatIOffer={aboutMeContent}
+          />
+        );
+      case 'animated-odyssey':
+        // For debugging
+        console.log("Animated Odyssey template userInfo:", templateProps.userInfo);
+        
+        // Use the same content for both about and whatIOffer if either is missing
+        const contentForOdyssey = templateProps.userInfo.whatIOffer || templateProps.userInfo.aboutMe || 
+          "I am a passionate professional with a focus on innovation and creativity. My background combines technical expertise with a keen eye for design, allowing me to deliver comprehensive solutions that meet client needs.";
+          
+        return (
+          <AnimatedOdyssey 
+            name={templateProps.userInfo.name}
+            title={templateProps.userInfo.title || ''}
+            industry={templateProps.userInfo.industry || ''}
+            domain={templateProps.userInfo.domain || ''}
+            location={templateProps.userInfo.location || ''}
+            photoURL={templateProps.userInfo.photoURL}
+            skills={templateProps.userSkills}
+            projects={templateProps.userProjects}
+            experiences={templateProps.userExperiences}
+            educations={templateProps.userEducations}
+            services={templateProps.userServices}
+            lookingFor={templateProps.userInfo.lookingFor || ''}
+            email={templateProps.userInfo.email}
+            aboutMe={contentForOdyssey}
+            whatIOffer={contentForOdyssey}
           />
         );
       default:
