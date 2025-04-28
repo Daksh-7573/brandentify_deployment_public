@@ -543,7 +543,24 @@ export default function FreelancerHub({
                 backgroundSize: 'cover',
                 backgroundPosition: 'center'
               }}
-            />
+            >
+              {/* Attempt to display image as fallback if background image fails */}
+              {selectedProject.thumbnailUrl && (
+                <img
+                  src={selectedProject.thumbnailUrl.startsWith('http') ? selectedProject.thumbnailUrl : `${window.location.origin}${selectedProject.thumbnailUrl}`}
+                  alt={selectedProject.title}
+                  className="w-full h-full object-cover opacity-0"
+                  onError={(e) => {
+                    console.log('Error loading image:', selectedProject.thumbnailUrl);
+                    e.currentTarget.style.opacity = '0';
+                  }}
+                  onLoad={(e) => {
+                    e.currentTarget.style.opacity = '1';
+                  }}
+                />
+              )}
+            </div>
+            
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/10" />
             
             {/* Close button */}
