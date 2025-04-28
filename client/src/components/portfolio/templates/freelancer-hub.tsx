@@ -851,7 +851,7 @@ export default function FreelancerHub({
                     })
                   ) : (
                     // Placeholder media items when no media is available
-                    Array.from({ length: 2 }).map((_, index) => (
+                    Array(4).fill(0).map((_, index) => (
                       <motion.div 
                         key={index} 
                         className="rounded-xl overflow-hidden h-32 relative shadow-md"
