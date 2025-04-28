@@ -79,7 +79,9 @@ const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
     username = pathname.startsWith('/@') ? pathname.substring(2) : undefined;
   }
   
+  // Enhance debugging for better tracking
   console.log("Public profile page for username:", username);
+  console.log("Current window.location.pathname:", window.location.pathname);
   
   // Fetch user data by username
   const { data: userData, isLoading: isUserLoading, error: userError } = useQuery<UserData | null>({
