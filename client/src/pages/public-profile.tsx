@@ -88,8 +88,6 @@ const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
       if (!username) return null;
       try {
         const response = await apiRequest('GET', `/api/users/by-username/${username}`);
-        console.log('[public-profile] User data fetched:', response);
-        console.log('[public-profile] whatIOffer value:', response.whatIOffer);
         return response as unknown as UserData;
       } catch (error) {
         console.error('Error fetching user:', error);
