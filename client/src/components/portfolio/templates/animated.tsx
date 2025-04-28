@@ -265,11 +265,12 @@ export default function AnimatedTemplate({
                       whileHover={{ y: -5, boxShadow: '0 10px 25px rgba(139, 92, 246, 0.15)' }}
                     >
                       <div className="text-sm text-gray-400">{skill.name}</div>
-                      <Progress 
-                        value={skill.proficiency || 75} 
-                        className="h-1.5 mt-2" 
-                        indicatorClassName="bg-gradient-to-r from-purple-500 to-pink-500" 
-                      />
+                      <div className="h-1.5 mt-2 relative w-full overflow-hidden rounded-full bg-gray-800">
+                        <div 
+                          className="h-full w-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all"
+                          style={{ transform: `translateX(-${100 - (skill.proficiency || 75)}%)` }}
+                        />
+                      </div>
                     </motion.div>
                   ))}
                 </div>
