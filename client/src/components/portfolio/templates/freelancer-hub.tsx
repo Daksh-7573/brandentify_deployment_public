@@ -247,8 +247,54 @@ export default function FreelancerHub({
   
   // Function to handle project selection and modal display
   const handleProjectClick = (project: Project) => {
-    setSelectedProject(project);
+    console.log("Selected project details:", {
+      title: project.title,
+      category: project.category,
+      industry: project.industry, 
+      startDate: project.startDate,
+      projectUrl: project.projectUrl,
+      description: project.description,
+      mediaUrls: project.mediaUrls
+    });
+    
+    // Make sure mediaUrls is treated as an array
+    let mediaUrlsArray: string[] = [];
+    if (project.mediaUrls) {
+      // If it's already an array, use it directly
+      if (Array.isArray(project.mediaUrls)) {
+        mediaUrlsArray = project.mediaUrls;
+      } 
+      // Otherwise, try to parse it if it's a JSON string
+      else if (typeof project.mediaUrls === 'string') {
+        try {
+          const parsed = JSON.parse(project.mediaUrls);
+          if (Array.isArray(parsed)) {
+            mediaUrlsArray = parsed;
+          }
+        } catch (e) {
+          console.error("Failed to parse mediaUrls:", e);
+        }
+      }
+    }
+    
+    // Create a properly typed version of the project with default values for optional fields
+    const enhancedProject = {
+      ...project,
+      title: project.title || 'Untitled Project',
+      category: project.category || '',
+      industry: project.industry || '',
+      description: project.description || '',
+      startDate: project.startDate || '',
+      projectUrl: project.projectUrl || '',
+      thumbnailUrl: project.thumbnailUrl || '',
+      mediaUrls: mediaUrlsArray
+    };
+    
+    setSelectedProject(enhancedProject);
     setIsProjectModalOpen(true);
+    
+    // Log the enhanced project to verify all fields are set
+    console.log("Enhanced project for modal:", enhancedProject);
   };
   
   // Function to handle Let's Talk button click
