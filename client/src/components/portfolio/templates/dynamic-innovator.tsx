@@ -982,45 +982,51 @@ export function DynamicInnovator({
               {userInfo.lookingFor ? ` Currently, I'm looking for ${userInfo.lookingFor} opportunities that challenge me to grow and innovate in the ${userInfo.industry || "technology"} space.` : ""}
             </p>
           </div>
+        </div>
+      </section>
+      
+      {/* Skills Section */}
+      <section 
+        id="skills-section" 
+        ref={sectionRefs.skills}
+        className="section py-10 px-4 md:px-8 bg-[#0c162d]/80"
+      >
+        <div className="max-w-6xl mx-auto">
+          <h2 className="futuristic-heading text-2xl md:text-3xl font-bold mb-8 text-white inline-block">
+            <Zap className="inline-block h-6 w-6 mr-2 text-[#08f7fe]" />
+            What I'm Good At
+          </h2>
           
-          {/* Skills Section */}
-          <div className="mt-12">
-            <h3 className="futuristic-heading text-xl font-bold mb-6 text-white inline-block">
-              <Cpu className="inline-block h-5 w-5 mr-2 text-[#08f7fe]" />
-              Skills & Technologies
-            </h3>
-            
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4">
-              {sortedSkills.length > 0 ? (
-                sortedSkills.map((skill) => {
-                  const SkillIcon = getSkillIcon(skill.name);
-                  return (
-                    <div key={skill.id} className="tech-card p-4">
-                      <div className="flex items-center mb-3">
-                        <SkillIcon className="h-5 w-5 mr-2 text-[#08f7fe]" />
-                        <span className="text-white">{skill.name}</span>
-                      </div>
-                      
-                      <div className="skill-meter">
-                        <div 
-                          className="skill-progress"
-                          style={{ width: `${skill.proficiency || 70}%` }}
-                        ></div>
-                      </div>
-                      
-                      <div className="text-right mt-1 text-xs text-[#08f7fe]">
-                        {skill.proficiency || 70}%
-                      </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4">
+            {sortedSkills.length > 0 ? (
+              sortedSkills.map((skill) => {
+                const SkillIcon = getSkillIcon(skill.name);
+                return (
+                  <div key={skill.id} className="tech-card p-4">
+                    <div className="flex items-center mb-3">
+                      <SkillIcon className="h-5 w-5 mr-2 text-[#08f7fe]" />
+                      <span className="text-white">{skill.name}</span>
                     </div>
-                  );
-                })
-              ) : (
-                <div className="tech-card p-6 text-center col-span-full">
-                  <CircuitBoard className="h-10 w-10 mx-auto mb-3 text-[#08f7fe]/50" />
-                  <p className="text-gray-400">Technical skills will be displayed here</p>
-                </div>
-              )}
-            </div>
+                    
+                    <div className="skill-meter">
+                      <div 
+                        className="skill-progress"
+                        style={{ width: `${skill.proficiency || 70}%` }}
+                      ></div>
+                    </div>
+                    
+                    <div className="text-right mt-1 text-xs text-[#08f7fe]">
+                      {skill.proficiency || 70}%
+                    </div>
+                  </div>
+                );
+              })
+            ) : (
+              <div className="tech-card p-6 text-center col-span-full">
+                <CircuitBoard className="h-10 w-10 mx-auto mb-3 text-[#08f7fe]/50" />
+                <p className="text-gray-400">Technical skills will be displayed here</p>
+              </div>
+            )}
           </div>
         </div>
       </section>
