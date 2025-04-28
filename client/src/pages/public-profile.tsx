@@ -34,6 +34,8 @@ interface UserData {
   domain?: string | null;
   lookingFor: string | null;
   phoneNumber: string | null;
+  aboutMe?: string | null;
+  whatIOffer?: string | null;
 }
 
 // Type for portfolio data
@@ -276,7 +278,24 @@ const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
       case 'dynamic-innovator':
         return <DynamicInnovator {...templateProps} />;
       case 'animated':
-        return <Animated {...templateProps} />;
+        // Pass the values directly to match the Animated component's expected props
+        return <Animated 
+          name={templateProps.userInfo.name}
+          title={templateProps.userInfo.title || ''}
+          industry={templateProps.userInfo.industry || ''}
+          domain={templateProps.userInfo.domain || ''}
+          location={templateProps.userInfo.location || ''}
+          photoURL={templateProps.userInfo.photoURL}
+          email={templateProps.userInfo.email}
+          lookingFor={templateProps.userInfo.lookingFor || ''}
+          aboutMe={templateProps.userInfo.aboutMe}
+          whatIOffer={templateProps.userInfo.whatIOffer}
+          skills={templateProps.userSkills}
+          projects={templateProps.userProjects}
+          experiences={templateProps.userExperiences}
+          educations={templateProps.userEducations}
+          services={templateProps.userServices}
+        />;
       default:
         return <VisualExpert {...templateProps} />;
     }
