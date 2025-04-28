@@ -247,6 +247,7 @@ export default function FreelancerHub({
   
   // Function to handle project selection and modal display
   const handleProjectClick = (project: Project) => {
+    console.log("Opening project modal with data:", project);
     setSelectedProject(project);
     setIsProjectModalOpen(true);
   };
@@ -529,6 +530,9 @@ export default function FreelancerHub({
   // Project Details Modal
   const renderProjectDetailsModal = () => {
     if (!selectedProject) return null;
+    
+    console.log("Rendering modal with project:", selectedProject);
+    console.log("Globe component availability:", typeof Globe === 'function' ? 'Available' : 'Not available');
     
     return (
       <Dialog open={isProjectModalOpen} onOpenChange={setIsProjectModalOpen}>
