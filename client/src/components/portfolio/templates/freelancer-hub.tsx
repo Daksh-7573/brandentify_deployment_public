@@ -1654,8 +1654,8 @@ export default function FreelancerHub({
                     className="project-card h-full overflow-hidden border-none shadow-xl rounded-xl cursor-pointer"
                     onClick={() => handleProjectClick(project)}
                   >
-                    <div className="relative h-52 overflow-hidden">
-                      {/* Project Image */}
+                    {/* Square Project Image */}
+                    <div className="relative aspect-square overflow-hidden">
                       <div 
                         className="project-image absolute w-full h-full"
                         style={{
@@ -1667,23 +1667,16 @@ export default function FreelancerHub({
                         }}
                       />
                       
-                      {/* Colored Overlay with Playful Pattern */}
+                      {/* Dark overlay */}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent flex items-end">
                         <div className="p-5 text-white">
                           <h3 className="text-xl font-bold" style={{ fontFamily: 'Fredoka, sans-serif' }}>
                             {project.title}
                           </h3>
-                          {project.category && (
-                            <div className="flex items-center mt-1">
-                              <Badge className="bg-white/20 text-white border-none">
-                                {project.category}
-                              </Badge>
-                            </div>
-                          )}
                         </div>
                       </div>
                       
-                      {/* Floating badge for year */}
+                      {/* Floating badge for date */}
                       {project.startDate && (
                         <motion.div 
                           className="absolute top-3 right-3 bg-white text-sm font-semibold px-2 py-1 rounded-full shadow-md"
@@ -1695,42 +1688,8 @@ export default function FreelancerHub({
                       )}
                     </div>
                     
-                    <CardContent className="p-5">
-                      <p className="text-gray-700 mb-4 line-clamp-3" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                        {project.description}
-                      </p>
-                      <div className="flex flex-wrap gap-2 mb-3">
-                        {project.tags && project.tags.split(',').slice(0, 3).map((tag, i) => (
-                          <Badge key={i} className="bg-violet-100 text-violet-700 border-none hover:bg-violet-200 transition-colors">
-                            {tag.trim()}
-                          </Badge>
-                        ))}
-                      </div>
-                      <div className="flex justify-between items-center mt-2">
-                        <motion.div
-                          whileHover={{ scale: 1.05 }}
-                          className="text-sm font-medium text-violet-600 flex items-center"
-                          style={{ fontFamily: 'Poppins, sans-serif' }}
-                        >
-                          View details
-                          <ChevronRight className="h-4 w-4 ml-1" />
-                        </motion.div>
-                        
-                        {/* Playful interaction hint */}
-                        <motion.div
-                          initial={{ scale: 1 }}
-                          animate={{ scale: [1, 1.1, 1] }}
-                          transition={{ 
-                            repeat: Infinity, 
-                            repeatType: "loop", 
-                            duration: 2,
-                            repeatDelay: 4
-                          }}
-                          className="text-pink-500 text-lg"
-                        >
-                          ✨
-                        </motion.div>
-                      </div>
+                    <CardContent className="p-3">
+                      {/* Empty content - only title and date are shown as requested */}
                     </CardContent>
                   </Card>
                 </motion.div>
