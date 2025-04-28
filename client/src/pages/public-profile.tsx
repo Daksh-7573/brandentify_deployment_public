@@ -367,7 +367,7 @@ const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
                         <div className="flex items-center gap-2 text-sm">
                           <Globe className="h-4 w-4 text-muted-foreground" />
                           <a 
-                            href={`/@${userData?.username}`} 
+                            href={`/${userData?.username}`} 
                             className="text-primary hover:underline"
                           >
                             brandentifier.com/@{userData?.username}

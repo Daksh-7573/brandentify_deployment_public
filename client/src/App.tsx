@@ -84,8 +84,20 @@ function Router() {
         <ProtectedRoute path="/personal-details" component={PersonalDetailsPage} />
       </Route>
       {/* Public profile using username route (/@username) - dynamic path parameter */}
-      <Route path="/@:username">
+      <Route path="/profile/:username">
         {(params) => <PublicProfile username={params.username} />}
+      </Route>
+      
+      {/* Additional route to support /@username format */}
+      <Route path="/:atUsername">
+        {(params) => {
+          // Extract username from the @username format if it starts with @
+          const username = params.atUsername.startsWith('@') 
+            ? params.atUsername.substring(1) 
+            : null;
+          
+          return username ? <PublicProfile username={username} /> : <Redirect to="/not-found" />;
+        }}
       </Route>
       <Route path="/ai-career">
         <ProtectedRoute path="/ai-career" component={Dashboard} />
