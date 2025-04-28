@@ -1061,14 +1061,25 @@ export default function FreelancerHub({
                         <span className="ml-2 font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
                           {skill.name}
                         </span>
-                        <div className="ml-2 flex">
-                          {Array.from({ length: 5 }).map((_, i) => (
-                            <Star
-                              key={i}
-                              className={`h-3 w-3 ${i < (skill.proficiency || 3) ? 'text-white' : 'text-white/30'}`}
-                              fill={i < (skill.proficiency || 3) ? 'currentColor' : 'none'}
-                            />
-                          ))}
+                        <div className="ml-2 flex items-center">
+                          {/* Stars for proficiency level */}
+                          <div className="flex mr-2">
+                            {Array.from({ length: 5 }).map((_, i) => (
+                              <Star
+                                key={i}
+                                className={`h-3 w-3 ${i < (skill.proficiency || 3) ? 'text-white' : 'text-white/30'}`}
+                                fill={i < (skill.proficiency || 3) ? 'currentColor' : 'none'}
+                              />
+                            ))}
+                          </div>
+                          {/* Badge for proficiency level text */}
+                          <span className="text-xs px-1.5 py-0.5 bg-white/20 rounded-md">
+                            {skill.level || 'Intermediate'}
+                          </span>
+                          {/* Badge for proficiency percentage */}
+                          <span className="text-xs px-1.5 py-0.5 bg-white/20 rounded-md ml-1">
+                            {skill.proficiency ? `${skill.proficiency * 20}%` : '60%'}
+                          </span>
                         </div>
                       </div>
                     </motion.div>
@@ -1100,14 +1111,25 @@ export default function FreelancerHub({
                         <span className="ml-2 font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
                           {skill.name}
                         </span>
-                        <div className="ml-2 flex">
-                          {Array.from({ length: 5 }).map((_, i) => (
-                            <Star
-                              key={i}
-                              className={`h-3 w-3 ${i < (skill.proficiency || 3) ? 'text-white' : 'text-white/30'}`}
-                              fill={i < (skill.proficiency || 3) ? 'currentColor' : 'none'}
-                            />
-                          ))}
+                        <div className="ml-2 flex items-center">
+                          {/* Stars for proficiency level */}
+                          <div className="flex mr-2">
+                            {Array.from({ length: 5 }).map((_, i) => (
+                              <Star
+                                key={i}
+                                className={`h-3 w-3 ${i < (skill.proficiency || 3) ? 'text-white' : 'text-white/30'}`}
+                                fill={i < (skill.proficiency || 3) ? 'currentColor' : 'none'}
+                              />
+                            ))}
+                          </div>
+                          {/* Badge for proficiency level text */}
+                          <span className="text-xs px-1.5 py-0.5 bg-white/20 rounded-md">
+                            {skill.level || 'Intermediate'}
+                          </span>
+                          {/* Badge for proficiency percentage */}
+                          <span className="text-xs px-1.5 py-0.5 bg-white/20 rounded-md ml-1">
+                            {skill.proficiency ? `${skill.proficiency * 20}%` : '60%'}
+                          </span>
                         </div>
                       </div>
                     </motion.div>
@@ -1139,14 +1161,25 @@ export default function FreelancerHub({
                         <span className="ml-2 font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
                           {skill.name}
                         </span>
-                        <div className="ml-2 flex">
-                          {Array.from({ length: 5 }).map((_, i) => (
-                            <Star
-                              key={i}
-                              className={`h-3 w-3 ${i < (skill.proficiency || 3) ? 'text-white' : 'text-white/30'}`}
-                              fill={i < (skill.proficiency || 3) ? 'currentColor' : 'none'}
-                            />
-                          ))}
+                        <div className="ml-2 flex items-center">
+                          {/* Stars for proficiency level */}
+                          <div className="flex mr-2">
+                            {Array.from({ length: 5 }).map((_, i) => (
+                              <Star
+                                key={i}
+                                className={`h-3 w-3 ${i < (skill.proficiency || 3) ? 'text-white' : 'text-white/30'}`}
+                                fill={i < (skill.proficiency || 3) ? 'currentColor' : 'none'}
+                              />
+                            ))}
+                          </div>
+                          {/* Badge for proficiency level text */}
+                          <span className="text-xs px-1.5 py-0.5 bg-white/20 rounded-md">
+                            {skill.level || 'Intermediate'}
+                          </span>
+                          {/* Badge for proficiency percentage */}
+                          <span className="text-xs px-1.5 py-0.5 bg-white/20 rounded-md ml-1">
+                            {skill.proficiency ? `${skill.proficiency * 20}%` : '60%'}
+                          </span>
                         </div>
                       </div>
                     </motion.div>
@@ -1178,14 +1211,25 @@ export default function FreelancerHub({
                         <span className="ml-2 font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
                           {skill.name}
                         </span>
-                        <div className="ml-2 flex">
-                          {Array.from({ length: 5 }).map((_, i) => (
-                            <Star
-                              key={i}
-                              className={`h-3 w-3 ${i < (skill.proficiency || 3) ? 'text-white' : 'text-white/30'}`}
-                              fill={i < (skill.proficiency || 3) ? 'currentColor' : 'none'}
-                            />
-                          ))}
+                        <div className="ml-2 flex items-center">
+                          {/* Stars for proficiency level */}
+                          <div className="flex mr-2">
+                            {Array.from({ length: 5 }).map((_, i) => (
+                              <Star
+                                key={i}
+                                className={`h-3 w-3 ${i < (skill.proficiency || 3) ? 'text-white' : 'text-white/30'}`}
+                                fill={i < (skill.proficiency || 3) ? 'currentColor' : 'none'}
+                              />
+                            ))}
+                          </div>
+                          {/* Badge for proficiency level text */}
+                          <span className="text-xs px-1.5 py-0.5 bg-white/20 rounded-md">
+                            {skill.level || 'Intermediate'}
+                          </span>
+                          {/* Badge for proficiency percentage */}
+                          <span className="text-xs px-1.5 py-0.5 bg-white/20 rounded-md ml-1">
+                            {skill.proficiency ? `${skill.proficiency * 20}%` : '60%'}
+                          </span>
                         </div>
                       </div>
                     </motion.div>
@@ -1212,14 +1256,25 @@ export default function FreelancerHub({
                         <span className="ml-2 font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
                           {skill.name}
                         </span>
-                        <div className="ml-2 flex">
-                          {Array.from({ length: 5 }).map((_, i) => (
-                            <Star
-                              key={i}
-                              className={`h-3 w-3 ${i < (skill.proficiency || 3) ? 'text-white' : 'text-white/30'}`}
-                              fill={i < (skill.proficiency || 3) ? 'currentColor' : 'none'}
-                            />
-                          ))}
+                        <div className="ml-2 flex items-center">
+                          {/* Stars for proficiency level */}
+                          <div className="flex mr-2">
+                            {Array.from({ length: 5 }).map((_, i) => (
+                              <Star
+                                key={i}
+                                className={`h-3 w-3 ${i < (skill.proficiency || 3) ? 'text-white' : 'text-white/30'}`}
+                                fill={i < (skill.proficiency || 3) ? 'currentColor' : 'none'}
+                              />
+                            ))}
+                          </div>
+                          {/* Badge for proficiency level text */}
+                          <span className="text-xs px-1.5 py-0.5 bg-white/20 rounded-md">
+                            {skill.level || 'Intermediate'}
+                          </span>
+                          {/* Badge for proficiency percentage */}
+                          <span className="text-xs px-1.5 py-0.5 bg-white/20 rounded-md ml-1">
+                            {skill.proficiency ? `${skill.proficiency * 20}%` : '60%'}
+                          </span>
                         </div>
                       </div>
                     </motion.div>
