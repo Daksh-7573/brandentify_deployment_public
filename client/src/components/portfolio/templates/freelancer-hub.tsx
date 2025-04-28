@@ -549,23 +549,31 @@ export default function FreelancerHub({
               <img
                 src={selectedProject.thumbnailUrl.startsWith('http') ? selectedProject.thumbnailUrl : `${window.location.origin}${selectedProject.thumbnailUrl}`}
                 alt={selectedProject.title}
-                className="absolute inset-0 w-full h-full object-cover"
+                className="absolute inset-0 w-full h-full object-cover z-10"
                 onError={(e) => {
                   console.log('Error loading project header image:', selectedProject.thumbnailUrl);
-                  e.currentTarget.style.opacity = '0';
+                  // Try to use the first media URL as fallback
+                  if (selectedProject.mediaUrls && Array.isArray(selectedProject.mediaUrls) && selectedProject.mediaUrls.length > 0) {
+                    const fallbackUrl = selectedProject.mediaUrls[0];
+                    console.log('Trying fallback image from mediaUrls:', fallbackUrl);
+                    e.currentTarget.src = fallbackUrl.startsWith('http') ? 
+                      fallbackUrl : `${window.location.origin}${fallbackUrl}`;
+                  } else {
+                    e.currentTarget.style.opacity = '0';
+                  }
                 }}
               />
             )}
             
-            {/* Try mediaUrls[0] as a fallback if thumbnailUrl fails */}
-            {selectedProject.mediaUrls && Array.isArray(selectedProject.mediaUrls) && 
-             selectedProject.mediaUrls.length > 0 && !selectedProject.thumbnailUrl && (
+            {/* Try mediaUrls[0] as a fallback if thumbnailUrl is not available */}
+            {!selectedProject.thumbnailUrl && selectedProject.mediaUrls && 
+             Array.isArray(selectedProject.mediaUrls) && selectedProject.mediaUrls.length > 0 && (
               <img
                 src={selectedProject.mediaUrls[0].startsWith('http') ? 
                     selectedProject.mediaUrls[0] : 
                     `${window.location.origin}${selectedProject.mediaUrls[0]}`}
                 alt={`${selectedProject.title} media`}
-                className="absolute inset-0 w-full h-full object-cover"
+                className="absolute inset-0 w-full h-full object-cover z-10"
                 onError={(e) => {
                   console.log('Error loading fallback media image:', selectedProject.mediaUrls[0]);
                   e.currentTarget.style.opacity = '0';
@@ -641,19 +649,34 @@ export default function FreelancerHub({
                   Project Gallery
                 </h4>
                 <div className="grid grid-cols-2 gap-2">
-                  {selectedProject.mediaUrls.map((url: string, index: number) => (
-                    <div key={index} className="rounded-lg overflow-hidden h-32">
-                      <img 
-                        src={url.startsWith('http') ? url : `${window.location.origin}${url}`}
-                        alt={`Project image ${index + 1}`}
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          console.log('Error loading media image:', url);
-                          e.currentTarget.src = `${window.location.origin}/images/placeholder-image.jpg`;
-                        }}
-                      />
-                    </div>
-                  ))}
+                  {selectedProject.mediaUrls.map((url: string, index: number) => {
+                    // Skip the first image if it's being used as the header and there are multiple images
+                    if (index === 0 && !selectedProject.thumbnailUrl && selectedProject.mediaUrls.length > 1) {
+                      return null;
+                    }
+                    
+                    return (
+                      <div key={index} className="rounded-lg overflow-hidden h-32 relative">
+                        {/* Gradient background as fallback */}
+                        <div 
+                          className="absolute inset-0"
+                          style={{
+                            background: `linear-gradient(135deg, ${getCategoryGradient(selectedProject.category || 'design')})`,
+                          }}
+                        />
+                        
+                        <img 
+                          src={url.startsWith('http') ? url : `${window.location.origin}${url}`}
+                          alt={`Project image ${index + 1}`}
+                          className="absolute inset-0 w-full h-full object-cover z-10"
+                          onError={(e) => {
+                            console.log('Error loading media image:', url);
+                            e.currentTarget.style.opacity = '0';
+                          }}
+                        />
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             )}
@@ -1709,24 +1732,45 @@ export default function FreelancerHub({
                   >
                     {/* Square Project Image */}
                     <div className="relative aspect-square overflow-hidden">
+                      {/* Gradient background as fallback */}
                       <div 
                         className="project-image absolute w-full h-full"
                         style={{
-                          backgroundImage: `linear-gradient(135deg, ${getCategoryGradient(project.category || 'design')})`,
+                          background: `linear-gradient(135deg, ${getCategoryGradient(project.category || 'design')})`,
                           backgroundSize: 'cover',
                           backgroundPosition: 'center'
                         }}
                       />
                       
-                      {/* Image with error handling */}
+                      {/* Direct display of the thumbnail image */}
                       {project.thumbnailUrl && (
                         <img
                           src={project.thumbnailUrl.startsWith('http') ? project.thumbnailUrl : `${window.location.origin}${project.thumbnailUrl}`}
                           alt={project.title}
-                          className="absolute inset-0 w-full h-full object-cover"
+                          className="absolute inset-0 w-full h-full object-cover z-10"
                           onError={(e) => {
                             console.log('Error loading thumbnail:', project.thumbnailUrl);
-                            e.currentTarget.style.display = 'none';
+                            // Try to get the first item from mediaUrls as fallback
+                            if (project.mediaUrls && Array.isArray(project.mediaUrls) && project.mediaUrls.length > 0) {
+                              const fallbackUrl = project.mediaUrls[0];
+                              e.currentTarget.src = fallbackUrl.startsWith('http') ? 
+                                fallbackUrl : `${window.location.origin}${fallbackUrl}`;
+                            } else {
+                              e.currentTarget.style.opacity = '0';
+                            }
+                          }}
+                        />
+                      )}
+                      
+                      {/* If no thumbnailUrl, try mediaUrls[0] */}
+                      {!project.thumbnailUrl && project.mediaUrls && Array.isArray(project.mediaUrls) && project.mediaUrls.length > 0 && (
+                        <img
+                          src={project.mediaUrls[0].startsWith('http') ? project.mediaUrls[0] : `${window.location.origin}${project.mediaUrls[0]}`}
+                          alt={project.title}
+                          className="absolute inset-0 w-full h-full object-cover z-10"
+                          onError={(e) => {
+                            console.log('Error loading media as thumbnail:', project.mediaUrls[0]);
+                            e.currentTarget.style.opacity = '0';
                           }}
                         />
                       )}
