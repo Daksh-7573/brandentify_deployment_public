@@ -664,6 +664,10 @@ export class MemStorage implements IStorage {
     // Initialize Brand of the Day ID
     this.currentBrandOfTheDayId = 1;
     
+    // Initialize Mentorship Connect IDs
+    this.currentMentorshipRequestId = 1;
+    this.currentMentorshipFeedbackId = 1;
+    
     // Initialize with a default user for development/demo
     this.initializeDemoData();
   }
@@ -787,6 +791,10 @@ export class MemStorage implements IStorage {
     
     // Reset Brand of the Day ID
     this.currentBrandOfTheDayId = 1;
+    
+    // Reset Mentorship Connect IDs
+    this.currentMentorshipRequestId = 1;
+    this.currentMentorshipFeedbackId = 1;
     
     // No pre-created skills
     
@@ -962,6 +970,10 @@ export class MemStorage implements IStorage {
     // Clear all Nowboard data
     this.nowboardItems.clear();
     this.nowboardInspiredBy.clear();
+    
+    // Clear all Mentorship Connect data
+    this.mentorshipRequests.clear();
+    this.mentorshipFeedback.clear();
   }
   
   /**
