@@ -174,7 +174,37 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
           return res.json([]);
         }
         
-        const weeklyQuests = await storage.getCurrentWeekUserQuests(userId);
+        // Get current week number and year
+        const now = new Date();
+        const weekNumber = getWeekNumber(now);
+        const year = now.getFullYear();
+        
+        console.log(`[GET /users/${userId}/quests/current-week] Fetching quests for week ${weekNumber}, year ${year}`);
+        
+        // Using direct DB query instead of the storage method
+        const userQuestsResult = await pool.query(`
+          SELECT 
+            id,
+            user_id as "userId",
+            quest_definition_id as "questDefinitionId",
+            status,
+            progress,
+            assigned_at as "assignedAt",
+            completed_at as "completedAt",
+            dismissed_reason as "dismissedReason",
+            xp_earned as "xpEarned",
+            badge_earned as "badgeEarned",
+            musk_response as "muskResponse",
+            week_number as "weekNumber",
+            year
+          FROM user_quests
+          WHERE user_id = $1 AND week_number = $2 AND year = $3
+          ORDER BY assigned_at DESC
+        `, [userId, weekNumber, year]);
+        
+        const weeklyQuests = userQuestsResult.rows;
+        console.log(`[GET /users/${userId}/quests/current-week] Found ${weeklyQuests.length} quests for week ${weekNumber}`);
+        
         res.json(weeklyQuests);
       } catch (dbError) {
         console.error(`[GET /users/${req.params.userId}/quests/current-week] Database error:`, dbError);
@@ -245,17 +275,17 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
             title,
             description,
             type,
-            difficulty,
+            target_count as "targetCount",
+            target_action as "targetAction",
             xp_reward as "xpReward",
             badge_reward as "badgeReward",
-            target_count as "targetCount",
             required_profile_completion as "requiredProfileCompletion",
             required_career_stage as "requiredCareerStage",
             required_industry as "requiredIndustry",
+            musk_tip as "muskTip",
             is_active as "isActive",
             created_at as "createdAt",
-            updated_at as "updatedAt",
-            musk_prompt as "muskPrompt"
+            updated_at as "updatedAt"
           FROM quest_definitions
           WHERE is_active = true
         `);
