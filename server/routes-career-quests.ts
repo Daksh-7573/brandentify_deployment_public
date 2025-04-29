@@ -579,33 +579,37 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
           });
         }
         
-        const userXp = await storage.getUserXp(userId);
+        // Get user XP directly from database
+        console.log(`[GET /users/${userId}/xp] Fetching user XP directly from DB`);
         
-        // If no XP record exists, create one with default values
-        if (!userXp) {
-          try {
-            const newUserXp = await storage.createUserXp({ 
-              userId, 
-              balance: 0, 
-              lifetimeEarned: 0, 
-              currentMonthEarned: 0 
-            });
-            return res.json(newUserXp);
-          } catch (createError) {
-            console.error(`[GET /users/${req.params.userId}/xp] Error creating user XP:`, createError);
-            // Return default XP object to prevent UI crashes
-            return res.json({
-              id: 0,
-              userId: userId,
-              balance: 0,
-              lifetimeEarned: 0,
-              currentMonthEarned: 0,
-              lastUpdated: new Date()
-            });
-          }
+        const userXpResult = await pool.query(`
+          SELECT 
+            id,
+            user_id as "userId",
+            balance,
+            lifetime_earned as "lifetimeEarned",
+            current_month_earned as "currentMonthEarned",
+            last_updated as "lastUpdated"
+          FROM user_xp
+          WHERE user_id = $1
+        `, [userId]);
+        
+        if (userXpResult.rows.length > 0) {
+          const userXp = userXpResult.rows[0];
+          console.log(`[GET /users/${userId}/xp] Found XP record:`, userXp);
+          res.json(userXp);
+        } else {
+          console.log(`[GET /users/${userId}/xp] No XP record found for user ${userId}, returning default`);
+          // Return default XP object if no record exists
+          res.json({
+            id: 0,
+            userId: userId,
+            balance: 0,
+            lifetimeEarned: 0,
+            currentMonthEarned: 0,
+            lastUpdated: new Date()
+          });
         }
-        
-        res.json(userXp);
       } catch (dbError) {
         console.error(`[GET /users/${req.params.userId}/xp] Database error:`, dbError);
         // Return default XP object to prevent UI crashes
