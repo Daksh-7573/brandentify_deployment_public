@@ -99,7 +99,6 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
   const servicesRef = useRef<HTMLDivElement>(null);
   const timelineRef = useRef<HTMLDivElement>(null);
   const educationRef = useRef<HTMLDivElement>(null);
-  const contactRef = useRef<HTMLDivElement>(null);
 
   // Check if sections are in view to trigger animations
   const isHeroInView = useInView(heroRef, { once: false, amount: 0.3 });
@@ -109,7 +108,6 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
   const isServicesInView = useInView(servicesRef, { once: false, amount: 0.2 });
   const isTimelineInView = useInView(timelineRef, { once: false, amount: 0.2 });
   const isEducationInView = useInView(educationRef, { once: false, amount: 0.2 });
-  const isContactInView = useInView(contactRef, { once: false, amount: 0.2 });
 
   // Animation controls for reactive animations
   const controls = useAnimation();
@@ -127,8 +125,7 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
       { id: 'projects', ref: projectsRef },
       { id: 'services', ref: servicesRef },
       { id: 'timeline', ref: timelineRef },
-      { id: 'education', ref: educationRef },
-      { id: 'contact', ref: contactRef }
+      { id: 'education', ref: educationRef }
     ];
     
     const handleScroll = () => {
@@ -1224,97 +1221,7 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
         </div>
       </section>
       
-      {/* Contact Section */}
-      <section id="contact" className="py-20 relative animated-contact" ref={contactRef}>
-        <div className="container mx-auto px-6 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: isContactInView ? 1 : 0, y: isContactInView ? 0 : 30 }}
-            transition={{ duration: 0.7 }}
-            className="mb-16 text-center"
-          >
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 section-title">
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500">
-                Get In Touch
-              </span>
-            </h2>
-            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-              Got a project in mind? Let's collaborate to create something amazing.
-            </p>
-          </motion.div>
-          
-          <div className="max-w-3xl mx-auto">
-            <motion.div 
-              className="bg-gray-800/30 rounded-xl overflow-hidden border border-gray-700 shadow-lg p-8 md:p-10"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: isContactInView ? 1 : 0, y: isContactInView ? 0 : 30 }}
-              transition={{ duration: 0.6 }}
-            >
-              <div className="flex flex-col md:flex-row gap-8">
-                <div className="md:w-1/2">
-                  <h3 className="text-2xl font-bold text-white mb-4">Contact Information</h3>
-                  
-                  <div className="space-y-4">
-                    {email && (
-                      <a 
-                        href={`mailto:${email}`}
-                        className="flex items-center gap-3 p-3 rounded-lg bg-gray-900/40 hover:bg-gray-900/60 transition-all duration-300"
-                      >
-                        <div className="w-10 h-10 rounded-full bg-purple-500/10 flex items-center justify-center">
-                          <Send className="w-5 h-5 text-purple-400" />
-                        </div>
-                        <div>
-                          <div className="text-sm text-gray-400">Email</div>
-                          <div className="text-white">{email}</div>
-                        </div>
-                      </a>
-                    )}
-                    
-                    {location && (
-                      <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-900/40">
-                        <div className="w-10 h-10 rounded-full bg-purple-500/10 flex items-center justify-center">
-                          <MapPin className="w-5 h-5 text-purple-400" />
-                        </div>
-                        <div>
-                          <div className="text-sm text-gray-400">Location</div>
-                          <div className="text-white">{location}</div>
-                        </div>
-                      </div>
-                    )}
-                    
-                    <div className="p-4 rounded-lg bg-purple-500/10 border border-purple-500/20">
-                      <h4 className="font-semibold text-purple-400 mb-2">Looking for:</h4>
-                      <p className="text-gray-300">{lookingFor || "Exciting projects and collaborations with creative teams."}</p>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="md:w-1/2">
-                  <h3 className="text-2xl font-bold text-white mb-4">Send Message</h3>
-                  
-                  <div className="space-y-4">
-                    <Button 
-                      className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 flex items-center justify-center gap-2 py-6 text-lg"
-                      onClick={() => {
-                        if (email) {
-                          window.location.href = `mailto:${email}`;
-                        }
-                      }}
-                    >
-                      <Mail className="w-5 h-5" />
-                      Contact via Email
-                    </Button>
-                    
-                    <p className="text-center text-gray-400">
-                      I'll get back to you as soon as possible.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
+
       
       {/* Footer */}
       <footer className="py-8 bg-gray-900/50 border-t border-gray-800">
