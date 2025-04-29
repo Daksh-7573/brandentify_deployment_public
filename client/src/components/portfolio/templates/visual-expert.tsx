@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ProfileImage } from "@/components/ui/profile-image";
 import { Education, Project, Service, Skill, WorkExperience } from "@shared/schema";
 import { useEffect, useState, useRef } from "react";
+import { MentorButton } from "@/components/mentorship/mentor-button";
 import PortfolioCtaButtons from "../portfolio-cta-buttons";
 import { 
   Calendar, 
@@ -662,12 +663,10 @@ export default function VisualExpert({
                 Grab My Resume
               </Button>
               
-              <Button 
-                className="bg-purple-500/20 text-purple-300 border border-purple-400/30 hover:bg-purple-500/30 px-8 py-6 rounded-md shadow-md glow-on-hover"
-              >
-                <Lightbulb className="w-5 h-5 mr-2" />
-                Mentor
-              </Button>
+              <MentorButton 
+                mentorId={userInfo.id || 0}
+                mentorName={userInfo.name}
+              />
             </div>
           </div>
         </div>
