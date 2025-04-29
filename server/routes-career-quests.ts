@@ -2,6 +2,14 @@ import { Router } from "express";
 import { IStorage } from "./storage";
 import { pool } from "./db";
 
+// Helper function to get week number from date
+function getWeekNumber(date: Date): number {
+  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  return Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
+}
+
 export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
   // Quest Definition routes
   apiRouter.get("/quest-definitions", async (req, res) => {
