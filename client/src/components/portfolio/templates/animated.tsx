@@ -229,6 +229,7 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
               </div>
               
               <p className="text-lg md:text-xl text-gray-300 mb-8 max-w-2xl mx-auto lg:mx-0">
+                <span className="font-medium">Looking For: </span>
                 {lookingFor || "I create engaging digital experiences with innovation and technical expertise."}
               </p>
               
