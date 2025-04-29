@@ -4660,6 +4660,36 @@ export class MemStorage implements IStorage {
   }
 
   // User Badge operations
+  async getUserBadgeById(id: number): Promise<UserBadge | undefined> {
+    try {
+      console.log(`[db.getUserBadgeById] Fetching badge with ID ${id}`);
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          user_id as "userId",
+          badge_type as "badgeType",
+          quest_id as "questId",
+          display_on_profile as "displayOnProfile",
+          display_on_resume as "displayOnResume",
+          earned_at as "earnedAt"
+        FROM user_badges
+        WHERE id = $1
+      `, [id]);
+      
+      if (result.rows.length === 0) {
+        console.log(`[db.getUserBadgeById] No badge found with ID ${id}`);
+        return undefined;
+      }
+      
+      console.log(`[db.getUserBadgeById] Found badge with ID ${id}`);
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.getUserBadgeById] Error fetching badge with ID ${id}:`, error);
+      return undefined;
+    }
+  }
+
   async getUserBadges(userId: number): Promise<UserBadge[]> {
     try {
       console.log(`[db.getUserBadges] Fetching badges for user ${userId}`);
@@ -4687,51 +4717,176 @@ export class MemStorage implements IStorage {
   }
 
   async getUserBadgeById(id: number): Promise<UserBadge | undefined> {
-    return this.userBadges.get(id);
+    try {
+      console.log(`[db.getUserBadgeById] Fetching badge with ID ${id}`);
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          user_id as "userId",
+          badge_type as "badgeType",
+          quest_id as "questId",
+          display_on_profile as "displayOnProfile",
+          display_on_resume as "displayOnResume",
+          earned_at as "earnedAt"
+        FROM user_badges
+        WHERE id = $1
+      `, [id]);
+      
+      if (result.rows.length === 0) {
+        console.log(`[db.getUserBadgeById] No badge found with ID ${id}`);
+        return undefined;
+      }
+      
+      console.log(`[db.getUserBadgeById] Found badge with ID ${id}`);
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.getUserBadgeById] Error fetching badge with ID ${id}:`, error);
+      return undefined;
+    }
   }
 
   async getUserBadgesByType(userId: number, badgeType: string): Promise<UserBadge[]> {
-    return Array.from(this.userBadges.values())
-      .filter(badge => badge.userId === userId && badge.badgeType === badgeType)
-      .sort((a, b) => {
-        // Sort by most recently earned first
-        const timeA = a.earnedAt ? a.earnedAt.getTime() : 0;
-        const timeB = b.earnedAt ? b.earnedAt.getTime() : 0;
-        return timeB - timeA;
-      });
+    try {
+      console.log(`[db.getUserBadgesByType] Fetching badges for user ${userId} and type ${badgeType}`);
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          user_id as "userId",
+          badge_type as "badgeType",
+          quest_id as "questId",
+          display_on_profile as "displayOnProfile",
+          display_on_resume as "displayOnResume",
+          earned_at as "earnedAt"
+        FROM user_badges
+        WHERE user_id = $1 AND badge_type = $2
+        ORDER BY earned_at DESC
+      `, [userId, badgeType]);
+      
+      console.log(`[db.getUserBadgesByType] Found ${result.rows.length} badges for user ${userId} and type ${badgeType}`);
+      return result.rows;
+    } catch (error) {
+      console.error(`[db.getUserBadgesByType] Error fetching badges for user ${userId} and type ${badgeType}:`, error);
+      return [];
+    }
   }
 
   async createUserBadge(badge: InsertUserBadge): Promise<UserBadge> {
-    const id = this.currentUserBadgeId++;
-    const earnedAt = new Date();
-    
-    const userBadge: UserBadge = {
-      ...badge,
-      id,
-      earnedAt,
-      displayOnProfile: badge.displayOnProfile ?? true,
-      displayOnResume: badge.displayOnResume ?? false
-    };
-    
-    this.userBadges.set(id, userBadge);
-    return userBadge;
+    try {
+      console.log(`[db.createUserBadge] Creating badge for user ${badge.userId} of type ${badge.badgeType}`);
+      
+      const result = await pool.query(`
+        INSERT INTO user_badges (
+          user_id,
+          badge_type,
+          quest_id,
+          display_on_profile,
+          display_on_resume,
+          earned_at
+        ) VALUES (
+          $1, $2, $3, $4, $5, $6
+        ) RETURNING
+          id,
+          user_id as "userId",
+          badge_type as "badgeType",
+          quest_id as "questId",
+          display_on_profile as "displayOnProfile",
+          display_on_resume as "displayOnResume",
+          earned_at as "earnedAt"
+      `, [
+        badge.userId,
+        badge.badgeType,
+        badge.questId || null,
+        badge.displayOnProfile ?? true,
+        badge.displayOnResume ?? false,
+        new Date()
+      ]);
+      
+      console.log(`[db.createUserBadge] Created badge with ID ${result.rows[0].id} for user ${badge.userId}`);
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.createUserBadge] Error creating badge for user ${badge.userId}:`, error);
+      throw error;
+    }
   }
 
   async updateUserBadge(id: number, badge: Partial<UserBadge>): Promise<UserBadge | undefined> {
-    const existingBadge = this.userBadges.get(id);
-    if (!existingBadge) return undefined;
-    
-    const updatedBadge: UserBadge = {
-      ...existingBadge,
-      ...badge
-    };
-    
-    this.userBadges.set(id, updatedBadge);
-    return updatedBadge;
+    try {
+      console.log(`[db.updateUserBadge] Updating badge with ID ${id}`);
+      
+      // First check if the badge exists
+      const existingBadge = await this.getUserBadgeById(id);
+      if (!existingBadge) {
+        console.log(`[db.updateUserBadge] No badge found with ID ${id}`);
+        return undefined;
+      }
+      
+      // Build the SET clause dynamically based on provided fields
+      const updates = [];
+      const values = [id]; // First parameter is always the badge ID
+      let paramCount = 2; // Start counting from 2 since $1 is already used for id
+      
+      if (badge.badgeType !== undefined) {
+        updates.push(`badge_type = $${paramCount}`);
+        values.push(badge.badgeType);
+        paramCount++;
+      }
+      
+      if (badge.questId !== undefined) {
+        updates.push(`quest_id = $${paramCount}`);
+        values.push(badge.questId);
+        paramCount++;
+      }
+      
+      if (badge.displayOnProfile !== undefined) {
+        updates.push(`display_on_profile = $${paramCount}`);
+        values.push(badge.displayOnProfile);
+        paramCount++;
+      }
+      
+      if (badge.displayOnResume !== undefined) {
+        updates.push(`display_on_resume = $${paramCount}`);
+        values.push(badge.displayOnResume);
+        paramCount++;
+      }
+      
+      // If nothing to update, return the existing badge
+      if (updates.length === 0) {
+        console.log(`[db.updateUserBadge] No fields to update for badge with ID ${id}`);
+        return existingBadge;
+      }
+      
+      const result = await pool.query(`
+        UPDATE user_badges
+        SET ${updates.join(', ')}
+        WHERE id = $1
+        RETURNING
+          id,
+          user_id as "userId",
+          badge_type as "badgeType",
+          quest_id as "questId",
+          display_on_profile as "displayOnProfile",
+          display_on_resume as "displayOnResume",
+          earned_at as "earnedAt"
+      `, values);
+      
+      console.log(`[db.updateUserBadge] Updated badge with ID ${id}`);
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.updateUserBadge] Error updating badge with ID ${id}:`, error);
+      return undefined;
+    }
   }
 
   async toggleBadgeDisplay(id: number, displayOnProfile: boolean, displayOnResume: boolean): Promise<UserBadge | undefined> {
-    return this.updateUserBadge(id, { displayOnProfile, displayOnResume });
+    try {
+      console.log(`[db.toggleBadgeDisplay] Toggling badge display for badge ID ${id}`);
+      return this.updateUserBadge(id, { displayOnProfile, displayOnResume });
+    } catch (error) {
+      console.error(`[db.toggleBadgeDisplay] Error toggling badge display for badge ID ${id}:`, error);
+      return undefined;
+    }
   }
 
   // XP Transaction operations
@@ -4818,18 +4973,42 @@ export class MemStorage implements IStorage {
   }
 
   async createXpTransaction(transaction: InsertXpTransaction): Promise<XpTransaction> {
-    const id = this.currentXpTransactionId++;
-    const createdAt = new Date();
-    
-    const xpTransaction: XpTransaction = {
-      ...transaction,
-      id,
-      createdAt,
-      sourceId: transaction.sourceId ?? null
-    };
-    
-    this.xpTransactions.set(id, xpTransaction);
-    return xpTransaction;
+    try {
+      console.log(`[db.createXpTransaction] Creating XP transaction for user ${transaction.userId}`);
+      
+      const result = await pool.query(`
+        INSERT INTO xp_transactions (
+          user_id,
+          amount,
+          source,
+          source_id,
+          description,
+          created_at
+        ) VALUES (
+          $1, $2, $3, $4, $5, $6
+        ) RETURNING
+          id,
+          user_id as "userId",
+          amount,
+          source,
+          source_id as "sourceId",
+          description,
+          created_at as "createdAt"
+      `, [
+        transaction.userId,
+        transaction.amount,
+        transaction.source,
+        transaction.sourceId || null,
+        transaction.description || null,
+        new Date()
+      ]);
+      
+      console.log(`[db.createXpTransaction] Created XP transaction with ID ${result.rows[0].id} for user ${transaction.userId}`);
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.createXpTransaction] Error creating XP transaction for user ${transaction.userId}:`, error);
+      throw error;
+    }
   }
 
   // Helper function to calculate week number (1-52) from date
