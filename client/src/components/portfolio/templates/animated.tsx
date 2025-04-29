@@ -228,10 +228,33 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                 <Cursor cursorColor="#8B5CF6" />
               </div>
               
-              <p className="text-lg md:text-xl text-gray-300 mb-8 max-w-2xl mx-auto lg:mx-0">
-                <span className="font-medium">Looking For: </span>
-                {lookingFor || "I create engaging digital experiences with innovation and technical expertise."}
-              </p>
+              <div className="text-lg md:text-xl text-gray-300 mb-8 max-w-2xl mx-auto lg:mx-0">
+                <p className="mb-2">
+                  <span className="font-medium">Looking For: </span>
+                  {lookingFor || "I create engaging digital experiences with innovation and technical expertise."}
+                </p>
+                
+                <div className="flex flex-wrap items-center gap-2 mt-3">
+                  {location && (
+                    <div className="flex items-center gap-1 text-gray-400">
+                      <MapPin className="h-4 w-4" />
+                      <span>{location}</span>
+                    </div>
+                  )}
+                  
+                  {industry && (
+                    <Badge className="bg-gray-800 text-gray-200 border border-gray-700">
+                      {industry}
+                    </Badge>
+                  )}
+                  
+                  {domain && (
+                    <Badge className="bg-gray-800 text-gray-200 border border-gray-700">
+                      {domain}
+                    </Badge>
+                  )}
+                </div>
+              </div>
               
               <div className="flex flex-wrap gap-3 justify-center lg:justify-start">
                 <a 
@@ -244,35 +267,15 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                   href="#projects" 
                   className="btn-secondary px-6 py-3 rounded-full bg-gray-800 border border-gray-700 text-white font-medium transition-all duration-300 hover:bg-gray-700 hover:-translate-y-1"
                 >
-                  View Projects
+                  Resume
+                </a>
+                <a 
+                  href="#contact"
+                  className="btn-secondary px-6 py-3 rounded-full bg-gray-800 border border-gray-700 text-white font-medium transition-all duration-300 hover:bg-gray-700 hover:-translate-y-1"
+                >
+                  Connect
                 </a>
               </div>
-              
-              <motion.div 
-                className="flex items-center gap-3 mt-8 justify-center lg:justify-start"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: isHeroInView ? 1 : 0 }}
-                transition={{ duration: 0.8, delay: 0.6 }}
-              >
-                {location && (
-                  <div className="flex items-center gap-1 text-gray-400">
-                    <MapPin className="h-4 w-4" />
-                    <span>{location}</span>
-                  </div>
-                )}
-                
-                {industry && (
-                  <Badge className="bg-gray-800 text-gray-200 border border-gray-700">
-                    {industry}
-                  </Badge>
-                )}
-                
-                {domain && (
-                  <Badge className="bg-gray-800 text-gray-200 border border-gray-700">
-                    {domain}
-                  </Badge>
-                )}
-              </motion.div>
             </motion.div>
             
             {/* Hero Image */}
