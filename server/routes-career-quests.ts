@@ -211,11 +211,57 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
           return res.json([]);
         }
         
+        // Using direct db query instead of storage method since it's not implemented yet
+        console.log(`[GET /users/${userId}/quests-with-definitions] Fetching user quests directly from DB`);
+        
         // Get user quests
-        const userQuests = await storage.getUserQuestsByUserId(userId);
+        const userQuestsResult = await pool.query(`
+          SELECT 
+            id,
+            user_id as "userId",
+            quest_definition_id as "questDefinitionId",
+            status,
+            progress,
+            assigned_at as "assignedAt",
+            completed_at as "completedAt",
+            dismissed_reason as "dismissedReason",
+            xp_earned as "xpEarned",
+            badge_earned as "badgeEarned",
+            musk_response as "muskResponse",
+            week_number as "weekNumber",
+            year
+          FROM user_quests
+          WHERE user_id = $1
+          ORDER BY assigned_at DESC
+        `, [userId]);
+        
+        const userQuests = userQuestsResult.rows;
+        console.log(`[GET /users/${userId}/quests-with-definitions] Found ${userQuests.length} quests`);
         
         // Get all quest definitions
-        const questDefinitions = await storage.getQuestDefinitions();
+        const questDefinitionsResult = await pool.query(`
+          SELECT 
+            id,
+            title,
+            description,
+            type,
+            difficulty,
+            xp_reward as "xpReward",
+            badge_reward as "badgeReward",
+            target_count as "targetCount",
+            required_profile_completion as "requiredProfileCompletion",
+            required_career_stage as "requiredCareerStage",
+            required_industry as "requiredIndustry",
+            is_active as "isActive",
+            created_at as "createdAt",
+            updated_at as "updatedAt",
+            musk_prompt as "muskPrompt"
+          FROM quest_definitions
+          WHERE is_active = true
+        `);
+        
+        const questDefinitions = questDefinitionsResult.rows;
+        console.log(`[GET /users/${userId}/quests-with-definitions] Found ${questDefinitions.length} quest definitions`);
         
         // Combine user quests with their definitions
         const questsWithDefinitions = userQuests.map(userQuest => {
