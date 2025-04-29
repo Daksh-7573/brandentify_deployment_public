@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { IStorage } from "./storage";
+import { pool } from "./db";
 
 export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
   // Quest Definition routes
