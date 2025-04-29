@@ -39,11 +39,7 @@ import {
   userBadges, UserBadge, InsertUserBadge,
   xpTransactions, XpTransaction, InsertXpTransaction,
   // Brand of the Day models
-  brandsOfTheDay, BrandOfTheDay, InsertBrandOfTheDay,
-  // Mentorship Connect models
-  mentorshipRequests, MentorshipRequest, InsertMentorshipRequest,
-  activeMentorships, ActiveMentorship, InsertActiveMentorship,
-  mentorshipFeedback, MentorshipFeedback, InsertMentorshipFeedback
+  brandsOfTheDay, BrandOfTheDay, InsertBrandOfTheDay
 } from "@shared/schema";
 
 // Import Musk suggestion models
@@ -417,30 +413,6 @@ export interface IStorage {
   getXpTransactionById(id: number): Promise<XpTransaction | undefined>;
   getXpTransactionsBySource(userId: number, source: string): Promise<XpTransaction[]>;
   createXpTransaction(transaction: InsertXpTransaction): Promise<XpTransaction>;
-  
-  // Mentorship Request operations
-  createMentorshipRequest(request: InsertMentorshipRequest): Promise<MentorshipRequest>;
-  getMentorshipRequestsByMentorId(mentorId: number): Promise<MentorshipRequest[]>;
-  getMentorshipRequestsByMenteeId(menteeId: number): Promise<MentorshipRequest[]>;
-  getMentorshipRequestById(id: number): Promise<MentorshipRequest | undefined>;
-  updateMentorshipRequestStatus(id: number, status: 'accepted' | 'rejected' | 'expired' | 'completed' | 'terminated'): Promise<MentorshipRequest | undefined>;
-  getMentorshipRequestByMentorAndMentee(mentorId: number, menteeId: number): Promise<MentorshipRequest | undefined>;
-  
-  // Active Mentorship operations
-  createActiveMentorship(mentorship: InsertActiveMentorship): Promise<ActiveMentorship>;
-  getActiveMentorshipsByMentorId(mentorId: number): Promise<ActiveMentorship[]>;
-  getActiveMentorshipsByMenteeId(menteeId: number): Promise<ActiveMentorship[]>;
-  getActiveMentorshipById(id: number): Promise<ActiveMentorship | undefined>;
-  updateActiveMentorshipStatus(id: number, status: 'accepted' | 'completed' | 'terminated'): Promise<ActiveMentorship | undefined>;
-  updateActiveMentorshipNotes(id: number, notes: string): Promise<ActiveMentorship | undefined>;
-  updateActiveMentorshipLastActivity(id: number): Promise<ActiveMentorship | undefined>;
-  getActiveMentorshipCount(userId: number): Promise<number>;
-  
-  // Mentorship Feedback operations
-  createMentorshipFeedback(feedback: InsertMentorshipFeedback): Promise<MentorshipFeedback>;
-  getMentorshipFeedbackByMentorshipId(mentorshipId: number): Promise<MentorshipFeedback[]>;
-  getMentorshipFeedbackById(id: number): Promise<MentorshipFeedback | undefined>;
-  updateMentorshipFeedback(id: number, feedback: Partial<MentorshipFeedback>): Promise<MentorshipFeedback | undefined>;
 }
 
 // In-memory implementation of the storage
@@ -499,11 +471,6 @@ export class MemStorage implements IStorage {
   private userBadges: Map<number, UserBadge>;
   private xpTransactions: Map<number, XpTransaction>;
   
-  // Mentorship Connect models
-  private mentorshipRequests: Map<number, MentorshipRequest>;
-  private activeMentorships: Map<number, ActiveMentorship>;
-  private mentorshipFeedback: Map<number, MentorshipFeedback>;
-  
   private currentUserId: number;
   private currentResumeId: number;
   private currentWorkExperienceId: number;
@@ -557,11 +524,6 @@ export class MemStorage implements IStorage {
   
   // Brand of the Day ID
   private currentBrandOfTheDayId: number;
-  
-  // Mentorship Connect IDs
-  private currentMentorshipRequestId: number;
-  private currentActiveMentorshipId: number;
-  private currentMentorshipFeedbackId: number;
 
   constructor() {
     this.users = new Map();
@@ -608,11 +570,6 @@ export class MemStorage implements IStorage {
     this.userXp = new Map();
     this.userBadges = new Map();
     this.xpTransactions = new Map();
-    
-    // Initialize Mentorship Connect maps
-    this.mentorshipRequests = new Map();
-    this.activeMentorships = new Map();
-    this.mentorshipFeedback = new Map();
     
     // Initialize Musk suggestion maps
     this.muskSuggestions = new Map();
@@ -679,11 +636,6 @@ export class MemStorage implements IStorage {
     
     // Initialize Brand of the Day ID
     this.currentBrandOfTheDayId = 1;
-    
-    // Initialize Mentorship Connect IDs
-    this.currentMentorshipRequestId = 1;
-    this.currentActiveMentorshipId = 1;
-    this.currentMentorshipFeedbackId = 1;
     
     // Initialize with a default user for development/demo
     this.initializeDemoData();
@@ -808,11 +760,6 @@ export class MemStorage implements IStorage {
     
     // Reset Brand of the Day ID
     this.currentBrandOfTheDayId = 1;
-    
-    // Reset Mentorship Connect IDs
-    this.currentMentorshipRequestId = 1;
-    this.currentActiveMentorshipId = 1;
-    this.currentMentorshipFeedbackId = 1;
     
     // No pre-created skills
     
@@ -988,11 +935,6 @@ export class MemStorage implements IStorage {
     // Clear all Nowboard data
     this.nowboardItems.clear();
     this.nowboardInspiredBy.clear();
-    
-    // Clear all Mentorship Connect data
-    this.mentorshipRequests.clear();
-    this.activeMentorships.clear();
-    this.mentorshipFeedback.clear();
   }
   
   /**
@@ -3886,194 +3828,6 @@ export class MemStorage implements IStorage {
         // Sort by match score (highest first)
         return (b.matchScore || 0) - (a.matchScore || 0);
       });
-  }
-  
-  // ============================
-  // Mentorship Connect methods
-  // ============================
-  
-  // Mentorship Request methods
-  async createMentorshipRequest(request: InsertMentorshipRequest): Promise<MentorshipRequest> {
-    const id = this.currentMentorshipRequestId++;
-    const now = new Date();
-    
-    // Calculate expiration date (7 days from now for pending requests)
-    const expiresAt = new Date(now);
-    expiresAt.setDate(expiresAt.getDate() + 7);
-    
-    const newRequest: MentorshipRequest = {
-      ...request,
-      id,
-      status: request.status || 'pending',
-      createdAt: now,
-      updatedAt: now,
-      expiresAt: request.expiresAt || expiresAt
-    };
-    
-    this.mentorshipRequests.set(id, newRequest);
-    return newRequest;
-  }
-  
-  async getMentorshipRequestsByMentorId(mentorId: number): Promise<MentorshipRequest[]> {
-    return Array.from(this.mentorshipRequests.values())
-      .filter(request => request.mentorId === mentorId);
-  }
-  
-  async getMentorshipRequestsByMenteeId(menteeId: number): Promise<MentorshipRequest[]> {
-    return Array.from(this.mentorshipRequests.values())
-      .filter(request => request.menteeId === menteeId);
-  }
-  
-  async getMentorshipRequestById(id: number): Promise<MentorshipRequest | undefined> {
-    return this.mentorshipRequests.get(id);
-  }
-  
-  async updateMentorshipRequestStatus(
-    id: number, 
-    status: 'accepted' | 'rejected' | 'expired' | 'completed' | 'terminated'
-  ): Promise<MentorshipRequest | undefined> {
-    const request = this.mentorshipRequests.get(id);
-    if (!request) return undefined;
-    
-    const updatedRequest = { 
-      ...request, 
-      status, 
-      updatedAt: new Date() 
-    };
-    
-    this.mentorshipRequests.set(id, updatedRequest);
-    return updatedRequest;
-  }
-  
-  async getMentorshipRequestByMentorAndMentee(mentorId: number, menteeId: number): Promise<MentorshipRequest | undefined> {
-    return Array.from(this.mentorshipRequests.values())
-      .find(request => request.mentorId === mentorId && request.menteeId === menteeId);
-  }
-  
-  // Active Mentorship methods
-  async createActiveMentorship(mentorship: InsertActiveMentorship): Promise<ActiveMentorship> {
-    const id = this.currentActiveMentorshipId++;
-    const now = new Date();
-    
-    // Set expiration date (30 days from now)
-    const expiresAt = new Date(now);
-    expiresAt.setDate(expiresAt.getDate() + 30);
-    
-    const newMentorship: ActiveMentorship = {
-      ...mentorship,
-      id,
-      status: mentorship.status || 'active',
-      createdAt: now,
-      updatedAt: now,
-      lastActivityAt: now,
-      expiresAt: mentorship.expiresAt || expiresAt,
-      notes: mentorship.notes || ''
-    };
-    
-    this.activeMentorships.set(id, newMentorship);
-    return newMentorship;
-  }
-  
-  async getActiveMentorshipsByMentorId(mentorId: number): Promise<ActiveMentorship[]> {
-    return Array.from(this.activeMentorships.values())
-      .filter(mentorship => mentorship.mentorId === mentorId);
-  }
-  
-  async getActiveMentorshipsByMenteeId(menteeId: number): Promise<ActiveMentorship[]> {
-    return Array.from(this.activeMentorships.values())
-      .filter(mentorship => mentorship.menteeId === menteeId);
-  }
-  
-  async getActiveMentorshipById(id: number): Promise<ActiveMentorship | undefined> {
-    return this.activeMentorships.get(id);
-  }
-  
-  async updateActiveMentorshipStatus(
-    id: number, 
-    status: 'accepted' | 'completed' | 'terminated'
-  ): Promise<ActiveMentorship | undefined> {
-    const mentorship = this.activeMentorships.get(id);
-    if (!mentorship) return undefined;
-    
-    const updatedMentorship = { 
-      ...mentorship, 
-      status, 
-      updatedAt: new Date() 
-    };
-    
-    this.activeMentorships.set(id, updatedMentorship);
-    return updatedMentorship;
-  }
-  
-  async updateActiveMentorshipNotes(id: number, notes: string): Promise<ActiveMentorship | undefined> {
-    const mentorship = this.activeMentorships.get(id);
-    if (!mentorship) return undefined;
-    
-    const updatedMentorship = { 
-      ...mentorship, 
-      notes, 
-      updatedAt: new Date() 
-    };
-    
-    this.activeMentorships.set(id, updatedMentorship);
-    return updatedMentorship;
-  }
-  
-  async updateActiveMentorshipLastActivity(id: number): Promise<ActiveMentorship | undefined> {
-    const mentorship = this.activeMentorships.get(id);
-    if (!mentorship) return undefined;
-    
-    const now = new Date();
-    const updatedMentorship = { 
-      ...mentorship, 
-      lastActivityAt: now,
-      updatedAt: now
-    };
-    
-    this.activeMentorships.set(id, updatedMentorship);
-    return updatedMentorship;
-  }
-  
-  async getActiveMentorshipCount(userId: number): Promise<number> {
-    // Count mentorships where the user is either mentor or mentee and the status is active
-    return Array.from(this.activeMentorships.values())
-      .filter(mentorship => 
-        (mentorship.mentorId === userId || mentorship.menteeId === userId) && 
-        mentorship.status === 'active'
-      ).length;
-  }
-  
-  // Mentorship Feedback methods
-  async createMentorshipFeedback(feedback: InsertMentorshipFeedback): Promise<MentorshipFeedback> {
-    const id = this.currentMentorshipFeedbackId++;
-    const now = new Date();
-    
-    const newFeedback: MentorshipFeedback = {
-      ...feedback,
-      id,
-      createdAt: now
-    };
-    
-    this.mentorshipFeedback.set(id, newFeedback);
-    return newFeedback;
-  }
-  
-  async getMentorshipFeedbackByMentorshipId(mentorshipId: number): Promise<MentorshipFeedback[]> {
-    return Array.from(this.mentorshipFeedback.values())
-      .filter(feedback => feedback.mentorshipId === mentorshipId);
-  }
-  
-  async getMentorshipFeedbackById(id: number): Promise<MentorshipFeedback | undefined> {
-    return this.mentorshipFeedback.get(id);
-  }
-  
-  async updateMentorshipFeedback(id: number, feedbackData: Partial<MentorshipFeedback>): Promise<MentorshipFeedback | undefined> {
-    const feedback = this.mentorshipFeedback.get(id);
-    if (!feedback) return undefined;
-    
-    const updatedFeedback = { ...feedback, ...feedbackData };
-    this.mentorshipFeedback.set(id, updatedFeedback);
-    return updatedFeedback;
   }
   
   async getCompatibleMuskMatches(userId: number, limit: number = 5): Promise<MuskMatch[]> {

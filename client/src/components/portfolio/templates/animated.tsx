@@ -4,7 +4,6 @@ import '../../../styles/animated-template.css';
 import { useLumosAnimations } from '@/hooks/use-lumos-animations';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { MentorButton } from '@/components/mentorship/mentor-button';
 import {
   ArrowRight,
   ChevronDown,
@@ -273,12 +272,6 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                 >
                   Services
                 </a>
-                <div className="animated-mentor-button">
-                  <MentorButton 
-                    mentorId={1} 
-                    mentorName={name} 
-                  />
-                </div>
               </div>
             </motion.div>
             

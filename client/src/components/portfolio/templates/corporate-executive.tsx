@@ -6,7 +6,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Education, Project as ProjectSchema, Service, Skill, WorkExperience } from "@shared/schema";
 import { useEffect, useState, useRef } from "react";
 import PortfolioCtaButtons from "../portfolio-cta-buttons";
-import { MentorButton } from "@/components/mentorship/mentor-button";
 import { 
   Mail, Linkedin, MapPin, Calendar, Download, FileText, ChevronRight,
   Briefcase, GraduationCap, Award, Target, ChartBar, Presentation,
@@ -770,15 +769,6 @@ export default function CorporateExecutive({
                     <span className="text-xs" style={{ fontFamily: 'Inter, sans-serif' }}>{userInfo.domain}</span>
                   </Badge>
                 )}
-              </div>
-              
-              {/* Mentor Button */}
-              <div className="mb-6 corporate-executive-mentor-button fade-in fade-in-delay-2">
-                <MentorButton 
-                  mentorId={1} 
-                  mentorName={userInfo.name} 
-                  className="bg-white hover:bg-gray-50 text-gray-800 border border-gray-200 hover:border-gray-300 font-medium shadow-sm rounded-md px-4 py-2 transition-all duration-200 flex items-center gap-2"
-                />
               </div>
               
               {/* Looking For */}

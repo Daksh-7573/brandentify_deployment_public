@@ -5,7 +5,6 @@ import { ProfileImage } from "@/components/ui/profile-image";
 import { Education, Project, Service, Skill, WorkExperience } from "@shared/schema";
 import { useEffect, useState, useRef } from "react";
 import PortfolioCtaButtons from "../portfolio-cta-buttons";
-import { MentorButton } from "@/components/mentorship/mentor-button";
 import { 
   Calendar, 
   MapPin, 
@@ -770,12 +769,12 @@ export function DynamicInnovator({
                 Grab My Resume
               </Button>
               
-              <div className="innovator-mentor-button">
-                <MentorButton 
-                  mentorId={userInfo.id || 0} 
-                  mentorName={userInfo.name} 
-                />
-              </div>
+              <Button
+                className="neon-button rounded-md text-sm px-4 py-2"
+              >
+                <Lightbulb className="h-4 w-4 mr-2" />
+                Mentor
+              </Button>
             </div>
           </div>
         </div>
@@ -865,12 +864,12 @@ export function DynamicInnovator({
                 Grab My Resume
               </Button>
               
-              <div className="innovator-mentor-button-mobile w-full">
-                <MentorButton 
-                  mentorId={userInfo.id || 0} 
-                  mentorName={userInfo.name} 
-                />
-              </div>
+              <Button
+                className="neon-button w-full rounded-md py-2.5"
+              >
+                <Lightbulb className="h-5 w-5 mr-2" />
+                Mentor
+              </Button>
             </div>
           </div>
         </div>
