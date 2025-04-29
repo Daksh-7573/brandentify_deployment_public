@@ -506,7 +506,7 @@ export default function MinimalistPro({
                         <div className="mt-3">
                           <p className="text-xs font-medium text-gray-700 mb-1">Skills & Achievements:</p>
                           <ul className="space-y-1 text-xs text-gray-600">
-                            {edu.skillsAcquired.slice(0, 2).map((skill, i) => (
+                            {edu.skillsAcquired.slice(0, 4).map((skill, i) => (
                               <li key={i} className="flex items-start">
                                 <GraduationCap className="h-3 w-3 text-primary mt-0.5 mr-1 flex-shrink-0" />
                                 <span>{skill}</span>

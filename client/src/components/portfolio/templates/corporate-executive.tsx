@@ -1100,7 +1100,7 @@ export default function CorporateExecutive({
                         <div className="mt-3 mb-2">
                           <h4 className="text-sm font-semibold mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>Key Responsibilities & Achievements</h4>
                           <ul className="list-disc pl-5 text-sm space-y-1 text-gray-600" style={{ fontFamily: 'Inter, sans-serif' }}>
-                            {exp.keyResponsibilities.map((item, idx) => (
+                            {(exp.keyResponsibilities as string[]).map((item, idx) => (
                               <li key={idx}>{item}</li>
                             ))}
                           </ul>
@@ -1174,7 +1174,7 @@ export default function CorporateExecutive({
                     <div className="mt-3">
                       <h4 className="text-sm font-semibold mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>Skills Acquired & Achievements</h4>
                       <ul className="list-disc pl-5 text-sm space-y-1 text-gray-600" style={{ fontFamily: 'Inter, sans-serif' }}>
-                        {edu.skillsAcquired.map((skill, idx) => (
+                        {(edu.skillsAcquired as string[]).map((skill, idx) => (
                           <li key={idx}>{skill}</li>
                         ))}
                       </ul>
