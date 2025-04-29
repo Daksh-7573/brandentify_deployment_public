@@ -672,7 +672,7 @@ export default function Scholar({
             </h2>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {userServices.slice(0, 3).map((service, index) => (
+              {userServices.slice(0, 6).map((service, index) => (
                 <div key={service.id} className={`notebook-paper fade-in-up delay-${index * 100} rounded-lg border-l-[3px] border-l-blue-500 hover:shadow-md transition-shadow p-6`}>
                   <div className="flex justify-between mb-3">
                     <h3 className="text-lg font-serif font-semibold text-blue-800">{service.title}</h3>

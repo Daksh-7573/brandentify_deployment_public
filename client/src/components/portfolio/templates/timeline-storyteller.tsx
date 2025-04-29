@@ -774,7 +774,7 @@ export default function TimelineStoryteller({
                     <div className="mt-2">
                       <h4 className="text-lg font-medium text-gray-800 mb-3">My Services</h4>
                       <div className="grid gap-4">
-                        {userServices.map((service) => (
+                        {userServices.slice(0, 6).map((service) => (
                           <div key={service.id} className="bg-indigo-50 p-4 rounded-md border border-indigo-100">
                             <div className="flex justify-between items-start mb-2">
                               <h5 className="text-base font-medium text-indigo-800">{service.title}</h5>

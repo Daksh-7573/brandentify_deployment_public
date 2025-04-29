@@ -1064,7 +1064,7 @@ export function DynamicInnovator({
               {/* Display any additional services */}
               {userServices.length > 0 && (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
-                  {userServices.map((service) => (
+                  {userServices.slice(0, 6).map((service) => (
                     <div key={service.id} className="tech-card p-6 relative overflow-hidden flex flex-col">
                       {/* Service category badge - positioned top right */}
                       <div className="absolute top-0 right-0">

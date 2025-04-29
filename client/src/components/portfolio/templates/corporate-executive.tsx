@@ -869,7 +869,7 @@ export default function CorporateExecutive({
           </h2>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {enhancedServices.map((service, index) => (
+            {enhancedServices.slice(0, 6).map((service, index) => (
               <div 
                 key={service.id} 
                 className="service-card bg-white rounded-lg p-6 shadow-sm fade-in"
