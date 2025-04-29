@@ -440,64 +440,11 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
             </p>
           </motion.div>
           
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+          <div className="max-w-3xl mx-auto">
             <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: isAboutMeInView ? 1 : 0, x: isAboutMeInView ? 0 : -30 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="relative"
-            >
-              <div className="aspect-video rounded-2xl overflow-hidden bg-gradient-to-br from-violet-600/20 to-fuchsia-600/20 p-1">
-                <div className="h-full w-full rounded-xl overflow-hidden bg-gray-800/90 backdrop-blur flex items-center justify-center">
-                  {photoURL ? (
-                    <img 
-                      src={photoURL} 
-                      alt={`${name} profile`} 
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="flex flex-col items-center justify-center text-center p-6">
-                      <User className="w-16 h-16 text-purple-400/50 mb-4" />
-                      <p className="text-gray-400">Profile image coming soon</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-              
-              {/* Floating elements */}
-              <motion.div 
-                className="absolute -top-5 -right-5 w-16 h-16 rounded-full bg-gradient-to-r from-purple-500/30 to-pink-500/30 backdrop-blur-sm"
-                animate={{ 
-                  y: [0, -10, 0],
-                  rotate: [0, 5, 0],
-                  scale: [1, 1.05, 1]
-                }}
-                transition={{ 
-                  duration: 5, 
-                  repeat: Infinity,
-                  repeatType: "reverse" 
-                }}
-              />
-              <motion.div 
-                className="absolute -bottom-6 left-10 w-20 h-20 rounded-full bg-gradient-to-r from-blue-500/20 to-teal-500/20 backdrop-blur-sm"
-                animate={{ 
-                  y: [0, 10, 0],
-                  rotate: [0, -5, 0],
-                  scale: [1, 1.08, 1]
-                }}
-                transition={{ 
-                  duration: 6, 
-                  repeat: Infinity,
-                  repeatType: "reverse",
-                  delay: 0.5
-                }}
-              />
-            </motion.div>
-            
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: isAboutMeInView ? 1 : 0, x: isAboutMeInView ? 0 : 30 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: isAboutMeInView ? 1 : 0, y: isAboutMeInView ? 0 : 30 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
               className="relative"
             >
               <div className="space-y-4">
@@ -509,18 +456,8 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                     </h3>
                     <div className="prose prose-invert max-w-none">
                       <p className="text-gray-300 leading-relaxed">
-                        {aboutMe || whatIOffer || "I am passionate about creating exceptional digital experiences that combine aesthetic appeal with functional excellence. With a strong foundation in both design and development, I bring a unique perspective to every project I undertake."}
+                        {aboutMe || "I am passionate about creating exceptional digital experiences that combine aesthetic appeal with functional excellence. With a strong foundation in both design and development, I bring a unique perspective to every project I undertake."}
                       </p>
-                      
-                      <div className="bg-gray-800/50 rounded-xl p-6 mt-6 border border-gray-700/30 backdrop-blur-sm">
-                        <h4 className="text-lg font-medium text-purple-300 mb-4 flex items-center">
-                          <Lightbulb className="w-5 h-5 mr-2 text-yellow-400" />
-                          What I Offer
-                        </h4>
-                        <p className="text-gray-300">
-                          {whatIOffer || "I deliver comprehensive solutions tailored to client needs, from concept to implementation. My approach combines technical expertise with creative problem-solving to create intuitive, engaging, and high-performing digital experiences."}
-                        </p>
-                      </div>
                     </div>
                   </div>
                 </div>
