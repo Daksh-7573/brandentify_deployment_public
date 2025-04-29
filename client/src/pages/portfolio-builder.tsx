@@ -1042,6 +1042,7 @@ export default function PortfolioBuilder() {
                       updatedAt: null
                     })) || []}
                     whatIOffer={whatIOfferValue}
+                    aboutMe={userData?.aboutMe || "I am a passionate software developer with a strong focus on creating innovative solutions. My background combines technical expertise with a keen eye for user experience, allowing me to deliver comprehensive applications that meet client needs."}
                   />
                 </CardContent>
               </Card>

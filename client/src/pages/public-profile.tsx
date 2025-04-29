@@ -349,30 +349,6 @@ const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
             whatIOffer={aboutMeContent}
           />
         );
-      case 'animated-odyssey':
-        // For debugging
-        console.log("AnimatedOdyssey template - whatIOffer:", templateProps.userInfo.whatIOffer);
-        console.log("AnimatedOdyssey template - aboutMe:", templateProps.userInfo.aboutMe);
-        
-        return (
-          <AnimatedOdyssey
-            name={templateProps.userInfo.name}
-            title={templateProps.userInfo.title || ''}
-            industry={templateProps.userInfo.industry || ''}
-            domain={templateProps.userInfo.domain || ''}
-            location={templateProps.userInfo.location || ''}
-            photoURL={templateProps.userInfo.photoURL}
-            skills={templateProps.userSkills}
-            projects={templateProps.userProjects}
-            experiences={templateProps.userExperiences}
-            educations={templateProps.userEducations}
-            services={templateProps.userServices}
-            lookingFor={templateProps.userInfo.lookingFor || ''}
-            email={templateProps.userInfo.email}
-            aboutMe={templateProps.userInfo.aboutMe}
-            whatIOffer={templateProps.userInfo.whatIOffer}
-          />
-        );
       default:
         return <VisualExpert {...templateProps} />;
     }
