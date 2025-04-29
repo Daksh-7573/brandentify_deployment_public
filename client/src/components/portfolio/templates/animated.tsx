@@ -173,8 +173,7 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
     { id: 'projects', label: 'Projects', icon: <Sparkles className="w-4 h-4" /> },
     { id: 'services', label: 'Services', icon: <PlusCircle className="w-4 h-4" /> },
     { id: 'timeline', label: 'Experience', icon: <Briefcase className="w-4 h-4" /> },
-    { id: 'education', label: 'Education', icon: <GraduationCap className="w-4 h-4" /> },
-    { id: 'contact', label: 'Contact', icon: <Send className="w-4 h-4" /> }
+    { id: 'education', label: 'Education', icon: <GraduationCap className="w-4 h-4" /> }
   ];
 
   return (
@@ -256,22 +255,22 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
               
               <div className="flex flex-wrap gap-3 justify-center lg:justify-start">
                 <a 
-                  href="#contact" 
+                  href={`mailto:${email}`}
                   className="btn-primary px-6 py-3 rounded-full bg-gradient-to-r from-purple-600 to-blue-500 text-white font-medium transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/20 hover:-translate-y-1"
                 >
-                  Get in Touch
+                  Email Me
                 </a>
                 <a 
                   href="#projects" 
                   className="btn-secondary px-6 py-3 rounded-full bg-gray-800 border border-gray-700 text-white font-medium transition-all duration-300 hover:bg-gray-700 hover:-translate-y-1"
                 >
-                  Resume
+                  Projects
                 </a>
                 <a 
-                  href="#contact"
+                  href="#services"
                   className="btn-secondary px-6 py-3 rounded-full bg-gray-800 border border-gray-700 text-white font-medium transition-all duration-300 hover:bg-gray-700 hover:-translate-y-1"
                 >
-                  Connect
+                  Services
                 </a>
               </div>
             </motion.div>
