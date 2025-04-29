@@ -906,7 +906,7 @@ export function DynamicInnovator({
           
           {sortedProjects.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
-              {sortedProjects.map((project) => (
+              {sortedProjects.slice(0, 6).map((project) => (
                 <div 
                   key={project.id} 
                   className="project-card h-72"

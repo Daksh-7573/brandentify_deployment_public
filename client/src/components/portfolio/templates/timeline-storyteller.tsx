@@ -835,7 +835,7 @@ export default function TimelineStoryteller({
           {/* Project Gallery - Using a grid for smaller sizes */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in">
             {sortedProjects.length > 0 ? (
-              sortedProjects.map((project, index) => (
+              sortedProjects.slice(0, 6).map((project, index) => (
                 <div 
                   key={project.id}
                   className="card-animated bg-white rounded-lg shadow-md overflow-hidden border border-purple-100 max-w-[280px] mx-auto cursor-pointer"
@@ -1182,7 +1182,7 @@ export default function TimelineStoryteller({
           {/* Project Gallery */}
           <div className="grid grid-cols-1 gap-8 animate-fade-in">
             {sortedProjects.length > 0 ? (
-              sortedProjects.map((project, index) => (
+              sortedProjects.slice(0, 6).map((project, index) => (
                 <div 
                   key={project.id}
                   className="card-animated bg-white rounded-lg shadow-lg overflow-hidden border border-purple-100 cursor-pointer"
