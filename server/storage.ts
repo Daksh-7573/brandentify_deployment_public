@@ -3486,6 +3486,127 @@ export class MemStorage implements IStorage {
     return updatedSuggestion;
   }
 
+  // Mentorship Connect operations
+  async getMentorshipRequestById(id: number): Promise<MentorshipRequest | undefined> {
+    return this.mentorshipRequests.get(id);
+  }
+
+  async getMentorshipRequestsByMenteeId(menteeId: number): Promise<MentorshipRequest[]> {
+    return Array.from(this.mentorshipRequests.values())
+      .filter(request => request.menteeId === menteeId);
+  }
+
+  async getMentorshipRequestsByMentorId(mentorId: number): Promise<MentorshipRequest[]> {
+    return Array.from(this.mentorshipRequests.values())
+      .filter(request => request.mentorId === mentorId);
+  }
+
+  async getActiveMentorshipsCount(userId: number, role: 'mentor' | 'mentee'): Promise<number> {
+    const requests = Array.from(this.mentorshipRequests.values())
+      .filter(request => {
+        if (role === 'mentor') {
+          return request.mentorId === userId && request.status === 'accepted' && request.endDate && new Date(request.endDate) > new Date();
+        } else {
+          return request.menteeId === userId && request.status === 'accepted' && request.endDate && new Date(request.endDate) > new Date();
+        }
+      });
+    return requests.length;
+  }
+
+  async getPendingMentorshipRequestsCount(userId: number, role: 'mentor' | 'mentee'): Promise<number> {
+    const requests = Array.from(this.mentorshipRequests.values())
+      .filter(request => {
+        if (role === 'mentor') {
+          return request.mentorId === userId && request.status === 'pending';
+        } else {
+          return request.menteeId === userId && request.status === 'pending';
+        }
+      });
+    return requests.length;
+  }
+
+  async createMentorshipRequest(request: InsertMentorshipRequest): Promise<MentorshipRequest> {
+    const id = this.currentMentorshipRequestId++;
+    const now = new Date();
+    
+    const newRequest: MentorshipRequest = {
+      ...request,
+      id,
+      status: 'pending',
+      requestedAt: now,
+      respondedAt: null,
+      startDate: null,
+      endDate: null,
+      declineReason: null,
+      isFeedbackRequested: false,
+      createdAt: now,
+      updatedAt: now
+    };
+    
+    this.mentorshipRequests.set(id, newRequest);
+    return newRequest;
+  }
+
+  async updateMentorshipRequestStatus(id: number, status: 'accepted' | 'declined' | 'expired' | 'completed', reason?: string): Promise<MentorshipRequest | undefined> {
+    const request = this.mentorshipRequests.get(id);
+    if (!request) return undefined;
+    
+    const now = new Date();
+    const updates: Partial<MentorshipRequest> = {
+      status,
+      respondedAt: now,
+      updatedAt: now
+    };
+    
+    if (status === 'declined') {
+      updates.declineReason = reason || null;
+    }
+    
+    if (status === 'accepted') {
+      updates.startDate = now;
+      // Set end date to 30 days from now
+      const endDate = new Date(now);
+      endDate.setDate(endDate.getDate() + 30);
+      updates.endDate = endDate;
+    }
+    
+    const updatedRequest: MentorshipRequest = {
+      ...request,
+      ...updates
+    };
+    
+    this.mentorshipRequests.set(id, updatedRequest);
+    return updatedRequest;
+  }
+
+  async getMentorshipFeedbackByMentorshipId(mentorshipId: number): Promise<MentorshipFeedback[]> {
+    return Array.from(this.mentorshipFeedback.values())
+      .filter(feedback => feedback.mentorshipId === mentorshipId);
+  }
+
+  async createMentorshipFeedback(feedback: InsertMentorshipFeedback): Promise<MentorshipFeedback> {
+    const id = this.currentMentorshipFeedbackId++;
+    const now = new Date();
+    
+    const newFeedback: MentorshipFeedback = {
+      ...feedback,
+      id,
+      providedAt: now
+    };
+    
+    this.mentorshipFeedback.set(id, newFeedback);
+    return newFeedback;
+  }
+
+  async canRequestMentorship(menteeId: number): Promise<boolean> {
+    // Check if user has less than 5 active mentors
+    const activeCount = await this.getActiveMentorshipsCount(menteeId, 'mentee');
+    const pendingCount = await this.getPendingMentorshipRequestsCount(menteeId, 'mentee');
+    
+    // User can request mentorship if they have fewer than 5 total mentorships (active + pending)
+    return (activeCount + pendingCount) < 5;
+  }
+
   // Nowboard Item operations
   async getNowboardItems(): Promise<NowboardItem[]> {
     return Array.from(this.nowboardItems.values())
