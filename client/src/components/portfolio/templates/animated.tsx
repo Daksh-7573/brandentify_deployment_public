@@ -777,7 +777,7 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
             </p>
           </motion.div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6 animated-projects">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 animated-projects">
             {projects && projects.length > 0 ? (
               projects.map((project, index) => (
                 <motion.div 
@@ -792,8 +792,8 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                   whileHover={{ y: -10, boxShadow: '0 20px 40px rgba(139, 92, 246, 0.15)' }}
                   onClick={() => setSelectedProject(project)}
                 >
-                  {/* Project Image - Smaller Square format */}
-                  <div className="aspect-square overflow-hidden relative group">
+                  {/* Project Image - Even Smaller Square format */}
+                  <div className="aspect-square overflow-hidden relative group w-full max-w-[200px] mx-auto">
                     {project.thumbnailUrl ? (
                       <img 
                         src={project.thumbnailUrl} 
@@ -925,24 +925,25 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                             </div>
                           </div>
                           
-                          {/* Project URL */}
-                          <div className="bg-gray-700/50 rounded-lg py-2 px-4">
-                            <div className="text-sm text-gray-400 mb-1">Project URL</div>
-                            <div className="text-lg font-medium text-white">
-                              {selectedProject.projectUrl ? (
-                                <a 
-                                  href={selectedProject.projectUrl}
-                                  target="_blank"
-                                  rel="noopener noreferrer" 
-                                  className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 transition-colors truncate"
-                                >
-                                  <ExternalLink className="h-4 w-4 shrink-0" />
-                                  <span className="truncate">{selectedProject.projectUrl}</span>
-                                </a>
-                              ) : (
-                                'Not specified'
-                              )}
-                            </div>
+                        </div>
+                        
+                        {/* Project URL - Moved outside the grid for more space */}
+                        <div className="mt-4 bg-gray-700/50 rounded-lg py-2 px-4">
+                          <div className="text-sm text-gray-400 mb-1">Project URL</div>
+                          <div className="text-base font-medium text-white break-all">
+                            {selectedProject.projectUrl ? (
+                              <a 
+                                href={selectedProject.projectUrl}
+                                target="_blank"
+                                rel="noopener noreferrer" 
+                                className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 transition-colors"
+                              >
+                                <ExternalLink className="h-4 w-4 flex-shrink-0" />
+                                <span className="break-all">{selectedProject.projectUrl}</span>
+                              </a>
+                            ) : (
+                              'Not specified'
+                            )}
                           </div>
                         </div>
                         
