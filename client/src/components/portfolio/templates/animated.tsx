@@ -777,7 +777,7 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
             </p>
           </motion.div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-6 animated-projects">
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6 animated-projects">
             {projects && projects.length > 0 ? (
               projects.map((project, index) => (
                 <motion.div 
@@ -910,40 +910,41 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                           </div>
                           
                           {/* Category */}
-                          {selectedProject.category && (
-                            <div className="bg-gray-700/50 rounded-lg py-2 px-4">
-                              <div className="text-sm text-gray-400 mb-1">Category</div>
-                              <div className="text-lg font-medium text-white">
-                                {selectedProject.category}
-                              </div>
+                          <div className="bg-gray-700/50 rounded-lg py-2 px-4">
+                            <div className="text-sm text-gray-400 mb-1">Category</div>
+                            <div className="text-lg font-medium text-white">
+                              {selectedProject.category || 'Not specified'}
                             </div>
-                          )}
+                          </div>
                           
                           {/* Industry */}
-                          {selectedProject.industry && (
-                            <div className="bg-gray-700/50 rounded-lg py-2 px-4">
-                              <div className="text-sm text-gray-400 mb-1">Industry</div>
-                              <div className="text-lg font-medium text-white">
-                                {selectedProject.industry}
-                              </div>
+                          <div className="bg-gray-700/50 rounded-lg py-2 px-4">
+                            <div className="text-sm text-gray-400 mb-1">Industry</div>
+                            <div className="text-lg font-medium text-white">
+                              {selectedProject.industry || 'Not specified'}
                             </div>
-                          )}
-                        </div>
-                        
-                        {/* Project URL */}
-                        {selectedProject.projectUrl && (
-                          <div className="pt-4">
-                            <a 
-                              href={selectedProject.projectUrl}
-                              target="_blank"
-                              rel="noopener noreferrer" 
-                              className="inline-flex items-center gap-2 text-purple-400 hover:text-purple-300 transition-colors"
-                            >
-                              <ExternalLink className="h-4 w-4" />
-                              <span>View Project</span>
-                            </a>
                           </div>
-                        )}
+                          
+                          {/* Project URL */}
+                          <div className="bg-gray-700/50 rounded-lg py-2 px-4">
+                            <div className="text-sm text-gray-400 mb-1">Project URL</div>
+                            <div className="text-lg font-medium text-white">
+                              {selectedProject.projectUrl ? (
+                                <a 
+                                  href={selectedProject.projectUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer" 
+                                  className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 transition-colors truncate"
+                                >
+                                  <ExternalLink className="h-4 w-4 shrink-0" />
+                                  <span className="truncate">{selectedProject.projectUrl}</span>
+                                </a>
+                              ) : (
+                                'Not specified'
+                              )}
+                            </div>
+                          </div>
+                        </div>
                         
                         {/* Media Gallery - if there are more images */}
                         {selectedProject.mediaUrls && selectedProject.mediaUrls.length > 1 && (
