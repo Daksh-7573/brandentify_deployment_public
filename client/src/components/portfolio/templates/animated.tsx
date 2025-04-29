@@ -25,8 +25,10 @@ import {
   Plus,
   PlusCircle,
   Send,
+  User,
   X,
-  Mail
+  Mail,
+  Lightbulb
 } from 'lucide-react';
 import { useTypewriter, Cursor } from 'react-simple-typewriter';
 import { Service, Project, Skill, WorkExperience, Education } from '@shared/schema';
@@ -90,6 +92,7 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
 
   // Refs for scrolling animations
   const heroRef = useRef<HTMLDivElement>(null);
+  const aboutMeRef = useRef<HTMLDivElement>(null);
   const skillsRef = useRef<HTMLDivElement>(null);
   const projectsRef = useRef<HTMLDivElement>(null);
   const servicesRef = useRef<HTMLDivElement>(null);
@@ -99,6 +102,7 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
 
   // Check if sections are in view to trigger animations
   const isHeroInView = useInView(heroRef, { once: false, amount: 0.3 });
+  const isAboutMeInView = useInView(aboutMeRef, { once: false, amount: 0.2 });
   const isSkillsInView = useInView(skillsRef, { once: false, amount: 0.2 });
   const isProjectsInView = useInView(projectsRef, { once: false, amount: 0.2 });
   const isServicesInView = useInView(servicesRef, { once: false, amount: 0.2 });
@@ -117,6 +121,7 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
   useEffect(() => {
     const sections = [
       { id: 'hero', ref: heroRef },
+      { id: 'about', ref: aboutMeRef },
       { id: 'skills', ref: skillsRef },
       { id: 'projects', ref: projectsRef },
       { id: 'services', ref: servicesRef },
@@ -147,7 +152,7 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
   }, []);
 
   // Get animations from a shared hook
-  const { rippleAnimation, particleAnimation } = useLumosAnimations();
+  const animations = useLumosAnimations();
 
   // Service and Project interaction states
   const [selectedService, setSelectedService] = useState<Service | null>(null);
@@ -165,6 +170,7 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
   // Navigation items
   const navItems = [
     { id: 'hero', label: 'Home', icon: <Star className="w-4 h-4" /> },
+    { id: 'about', label: 'About', icon: <User className="w-4 h-4" /> },
     { id: 'skills', label: 'Skills', icon: <Code className="w-4 h-4" /> },
     { id: 'projects', label: 'Projects', icon: <Sparkles className="w-4 h-4" /> },
     { id: 'services', label: 'Services', icon: <PlusCircle className="w-4 h-4" /> },
@@ -412,6 +418,136 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
               }}
             />
           ))}
+        </div>
+      </section>
+      
+      {/* About Me Section */}
+      <section id="about" className="py-20 relative animated-about" ref={aboutMeRef}>
+        <div className="container mx-auto px-6 relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: isAboutMeInView ? 1 : 0, y: isAboutMeInView ? 0 : 30 }}
+            transition={{ duration: 0.7 }}
+            className="mb-12 text-center"
+          >
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 section-title">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500">
+                What I'm All About
+              </span>
+            </h2>
+            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+              Get to know me beyond the resume
+            </p>
+          </motion.div>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: isAboutMeInView ? 1 : 0, x: isAboutMeInView ? 0 : -30 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="relative"
+            >
+              <div className="aspect-video rounded-2xl overflow-hidden bg-gradient-to-br from-violet-600/20 to-fuchsia-600/20 p-1">
+                <div className="h-full w-full rounded-xl overflow-hidden bg-gray-800/90 backdrop-blur flex items-center justify-center">
+                  {photoURL ? (
+                    <img 
+                      src={photoURL} 
+                      alt={`${name} profile`} 
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex flex-col items-center justify-center text-center p-6">
+                      <User className="w-16 h-16 text-purple-400/50 mb-4" />
+                      <p className="text-gray-400">Profile image coming soon</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+              
+              {/* Floating elements */}
+              <motion.div 
+                className="absolute -top-5 -right-5 w-16 h-16 rounded-full bg-gradient-to-r from-purple-500/30 to-pink-500/30 backdrop-blur-sm"
+                animate={{ 
+                  y: [0, -10, 0],
+                  rotate: [0, 5, 0],
+                  scale: [1, 1.05, 1]
+                }}
+                transition={{ 
+                  duration: 5, 
+                  repeat: Infinity,
+                  repeatType: "reverse" 
+                }}
+              />
+              <motion.div 
+                className="absolute -bottom-6 left-10 w-20 h-20 rounded-full bg-gradient-to-r from-blue-500/20 to-teal-500/20 backdrop-blur-sm"
+                animate={{ 
+                  y: [0, 10, 0],
+                  rotate: [0, -5, 0],
+                  scale: [1, 1.08, 1]
+                }}
+                transition={{ 
+                  duration: 6, 
+                  repeat: Infinity,
+                  repeatType: "reverse",
+                  delay: 0.5
+                }}
+              />
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: isAboutMeInView ? 1 : 0, x: isAboutMeInView ? 0 : 30 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              className="relative"
+            >
+              <div className="space-y-4">
+                <div className="relative">
+                  <div className="absolute top-0 left-0 w-12 h-12 -translate-x-1/2 -translate-y-1/2 bg-purple-500/10 rounded-full blur-xl"></div>
+                  <div className="relative z-10">
+                    <h3 className="text-2xl font-semibold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-purple-300 to-pink-300">
+                      Hello, I'm {name}
+                    </h3>
+                    <div className="prose prose-invert max-w-none">
+                      <p className="text-gray-300 leading-relaxed">
+                        {aboutMe || whatIOffer || "I am passionate about creating exceptional digital experiences that combine aesthetic appeal with functional excellence. With a strong foundation in both design and development, I bring a unique perspective to every project I undertake."}
+                      </p>
+                      
+                      <div className="bg-gray-800/50 rounded-xl p-6 mt-6 border border-gray-700/30 backdrop-blur-sm">
+                        <h4 className="text-lg font-medium text-purple-300 mb-4 flex items-center">
+                          <Lightbulb className="w-5 h-5 mr-2 text-yellow-400" />
+                          What I Offer
+                        </h4>
+                        <p className="text-gray-300">
+                          {whatIOffer || "I deliver comprehensive solutions tailored to client needs, from concept to implementation. My approach combines technical expertise with creative problem-solving to create intuitive, engaging, and high-performing digital experiences."}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Floating elements */}
+              <motion.div 
+                className="absolute -bottom-10 -right-5 w-24 h-24 rounded-full bg-gradient-to-r from-blue-500/10 to-teal-500/10 backdrop-blur-sm"
+                animate={{ 
+                  y: [0, -15, 0],
+                  rotate: [0, -8, 0],
+                  scale: [1, 1.1, 1]
+                }}
+                transition={{ 
+                  duration: 7, 
+                  repeat: Infinity,
+                  repeatType: "reverse" 
+                }}
+              />
+            </motion.div>
+          </div>
+        </div>
+        
+        {/* Background elements */}
+        <div className="absolute inset-0 overflow-hidden -z-10">
+          <div className="absolute top-1/2 left-1/4 w-64 h-64 bg-purple-500/5 rounded-full filter blur-3xl"></div>
+          <div className="absolute bottom-1/4 right-1/3 w-96 h-96 bg-blue-500/5 rounded-full filter blur-3xl"></div>
         </div>
       </section>
       
