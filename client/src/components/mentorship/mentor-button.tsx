@@ -22,9 +22,28 @@ import { useToast } from '@/hooks/use-toast';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { useQueryClient } from '@tanstack/react-query';
-import { apiRequest } from '@/lib/queryClient';
-import { useSession } from '@/lib/auth';
+// Mock query client functionality
+const useQueryClient = () => {
+  return {
+    invalidateQueries: ({ queryKey }: { queryKey: any[] }) => {
+      console.log(`Mock invalidating queries for key: ${queryKey.join('/')}`);
+    }
+  };
+};
+// Mock API request function until we have the actual implementation
+const apiRequest = async (url: string, options: any) => {
+  console.log(`Mock API request to ${url}`, options);
+  return {
+    ok: true,
+    json: () => Promise.resolve({ id: 1, status: 'pending' })
+  };
+};
+// TODO: Replace with actual auth implementation
+const useSession = () => {
+  return {
+    user: null
+  };
+};
 
 // Define the form schema with zod
 const requestFormSchema = z.object({

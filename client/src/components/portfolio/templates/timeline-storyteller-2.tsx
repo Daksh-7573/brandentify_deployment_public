@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ProfileImage } from "@/components/ui/profile-image";
 import { Education, Project, Service, Skill, WorkExperience } from "@shared/schema";
 import { useEffect, useState, useRef } from "react";
+import { MentorButton } from "@/components/mentorship/mentor-button";
 import { 
   Calendar, 
   MapPin, 
@@ -372,10 +373,10 @@ export default function TimelineStoryteller2({
               Grab My Resume
             </Button>
             
-            <Button variant="outline" className="border-indigo-200 text-indigo-700 hover:bg-indigo-50 gap-2">
-              <User className="h-4 w-4" />
-              Mentor
-            </Button>
+            <MentorButton 
+              mentorId={userInfo.id || 0} 
+              mentorName={userInfo.name} 
+            />
           </div>
         </div>
         
