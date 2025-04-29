@@ -40,7 +40,8 @@ export const resumeThemeEnum = pgEnum("resume_theme", [
   "freelancer_hub",
   "scholar",
   "animated",
-  "dynamic_innovator"
+  "dynamic_innovator",
+  "animated_odyssey"
 ]);
 
 // Resume model
@@ -289,6 +290,7 @@ export const portfolioLayoutEnum = pgEnum("portfolio_layout", [
   "corporate-executive",
   "dynamic-innovator",
   "animated",
+  "animated-odyssey", // New immersive animated template with continuous scrolling
   "freelancer-hub",
   "scholar"
 ]);

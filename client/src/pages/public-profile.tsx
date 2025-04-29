@@ -20,6 +20,7 @@ import VisualExpert from "@/components/portfolio/templates/visual-expert";
 import CorporateExecutive from "@/components/portfolio/templates/corporate-executive";
 import { DynamicInnovator } from "@/components/portfolio/templates/dynamic-innovator";
 import Animated from "@/components/portfolio/templates/animated";
+import AnimatedOdyssey from "@/components/portfolio/templates/animated-odyssey";
 
 // Type for our user data
 interface UserData {
@@ -174,7 +175,7 @@ const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
   
   // Construct portfolio data from all fetched components
   const portfolioData: PortfolioData | null = userData ? {
-    layout: 'visual-expert', // Default to visual-expert template
+    layout: 'animated-odyssey', // Default to our new animated-odyssey template
     publicUrl: null,
     isPublished: true,
     customTitle: userData.name || userData.username,
@@ -303,6 +304,30 @@ const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
             email={templateProps.userInfo.email}
             aboutMe={aboutMeContent}
             whatIOffer={aboutMeContent}
+          />
+        );
+      case 'animated-odyssey':
+        // For debugging
+        console.log("AnimatedOdyssey template - whatIOffer:", templateProps.userInfo.whatIOffer);
+        console.log("AnimatedOdyssey template - aboutMe:", templateProps.userInfo.aboutMe);
+        
+        return (
+          <AnimatedOdyssey
+            name={templateProps.userInfo.name}
+            title={templateProps.userInfo.title || ''}
+            industry={templateProps.userInfo.industry || ''}
+            domain={templateProps.userInfo.domain || ''}
+            location={templateProps.userInfo.location || ''}
+            photoURL={templateProps.userInfo.photoURL}
+            skills={templateProps.userSkills}
+            projects={templateProps.userProjects}
+            experiences={templateProps.userExperiences}
+            educations={templateProps.userEducations}
+            services={templateProps.userServices}
+            lookingFor={templateProps.userInfo.lookingFor || ''}
+            email={templateProps.userInfo.email}
+            aboutMe={templateProps.userInfo.aboutMe}
+            whatIOffer={templateProps.userInfo.whatIOffer}
           />
         );
       default:
