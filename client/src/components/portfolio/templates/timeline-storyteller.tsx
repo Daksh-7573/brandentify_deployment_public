@@ -650,7 +650,7 @@ export default function TimelineStoryteller({
           {/* If there are skills, display them as certifications */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in">
             {sortedSkills.length > 0 ? (
-              sortedSkills.slice(0, 6).map((skill) => (
+              sortedSkills.slice(0, 9).map((skill) => (
                 <div key={skill.id} className="card-animated bg-white rounded-lg shadow-md overflow-hidden border border-pink-100">
                   <div className="h-2 bg-gradient-to-r from-pink-400 to-purple-400"></div>
                   <div className="p-6">
@@ -1274,7 +1274,7 @@ export default function TimelineStoryteller({
           {/* If there are skills, display them as certifications */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in">
             {sortedSkills.length > 0 ? (
-              sortedSkills.slice(0, 6).map((skill) => (
+              sortedSkills.slice(0, 9).map((skill) => (
                 <div key={skill.id} className="card-animated bg-white rounded-lg shadow-md overflow-hidden border border-pink-100">
                   <div className="h-2 bg-gradient-to-r from-pink-400 to-purple-400"></div>
                   <div className="p-6">

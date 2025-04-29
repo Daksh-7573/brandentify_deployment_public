@@ -812,7 +812,7 @@ export default function CorporateExecutive({
           
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {sortedSkills.length > 0 ? (
-              sortedSkills.slice(0, 8).map((skill, index) => (
+              sortedSkills.slice(0, 9).map((skill, index) => (
                 <div 
                   key={skill.id} 
                   className="skill-tag bg-white rounded-lg p-5 shadow-sm fade-in"
