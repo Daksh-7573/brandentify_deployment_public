@@ -273,6 +273,12 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                 >
                   Services
                 </a>
+                <div className="animated-mentor-button">
+                  <MentorButton 
+                    mentorId={1} 
+                    mentorName={name} 
+                  />
+                </div>
               </div>
             </motion.div>
             

@@ -333,6 +333,60 @@
   opacity: 0.6;
 }
 
+/* Mentor Button styling for animated template */
+.animated-mentor-button {
+  overflow: hidden;
+  position: relative;
+}
+
+.animated-mentor-button button {
+  background: linear-gradient(120deg, #a855f7, #6366f1);
+  border-color: rgba(168, 85, 247, 0.3);
+  font-weight: 500;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.animated-mentor-button button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(168, 85, 247, 0.2);
+  background: linear-gradient(120deg, #9333ea, #4f46e5);
+}
+
+.animated-mentor-button button::before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  z-index: -1;
+  background: linear-gradient(60deg, #a855f7, #6366f1, #6366f1, #a855f7);
+  background-size: 300% 300%;
+  border-radius: inherit;
+  animation: border-flow 4s linear infinite;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.animated-mentor-button button:hover::before {
+  opacity: 1;
+}
+
+@keyframes border-flow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
 /* Lumos Animation System Styles */
 /* These styles enhance the animation hooks in use-lumos-animations.ts */
 
