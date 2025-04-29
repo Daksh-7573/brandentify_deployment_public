@@ -28,7 +28,8 @@ import {
   User,
   X,
   Mail,
-  Lightbulb
+  Lightbulb,
+  Maximize
 } from 'lucide-react';
 import { useTypewriter, Cursor } from 'react-simple-typewriter';
 import { Service, Project, Skill, WorkExperience, Education } from '@shared/schema';
@@ -789,9 +790,10 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                   }}
                   transition={{ duration: 0.6, delay: index * 0.1 }}
                   whileHover={{ y: -10, boxShadow: '0 20px 40px rgba(139, 92, 246, 0.15)' }}
+                  onClick={() => setSelectedProject(project)}
                 >
-                  {/* Project Image */}
-                  <div className="aspect-video overflow-hidden relative group">
+                  {/* Project Image - Square format */}
+                  <div className="aspect-square overflow-hidden relative group">
                     {project.thumbnailUrl ? (
                       <img 
                         src={project.thumbnailUrl} 
@@ -804,15 +806,18 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                       </div>
                     )}
                     
-                    {/* Play/Pause Button removed as requested */}
-                    
-                    {/* Project Category Badge - removed as requested */}
+                    {/* Expand icon indicator for clicking */}
+                    <div className="absolute top-0 right-0 p-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="p-2 bg-purple-500/80 rounded-full">
+                        <Maximize className="h-5 w-5 text-white" />
+                      </div>
+                    </div>
                   </div>
                   
-                  {/* Project Details - Simplified to only show heading and date as requested */}
+                  {/* Project Details */}
                   <div className="p-6 bg-purple-900/20">
                     <h3 className="text-xl font-bold text-white mb-3 tracking-tight">
-                      {project.title} - Simplified
+                      {project.title}
                     </h3>
                     
                     {/* Project Date - with simpler formatting */}
@@ -839,6 +844,127 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
               </motion.div>
             )}
           </div>
+          
+          {/* Project Detail Modal */}
+          <AnimatePresence>
+            {selectedProject && (
+              <motion.div 
+                className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/70 backdrop-blur-sm"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setSelectedProject(null)}
+              >
+                <motion.div 
+                  className="bg-gray-800/90 max-w-4xl rounded-xl border border-gray-700 overflow-hidden backdrop-blur-xl"
+                  initial={{ scale: 0.9, y: 20 }}
+                  animate={{ scale: 1, y: 0 }}
+                  exit={{ scale: 0.9, y: 20 }}
+                  onClick={e => e.stopPropagation()}
+                >
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
+                    {/* Project Image */}
+                    <div className="aspect-square relative overflow-hidden bg-black">
+                      {selectedProject.thumbnailUrl ? (
+                        <img 
+                          src={selectedProject.thumbnailUrl} 
+                          alt={selectedProject.title} 
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center">
+                          <Sparkles className="h-16 w-16 text-purple-400 opacity-40" />
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Project Details */}
+                    <div className="p-6 md:p-8 max-h-[70vh] overflow-y-auto">
+                      <div className="flex justify-between items-start mb-6">
+                        <h3 className="text-2xl font-bold text-white">{selectedProject.title}</h3>
+                        <button 
+                          onClick={() => setSelectedProject(null)}
+                          className="text-gray-400 hover:text-white p-1"
+                        >
+                          <X className="w-5 h-5" />
+                        </button>
+                      </div>
+                      
+                      <div className="space-y-6">
+                        {/* Description */}
+                        <p className="text-gray-300 leading-relaxed">
+                          {selectedProject.description || 'No description available for this project.'}
+                        </p>
+                        
+                        {/* Project Details */}
+                        <div className="grid grid-cols-2 gap-4">
+                          {/* Date */}
+                          <div className="bg-gray-700/50 rounded-lg py-2 px-4">
+                            <div className="text-sm text-gray-400 mb-1">Date</div>
+                            <div className="text-lg font-medium text-white">
+                              {new Date(selectedProject.startDate || '').toLocaleDateString('en-US', {
+                                year: 'numeric',
+                                month: 'short'
+                              })}
+                            </div>
+                          </div>
+                          
+                          {/* Category */}
+                          {selectedProject.category && (
+                            <div className="bg-gray-700/50 rounded-lg py-2 px-4">
+                              <div className="text-sm text-gray-400 mb-1">Category</div>
+                              <div className="text-lg font-medium text-white">
+                                {selectedProject.category}
+                              </div>
+                            </div>
+                          )}
+                          
+                          {/* Industry */}
+                          {selectedProject.industry && (
+                            <div className="bg-gray-700/50 rounded-lg py-2 px-4">
+                              <div className="text-sm text-gray-400 mb-1">Industry</div>
+                              <div className="text-lg font-medium text-white">
+                                {selectedProject.industry}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                        
+                        {/* Project URL */}
+                        {selectedProject.projectUrl && (
+                          <div className="pt-4">
+                            <a 
+                              href={selectedProject.projectUrl}
+                              target="_blank"
+                              rel="noopener noreferrer" 
+                              className="inline-flex items-center gap-2 text-purple-400 hover:text-purple-300 transition-colors"
+                            >
+                              <ExternalLink className="h-4 w-4" />
+                              <span>View Project</span>
+                            </a>
+                          </div>
+                        )}
+                        
+                        {/* Media Gallery - if there are more images */}
+                        {selectedProject.mediaUrls && selectedProject.mediaUrls.length > 1 && (
+                          <div className="pt-4">
+                            <h4 className="text-lg font-bold text-white mb-3">Project Gallery</h4>
+                            <div className="grid grid-cols-3 gap-2">
+                              {selectedProject.mediaUrls.map((url, i) => (
+                                <div key={i} className="aspect-square rounded-md overflow-hidden">
+                                  <img src={url} alt={`${selectedProject.title} - image ${i+1}`} className="w-full h-full object-cover" />
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </section>
       
