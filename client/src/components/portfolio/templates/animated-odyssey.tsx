@@ -542,7 +542,7 @@ const AnimatedOdyssey: React.FC<AnimatedOdysseyProps> = ({
           
           {projects.length > 0 ? (
             <div className="project-grid">
-              {projects.map((project, index) => (
+              {projects.slice(0, 6).map((project, index) => (
                 <motion.div
                   key={project.id}
                   className="project-card"

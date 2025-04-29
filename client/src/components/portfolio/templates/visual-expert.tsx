@@ -819,7 +819,7 @@ export default function VisualExpert({
           {sortedProjects.length > 0 ? (
             <>
               <div className="masonry-grid scroll-reveal">
-                {sortedProjects.map((project, index) => (
+                {sortedProjects.slice(0, 6).map((project, index) => (
                   <div key={project.id} className={getProjectLayout(index)}>
                     <div 
                       className="project-card h-full"

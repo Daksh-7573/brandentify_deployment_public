@@ -775,7 +775,7 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
           
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 animated-projects">
             {projects && projects.length > 0 ? (
-              projects.map((project, index) => (
+              projects.slice(0, 6).map((project, index) => (
                 <motion.div 
                   key={project.id}
                   className="animated-project bg-gray-800/30 rounded-xl overflow-hidden border border-gray-700 hover:border-purple-500/50 shadow-lg transition-all duration-500"

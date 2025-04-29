@@ -544,7 +544,7 @@ export default function TimelineStoryteller2({
           {/* Project Gallery - 3 projects per row, square thumbnails */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 animate-fade-in">
             {sortedProjects.length > 0 ? (
-              sortedProjects.map((project) => (
+              sortedProjects.slice(0, 6).map((project) => (
                 <div 
                   key={project.id}
                   className="card-animated bg-white rounded-lg shadow-md overflow-hidden border border-purple-100 cursor-pointer hover:shadow-xl transition-all"
