@@ -589,7 +589,7 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
             balance,
             lifetime_earned as "lifetimeEarned",
             current_month_earned as "currentMonthEarned",
-            last_updated as "lastUpdated"
+            updated_at as "lastUpdated"
           FROM user_xp
           WHERE user_id = $1
         `, [userId]);
@@ -700,7 +700,29 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
           return res.json([]);
         }
         
-        const userBadges = await storage.getUserBadges(userId);
+        // Get user badges directly from database
+        console.log(`[GET /users/${userId}/badges] Fetching user badges directly from DB`);
+        
+        const userBadgesResult = await pool.query(`
+          SELECT 
+            id,
+            user_id as "userId",
+            name,
+            description,
+            type,
+            image_url as "imageUrl",
+            awarded_at as "awardedAt",
+            awarded_for as "awardedFor",
+            display_on_profile as "displayOnProfile",
+            display_on_resume as "displayOnResume"
+          FROM user_badges
+          WHERE user_id = $1
+          ORDER BY awarded_at DESC
+        `, [userId]);
+        
+        const userBadges = userBadgesResult.rows;
+        console.log(`[GET /users/${userId}/badges] Found ${userBadges.length} badges`);
+        
         res.json(userBadges);
       } catch (dbError) {
         console.error(`[GET /users/${req.params.userId}/badges] Database error:`, dbError);
@@ -737,7 +759,30 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
         }
         
         const { type } = req.params;
-        const userBadges = await storage.getUserBadgesByType(userId, type);
+        
+        // Get user badges by type directly from database
+        console.log(`[GET /users/${userId}/badges/type/${type}] Fetching user badges by type directly from DB`);
+        
+        const userBadgesResult = await pool.query(`
+          SELECT 
+            id,
+            user_id as "userId",
+            name,
+            description,
+            type,
+            image_url as "imageUrl",
+            awarded_at as "awardedAt",
+            awarded_for as "awardedFor",
+            display_on_profile as "displayOnProfile",
+            display_on_resume as "displayOnResume"
+          FROM user_badges
+          WHERE user_id = $1 AND type = $2
+          ORDER BY awarded_at DESC
+        `, [userId, type]);
+        
+        const userBadges = userBadgesResult.rows;
+        console.log(`[GET /users/${userId}/badges/type/${type}] Found ${userBadges.length} badges`);
+        
         res.json(userBadges);
       } catch (dbError) {
         console.error(`[GET /users/${req.params.userId}/badges/type/${req.params.type}] Database error:`, dbError);
@@ -816,7 +861,27 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
           return res.json([]);
         }
         
-        const transactions = await storage.getXpTransactions(userId);
+        // Get XP transactions directly from database
+        console.log(`[GET /users/${userId}/xp-transactions] Fetching XP transactions directly from DB`);
+        
+        const transactionsResult = await pool.query(`
+          SELECT 
+            id,
+            user_id as "userId",
+            amount,
+            source,
+            source_id as "sourceId",
+            created_at as "createdAt",
+            transaction_type as "transactionType",
+            description
+          FROM xp_transactions
+          WHERE user_id = $1
+          ORDER BY created_at DESC
+        `, [userId]);
+        
+        const transactions = transactionsResult.rows;
+        console.log(`[GET /users/${userId}/xp-transactions] Found ${transactions.length} transactions`);
+        
         res.json(transactions);
       } catch (dbError) {
         console.error(`[GET /users/${req.params.userId}/xp-transactions] Database error:`, dbError);
@@ -853,7 +918,28 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
         }
         
         const { source } = req.params;
-        const transactions = await storage.getXpTransactionsBySource(userId, source);
+        
+        // Get XP transactions by source directly from database
+        console.log(`[GET /users/${userId}/xp-transactions/source/${source}] Fetching XP transactions by source directly from DB`);
+        
+        const transactionsResult = await pool.query(`
+          SELECT 
+            id,
+            user_id as "userId",
+            amount,
+            source,
+            source_id as "sourceId",
+            created_at as "createdAt",
+            transaction_type as "transactionType",
+            description
+          FROM xp_transactions
+          WHERE user_id = $1 AND source = $2
+          ORDER BY created_at DESC
+        `, [userId, source]);
+        
+        const transactions = transactionsResult.rows;
+        console.log(`[GET /users/${userId}/xp-transactions/source/${source}] Found ${transactions.length} transactions`);
+        
         res.json(transactions);
       } catch (dbError) {
         console.error(`[GET /users/${req.params.userId}/xp-transactions/source/${req.params.source}] Database error:`, dbError);
