@@ -3993,7 +3993,36 @@ export class MemStorage implements IStorage {
 
   // Career Quests operations - Quest Definition methods
   async getQuestDefinitions(): Promise<QuestDefinition[]> {
-    return Array.from(this.questDefinitions.values());
+    try {
+      console.log('[db.getQuestDefinitions] Fetching all quest definitions');
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          title,
+          description,
+          type,
+          target_count as "targetCount",
+          target_action as "targetAction",
+          xp_reward as "xpReward",
+          badge_reward as "badgeReward",
+          required_profile_completion as "requiredProfileCompletion",
+          required_career_stage as "requiredCareerStage",
+          required_industry as "requiredIndustry",
+          musk_tip as "muskTip",
+          is_active as "isActive",
+          created_at as "createdAt",
+          updated_at as "updatedAt"
+        FROM quest_definitions
+        ORDER BY id ASC
+      `);
+      
+      console.log(`[db.getQuestDefinitions] Found ${result.rows.length} quest definitions`);
+      return result.rows;
+    } catch (error) {
+      console.error('[db.getQuestDefinitions] Error fetching quest definitions:', error);
+      return [];
+    }
   }
 
   async getQuestDefinitionById(id: number): Promise<QuestDefinition | undefined> {
@@ -4054,14 +4083,35 @@ export class MemStorage implements IStorage {
 
   // User Quest operations
   async getUserQuestsByUserId(userId: number): Promise<UserQuest[]> {
-    return Array.from(this.userQuests.values())
-      .filter(quest => quest.userId === userId)
-      .sort((a, b) => {
-        // Sort by most recently assigned first
-        const timeA = a.assignedAt ? a.assignedAt.getTime() : 0;
-        const timeB = b.assignedAt ? b.assignedAt.getTime() : 0;
-        return timeB - timeA;
-      });
+    try {
+      console.log(`[db.getUserQuestsByUserId] Fetching quests for user ${userId}`);
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          user_id as "userId",
+          quest_definition_id as "questDefinitionId",
+          status,
+          progress,
+          assigned_at as "assignedAt",
+          completed_at as "completedAt",
+          dismissed_reason as "dismissedReason",
+          xp_earned as "xpEarned",
+          badge_earned as "badgeEarned",
+          musk_response as "muskResponse",
+          week_number as "weekNumber",
+          year
+        FROM user_quests
+        WHERE user_id = $1
+        ORDER BY assigned_at DESC
+      `, [userId]);
+      
+      console.log(`[db.getUserQuestsByUserId] Found ${result.rows.length} quests for user ${userId}`);
+      return result.rows;
+    } catch (error) {
+      console.error(`[db.getUserQuestsByUserId] Error fetching quests for user ${userId}:`, error);
+      return [];
+    }
   }
 
   async getUserQuestById(id: number): Promise<UserQuest | undefined> {
@@ -5768,14 +5818,15 @@ export class DatabaseStorage implements IStorage {
         SELECT 
           id,
           user_id as "userId",
-          type,
-          action,
+          category,
           content,
-          link,
-          metadata,
+          visibility,
+          inspired_count as "inspiredCount",
+          related_skills as "relatedSkills",
+          related_project as "relatedProject",
+          image_url as "imageUrl",
           created_at as "createdAt",
-          updated_at as "updatedAt",
-          is_active as "isActive"
+          updated_at as "updatedAt"
         FROM nowboard_items
         ORDER BY created_at DESC
         LIMIT 50
