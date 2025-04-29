@@ -962,6 +962,8 @@ export default function PortfolioBuilder() {
                     email={userData?.email || user?.email || ''}
                     photoURL={userData?.photoURL || user?.photoURL || null}
                     lookingFor={userData?.lookingFor || ''}
+                    aboutMe={userData?.aboutMe || ''}
+                    whatIOffer={whatIOfferValue || userData?.whatIOffer || ''}
                     skills={userSkills || []}
                     services={userServices || []}
                     experiences={userExperiences || []}
@@ -1023,6 +1025,8 @@ export default function PortfolioBuilder() {
                     email={userData?.email || user?.email || ''}
                     photoURL={userData?.photoURL || user?.photoURL || null}
                     lookingFor={userData?.lookingFor || ''}
+                    aboutMe={userData?.aboutMe || ''}
+                    whatIOffer={whatIOfferValue || userData?.whatIOffer || ''}
                     skills={userSkills || []}
                     services={userServices || []}
                     experiences={userExperiences || []}
