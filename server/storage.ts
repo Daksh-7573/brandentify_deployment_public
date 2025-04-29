@@ -4149,6 +4149,20 @@ export class MemStorage implements IStorage {
     try {
       console.log(`[db.getUserQuestsByUserId] Fetching quests for user ${userId}`);
       
+      // Check if the table exists first
+      const tableCheck = await pool.query(`
+        SELECT EXISTS (
+          SELECT 1 
+          FROM information_schema.tables 
+          WHERE table_name = 'user_quests'
+        );
+      `);
+      
+      if (!tableCheck.rows[0].exists) {
+        console.log(`[db.getUserQuestsByUserId] user_quests table does not exist`);
+        return [];
+      }
+      
       const result = await pool.query(`
         SELECT 
           id,
@@ -4173,6 +4187,7 @@ export class MemStorage implements IStorage {
       return result.rows;
     } catch (error) {
       console.error(`[db.getUserQuestsByUserId] Error fetching quests for user ${userId}:`, error);
+      // Return empty array instead of failing
       return [];
     }
   }
@@ -4264,6 +4279,33 @@ export class MemStorage implements IStorage {
       
       console.log(`[db.getCurrentWeekUserQuests] Fetching week ${currentWeek} year ${currentYear} quests for user ${userId}`);
       
+      // Check if the table exists first
+      const tableCheck = await pool.query(`
+        SELECT EXISTS (
+          SELECT 1 
+          FROM information_schema.tables 
+          WHERE table_name = 'user_quests'
+        );
+      `);
+      
+      if (!tableCheck.rows[0].exists) {
+        console.log(`[db.getCurrentWeekUserQuests] user_quests table does not exist`);
+        return [];
+      }
+      
+      // Check table columns
+      try {
+        const columnCheck = await pool.query(`
+          SELECT column_name 
+          FROM information_schema.columns 
+          WHERE table_name = 'user_quests';
+        `);
+        
+        console.log(`[db.getCurrentWeekUserQuests] Found columns:`, columnCheck.rows.map(r => r.column_name).join(', '));
+      } catch (err) {
+        console.log(`[db.getCurrentWeekUserQuests] Failed to check columns:`, err);
+      }
+      
       const result = await pool.query(`
         SELECT 
           id,
@@ -4296,6 +4338,7 @@ export class MemStorage implements IStorage {
       return result.rows;
     } catch (error) {
       console.error(`[db.getCurrentWeekUserQuests] Error fetching quests for user ${userId}:`, error);
+      // Return empty array to prevent cascading errors
       return [];
     }
   }
