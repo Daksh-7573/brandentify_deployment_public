@@ -900,6 +900,15 @@ export const questStatusEnum = pgEnum("quest_status", [
   "expired"
 ]);
 
+// Mentorship request status enum
+export const mentorshipStatusEnum = pgEnum("mentorship_status", [
+  "pending",
+  "accepted",
+  "declined",
+  "expired",
+  "completed"
+]);
+
 // Badge type enum
 export const badgeTypeEnum = pgEnum("badge_type", [
   "quest_initiate",
@@ -1051,3 +1060,59 @@ export const insertBrandOfTheDaySchema = createInsertSchema(brandsOfTheDay).omit
 // Export types for Brand of the Day
 export type BrandOfTheDay = typeof brandsOfTheDay.$inferSelect;
 export type InsertBrandOfTheDay = z.infer<typeof insertBrandOfTheDaySchema>;
+
+// Mentorship Connect Feature
+// Mentorship requests table - tracks mentorship requests between users
+export const mentorshipRequests = pgTable("mentorship_requests", {
+  id: serial("id").primaryKey(),
+  menteeId: integer("mentee_id").references(() => users.id).notNull(), // User requesting mentorship
+  mentorId: integer("mentor_id").references(() => users.id).notNull(), // User being asked to mentor
+  message: text("message"), // Custom message from mentee (300 chars max)
+  status: mentorshipStatusEnum("status").notNull().default("pending"),
+  requestedAt: timestamp("requested_at").defaultNow(),
+  respondedAt: timestamp("responded_at"), // When the request was accepted/declined
+  startDate: timestamp("start_date"), // When the mentorship started (if accepted)
+  endDate: timestamp("end_date"), // When the mentorship ends (30 days after acceptance)
+  declineReason: text("decline_reason"), // Optional reason for declining
+  isFeedbackRequested: boolean("is_feedback_requested").default(false), // Whether feedback has been requested
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Mentorship feedback table - tracks feedback for completed mentorships
+export const mentorshipFeedback = pgTable("mentorship_feedback", {
+  id: serial("id").primaryKey(), 
+  mentorshipId: integer("mentorship_id").references(() => mentorshipRequests.id).notNull(),
+  userId: integer("user_id").references(() => users.id).notNull(), // User giving feedback
+  rating: integer("rating").notNull(), // 1-5 star rating
+  positiveNotes: text("positive_notes"), // What went well
+  improvementNotes: text("improvement_notes"), // What could be improved
+  wouldRepeat: boolean("would_repeat").default(false), // Whether they would mentor/be mentored again
+  isPublic: boolean("is_public").default(false), // Whether feedback can be shown publicly
+  providedAt: timestamp("provided_at").defaultNow(),
+});
+
+// Insert schemas for Mentorship Connect
+export const insertMentorshipRequestSchema = createInsertSchema(mentorshipRequests).omit({
+  id: true,
+  status: true,
+  requestedAt: true,
+  respondedAt: true,
+  startDate: true,
+  endDate: true,
+  isFeedbackRequested: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+export const insertMentorshipFeedbackSchema = createInsertSchema(mentorshipFeedback).omit({
+  id: true,
+  providedAt: true
+});
+
+// Export types for Mentorship Connect
+export type MentorshipRequest = typeof mentorshipRequests.$inferSelect;
+export type InsertMentorshipRequest = z.infer<typeof insertMentorshipRequestSchema>;
+
+export type MentorshipFeedback = typeof mentorshipFeedback.$inferSelect;
+export type InsertMentorshipFeedback = z.infer<typeof insertMentorshipFeedbackSchema>;
