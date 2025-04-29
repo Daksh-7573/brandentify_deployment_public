@@ -52,101 +52,110 @@ interface AnimatedTemplateProps {
   whatIOffer?: string | null;
 }
 
-// Animated Template Component
-export default function AnimatedTemplate({
+// Main animated portfolio component
+const Animated: React.FC<AnimatedTemplateProps> = ({
   name,
   title,
   industry,
   domain,
   location,
-  organization,
   photoURL,
-  skills = [], // Provide empty array fallbacks for all collections
-  projects = [],
-  experiences = [],
-  educations = [],
-  services = [],
+  skills,
+  projects,
+  experiences,
+  educations,
+  services,
   lookingFor,
   email,
   aboutMe,
   whatIOffer
-}: AnimatedTemplateProps) {
-  // For debugging
+}) => {
+  // For debugging purposes
   console.log("Animated template - whatIOffer:", whatIOffer);
   console.log("Animated template - aboutMe:", aboutMe);
-  
-  // Use Lumos Animation hook
-  const { initAmbientAuras, animateCardStack, addSparkleEffect, addTypingEffect } = useLumosAnimations();
-  
-  // Refs for sections for scroll animations
-  const heroRef = useRef(null);
-  const projectsRef = useRef(null);
-  const timelineRef = useRef(null);
-  const aboutRef = useRef(null);
-  const skillsRef = useRef(null);
-  const educationRef = useRef(null);
-  const contactRef = useRef(null);
-  
-  // Check if sections are in view to trigger animations
-  const isHeroInView = useInView(heroRef, { once: false, amount: 0.3 });
-  const isProjectsInView = useInView(projectsRef, { once: false, amount: 0.1 });
-  const isTimelineInView = useInView(timelineRef, { once: false, amount: 0.1 });
-  const isAboutInView = useInView(aboutRef, { once: false, amount: 0.1 });
-  const isSkillsInView = useInView(skillsRef, { once: false, amount: 0.1 });
-  const isEducationInView = useInView(educationRef, { once: false, amount: 0.1 });
-  const isContactInView = useInView(contactRef, { once: false, amount: 0.1 });
-  
-  // Typewriter effect for hero section
+
+  // Typewriter effect for the hero section
   const [typewriterText] = useTypewriter({
     words: [
       title || 'Creative Professional',
-      `${industry || 'Digital'} Specialist`,
-      `${domain || 'Design'} Expert`,
-      'Portfolio',
+      industry ? `${industry} Specialist` : 'Industry Expert',
+      domain ? `${domain} Expert` : 'Domain Expert',
     ],
     loop: true,
-    typeSpeed: 80,
-    deleteSpeed: 50,
     delaySpeed: 2000,
+    typeSpeed: 70,
+    deleteSpeed: 50
   });
-  
-  // Video states for projects
-  const [activeVideoIndex, setActiveVideoIndex] = useState<number | null>(null);
-  
-  // Animation states
+
+  // Refs for scrolling animations
+  const heroRef = useRef<HTMLDivElement>(null);
+  const skillsRef = useRef<HTMLDivElement>(null);
+  const projectsRef = useRef<HTMLDivElement>(null);
+  const servicesRef = useRef<HTMLDivElement>(null);
+  const aboutRef = useRef<HTMLDivElement>(null);
+  const timelineRef = useRef<HTMLDivElement>(null);
+  const educationRef = useRef<HTMLDivElement>(null);
+  const contactRef = useRef<HTMLDivElement>(null);
+
+  // Check if sections are in view to trigger animations
+  const isHeroInView = useInView(heroRef, { once: false, amount: 0.3 });
+  const isSkillsInView = useInView(skillsRef, { once: false, amount: 0.2 });
+  const isProjectsInView = useInView(projectsRef, { once: false, amount: 0.2 });
+  const isServicesInView = useInView(servicesRef, { once: false, amount: 0.2 });
+  const isAboutInView = useInView(aboutRef, { once: false, amount: 0.2 });
+  const isTimelineInView = useInView(timelineRef, { once: false, amount: 0.2 });
+  const isEducationInView = useInView(educationRef, { once: false, amount: 0.2 });
+  const isContactInView = useInView(contactRef, { once: false, amount: 0.2 });
+
+  // Animation controls for reactive animations
   const controls = useAnimation();
+
+  // State for navigation
+  const [navOpen, setNavOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState('hero');
   
-  // Organize skills into categories based on the skill name
-  // This is a fallback mechanism since the schema might not have categories
-  const categorizeSkills = (allSkills: Skill[]) => {
-    const skillList = allSkills || [];
-    const categories = {
-      creative: [] as Skill[],
-      technical: [] as Skill[],
-      tools: [] as Skill[],
-      other: [] as Skill[]
+  // Track active section based on scroll position
+  useEffect(() => {
+    const sections = [
+      { id: 'hero', ref: heroRef },
+      { id: 'skills', ref: skillsRef },
+      { id: 'projects', ref: projectsRef },
+      { id: 'services', ref: servicesRef },
+      { id: 'about', ref: aboutRef },
+      { id: 'timeline', ref: timelineRef },
+      { id: 'education', ref: educationRef },
+      { id: 'contact', ref: contactRef }
+    ];
+    
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY + 300;
+      
+      for (const section of sections) {
+        const element = section.ref.current;
+        if (!element) continue;
+        
+        const offsetTop = element.offsetTop;
+        const height = element.offsetHeight;
+        
+        if (scrollPosition >= offsetTop && scrollPosition < offsetTop + height) {
+          setActiveSection(section.id);
+          break;
+        }
+      }
     };
     
-    skillList.forEach(skill => {
-      const name = skill.name.toLowerCase();
-      
-      if (name.includes('design') || name.includes('art') || name.includes('creat') || name.includes('ui') || name.includes('ux')) {
-        categories.creative.push(skill);
-      } else if (name.includes('develop') || name.includes('code') || name.includes('program') || name.includes('architecture')) {
-        categories.technical.push(skill);
-      } else if (name.includes('tool') || name.includes('software') || name.includes('framework') || name.includes('platform')) {
-        categories.tools.push(skill);
-      } else {
-        categories.other.push(skill);
-      }
-    });
-    
-    return categories;
-  };
-  
-  const skillCategories = categorizeSkills(skills);
-  
-  // Handle video toggle for projects
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Get animations from a shared hook
+  const { rippleAnimation, particleAnimation } = useLumosAnimations();
+
+  // Service and Project interaction states
+  const [selectedService, setSelectedService] = useState<Service | null>(null);
+  const [activeVideoIndex, setActiveVideoIndex] = useState<number | null>(null);
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+
   const toggleProjectVideo = (index: number) => {
     if (activeVideoIndex === index) {
       setActiveVideoIndex(null);
@@ -154,221 +163,528 @@ export default function AnimatedTemplate({
       setActiveVideoIndex(index);
     }
   };
-  
-  // Initialize animations when component mounts
-  useEffect(() => {
-    // Initialize all the Lumos animations
-    initAmbientAuras('.hero-section');
-    animateCardStack('.animated-project');
-    addSparkleEffect('.skill-bar');
-    addTypingEffect('.animated-title');
-    
-    // Scroll to top when component mounts
-    window.scrollTo(0, 0);
-    
-    // Animation sequence
-    controls.start({
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.8, ease: "easeOut" }
-    });
-    
-    // No cleanup needed as the animation hooks handle their own cleanup
-  }, []);
-  
+
+  // Navigation items
+  const navItems = [
+    { id: 'hero', label: 'Home', icon: <Star className="w-4 h-4" /> },
+    { id: 'skills', label: 'Skills', icon: <Code className="w-4 h-4" /> },
+    { id: 'projects', label: 'Projects', icon: <Sparkles className="w-4 h-4" /> },
+    { id: 'services', label: 'Services', icon: <PlusCircle className="w-4 h-4" /> },
+    { id: 'about', label: 'About', icon: <MessageCircle className="w-4 h-4" /> },
+    { id: 'timeline', label: 'Experience', icon: <Briefcase className="w-4 h-4" /> },
+    { id: 'education', label: 'Education', icon: <GraduationCap className="w-4 h-4" /> },
+    { id: 'contact', label: 'Contact', icon: <Send className="w-4 h-4" /> }
+  ];
+
   return (
-    <div className="animated-template bg-gray-900 text-white min-h-screen">
+    <div className="animated-portfolio min-h-screen bg-gray-900 text-white font-sans">
+      {/* Fixed Navigation */}
+      <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50">
+        <div className="bg-gray-800/80 backdrop-blur-md rounded-full p-2 shadow-lg border border-gray-700/50">
+          <div className="flex items-center space-x-1">
+            {navItems.map(item => (
+              <a
+                key={item.id}
+                href={`#${item.id}`}
+                className={`p-2 rounded-full transition-all duration-300 flex items-center ${
+                  activeSection === item.id 
+                    ? 'bg-purple-500 text-white' 
+                    : 'text-gray-400 hover:bg-gray-700/50 hover:text-white'
+                }`}
+                onClick={() => setActiveSection(item.id)}
+              >
+                {item.icon}
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
+
       {/* Hero Section */}
-      <section id="hero" className="min-h-screen flex items-center justify-center relative hero-section" ref={heroRef}>
-        <div className="hero-particle-container absolute inset-0 pointer-events-none" />
-        
-        {/* Animated background auras */}
-        <div className="ambient-aura ambient-aura-1" />
-        <div className="ambient-aura ambient-aura-2" />
-        <div className="ambient-aura ambient-aura-3" />
-        
-        <div className="container mx-auto px-6 py-20 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+      <section id="hero" className="min-h-screen flex items-center relative pt-16 pb-32 animated-hero" ref={heroRef}>
+        <div className="container mx-auto px-6 relative z-10">
+          <div className="flex flex-col lg:flex-row items-center gap-10">
             {/* Hero Content */}
             <motion.div 
-              className="lg:col-span-7 space-y-8"
+              className="lg:w-3/5 text-center lg:text-left"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: isHeroInView ? 1 : 0, y: isHeroInView ? 0 : 30 }}
               transition={{ duration: 0.8 }}
             >
-              <motion.h1 
-                className="text-4xl md:text-6xl font-bold leading-tight"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: isHeroInView ? 1 : 0, y: isHeroInView ? 0 : 20 }}
-                transition={{ duration: 0.8, delay: 0.2 }}
-              >
-                Hello, I'm{' '}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-pink-500">
-                  {name || 'Creative Professional'}
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 tracking-tight leading-tight">
+                Hi, I'm{' '}
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
+                  {name}
                 </span>
-              </motion.h1>
+              </h1>
               
-              <motion.div 
-                className="text-3xl md:text-5xl font-bold text-gray-300 h-20"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: isHeroInView ? 1 : 0, y: isHeroInView ? 0 : 20 }}
-                transition={{ duration: 0.8, delay: 0.4 }}
-              >
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-500">
+              <div className="text-2xl md:text-3xl lg:text-4xl font-semibold mb-6 h-12 lg:h-16">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-teal-400">
                   {typewriterText}
                 </span>
-                <Cursor cursorStyle="|" cursorColor="#0EA5E9" />
-              </motion.div>
+                <Cursor cursorColor="#8B5CF6" />
+              </div>
               
-              <motion.p 
-                className="text-xl text-gray-400 max-w-2xl"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: isHeroInView ? 1 : 0, y: isHeroInView ? 0 : 20 }}
-                transition={{ duration: 0.8, delay: 0.6 }}
-              >
-                Based in {location || 'a creative space'}, specializing in {domain || 'digital design'} 
-                with expertise in interactive experiences and creative solutions.
-              </motion.p>
+              <p className="text-lg md:text-xl text-gray-300 mb-8 max-w-2xl mx-auto lg:mx-0">
+                {lookingFor || "I create engaging digital experiences with innovation and technical expertise."}
+              </p>
+              
+              <div className="flex flex-wrap gap-3 justify-center lg:justify-start">
+                <a 
+                  href="#contact" 
+                  className="btn-primary px-6 py-3 rounded-full bg-gradient-to-r from-purple-600 to-blue-500 text-white font-medium transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/20 hover:-translate-y-1"
+                >
+                  Get in Touch
+                </a>
+                <a 
+                  href="#projects" 
+                  className="btn-secondary px-6 py-3 rounded-full bg-gray-800 border border-gray-700 text-white font-medium transition-all duration-300 hover:bg-gray-700 hover:-translate-y-1"
+                >
+                  View Projects
+                </a>
+              </div>
               
               <motion.div 
-                className="flex flex-wrap gap-4 pt-4"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: isHeroInView ? 1 : 0, y: isHeroInView ? 0 : 20 }}
-                transition={{ duration: 0.8, delay: 0.8 }}
-              >
-                <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-6 rounded-full text-lg font-medium flex items-center transition-all transform hover:scale-105 shadow-lg">
-                  <span>Let's Talk</span>
-                  <MessageCircle className="ml-2 h-5 w-5" />
-                </Button>
-                
-                <Button className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white px-8 py-6 rounded-full text-lg font-medium flex items-center transition-all transform hover:scale-105 shadow-lg">
-                  <span>Mentor</span>
-                  <TrendingUp className="ml-2 h-5 w-5" />
-                </Button>
-                
-                <Button variant="outline" className="bg-transparent border border-purple-500 text-purple-400 hover:bg-purple-950/30 px-8 py-6 rounded-full text-lg font-medium flex items-center transition-all hover:text-purple-300">
-                  <Download className="mr-2 h-5 w-5" />
-                  <span>Download Resume</span>
-                </Button>
-              </motion.div>
-              
-              {/* Resume or skills teaser */}
-              <motion.div 
-                className="mt-8 pt-8 border-t border-gray-800"
+                className="flex items-center gap-3 mt-8 justify-center lg:justify-start"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: isHeroInView ? 1 : 0 }}
-                transition={{ duration: 0.8, delay: 1 }}
+                transition={{ duration: 0.8, delay: 0.6 }}
               >
-                <h3 className="text-lg font-medium text-gray-300 mb-4">Featured Skills</h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                  {skills && skills.slice(0, 6).map((skill, index) => (
-                    <motion.div 
-                      key={skill.id || index} 
-                      className="bg-gray-800/40 rounded-lg p-3 border border-gray-700"
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: isHeroInView ? 1 : 0, y: isHeroInView ? 0 : 10 }}
-                      transition={{ duration: 0.4, delay: 1 + (index * 0.1) }}
-                      whileHover={{ y: -5, boxShadow: '0 10px 25px rgba(139, 92, 246, 0.15)' }}
-                    >
-                      <div className="text-sm text-gray-400">{skill.name}</div>
-                      <div className="h-1.5 mt-2 relative w-full overflow-hidden rounded-full bg-gray-800">
-                        <div 
-                          className="h-full w-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all"
-                          style={{ transform: `translateX(-${100 - (skill.proficiency || 75)}%)` }}
-                        />
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
+                {location && (
+                  <div className="flex items-center gap-1 text-gray-400">
+                    <MapPin className="h-4 w-4" />
+                    <span>{location}</span>
+                  </div>
+                )}
+                
+                {industry && (
+                  <Badge className="bg-gray-800 text-gray-200 border border-gray-700">
+                    {industry}
+                  </Badge>
+                )}
+                
+                {domain && (
+                  <Badge className="bg-gray-800 text-gray-200 border border-gray-700">
+                    {domain}
+                  </Badge>
+                )}
               </motion.div>
             </motion.div>
             
-            {/* Hero Image/Profile */}
+            {/* Hero Image */}
             <motion.div 
-              className="lg:col-span-5 flex justify-center"
+              className="lg:w-2/5 flex justify-center"
               initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: isHeroInView ? 1 : 0, scale: isHeroInView ? 1 : 0.9 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
+              animate={{ 
+                opacity: isHeroInView ? 1 : 0, 
+                scale: isHeroInView ? 1 : 0.9 
+              }}
+              transition={{ duration: 0.8, delay: 0.3 }}
             >
-              <div className="relative overflow-visible hero-profile">
-                {/* Glowing background behind profile image */}
-                <div className="absolute inset-0 bg-gradient-to-br from-purple-600/40 to-pink-600/40 rounded-full filter blur-3xl opacity-70" />
+              <div className="relative w-64 h-64 md:w-80 md:h-80">
+                {/* Animated background elements */}
+                <motion.div 
+                  className="absolute inset-0 rounded-full bg-gradient-to-r from-purple-500/20 to-blue-500/20 backdrop-blur-3xl"
+                  animate={{ 
+                    scale: [1, 1.05, 1],
+                    rotate: [0, 5, 0],
+                  }}
+                  transition={{ 
+                    duration: 6, 
+                    repeat: Infinity,
+                    repeatType: "reverse"
+                  }}
+                />
                 
-                {/* Animated circles around profile - with lower z-index */}
-                <div className="profile-orbit profile-orbit-1 z-0">
-                  <div className="profile-satellite bg-cyan-500"></div>
-                </div>
-                <div className="profile-orbit profile-orbit-2 z-0">
-                  <div className="profile-satellite bg-purple-500"></div>
-                </div>
-                <div className="profile-orbit profile-orbit-3 z-0">
-                  <div className="profile-satellite bg-pink-500"></div>
-                </div>
+                <motion.div 
+                  className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-56 h-56 md:w-72 md:h-72 rounded-full border border-purple-500/30"
+                  animate={{ 
+                    rotate: 360,
+                    borderWidth: [1, 2, 1],
+                  }}
+                  transition={{ 
+                    duration: 20, 
+                    repeat: Infinity,
+                    ease: "linear"
+                  }}
+                />
                 
-                {/* Profile image - Reduced z-index so cards appear in front */}
-                <div className="w-64 h-64 sm:w-80 sm:h-80 relative z-0 rounded-full overflow-hidden border-4 border-purple-500/40 shadow-lg shadow-purple-500/30">
+                <motion.div 
+                  className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-40 h-40 md:w-56 md:h-56 rounded-full border border-blue-500/20"
+                  animate={{ 
+                    rotate: -360,
+                  }}
+                  transition={{ 
+                    duration: 15, 
+                    repeat: Infinity,
+                    ease: "linear"
+                  }}
+                />
+                
+                {/* Profile image */}
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 md:w-48 md:h-48 rounded-full overflow-hidden border-4 border-white/10 shadow-lg">
                   {photoURL ? (
                     <img 
                       src={photoURL} 
                       alt={name} 
-                      className="w-full h-full object-cover object-center"
+                      className="w-full h-full object-cover"
                     />
                   ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center">
-                      <span className="text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
-                        {name ? name.charAt(0) : '?'}
-                      </span>
+                    <div className="w-full h-full bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center text-4xl font-bold">
+                      {name ? name.charAt(0) : '?'}
                     </div>
                   )}
                 </div>
                 
-                {/* Profile badges/cards - Positioned with higher z-index to appear in front of profile picture */}
-                <motion.div 
-                  className="absolute -bottom-5 -right-5 bg-gray-800/90 backdrop-blur-sm p-3 rounded-xl border border-purple-500/30 shadow-lg z-20"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: isHeroInView ? 1 : 0, y: isHeroInView ? 0 : 20 }}
-                  transition={{ duration: 0.5, delay: 0.9 }}
-                  whileHover={{ y: -5 }}
-                >
-                  <div className="text-sm font-medium text-gray-300">{industry || "Industry"}</div>
-                  <div className="text-xs text-purple-400">{domain || "Domain"}</div>
-                </motion.div>
-                
-                <motion.div 
-                  className="absolute -top-5 -left-5 bg-gray-800/90 backdrop-blur-sm p-3 rounded-xl border border-blue-500/30 shadow-lg z-20"
-                  initial={{ opacity: 0, y: -20 }}
-                  animate={{ opacity: isHeroInView ? 1 : 0, y: isHeroInView ? 0 : -20 }}
-                  transition={{ duration: 0.5, delay: 1.1 }}
-                  whileHover={{ y: 5 }}
-                >
-                  <div className="text-sm font-medium text-gray-300">{title || "Professional Title"}</div>
-                  <div className="text-xs text-blue-400">{lookingFor || "Available for work"}</div>
-                </motion.div>
+                {/* Floating particles */}
+                {[...Array(6)].map((_, i) => (
+                  <motion.div
+                    key={i}
+                    className="absolute w-3 h-3 rounded-full bg-gradient-to-r from-purple-400 to-pink-400"
+                    initial={{ 
+                      x: Math.random() * 160 - 80, 
+                      y: Math.random() * 160 - 80,
+                      opacity: 0.5 + Math.random() * 0.5,
+                      scale: 0.5 + Math.random() * 0.5,
+                    }}
+                    animate={{ 
+                      x: Math.random() * 160 - 80, 
+                      y: Math.random() * 160 - 80,
+                      opacity: [0.5, 1, 0.5],
+                    }}
+                    transition={{ 
+                      duration: 5 + Math.random() * 5, 
+                      repeat: Infinity,
+                      repeatType: "reverse"
+                    }}
+                  />
+                ))}
               </div>
             </motion.div>
           </div>
           
           {/* Scroll indicator */}
           <motion.div 
-            className="absolute bottom-10 left-1/2 transform -translate-x-1/2"
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ 
-              opacity: isHeroInView ? [0.4, 1, 0.4] : 0, 
-              y: isHeroInView ? [0, 10, 0] : -10 
-            }}
-            transition={{ 
-              duration: 2, 
-              repeat: Infinity,
-              repeatType: "loop"
-            }}
+            className="absolute bottom-10 left-1/2 transform -translate-x-1/2 text-gray-500 flex flex-col items-center"
+            animate={{ y: [0, 10, 0] }}
+            transition={{ duration: 2, repeat: Infinity }}
           >
-            <ChevronDown className="h-8 w-8 text-purple-400" />
+            <span className="text-sm mb-2">Scroll Down</span>
+            <ChevronDown className="w-6 h-6" />
           </motion.div>
+        </div>
+        
+        {/* Animated background */}
+        <div className="absolute top-0 left-0 right-0 bottom-0 overflow-hidden z-0">
+          {/* Gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-radial from-gray-900/0 to-gray-900 z-10" />
+          
+          {/* Moving particles */}
+          {[...Array(20)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="particle"
+              initial={{ 
+                x: Math.random() * 100 + "%", 
+                y: Math.random() * 100 + "%",
+                scale: Math.random() * 0.4 + 0.1,
+                opacity: Math.random() * 0.5 + 0.1,
+              }}
+              animate={{ 
+                y: [
+                  Math.random() * 100 + "%", 
+                  Math.random() * 100 + "%"
+                ],
+                opacity: [
+                  Math.random() * 0.3 + 0.1,
+                  Math.random() * 0.5 + 0.2,
+                  Math.random() * 0.3 + 0.1
+                ],
+              }}
+              transition={{ 
+                duration: 10 + Math.random() * 20, 
+                repeat: Infinity,
+                repeatType: "reverse"
+              }}
+              style={{
+                width: (Math.random() * 8 + 2) + "px",
+                height: (Math.random() * 8 + 2) + "px",
+                background: `rgba(${Math.random() * 100 + 100}, ${Math.random() * 100}, ${Math.random() * 255}, ${Math.random() * 0.5 + 0.1})`,
+                borderRadius: "50%",
+                position: "absolute",
+              }}
+            />
+          ))}
+        </div>
+      </section>
+      
+      {/* Skills Section */}
+      <section id="skills" className="py-20 relative animated-skills" ref={skillsRef}>
+        <div className="container mx-auto px-6 relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: isSkillsInView ? 1 : 0, y: isSkillsInView ? 0 : 30 }}
+            transition={{ duration: 0.7 }}
+            className="mb-16 text-center"
+          >
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 section-title">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500">
+                My Expertise
+              </span>
+            </h2>
+            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+              A collection of skills I've mastered throughout my career.
+            </p>
+          </motion.div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+            {skills && skills.length > 0 ? (
+              skills.map((skill, index) => (
+                <motion.div 
+                  key={skill.id}
+                  className="bg-gray-800/30 rounded-xl overflow-hidden border border-gray-700 hover:border-purple-500/50 shadow-lg transition-all duration-500"
+                  initial={{ opacity: 0, y: 40 }}
+                  animate={{ 
+                    opacity: isSkillsInView ? 1 : 0, 
+                    y: isSkillsInView ? 0 : 40 
+                  }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  whileHover={{ y: -10, boxShadow: '0 20px 40px rgba(139, 92, 246, 0.15)' }}
+                >
+                  <div className="p-6">
+                    <div className="relative mb-4">
+                      <div className="w-16 h-16 rounded-full bg-purple-500/10 flex items-center justify-center mx-auto mb-4">
+                        <Sparkles className="w-8 h-8 text-purple-400" />
+                      </div>
+                      <motion.div 
+                        className="absolute inset-0 rounded-full"
+                        animate={{ 
+                          boxShadow: ['0 0 0 0px rgba(139, 92, 246, 0.2)', '0 0 0 10px rgba(139, 92, 246, 0)'],
+                        }}
+                        transition={{ 
+                          duration: 1.5,
+                          repeat: Infinity,
+                          delay: index * 0.1
+                        }}
+                      />
+                    </div>
+                    
+                    <h3 className="text-xl font-bold text-white mb-3 text-center">{skill.name}</h3>
+                    
+                    <div className="flex flex-col items-center">
+                      <div className="relative w-full h-2 bg-gray-700 rounded-full overflow-hidden mb-2">
+                        <motion.div 
+                          className="absolute top-0 left-0 h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full"
+                          initial={{ width: 0 }}
+                          animate={{ width: isSkillsInView ? `${skill.proficiency || 70}%` : 0 }}
+                          transition={{ duration: 1, delay: 0.2 + index * 0.1 }}
+                        />
+                      </div>
+                      
+                      <div className="flex justify-between w-full">
+                        <span className="text-xs text-gray-400 uppercase font-medium">
+                          {skill.level || 'Intermediate'}
+                        </span>
+                        <span className="text-xs text-purple-400 font-bold">
+                          {skill.proficiency || 70}%
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              ))
+            ) : (
+              <motion.div 
+                className="col-span-full text-center py-12 bg-gray-800/30 rounded-xl border border-gray-700"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: isSkillsInView ? 1 : 0 }}
+                transition={{ duration: 0.6 }}
+              >
+                <Sparkles className="h-12 w-12 text-purple-500 mx-auto mb-4 opacity-60" />
+                <h3 className="text-white text-xl font-bold mb-2">No Skills Added Yet</h3>
+                <p className="text-gray-400">Skills will be displayed here once added.</p>
+              </motion.div>
+            )}
+          </div>
+        </div>
+      </section>
+      
+      {/* Services Section */}
+      <section id="services" className="py-20 relative animated-services" ref={servicesRef}>
+        <div className="container mx-auto px-6 relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: isServicesInView ? 1 : 0, y: isServicesInView ? 0 : 30 }}
+            transition={{ duration: 0.7 }}
+            className="mb-16 text-center"
+          >
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 section-title">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-teal-400">
+                Services I Offer
+              </span>
+            </h2>
+            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+              Expert solutions tailored to your specific needs.
+            </p>
+          </motion.div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {services && services.length > 0 ? (
+              services.map((service, index) => (
+                <motion.div 
+                  key={service.id}
+                  className="bg-gray-800/30 rounded-xl overflow-hidden border border-gray-700 hover:border-blue-500/50 shadow-lg transition-all duration-500"
+                  initial={{ opacity: 0, y: 40 }}
+                  animate={{ 
+                    opacity: isServicesInView ? 1 : 0, 
+                    y: isServicesInView ? 0 : 40 
+                  }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  whileHover={{ y: -10, boxShadow: '0 20px 40px rgba(59, 130, 246, 0.15)' }}
+                >
+                  <div className="p-6">
+                    <div className="w-12 h-12 rounded-lg bg-blue-500/10 flex items-center justify-center mb-6">
+                      <PlusCircle className="w-6 h-6 text-blue-400" />
+                    </div>
+                    
+                    <h3 className="text-xl font-bold text-white mb-3">{service.title}</h3>
+                    
+                    <p className="text-gray-400 mb-6 min-h-[4rem]">
+                      {service.description || 'Professional service with expert execution and attention to detail.'}
+                    </p>
+                    
+                    {service.price !== null && (
+                      <div className="bg-blue-500/10 rounded-lg py-2 px-4 inline-block mb-4">
+                        <span className="text-blue-400 font-bold">
+                          {service.price.toLocaleString()} {service.isHourly ? '/hour' : ''}
+                        </span>
+                      </div>
+                    )}
+                    
+                    {service.features && service.features.length > 0 && (
+                      <ul className="space-y-2 mb-6">
+                        {service.features.map((feature, i) => (
+                          <li key={i} className="text-gray-300 flex items-start">
+                            <ChevronRight className="w-5 h-5 text-blue-400 shrink-0 mr-2 mt-0.5" />
+                            <span>{feature}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                    
+                    <Button 
+                      onClick={() => setSelectedService(service)}
+                      className="w-full bg-gradient-to-r from-blue-600 to-teal-500 hover:from-blue-700 hover:to-teal-600 text-white"
+                    >
+                      Learn More
+                    </Button>
+                  </div>
+                </motion.div>
+              ))
+            ) : (
+              <motion.div 
+                className="col-span-full text-center py-12 bg-gray-800/30 rounded-xl border border-gray-700"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: isServicesInView ? 1 : 0 }}
+                transition={{ duration: 0.6 }}
+              >
+                <Sparkles className="h-12 w-12 text-blue-500 mx-auto mb-4 opacity-60" />
+                <h3 className="text-white text-xl font-bold mb-2">No Services Added Yet</h3>
+                <p className="text-gray-400">Services will be displayed here once added.</p>
+              </motion.div>
+            )}
+          </div>
+          
+          {/* Service Modal */}
+          <AnimatePresence>
+            {selectedService && (
+              <motion.div 
+                className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/70 backdrop-blur-sm"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setSelectedService(null)}
+              >
+                <motion.div 
+                  className="bg-gray-800/90 max-w-2xl rounded-xl border border-gray-700 overflow-hidden backdrop-blur-xl"
+                  initial={{ scale: 0.9, y: 20 }}
+                  animate={{ scale: 1, y: 0 }}
+                  exit={{ scale: 0.9, y: 20 }}
+                  onClick={e => e.stopPropagation()}
+                >
+                  <div className="p-6 md:p-8">
+                    <div className="flex justify-between items-start mb-6">
+                      <h3 className="text-2xl font-bold text-white">{selectedService.title}</h3>
+                      <button 
+                        onClick={() => setSelectedService(null)}
+                        className="text-gray-400 hover:text-white p-1"
+                      >
+                        <X className="w-5 h-5" />
+                      </button>
+                    </div>
+                    
+                    <div className="space-y-6">
+                      <p className="text-gray-300 leading-relaxed">
+                        {selectedService.description || 'Professional service with expert execution and attention to detail.'}
+                      </p>
+                      
+                      <div className="flex flex-wrap gap-4">
+                        {selectedService.price !== null && (
+                          <div className="bg-blue-500/10 rounded-lg py-2 px-4">
+                            <div className="text-sm text-gray-400 mb-1">Price</div>
+                            <div className="text-lg font-bold text-blue-400">
+                              {selectedService.price.toLocaleString()} {selectedService.isHourly ? '/hour' : ''}
+                            </div>
+                          </div>
+                        )}
+                        
+                        <div className="bg-gray-700/50 rounded-lg py-2 px-4">
+                          <div className="text-sm text-gray-400 mb-1">Category</div>
+                          <div className="text-lg font-bold text-white">
+                            {selectedService.category || 'Professional Services'}
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {selectedService.features && selectedService.features.length > 0 && (
+                        <div>
+                          <h4 className="text-lg font-bold text-white mb-3">What's Included</h4>
+                          <ul className="space-y-3 bg-gray-900/50 rounded-lg p-4 border border-gray-700/50">
+                            {selectedService.features.map((feature, i) => (
+                              <li key={i} className="text-gray-300 flex items-start">
+                                <div className="mr-3 mt-1 w-5 h-5 rounded-full bg-blue-500/20 flex items-center justify-center shrink-0">
+                                  <ChevronRight className="w-4 h-4 text-blue-400" />
+                                </div>
+                                <span>{feature}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                      
+                      <div className="pt-4">
+                        <Button 
+                          onClick={() => {
+                            setSelectedService(null);
+                            // Scroll to contact section
+                            document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+                          }}
+                          className="w-full bg-gradient-to-r from-blue-600 to-teal-500 hover:from-blue-700 hover:to-teal-600 text-white py-6"
+                        >
+                          Request This Service
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </section>
       
       {/* Projects Section */}
-      <section id="projects" className="py-20 relative" ref={projectsRef}>
+      <section id="projects" className="py-20 relative animated-projects" ref={projectsRef}>
         <div className="container mx-auto px-6 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -377,7 +693,7 @@ export default function AnimatedTemplate({
             className="mb-16 text-center"
           >
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 section-title">
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-red-500">
                 Featured Projects
               </span>
             </h2>
@@ -414,19 +730,7 @@ export default function AnimatedTemplate({
                       </div>
                     )}
                     
-                    {/* Play/Pause Button if there's a video */}
-                    <motion.button
-                      className="absolute bottom-4 right-4 w-10 h-10 rounded-full bg-purple-600/80 backdrop-blur-sm flex items-center justify-center text-white"
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
-                      onClick={() => toggleProjectVideo(index)}
-                    >
-                      {activeVideoIndex === index ? (
-                        <Pause className="h-5 w-5" />
-                      ) : (
-                        <Play className="h-5 w-5" />
-                      )}
-                    </motion.button>
+                    {/* Play/Pause Button removed as requested */}
                     
                     {/* Project Category Badge */}
                     {project.category && (
@@ -441,45 +745,17 @@ export default function AnimatedTemplate({
                     )}
                   </div>
                   
-                  {/* Project Details */}
+                  {/* Project Details - Simplified to only show heading and date as requested */}
                   <div className="p-6">
-                    <h3 className="text-xl font-bold text-white mb-2 tracking-tight">{project.title}</h3>
-                    <p className="text-gray-400 mb-4 line-clamp-2">{project.description}</p>
+                    <h3 className="text-xl font-bold text-white mb-3 tracking-tight">{project.title}</h3>
                     
-                    {/* Project Tags/Technology */}
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {/* Using project.category as a fallback tag since tags field may not exist in schema */}
-                      {project.category && (
-                        <Badge className="bg-gray-700 text-gray-200 hover:bg-gray-600">
-                          {project.category}
-                        </Badge>
-                      )}
-                    </div>
-                    
-                    {/* Project Links */}
-                    <div className="flex justify-between items-center mt-4">
-                      <div className="text-sm text-gray-400 flex items-center">
-                        <Calendar className="h-4 w-4 mr-1" />
-                        {new Date(project.startDate || '').toLocaleDateString('en-US', {
-                          year: 'numeric',
-                          month: 'short'
-                        })}
-                      </div>
-                      
-                      <div className="flex gap-2">
-                        {project.projectUrl && (
-                          <motion.a
-                            href={project.projectUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-purple-400 hover:text-purple-300 p-1"
-                            whileHover={{ scale: 1.1, rotate: 5 }}
-                            whileTap={{ scale: 0.9 }}
-                          >
-                            <ExternalLink className="h-5 w-5" />
-                          </motion.a>
-                        )}
-                      </div>
+                    {/* Project Date */}
+                    <div className="text-sm text-gray-400 flex items-center">
+                      <Calendar className="h-4 w-4 mr-1" />
+                      {new Date(project.startDate || '').toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'short'
+                      })}
                     </div>
                   </div>
                 </motion.div>
@@ -714,49 +990,64 @@ export default function AnimatedTemplate({
                     <div className="md:w-1/2 pr-8 pb-10 md:pb-0 md:text-right flex flex-col items-start md:items-end">
                       <motion.div 
                         className="bg-gray-800/40 px-4 py-2 rounded-lg inline-block"
-                        whileHover={{ y: -3 }}
+                        whileHover={{ y: -2 }}
                       >
-                        <span className="text-orange-400 font-medium">
-                          {new Date(experience.startDate || '').toLocaleDateString('en-US', {
+                        <span className="text-orange-400 font-semibold">
+                          {new Date(experience.startDate).toLocaleDateString('en-US', {
                             year: 'numeric',
                             month: 'short'
-                          })} - {' '}
-                          {experience.endDate 
-                            ? new Date(experience.endDate).toLocaleDateString('en-US', {
-                                year: 'numeric',
-                                month: 'short'
-                              })
-                            : 'Present'}
+                          })}
+                          {' - '}
+                          {experience.endDate ? new Date(experience.endDate).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'short'
+                          }) : 'Present'}
                         </span>
                       </motion.div>
                     </div>
                     
-                    {/* Experience Card */}
+                    {/* Content */}
                     <motion.div 
-                      className="bg-gray-800/30 p-6 rounded-xl border border-gray-700 hover:border-orange-500/50 transition-colors"
-                      whileHover={{ y: -5, boxShadow: '0 8px 30px rgba(251, 146, 60, 0.15)' }}
+                      className="md:w-1/2 pl-8 bg-gray-800/30 rounded-xl p-6 border border-gray-700 shadow-lg"
+                      whileHover={{ y: -5, boxShadow: '0 20px 40px rgba(234, 88, 12, 0.15)' }}
                     >
-                      <h3 className="text-lg font-bold text-white mb-2">{experience.title}</h3>
-                      <h4 className="text-orange-400 mb-3">{experience.company}</h4>
-                      <p className="text-gray-400 mb-4 line-clamp-3">{experience.description}</p>
+                      <h3 className="text-xl font-bold text-white">{experience.title}</h3>
+                      <h4 className="text-orange-400 font-medium mb-3">{experience.company}</h4>
                       
-                      {/* Location */}
-                      {experience.location && (
-                        <div className="flex items-center text-gray-500 text-sm mb-3">
-                          <MapPin className="h-4 w-4 mr-1" />
-                          <span>{experience.location}</span>
+                      {experience.description && (
+                        <p className="text-gray-300 mb-4">{experience.description}</p>
+                      )}
+                      
+                      {experience.keyResponsibilities && experience.keyResponsibilities.length > 0 && (
+                        <div className="mb-4">
+                          <h5 className="text-sm font-semibold text-gray-400 mb-2">Key Responsibilities</h5>
+                          <ul className="space-y-1">
+                            {experience.keyResponsibilities.map((responsibility, i) => (
+                              <li key={i} className="text-gray-300 flex items-start">
+                                <ChevronRight className="h-4 w-4 text-orange-400 mt-1 flex-shrink-0 mr-2" />
+                                <span>{responsibility}</span>
+                              </li>
+                            ))}
+                          </ul>
                         </div>
                       )}
                       
-                      {/* Skills Used - Using industry or domain as a fallback skill */}
-                      <div className="flex flex-wrap gap-1 mt-4">
+                      <div className="flex flex-wrap items-center gap-2 mt-4">
+                        {experience.location && (
+                          <div className="flex items-center text-sm text-gray-400">
+                            <MapPin className="h-4 w-4 mr-1 text-gray-500" />
+                            {experience.location}
+                          </div>
+                        )}
+                        
                         {experience.industry && (
-                          <Badge className="bg-gray-700 text-gray-300 hover:bg-gray-600 text-xs">
+                          <Badge className="bg-orange-500/10 text-orange-400 border border-orange-500/20">
                             {experience.industry}
                           </Badge>
                         )}
+                        
                         {experience.domain && (
-                          <Badge className="bg-gray-700 text-gray-300 hover:bg-gray-600 text-xs">
+                          <Badge className="bg-gray-700 text-gray-300">
                             {experience.domain}
                           </Badge>
                         )}
@@ -766,14 +1057,14 @@ export default function AnimatedTemplate({
                 ))
               ) : (
                 <motion.div 
-                  className="w-full text-center py-12 mt-6"
+                  className="text-center py-12 bg-gray-800/30 rounded-xl border border-gray-700"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: isTimelineInView ? 1 : 0 }}
                   transition={{ duration: 0.6 }}
                 >
                   <Briefcase className="h-12 w-12 text-orange-500 mx-auto mb-4 opacity-60" />
-                  <h3 className="text-white text-xl font-bold mb-2">No Experience Entries Yet</h3>
-                  <p className="text-gray-400">Career timeline will be displayed here once experience is added.</p>
+                  <h3 className="text-white text-xl font-bold mb-2">No Work Experience Yet</h3>
+                  <p className="text-gray-400">Experience will be displayed here once added.</p>
                 </motion.div>
               )}
             </div>
@@ -791,52 +1082,95 @@ export default function AnimatedTemplate({
             className="mb-16 text-center"
           >
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 section-title">
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">
-                Education
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-teal-500">
+                Academic Background
               </span>
             </h2>
             <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-              My academic background and professional certifications.
+              My educational journey and qualifications.
             </p>
           </motion.div>
           
-          {/* Education Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {educations && educations.length > 0 ? (
               educations.map((education, index) => (
                 <motion.div 
                   key={education.id}
-                  className="bg-gray-800/30 rounded-xl border border-gray-700 overflow-hidden education-card"
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: isEducationInView ? 1 : 0, y: isEducationInView ? 0 : 30 }}
-                  transition={{ duration: 0.7, delay: index * 0.1 }}
-                  whileHover={{ 
-                    y: -8,
-                    boxShadow: '0 10px 30px rgba(56, 189, 248, 0.2)',
-                    borderColor: 'rgba(56, 189, 248, 0.3)' 
-                  }}
+                  className="bg-gray-800/30 rounded-xl overflow-hidden border border-gray-700 hover:border-green-500/50 shadow-lg transition-all duration-500"
+                  initial={{ opacity: 0, y: 50 }}
+                  animate={{ opacity: isEducationInView ? 1 : 0, y: isEducationInView ? 0 : 50 }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  whileHover={{ y: -10, boxShadow: '0 20px 40px rgba(74, 222, 128, 0.1)' }}
                 >
-                  <div className="bg-gradient-to-r from-blue-600 to-cyan-600 h-2" />
                   <div className="p-6">
-                    <div className="flex justify-between items-start mb-4">
-                      <div>
-                        <h3 className="text-lg font-bold text-white mb-1">{education.institution}</h3>
-                        <h4 className="text-cyan-400 mb-1">{education.degree}</h4>
+                    <div className="flex items-start mb-4">
+                      <div className="w-12 h-12 rounded-full bg-green-500/10 flex items-center justify-center mr-4 flex-shrink-0">
+                        <GraduationCap className="w-6 h-6 text-green-400" />
                       </div>
-                      <GraduationCap className="h-8 w-8 text-cyan-500 opacity-70" />
+                      
+                      <div>
+                        <h3 className="text-xl font-bold text-white mb-1">{education.degree}</h3>
+                        <h4 className="text-green-400 font-medium">{education.institution}</h4>
+                      </div>
                     </div>
                     
-                    <div className="flex justify-between items-center mt-4 text-sm">
-                      <div className="text-gray-500 flex items-center">
-                        <Calendar className="h-4 w-4 mr-1" />
-                        <span>
-                          {new Date(education.startDate || '').getFullYear()} - 
-                          {education.endDate 
-                            ? new Date(education.endDate).getFullYear() 
-                            : 'Present'}
-                        </span>
+                    <div className="mb-4 bg-gray-900/30 rounded-lg p-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="text-sm text-gray-400 flex items-center">
+                          <Calendar className="h-4 w-4 mr-1" />
+                          {new Date(education.startDate).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'short'
+                          })}
+                          {' - '}
+                          {education.endDate ? new Date(education.endDate).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'short'
+                          }) : 'Present'}
+                        </div>
+                        
+                        {education.location && (
+                          <div className="text-sm text-gray-400 flex items-center">
+                            <MapPin className="h-4 w-4 mr-1" />
+                            {education.location}
+                          </div>
+                        )}
+                      </div>
+                      
+                      {education.fieldOfStudy && (
+                        <div className="mb-3">
+                          <span className="text-sm text-gray-400">Field of Study:</span>
+                          <span className="ml-2 text-white">{education.fieldOfStudy}</span>
+                        </div>
+                      )}
+                      
+                      <div className="flex flex-wrap gap-2">
+                        {education.industry && (
+                          <Badge className="bg-green-500/10 text-green-400 border border-green-500/20">
+                            {education.industry}
+                          </Badge>
+                        )}
+                        
+                        {education.domain && (
+                          <Badge className="bg-gray-700 text-gray-300">
+                            {education.domain}
+                          </Badge>
+                        )}
                       </div>
                     </div>
+                    
+                    {education.skillsAcquired && education.skillsAcquired.length > 0 && (
+                      <div>
+                        <h5 className="text-sm font-semibold text-gray-400 mb-2">Skills Acquired</h5>
+                        <div className="flex flex-wrap gap-2">
+                          {education.skillsAcquired.map((skill, i) => (
+                            <Badge key={i} className="bg-gray-700/50 text-gray-300 border border-gray-600/20">
+                              {skill}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </motion.div>
               ))
@@ -847,202 +1181,17 @@ export default function AnimatedTemplate({
                 animate={{ opacity: isEducationInView ? 1 : 0 }}
                 transition={{ duration: 0.6 }}
               >
-                <Book className="h-12 w-12 text-cyan-500 mx-auto mb-4 opacity-60" />
-                <h3 className="text-white text-xl font-bold mb-2">No Education Entries Yet</h3>
-                <p className="text-gray-400">Education history will be displayed here once added.</p>
+                <GraduationCap className="h-12 w-12 text-green-500 mx-auto mb-4 opacity-60" />
+                <h3 className="text-white text-xl font-bold mb-2">No Education Added Yet</h3>
+                <p className="text-gray-400">Education will be displayed here once added.</p>
               </motion.div>
             )}
           </div>
         </div>
       </section>
       
-      {/* Skills & Services Section */}
-      <section id="skills" className="py-20 relative animated-skills" ref={skillsRef}>
-        <div className="container mx-auto px-6 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: isSkillsInView ? 1 : 0, y: isSkillsInView ? 0 : 30 }}
-            transition={{ duration: 0.7 }}
-            className="mb-16 text-center"
-          >
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 section-title">
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-teal-500">
-                Skills & Services
-              </span>
-            </h2>
-            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-              Specialized tools, technologies, and creative services I offer.
-            </p>
-          </motion.div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-            {/* Skills Column */}
-            <div className="md:col-span-2 space-y-8">
-              <motion.h3 
-                className="text-2xl font-bold text-white mb-6 flex items-center"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: isSkillsInView ? 1 : 0, x: isSkillsInView ? 0 : -20 }}
-                transition={{ duration: 0.6 }}
-              >
-                <Sparkles className="h-6 w-6 mr-2 text-teal-500" />
-                Professional Skills
-              </motion.h3>
-              
-              {/* Skill Categories */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Creative Skills */}
-                {skillCategories.creative.length > 0 && (
-                  <motion.div
-                    className="bg-gray-800/30 rounded-xl p-6 border border-gray-700 skill-card"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: isSkillsInView ? 1 : 0, y: isSkillsInView ? 0 : 20 }}
-                    transition={{ duration: 0.5, delay: 0.1 }}
-                    whileHover={{ y: -5, boxShadow: '0 8px 30px rgba(45, 212, 191, 0.15)' }}
-                  >
-                    <h4 className="text-lg font-bold text-white mb-4 flex items-center">
-                      <div className="w-8 h-8 rounded-full bg-teal-500/20 flex items-center justify-center mr-2">
-                        <TrendingUp className="h-4 w-4 text-teal-400" />
-                      </div>
-                      Creative Skills
-                    </h4>
-                    
-                    <div className="space-y-3">
-                      {skillCategories.creative.map((skill, index) => (
-                        <motion.div 
-                          key={skill.id}
-                          className="flex items-center justify-between"
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: isSkillsInView ? 1 : 0, x: isSkillsInView ? 0 : -20 }}
-                          transition={{ duration: 0.3, delay: 0.2 + index * 0.05 }}
-                        >
-                          <span className="text-gray-300">{skill.name}</span>
-                          <div className="flex">
-                            {Array.from({ length: 5 }).map((_, i) => (
-                              <motion.div 
-                                key={i}
-                                whileHover={{ scale: 1.2 }}
-                                transition={{ duration: 0.2 }}
-                              >
-                                <Star
-                                  className={`h-4 w-4 ${i < (skill.proficiency || 3) ? 'text-teal-500' : 'text-gray-600'}`}
-                                  fill={i < (skill.proficiency || 3) ? 'currentColor' : 'none'}
-                                />
-                              </motion.div>
-                            ))}
-                          </div>
-                        </motion.div>
-                      ))}
-                    </div>
-                  </motion.div>
-                )}
-                
-                {/* Technical Skills */}
-                {skillCategories.technical.length > 0 && (
-                  <motion.div
-                    className="bg-gray-800/30 rounded-xl p-6 border border-gray-700 skill-card"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: isSkillsInView ? 1 : 0, y: isSkillsInView ? 0 : 20 }}
-                    transition={{ duration: 0.5, delay: 0.2 }}
-                    whileHover={{ y: -5, boxShadow: '0 8px 30px rgba(45, 212, 191, 0.15)' }}
-                  >
-                    <h4 className="text-lg font-bold text-white mb-4 flex items-center">
-                      <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center mr-2">
-                        <Code className="h-4 w-4 text-blue-400" />
-                      </div>
-                      Technical Skills
-                    </h4>
-                    
-                    <div className="space-y-3">
-                      {skillCategories.technical.map((skill, index) => (
-                        <motion.div 
-                          key={skill.id}
-                          className="flex items-center justify-between"
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: isSkillsInView ? 1 : 0, x: isSkillsInView ? 0 : -20 }}
-                          transition={{ duration: 0.3, delay: 0.3 + index * 0.05 }}
-                        >
-                          <span className="text-gray-300">{skill.name}</span>
-                          <div className="flex">
-                            {Array.from({ length: 5 }).map((_, i) => (
-                              <motion.div 
-                                key={i}
-                                whileHover={{ scale: 1.2 }}
-                                transition={{ duration: 0.2 }}
-                              >
-                                <Star
-                                  className={`h-4 w-4 ${i < (skill.proficiency || 3) ? 'text-blue-500' : 'text-gray-600'}`}
-                                  fill={i < (skill.proficiency || 3) ? 'currentColor' : 'none'}
-                                />
-                              </motion.div>
-                            ))}
-                          </div>
-                        </motion.div>
-                      ))}
-                    </div>
-                  </motion.div>
-                )}
-              </div>
-            </div>
-            
-            {/* Services Column */}
-            <div className="md:col-span-1">
-              <motion.h3 
-                className="text-2xl font-bold text-white mb-6 flex items-center"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: isSkillsInView ? 1 : 0, x: isSkillsInView ? 0 : 20 }}
-                transition={{ duration: 0.6 }}
-              >
-                <Sparkles className="h-6 w-6 mr-2 text-green-500" />
-                Services
-              </motion.h3>
-              
-              <div className="space-y-4">
-                {services && services.length > 0 ? (
-                  services.map((service, index) => (
-                    <motion.div 
-                      key={service.id}
-                      className="bg-gray-800/30 rounded-xl p-6 border border-gray-700 service-card"
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: isSkillsInView ? 1 : 0, y: isSkillsInView ? 0 : 20 }}
-                      transition={{ duration: 0.5, delay: 0.1 + index * 0.1 }}
-                      whileHover={{ y: -5, boxShadow: '0 8px 30px rgba(16, 185, 129, 0.15)' }}
-                    >
-                      <div className="flex items-center justify-between">
-                        <h4 className="text-lg font-bold text-white">{service.title}</h4>
-                        <div className="text-green-400 text-sm">
-                          {service.category}
-                        </div>
-                      </div>
-                      
-                      <p className="text-gray-400 mt-2 mb-4 text-sm line-clamp-2">{service.description}</p>
-                      
-                      <div className="border-t border-gray-700 pt-4 mt-4">
-                        <Button className="w-full bg-gray-700 hover:bg-gray-600 text-white">
-                          Learn More
-                        </Button>
-                      </div>
-                    </motion.div>
-                  ))
-                ) : (
-                  <motion.div 
-                    className="bg-gray-800/30 rounded-xl p-8 border border-gray-700 text-center"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: isSkillsInView ? 1 : 0 }}
-                    transition={{ duration: 0.6 }}
-                  >
-                    <PlusCircle className="h-12 w-12 text-green-500 mx-auto mb-4 opacity-60" />
-                    <h3 className="text-white text-xl font-bold mb-2">No Services Yet</h3>
-                    <p className="text-gray-400 mb-4">Services will be displayed here once added.</p>
-                  </motion.div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-      
       {/* Contact Section */}
-      <section id="contact" className="py-20 relative" ref={contactRef}>
+      <section id="contact" className="py-20 relative animated-contact" ref={contactRef}>
         <div className="container mx-auto px-6 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -1051,119 +1200,82 @@ export default function AnimatedTemplate({
             className="mb-16 text-center"
           >
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 section-title">
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-500">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500">
                 Get In Touch
               </span>
             </h2>
             <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-              Have a project in mind or want to collaborate? I'd love to hear from you.
+              Got a project in mind? Let's collaborate to create something amazing.
             </p>
           </motion.div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+          <div className="max-w-3xl mx-auto">
             <motion.div 
-              className="space-y-8"
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: isContactInView ? 1 : 0, x: isContactInView ? 0 : -30 }}
-              transition={{ duration: 0.8 }}
+              className="bg-gray-800/30 rounded-xl overflow-hidden border border-gray-700 shadow-lg p-8 md:p-10"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: isContactInView ? 1 : 0, y: isContactInView ? 0 : 30 }}
+              transition={{ duration: 0.6 }}
             >
-              <h3 className="text-2xl font-bold text-white">Let's build something amazing together</h3>
-              
-              <p className="text-gray-400 text-lg">
-                I'm always open to discussing new projects, creative ideas or opportunities to be part of your vision.
-              </p>
-              
-              <div className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-purple-500/20 rounded-full flex items-center justify-center">
-                    <MessageCircle className="h-6 w-6 text-purple-400" />
+              <div className="flex flex-col md:flex-row gap-8">
+                <div className="md:w-1/2">
+                  <h3 className="text-2xl font-bold text-white mb-4">Contact Information</h3>
+                  
+                  <div className="space-y-4">
+                    {email && (
+                      <a 
+                        href={`mailto:${email}`}
+                        className="flex items-center gap-3 p-3 rounded-lg bg-gray-900/40 hover:bg-gray-900/60 transition-all duration-300"
+                      >
+                        <div className="w-10 h-10 rounded-full bg-purple-500/10 flex items-center justify-center">
+                          <Send className="w-5 h-5 text-purple-400" />
+                        </div>
+                        <div>
+                          <div className="text-sm text-gray-400">Email</div>
+                          <div className="text-white">{email}</div>
+                        </div>
+                      </a>
+                    )}
+                    
+                    {location && (
+                      <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-900/40">
+                        <div className="w-10 h-10 rounded-full bg-purple-500/10 flex items-center justify-center">
+                          <MapPin className="w-5 h-5 text-purple-400" />
+                        </div>
+                        <div>
+                          <div className="text-sm text-gray-400">Location</div>
+                          <div className="text-white">{location}</div>
+                        </div>
+                      </div>
+                    )}
+                    
+                    <div className="p-4 rounded-lg bg-purple-500/10 border border-purple-500/20">
+                      <h4 className="font-semibold text-purple-400 mb-2">Looking for:</h4>
+                      <p className="text-gray-300">{lookingFor || "Exciting projects and collaborations with creative teams."}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-sm text-gray-500">Email me at</p>
-                    <a
-                      href={`mailto:${email || 'contact@example.com'}`}
-                      className="text-white hover:text-purple-400 transition-colors"
+                </div>
+                
+                <div className="md:w-1/2">
+                  <h3 className="text-2xl font-bold text-white mb-4">Send Message</h3>
+                  
+                  <div className="space-y-4">
+                    <Button 
+                      className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 flex items-center justify-center gap-2 py-6 text-lg"
+                      onClick={() => {
+                        if (email) {
+                          window.location.href = `mailto:${email}`;
+                        }
+                      }}
                     >
-                      {email || 'contact@example.com'}
-                    </a>
+                      <Mail className="w-5 h-5" />
+                      Contact via Email
+                    </Button>
+                    
+                    <p className="text-center text-gray-400">
+                      I'll get back to you as soon as possible.
+                    </p>
                   </div>
                 </div>
-                
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-purple-500/20 rounded-full flex items-center justify-center">
-                    <MapPin className="h-6 w-6 text-purple-400" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500">Based in</p>
-                    <p className="text-white">{location || 'San Francisco, CA'}</p>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="pt-4">
-                <h4 className="text-lg font-bold text-white mb-4">Connect with me</h4>
-                <div className="flex gap-4">
-                  {['twitter', 'github', 'linkedin', 'dribbble'].map((platform, i) => (
-                    <motion.a
-                      key={platform}
-                      href="#"
-                      className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 hover:bg-purple-600 hover:text-white transition-all"
-                      whileHover={{ y: -5 }}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: isContactInView ? 1 : 0, y: isContactInView ? 0 : 20 }}
-                      transition={{ duration: 0.4, delay: 0.3 + i * 0.1 }}
-                    >
-                      <span className="sr-only">{platform}</span>
-                      {/* Platform icons would go here */}
-                    </motion.a>
-                  ))}
-                </div>
-              </div>
-            </motion.div>
-            
-            <motion.div 
-              className="bg-gray-800/30 rounded-xl p-8 border border-gray-700"
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: isContactInView ? 1 : 0, x: isContactInView ? 0 : 30 }}
-              transition={{ duration: 0.8 }}
-            >
-              <h3 className="text-xl font-bold text-white mb-6">Send a Message</h3>
-              
-              <div className="space-y-6">
-                <div className="space-y-2">
-                  <label htmlFor="name" className="text-gray-400 block">Name</label>
-                  <input 
-                    type="text" 
-                    id="name" 
-                    className="w-full bg-gray-900/70 border border-gray-700 rounded-lg p-3 text-white focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all"
-                    placeholder="Your name"
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <label htmlFor="email" className="text-gray-400 block">Email</label>
-                  <input 
-                    type="email" 
-                    id="email" 
-                    className="w-full bg-gray-900/70 border border-gray-700 rounded-lg p-3 text-white focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all"
-                    placeholder="Your email"
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <label htmlFor="message" className="text-gray-400 block">Message</label>
-                  <textarea 
-                    id="message" 
-                    rows={4}
-                    className="w-full bg-gray-900/70 border border-gray-700 rounded-lg p-3 text-white focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all"
-                    placeholder="Your message"
-                  ></textarea>
-                </div>
-                
-                <Button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white py-6 rounded-lg text-lg font-medium flex items-center justify-center">
-                  <Send className="mr-2 h-5 w-5" />
-                  <span>Send Message</span>
-                </Button>
               </div>
             </motion.div>
           </div>
@@ -1171,30 +1283,22 @@ export default function AnimatedTemplate({
       </section>
       
       {/* Footer */}
-      <footer className="py-12 bg-gray-900/80 border-t border-gray-800">
+      <footer className="py-8 bg-gray-900/50 border-t border-gray-800">
         <div className="container mx-auto px-6">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="mb-6 md:mb-0">
-              <h3 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500">
-                {name}
-              </h3>
-              <p className="text-gray-500 mt-1">{title}</p>
+            <div className="mb-4 md:mb-0">
+              <h2 className="text-2xl font-bold text-white">{name}</h2>
+              <p className="text-gray-400">{title}</p>
             </div>
             
-            <div className="text-gray-500 text-sm text-center">
-              <p>© {new Date().getFullYear()} All rights reserved.</p>
-              <p>Made with ✨ using React, Tailwind & Framer Motion</p>
-            </div>
-            
-            <div className="mt-6 md:mt-0">
-              <Button variant="outline" className="bg-transparent border border-gray-700 text-gray-400 hover:bg-gray-800 hover:text-white">
-                <ArrowRight className="mr-2 h-4 w-4" />
-                <span>Back to top</span>
-              </Button>
+            <div className="text-gray-400 text-sm">
+              © {new Date().getFullYear()} All rights reserved.
             </div>
           </div>
         </div>
       </footer>
     </div>
   );
-}
+};
+
+export default Animated;
