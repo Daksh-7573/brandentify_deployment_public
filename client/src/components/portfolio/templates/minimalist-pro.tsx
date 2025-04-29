@@ -5,6 +5,7 @@ import { ProfileImage } from "@/components/ui/profile-image";
 import { Project, Skill, WorkExperience, Education, Service } from "@shared/schema";
 import { useEffect, useState } from "react";
 import PortfolioCtaButtons from "../portfolio-cta-buttons";
+import { MentorButton } from "@/components/mentorship/mentor-button";
 import { 
   Mail, Linkedin, ExternalLink, Calendar, GraduationCap, 
   MapPin, Star, Package, Briefcase, ChevronRight, ArrowUpRight
@@ -198,11 +199,21 @@ export default function MinimalistPro({
               </div>
               
               {/* Looking for */}
-              {userInfo.lookingFor && (
-                <Badge className="bg-primary text-white hover:bg-primary/90 py-1.5 px-3 text-sm rounded-full">
-                  Looking for {userInfo.lookingFor}
-                </Badge>
-              )}
+              <div className="flex flex-wrap gap-2 justify-center md:justify-start mb-4">
+                {userInfo.lookingFor && (
+                  <Badge className="bg-primary text-white hover:bg-primary/90 py-1.5 px-3 text-sm rounded-full">
+                    Looking for {userInfo.lookingFor}
+                  </Badge>
+                )}
+                
+                {/* Mentor Button */}
+                <div className="mt-2">
+                  <MentorButton 
+                    mentorId={1} 
+                    mentorName={userInfo.name} 
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </header>

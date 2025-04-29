@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { MentorButton } from "@/components/mentorship/mentor-button";
 import {
   Briefcase,
   Mail,
@@ -492,6 +493,14 @@ export default function Scholar({
             {/* Right side with CTA buttons aligned with profile picture */}
             <div className="md:self-center flex items-center justify-center md:justify-end fade-in-up delay-400">
               <div className="flex flex-row gap-2">
+                {/* Mentor Button */}
+                <div className="mr-2">
+                  <MentorButton 
+                    mentorId={1} 
+                    mentorName={userInfo?.name} 
+                  />
+                </div>
+                
                 <PortfolioCtaButtons 
                   userEmail={userInfo?.email}
                   userName={userInfo?.name}
