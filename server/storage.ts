@@ -39,7 +39,11 @@ import {
   userBadges, UserBadge, InsertUserBadge,
   xpTransactions, XpTransaction, InsertXpTransaction,
   // Brand of the Day models
-  brandsOfTheDay, BrandOfTheDay, InsertBrandOfTheDay
+  brandsOfTheDay, BrandOfTheDay, InsertBrandOfTheDay,
+  // Mentorship Connect models
+  mentorshipRequests, MentorshipRequest, InsertMentorshipRequest,
+  activeMentorships, ActiveMentorship, InsertActiveMentorship,
+  mentorshipFeedback, MentorshipFeedback, InsertMentorshipFeedback
 } from "@shared/schema";
 
 // Import Musk suggestion models
