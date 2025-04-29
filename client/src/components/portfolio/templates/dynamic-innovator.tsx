@@ -5,6 +5,7 @@ import { ProfileImage } from "@/components/ui/profile-image";
 import { Education, Project, Service, Skill, WorkExperience } from "@shared/schema";
 import { useEffect, useState, useRef } from "react";
 import PortfolioCtaButtons from "../portfolio-cta-buttons";
+import { MentorButton } from "@/components/mentorship/mentor-button";
 import { 
   Calendar, 
   MapPin, 

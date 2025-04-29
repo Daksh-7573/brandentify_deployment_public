@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ProfileImage } from "@/components/ui/profile-image";
+import { MentorButton } from "@/components/mentorship/mentor-button";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog,
@@ -1264,25 +1265,12 @@ export default function FreelancerHub({
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.8, type: "spring" }}
                   >
-                    <Button 
-                      className="bg-gradient-to-r from-amber-500 to-orange-500 text-white text-lg px-6 py-6 rounded-full shadow-lg flex items-center gap-2 font-bold hover:shadow-xl transition-shadow w-full sm:w-auto"
-                      style={{ fontFamily: 'Fredoka, sans-serif' }}
-                    >
-                      <span>Mentor</span>
-                      <motion.span
-                        initial={{ scale: 1 }}
-                        animate={{ scale: [1, 1.2, 1] }}
-                        transition={{ 
-                          duration: 1,
-                          delay: 1.3,
-                          repeat: 1,
-                          repeatType: "reverse"
-                        }}
-                        className="text-xl"
-                      >
-                        🚀
-                      </motion.span>
-                    </Button>
+                    <div className="freelancer-mentor-button">
+                      <MentorButton 
+                        mentorId={userInfo.id || 0} 
+                        mentorName={userInfo.name} 
+                      />
+                    </div>
                   </motion.div>
                   
                   {/* Grab My Resume Button */}
