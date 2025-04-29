@@ -732,25 +732,17 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                     
                     {/* Play/Pause Button removed as requested */}
                     
-                    {/* Project Category Badge */}
-                    {project.category && (
-                      <div className="absolute top-4 left-4">
-                        <motion.div
-                          whileHover={{ y: -2 }}
-                          className="bg-purple-600/80 text-white text-sm py-1 px-3 rounded-full backdrop-blur-sm"
-                        >
-                          {project.category}
-                        </motion.div>
-                      </div>
-                    )}
+                    {/* Project Category Badge - removed as requested */}
                   </div>
                   
                   {/* Project Details - Simplified to only show heading and date as requested */}
-                  <div className="p-6">
-                    <h3 className="text-xl font-bold text-white mb-3 tracking-tight">{project.title}</h3>
+                  <div className="p-6 bg-purple-900/20">
+                    <h3 className="text-xl font-bold text-white mb-3 tracking-tight">
+                      {project.title} - Simplified
+                    </h3>
                     
-                    {/* Project Date */}
-                    <div className="text-sm text-gray-400 flex items-center">
+                    {/* Project Date - with simpler formatting */}
+                    <div className="text-sm text-white flex items-center">
                       <Calendar className="h-4 w-4 mr-1" />
                       {new Date(project.startDate || '').toLocaleDateString('en-US', {
                         year: 'numeric',
