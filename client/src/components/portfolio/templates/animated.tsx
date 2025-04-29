@@ -93,7 +93,6 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
   const skillsRef = useRef<HTMLDivElement>(null);
   const projectsRef = useRef<HTMLDivElement>(null);
   const servicesRef = useRef<HTMLDivElement>(null);
-  const aboutRef = useRef<HTMLDivElement>(null);
   const timelineRef = useRef<HTMLDivElement>(null);
   const educationRef = useRef<HTMLDivElement>(null);
   const contactRef = useRef<HTMLDivElement>(null);
@@ -103,7 +102,6 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
   const isSkillsInView = useInView(skillsRef, { once: false, amount: 0.2 });
   const isProjectsInView = useInView(projectsRef, { once: false, amount: 0.2 });
   const isServicesInView = useInView(servicesRef, { once: false, amount: 0.2 });
-  const isAboutInView = useInView(aboutRef, { once: false, amount: 0.2 });
   const isTimelineInView = useInView(timelineRef, { once: false, amount: 0.2 });
   const isEducationInView = useInView(educationRef, { once: false, amount: 0.2 });
   const isContactInView = useInView(contactRef, { once: false, amount: 0.2 });
@@ -171,7 +169,6 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
     { id: 'skills', label: 'Skills', icon: <Code className="w-4 h-4" /> },
     { id: 'projects', label: 'Projects', icon: <Sparkles className="w-4 h-4" /> },
     { id: 'services', label: 'Services', icon: <PlusCircle className="w-4 h-4" /> },
-    { id: 'about', label: 'About', icon: <MessageCircle className="w-4 h-4" /> },
     { id: 'timeline', label: 'Experience', icon: <Briefcase className="w-4 h-4" /> },
     { id: 'education', label: 'Education', icon: <GraduationCap className="w-4 h-4" /> },
     { id: 'contact', label: 'Contact', icon: <Send className="w-4 h-4" /> }
@@ -765,189 +762,6 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                 <p className="text-gray-400">Projects will be displayed here once added.</p>
               </motion.div>
             )}
-          </div>
-        </div>
-      </section>
-
-      {/* Expertise & Stats Section */}
-      <section id="about" className="py-20 relative animated-about" ref={aboutRef}>
-        <div className="container mx-auto px-6 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: isAboutInView ? 1 : 0, y: isAboutInView ? 0 : 30 }}
-            transition={{ duration: 0.7 }}
-            className="mb-16 text-center"
-          >
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 section-title">
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-blue-500">
-                Expertise & Stats
-              </span>
-            </h2>
-            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-              My skills, statistics, and professional metrics at a glance.
-            </p>
-          </motion.div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-12">
-            {/* Skills & Proficiencies */}
-            <motion.div 
-              className="md:col-span-3 bg-gray-800/30 rounded-xl p-8 border border-gray-700 shadow-lg relative overflow-hidden"
-              initial={{ opacity: 0, x: -50 }}
-              animate={{ opacity: isAboutInView ? 1 : 0, x: isAboutInView ? 0 : -50 }}
-              transition={{ duration: 0.8 }}
-            >
-              {/* Animated background shapes */}
-              <motion.div 
-                className="absolute -top-20 -right-20 w-64 h-64 rounded-full bg-blue-500/10 backdrop-blur-3xl"
-                animate={{ rotate: 360 }}
-                transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-              />
-              <motion.div 
-                className="absolute -bottom-20 -left-20 w-80 h-80 rounded-full bg-purple-500/10 backdrop-blur-3xl"
-                animate={{ rotate: -360 }}
-                transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
-              />
-              
-              <div className="relative">
-                <h3 className="text-2xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-blue-500">
-                  Professional Skills
-                </h3>
-                
-                <div className="space-y-6">
-                  {skills && skills.length > 0 ? (
-                    skills.map((skill, index) => (
-                      <div key={skill.id} className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span className="text-gray-300">{skill.name}</span>
-                          <span className="text-purple-400">{skill.proficiency || 80}%</span>
-                        </div>
-                        <motion.div 
-                          initial={{ width: 0 }}
-                          animate={{ width: isAboutInView ? `${skill.proficiency || 80}%` : 0 }}
-                          transition={{ duration: 1, delay: 0.3 + index * 0.1 }}
-                          className="h-2 bg-gradient-to-r from-purple-600 to-pink-500 rounded-full skill-bar"
-                        />
-                      </div>
-                    ))
-                  ) : (
-                    [
-                      { name: "Motion Design", value: 90 },
-                      { name: "Interactive Development", value: 85 },
-                      { name: "UI Animation", value: 92 },
-                      { name: "3D Visualization", value: 80 },
-                    ].map((skill, index) => (
-                      <div key={index} className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span className="text-gray-300">{skill.name}</span>
-                          <span className="text-purple-400">{skill.value}%</span>
-                        </div>
-                        <motion.div 
-                          initial={{ width: 0 }}
-                          animate={{ width: isAboutInView ? `${skill.value}%` : 0 }}
-                          transition={{ duration: 1, delay: 0.3 + index * 0.1 }}
-                          className="h-2 bg-gradient-to-r from-purple-600 to-pink-500 rounded-full skill-bar"
-                        />
-                      </div>
-                    ))
-                  )}
-                </div>
-              </div>
-            </motion.div>
-            
-            {/* Stats and Expertise */}
-            <motion.div 
-              className="md:col-span-2 space-y-6"
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: isAboutInView ? 1 : 0, x: isAboutInView ? 0 : 50 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-            >
-              {/* Expertise Areas */}
-              <div className="bg-gray-800/30 rounded-xl p-6 border border-gray-700">
-                <h3 className="text-xl font-bold text-white mb-4 flex items-center">
-                  <Sparkles className="h-5 w-5 mr-2 text-purple-400" />
-                  Areas of Expertise
-                </h3>
-                
-                <div className="space-y-4">
-                  {[
-                    { name: "Motion Design", value: 90 },
-                    { name: "Interactive Development", value: 85 },
-                    { name: "UI Animation", value: 92 },
-                    { name: "3D Visualization", value: 80 },
-                  ].map((skill, index) => (
-                    <div key={index} className="space-y-2">
-                      <div className="flex justify-between text-sm">
-                        <span className="text-gray-300">{skill.name}</span>
-                        <span className="text-purple-400">{skill.value}%</span>
-                      </div>
-                      <motion.div 
-                        initial={{ width: 0 }}
-                        animate={{ width: isAboutInView ? `${skill.value}%` : 0 }}
-                        transition={{ duration: 1, delay: 0.3 + index * 0.1 }}
-                        className="h-2 bg-gradient-to-r from-purple-600 to-pink-500 rounded-full skill-bar"
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
-              
-              {/* Work Stats */}
-              <div className="grid grid-cols-2 gap-4">
-                <motion.div 
-                  className="bg-gray-800/30 rounded-xl p-6 border border-gray-700 flex flex-col items-center justify-center"
-                  whileHover={{ y: -5 }}
-                >
-                  <motion.span 
-                    className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500 mb-2"
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    animate={{ 
-                      scale: isAboutInView ? 1 : 0.8, 
-                      opacity: isAboutInView ? 1 : 0 
-                    }}
-                    transition={{ duration: 0.4, delay: 0.5 }}
-                  >
-                    {projects.length}+
-                  </motion.span>
-                  <span className="text-gray-400 text-center">Projects Completed</span>
-                </motion.div>
-                
-                <motion.div 
-                  className="bg-gray-800/30 rounded-xl p-6 border border-gray-700 flex flex-col items-center justify-center"
-                  whileHover={{ y: -5 }}
-                >
-                  <motion.span 
-                    className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-blue-500 mb-2"
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    animate={{ 
-                      scale: isAboutInView ? 1 : 0.8, 
-                      opacity: isAboutInView ? 1 : 0 
-                    }}
-                    transition={{ duration: 0.4, delay: 0.6 }}
-                  >
-                    {experiences.length}+
-                  </motion.span>
-                  <span className="text-gray-400 text-center">Years Experience</span>
-                </motion.div>
-                
-                <motion.div 
-                  className="bg-gray-800/30 rounded-xl p-6 border border-gray-700 flex flex-col items-center justify-center col-span-2"
-                  whileHover={{ y: -5 }}
-                >
-                  <motion.span 
-                    className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-500 mb-2"
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    animate={{ 
-                      scale: isAboutInView ? 1 : 0.8, 
-                      opacity: isAboutInView ? 1 : 0 
-                    }}
-                    transition={{ duration: 0.4, delay: 0.7 }}
-                  >
-                    {services.length > 0 ? services.length : 3}+
-                  </motion.span>
-                  <span className="text-gray-400 text-center">Creative Services</span>
-                </motion.div>
-              </div>
-            </motion.div>
           </div>
         </div>
       </section>
