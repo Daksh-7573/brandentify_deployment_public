@@ -4176,6 +4176,8 @@ export class MemStorage implements IStorage {
       return [];
     }
   }
+  
+
 
   async getUserQuestById(id: number): Promise<UserQuest | undefined> {
     try {
@@ -4674,9 +4676,11 @@ export class MemStorage implements IStorage {
           target_action as "targetAction",
           xp_reward as "xpReward",
           badge_reward as "badgeReward",
-          requirements,
+          required_profile_completion as "requiredProfileCompletion",
+          required_career_stage as "requiredCareerStage",
+          required_industry as "requiredIndustry",
+          musk_tip as "muskTip",
           is_active as "isActive",
-          difficulty,
           created_at as "createdAt",
           updated_at as "updatedAt"
         FROM quest_definitions
@@ -4705,9 +4709,11 @@ export class MemStorage implements IStorage {
           target_action as "targetAction",
           xp_reward as "xpReward",
           badge_reward as "badgeReward",
-          requirements,
+          required_profile_completion as "requiredProfileCompletion",
+          required_career_stage as "requiredCareerStage",
+          required_industry as "requiredIndustry",
+          musk_tip as "muskTip",
           is_active as "isActive",
-          difficulty,
           created_at as "createdAt",
           updated_at as "updatedAt"
         FROM quest_definitions
@@ -4737,9 +4743,11 @@ export class MemStorage implements IStorage {
           target_action as "targetAction",
           xp_reward as "xpReward",
           badge_reward as "badgeReward",
-          requirements,
+          required_profile_completion as "requiredProfileCompletion",
+          required_career_stage as "requiredCareerStage",
+          required_industry as "requiredIndustry",
+          musk_tip as "muskTip",
           is_active as "isActive",
-          difficulty,
           created_at as "createdAt",
           updated_at as "updatedAt"
         FROM quest_definitions
