@@ -3888,6 +3888,194 @@ export class MemStorage implements IStorage {
       });
   }
   
+  // ============================
+  // Mentorship Connect methods
+  // ============================
+  
+  // Mentorship Request methods
+  async createMentorshipRequest(request: InsertMentorshipRequest): Promise<MentorshipRequest> {
+    const id = this.currentMentorshipRequestId++;
+    const now = new Date();
+    
+    // Calculate expiration date (7 days from now for pending requests)
+    const expiresAt = new Date(now);
+    expiresAt.setDate(expiresAt.getDate() + 7);
+    
+    const newRequest: MentorshipRequest = {
+      ...request,
+      id,
+      status: request.status || 'pending',
+      createdAt: now,
+      updatedAt: now,
+      expiresAt: request.expiresAt || expiresAt
+    };
+    
+    this.mentorshipRequests.set(id, newRequest);
+    return newRequest;
+  }
+  
+  async getMentorshipRequestsByMentorId(mentorId: number): Promise<MentorshipRequest[]> {
+    return Array.from(this.mentorshipRequests.values())
+      .filter(request => request.mentorId === mentorId);
+  }
+  
+  async getMentorshipRequestsByMenteeId(menteeId: number): Promise<MentorshipRequest[]> {
+    return Array.from(this.mentorshipRequests.values())
+      .filter(request => request.menteeId === menteeId);
+  }
+  
+  async getMentorshipRequestById(id: number): Promise<MentorshipRequest | undefined> {
+    return this.mentorshipRequests.get(id);
+  }
+  
+  async updateMentorshipRequestStatus(
+    id: number, 
+    status: 'accepted' | 'rejected' | 'expired' | 'completed' | 'terminated'
+  ): Promise<MentorshipRequest | undefined> {
+    const request = this.mentorshipRequests.get(id);
+    if (!request) return undefined;
+    
+    const updatedRequest = { 
+      ...request, 
+      status, 
+      updatedAt: new Date() 
+    };
+    
+    this.mentorshipRequests.set(id, updatedRequest);
+    return updatedRequest;
+  }
+  
+  async getMentorshipRequestByMentorAndMentee(mentorId: number, menteeId: number): Promise<MentorshipRequest | undefined> {
+    return Array.from(this.mentorshipRequests.values())
+      .find(request => request.mentorId === mentorId && request.menteeId === menteeId);
+  }
+  
+  // Active Mentorship methods
+  async createActiveMentorship(mentorship: InsertActiveMentorship): Promise<ActiveMentorship> {
+    const id = this.currentActiveMentorshipId++;
+    const now = new Date();
+    
+    // Set expiration date (30 days from now)
+    const expiresAt = new Date(now);
+    expiresAt.setDate(expiresAt.getDate() + 30);
+    
+    const newMentorship: ActiveMentorship = {
+      ...mentorship,
+      id,
+      status: mentorship.status || 'active',
+      createdAt: now,
+      updatedAt: now,
+      lastActivityAt: now,
+      expiresAt: mentorship.expiresAt || expiresAt,
+      notes: mentorship.notes || ''
+    };
+    
+    this.activeMentorships.set(id, newMentorship);
+    return newMentorship;
+  }
+  
+  async getActiveMentorshipsByMentorId(mentorId: number): Promise<ActiveMentorship[]> {
+    return Array.from(this.activeMentorships.values())
+      .filter(mentorship => mentorship.mentorId === mentorId);
+  }
+  
+  async getActiveMentorshipsByMenteeId(menteeId: number): Promise<ActiveMentorship[]> {
+    return Array.from(this.activeMentorships.values())
+      .filter(mentorship => mentorship.menteeId === menteeId);
+  }
+  
+  async getActiveMentorshipById(id: number): Promise<ActiveMentorship | undefined> {
+    return this.activeMentorships.get(id);
+  }
+  
+  async updateActiveMentorshipStatus(
+    id: number, 
+    status: 'accepted' | 'completed' | 'terminated'
+  ): Promise<ActiveMentorship | undefined> {
+    const mentorship = this.activeMentorships.get(id);
+    if (!mentorship) return undefined;
+    
+    const updatedMentorship = { 
+      ...mentorship, 
+      status, 
+      updatedAt: new Date() 
+    };
+    
+    this.activeMentorships.set(id, updatedMentorship);
+    return updatedMentorship;
+  }
+  
+  async updateActiveMentorshipNotes(id: number, notes: string): Promise<ActiveMentorship | undefined> {
+    const mentorship = this.activeMentorships.get(id);
+    if (!mentorship) return undefined;
+    
+    const updatedMentorship = { 
+      ...mentorship, 
+      notes, 
+      updatedAt: new Date() 
+    };
+    
+    this.activeMentorships.set(id, updatedMentorship);
+    return updatedMentorship;
+  }
+  
+  async updateActiveMentorshipLastActivity(id: number): Promise<ActiveMentorship | undefined> {
+    const mentorship = this.activeMentorships.get(id);
+    if (!mentorship) return undefined;
+    
+    const now = new Date();
+    const updatedMentorship = { 
+      ...mentorship, 
+      lastActivityAt: now,
+      updatedAt: now
+    };
+    
+    this.activeMentorships.set(id, updatedMentorship);
+    return updatedMentorship;
+  }
+  
+  async getActiveMentorshipCount(userId: number): Promise<number> {
+    // Count mentorships where the user is either mentor or mentee and the status is active
+    return Array.from(this.activeMentorships.values())
+      .filter(mentorship => 
+        (mentorship.mentorId === userId || mentorship.menteeId === userId) && 
+        mentorship.status === 'active'
+      ).length;
+  }
+  
+  // Mentorship Feedback methods
+  async createMentorshipFeedback(feedback: InsertMentorshipFeedback): Promise<MentorshipFeedback> {
+    const id = this.currentMentorshipFeedbackId++;
+    const now = new Date();
+    
+    const newFeedback: MentorshipFeedback = {
+      ...feedback,
+      id,
+      createdAt: now
+    };
+    
+    this.mentorshipFeedback.set(id, newFeedback);
+    return newFeedback;
+  }
+  
+  async getMentorshipFeedbackByMentorshipId(mentorshipId: number): Promise<MentorshipFeedback[]> {
+    return Array.from(this.mentorshipFeedback.values())
+      .filter(feedback => feedback.mentorshipId === mentorshipId);
+  }
+  
+  async getMentorshipFeedbackById(id: number): Promise<MentorshipFeedback | undefined> {
+    return this.mentorshipFeedback.get(id);
+  }
+  
+  async updateMentorshipFeedback(id: number, feedbackData: Partial<MentorshipFeedback>): Promise<MentorshipFeedback | undefined> {
+    const feedback = this.mentorshipFeedback.get(id);
+    if (!feedback) return undefined;
+    
+    const updatedFeedback = { ...feedback, ...feedbackData };
+    this.mentorshipFeedback.set(id, updatedFeedback);
+    return updatedFeedback;
+  }
+  
   async getCompatibleMuskMatches(userId: number, limit: number = 5): Promise<MuskMatch[]> {
     // Get the user
     const user = await this.getUser(userId);
