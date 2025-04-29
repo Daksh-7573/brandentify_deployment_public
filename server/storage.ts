@@ -5019,8 +5019,7 @@ export class MemStorage implements IStorage {
   }
 }
 
-// Import the database connection
-import { db, pool, executeWithRetry, sql } from './db';
+// Import additional Drizzle utilities
 import { eq } from 'drizzle-orm';
 
 /**
