@@ -553,7 +553,7 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                       {service.description || 'Professional service with expert execution and attention to detail.'}
                     </p>
                     
-                    {service.price !== null && (
+                    {service.price !== null && service.price !== undefined && (
                       <div className="bg-blue-500/10 rounded-lg py-2 px-4 inline-block mb-4">
                         <span className="text-blue-400 font-bold">
                           {service.price.toLocaleString()} {service.isHourly ? '/hour' : ''}
@@ -629,7 +629,7 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                       </p>
                       
                       <div className="flex flex-wrap gap-4">
-                        {selectedService.price !== null && (
+                        {selectedService.price !== null && selectedService.price !== undefined && (
                           <div className="bg-blue-500/10 rounded-lg py-2 px-4">
                             <div className="text-sm text-gray-400 mb-1">Price</div>
                             <div className="text-lg font-bold text-blue-400">
