@@ -627,13 +627,13 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                       {service.description || 'Professional service with expert execution and attention to detail.'}
                     </p>
                     
-                    {service.price !== null && service.price !== undefined && (
-                      <div className="bg-blue-500/10 rounded-lg py-2 px-4 inline-block mb-4">
-                        <span className="text-blue-400 font-bold">
-                          {service.price.toLocaleString()} {service.isHourly ? '/hour' : ''}
-                        </span>
-                      </div>
-                    )}
+                    <div className="bg-blue-500/10 rounded-lg py-2 px-4 inline-block mb-4">
+                      <span className="text-blue-400 font-bold">
+                        {service.priceUsd ? `$${service.priceUsd}` : 
+                         (service.priceInr ? `₹${service.priceInr}` : 'Contact for pricing')}
+                        {(service.priceUsd || service.priceInr) && service.isHourly ? '/hour' : ''}
+                      </span>
+                    </div>
                     
                     {service.features && service.features.length > 0 && (
                       <ul className="space-y-2 mb-6">
@@ -650,7 +650,7 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                       onClick={() => setSelectedService(service)}
                       className="w-full bg-gradient-to-r from-blue-600 to-teal-500 hover:from-blue-700 hover:to-teal-600 text-white"
                     >
-                      Learn More
+                      Order Now
                     </Button>
                   </div>
                 </motion.div>
@@ -703,14 +703,14 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                       </p>
                       
                       <div className="flex flex-wrap gap-4">
-                        {selectedService.price !== null && selectedService.price !== undefined && (
-                          <div className="bg-blue-500/10 rounded-lg py-2 px-4">
-                            <div className="text-sm text-gray-400 mb-1">Price</div>
-                            <div className="text-lg font-bold text-blue-400">
-                              {selectedService.price.toLocaleString()} {selectedService.isHourly ? '/hour' : ''}
-                            </div>
+                        <div className="bg-blue-500/10 rounded-lg py-2 px-4">
+                          <div className="text-sm text-gray-400 mb-1">Price</div>
+                          <div className="text-lg font-bold text-blue-400">
+                            {selectedService.priceUsd ? `$${selectedService.priceUsd}` : 
+                            (selectedService.priceInr ? `₹${selectedService.priceInr}` : 'Contact for pricing')}
+                            {(selectedService.priceUsd || selectedService.priceInr) && selectedService.isHourly ? '/hour' : ''}
                           </div>
-                        )}
+                        </div>
                         
                         <div className="bg-gray-700/50 rounded-lg py-2 px-4">
                           <div className="text-sm text-gray-400 mb-1">Category</div>
