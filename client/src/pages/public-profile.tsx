@@ -307,15 +307,12 @@ const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
               id: p.id,
               title: p.title,
               description: p.description,
-              userId: p.userId,
               startDate: p.startDate,
-              createdAt: null,
               projectUrl: p.projectUrl || null,
               category: p.category || null,
+              industry: p.industry || null,
               thumbnailUrl: p.thumbnailUrl || null,
-              thumbnailFile: null,
-              mediaUrls: p.mediaUrls || [],
-              updatedAt: null
+              mediaUrls: p.mediaUrls || []
             }))}
             whatIOffer={whatIOfferContent}
             aboutMe={aboutMeOdysseyContent}
