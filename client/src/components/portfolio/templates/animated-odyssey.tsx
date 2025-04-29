@@ -478,7 +478,9 @@ const AnimatedOdyssey: React.FC<AnimatedOdysseyProps> = ({
                           repeatType: "loop"
                         }}
                       >
-                        <span className="price-value">₹{service.price.toLocaleString()}</span>
+                        <span className="price-value">
+                          {service.price ? `₹${service.price.toLocaleString()}` : 'Price on request'}
+                        </span>
                         {service.isHourly && <span className="price-hour">/hour</span>}
                       </motion.div>
                     )}
