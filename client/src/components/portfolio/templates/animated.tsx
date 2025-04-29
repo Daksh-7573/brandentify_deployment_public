@@ -1052,21 +1052,7 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                         <p className="text-gray-300 mb-4">{experience.description}</p>
                       )}
                       
-                      {experience.keyResponsibilities && experience.keyResponsibilities.length > 0 && (
-                        <div className="mb-4">
-                          <h5 className="text-sm font-semibold text-gray-400 mb-2">Key Responsibilities</h5>
-                          <ul className="space-y-1">
-                            {experience.keyResponsibilities.map((responsibility, i) => (
-                              <li key={i} className="text-gray-300 flex items-start">
-                                <ChevronRight className="h-4 w-4 text-orange-400 mt-1 flex-shrink-0 mr-2" />
-                                <span>{responsibility}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-                      
-                      <div className="flex flex-wrap items-center gap-2 mt-4">
+                      <div className="flex flex-wrap items-center gap-2 mb-4">
                         {experience.location && (
                           <div className="flex items-center text-sm text-gray-400">
                             <MapPin className="h-4 w-4 mr-1 text-gray-500" />
@@ -1086,6 +1072,20 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                           </Badge>
                         )}
                       </div>
+                      
+                      {experience.keyResponsibilities && experience.keyResponsibilities.length > 0 && (
+                        <div className="mb-4">
+                          <h5 className="text-sm font-semibold text-gray-400 mb-2">Key Responsibilities</h5>
+                          <ul className="space-y-1">
+                            {experience.keyResponsibilities.map((responsibility, i) => (
+                              <li key={i} className="text-gray-300 flex items-start">
+                                <ChevronRight className="h-4 w-4 text-orange-400 mt-1 flex-shrink-0 mr-2" />
+                                <span>{responsibility}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
                     </motion.div>
                   </motion.div>
                 ))
