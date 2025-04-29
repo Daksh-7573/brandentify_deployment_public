@@ -4237,6 +4237,24 @@ export class MemStorage implements IStorage {
       });
   }
 
+  // Utility function to get the ISO week number from a date
+  getWeekNumber(date: Date): number {
+    // Create a copy of the date to avoid modifying the original
+    const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+    
+    // Set to nearest Thursday: current date + 4 - current day number
+    // Make Sunday's day number 7
+    d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+    
+    // Get first day of year
+    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+    
+    // Calculate full weeks to nearest Thursday
+    const weekNumber = Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
+    
+    return weekNumber;
+  }
+
   async getCurrentWeekUserQuests(userId: number): Promise<UserQuest[]> {
     try {
       // Get current week number and year
@@ -4283,31 +4301,55 @@ export class MemStorage implements IStorage {
   }
 
   async createUserQuest(quest: InsertUserQuest): Promise<UserQuest> {
-    const id = this.currentUserQuestId++;
-    const assignedAt = new Date();
-    
-    // Get current week number and year if not provided
-    const now = new Date();
-    const weekNumber = quest.weekNumber || this.getWeekNumber(now);
-    const year = quest.year || now.getFullYear();
-    
-    const userQuest: UserQuest = {
-      ...quest,
-      id,
-      assignedAt,
-      weekNumber,
-      year,
-      progress: quest.progress ?? 0,
-      status: quest.status ?? "active",
-      completedAt: null,
-      dismissedReason: null,
-      xpEarned: null,
-      badgeEarned: null,
-      muskResponse: null
-    };
-    
-    this.userQuests.set(id, userQuest);
-    return userQuest;
+    try {
+      console.log(`[db.createUserQuest] Creating quest for user ${quest.userId}, definition ${quest.questDefinitionId}`);
+      
+      // Get current week number and year if not provided
+      const now = new Date();
+      const weekNumber = quest.weekNumber || this.getWeekNumber(now);
+      const year = quest.year || now.getFullYear();
+      
+      const result = await pool.query(`
+        INSERT INTO user_quests (
+          user_id,
+          quest_definition_id,
+          status,
+          progress,
+          assigned_at,
+          week_number,
+          year
+        ) VALUES (
+          $1, $2, $3, $4, $5, $6, $7
+        ) RETURNING
+          id,
+          user_id as "userId",
+          quest_definition_id as "questDefinitionId",
+          status,
+          progress,
+          assigned_at as "assignedAt",
+          completed_at as "completedAt",
+          dismissed_reason as "dismissedReason",
+          xp_earned as "xpEarned",
+          badge_earned as "badgeEarned",
+          musk_response as "muskResponse",
+          week_number as "weekNumber",
+          year
+      `, [
+        quest.userId,
+        quest.questDefinitionId,
+        quest.status || "active",
+        quest.progress || 0,
+        new Date(),
+        weekNumber,
+        year
+      ]);
+      
+      console.log(`[db.createUserQuest] Created quest with ID ${result.rows[0].id} for user ${quest.userId}`);
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.createUserQuest] Error creating quest for user ${quest.userId}:`, error);
+      throw error;
+    }
   }
 
   async updateUserQuest(id: number, quest: Partial<UserQuest>): Promise<UserQuest | undefined> {
