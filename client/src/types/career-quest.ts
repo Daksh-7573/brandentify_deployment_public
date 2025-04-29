@@ -53,7 +53,11 @@ export interface UserQuest {
   xpEarned?: number;
   badgeEarned?: BadgeType;
   muskResponse?: string;
-  questDefinition?: QuestDefinition;
+  
+  // Different quest definition formats based on API source
+  questDefinition?: QuestDefinition;  // Original format
+  definition?: QuestDefinition;       // Direct DB query format
+  
   // Additional fields for the new API format
   questTitle?: string;
   questDescription?: string;

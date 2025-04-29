@@ -23,8 +23,11 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
   const dismissQuestMutation = useDismissQuest();
   const updateProgressMutation = useUpdateQuestProgress();
   
-  // Handle both data structures - either quest.questDefinition (old) or direct properties (new)
-  const questDefinition = quest.questDefinition || {
+  // Handle all possible API data structures:
+  // 1. quest.questDefinition (original format)
+  // 2. quest.definition (direct DB query format)
+  // 3. Flattened properties (direct from new API)
+  const questDefinition = quest.questDefinition || quest.definition || {
     id: quest.questDefinitionId,
     title: quest.questTitle || '',
     description: quest.questDescription || '',
