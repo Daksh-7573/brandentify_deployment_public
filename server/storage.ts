@@ -416,6 +416,18 @@ export interface IStorage {
   getXpTransactionById(id: number): Promise<XpTransaction | undefined>;
   getXpTransactionsBySource(userId: number, source: string): Promise<XpTransaction[]>;
   createXpTransaction(transaction: InsertXpTransaction): Promise<XpTransaction>;
+
+  // Mentorship Connect operations
+  getMentorshipRequestById(id: number): Promise<MentorshipRequest | undefined>;
+  getMentorshipRequestsByMenteeId(menteeId: number): Promise<MentorshipRequest[]>;
+  getMentorshipRequestsByMentorId(mentorId: number): Promise<MentorshipRequest[]>;
+  getActiveMentorshipsCount(userId: number, role: 'mentor' | 'mentee'): Promise<number>;
+  getPendingMentorshipRequestsCount(userId: number, role: 'mentor' | 'mentee'): Promise<number>;
+  createMentorshipRequest(request: InsertMentorshipRequest): Promise<MentorshipRequest>;
+  updateMentorshipRequestStatus(id: number, status: 'accepted' | 'declined' | 'expired' | 'completed', reason?: string): Promise<MentorshipRequest | undefined>;
+  getMentorshipFeedbackByMentorshipId(mentorshipId: number): Promise<MentorshipFeedback[]>;
+  createMentorshipFeedback(feedback: InsertMentorshipFeedback): Promise<MentorshipFeedback>;
+  canRequestMentorship(menteeId: number): Promise<boolean>;
 }
 
 // In-memory implementation of the storage
@@ -474,6 +486,10 @@ export class MemStorage implements IStorage {
   private userBadges: Map<number, UserBadge>;
   private xpTransactions: Map<number, XpTransaction>;
   
+  // Mentorship Connect models
+  private mentorshipRequests: Map<number, MentorshipRequest>;
+  private mentorshipFeedback: Map<number, MentorshipFeedback>;
+  
   private currentUserId: number;
   private currentResumeId: number;
   private currentWorkExperienceId: number;
@@ -527,6 +543,10 @@ export class MemStorage implements IStorage {
   
   // Brand of the Day ID
   private currentBrandOfTheDayId: number;
+  
+  // Mentorship Connect IDs
+  private currentMentorshipRequestId: number;
+  private currentMentorshipFeedbackId: number;
 
   constructor() {
     this.users = new Map();
@@ -573,6 +593,10 @@ export class MemStorage implements IStorage {
     this.userXp = new Map();
     this.userBadges = new Map();
     this.xpTransactions = new Map();
+    
+    // Initialize Mentorship Connect maps
+    this.mentorshipRequests = new Map();
+    this.mentorshipFeedback = new Map();
     
     // Initialize Musk suggestion maps
     this.muskSuggestions = new Map();
