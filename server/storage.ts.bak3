@@ -637,211 +637,22 @@ export class MemStorage implements IStorage {
     // Initialize Brand of the Day ID
     this.currentBrandOfTheDayId = 1;
     
-    // Initialize with a default user for development/demo
-    this.initializeDemoData();
+    // Demo data initialization removed
   }
-  
   /**
-   * Initialize demo data for development and testing
+   * Initialize demo data function removed
    */
-  private initializeDemoData() {
-    // Create demo user with proper photoURL and other required fields
-    const demoUser: User = {
-      id: 1,
-      username: "user1",
-      email: "user1@example.com",
-      password: null,
-      phoneNumber: null,
-      name: "Senior Professional",
-      photoURL: null,
-      title: "Senior Software Engineer",
-      location: "San Francisco, CA, USA",
-      industry: "Technology",
-      lookingFor: "A Career Mentor",
-      profileCompleted: 65,
-      emailVerified: true,
-      emailVerificationToken: null,
-      emailVerificationExpires: null,
-      createdAt: new Date()
-    };
-    this.users.set(demoUser.id, demoUser);
-    this.currentUserId++;
-    
-    // Clear any existing work experiences, education, and skills for the demo user
-    this.clearDemoDataMaps();
-    
-    // No pre-created skills either
-    // Skills will be added by the user as needed
-    this.currentSkillId = 1;
-    
-    // Create default portfolio for the demo user
-    const demoPortfolio: Portfolio = {
-      id: 1,
-      userId: 1,
-      layout: "professional", // Default layout
-      customTitle: null,
-      customBio: null,
-      customizationOptions: {},
-      isPublished: false,
-      publicUrl: null,
-      featuredProjects: [],
-      featuredSkills: [], // No featured skills yet
-      featuredExperiences: [],
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
-    this.portfolios.set(demoPortfolio.id, demoPortfolio);
-    this.currentPortfolioId++;
-    
-    // No pre-created services for new accounts
-    // Starting service ID at 1 for the first service a user creates
-    this.currentServiceId = 1;
-    
-    // Add demo pulses for testing image carousel
-    this.createDemoPulses(demoUser.id);
-    
-    // Add demo Nowboard items
-    this.createDemoNowboardItems(demoUser.id);
-    
-    console.log(`[storage.initializeDemoData] No pre-created services - users will add their own`);
-    
+  private initializeDemoDataRemoved() {
+    // This function has been intentionally emptied
   }
-  
   /**
-   * Completely reset all demo data and reinitialize with minimal values
-   * Used by the debug endpoint to wipe all existing data
+   * Demo data reinitialization function removed
    */
-  async reinitializeDemoData(): Promise<void> {
-    // First clear all data maps
-    this.clearDemoDataMaps();
-    
-    // Force IDs back to start
-    this.currentWorkExperienceId = 1;
-    this.currentEducationId = 1;
-    this.currentSkillId = 1;
-    this.currentPortfolioId = 1;
-    this.currentPulseId = 1;
-    this.currentPulseCommentId = 1;
-    this.currentPollVoteId = 1;
-    this.currentHashtagId = 1;
-    this.currentPulseHashtagId = 1;
-    this.currentUserHashtagFollowId = 1;
-    // Reset pulse interaction system IDs
-    this.currentPulseReactionId = 1;
-    this.currentUserReactionQuotaId = 1;
-    this.currentPulseShareId = 1;
-    // Reset News IDs
-    this.currentNewsSourceId = 1;
-    this.currentNewsArticleId = 1;
-    this.currentNewsUserPreferenceId = 1;
-    // Reset Musk Match ID
-    this.currentMuskMatchId = 1;
-    // Reset Musk suggestion IDs
-    this.currentMuskSuggestionId = 1;
-    this.currentMuskBehaviorTrackingId = 1;
-    // Reset enhanced Musk intelligence IDs
-    this.currentUserProfileIntelligenceId = 1;
-    this.currentBehaviorHeatmapId = 1;
-    this.currentContentScoringId = 1;
-    this.currentIndustryTrendsMonitorId = 1;
-    this.currentUserMilestonesId = 1;
-    this.currentSmartPostSuggestionsId = 1;
-    
-    // Reset Nowboard IDs
-    this.currentNowboardItemId = 1;
-    this.currentNowboardInspiredById = 1;
-    
-    // Reset Career Quests IDs
-    this.currentQuestDefinitionId = 1;
-    this.currentUserQuestId = 1;
-    this.currentUserXpId = 1;
-    this.currentUserBadgeId = 1;
-    this.currentXpTransactionId = 1;
-    
-    // Reset Brand of the Day ID
-    this.currentBrandOfTheDayId = 1;
-    
-    // No pre-created skills
-    
-    // Create a default portfolio for the demo user
-    const portfolio: Portfolio = {
-      id: 1,
-      userId: 1,
-      layout: "professional", // Default layout
-      customTitle: null,
-      customBio: null,
-      customizationOptions: {},
-      isPublished: false,
-      publicUrl: null,
-      featuredProjects: [],
-      featuredSkills: [], // No featured skills
-      featuredExperiences: [],
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
-    this.portfolios.set(portfolio.id, portfolio);
-    this.currentPortfolioId++;
-    
-    // Create sample services for the demo user
-    const service1: Service = {
-      id: 1,
-      userId: 1,
-      title: 'Web Application Development',
-      description: 'Full-stack web application development using React, Node.js, and PostgreSQL.',
-      category: 'development',
-      priceUsd: "100",  // Using string format for decimal values
-      priceInr: "8000", // Using string format for decimal values
-      isHourly: true,
-      features: ['Custom UI/UX design', 'Database integration', 'API development', 'Delivery: 2-4 weeks'],
-      imageUrl: "https://placehold.co/400x300/4f46e5/ffffff?text=Web+Development",
-      isActive: true,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      order: 1
-    };
-    this.services.set(service1.id, service1);
-    
-    const service2: Service = {
-      id: 2,
-      userId: 1,
-      title: 'Brand Identity Design',
-      description: 'Professional brand identity design including logo, color palette, and brand guidelines.',
-      category: 'design',
-      priceUsd: "500",  // Using string format for decimal values
-      priceInr: "40000", // Using string format for decimal values
-      isHourly: false,
-      features: ['Logo design', 'Brand guidelines', 'Social media assets', 'Delivery: 1-2 weeks'],
-      imageUrl: "https://placehold.co/400x300/e95800/ffffff?text=Brand+Design",
-      isActive: true,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      order: 2
-    };
-    this.services.set(service2.id, service2);
-    
-    const service3: Service = {
-      id: 3,
-      userId: 1,
-      title: 'SEO Optimization',
-      description: 'Improve your website visibility with professional SEO services.',
-      category: 'marketing',
-      priceUsd: "300",  // Using string format for decimal values
-      priceInr: "24000", // Using string format for decimal values
-      isHourly: false,
-      features: ['Keyword research', 'On-page optimization', 'Performance tracking', 'Delivery: 2-3 weeks'],
-      imageUrl: "https://placehold.co/400x300/22c55e/ffffff?text=SEO+Services",
-      isActive: true,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      order: 3
-    };
-    this.services.set(service3.id, service3);
-    this.currentServiceId = 4;
-    
-    console.log("Demo data reinitialized with minimal values, skill, portfolio, and services");
+  async reinitializeDemoDataRemoved(): Promise<void> {
+    // This function has been intentionally emptied
   }
-  
-  /**
+
+/**
    * Clear all work experience, education, skills, project, portfolio, and service data
    */
   private clearDemoDataMaps(): void {
@@ -1778,229 +1589,230 @@ export class MemStorage implements IStorage {
   }
 
   async createService(insertService: InsertService): Promise<Service> {
-    const id = this.currentServiceId++;
-    const createdAt = new Date();
-    const service: Service = {
-      id,
-      userId: insertService.userId,
-      title: insertService.title,
-      description: insertService.description ?? null,
+    console.log(`[storage.createService] Creating service with data:`, JSON.stringify(insertService, null, 2));
+    
+    // Validate and normalize price values before database insertion
+    const normalizedInsert = { 
+      ...insertService,
+      // Set defaults if not provided
       category: insertService.category ?? "other",
-      priceInr: insertService.priceInr ?? null,
-      priceUsd: insertService.priceUsd ?? null,
       isHourly: insertService.isHourly ?? false,
       features: insertService.features ?? [],
-      imageUrl: insertService.imageUrl ?? null,
       order: insertService.order ?? 0,
-      isActive: insertService.isActive ?? true,
-      createdAt,
-      updatedAt: createdAt
+      isActive: insertService.isActive ?? true
     };
-    this.services.set(id, service);
-    return service;
+    
+    // Ensure price fields are properly formatted for the database
+    if (normalizedInsert.priceInr !== undefined) {
+      if (normalizedInsert.priceInr === null || normalizedInsert.priceInr === '') {
+        normalizedInsert.priceInr = null;
+      } else if (typeof normalizedInsert.priceInr === 'string') {
+        const parsed = parseFloat(normalizedInsert.priceInr);
+        normalizedInsert.priceInr = isNaN(parsed) ? null : parsed;
+      } else if (typeof normalizedInsert.priceInr === 'number') {
+        // Ensure it's a valid number and round to 2 decimal places
+        if (isNaN(normalizedInsert.priceInr) || !isFinite(normalizedInsert.priceInr)) {
+          normalizedInsert.priceInr = null;
+        } else {
+          normalizedInsert.priceInr = Math.round(normalizedInsert.priceInr * 100) / 100;
+        }
+      }
+    }
+    
+    if (normalizedInsert.priceUsd !== undefined) {
+      if (normalizedInsert.priceUsd === null || normalizedInsert.priceUsd === '') {
+        normalizedInsert.priceUsd = null;
+      } else if (typeof normalizedInsert.priceUsd === 'string') {
+        const parsed = parseFloat(normalizedInsert.priceUsd);
+        normalizedInsert.priceUsd = isNaN(parsed) ? null : parsed;
+      } else if (typeof normalizedInsert.priceUsd === 'number') {
+        // Ensure it's a valid number and round to 2 decimal places
+        if (isNaN(normalizedInsert.priceUsd) || !isFinite(normalizedInsert.priceUsd)) {
+          normalizedInsert.priceUsd = null;
+        } else {
+          normalizedInsert.priceUsd = Math.round(normalizedInsert.priceUsd * 100) / 100;
+        }
+      }
+    }
+    
+    console.log(`[storage.createService] Normalized service data:`, JSON.stringify(normalizedInsert, null, 2));
+    
+    try {
+      const [service] = await db.insert(services).values(normalizedInsert).returning();
+      console.log(`[storage.createService] Successfully created service with ID ${service.id}`);
+      return service;
+    } catch (error) {
+      console.error(`[storage.createService] Error creating service:`, error);
+      // If database insert fails, fall back to memory storage for development
+      const id = this.currentServiceId++;
+      const createdAt = new Date();
+      const service: Service = {
+        id,
+        userId: normalizedInsert.userId,
+        title: normalizedInsert.title,
+        description: normalizedInsert.description ?? null,
+        category: normalizedInsert.category,
+        priceInr: normalizedInsert.priceInr,
+        priceUsd: normalizedInsert.priceUsd,
+        isHourly: normalizedInsert.isHourly,
+        features: normalizedInsert.features,
+        imageUrl: normalizedInsert.imageUrl ?? null,
+        order: normalizedInsert.order,
+        isActive: normalizedInsert.isActive,
+        createdAt,
+        updatedAt: createdAt
+      };
+      this.services.set(id, service);
+      console.log(`[storage.createService] Fallback to memory storage with ID ${id}`);
+      return service;
+    }
   }
 
   async updateService(id: number, serviceData: Partial<Service>): Promise<Service | undefined> {
-    const service = this.services.get(id);
-    if (!service) return undefined;
+    console.log(`[storage.updateService] Updating service with ID ${id} with data:`, JSON.stringify(serviceData, null, 2));
     
-    const updatedService = { ...service, ...serviceData };
-    this.services.set(id, updatedService);
-    return updatedService;
+    // Get the existing service first
+    try {
+      const existingService = await db
+        .select()
+        .from(services)
+        .where(eq(services.id, id))
+        .then(rows => rows[0]);
+        
+      if (!existingService) {
+        console.log(`[storage.updateService] Service with ID ${id} not found in database`);
+        
+        // Fall back to memory storage for development
+        const service = this.services.get(id);
+        if (!service) {
+          console.log(`[storage.updateService] Service with ID ${id} not found in memory storage either`);
+          return undefined;
+        }
+        
+        const updatedService = { ...service, ...serviceData };
+        this.services.set(id, updatedService);
+        return updatedService;
+      }
+      
+      // Normalize and validate price values
+      const normalizedData = { ...serviceData };
+      
+      // Handle price fields just like in createService
+      if (normalizedData.priceInr !== undefined) {
+        if (normalizedData.priceInr === null || normalizedData.priceInr === '') {
+          normalizedData.priceInr = null;
+        } else if (typeof normalizedData.priceInr === 'string') {
+          const parsed = parseFloat(normalizedData.priceInr);
+          normalizedData.priceInr = isNaN(parsed) ? null : parsed;
+        } else if (typeof normalizedData.priceInr === 'number') {
+          if (isNaN(normalizedData.priceInr) || !isFinite(normalizedData.priceInr)) {
+            normalizedData.priceInr = null;
+          } else {
+            normalizedData.priceInr = Math.round(normalizedData.priceInr * 100) / 100;
+          }
+        }
+      }
+      
+      if (normalizedData.priceUsd !== undefined) {
+        if (normalizedData.priceUsd === null || normalizedData.priceUsd === '') {
+          normalizedData.priceUsd = null;
+        } else if (typeof normalizedData.priceUsd === 'string') {
+          const parsed = parseFloat(normalizedData.priceUsd);
+          normalizedData.priceUsd = isNaN(parsed) ? null : parsed;
+        } else if (typeof normalizedData.priceUsd === 'number') {
+          if (isNaN(normalizedData.priceUsd) || !isFinite(normalizedData.priceUsd)) {
+            normalizedData.priceUsd = null;
+          } else {
+            normalizedData.priceUsd = Math.round(normalizedData.priceUsd * 100) / 100;
+          }
+        }
+      }
+      
+      console.log(`[storage.updateService] Normalized data:`, JSON.stringify(normalizedData, null, 2));
+      
+      // Update in database
+      const [updatedService] = await db
+        .update(services)
+        .set({
+          ...normalizedData,
+          updatedAt: new Date()
+        })
+        .where(eq(services.id, id))
+        .returning();
+        
+      console.log(`[storage.updateService] Successfully updated service with ID ${id}`);
+      
+      // Also update in memory storage for backward compatibility
+      const memService = this.services.get(id);
+      if (memService) {
+        this.services.set(id, { ...memService, ...normalizedData, updatedAt: new Date() });
+      }
+      
+      return updatedService;
+    } catch (error) {
+      console.error(`[storage.updateService] Error updating service with ID ${id}:`, error);
+      
+      // Fall back to memory storage
+      const service = this.services.get(id);
+      if (!service) return undefined;
+      
+      const updatedService = { ...service, ...serviceData, updatedAt: new Date() };
+      this.services.set(id, updatedService);
+      console.log(`[storage.updateService] Fallback to memory storage for service ID ${id}`);
+      
+      return updatedService;
+    }
   }
 
   async deleteService(id: number): Promise<boolean> {
-    return this.services.delete(id);
+    console.log(`[storage.deleteService] Deleting service with ID ${id}`);
+    
+    try {
+      // First try to delete from database
+      const result = await db
+        .delete(services)
+        .where(eq(services.id, id))
+        .returning();
+      
+      const deleted = result.length > 0;
+      console.log(`[storage.deleteService] Service with ID ${id} deleted from database: ${deleted}`);
+      
+      // Also delete from memory storage for backward compatibility
+      this.services.delete(id);
+      
+      return deleted;
+    } catch (error) {
+      console.error(`[storage.deleteService] Error deleting service with ID ${id}:`, error);
+      
+      // Fall back to memory storage
+      const deleted = this.services.delete(id);
+      console.log(`[storage.deleteService] Fallback to memory storage for service ID ${id}, deleted: ${deleted}`);
+      
+      return deleted;
+    }
   }
   
   /**
    * Create demo pulses for testing carousel/image gallery functionality
    */
-  private createDemoPulses(userId: number): void {
-    // Create a demo project for project-type pulse
-    const demoProject: Project = {
-      id: 1,
-      userId: userId,
-      title: "AI-Powered Career Platform",
-      description: "A professional networking platform with intelligent career guidance and portfolio showcase",
-      startDate: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 60 days ago as YYYY-MM-DD
-      projectUrl: "https://example.com/demo",
-      category: "Web Development",
-      thumbnailUrl: "/images/demo/ui-design-1.svg",
-      thumbnailFile: null,
-      mediaUrls: [
-        "/images/demo/ui-design-1.svg",
-        "/images/demo/ui-design-2.svg",
-        "/images/demo/ui-design-3.svg"
-      ],
-      createdAt: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000), // 60 days ago
-      updatedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000)  // 2 days ago
-    };
-    
-    // Add project to storage
-    this.projects.set(demoProject.id, demoProject);
-    this.currentProjectId = 2; // Set next project ID
-    
-    // Create a demo media pulse with multiple images for carousel testing
-    const imagePulse: Pulse = {
-      id: 1,
-      userId: userId,
-      type: "media-pulse",
-      title: "My Latest UI Design Work",
-      content: "Showcasing some of my recent UI design work on product dashboards and analytics interfaces. I focused on creating clean, intuitive layouts with strong visual hierarchy.",
-      mediaType: "image",
-      mediaUrls: [
-        "/images/demo/ui-design-1.svg",
-        "/images/demo/ui-design-2.svg", 
-        "/images/demo/ui-design-3.svg",
-        "/images/demo/ui-design-4.svg",
-        "/images/demo/ui-design-5.svg"
-      ],
-      mediaLocalStorageKeys: [],
-      pollOptions: [],
-      projectId: null,
-      likes: 24,
-      insightfulCount: 18,
-      misinformedCount: 2,
-      shareCount: 5,
-      comments: 7,
-      isPublished: true,
-      createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
-      updatedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000)
-    };
-    
-    // Create a poll pulse
-    const pollPulse: Pulse = {
-      id: 2,
-      userId: userId,
-      type: "poll",
-      title: "What's your preferred development stack?",
-      content: "I'm curious about what technologies other professionals are using for their projects.",
-      mediaType: null,
-      mediaUrls: [],
-      mediaLocalStorageKeys: [],
-      pollOptions: ["MERN (MongoDB, Express, React, Node)", "LAMP (Linux, Apache, MySQL, PHP)", "JAMstack", "Python + Django/Flask", ".NET Core + Angular/React"],
-      projectId: null,
-      likes: 42,
-      insightfulCount: 30,
-      misinformedCount: 3,
-      shareCount: 10,
-      comments: 18,
-      isPublished: true,
-      createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5 days ago
-      updatedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000)
-    };
-    
-    // Create a video pulse
-    const videoPulse: Pulse = {
-      id: 3,
-      userId: userId,
-      type: "media-pulse",
-      title: "Quick Demo of My New App",
-      content: "A brief walkthrough of the application I've been developing for the past few months. Would love your feedback!",
-      mediaType: "video",
-      mediaUrls: ["https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"],
-      mediaLocalStorageKeys: [],
-      pollOptions: [],
-      projectId: null,
-      likes: 17,
-      insightfulCount: 12,
-      misinformedCount: 0,
-      shareCount: 3,
-      comments: 5,
-      isPublished: true,
-      createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // 7 days ago
-      updatedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
-    };
-    
-    // Create a project pulse
-    const projectPulse: Pulse = {
-      id: 4,
-      userId: userId,
-      type: "project",
-      title: "Just Launched: AI-Powered Career Platform",
-      content: "Excited to share my latest project! I've been working on a professional networking platform that uses AI to provide personalized career guidance and a sleek portfolio showcase. Looking for beta testers and feedback.",
-      mediaType: null,
-      mediaUrls: [],
-      mediaLocalStorageKeys: [],
-      pollOptions: [],
-      projectId: demoProject.id,
-      likes: 31,
-      insightfulCount: 25,
-      misinformedCount: 1,
-      shareCount: 7,
-      comments: 12,
-      isPublished: true,
-      createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // 1 day ago
-      updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000)
-    };
-    
-    // Add pulses to storage
-    this.pulses.set(imagePulse.id, imagePulse);
-    this.pulses.set(pollPulse.id, pollPulse);
-    this.pulses.set(videoPulse.id, videoPulse);
-    this.pulses.set(projectPulse.id, projectPulse);
-    this.currentPulseId = 5; // Set next pulse ID
-    
-    console.log("[storage.createDemoPulses] Created demo pulses for image carousel testing");
-  }
-  
   /**
-   * Create demo Nowboard items for testing
+   * Create demo pulses function removed
    */
-  private createDemoNowboardItems(userId: number): void {
-    const nowboardItem1: NowboardItem = {
-      id: 1,
-      userId: userId,
-      content: "Just completed a new course on advanced React patterns. Learning never stops!",
-      category: "learning",
-      visibility: "public",
-      inspiredCount: 5,
-      relatedSkills: "React, JavaScript, Frontend Development",
-      relatedProject: null,
-      imageUrl: null,
-      createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
-      updatedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000)
-    };
-    
-    const nowboardItem2: NowboardItem = {
-      id: 2,
-      userId: userId,
-      content: "Just launched my new portfolio website! Check it out and let me know what you think.",
-      category: "launch",
-      visibility: "public",
-      inspiredCount: 12,
-      relatedSkills: "Web Design, UI/UX, Portfolio Development",
-      relatedProject: 1, // The demo project we created earlier
-      imageUrl: null,
-      createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // 1 day ago
-      updatedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000)
-    };
-    
-    const nowboardItem3: NowboardItem = {
-      id: 3,
-      userId: userId,
-      content: "Achieved a major milestone in my current project. User engagement up by 45% after the latest update!",
-      category: "growth",
-      visibility: "public",
-      inspiredCount: 8,
-      relatedSkills: "Product Management, Analytics, Growth Hacking",
-      relatedProject: null,
-      imageUrl: null,
-      createdAt: new Date(Date.now() - 12 * 60 * 60 * 1000), // 12 hours ago
-      updatedAt: new Date(Date.now() - 12 * 60 * 60 * 1000)
-    };
-    
-    // Add Nowboard items to storage
-    this.nowboardItems.set(nowboardItem1.id, nowboardItem1);
-    this.nowboardItems.set(nowboardItem2.id, nowboardItem2);
-    this.nowboardItems.set(nowboardItem3.id, nowboardItem3);
-    this.currentNowboardItemId = 4; // Set next Nowboard item ID
-    
-    console.log("[storage.createDemoNowboardItems] Created demo Nowboard items");
+  private createDemoPulsesRemoved(userId: number): void {
+    // This function has been intentionally emptied
   }
 
-  // Pulse operations
+/**
+   * Create demo Nowboard items for testing
+   */
+  /**
+   * Create demo nowboard items function removed
+   */
+  private createDemoNowboardItemsRemoved(userId: number): void {
+    // This function has been intentionally emptied
+  }
+
+// Pulse operations
   async getPulses(): Promise<Pulse[]> {
     return Array.from(this.pulses.values())
       .sort((a, b) => {
@@ -4181,16 +3993,108 @@ export class MemStorage implements IStorage {
 
   // Career Quests operations - Quest Definition methods
   async getQuestDefinitions(): Promise<QuestDefinition[]> {
-    return Array.from(this.questDefinitions.values());
+    try {
+      console.log('[db.getQuestDefinitions] Fetching all quest definitions');
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          title,
+          description,
+          type,
+          target_count as "targetCount",
+          target_action as "targetAction",
+          xp_reward as "xpReward",
+          badge_reward as "badgeReward",
+          required_profile_completion as "requiredProfileCompletion",
+          required_career_stage as "requiredCareerStage",
+          required_industry as "requiredIndustry",
+          musk_tip as "muskTip",
+          is_active as "isActive",
+          created_at as "createdAt",
+          updated_at as "updatedAt"
+        FROM quest_definitions
+        ORDER BY id ASC
+      `);
+      
+      console.log(`[db.getQuestDefinitions] Found ${result.rows.length} quest definitions`);
+      return result.rows;
+    } catch (error) {
+      console.error('[db.getQuestDefinitions] Error fetching quest definitions:', error);
+      return [];
+    }
   }
 
   async getQuestDefinitionById(id: number): Promise<QuestDefinition | undefined> {
-    return this.questDefinitions.get(id);
+    try {
+      console.log(`[db.getQuestDefinitionById] Fetching quest definition with ID ${id}`);
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          title,
+          description,
+          type,
+          target_count as "targetCount",
+          target_action as "targetAction",
+          xp_reward as "xpReward",
+          badge_reward as "badgeReward",
+          required_profile_completion as "requiredProfileCompletion",
+          required_career_stage as "requiredCareerStage",
+          required_industry as "requiredIndustry",
+          musk_tip as "muskTip",
+          is_active as "isActive",
+          created_at as "createdAt",
+          updated_at as "updatedAt"
+        FROM quest_definitions
+        WHERE id = $1
+      `, [id]);
+      
+      if (result.rows.length === 0) {
+        console.log(`[db.getQuestDefinitionById] No quest definition found with ID ${id}`);
+        return undefined;
+      }
+      
+      console.log(`[db.getQuestDefinitionById] Found quest definition with ID ${id}`);
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.getQuestDefinitionById] Error fetching quest definition with ID ${id}:`, error);
+      return undefined;
+    }
   }
 
   async getActiveQuestDefinitions(): Promise<QuestDefinition[]> {
-    return Array.from(this.questDefinitions.values())
-      .filter(quest => quest.isActive);
+    try {
+      console.log('[db.getActiveQuestDefinitions] Fetching active quest definitions');
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          title,
+          description,
+          type,
+          target_count as "targetCount",
+          target_action as "targetAction",
+          xp_reward as "xpReward",
+          badge_reward as "badgeReward",
+          required_profile_completion as "requiredProfileCompletion",
+          required_career_stage as "requiredCareerStage",
+          required_industry as "requiredIndustry",
+          musk_tip as "muskTip",
+          is_active as "isActive",
+          created_at as "createdAt",
+          updated_at as "updatedAt"
+        FROM quest_definitions
+        WHERE is_active = true
+        ORDER BY id ASC
+      `);
+      
+      console.log(`[db.getActiveQuestDefinitions] Found ${result.rows.length} active quest definitions`);
+      return result.rows;
+    } catch (error) {
+      console.error('[db.getActiveQuestDefinitions] Error fetching active quest definitions:', error);
+      return [];
+    }
   }
 
   async getQuestDefinitionsByType(type: string): Promise<QuestDefinition[]> {
@@ -4242,194 +4146,668 @@ export class MemStorage implements IStorage {
 
   // User Quest operations
   async getUserQuestsByUserId(userId: number): Promise<UserQuest[]> {
-    return Array.from(this.userQuests.values())
-      .filter(quest => quest.userId === userId)
-      .sort((a, b) => {
-        // Sort by most recently assigned first
-        const timeA = a.assignedAt ? a.assignedAt.getTime() : 0;
-        const timeB = b.assignedAt ? b.assignedAt.getTime() : 0;
-        return timeB - timeA;
-      });
+    try {
+      console.log(`[db.getUserQuestsByUserId] Fetching quests for user ${userId}`);
+      
+      // Check if the table exists first
+      const tableCheck = await pool.query(`
+        SELECT EXISTS (
+          SELECT 1 
+          FROM information_schema.tables 
+          WHERE table_name = 'user_quests'
+        );
+      `);
+      
+      if (!tableCheck.rows[0].exists) {
+        console.log(`[db.getUserQuestsByUserId] user_quests table does not exist`);
+        return [];
+      }
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          user_id as "userId",
+          quest_definition_id as "questDefinitionId",
+          status,
+          progress,
+          assigned_at as "assignedAt",
+          completed_at as "completedAt",
+          dismissed_reason as "dismissedReason",
+          xp_earned as "xpEarned",
+          badge_earned as "badgeEarned",
+          musk_response as "muskResponse",
+          week_number as "weekNumber",
+          year
+        FROM user_quests
+        WHERE user_id = $1
+        ORDER BY assigned_at DESC
+      `, [userId]);
+      
+      console.log(`[db.getUserQuestsByUserId] Found ${result.rows.length} quests for user ${userId}`);
+      return result.rows;
+    } catch (error) {
+      console.error(`[db.getUserQuestsByUserId] Error fetching quests for user ${userId}:`, error);
+      // Return empty array instead of failing
+      return [];
+    }
   }
+  
+
 
   async getUserQuestById(id: number): Promise<UserQuest | undefined> {
-    return this.userQuests.get(id);
+    try {
+      console.log(`[db.getUserQuestById] Fetching quest with ID ${id}`);
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          user_id as "userId",
+          quest_definition_id as "questDefinitionId",
+          status,
+          progress,
+          assigned_at as "assignedAt",
+          completed_at as "completedAt",
+          dismissed_reason as "dismissedReason",
+          xp_earned as "xpEarned",
+          badge_earned as "badgeEarned",
+          musk_response as "muskResponse",
+          week_number as "weekNumber",
+          year
+        FROM user_quests
+        WHERE id = $1
+      `, [id]);
+      
+      if (result.rows.length === 0) {
+        console.log(`[db.getUserQuestById] No quest found with ID ${id}`);
+        return undefined;
+      }
+      
+      console.log(`[db.getUserQuestById] Found quest with ID ${id}`);
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.getUserQuestById] Error fetching quest with ID ${id}:`, error);
+      return undefined;
+    }
   }
-
+  
   async getActiveUserQuests(userId: number): Promise<UserQuest[]> {
-    return Array.from(this.userQuests.values())
-      .filter(quest => quest.userId === userId && quest.status === "active")
-      .sort((a, b) => {
-        // Sort by most recently assigned first
-        const timeA = a.assignedAt ? a.assignedAt.getTime() : 0;
-        const timeB = b.assignedAt ? b.assignedAt.getTime() : 0;
-        return timeB - timeA;
-      });
+    try {
+      console.log(`[db.getActiveUserQuests] Fetching active quests for user ${userId}`);
+      
+      // Check if the table exists first
+      const tableCheck = await pool.query(`
+        SELECT EXISTS (
+          SELECT 1 
+          FROM information_schema.tables 
+          WHERE table_name = 'user_quests'
+        );
+      `);
+      
+      if (!tableCheck.rows[0].exists) {
+        console.log(`[db.getActiveUserQuests] user_quests table does not exist`);
+        return [];
+      }
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          user_id as "userId",
+          quest_definition_id as "questDefinitionId",
+          status,
+          progress,
+          assigned_at as "assignedAt",
+          completed_at as "completedAt",
+          dismissed_reason as "dismissedReason",
+          xp_earned as "xpEarned",
+          badge_earned as "badgeEarned",
+          musk_response as "muskResponse",
+          week_number as "weekNumber",
+          year
+        FROM user_quests
+        WHERE user_id = $1 AND status = 'active'
+        ORDER BY assigned_at DESC
+      `, [userId]);
+      
+      console.log(`[db.getActiveUserQuests] Found ${result.rows.length} active quests for user ${userId}`);
+      return result.rows;
+    } catch (error) {
+      console.error(`[db.getActiveUserQuests] Error fetching active quests for user ${userId}:`, error);
+      return [];
+    }
   }
 
   async getCompletedUserQuests(userId: number): Promise<UserQuest[]> {
-    return Array.from(this.userQuests.values())
-      .filter(quest => quest.userId === userId && quest.status === "completed")
-      .sort((a, b) => {
-        // Sort by most recently completed first
-        const timeA = a.completedAt ? a.completedAt.getTime() : 0;
-        const timeB = b.completedAt ? b.completedAt.getTime() : 0;
-        return timeB - timeA;
-      });
+    try {
+      console.log(`[db.getCompletedUserQuests] Fetching completed quests for user ${userId}`);
+      
+      // Check if the table exists first
+      const tableCheck = await pool.query(`
+        SELECT EXISTS (
+          SELECT 1 
+          FROM information_schema.tables 
+          WHERE table_name = 'user_quests'
+        );
+      `);
+      
+      if (!tableCheck.rows[0].exists) {
+        console.log(`[db.getCompletedUserQuests] user_quests table does not exist`);
+        return [];
+      }
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          user_id as "userId",
+          quest_definition_id as "questDefinitionId",
+          status,
+          progress,
+          assigned_at as "assignedAt",
+          completed_at as "completedAt",
+          dismissed_reason as "dismissedReason",
+          xp_earned as "xpEarned",
+          badge_earned as "badgeEarned",
+          musk_response as "muskResponse",
+          week_number as "weekNumber",
+          year
+        FROM user_quests
+        WHERE user_id = $1 AND status = 'completed'
+        ORDER BY completed_at DESC
+      `, [userId]);
+      
+      console.log(`[db.getCompletedUserQuests] Found ${result.rows.length} completed quests for user ${userId}`);
+      return result.rows;
+    } catch (error) {
+      console.error(`[db.getCompletedUserQuests] Error fetching completed quests for user ${userId}:`, error);
+      return [];
+    }
+  }
+
+  // Utility function to get the ISO week number from a date
+  getWeekNumber(date: Date): number {
+    // Create a copy of the date to avoid modifying the original
+    const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+    
+    // Set to nearest Thursday: current date + 4 - current day number
+    // Make Sunday's day number 7
+    d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+    
+    // Get first day of year
+    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+    
+    // Calculate full weeks to nearest Thursday
+    const weekNumber = Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
+    
+    return weekNumber;
   }
 
   async getCurrentWeekUserQuests(userId: number): Promise<UserQuest[]> {
-    // Get current week number and year
-    const now = new Date();
-    const currentWeek = this.getWeekNumber(now);
-    const currentYear = now.getFullYear();
-    
-    return Array.from(this.userQuests.values())
-      .filter(quest => 
-        quest.userId === userId && 
-        quest.weekNumber === currentWeek &&
-        quest.year === currentYear)
-      .sort((a, b) => {
-        if (a.status === "completed" && b.status !== "completed") return 1;
-        if (a.status !== "completed" && b.status === "completed") return -1;
-        return 0;
-      });
+    try {
+      // Get current week number and year
+      const now = new Date();
+      const currentWeek = this.getWeekNumber(now);
+      const currentYear = now.getFullYear();
+      
+      console.log(`[db.getCurrentWeekUserQuests] Fetching week ${currentWeek} year ${currentYear} quests for user ${userId}`);
+      
+      // Check if the table exists first
+      const tableCheck = await pool.query(`
+        SELECT EXISTS (
+          SELECT 1 
+          FROM information_schema.tables 
+          WHERE table_name = 'user_quests'
+        );
+      `);
+      
+      if (!tableCheck.rows[0].exists) {
+        console.log(`[db.getCurrentWeekUserQuests] user_quests table does not exist`);
+        return [];
+      }
+      
+      // Check table columns
+      try {
+        const columnCheck = await pool.query(`
+          SELECT column_name 
+          FROM information_schema.columns 
+          WHERE table_name = 'user_quests';
+        `);
+        
+        console.log(`[db.getCurrentWeekUserQuests] Found columns:`, columnCheck.rows.map(r => r.column_name).join(', '));
+      } catch (err) {
+        console.log(`[db.getCurrentWeekUserQuests] Failed to check columns:`, err);
+      }
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          user_id as "userId",
+          quest_definition_id as "questDefinitionId",
+          status,
+          progress,
+          assigned_at as "assignedAt",
+          completed_at as "completedAt",
+          dismissed_reason as "dismissedReason",
+          xp_earned as "xpEarned",
+          badge_earned as "badgeEarned",
+          musk_response as "muskResponse",
+          week_number as "weekNumber",
+          year
+        FROM user_quests
+        WHERE user_id = $1
+          AND week_number = $2
+          AND year = $3
+        ORDER BY 
+          CASE status 
+            WHEN 'completed' THEN 2
+            WHEN 'dismissed' THEN 1
+            ELSE 0
+          END,
+          assigned_at DESC
+      `, [userId, currentWeek, currentYear]);
+      
+      console.log(`[db.getCurrentWeekUserQuests] Found ${result.rows.length} quests for user ${userId} in week ${currentWeek}`);
+      return result.rows;
+    } catch (error) {
+      console.error(`[db.getCurrentWeekUserQuests] Error fetching quests for user ${userId}:`, error);
+      // Return empty array to prevent cascading errors
+      return [];
+    }
   }
 
   async createUserQuest(quest: InsertUserQuest): Promise<UserQuest> {
-    const id = this.currentUserQuestId++;
-    const assignedAt = new Date();
-    
-    // Get current week number and year if not provided
-    const now = new Date();
-    const weekNumber = quest.weekNumber || this.getWeekNumber(now);
-    const year = quest.year || now.getFullYear();
-    
-    const userQuest: UserQuest = {
-      ...quest,
-      id,
-      assignedAt,
-      weekNumber,
-      year,
-      progress: quest.progress ?? 0,
-      status: quest.status ?? "active",
-      completedAt: null,
-      dismissedReason: null,
-      xpEarned: null,
-      badgeEarned: null,
-      muskResponse: null
-    };
-    
-    this.userQuests.set(id, userQuest);
-    return userQuest;
+    try {
+      console.log(`[db.createUserQuest] Creating quest for user ${quest.userId}, definition ${quest.questDefinitionId}`);
+      
+      // Get current week number and year if not provided
+      const now = new Date();
+      const weekNumber = quest.weekNumber || this.getWeekNumber(now);
+      const year = quest.year || now.getFullYear();
+      
+      const result = await pool.query(`
+        INSERT INTO user_quests (
+          user_id,
+          quest_definition_id,
+          status,
+          progress,
+          assigned_at,
+          week_number,
+          year
+        ) VALUES (
+          $1, $2, $3, $4, $5, $6, $7
+        ) RETURNING
+          id,
+          user_id as "userId",
+          quest_definition_id as "questDefinitionId",
+          status,
+          progress,
+          assigned_at as "assignedAt",
+          completed_at as "completedAt",
+          dismissed_reason as "dismissedReason",
+          xp_earned as "xpEarned",
+          badge_earned as "badgeEarned",
+          musk_response as "muskResponse",
+          week_number as "weekNumber",
+          year
+      `, [
+        quest.userId,
+        quest.questDefinitionId,
+        quest.status || "active",
+        quest.progress || 0,
+        new Date(),
+        weekNumber,
+        year
+      ]);
+      
+      console.log(`[db.createUserQuest] Created quest with ID ${result.rows[0].id} for user ${quest.userId}`);
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.createUserQuest] Error creating quest for user ${quest.userId}:`, error);
+      throw error;
+    }
   }
 
   async updateUserQuest(id: number, quest: Partial<UserQuest>): Promise<UserQuest | undefined> {
-    const existingQuest = this.userQuests.get(id);
-    if (!existingQuest) return undefined;
-    
-    const updatedQuest: UserQuest = {
-      ...existingQuest,
-      ...quest
-    };
-    
-    this.userQuests.set(id, updatedQuest);
-    return updatedQuest;
+    try {
+      console.log(`[db.updateUserQuest] Updating quest with ID ${id}`);
+      
+      // Check if the table exists first
+      const tableCheck = await pool.query(`
+        SELECT EXISTS (
+          SELECT 1 
+          FROM information_schema.tables 
+          WHERE table_name = 'user_quests'
+        );
+      `);
+      
+      if (!tableCheck.rows[0].exists) {
+        console.log(`[db.updateUserQuest] user_quests table does not exist`);
+        return undefined;
+      }
+      
+      // Get the existing quest
+      const existingResult = await pool.query(`
+        SELECT * FROM user_quests WHERE id = $1
+      `, [id]);
+      
+      if (existingResult.rows.length === 0) {
+        console.log(`[db.updateUserQuest] No quest found with ID ${id}`);
+        return undefined;
+      }
+      
+      // Build the SET clause for the update query
+      const updates: string[] = [];
+      const values: any[] = [];
+      let valueIndex = 1;
+      
+      // Add each property to update
+      if (quest.status !== undefined) {
+        updates.push(`status = $${valueIndex}`);
+        values.push(quest.status);
+        valueIndex++;
+      }
+      
+      if (quest.progress !== undefined) {
+        updates.push(`progress = $${valueIndex}`);
+        values.push(quest.progress);
+        valueIndex++;
+      }
+      
+      if (quest.completedAt !== undefined) {
+        updates.push(`completed_at = $${valueIndex}`);
+        values.push(quest.completedAt);
+        valueIndex++;
+      }
+      
+      if (quest.dismissedReason !== undefined) {
+        updates.push(`dismissed_reason = $${valueIndex}`);
+        values.push(quest.dismissedReason);
+        valueIndex++;
+      }
+      
+      if (quest.xpEarned !== undefined) {
+        updates.push(`xp_earned = $${valueIndex}`);
+        values.push(quest.xpEarned);
+        valueIndex++;
+      }
+      
+      if (quest.badgeEarned !== undefined) {
+        updates.push(`badge_earned = $${valueIndex}`);
+        values.push(quest.badgeEarned);
+        valueIndex++;
+      }
+      
+      if (quest.muskResponse !== undefined) {
+        updates.push(`musk_response = $${valueIndex}`);
+        values.push(quest.muskResponse);
+        valueIndex++;
+      }
+      
+      // Add the ID as the last parameter
+      values.push(id);
+      
+      // Execute the update
+      if (updates.length > 0) {
+        const updateQuery = `
+          UPDATE user_quests
+          SET ${updates.join(', ')}
+          WHERE id = $${valueIndex}
+          RETURNING 
+            id,
+            user_id as "userId",
+            quest_definition_id as "questDefinitionId",
+            status,
+            progress,
+            assigned_at as "assignedAt",
+            completed_at as "completedAt",
+            dismissed_reason as "dismissedReason",
+            xp_earned as "xpEarned",
+            badge_earned as "badgeEarned",
+            musk_response as "muskResponse",
+            week_number as "weekNumber",
+            year
+        `;
+        
+        const result = await pool.query(updateQuery, values);
+        console.log(`[db.updateUserQuest] Updated quest with ID ${id}`);
+        return result.rows[0];
+      } else {
+        // If no updates were specified, just return the existing quest
+        console.log(`[db.updateUserQuest] No updates specified for quest with ID ${id}`);
+        const result = await pool.query(`
+          SELECT 
+            id,
+            user_id as "userId",
+            quest_definition_id as "questDefinitionId",
+            status,
+            progress,
+            assigned_at as "assignedAt",
+            completed_at as "completedAt",
+            dismissed_reason as "dismissedReason",
+            xp_earned as "xpEarned",
+            badge_earned as "badgeEarned",
+            musk_response as "muskResponse",
+            week_number as "weekNumber",
+            year
+          FROM user_quests
+          WHERE id = $1
+        `, [id]);
+        
+        return result.rows[0];
+      }
+    } catch (error) {
+      console.error(`[db.updateUserQuest] Error updating quest with ID ${id}:`, error);
+      return undefined;
+    }
   }
 
   async completeUserQuest(id: number, earnedXp?: number): Promise<UserQuest | undefined> {
-    const quest = this.userQuests.get(id);
-    if (!quest) return undefined;
-    
-    // Only complete if active
-    if (quest.status !== "active") return quest;
-    
-    // Get quest definition
-    const questDefinition = await this.getQuestDefinitionById(quest.questDefinitionId);
-    if (!questDefinition) return undefined;
-    
-    // Set XP earned (either provided or from quest definition)
-    const xpEarned = earnedXp || questDefinition.xpReward;
-    
-    // Update the quest
-    const completedQuest: UserQuest = {
-      ...quest,
-      status: "completed",
-      completedAt: new Date(),
-      progress: questDefinition.targetCount, // Set to target count
-      xpEarned,
-      badgeEarned: questDefinition.badgeReward || null
-    };
-    
-    this.userQuests.set(id, completedQuest);
-    
-    // If there's a badge reward, award it to the user
-    if (questDefinition.badgeReward) {
-      await this.createUserBadge({
-        userId: quest.userId,
-        badgeType: questDefinition.badgeReward,
-        questId: id,
-        displayOnProfile: true,
-        displayOnResume: false
-      });
+    try {
+      console.log(`[db.completeUserQuest] Completing quest with ID ${id}`);
+      
+      // Get the quest
+      const quest = await this.getUserQuestById(id);
+      if (!quest) {
+        console.log(`[db.completeUserQuest] No quest found with ID ${id}`);
+        return undefined;
+      }
+      
+      // Only complete if active
+      if (quest.status !== "active") {
+        console.log(`[db.completeUserQuest] Quest with ID ${id} is not active (status: ${quest.status})`);
+        return quest;
+      }
+      
+      // Get quest definition
+      const questDefinition = await this.getQuestDefinitionById(quest.questDefinitionId);
+      if (!questDefinition) {
+        console.log(`[db.completeUserQuest] Quest definition not found for quest ID ${id}`);
+        return undefined;
+      }
+      
+      // Set XP earned (either provided or from quest definition)
+      const xpEarned = earnedXp || questDefinition.xpReward;
+      const now = new Date();
+      
+      // Update quest
+      const result = await pool.query(`
+        UPDATE user_quests
+        SET 
+          status = 'completed',
+          completed_at = $1,
+          progress = $2,
+          xp_earned = $3,
+          badge_earned = $4
+        WHERE id = $5
+        RETURNING 
+          id,
+          user_id as "userId",
+          quest_definition_id as "questDefinitionId",
+          status,
+          progress,
+          assigned_at as "assignedAt",
+          completed_at as "completedAt",
+          dismissed_reason as "dismissedReason",
+          xp_earned as "xpEarned",
+          badge_earned as "badgeEarned",
+          musk_response as "muskResponse",
+          week_number as "weekNumber",
+          year
+      `, [
+        now,
+        questDefinition.targetCount,
+        xpEarned,
+        questDefinition.badgeReward || null,
+        id
+      ]);
+      
+      const completedQuest = result.rows[0];
+      console.log(`[db.completeUserQuest] Completed quest with ID ${id}, earned XP: ${xpEarned}`);
+      
+      // If there's a badge reward, award it to the user
+      if (questDefinition.badgeReward) {
+        try {
+          await this.createUserBadge({
+            userId: quest.userId,
+            badgeType: questDefinition.badgeReward,
+            questId: id,
+            displayOnProfile: true,
+            displayOnResume: false
+          });
+          console.log(`[db.completeUserQuest] Awarded badge ${questDefinition.badgeReward} to user ${quest.userId}`);
+        } catch (badgeError) {
+          console.error(`[db.completeUserQuest] Error awarding badge to user ${quest.userId}:`, badgeError);
+        }
+      }
+      
+      // Add XP to user account
+      try {
+        await this.incrementUserXp(
+          quest.userId, 
+          xpEarned, 
+          "quest_completion", 
+          id
+        );
+        console.log(`[db.completeUserQuest] Added ${xpEarned} XP to user ${quest.userId}`);
+      } catch (xpError) {
+        console.error(`[db.completeUserQuest] Error adding XP to user ${quest.userId}:`, xpError);
+      }
+      
+      return completedQuest;
+    } catch (error) {
+      console.error(`[db.completeUserQuest] Error completing quest with ID ${id}:`, error);
+      return undefined;
     }
-    
-    // Add XP to user account
-    await this.incrementUserXp(
-      quest.userId, 
-      xpEarned, 
-      "quest_completion", 
-      id
-    );
-    
-    return completedQuest;
   }
 
   async dismissUserQuest(id: number, reason?: string): Promise<UserQuest | undefined> {
-    const quest = this.userQuests.get(id);
-    if (!quest) return undefined;
-    
-    // Only dismiss if active
-    if (quest.status !== "active") return quest;
-    
-    const dismissedQuest: UserQuest = {
-      ...quest,
-      status: "dismissed",
-      dismissedReason: reason || null
-    };
-    
-    this.userQuests.set(id, dismissedQuest);
-    return dismissedQuest;
+    try {
+      console.log(`[db.dismissUserQuest] Dismissing quest with ID ${id}`);
+      
+      // Get the quest
+      const quest = await this.getUserQuestById(id);
+      if (!quest) {
+        console.log(`[db.dismissUserQuest] No quest found with ID ${id}`);
+        return undefined;
+      }
+      
+      // Only dismiss if active
+      if (quest.status !== "active") {
+        console.log(`[db.dismissUserQuest] Quest with ID ${id} is not active (status: ${quest.status})`);
+        return quest;
+      }
+      
+      // Update quest
+      const result = await pool.query(`
+        UPDATE user_quests
+        SET 
+          status = 'dismissed',
+          dismissed_reason = $1
+        WHERE id = $2
+        RETURNING 
+          id,
+          user_id as "userId",
+          quest_definition_id as "questDefinitionId",
+          status,
+          progress,
+          assigned_at as "assignedAt",
+          completed_at as "completedAt",
+          dismissed_reason as "dismissedReason",
+          xp_earned as "xpEarned",
+          badge_earned as "badgeEarned",
+          musk_response as "muskResponse",
+          week_number as "weekNumber",
+          year
+      `, [reason || null, id]);
+      
+      console.log(`[db.dismissUserQuest] Dismissed quest with ID ${id}`);
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.dismissUserQuest] Error dismissing quest with ID ${id}:`, error);
+      return undefined;
+    }
   }
 
   async incrementQuestProgress(id: number): Promise<UserQuest | undefined> {
-    const quest = this.userQuests.get(id);
-    if (!quest) return undefined;
-    
-    // Only increment if active
-    if (quest.status !== "active") return quest;
-    
-    // Get quest definition
-    const questDefinition = await this.getQuestDefinitionById(quest.questDefinitionId);
-    if (!questDefinition) return undefined;
-    
-    // Calculate new progress
-    const newProgress = quest.progress + 1;
-    
-    // Update the quest
-    const updatedQuest: UserQuest = {
-      ...quest,
-      progress: newProgress
-    };
-    
-    this.userQuests.set(id, updatedQuest);
-    
-    // If progress meets the target, complete the quest
-    if (newProgress >= questDefinition.targetCount) {
-      return this.completeUserQuest(id);
+    try {
+      console.log(`[db.incrementQuestProgress] Incrementing progress for quest with ID ${id}`);
+      
+      // Get the quest
+      const quest = await this.getUserQuestById(id);
+      if (!quest) {
+        console.log(`[db.incrementQuestProgress] No quest found with ID ${id}`);
+        return undefined;
+      }
+      
+      // Only increment if active
+      if (quest.status !== "active") {
+        console.log(`[db.incrementQuestProgress] Quest with ID ${id} is not active (status: ${quest.status})`);
+        return quest;
+      }
+      
+      // Get quest definition
+      const questDefinition = await this.getQuestDefinitionById(quest.questDefinitionId);
+      if (!questDefinition) {
+        console.log(`[db.incrementQuestProgress] Quest definition not found for quest ID ${id}`);
+        return undefined;
+      }
+      
+      // Calculate new progress
+      const newProgress = quest.progress + 1;
+      
+      // Update quest
+      const result = await pool.query(`
+        UPDATE user_quests
+        SET progress = $1
+        WHERE id = $2
+        RETURNING 
+          id,
+          user_id as "userId",
+          quest_definition_id as "questDefinitionId",
+          status,
+          progress,
+          assigned_at as "assignedAt",
+          completed_at as "completedAt",
+          dismissed_reason as "dismissedReason",
+          xp_earned as "xpEarned",
+          badge_earned as "badgeEarned",
+          musk_response as "muskResponse",
+          week_number as "weekNumber",
+          year
+      `, [newProgress, id]);
+      
+      const updatedQuest = result.rows[0];
+      console.log(`[db.incrementQuestProgress] Incremented progress for quest with ID ${id} to ${newProgress}`);
+      
+      // If progress meets the target, complete the quest
+      if (newProgress >= questDefinition.targetCount) {
+        console.log(`[db.incrementQuestProgress] Quest with ID ${id} meets completion criteria, completing...`);
+        return this.completeUserQuest(id);
+      }
+      
+      return updatedQuest;
+    } catch (error) {
+      console.error(`[db.incrementQuestProgress] Error incrementing progress for quest with ID ${id}:`, error);
+      return undefined;
     }
-    
-    return updatedQuest;
   }
 
   async assignWeeklyQuestsToUser(userId: number): Promise<UserQuest[]> {
@@ -4520,8 +4898,85 @@ export class MemStorage implements IStorage {
 
   // User XP operations
   async getUserXp(userId: number): Promise<UserXp | undefined> {
-    return Array.from(this.userXp.values())
-      .find(xp => xp.userId === userId);
+    try {
+      console.log(`[db.getUserXp] Fetching XP for user ${userId}`);
+      
+      // Check if the table exists first
+      const tableCheck = await pool.query(`
+        SELECT EXISTS (
+          SELECT 1 
+          FROM information_schema.tables 
+          WHERE table_name = 'user_xp'
+        );
+      `);
+      
+      if (!tableCheck.rows[0].exists) {
+        console.log(`[db.getUserXp] user_xp table does not exist`);
+        
+        // If table doesn't exist, create default XP record in memory instead of failing
+        return {
+          id: 0,
+          userId: userId,
+          balance: 0,
+          lifetimeEarned: 0,
+          currentMonthEarned: 0,
+          lastEarnedAt: null,
+          lastResetAt: null,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+      }
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          user_id as "userId",
+          balance,
+          lifetime_earned as "lifetimeEarned",
+          current_month_earned as "currentMonthEarned",
+          last_earned_at as "lastEarnedAt",
+          last_reset_at as "lastResetAt",
+          created_at as "createdAt",
+          updated_at as "updatedAt"
+        FROM user_xp
+        WHERE user_id = $1
+      `, [userId]);
+      
+      if (result.rows.length === 0) {
+        console.log(`[db.getUserXp] No XP record found for user ${userId}`);
+        
+        // Create default record if none found
+        return {
+          id: 0,
+          userId: userId,
+          balance: 0,
+          lifetimeEarned: 0,
+          currentMonthEarned: 0,
+          lastEarnedAt: null,
+          lastResetAt: null,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+      }
+      
+      console.log(`[db.getUserXp] Found XP record for user ${userId}`);
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.getUserXp] Error fetching XP for user ${userId}:`, error);
+      
+      // Return a default record instead of undefined to prevent UI errors
+      return {
+        id: 0,
+        userId: userId,
+        balance: 0,
+        lifetimeEarned: 0,
+        currentMonthEarned: 0,
+        lastEarnedAt: null,
+        lastResetAt: null,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+    }
   }
 
   async createUserXp(userXp: InsertUserXp): Promise<UserXp> {
@@ -4648,106 +5103,472 @@ export class MemStorage implements IStorage {
     }
   }
 
+  // Quest Definition operations
+  async getQuestDefinitions(): Promise<QuestDefinition[]> {
+    try {
+      console.log('[db.getQuestDefinitions] Fetching all quest definitions');
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          title,
+          description,
+          type,
+          target_count as "targetCount",
+          target_action as "targetAction",
+          xp_reward as "xpReward",
+          badge_reward as "badgeReward",
+          required_profile_completion as "requiredProfileCompletion",
+          required_career_stage as "requiredCareerStage",
+          required_industry as "requiredIndustry",
+          musk_tip as "muskTip",
+          is_active as "isActive",
+          created_at as "createdAt",
+          updated_at as "updatedAt"
+        FROM quest_definitions
+        ORDER BY id ASC
+      `);
+      
+      console.log(`[db.getQuestDefinitions] Found ${result.rows.length} quest definitions`);
+      return result.rows;
+    } catch (error) {
+      console.error('[db.getQuestDefinitions] Error fetching quest definitions:', error);
+      return [];
+    }
+  }
+  
+  async getActiveQuestDefinitions(): Promise<QuestDefinition[]> {
+    try {
+      console.log('[db.getActiveQuestDefinitions] Fetching active quest definitions');
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          title,
+          description,
+          type,
+          target_count as "targetCount",
+          target_action as "targetAction",
+          xp_reward as "xpReward",
+          badge_reward as "badgeReward",
+          required_profile_completion as "requiredProfileCompletion",
+          required_career_stage as "requiredCareerStage",
+          required_industry as "requiredIndustry",
+          musk_tip as "muskTip",
+          is_active as "isActive",
+          created_at as "createdAt",
+          updated_at as "updatedAt"
+        FROM quest_definitions
+        WHERE is_active = true
+        ORDER BY id ASC
+      `);
+      
+      console.log(`[db.getActiveQuestDefinitions] Found ${result.rows.length} active quest definitions`);
+      return result.rows;
+    } catch (error) {
+      console.error('[db.getActiveQuestDefinitions] Error fetching active quest definitions:', error);
+      return [];
+    }
+  }
+  
+  async getQuestDefinitionsByType(type: string): Promise<QuestDefinition[]> {
+    try {
+      console.log(`[db.getQuestDefinitionsByType] Fetching quest definitions of type ${type}`);
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          title,
+          description,
+          type,
+          target_count as "targetCount",
+          target_action as "targetAction",
+          xp_reward as "xpReward",
+          badge_reward as "badgeReward",
+          required_profile_completion as "requiredProfileCompletion",
+          required_career_stage as "requiredCareerStage",
+          required_industry as "requiredIndustry",
+          musk_tip as "muskTip",
+          is_active as "isActive",
+          created_at as "createdAt",
+          updated_at as "updatedAt"
+        FROM quest_definitions
+        WHERE type = $1
+        ORDER BY id ASC
+      `, [type]);
+      
+      console.log(`[db.getQuestDefinitionsByType] Found ${result.rows.length} quest definitions of type ${type}`);
+      return result.rows;
+    } catch (error) {
+      console.error(`[db.getQuestDefinitionsByType] Error fetching quest definitions of type ${type}:`, error);
+      return [];
+    }
+  }
+  
   // User Badge operations
+  async getUserBadgeById(id: number): Promise<UserBadge | undefined> {
+    try {
+      console.log(`[db.getUserBadgeById] Fetching badge with ID ${id}`);
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          user_id as "userId",
+          badge_type as "badgeType",
+          quest_id as "questId",
+          display_on_profile as "displayOnProfile",
+          display_on_resume as "displayOnResume",
+          earned_at as "earnedAt"
+        FROM user_badges
+        WHERE id = $1
+      `, [id]);
+      
+      if (result.rows.length === 0) {
+        console.log(`[db.getUserBadgeById] No badge found with ID ${id}`);
+        return undefined;
+      }
+      
+      console.log(`[db.getUserBadgeById] Found badge with ID ${id}`);
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.getUserBadgeById] Error fetching badge with ID ${id}:`, error);
+      return undefined;
+    }
+  }
+
   async getUserBadges(userId: number): Promise<UserBadge[]> {
-    return Array.from(this.userBadges.values())
-      .filter(badge => badge.userId === userId)
-      .sort((a, b) => {
-        // Sort by most recently earned first
-        const timeA = a.earnedAt ? a.earnedAt.getTime() : 0;
-        const timeB = b.earnedAt ? b.earnedAt.getTime() : 0;
-        return timeB - timeA;
-      });
+    try {
+      console.log(`[db.getUserBadges] Fetching badges for user ${userId}`);
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          user_id as "userId",
+          badge_type as "badgeType",
+          quest_id as "questId",
+          display_on_profile as "displayOnProfile",
+          display_on_resume as "displayOnResume",
+          earned_at as "earnedAt"
+        FROM user_badges
+        WHERE user_id = $1
+        ORDER BY earned_at DESC
+      `, [userId]);
+      
+      console.log(`[db.getUserBadges] Found ${result.rows.length} badges for user ${userId}`);
+      return result.rows;
+    } catch (error) {
+      console.error(`[db.getUserBadges] Error fetching badges for user ${userId}:`, error);
+      return [];
+    }
   }
 
   async getUserBadgeById(id: number): Promise<UserBadge | undefined> {
-    return this.userBadges.get(id);
+    try {
+      console.log(`[db.getUserBadgeById] Fetching badge with ID ${id}`);
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          user_id as "userId",
+          badge_type as "badgeType",
+          quest_id as "questId",
+          display_on_profile as "displayOnProfile",
+          display_on_resume as "displayOnResume",
+          earned_at as "earnedAt"
+        FROM user_badges
+        WHERE id = $1
+      `, [id]);
+      
+      if (result.rows.length === 0) {
+        console.log(`[db.getUserBadgeById] No badge found with ID ${id}`);
+        return undefined;
+      }
+      
+      console.log(`[db.getUserBadgeById] Found badge with ID ${id}`);
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.getUserBadgeById] Error fetching badge with ID ${id}:`, error);
+      return undefined;
+    }
   }
 
   async getUserBadgesByType(userId: number, badgeType: string): Promise<UserBadge[]> {
-    return Array.from(this.userBadges.values())
-      .filter(badge => badge.userId === userId && badge.badgeType === badgeType)
-      .sort((a, b) => {
-        // Sort by most recently earned first
-        const timeA = a.earnedAt ? a.earnedAt.getTime() : 0;
-        const timeB = b.earnedAt ? b.earnedAt.getTime() : 0;
-        return timeB - timeA;
-      });
+    try {
+      console.log(`[db.getUserBadgesByType] Fetching badges for user ${userId} and type ${badgeType}`);
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          user_id as "userId",
+          badge_type as "badgeType",
+          quest_id as "questId",
+          display_on_profile as "displayOnProfile",
+          display_on_resume as "displayOnResume",
+          earned_at as "earnedAt"
+        FROM user_badges
+        WHERE user_id = $1 AND badge_type = $2
+        ORDER BY earned_at DESC
+      `, [userId, badgeType]);
+      
+      console.log(`[db.getUserBadgesByType] Found ${result.rows.length} badges for user ${userId} and type ${badgeType}`);
+      return result.rows;
+    } catch (error) {
+      console.error(`[db.getUserBadgesByType] Error fetching badges for user ${userId} and type ${badgeType}:`, error);
+      return [];
+    }
   }
 
   async createUserBadge(badge: InsertUserBadge): Promise<UserBadge> {
-    const id = this.currentUserBadgeId++;
-    const earnedAt = new Date();
-    
-    const userBadge: UserBadge = {
-      ...badge,
-      id,
-      earnedAt,
-      displayOnProfile: badge.displayOnProfile ?? true,
-      displayOnResume: badge.displayOnResume ?? false
-    };
-    
-    this.userBadges.set(id, userBadge);
-    return userBadge;
+    try {
+      console.log(`[db.createUserBadge] Creating badge for user ${badge.userId} of type ${badge.badgeType}`);
+      
+      const result = await pool.query(`
+        INSERT INTO user_badges (
+          user_id,
+          badge_type,
+          quest_id,
+          display_on_profile,
+          display_on_resume,
+          earned_at
+        ) VALUES (
+          $1, $2, $3, $4, $5, $6
+        ) RETURNING
+          id,
+          user_id as "userId",
+          badge_type as "badgeType",
+          quest_id as "questId",
+          display_on_profile as "displayOnProfile",
+          display_on_resume as "displayOnResume",
+          earned_at as "earnedAt"
+      `, [
+        badge.userId,
+        badge.badgeType,
+        badge.questId || null,
+        badge.displayOnProfile ?? true,
+        badge.displayOnResume ?? false,
+        new Date()
+      ]);
+      
+      console.log(`[db.createUserBadge] Created badge with ID ${result.rows[0].id} for user ${badge.userId}`);
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.createUserBadge] Error creating badge for user ${badge.userId}:`, error);
+      throw error;
+    }
   }
 
   async updateUserBadge(id: number, badge: Partial<UserBadge>): Promise<UserBadge | undefined> {
-    const existingBadge = this.userBadges.get(id);
-    if (!existingBadge) return undefined;
-    
-    const updatedBadge: UserBadge = {
-      ...existingBadge,
-      ...badge
-    };
-    
-    this.userBadges.set(id, updatedBadge);
-    return updatedBadge;
+    try {
+      console.log(`[db.updateUserBadge] Updating badge with ID ${id}`);
+      
+      // First check if the badge exists
+      const existingBadge = await this.getUserBadgeById(id);
+      if (!existingBadge) {
+        console.log(`[db.updateUserBadge] No badge found with ID ${id}`);
+        return undefined;
+      }
+      
+      // Build the SET clause dynamically based on provided fields
+      const updates = [];
+      const values = [id]; // First parameter is always the badge ID
+      let paramCount = 2; // Start counting from 2 since $1 is already used for id
+      
+      if (badge.badgeType !== undefined) {
+        updates.push(`badge_type = $${paramCount}`);
+        values.push(badge.badgeType);
+        paramCount++;
+      }
+      
+      if (badge.questId !== undefined) {
+        updates.push(`quest_id = $${paramCount}`);
+        values.push(badge.questId);
+        paramCount++;
+      }
+      
+      if (badge.displayOnProfile !== undefined) {
+        updates.push(`display_on_profile = $${paramCount}`);
+        values.push(badge.displayOnProfile);
+        paramCount++;
+      }
+      
+      if (badge.displayOnResume !== undefined) {
+        updates.push(`display_on_resume = $${paramCount}`);
+        values.push(badge.displayOnResume);
+        paramCount++;
+      }
+      
+      // If nothing to update, return the existing badge
+      if (updates.length === 0) {
+        console.log(`[db.updateUserBadge] No fields to update for badge with ID ${id}`);
+        return existingBadge;
+      }
+      
+      const result = await pool.query(`
+        UPDATE user_badges
+        SET ${updates.join(', ')}
+        WHERE id = $1
+        RETURNING
+          id,
+          user_id as "userId",
+          badge_type as "badgeType",
+          quest_id as "questId",
+          display_on_profile as "displayOnProfile",
+          display_on_resume as "displayOnResume",
+          earned_at as "earnedAt"
+      `, values);
+      
+      console.log(`[db.updateUserBadge] Updated badge with ID ${id}`);
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.updateUserBadge] Error updating badge with ID ${id}:`, error);
+      return undefined;
+    }
   }
 
   async toggleBadgeDisplay(id: number, displayOnProfile: boolean, displayOnResume: boolean): Promise<UserBadge | undefined> {
-    return this.updateUserBadge(id, { displayOnProfile, displayOnResume });
+    try {
+      console.log(`[db.toggleBadgeDisplay] Toggling badge display for badge ID ${id}`);
+      return this.updateUserBadge(id, { displayOnProfile, displayOnResume });
+    } catch (error) {
+      console.error(`[db.toggleBadgeDisplay] Error toggling badge display for badge ID ${id}:`, error);
+      return undefined;
+    }
   }
 
   // XP Transaction operations
   async getXpTransactions(userId: number): Promise<XpTransaction[]> {
-    return Array.from(this.xpTransactions.values())
-      .filter(transaction => transaction.userId === userId)
-      .sort((a, b) => {
-        // Sort by most recent first
-        const timeA = a.createdAt ? a.createdAt.getTime() : 0;
-        const timeB = b.createdAt ? b.createdAt.getTime() : 0;
-        return timeB - timeA;
-      });
+    try {
+      console.log(`[db.getXpTransactions] Fetching XP transactions for user ${userId}`);
+      
+      // Check if the table exists first
+      const tableCheck = await pool.query(`
+        SELECT EXISTS (
+          SELECT 1 
+          FROM information_schema.tables 
+          WHERE table_name = 'xp_transactions'
+        );
+      `);
+      
+      if (!tableCheck.rows[0].exists) {
+        console.log(`[db.getXpTransactions] xp_transactions table does not exist`);
+        return [];
+      }
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          user_id as "userId",
+          amount,
+          source,
+          source_id as "sourceId",
+          description,
+          created_at as "createdAt"
+        FROM xp_transactions
+        WHERE user_id = $1
+        ORDER BY created_at DESC
+      `, [userId]);
+      
+      console.log(`[db.getXpTransactions] Found ${result.rows.length} XP transactions for user ${userId}`);
+      return result.rows;
+    } catch (error) {
+      console.error(`[db.getXpTransactions] Error fetching XP transactions for user ${userId}:`, error);
+      return [];
+    }
   }
 
   async getXpTransactionById(id: number): Promise<XpTransaction | undefined> {
-    return this.xpTransactions.get(id);
+    try {
+      console.log(`[db.getXpTransactionById] Fetching XP transaction with ID ${id}`);
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          user_id as "userId",
+          amount,
+          source,
+          source_id as "sourceId",
+          description,
+          created_at as "createdAt"
+        FROM xp_transactions
+        WHERE id = $1
+      `, [id]);
+      
+      if (result.rows.length === 0) {
+        console.log(`[db.getXpTransactionById] No XP transaction found with ID ${id}`);
+        return undefined;
+      }
+      
+      console.log(`[db.getXpTransactionById] Found XP transaction with ID ${id}`);
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.getXpTransactionById] Error fetching XP transaction with ID ${id}:`, error);
+      return undefined;
+    }
   }
 
   async getXpTransactionsBySource(userId: number, source: string): Promise<XpTransaction[]> {
-    return Array.from(this.xpTransactions.values())
-      .filter(transaction => transaction.userId === userId && transaction.source === source)
-      .sort((a, b) => {
-        // Sort by most recent first
-        const timeA = a.createdAt ? a.createdAt.getTime() : 0;
-        const timeB = b.createdAt ? b.createdAt.getTime() : 0;
-        return timeB - timeA;
-      });
+    try {
+      console.log(`[db.getXpTransactionsBySource] Fetching XP transactions for user ${userId} and source ${source}`);
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          user_id as "userId",
+          amount,
+          source,
+          source_id as "sourceId",
+          description,
+          created_at as "createdAt"
+        FROM xp_transactions
+        WHERE user_id = $1 AND source = $2
+        ORDER BY created_at DESC
+      `, [userId, source]);
+      
+      console.log(`[db.getXpTransactionsBySource] Found ${result.rows.length} XP transactions for user ${userId} and source ${source}`);
+      return result.rows;
+    } catch (error) {
+      console.error(`[db.getXpTransactionsBySource] Error fetching XP transactions for user ${userId} and source ${source}:`, error);
+      return [];
+    }
   }
 
   async createXpTransaction(transaction: InsertXpTransaction): Promise<XpTransaction> {
-    const id = this.currentXpTransactionId++;
-    const createdAt = new Date();
-    
-    const xpTransaction: XpTransaction = {
-      ...transaction,
-      id,
-      createdAt,
-      sourceId: transaction.sourceId ?? null
-    };
-    
-    this.xpTransactions.set(id, xpTransaction);
-    return xpTransaction;
+    try {
+      console.log(`[db.createXpTransaction] Creating XP transaction for user ${transaction.userId}`);
+      
+      const result = await pool.query(`
+        INSERT INTO xp_transactions (
+          user_id,
+          amount,
+          source,
+          source_id,
+          description,
+          created_at
+        ) VALUES (
+          $1, $2, $3, $4, $5, $6
+        ) RETURNING
+          id,
+          user_id as "userId",
+          amount,
+          source,
+          source_id as "sourceId",
+          description,
+          created_at as "createdAt"
+      `, [
+        transaction.userId,
+        transaction.amount,
+        transaction.source,
+        transaction.sourceId || null,
+        transaction.description || null,
+        new Date()
+      ]);
+      
+      console.log(`[db.createXpTransaction] Created XP transaction with ID ${result.rows[0].id} for user ${transaction.userId}`);
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.createXpTransaction] Error creating XP transaction for user ${transaction.userId}:`, error);
+      throw error;
+    }
   }
 
   // Helper function to calculate week number (1-52) from date
@@ -4758,8 +5579,7 @@ export class MemStorage implements IStorage {
   }
 }
 
-// Import the database connection
-import { db, pool, executeWithRetry, sql } from './db';
+// Import additional Drizzle utilities
 import { eq } from 'drizzle-orm';
 
 /**
@@ -4959,7 +5779,36 @@ export class DatabaseStorage implements IStorage {
         // Add each property to the update
         for (const [key, value] of Object.entries(cleanedUserData)) {
           // Convert camelCase to snake_case for PostgreSQL
-          const columnName = key.replace(/([A-Z])/g, '_$1').toLowerCase();
+          let columnName = "";
+          
+          // Handle special cases like photoURL -> photo_url (not photo_u_r_l)
+          if (key === "photoURL") {
+            columnName = "photo_url";
+          } else if (key === "phoneNumber") {
+            columnName = "phone_number";
+          } else if (key === "aboutMe") {
+            columnName = "about_me";
+          } else if (key === "whatIOffer") {
+            columnName = "what_i_offer";
+          } else if (key === "lookingFor") {
+            columnName = "looking_for";
+          } else if (key === "visitingCardType") {
+            columnName = "visiting_card_type";
+          } else if (key === "profileCompleted") {
+            columnName = "profile_completed";
+          } else if (key === "emailVerified") {
+            columnName = "email_verified";
+          } else if (key === "emailVerificationToken") {
+            columnName = "email_verification_token";
+          } else if (key === "emailVerificationExpires") {
+            columnName = "email_verification_expires";
+          } else if (key === "createdAt") {
+            columnName = "created_at";
+          } else {
+            // Standard camelCase to snake_case for other fields
+            columnName = key.replace(/([A-Z])/g, '_$1').toLowerCase();
+          }
+          
           updateParts.push(`${columnName} = $${paramIndex}`);
           updateValues.push(value);
           paramIndex++;
@@ -5013,15 +5862,21 @@ export class DatabaseStorage implements IStorage {
       try {
         const result = await pool.query(`
           SELECT id, user_id as "userId", title, company, location, 
-                industry, start_date as "startDate", end_date as "endDate", 
-                description
+                industry, domain, start_date as "startDate", end_date as "endDate", 
+                description, key_responsibilities as "keyResponsibilities"
           FROM work_experiences
           WHERE user_id = $1
         `, [userId]);
         
         console.log(`[db.getWorkExperiencesByUserId] Found ${result.rows.length} work experiences for user ${userId}`);
         
-        return result.rows;
+        // Make sure keyResponsibilities is an array
+        const experiences = result.rows.map(row => ({
+          ...row,
+          keyResponsibilities: row.keyResponsibilities || []
+        }));
+        
+        return experiences;
       } catch (error) {
         console.error(`[db.getWorkExperiencesByUserId] Error fetching work experiences for user ${userId}:`, error);
         throw error; // Rethrow for retry mechanism
@@ -5066,14 +5921,30 @@ export class DatabaseStorage implements IStorage {
       try {
         const result = await pool.query(`
           SELECT id, user_id as "userId", degree, institution, location, 
-                 start_date as "startDate", end_date as "endDate"
+                 start_date as "startDate", end_date as "endDate", industry,
+                 field_of_study as "fieldOfStudy", skills_acquired as "skillsAcquired", domain
           FROM educations
           WHERE user_id = $1
         `, [userId]);
         
         console.log(`[db.getEducationsByUserId] Found ${result.rows.length} education records for user ${userId}`);
         
-        return result.rows;
+        // Process skillsAcquired to ensure it's an array
+        const processedEducations = result.rows.map(education => {
+          if (education.skillsAcquired && typeof education.skillsAcquired === 'string') {
+            try {
+              education.skillsAcquired = JSON.parse(education.skillsAcquired);
+            } catch (error) {
+              console.error(`[db.getEducationsByUserId] Error parsing skillsAcquired for education ${education.id}:`, error);
+              education.skillsAcquired = [];
+            }
+          } else if (!education.skillsAcquired) {
+            education.skillsAcquired = [];
+          }
+          return education;
+        });
+        
+        return processedEducations;
       } catch (error) {
         console.error(`[db.getEducationsByUserId] Error fetching education records for user ${userId}:`, error);
         throw error; // Rethrow for retry mechanism
@@ -5095,19 +5966,24 @@ export class DatabaseStorage implements IStorage {
     try {
       const result = await pool.query(`
         INSERT INTO educations (
-          user_id, degree, institution, location, start_date, end_date
+          user_id, degree, institution, location, start_date, end_date, industry, field_of_study, skills_acquired, domain
         ) VALUES (
-          $1, $2, $3, $4, $5, $6
+          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10
         ) RETURNING 
           id, user_id as "userId", degree, institution, location, 
-          start_date as "startDate", end_date as "endDate"
+          start_date as "startDate", end_date as "endDate", industry, field_of_study as "fieldOfStudy",
+          skills_acquired as "skillsAcquired", domain
       `, [
         insertEducation.userId,
         insertEducation.degree,
         insertEducation.institution,
         insertEducation.location,
         insertEducation.startDate,
-        insertEducation.endDate
+        insertEducation.endDate,
+        insertEducation.industry || null,
+        insertEducation.fieldOfStudy || null,
+        insertEducation.skillsAcquired || null,
+        insertEducation.domain || null
       ]);
       
       console.log(`[db.createEducation] Created education record with ID ${result.rows[0].id}`);
@@ -5153,6 +6029,27 @@ export class DatabaseStorage implements IStorage {
         values.push(educationData.endDate);
       }
       
+      // Handle new fields
+      if (educationData.industry !== undefined) {
+        updateFields.push(`industry = $${valueIndex++}`);
+        values.push(educationData.industry);
+      }
+      
+      if (educationData.fieldOfStudy !== undefined) {
+        updateFields.push(`field_of_study = $${valueIndex++}`);
+        values.push(educationData.fieldOfStudy);
+      }
+      
+      if (educationData.skillsAcquired !== undefined) {
+        updateFields.push(`skills_acquired = $${valueIndex++}`);
+        values.push(educationData.skillsAcquired);
+      }
+      
+      if (educationData.domain !== undefined) {
+        updateFields.push(`domain = $${valueIndex++}`);
+        values.push(educationData.domain);
+      }
+      
       // If no fields were provided to update, return the original education
       if (updateFields.length === 0) {
         console.log(`[db.updateEducation] No fields to update for education ${id}`);
@@ -5167,7 +6064,8 @@ export class DatabaseStorage implements IStorage {
         SET ${updateFields.join(', ')} 
         WHERE id = $${valueIndex}
         RETURNING id, user_id as "userId", degree, institution, location, 
-                 start_date as "startDate", end_date as "endDate"
+                 start_date as "startDate", end_date as "endDate", industry,
+                 field_of_study as "fieldOfStudy", skills_acquired as "skillsAcquired", domain
       `;
       
       console.log(`[db.updateEducation] Executing update query for education ${id}`);
@@ -5262,7 +6160,7 @@ export class DatabaseStorage implements IStorage {
       try {
         const result = await pool.query(`
           SELECT id, user_id as "userId", title, description, start_date as "startDate",
-                project_url as "projectUrl", category, thumbnail_url as "thumbnailUrl",
+                project_url as "projectUrl", category, industry, thumbnail_url as "thumbnailUrl",
                 thumbnail_file as "thumbnailFile", media_urls as "mediaUrls",
                 created_at as "createdAt", updated_at as "updatedAt"
           FROM projects
@@ -5271,7 +6169,20 @@ export class DatabaseStorage implements IStorage {
         
         console.log(`[db.getProjectsByUserId] Found ${result.rows.length} projects for user ${userId}`);
         
-        return result.rows;
+        // Parse mediaUrls from JSON string to array for each project
+        const projectsWithParsedMediaUrls = result.rows.map(project => {
+          try {
+            if (project.mediaUrls && typeof project.mediaUrls === 'string') {
+              project.mediaUrls = JSON.parse(project.mediaUrls);
+            }
+          } catch (parseError) {
+            console.error(`[db.getProjectsByUserId] Error parsing mediaUrls for project ${project.id}:`, parseError);
+            // Keep original string if parsing fails
+          }
+          return project;
+        });
+        
+        return projectsWithParsedMediaUrls;
       } catch (error) {
         console.error(`[db.getProjectsByUserId] Error fetching projects for user ${userId}:`, error);
         throw error; // Rethrow for retry mechanism
@@ -5284,8 +6195,41 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getProjectById(id: number): Promise<Project | undefined> {
-    const [project] = await db.select().from(projects).where(eq(projects.id, id));
-    return project || undefined;
+    try {
+      console.log(`[db.getProjectById] Looking for project with ID ${id}`);
+      
+      const result = await pool.query(`
+        SELECT id, user_id as "userId", title, description, start_date as "startDate",
+              project_url as "projectUrl", category, industry, thumbnail_url as "thumbnailUrl",
+              thumbnail_file as "thumbnailFile", media_urls as "mediaUrls",
+              created_at as "createdAt", updated_at as "updatedAt"
+        FROM projects
+        WHERE id = $1
+      `, [id]);
+      
+      if (result.rows.length === 0) {
+        console.log(`[db.getProjectById] No project found with ID ${id}`);
+        return undefined;
+      }
+      
+      console.log(`[db.getProjectById] Found project with ID ${id}`);
+      
+      // Parse mediaUrls from JSON string to array if needed
+      const project = result.rows[0];
+      try {
+        if (project.mediaUrls && typeof project.mediaUrls === 'string') {
+          project.mediaUrls = JSON.parse(project.mediaUrls);
+        }
+      } catch (parseError) {
+        console.error(`[db.getProjectById] Error parsing mediaUrls for project ${id}:`, parseError);
+        // Keep original string if parsing fails
+      }
+      
+      return project;
+    } catch (error) {
+      console.error(`[db.getProjectById] Error fetching project with ID ${id}:`, error);
+      return undefined;
+    }
   }
 
   async createProject(insertProject: InsertProject): Promise<Project> {
@@ -5305,6 +6249,34 @@ export class DatabaseStorage implements IStorage {
   async deleteProject(id: number): Promise<boolean> {
     const result = await db.delete(projects).where(eq(projects.id, id));
     return result.rowCount > 0;
+  }
+
+  // Project Collaborator operations
+  async getProjectCollaboratorsByProjectId(projectId: number): Promise<any[]> {
+    try {
+      console.log(`[db.getProjectCollaboratorsByProjectId] Looking for collaborators for project ${projectId}`);
+      
+      // This is a placeholder implementation that returns an empty array
+      // In a real implementation, we would query for collaborators
+      return [];
+    } catch (error) {
+      console.error(`[db.getProjectCollaboratorsByProjectId] Error fetching collaborators for project ${projectId}:`, error);
+      return [];
+    }
+  }
+
+  // Project Endorsement operations
+  async getProjectEndorsementsByProjectId(projectId: number): Promise<any[]> {
+    try {
+      console.log(`[db.getProjectEndorsementsByProjectId] Looking for endorsements for project ${projectId}`);
+      
+      // This is a placeholder implementation that returns an empty array
+      // In a real implementation, we would query for endorsements
+      return [];
+    } catch (error) {
+      console.error(`[db.getProjectEndorsementsByProjectId] Error fetching endorsements for project ${projectId}:`, error);
+      return [];
+    }
   }
 
   // Portfolio operations
@@ -5804,14 +6776,15 @@ export class DatabaseStorage implements IStorage {
         SELECT 
           id,
           user_id as "userId",
-          type,
-          action,
+          category,
           content,
-          link,
-          metadata,
+          visibility,
+          inspired_count as "inspiredCount",
+          related_skills as "relatedSkills",
+          related_project as "relatedProject",
+          image_url as "imageUrl",
           created_at as "createdAt",
-          updated_at as "updatedAt",
-          is_active as "isActive"
+          updated_at as "updatedAt"
         FROM nowboard_items
         ORDER BY created_at DESC
         LIMIT 50
