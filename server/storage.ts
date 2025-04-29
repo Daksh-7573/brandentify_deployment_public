@@ -417,6 +417,30 @@ export interface IStorage {
   getXpTransactionById(id: number): Promise<XpTransaction | undefined>;
   getXpTransactionsBySource(userId: number, source: string): Promise<XpTransaction[]>;
   createXpTransaction(transaction: InsertXpTransaction): Promise<XpTransaction>;
+  
+  // Mentorship Request operations
+  createMentorshipRequest(request: InsertMentorshipRequest): Promise<MentorshipRequest>;
+  getMentorshipRequestsByMentorId(mentorId: number): Promise<MentorshipRequest[]>;
+  getMentorshipRequestsByMenteeId(menteeId: number): Promise<MentorshipRequest[]>;
+  getMentorshipRequestById(id: number): Promise<MentorshipRequest | undefined>;
+  updateMentorshipRequestStatus(id: number, status: 'accepted' | 'rejected' | 'expired' | 'completed' | 'terminated'): Promise<MentorshipRequest | undefined>;
+  getMentorshipRequestByMentorAndMentee(mentorId: number, menteeId: number): Promise<MentorshipRequest | undefined>;
+  
+  // Active Mentorship operations
+  createActiveMentorship(mentorship: InsertActiveMentorship): Promise<ActiveMentorship>;
+  getActiveMentorshipsByMentorId(mentorId: number): Promise<ActiveMentorship[]>;
+  getActiveMentorshipsByMenteeId(menteeId: number): Promise<ActiveMentorship[]>;
+  getActiveMentorshipById(id: number): Promise<ActiveMentorship | undefined>;
+  updateActiveMentorshipStatus(id: number, status: 'accepted' | 'completed' | 'terminated'): Promise<ActiveMentorship | undefined>;
+  updateActiveMentorshipNotes(id: number, notes: string): Promise<ActiveMentorship | undefined>;
+  updateActiveMentorshipLastActivity(id: number): Promise<ActiveMentorship | undefined>;
+  getActiveMentorshipCount(userId: number): Promise<number>;
+  
+  // Mentorship Feedback operations
+  createMentorshipFeedback(feedback: InsertMentorshipFeedback): Promise<MentorshipFeedback>;
+  getMentorshipFeedbackByMentorshipId(mentorshipId: number): Promise<MentorshipFeedback[]>;
+  getMentorshipFeedbackById(id: number): Promise<MentorshipFeedback | undefined>;
+  updateMentorshipFeedback(id: number, feedback: Partial<MentorshipFeedback>): Promise<MentorshipFeedback | undefined>;
 }
 
 // In-memory implementation of the storage
@@ -475,6 +499,11 @@ export class MemStorage implements IStorage {
   private userBadges: Map<number, UserBadge>;
   private xpTransactions: Map<number, XpTransaction>;
   
+  // Mentorship Connect models
+  private mentorshipRequests: Map<number, MentorshipRequest>;
+  private activeMentorships: Map<number, ActiveMentorship>;
+  private mentorshipFeedback: Map<number, MentorshipFeedback>;
+  
   private currentUserId: number;
   private currentResumeId: number;
   private currentWorkExperienceId: number;
@@ -528,6 +557,11 @@ export class MemStorage implements IStorage {
   
   // Brand of the Day ID
   private currentBrandOfTheDayId: number;
+  
+  // Mentorship Connect IDs
+  private currentMentorshipRequestId: number;
+  private currentActiveMentorshipId: number;
+  private currentMentorshipFeedbackId: number;
 
   constructor() {
     this.users = new Map();
@@ -574,6 +608,11 @@ export class MemStorage implements IStorage {
     this.userXp = new Map();
     this.userBadges = new Map();
     this.xpTransactions = new Map();
+    
+    // Initialize Mentorship Connect maps
+    this.mentorshipRequests = new Map();
+    this.activeMentorships = new Map();
+    this.mentorshipFeedback = new Map();
     
     // Initialize Musk suggestion maps
     this.muskSuggestions = new Map();
@@ -640,6 +679,11 @@ export class MemStorage implements IStorage {
     
     // Initialize Brand of the Day ID
     this.currentBrandOfTheDayId = 1;
+    
+    // Initialize Mentorship Connect IDs
+    this.currentMentorshipRequestId = 1;
+    this.currentActiveMentorshipId = 1;
+    this.currentMentorshipFeedbackId = 1;
     
     // Initialize with a default user for development/demo
     this.initializeDemoData();
@@ -764,6 +808,11 @@ export class MemStorage implements IStorage {
     
     // Reset Brand of the Day ID
     this.currentBrandOfTheDayId = 1;
+    
+    // Reset Mentorship Connect IDs
+    this.currentMentorshipRequestId = 1;
+    this.currentActiveMentorshipId = 1;
+    this.currentMentorshipFeedbackId = 1;
     
     // No pre-created skills
     
@@ -939,6 +988,11 @@ export class MemStorage implements IStorage {
     // Clear all Nowboard data
     this.nowboardItems.clear();
     this.nowboardInspiredBy.clear();
+    
+    // Clear all Mentorship Connect data
+    this.mentorshipRequests.clear();
+    this.activeMentorships.clear();
+    this.mentorshipFeedback.clear();
   }
   
   /**
