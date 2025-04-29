@@ -279,6 +279,49 @@ const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
         return <CorporateExecutive {...templateProps} />;
       case 'dynamic-innovator':
         return <DynamicInnovator {...templateProps} />;
+      case 'animated-odyssey':
+        // For debugging
+        console.log("AnimatedOdyssey template userInfo:", templateProps.userInfo);
+        
+        const whatIOfferContent = templateProps.userInfo.whatIOffer || 
+          "I am a skilled software developer specializing in full-stack web development with expertise in modern JavaScript frameworks. I offer clean, scalable code solutions and bring a detail-oriented approach to every project.";
+        
+        const aboutMeOdysseyContent = templateProps.userInfo.aboutMe || 
+          "I am a passionate software developer with a strong focus on creating innovative solutions. My background combines technical expertise with a keen eye for user experience, allowing me to deliver comprehensive applications that meet client needs.";
+          
+        return (
+          <AnimatedOdyssey
+            name={templateProps.userInfo.name}
+            title={templateProps.userInfo.title || ''}
+            industry={templateProps.userInfo.industry || ''}
+            domain={templateProps.userInfo.domain || ''}
+            location={templateProps.userInfo.location || ''}
+            email={templateProps.userInfo.email}
+            photoURL={templateProps.userInfo.photoURL}
+            lookingFor={templateProps.userInfo.lookingFor || ''}
+            skills={templateProps.userSkills}
+            services={templateProps.userServices}
+            experiences={templateProps.userExperiences}
+            educations={templateProps.userEducations}
+            projects={templateProps.userProjects.map((p: any) => ({
+              id: p.id,
+              title: p.title,
+              description: p.description,
+              userId: p.userId,
+              startDate: p.startDate,
+              createdAt: null,
+              projectUrl: p.projectUrl || null,
+              category: p.category || null,
+              thumbnailUrl: p.thumbnailUrl || null,
+              thumbnailFile: null,
+              mediaUrls: p.mediaUrls || [],
+              updatedAt: null
+            }))}
+            whatIOffer={whatIOfferContent}
+            aboutMe={aboutMeOdysseyContent}
+          />
+        );
+      
       case 'animated':
         // For debugging
         console.log("Animated template userInfo:", templateProps.userInfo);
