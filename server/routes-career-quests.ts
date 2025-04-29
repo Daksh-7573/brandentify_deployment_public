@@ -945,5 +945,69 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
     }
   });
 
+  // Get current week quests for all users (system-wide current quests)
+  apiRouter.get("/quests/current-week", async (req, res) => {
+    try {
+      // Check if database tables exist first
+      const tableCheck = await pool.query(`
+        SELECT EXISTS (
+          SELECT 1 
+          FROM information_schema.tables 
+          WHERE table_name = 'user_quests'
+        );
+      `);
+      
+      if (!tableCheck.rows[0].exists) {
+        console.log('[GET /quests/current-week] user_quests table does not exist, returning empty array');
+        return res.json([]);
+      }
+      
+      // Get current week number and year
+      const now = new Date();
+      const weekNumber = getWeekNumber(now);
+      const year = now.getFullYear();
+      
+      console.log(`[GET /quests/current-week] Fetching quests for week ${weekNumber}, year ${year}`);
+      
+      // Using direct DB query to get all current week quests
+      const currentWeekQuestsResult = await pool.query(`
+        SELECT 
+          uq.id,
+          uq.user_id as "userId",
+          uq.quest_definition_id as "questDefinitionId",
+          uq.status,
+          uq.progress,
+          uq.assigned_at as "assignedAt",
+          uq.completed_at as "completedAt",
+          uq.dismissed_reason as "dismissedReason",
+          uq.xp_earned as "xpEarned",
+          uq.badge_earned as "badgeEarned",
+          uq.musk_response as "muskResponse",
+          uq.week_number as "weekNumber",
+          uq.year,
+          qd.title as "questTitle",
+          qd.description as "questDescription",
+          qd.type as "questType",
+          u.name as "userName",
+          u.photo_url as "userPhotoURL"
+        FROM user_quests uq
+        JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
+        JOIN users u ON uq.user_id = u.id
+        WHERE uq.week_number = $1 AND uq.year = $2
+        ORDER BY uq.assigned_at DESC
+        LIMIT 50
+      `, [weekNumber, year]);
+      
+      const currentWeekQuests = currentWeekQuestsResult.rows;
+      console.log(`[GET /quests/current-week] Found ${currentWeekQuests.length} quests for week ${weekNumber}`);
+      
+      res.json(currentWeekQuests);
+    } catch (error) {
+      console.error(`[GET /quests/current-week] Error:`, error);
+      // Return empty array instead of error to prevent UI crashes
+      res.json([]);
+    }
+  });
+
   console.log("Career Quests routes loaded");
 }

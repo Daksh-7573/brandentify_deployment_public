@@ -6,13 +6,11 @@ import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
-import { UserQuest, QuestDefinition, getQuestTypeIcon, getQuestStatusLabel, getBadgeLabel } from '@/types/career-quest';
+import { UserQuest, QuestDefinition, QuestType, getQuestTypeIcon, getQuestStatusLabel, getBadgeLabel } from '@/types/career-quest';
 import { useCompleteQuest, useDismissQuest, useUpdateQuestProgress } from '@/hooks/use-career-quests';
 
 interface QuestCardProps {
-  quest: UserQuest & {
-    questDefinition: QuestDefinition;
-  };
+  quest: UserQuest;
   onActionClick?: (quest: UserQuest) => void;
 }
 
@@ -25,8 +23,25 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
   const dismissQuestMutation = useDismissQuest();
   const updateProgressMutation = useUpdateQuestProgress();
   
-  const { questDefinition } = quest;
-  const progressPercentage = Math.min(100, Math.floor((quest.progress / questDefinition.targetCount) * 100));
+  // Handle both data structures - either quest.questDefinition (old) or direct properties (new)
+  const questDefinition = quest.questDefinition || {
+    id: quest.questDefinitionId,
+    title: quest.questTitle || '',
+    description: quest.questDescription || '',
+    type: (quest.questType as QuestType) || 'profile_update',
+    targetCount: 1, // Default if not provided
+    targetAction: '',
+    xpReward: 0,
+    badgeReward: undefined,
+    muskTip: quest.muskResponse,
+    isActive: true,
+    createdAt: '',
+    updatedAt: ''
+  };
+  
+  // Ensure targetCount has a minimum value of 1 to prevent division by zero
+  const targetCount = questDefinition.targetCount || 1;
+  const progressPercentage = Math.min(100, Math.floor((quest.progress / targetCount) * 100));
   const isComplete = quest.status === 'completed';
   const isDismissed = quest.status === 'dismissed';
   const isExpired = quest.status === 'expired';
@@ -40,7 +55,8 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
       if (isActive && quest.progress < questDefinition.targetCount) {
         updateProgressMutation.mutate({
           questId: quest.id,
-          progress: quest.progress + 1
+          progress: quest.progress + 1,
+          userId: quest.userId
         }, {
           onSuccess: () => {
             toast({
@@ -62,7 +78,8 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
   
   const handleComplete = () => {
     completeQuestMutation.mutate({
-      questId: quest.id
+      questId: quest.id,
+      userId: quest.userId
     }, {
       onSuccess: () => {
         toast({
@@ -84,7 +101,8 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
   const handleDismiss = () => {
     dismissQuestMutation.mutate({
       questId: quest.id,
-      reason: 'User dismissed'
+      reason: 'User dismissed',
+      userId: quest.userId
     }, {
       onSuccess: () => {
         toast({

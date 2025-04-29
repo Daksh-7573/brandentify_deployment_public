@@ -54,6 +54,12 @@ export interface UserQuest {
   badgeEarned?: BadgeType;
   muskResponse?: string;
   questDefinition?: QuestDefinition;
+  // Additional fields for the new API format
+  questTitle?: string;
+  questDescription?: string;
+  questType?: string;
+  userName?: string;
+  userPhotoURL?: string;
 }
 
 export interface UserXp {
