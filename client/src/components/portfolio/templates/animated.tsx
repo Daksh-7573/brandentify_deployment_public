@@ -768,8 +768,8 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
           </div>
         </div>
       </section>
-      
-      {/* What I'm All About Section */}
+
+      {/* Expertise & Stats Section */}
       <section id="about" className="py-20 relative animated-about" ref={aboutRef}>
         <div className="container mx-auto px-6 relative z-10">
           <motion.div
@@ -780,16 +780,16 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
           >
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 section-title">
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-blue-500">
-                What I'm All About
+                Expertise & Stats
               </span>
             </h2>
             <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-              My journey, passion, and creative approach to making impactful digital experiences.
+              My skills, statistics, and professional metrics at a glance.
             </p>
           </motion.div>
           
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-12 items-center">
-            {/* About Text */}
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-12">
+            {/* Skills & Proficiencies */}
             <motion.div 
               className="md:col-span-3 bg-gray-800/30 rounded-xl p-8 border border-gray-700 shadow-lg relative overflow-hidden"
               initial={{ opacity: 0, x: -50 }}
@@ -810,22 +810,45 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
               
               <div className="relative">
                 <h3 className="text-2xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-blue-500">
-                  What I'm All About
+                  Professional Skills
                 </h3>
                 
-                <div className="text-gray-300 text-lg leading-relaxed">
-                  {whatIOffer || aboutMe || (
-                    <>
-                      <p>
-                        I'm a passionate professional with a focus on {domain || 'digital solutions'} within the {industry || 'creative'} industry. 
-                        My work combines expertise and innovation to create impactful results.
-                      </p>
-                      <br/>
-                      <p>
-                        With a background in {domain || 'digital arts'} and an eye for detail, I specialize in delivering 
-                        high-quality work that meets the needs of clients and stakeholders.
-                      </p>
-                    </>
+                <div className="space-y-6">
+                  {skills && skills.length > 0 ? (
+                    skills.map((skill, index) => (
+                      <div key={skill.id} className="space-y-2">
+                        <div className="flex justify-between text-sm">
+                          <span className="text-gray-300">{skill.name}</span>
+                          <span className="text-purple-400">{skill.proficiency || 80}%</span>
+                        </div>
+                        <motion.div 
+                          initial={{ width: 0 }}
+                          animate={{ width: isAboutInView ? `${skill.proficiency || 80}%` : 0 }}
+                          transition={{ duration: 1, delay: 0.3 + index * 0.1 }}
+                          className="h-2 bg-gradient-to-r from-purple-600 to-pink-500 rounded-full skill-bar"
+                        />
+                      </div>
+                    ))
+                  ) : (
+                    [
+                      { name: "Motion Design", value: 90 },
+                      { name: "Interactive Development", value: 85 },
+                      { name: "UI Animation", value: 92 },
+                      { name: "3D Visualization", value: 80 },
+                    ].map((skill, index) => (
+                      <div key={index} className="space-y-2">
+                        <div className="flex justify-between text-sm">
+                          <span className="text-gray-300">{skill.name}</span>
+                          <span className="text-purple-400">{skill.value}%</span>
+                        </div>
+                        <motion.div 
+                          initial={{ width: 0 }}
+                          animate={{ width: isAboutInView ? `${skill.value}%` : 0 }}
+                          transition={{ duration: 1, delay: 0.3 + index * 0.1 }}
+                          className="h-2 bg-gradient-to-r from-purple-600 to-pink-500 rounded-full skill-bar"
+                        />
+                      </div>
+                    ))
                   )}
                 </div>
               </div>
