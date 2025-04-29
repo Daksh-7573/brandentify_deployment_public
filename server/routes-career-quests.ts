@@ -707,17 +707,14 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
           SELECT 
             id,
             user_id as "userId",
-            name,
-            description,
-            type,
-            image_url as "imageUrl",
-            awarded_at as "awardedAt",
-            awarded_for as "awardedFor",
+            badge_type as "type",
+            earned_at as "awardedAt",
+            quest_id as "questId",
             display_on_profile as "displayOnProfile",
             display_on_resume as "displayOnResume"
           FROM user_badges
           WHERE user_id = $1
-          ORDER BY awarded_at DESC
+          ORDER BY earned_at DESC
         `, [userId]);
         
         const userBadges = userBadgesResult.rows;
@@ -767,17 +764,14 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
           SELECT 
             id,
             user_id as "userId",
-            name,
-            description,
-            type,
-            image_url as "imageUrl",
-            awarded_at as "awardedAt",
-            awarded_for as "awardedFor",
+            badge_type as "type",
+            earned_at as "awardedAt",
+            quest_id as "questId",
             display_on_profile as "displayOnProfile",
             display_on_resume as "displayOnResume"
           FROM user_badges
-          WHERE user_id = $1 AND type = $2
-          ORDER BY awarded_at DESC
+          WHERE user_id = $1 AND badge_type = $2
+          ORDER BY earned_at DESC
         `, [userId, type]);
         
         const userBadges = userBadgesResult.rows;
@@ -872,7 +866,6 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
             source,
             source_id as "sourceId",
             created_at as "createdAt",
-            transaction_type as "transactionType",
             description
           FROM xp_transactions
           WHERE user_id = $1
@@ -930,7 +923,6 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
             source,
             source_id as "sourceId",
             created_at as "createdAt",
-            transaction_type as "transactionType",
             description
           FROM xp_transactions
           WHERE user_id = $1 AND source = $2
