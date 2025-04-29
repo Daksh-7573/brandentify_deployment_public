@@ -71,7 +71,7 @@ const portfolioFormSchema = z.object({
   layout: z.enum([
     "professional", "creative", "minimal", "technical", "executive", "minimalist_pro",
     "minimalist-pro", "timeline-storyteller-2", "visual-expert", "corporate-executive", 
-    "dynamic-innovator", "freelancer-hub", "animated", "scholar"
+    "dynamic-innovator", "freelancer-hub", "animated", "scholar", "animated-odyssey"
   ]),
   isPublished: z.boolean().default(false),
   publicUrl: z.string().nullable().optional(),
@@ -473,6 +473,13 @@ export default function PortfolioBuilder() {
       description: `✔ Theme: Fully Animated, Motion-Driven, Interactive
 ✔ Best For: Motion Designers, VFX Artists, Web Animators, AR/VR & Game Designers`,
       theme: "#00E5FF"
+    },
+    { 
+      id: "animated-odyssey", 
+      name: "The Animated Odyssey", 
+      description: `✔ Theme: Space-themed, Immersive, Continuous Animation
+✔ Best For: Futurists, Innovators, Space Enthusiasts, Creative Technologists`,
+      theme: "#8A2BE2"
     }
   ];
 
