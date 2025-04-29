@@ -25,7 +25,8 @@ import {
   Plus,
   PlusCircle,
   Send,
-  X
+  X,
+  Mail
 } from 'lucide-react';
 import { useTypewriter, Cursor } from 'react-simple-typewriter';
 import { Service, Project, Skill, WorkExperience, Education } from '@shared/schema';
