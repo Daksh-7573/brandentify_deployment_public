@@ -4181,7 +4181,174 @@ export class MemStorage implements IStorage {
 
   // Career Quests operations - Quest Definition methods
   async getQuestDefinitions(): Promise<QuestDefinition[]> {
-    return Array.from(this.questDefinitions.values());
+    try {
+      console.log('[db.getQuestDefinitions] Fetching all quest definitions');
+      
+      const tableCheck = await pool.query(`
+        SELECT EXISTS (
+          SELECT 1 
+          FROM information_schema.tables 
+          WHERE table_name = 'quest_definitions'
+        );
+      `);
+      
+      if (!tableCheck.rows[0].exists) {
+        console.log(`[db.getQuestDefinitions] quest_definitions table does not exist`);
+        return [];
+      }
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          title,
+          description,
+          type,
+          difficulty,
+          xp_reward as "xpReward",
+          badge_reward as "badgeReward",
+          is_active as "isActive",
+          completion_criteria as "completionCriteria",
+          progress_tracking_field as "progressTrackingField",
+          progress_goal as "progressGoal",
+          is_repeatable as "isRepeatable",
+          tags,
+          created_at as "createdAt",
+          updated_at as "updatedAt"
+        FROM quest_definitions
+      `);
+      
+      console.log(`[db.getQuestDefinitions] Found ${result.rows.length} quest definitions`);
+      return result.rows;
+    } catch (error) {
+      console.error('[db.getQuestDefinitions] Error fetching quest definitions:', error);
+      return [];
+    }
+  }
+  
+  // User Quest methods
+  async getUserQuestsByUserId(userId: number): Promise<UserQuest[]> {
+    try {
+      console.log(`[db.getUserQuestsByUserId] Fetching quests for user ${userId}`);
+      
+      // Check if the table exists first
+      const tableCheck = await pool.query(`
+        SELECT EXISTS (
+          SELECT 1 
+          FROM information_schema.tables 
+          WHERE table_name = 'user_quests'
+        );
+      `);
+      
+      if (!tableCheck.rows[0].exists) {
+        console.log(`[db.getUserQuestsByUserId] user_quests table does not exist`);
+        return [];
+      }
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          user_id as "userId",
+          quest_definition_id as "questDefinitionId",
+          status,
+          progress,
+          assigned_at as "assignedAt",
+          completed_at as "completedAt",
+          dismissed_reason as "dismissedReason",
+          xp_earned as "xpEarned",
+          badge_earned as "badgeEarned",
+          musk_response as "muskResponse",
+          week_number as "weekNumber",
+          year
+        FROM user_quests
+        WHERE user_id = $1
+        ORDER BY assigned_at DESC
+      `, [userId]);
+      
+      console.log(`[db.getUserQuestsByUserId] Found ${result.rows.length} quests for user ${userId}`);
+      return result.rows;
+    } catch (error) {
+      console.error(`[db.getUserQuestsByUserId] Error fetching quests for user ${userId}:`, error);
+      // Return empty array instead of failing
+      return [];
+    }
+  }
+  
+  async getCurrentWeekUserQuests(userId: number): Promise<UserQuest[]> {
+    try {
+      // Get current week number and year
+      const now = new Date();
+      const currentWeek = this.getWeekNumber(now);
+      const currentYear = now.getFullYear();
+      
+      console.log(`[db.getCurrentWeekUserQuests] Fetching week ${currentWeek} year ${currentYear} quests for user ${userId}`);
+      
+      // Check if the table exists first
+      const tableCheck = await pool.query(`
+        SELECT EXISTS (
+          SELECT 1 
+          FROM information_schema.tables 
+          WHERE table_name = 'user_quests'
+        );
+      `);
+      
+      if (!tableCheck.rows[0].exists) {
+        console.log(`[db.getCurrentWeekUserQuests] user_quests table does not exist`);
+        return [];
+      }
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          user_id as "userId",
+          quest_definition_id as "questDefinitionId",
+          status,
+          progress,
+          assigned_at as "assignedAt",
+          completed_at as "completedAt",
+          dismissed_reason as "dismissedReason",
+          xp_earned as "xpEarned",
+          badge_earned as "badgeEarned",
+          musk_response as "muskResponse",
+          week_number as "weekNumber",
+          year
+        FROM user_quests
+        WHERE user_id = $1
+          AND week_number = $2
+          AND year = $3
+        ORDER BY 
+          CASE status 
+            WHEN 'completed' THEN 2
+            WHEN 'dismissed' THEN 1
+            ELSE 0
+          END,
+          assigned_at DESC
+      `, [userId, currentWeek, currentYear]);
+      
+      console.log(`[db.getCurrentWeekUserQuests] Found ${result.rows.length} quests for user ${userId} in week ${currentWeek}`);
+      return result.rows;
+    } catch (error) {
+      console.error(`[db.getCurrentWeekUserQuests] Error fetching quests for user ${userId}:`, error);
+      // Return empty array to prevent cascading errors
+      return [];
+    }
+  }
+  
+  // Utility function to get ISO week number
+  getWeekNumber(date: Date): number {
+    // Create a copy of the date to avoid modifying the original
+    const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+    
+    // Set to nearest Thursday: current date + 4 - current day number
+    // Make Sunday's day number 7
+    d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+    
+    // Get first day of year
+    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+    
+    // Calculate full weeks to nearest Thursday
+    const weekNumber = Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
+    
+    return weekNumber;
   }
 
   async getQuestDefinitionById(id: number): Promise<QuestDefinition | undefined> {
@@ -4240,61 +4407,139 @@ export class MemStorage implements IStorage {
     return this.questDefinitions.delete(id);
   }
 
-  // User Quest operations
-  async getUserQuestsByUserId(userId: number): Promise<UserQuest[]> {
-    return Array.from(this.userQuests.values())
-      .filter(quest => quest.userId === userId)
-      .sort((a, b) => {
-        // Sort by most recently assigned first
-        const timeA = a.assignedAt ? a.assignedAt.getTime() : 0;
-        const timeB = b.assignedAt ? b.assignedAt.getTime() : 0;
-        return timeB - timeA;
-      });
-  }
+  // User Quest operations - in-memory implementation, replaced by database implementation above
+  // This method is not used when the database implementation is active
 
   async getUserQuestById(id: number): Promise<UserQuest | undefined> {
-    return this.userQuests.get(id);
+    try {
+      console.log(`[db.getUserQuestById] Fetching quest with ID ${id}`);
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          user_id as "userId",
+          quest_definition_id as "questDefinitionId",
+          status,
+          progress,
+          assigned_at as "assignedAt",
+          completed_at as "completedAt",
+          dismissed_reason as "dismissedReason",
+          xp_earned as "xpEarned",
+          badge_earned as "badgeEarned",
+          musk_response as "muskResponse",
+          week_number as "weekNumber",
+          year
+        FROM user_quests
+        WHERE id = $1
+      `, [id]);
+      
+      if (result.rows.length === 0) {
+        console.log(`[db.getUserQuestById] No quest found with ID ${id}`);
+        return undefined;
+      }
+      
+      console.log(`[db.getUserQuestById] Found quest with ID ${id}`);
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.getUserQuestById] Error fetching quest with ID ${id}:`, error);
+      return undefined;
+    }
   }
 
   async getActiveUserQuests(userId: number): Promise<UserQuest[]> {
-    return Array.from(this.userQuests.values())
-      .filter(quest => quest.userId === userId && quest.status === "active")
-      .sort((a, b) => {
-        // Sort by most recently assigned first
-        const timeA = a.assignedAt ? a.assignedAt.getTime() : 0;
-        const timeB = b.assignedAt ? b.assignedAt.getTime() : 0;
-        return timeB - timeA;
-      });
+    try {
+      console.log(`[db.getActiveUserQuests] Fetching active quests for user ${userId}`);
+      
+      // Check if the table exists first
+      const tableCheck = await pool.query(`
+        SELECT EXISTS (
+          SELECT 1 
+          FROM information_schema.tables 
+          WHERE table_name = 'user_quests'
+        );
+      `);
+      
+      if (!tableCheck.rows[0].exists) {
+        console.log(`[db.getActiveUserQuests] user_quests table does not exist`);
+        return [];
+      }
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          user_id as "userId",
+          quest_definition_id as "questDefinitionId",
+          status,
+          progress,
+          assigned_at as "assignedAt",
+          completed_at as "completedAt",
+          dismissed_reason as "dismissedReason",
+          xp_earned as "xpEarned",
+          badge_earned as "badgeEarned",
+          musk_response as "muskResponse",
+          week_number as "weekNumber",
+          year
+        FROM user_quests
+        WHERE user_id = $1 AND status = 'active'
+        ORDER BY assigned_at DESC
+      `, [userId]);
+      
+      console.log(`[db.getActiveUserQuests] Found ${result.rows.length} active quests for user ${userId}`);
+      return result.rows;
+    } catch (error) {
+      console.error(`[db.getActiveUserQuests] Error fetching active quests for user ${userId}:`, error);
+      return [];
+    }
   }
 
   async getCompletedUserQuests(userId: number): Promise<UserQuest[]> {
-    return Array.from(this.userQuests.values())
-      .filter(quest => quest.userId === userId && quest.status === "completed")
-      .sort((a, b) => {
-        // Sort by most recently completed first
-        const timeA = a.completedAt ? a.completedAt.getTime() : 0;
-        const timeB = b.completedAt ? b.completedAt.getTime() : 0;
-        return timeB - timeA;
-      });
+    try {
+      console.log(`[db.getCompletedUserQuests] Fetching completed quests for user ${userId}`);
+      
+      // Check if the table exists first
+      const tableCheck = await pool.query(`
+        SELECT EXISTS (
+          SELECT 1 
+          FROM information_schema.tables 
+          WHERE table_name = 'user_quests'
+        );
+      `);
+      
+      if (!tableCheck.rows[0].exists) {
+        console.log(`[db.getCompletedUserQuests] user_quests table does not exist`);
+        return [];
+      }
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          user_id as "userId",
+          quest_definition_id as "questDefinitionId",
+          status,
+          progress,
+          assigned_at as "assignedAt",
+          completed_at as "completedAt",
+          dismissed_reason as "dismissedReason",
+          xp_earned as "xpEarned",
+          badge_earned as "badgeEarned",
+          musk_response as "muskResponse",
+          week_number as "weekNumber",
+          year
+        FROM user_quests
+        WHERE user_id = $1 AND status = 'completed'
+        ORDER BY completed_at DESC
+      `, [userId]);
+      
+      console.log(`[db.getCompletedUserQuests] Found ${result.rows.length} completed quests for user ${userId}`);
+      return result.rows;
+    } catch (error) {
+      console.error(`[db.getCompletedUserQuests] Error fetching completed quests for user ${userId}:`, error);
+      return [];
+    }
   }
 
-  async getCurrentWeekUserQuests(userId: number): Promise<UserQuest[]> {
-    // Get current week number and year
-    const now = new Date();
-    const currentWeek = this.getWeekNumber(now);
-    const currentYear = now.getFullYear();
-    
-    return Array.from(this.userQuests.values())
-      .filter(quest => 
-        quest.userId === userId && 
-        quest.weekNumber === currentWeek &&
-        quest.year === currentYear)
-      .sort((a, b) => {
-        if (a.status === "completed" && b.status !== "completed") return 1;
-        if (a.status !== "completed" && b.status === "completed") return -1;
-        return 0;
-      });
-  }
+  // In-memory implementation of getCurrentWeekUserQuests, replaced by database implementation above
+  // This method is not used when the database implementation is active
 
   async createUserQuest(quest: InsertUserQuest): Promise<UserQuest> {
     const id = this.currentUserQuestId++;
