@@ -120,7 +120,6 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
       { id: 'skills', ref: skillsRef },
       { id: 'projects', ref: projectsRef },
       { id: 'services', ref: servicesRef },
-      { id: 'about', ref: aboutRef },
       { id: 'timeline', ref: timelineRef },
       { id: 'education', ref: educationRef },
       { id: 'contact', ref: contactRef }
