@@ -4230,26 +4230,142 @@ export class MemStorage implements IStorage {
     }
   }
 
+  async getUserQuestsByUserId(userId: number): Promise<UserQuest[]> {
+    try {
+      console.log(`[db.getUserQuestsByUserId] Fetching quests for user ${userId}`);
+      
+      // Check if the table exists first
+      const tableCheck = await pool.query(`
+        SELECT EXISTS (
+          SELECT 1 
+          FROM information_schema.tables 
+          WHERE table_name = 'user_quests'
+        );
+      `);
+      
+      if (!tableCheck.rows[0].exists) {
+        console.log(`[db.getUserQuestsByUserId] user_quests table does not exist`);
+        return [];
+      }
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          user_id as "userId",
+          quest_definition_id as "questDefinitionId",
+          status,
+          progress,
+          assigned_at as "assignedAt",
+          completed_at as "completedAt",
+          dismissed_reason as "dismissedReason",
+          xp_earned as "xpEarned",
+          badge_earned as "badgeEarned",
+          musk_response as "muskResponse",
+          week_number as "weekNumber",
+          year
+        FROM user_quests
+        WHERE user_id = $1
+        ORDER BY assigned_at DESC
+      `, [userId]);
+      
+      console.log(`[db.getUserQuestsByUserId] Found ${result.rows.length} quests for user ${userId}`);
+      return result.rows;
+    } catch (error) {
+      console.error(`[db.getUserQuestsByUserId] Error fetching quests for user ${userId}:`, error);
+      return [];
+    }
+  }
+
   async getActiveUserQuests(userId: number): Promise<UserQuest[]> {
-    return Array.from(this.userQuests.values())
-      .filter(quest => quest.userId === userId && quest.status === "active")
-      .sort((a, b) => {
-        // Sort by most recently assigned first
-        const timeA = a.assignedAt ? a.assignedAt.getTime() : 0;
-        const timeB = b.assignedAt ? b.assignedAt.getTime() : 0;
-        return timeB - timeA;
-      });
+    try {
+      console.log(`[db.getActiveUserQuests] Fetching active quests for user ${userId}`);
+      
+      // Check if the table exists first
+      const tableCheck = await pool.query(`
+        SELECT EXISTS (
+          SELECT 1 
+          FROM information_schema.tables 
+          WHERE table_name = 'user_quests'
+        );
+      `);
+      
+      if (!tableCheck.rows[0].exists) {
+        console.log(`[db.getActiveUserQuests] user_quests table does not exist`);
+        return [];
+      }
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          user_id as "userId",
+          quest_definition_id as "questDefinitionId",
+          status,
+          progress,
+          assigned_at as "assignedAt",
+          completed_at as "completedAt",
+          dismissed_reason as "dismissedReason",
+          xp_earned as "xpEarned",
+          badge_earned as "badgeEarned",
+          musk_response as "muskResponse",
+          week_number as "weekNumber",
+          year
+        FROM user_quests
+        WHERE user_id = $1 AND status = 'active'
+        ORDER BY assigned_at DESC
+      `, [userId]);
+      
+      console.log(`[db.getActiveUserQuests] Found ${result.rows.length} active quests for user ${userId}`);
+      return result.rows;
+    } catch (error) {
+      console.error(`[db.getActiveUserQuests] Error fetching active quests for user ${userId}:`, error);
+      return [];
+    }
   }
 
   async getCompletedUserQuests(userId: number): Promise<UserQuest[]> {
-    return Array.from(this.userQuests.values())
-      .filter(quest => quest.userId === userId && quest.status === "completed")
-      .sort((a, b) => {
-        // Sort by most recently completed first
-        const timeA = a.completedAt ? a.completedAt.getTime() : 0;
-        const timeB = b.completedAt ? b.completedAt.getTime() : 0;
-        return timeB - timeA;
-      });
+    try {
+      console.log(`[db.getCompletedUserQuests] Fetching completed quests for user ${userId}`);
+      
+      // Check if the table exists first
+      const tableCheck = await pool.query(`
+        SELECT EXISTS (
+          SELECT 1 
+          FROM information_schema.tables 
+          WHERE table_name = 'user_quests'
+        );
+      `);
+      
+      if (!tableCheck.rows[0].exists) {
+        console.log(`[db.getCompletedUserQuests] user_quests table does not exist`);
+        return [];
+      }
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          user_id as "userId",
+          quest_definition_id as "questDefinitionId",
+          status,
+          progress,
+          assigned_at as "assignedAt",
+          completed_at as "completedAt",
+          dismissed_reason as "dismissedReason",
+          xp_earned as "xpEarned",
+          badge_earned as "badgeEarned",
+          musk_response as "muskResponse",
+          week_number as "weekNumber",
+          year
+        FROM user_quests
+        WHERE user_id = $1 AND status = 'completed'
+        ORDER BY completed_at DESC
+      `, [userId]);
+      
+      console.log(`[db.getCompletedUserQuests] Found ${result.rows.length} completed quests for user ${userId}`);
+      return result.rows;
+    } catch (error) {
+      console.error(`[db.getCompletedUserQuests] Error fetching completed quests for user ${userId}:`, error);
+      return [];
+    }
   }
 
   // Utility function to get the ISO week number from a date
@@ -4396,111 +4512,348 @@ export class MemStorage implements IStorage {
   }
 
   async updateUserQuest(id: number, quest: Partial<UserQuest>): Promise<UserQuest | undefined> {
-    const existingQuest = this.userQuests.get(id);
-    if (!existingQuest) return undefined;
-    
-    const updatedQuest: UserQuest = {
-      ...existingQuest,
-      ...quest
-    };
-    
-    this.userQuests.set(id, updatedQuest);
-    return updatedQuest;
+    try {
+      console.log(`[db.updateUserQuest] Updating quest with ID ${id}`);
+      
+      // Check if the table exists first
+      const tableCheck = await pool.query(`
+        SELECT EXISTS (
+          SELECT 1 
+          FROM information_schema.tables 
+          WHERE table_name = 'user_quests'
+        );
+      `);
+      
+      if (!tableCheck.rows[0].exists) {
+        console.log(`[db.updateUserQuest] user_quests table does not exist`);
+        return undefined;
+      }
+      
+      // Get the existing quest
+      const existingResult = await pool.query(`
+        SELECT * FROM user_quests WHERE id = $1
+      `, [id]);
+      
+      if (existingResult.rows.length === 0) {
+        console.log(`[db.updateUserQuest] No quest found with ID ${id}`);
+        return undefined;
+      }
+      
+      // Build the SET clause for the update query
+      const updates: string[] = [];
+      const values: any[] = [];
+      let valueIndex = 1;
+      
+      // Add each property to update
+      if (quest.status !== undefined) {
+        updates.push(`status = $${valueIndex}`);
+        values.push(quest.status);
+        valueIndex++;
+      }
+      
+      if (quest.progress !== undefined) {
+        updates.push(`progress = $${valueIndex}`);
+        values.push(quest.progress);
+        valueIndex++;
+      }
+      
+      if (quest.completedAt !== undefined) {
+        updates.push(`completed_at = $${valueIndex}`);
+        values.push(quest.completedAt);
+        valueIndex++;
+      }
+      
+      if (quest.dismissedReason !== undefined) {
+        updates.push(`dismissed_reason = $${valueIndex}`);
+        values.push(quest.dismissedReason);
+        valueIndex++;
+      }
+      
+      if (quest.xpEarned !== undefined) {
+        updates.push(`xp_earned = $${valueIndex}`);
+        values.push(quest.xpEarned);
+        valueIndex++;
+      }
+      
+      if (quest.badgeEarned !== undefined) {
+        updates.push(`badge_earned = $${valueIndex}`);
+        values.push(quest.badgeEarned);
+        valueIndex++;
+      }
+      
+      if (quest.muskResponse !== undefined) {
+        updates.push(`musk_response = $${valueIndex}`);
+        values.push(quest.muskResponse);
+        valueIndex++;
+      }
+      
+      // Add the ID as the last parameter
+      values.push(id);
+      
+      // Execute the update
+      if (updates.length > 0) {
+        const updateQuery = `
+          UPDATE user_quests
+          SET ${updates.join(', ')}
+          WHERE id = $${valueIndex}
+          RETURNING 
+            id,
+            user_id as "userId",
+            quest_definition_id as "questDefinitionId",
+            status,
+            progress,
+            assigned_at as "assignedAt",
+            completed_at as "completedAt",
+            dismissed_reason as "dismissedReason",
+            xp_earned as "xpEarned",
+            badge_earned as "badgeEarned",
+            musk_response as "muskResponse",
+            week_number as "weekNumber",
+            year
+        `;
+        
+        const result = await pool.query(updateQuery, values);
+        console.log(`[db.updateUserQuest] Updated quest with ID ${id}`);
+        return result.rows[0];
+      } else {
+        // If no updates were specified, just return the existing quest
+        console.log(`[db.updateUserQuest] No updates specified for quest with ID ${id}`);
+        const result = await pool.query(`
+          SELECT 
+            id,
+            user_id as "userId",
+            quest_definition_id as "questDefinitionId",
+            status,
+            progress,
+            assigned_at as "assignedAt",
+            completed_at as "completedAt",
+            dismissed_reason as "dismissedReason",
+            xp_earned as "xpEarned",
+            badge_earned as "badgeEarned",
+            musk_response as "muskResponse",
+            week_number as "weekNumber",
+            year
+          FROM user_quests
+          WHERE id = $1
+        `, [id]);
+        
+        return result.rows[0];
+      }
+    } catch (error) {
+      console.error(`[db.updateUserQuest] Error updating quest with ID ${id}:`, error);
+      return undefined;
+    }
   }
 
   async completeUserQuest(id: number, earnedXp?: number): Promise<UserQuest | undefined> {
-    const quest = this.userQuests.get(id);
-    if (!quest) return undefined;
-    
-    // Only complete if active
-    if (quest.status !== "active") return quest;
-    
-    // Get quest definition
-    const questDefinition = await this.getQuestDefinitionById(quest.questDefinitionId);
-    if (!questDefinition) return undefined;
-    
-    // Set XP earned (either provided or from quest definition)
-    const xpEarned = earnedXp || questDefinition.xpReward;
-    
-    // Update the quest
-    const completedQuest: UserQuest = {
-      ...quest,
-      status: "completed",
-      completedAt: new Date(),
-      progress: questDefinition.targetCount, // Set to target count
-      xpEarned,
-      badgeEarned: questDefinition.badgeReward || null
-    };
-    
-    this.userQuests.set(id, completedQuest);
-    
-    // If there's a badge reward, award it to the user
-    if (questDefinition.badgeReward) {
-      await this.createUserBadge({
-        userId: quest.userId,
-        badgeType: questDefinition.badgeReward,
-        questId: id,
-        displayOnProfile: true,
-        displayOnResume: false
-      });
+    try {
+      console.log(`[db.completeUserQuest] Completing quest with ID ${id}`);
+      
+      // Get the quest
+      const quest = await this.getUserQuestById(id);
+      if (!quest) {
+        console.log(`[db.completeUserQuest] No quest found with ID ${id}`);
+        return undefined;
+      }
+      
+      // Only complete if active
+      if (quest.status !== "active") {
+        console.log(`[db.completeUserQuest] Quest with ID ${id} is not active (status: ${quest.status})`);
+        return quest;
+      }
+      
+      // Get quest definition
+      const questDefinition = await this.getQuestDefinitionById(quest.questDefinitionId);
+      if (!questDefinition) {
+        console.log(`[db.completeUserQuest] Quest definition not found for quest ID ${id}`);
+        return undefined;
+      }
+      
+      // Set XP earned (either provided or from quest definition)
+      const xpEarned = earnedXp || questDefinition.xpReward;
+      const now = new Date();
+      
+      // Update quest
+      const result = await pool.query(`
+        UPDATE user_quests
+        SET 
+          status = 'completed',
+          completed_at = $1,
+          progress = $2,
+          xp_earned = $3,
+          badge_earned = $4
+        WHERE id = $5
+        RETURNING 
+          id,
+          user_id as "userId",
+          quest_definition_id as "questDefinitionId",
+          status,
+          progress,
+          assigned_at as "assignedAt",
+          completed_at as "completedAt",
+          dismissed_reason as "dismissedReason",
+          xp_earned as "xpEarned",
+          badge_earned as "badgeEarned",
+          musk_response as "muskResponse",
+          week_number as "weekNumber",
+          year
+      `, [
+        now,
+        questDefinition.targetCount,
+        xpEarned,
+        questDefinition.badgeReward || null,
+        id
+      ]);
+      
+      const completedQuest = result.rows[0];
+      console.log(`[db.completeUserQuest] Completed quest with ID ${id}, earned XP: ${xpEarned}`);
+      
+      // If there's a badge reward, award it to the user
+      if (questDefinition.badgeReward) {
+        try {
+          await this.createUserBadge({
+            userId: quest.userId,
+            badgeType: questDefinition.badgeReward,
+            questId: id,
+            displayOnProfile: true,
+            displayOnResume: false
+          });
+          console.log(`[db.completeUserQuest] Awarded badge ${questDefinition.badgeReward} to user ${quest.userId}`);
+        } catch (badgeError) {
+          console.error(`[db.completeUserQuest] Error awarding badge to user ${quest.userId}:`, badgeError);
+        }
+      }
+      
+      // Add XP to user account
+      try {
+        await this.incrementUserXp(
+          quest.userId, 
+          xpEarned, 
+          "quest_completion", 
+          id
+        );
+        console.log(`[db.completeUserQuest] Added ${xpEarned} XP to user ${quest.userId}`);
+      } catch (xpError) {
+        console.error(`[db.completeUserQuest] Error adding XP to user ${quest.userId}:`, xpError);
+      }
+      
+      return completedQuest;
+    } catch (error) {
+      console.error(`[db.completeUserQuest] Error completing quest with ID ${id}:`, error);
+      return undefined;
     }
-    
-    // Add XP to user account
-    await this.incrementUserXp(
-      quest.userId, 
-      xpEarned, 
-      "quest_completion", 
-      id
-    );
-    
-    return completedQuest;
   }
 
   async dismissUserQuest(id: number, reason?: string): Promise<UserQuest | undefined> {
-    const quest = this.userQuests.get(id);
-    if (!quest) return undefined;
-    
-    // Only dismiss if active
-    if (quest.status !== "active") return quest;
-    
-    const dismissedQuest: UserQuest = {
-      ...quest,
-      status: "dismissed",
-      dismissedReason: reason || null
-    };
-    
-    this.userQuests.set(id, dismissedQuest);
-    return dismissedQuest;
+    try {
+      console.log(`[db.dismissUserQuest] Dismissing quest with ID ${id}`);
+      
+      // Get the quest
+      const quest = await this.getUserQuestById(id);
+      if (!quest) {
+        console.log(`[db.dismissUserQuest] No quest found with ID ${id}`);
+        return undefined;
+      }
+      
+      // Only dismiss if active
+      if (quest.status !== "active") {
+        console.log(`[db.dismissUserQuest] Quest with ID ${id} is not active (status: ${quest.status})`);
+        return quest;
+      }
+      
+      // Update quest
+      const result = await pool.query(`
+        UPDATE user_quests
+        SET 
+          status = 'dismissed',
+          dismissed_reason = $1
+        WHERE id = $2
+        RETURNING 
+          id,
+          user_id as "userId",
+          quest_definition_id as "questDefinitionId",
+          status,
+          progress,
+          assigned_at as "assignedAt",
+          completed_at as "completedAt",
+          dismissed_reason as "dismissedReason",
+          xp_earned as "xpEarned",
+          badge_earned as "badgeEarned",
+          musk_response as "muskResponse",
+          week_number as "weekNumber",
+          year
+      `, [reason || null, id]);
+      
+      console.log(`[db.dismissUserQuest] Dismissed quest with ID ${id}`);
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.dismissUserQuest] Error dismissing quest with ID ${id}:`, error);
+      return undefined;
+    }
   }
 
   async incrementQuestProgress(id: number): Promise<UserQuest | undefined> {
-    const quest = this.userQuests.get(id);
-    if (!quest) return undefined;
-    
-    // Only increment if active
-    if (quest.status !== "active") return quest;
-    
-    // Get quest definition
-    const questDefinition = await this.getQuestDefinitionById(quest.questDefinitionId);
-    if (!questDefinition) return undefined;
-    
-    // Calculate new progress
-    const newProgress = quest.progress + 1;
-    
-    // Update the quest
-    const updatedQuest: UserQuest = {
-      ...quest,
-      progress: newProgress
-    };
-    
-    this.userQuests.set(id, updatedQuest);
-    
-    // If progress meets the target, complete the quest
-    if (newProgress >= questDefinition.targetCount) {
-      return this.completeUserQuest(id);
+    try {
+      console.log(`[db.incrementQuestProgress] Incrementing progress for quest with ID ${id}`);
+      
+      // Get the quest
+      const quest = await this.getUserQuestById(id);
+      if (!quest) {
+        console.log(`[db.incrementQuestProgress] No quest found with ID ${id}`);
+        return undefined;
+      }
+      
+      // Only increment if active
+      if (quest.status !== "active") {
+        console.log(`[db.incrementQuestProgress] Quest with ID ${id} is not active (status: ${quest.status})`);
+        return quest;
+      }
+      
+      // Get quest definition
+      const questDefinition = await this.getQuestDefinitionById(quest.questDefinitionId);
+      if (!questDefinition) {
+        console.log(`[db.incrementQuestProgress] Quest definition not found for quest ID ${id}`);
+        return undefined;
+      }
+      
+      // Calculate new progress
+      const newProgress = quest.progress + 1;
+      
+      // Update quest
+      const result = await pool.query(`
+        UPDATE user_quests
+        SET progress = $1
+        WHERE id = $2
+        RETURNING 
+          id,
+          user_id as "userId",
+          quest_definition_id as "questDefinitionId",
+          status,
+          progress,
+          assigned_at as "assignedAt",
+          completed_at as "completedAt",
+          dismissed_reason as "dismissedReason",
+          xp_earned as "xpEarned",
+          badge_earned as "badgeEarned",
+          musk_response as "muskResponse",
+          week_number as "weekNumber",
+          year
+      `, [newProgress, id]);
+      
+      const updatedQuest = result.rows[0];
+      console.log(`[db.incrementQuestProgress] Incremented progress for quest with ID ${id} to ${newProgress}`);
+      
+      // If progress meets the target, complete the quest
+      if (newProgress >= questDefinition.targetCount) {
+        console.log(`[db.incrementQuestProgress] Quest with ID ${id} meets completion criteria, completing...`);
+        return this.completeUserQuest(id);
+      }
+      
+      return updatedQuest;
+    } catch (error) {
+      console.error(`[db.incrementQuestProgress] Error incrementing progress for quest with ID ${id}:`, error);
+      return undefined;
     }
-    
-    return updatedQuest;
   }
 
   async assignWeeklyQuestsToUser(userId: number): Promise<UserQuest[]> {
