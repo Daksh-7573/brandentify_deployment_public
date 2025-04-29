@@ -34,6 +34,7 @@ import { registerMuskAIEnhancedRoutes } from "./routes-musk-ai-enhanced";
 import { setupMuskTestingRoutes } from "./routes-musk-testing";
 import muskFeedbackRoutes from "./routes-musk-feedback";
 import { setupServicesRoutes } from "./routes-services";
+import mentorshipRoutes from "./routes-mentorship";
 import { 
   handleSmartConnect, 
   handleCareerRecommendations, 
@@ -5304,6 +5305,10 @@ ${extractedText.substring(0, 5000)}
   // Register Services routes for managing user services
   setupServicesRoutes(app);
   console.log("Services routes loaded");
+  
+  // Register Mentorship Connect routes
+  app.use(mentorshipRoutes);
+  console.log("Mentorship Connect routes loaded");
 
   app.use("/api", apiRouter);
 
