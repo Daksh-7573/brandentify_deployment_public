@@ -4026,12 +4026,75 @@ export class MemStorage implements IStorage {
   }
 
   async getQuestDefinitionById(id: number): Promise<QuestDefinition | undefined> {
-    return this.questDefinitions.get(id);
+    try {
+      console.log(`[db.getQuestDefinitionById] Fetching quest definition with ID ${id}`);
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          title,
+          description,
+          type,
+          target_count as "targetCount",
+          target_action as "targetAction",
+          xp_reward as "xpReward",
+          badge_reward as "badgeReward",
+          required_profile_completion as "requiredProfileCompletion",
+          required_career_stage as "requiredCareerStage",
+          required_industry as "requiredIndustry",
+          musk_tip as "muskTip",
+          is_active as "isActive",
+          created_at as "createdAt",
+          updated_at as "updatedAt"
+        FROM quest_definitions
+        WHERE id = $1
+      `, [id]);
+      
+      if (result.rows.length === 0) {
+        console.log(`[db.getQuestDefinitionById] No quest definition found with ID ${id}`);
+        return undefined;
+      }
+      
+      console.log(`[db.getQuestDefinitionById] Found quest definition with ID ${id}`);
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.getQuestDefinitionById] Error fetching quest definition with ID ${id}:`, error);
+      return undefined;
+    }
   }
 
   async getActiveQuestDefinitions(): Promise<QuestDefinition[]> {
-    return Array.from(this.questDefinitions.values())
-      .filter(quest => quest.isActive);
+    try {
+      console.log('[db.getActiveQuestDefinitions] Fetching active quest definitions');
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          title,
+          description,
+          type,
+          target_count as "targetCount",
+          target_action as "targetAction",
+          xp_reward as "xpReward",
+          badge_reward as "badgeReward",
+          required_profile_completion as "requiredProfileCompletion",
+          required_career_stage as "requiredCareerStage",
+          required_industry as "requiredIndustry",
+          musk_tip as "muskTip",
+          is_active as "isActive",
+          created_at as "createdAt",
+          updated_at as "updatedAt"
+        FROM quest_definitions
+        WHERE is_active = true
+        ORDER BY id ASC
+      `);
+      
+      console.log(`[db.getActiveQuestDefinitions] Found ${result.rows.length} active quest definitions`);
+      return result.rows;
+    } catch (error) {
+      console.error('[db.getActiveQuestDefinitions] Error fetching active quest definitions:', error);
+      return [];
+    }
   }
 
   async getQuestDefinitionsByType(type: string): Promise<QuestDefinition[]> {
@@ -4115,7 +4178,39 @@ export class MemStorage implements IStorage {
   }
 
   async getUserQuestById(id: number): Promise<UserQuest | undefined> {
-    return this.userQuests.get(id);
+    try {
+      console.log(`[db.getUserQuestById] Fetching quest with ID ${id}`);
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          user_id as "userId",
+          quest_definition_id as "questDefinitionId",
+          status,
+          progress,
+          assigned_at as "assignedAt",
+          completed_at as "completedAt",
+          dismissed_reason as "dismissedReason",
+          xp_earned as "xpEarned",
+          badge_earned as "badgeEarned",
+          musk_response as "muskResponse",
+          week_number as "weekNumber",
+          year
+        FROM user_quests
+        WHERE id = $1
+      `, [id]);
+      
+      if (result.rows.length === 0) {
+        console.log(`[db.getUserQuestById] No quest found with ID ${id}`);
+        return undefined;
+      }
+      
+      console.log(`[db.getUserQuestById] Found quest with ID ${id}`);
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.getUserQuestById] Error fetching quest with ID ${id}:`, error);
+      return undefined;
+    }
   }
 
   async getActiveUserQuests(userId: number): Promise<UserQuest[]> {
@@ -4141,21 +4236,48 @@ export class MemStorage implements IStorage {
   }
 
   async getCurrentWeekUserQuests(userId: number): Promise<UserQuest[]> {
-    // Get current week number and year
-    const now = new Date();
-    const currentWeek = this.getWeekNumber(now);
-    const currentYear = now.getFullYear();
-    
-    return Array.from(this.userQuests.values())
-      .filter(quest => 
-        quest.userId === userId && 
-        quest.weekNumber === currentWeek &&
-        quest.year === currentYear)
-      .sort((a, b) => {
-        if (a.status === "completed" && b.status !== "completed") return 1;
-        if (a.status !== "completed" && b.status === "completed") return -1;
-        return 0;
-      });
+    try {
+      // Get current week number and year
+      const now = new Date();
+      const currentWeek = this.getWeekNumber(now);
+      const currentYear = now.getFullYear();
+      
+      console.log(`[db.getCurrentWeekUserQuests] Fetching week ${currentWeek} year ${currentYear} quests for user ${userId}`);
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          user_id as "userId",
+          quest_definition_id as "questDefinitionId",
+          status,
+          progress,
+          assigned_at as "assignedAt",
+          completed_at as "completedAt",
+          dismissed_reason as "dismissedReason",
+          xp_earned as "xpEarned",
+          badge_earned as "badgeEarned",
+          musk_response as "muskResponse",
+          week_number as "weekNumber",
+          year
+        FROM user_quests
+        WHERE user_id = $1
+          AND week_number = $2
+          AND year = $3
+        ORDER BY 
+          CASE status 
+            WHEN 'completed' THEN 2
+            WHEN 'dismissed' THEN 1
+            ELSE 0
+          END,
+          assigned_at DESC
+      `, [userId, currentWeek, currentYear]);
+      
+      console.log(`[db.getCurrentWeekUserQuests] Found ${result.rows.length} quests for user ${userId} in week ${currentWeek}`);
+      return result.rows;
+    } catch (error) {
+      console.error(`[db.getCurrentWeekUserQuests] Error fetching quests for user ${userId}:`, error);
+      return [];
+    }
   }
 
   async createUserQuest(quest: InsertUserQuest): Promise<UserQuest> {
@@ -4382,8 +4504,35 @@ export class MemStorage implements IStorage {
 
   // User XP operations
   async getUserXp(userId: number): Promise<UserXp | undefined> {
-    return Array.from(this.userXp.values())
-      .find(xp => xp.userId === userId);
+    try {
+      console.log(`[db.getUserXp] Fetching XP for user ${userId}`);
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          user_id as "userId",
+          balance,
+          lifetime_earned as "lifetimeEarned",
+          current_month_earned as "currentMonthEarned",
+          last_earned_at as "lastEarnedAt",
+          last_reset_at as "lastResetAt",
+          created_at as "createdAt",
+          updated_at as "updatedAt"
+        FROM user_xp
+        WHERE user_id = $1
+      `, [userId]);
+      
+      if (result.rows.length === 0) {
+        console.log(`[db.getUserXp] No XP record found for user ${userId}`);
+        return undefined;
+      }
+      
+      console.log(`[db.getUserXp] Found XP record for user ${userId}`);
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.getUserXp] Error fetching XP for user ${userId}:`, error);
+      return undefined;
+    }
   }
 
   async createUserXp(userXp: InsertUserXp): Promise<UserXp> {
@@ -4512,14 +4661,29 @@ export class MemStorage implements IStorage {
 
   // User Badge operations
   async getUserBadges(userId: number): Promise<UserBadge[]> {
-    return Array.from(this.userBadges.values())
-      .filter(badge => badge.userId === userId)
-      .sort((a, b) => {
-        // Sort by most recently earned first
-        const timeA = a.earnedAt ? a.earnedAt.getTime() : 0;
-        const timeB = b.earnedAt ? b.earnedAt.getTime() : 0;
-        return timeB - timeA;
-      });
+    try {
+      console.log(`[db.getUserBadges] Fetching badges for user ${userId}`);
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          user_id as "userId",
+          badge_type as "badgeType",
+          quest_id as "questId",
+          display_on_profile as "displayOnProfile",
+          display_on_resume as "displayOnResume",
+          earned_at as "earnedAt"
+        FROM user_badges
+        WHERE user_id = $1
+        ORDER BY earned_at DESC
+      `, [userId]);
+      
+      console.log(`[db.getUserBadges] Found ${result.rows.length} badges for user ${userId}`);
+      return result.rows;
+    } catch (error) {
+      console.error(`[db.getUserBadges] Error fetching badges for user ${userId}:`, error);
+      return [];
+    }
   }
 
   async getUserBadgeById(id: number): Promise<UserBadge | undefined> {
@@ -4572,29 +4736,85 @@ export class MemStorage implements IStorage {
 
   // XP Transaction operations
   async getXpTransactions(userId: number): Promise<XpTransaction[]> {
-    return Array.from(this.xpTransactions.values())
-      .filter(transaction => transaction.userId === userId)
-      .sort((a, b) => {
-        // Sort by most recent first
-        const timeA = a.createdAt ? a.createdAt.getTime() : 0;
-        const timeB = b.createdAt ? b.createdAt.getTime() : 0;
-        return timeB - timeA;
-      });
+    try {
+      console.log(`[db.getXpTransactions] Fetching XP transactions for user ${userId}`);
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          user_id as "userId",
+          amount,
+          source,
+          source_id as "sourceId",
+          description,
+          created_at as "createdAt"
+        FROM xp_transactions
+        WHERE user_id = $1
+        ORDER BY created_at DESC
+      `, [userId]);
+      
+      console.log(`[db.getXpTransactions] Found ${result.rows.length} XP transactions for user ${userId}`);
+      return result.rows;
+    } catch (error) {
+      console.error(`[db.getXpTransactions] Error fetching XP transactions for user ${userId}:`, error);
+      return [];
+    }
   }
 
   async getXpTransactionById(id: number): Promise<XpTransaction | undefined> {
-    return this.xpTransactions.get(id);
+    try {
+      console.log(`[db.getXpTransactionById] Fetching XP transaction with ID ${id}`);
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          user_id as "userId",
+          amount,
+          source,
+          source_id as "sourceId",
+          description,
+          created_at as "createdAt"
+        FROM xp_transactions
+        WHERE id = $1
+      `, [id]);
+      
+      if (result.rows.length === 0) {
+        console.log(`[db.getXpTransactionById] No XP transaction found with ID ${id}`);
+        return undefined;
+      }
+      
+      console.log(`[db.getXpTransactionById] Found XP transaction with ID ${id}`);
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.getXpTransactionById] Error fetching XP transaction with ID ${id}:`, error);
+      return undefined;
+    }
   }
 
   async getXpTransactionsBySource(userId: number, source: string): Promise<XpTransaction[]> {
-    return Array.from(this.xpTransactions.values())
-      .filter(transaction => transaction.userId === userId && transaction.source === source)
-      .sort((a, b) => {
-        // Sort by most recent first
-        const timeA = a.createdAt ? a.createdAt.getTime() : 0;
-        const timeB = b.createdAt ? b.createdAt.getTime() : 0;
-        return timeB - timeA;
-      });
+    try {
+      console.log(`[db.getXpTransactionsBySource] Fetching XP transactions for user ${userId} and source ${source}`);
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          user_id as "userId",
+          amount,
+          source,
+          source_id as "sourceId",
+          description,
+          created_at as "createdAt"
+        FROM xp_transactions
+        WHERE user_id = $1 AND source = $2
+        ORDER BY created_at DESC
+      `, [userId, source]);
+      
+      console.log(`[db.getXpTransactionsBySource] Found ${result.rows.length} XP transactions for user ${userId} and source ${source}`);
+      return result.rows;
+    } catch (error) {
+      console.error(`[db.getXpTransactionsBySource] Error fetching XP transactions for user ${userId} and source ${source}:`, error);
+      return [];
+    }
   }
 
   async createXpTransaction(transaction: InsertXpTransaction): Promise<XpTransaction> {
