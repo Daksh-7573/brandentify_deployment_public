@@ -777,7 +777,7 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
             </p>
           </motion.div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 animated-projects">
+          <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-6 animated-projects">
             {projects && projects.length > 0 ? (
               projects.map((project, index) => (
                 <motion.div 
@@ -792,7 +792,7 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                   whileHover={{ y: -10, boxShadow: '0 20px 40px rgba(139, 92, 246, 0.15)' }}
                   onClick={() => setSelectedProject(project)}
                 >
-                  {/* Project Image - Square format */}
+                  {/* Project Image - Smaller Square format */}
                   <div className="aspect-square overflow-hidden relative group">
                     {project.thumbnailUrl ? (
                       <img 
@@ -815,14 +815,14 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                   </div>
                   
                   {/* Project Details */}
-                  <div className="p-6 bg-purple-900/20">
-                    <h3 className="text-xl font-bold text-white mb-3 tracking-tight">
+                  <div className="p-4 bg-purple-900/20">
+                    <h3 className="text-lg font-bold text-white mb-2 tracking-tight truncate">
                       {project.title}
                     </h3>
                     
                     {/* Project Date - with simpler formatting */}
-                    <div className="text-sm text-white flex items-center">
-                      <Calendar className="h-4 w-4 mr-1" />
+                    <div className="text-xs text-white flex items-center">
+                      <Calendar className="h-3 w-3 mr-1" />
                       {new Date(project.startDate || '').toLocaleDateString('en-US', {
                         year: 'numeric',
                         month: 'short'
