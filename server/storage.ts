@@ -4594,6 +4594,32 @@ export class MemStorage implements IStorage {
     try {
       console.log(`[db.getUserXp] Fetching XP for user ${userId}`);
       
+      // Check if the table exists first
+      const tableCheck = await pool.query(`
+        SELECT EXISTS (
+          SELECT 1 
+          FROM information_schema.tables 
+          WHERE table_name = 'user_xp'
+        );
+      `);
+      
+      if (!tableCheck.rows[0].exists) {
+        console.log(`[db.getUserXp] user_xp table does not exist`);
+        
+        // If table doesn't exist, create default XP record in memory instead of failing
+        return {
+          id: 0,
+          userId: userId,
+          balance: 0,
+          lifetimeEarned: 0,
+          currentMonthEarned: 0,
+          lastEarnedAt: null,
+          lastResetAt: null,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+      }
+      
       const result = await pool.query(`
         SELECT 
           id,
@@ -4611,14 +4637,38 @@ export class MemStorage implements IStorage {
       
       if (result.rows.length === 0) {
         console.log(`[db.getUserXp] No XP record found for user ${userId}`);
-        return undefined;
+        
+        // Create default record if none found
+        return {
+          id: 0,
+          userId: userId,
+          balance: 0,
+          lifetimeEarned: 0,
+          currentMonthEarned: 0,
+          lastEarnedAt: null,
+          lastResetAt: null,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
       }
       
       console.log(`[db.getUserXp] Found XP record for user ${userId}`);
       return result.rows[0];
     } catch (error) {
       console.error(`[db.getUserXp] Error fetching XP for user ${userId}:`, error);
-      return undefined;
+      
+      // Return a default record instead of undefined to prevent UI errors
+      return {
+        id: 0,
+        userId: userId,
+        balance: 0,
+        lifetimeEarned: 0,
+        currentMonthEarned: 0,
+        lastEarnedAt: null,
+        lastResetAt: null,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
     }
   }
 
@@ -5082,6 +5132,20 @@ export class MemStorage implements IStorage {
   async getXpTransactions(userId: number): Promise<XpTransaction[]> {
     try {
       console.log(`[db.getXpTransactions] Fetching XP transactions for user ${userId}`);
+      
+      // Check if the table exists first
+      const tableCheck = await pool.query(`
+        SELECT EXISTS (
+          SELECT 1 
+          FROM information_schema.tables 
+          WHERE table_name = 'xp_transactions'
+        );
+      `);
+      
+      if (!tableCheck.rows[0].exists) {
+        console.log(`[db.getXpTransactions] xp_transactions table does not exist`);
+        return [];
+      }
       
       const result = await pool.query(`
         SELECT 

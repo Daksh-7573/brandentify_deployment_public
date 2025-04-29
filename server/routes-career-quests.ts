@@ -174,25 +174,46 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
         return res.status(400).json({ message: 'Invalid user ID' });
       }
       
-      // Get user quests
-      const userQuests = await storage.getUserQuestsByUserId(userId);
-      
-      // Get all quest definitions
-      const questDefinitions = await storage.getQuestDefinitions();
-      
-      // Combine user quests with their definitions
-      const questsWithDefinitions = userQuests.map(userQuest => {
-        const definition = questDefinitions.find(def => def.id === userQuest.questDefinitionId);
-        return {
-          ...userQuest,
-          definition: definition || null
-        };
-      });
-      
-      res.json(questsWithDefinitions);
+      try {
+        // Check if database tables exist first
+        const tableCheck = await pool.query(`
+          SELECT EXISTS (
+            SELECT 1 
+            FROM information_schema.tables 
+            WHERE table_name = 'user_quests'
+          );
+        `);
+        
+        if (!tableCheck.rows[0].exists) {
+          console.log('[GET /quests-with-definitions] user_quests table does not exist, returning empty array');
+          return res.json([]);
+        }
+        
+        // Get user quests
+        const userQuests = await storage.getUserQuestsByUserId(userId);
+        
+        // Get all quest definitions
+        const questDefinitions = await storage.getQuestDefinitions();
+        
+        // Combine user quests with their definitions
+        const questsWithDefinitions = userQuests.map(userQuest => {
+          const definition = questDefinitions.find(def => def.id === userQuest.questDefinitionId);
+          return {
+            ...userQuest,
+            definition: definition || null
+          };
+        });
+        
+        res.json(questsWithDefinitions);
+      } catch (dbError) {
+        console.error(`[GET /users/${req.params.userId}/quests-with-definitions] Database error:`, dbError);
+        // Return empty array instead of error to prevent UI crashes
+        res.json([]);
+      }
     } catch (error) {
       console.error(`[GET /users/${req.params.userId}/quests-with-definitions] Error:`, error);
-      res.status(500).json({ message: 'Failed to fetch quests with definitions' });
+      // Return empty array to prevent UI crashes
+      res.json([]);
     }
   });
 
