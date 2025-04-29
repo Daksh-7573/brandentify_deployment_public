@@ -1625,7 +1625,7 @@ export default function FreelancerHub({
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {sortedServices.length > 0 ? (
-              sortedServices.map((service, index) => (
+              sortedServices.slice(0, 6).map((service, index) => (
                 <motion.div
                   key={service.id}
                   className="service-card bg-white rounded-3xl shadow-xl overflow-hidden relative border-t-4 border-t-fuchsia-400"
