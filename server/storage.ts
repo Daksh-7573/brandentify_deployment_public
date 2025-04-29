@@ -4659,6 +4659,102 @@ export class MemStorage implements IStorage {
     }
   }
 
+  // Quest Definition operations
+  async getQuestDefinitions(): Promise<QuestDefinition[]> {
+    try {
+      console.log('[db.getQuestDefinitions] Fetching all quest definitions');
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          title,
+          description,
+          type,
+          target_count as "targetCount",
+          target_action as "targetAction",
+          xp_reward as "xpReward",
+          badge_reward as "badgeReward",
+          requirements,
+          is_active as "isActive",
+          difficulty,
+          created_at as "createdAt",
+          updated_at as "updatedAt"
+        FROM quest_definitions
+        ORDER BY id ASC
+      `);
+      
+      console.log(`[db.getQuestDefinitions] Found ${result.rows.length} quest definitions`);
+      return result.rows;
+    } catch (error) {
+      console.error('[db.getQuestDefinitions] Error fetching quest definitions:', error);
+      return [];
+    }
+  }
+  
+  async getActiveQuestDefinitions(): Promise<QuestDefinition[]> {
+    try {
+      console.log('[db.getActiveQuestDefinitions] Fetching active quest definitions');
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          title,
+          description,
+          type,
+          target_count as "targetCount",
+          target_action as "targetAction",
+          xp_reward as "xpReward",
+          badge_reward as "badgeReward",
+          requirements,
+          is_active as "isActive",
+          difficulty,
+          created_at as "createdAt",
+          updated_at as "updatedAt"
+        FROM quest_definitions
+        WHERE is_active = true
+        ORDER BY id ASC
+      `);
+      
+      console.log(`[db.getActiveQuestDefinitions] Found ${result.rows.length} active quest definitions`);
+      return result.rows;
+    } catch (error) {
+      console.error('[db.getActiveQuestDefinitions] Error fetching active quest definitions:', error);
+      return [];
+    }
+  }
+  
+  async getQuestDefinitionsByType(type: string): Promise<QuestDefinition[]> {
+    try {
+      console.log(`[db.getQuestDefinitionsByType] Fetching quest definitions of type ${type}`);
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          title,
+          description,
+          type,
+          target_count as "targetCount",
+          target_action as "targetAction",
+          xp_reward as "xpReward",
+          badge_reward as "badgeReward",
+          requirements,
+          is_active as "isActive",
+          difficulty,
+          created_at as "createdAt",
+          updated_at as "updatedAt"
+        FROM quest_definitions
+        WHERE type = $1
+        ORDER BY id ASC
+      `, [type]);
+      
+      console.log(`[db.getQuestDefinitionsByType] Found ${result.rows.length} quest definitions of type ${type}`);
+      return result.rows;
+    } catch (error) {
+      console.error(`[db.getQuestDefinitionsByType] Error fetching quest definitions of type ${type}:`, error);
+      return [];
+    }
+  }
+  
   // User Badge operations
   async getUserBadgeById(id: number): Promise<UserBadge | undefined> {
     try {
