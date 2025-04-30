@@ -46,16 +46,40 @@ export default function ResumePage() {
   const [isCreationRequested, setIsCreationRequested] = useState(false);
   const [resumeReadyForViewing, setResumeReadyForViewing] = useState(false);
   
-  // Auto-create shadow resume if one doesn't exist
+  // Force initial shadow resume fetch on mount
+  useEffect(() => {
+    if (user?.id) {
+      console.log('Forcing initial shadow resume fetch...');
+      fetch(`/api/users/${user.id}/shadow-resume`)
+        .then(res => res.json())
+        .then(data => {
+          console.log('Direct fetch result:', data);
+          if (data.resume) {
+            console.log('Shadow resume found via direct fetch, updating UI state...');
+            setResumeReadyForViewing(true);
+            // Force refresh query state
+            refetchResume();
+          } else {
+            console.log('No shadow resume from direct fetch, will try creating one...');
+            createResumeMutation.mutate();
+          }
+        })
+        .catch(err => {
+          console.error('Error fetching shadow resume:', err);
+        });
+    }
+  }, [user?.id]);
+  
+  // Auto-create shadow resume if one doesn't exist based on query results
   useEffect(() => {
     if (resumeData && !resumeData.resume && !isCreationRequested && !createResumeMutation.isPending) {
-      console.log('No shadow resume found, auto-creating one...');
+      console.log('No shadow resume found in query data, auto-creating one...');
       createResumeMutation.mutate();
     }
     
     // If resume exists in data but still showing generating state, update the state
     if (resumeData && resumeData.resume && !resumeReadyForViewing) {
-      console.log('Resume found in data, updating UI state...');
+      console.log('Resume found in query data, updating UI state...');
       setResumeReadyForViewing(true);
     }
   }, [resumeData]);
@@ -168,7 +192,7 @@ export default function ResumePage() {
               resumeDataKeys: resumeData ? Object.keys(resumeData) : [],
               resumeReadyState: resumeReadyForViewing
             })}
-            {resumeData && resumeData.resume ? (
+            {(resumeData && resumeData.resume) || (resumeReadyForViewing && resume) ? (
               <ShadowResumeSection 
                 user={userData || user} 
                 resume={resume}
