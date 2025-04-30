@@ -1,6 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { MentorshipButton } from "@/components/shared/mentorship-button";
 import { ProfileImage } from "@/components/ui/profile-image";
 import { Education, Project, Service, Skill, WorkExperience } from "@shared/schema";
 import { useEffect, useState, useRef } from "react";
@@ -54,6 +55,7 @@ import { useToast } from "@/hooks/use-toast";
 
 interface TimelineStorytellerProps {
   userInfo: {
+    id?: number;
     name: string;
     title: string | null;
     industry: string | null;
@@ -71,6 +73,7 @@ interface TimelineStorytellerProps {
   userProjects: Project[];
   userEducations?: Education[];
   userServices?: Service[];
+  currentUserId?: number;
 }
 
 // For skill icons
@@ -84,7 +87,8 @@ export default function TimelineStoryteller({
   userExperiences, 
   userProjects,
   userEducations = [],
-  userServices = []
+  userServices = [],
+  currentUserId
 }: TimelineStorytellerProps) {
   // Debug info
   console.log("TimelineStoryteller - userInfo:", userInfo);
@@ -598,13 +602,25 @@ export default function TimelineStoryteller({
               Grab My Resume
             </Button>
             
-            <Button 
-              variant="outline" 
-              className="text-purple-600 border-purple-300 hover:bg-purple-50 px-6 py-3 rounded-md shadow-sm cta-btn"
-            >
-              <Lightbulb className="h-5 w-5 mr-2" />
-              Mentor
-            </Button>
+            {userInfo.id && currentUserId && userInfo.id !== currentUserId ? (
+              <MentorshipButton
+                userId={currentUserId}
+                mentorId={userInfo.id}
+                variant="outline"
+                className="text-purple-600 border-purple-300 hover:bg-purple-50 px-6 py-3 rounded-md shadow-sm cta-btn"
+                buttonText="Mentor"
+                showIcon={true}
+              />
+            ) : (
+              <Button 
+                variant="outline" 
+                className="text-purple-600 border-purple-300 hover:bg-purple-50 px-6 py-3 rounded-md shadow-sm cta-btn"
+                disabled
+              >
+                <Lightbulb className="h-5 w-5 mr-2" />
+                Mentor
+              </Button>
+            )}
           </div>
         </div>
       </section>
