@@ -272,90 +272,161 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
             {/* Resume Preview */}
             <div className="aspect-[3/4] bg-card border rounded-lg flex items-center justify-center overflow-hidden">
               {resume?.fileData ? (
-                <div className="w-full h-full flex flex-col items-center justify-center p-4">
-                  {/* Professional resume preview mockup */}
-                  <div className="text-center mb-4">
-                    <h3 className="text-xl font-bold">{user.name}</h3>
-                    <p className="text-sm text-muted-foreground">{user.title || 'Professional Resume'}</p>
-                  </div>
-                  
-                  <div className="relative w-full flex-1 flex items-center justify-center">
-                    {/* Simplified PDF page preview */}
-                    <div className="w-4/5 h-4/5 bg-white shadow-md rounded-sm border flex flex-col p-5">
-                      <div className="border-b pb-2 mb-3">
-                        <div className="font-bold text-base">{user.name}</div>
-                        <div className="text-sm text-muted-foreground">{user.title || 'Professional'}</div>
-                        <div className="text-xs text-muted-foreground mt-1">{user.email} • {user.location || 'Location'}</div>
+                <div className="w-full h-full flex flex-col items-center justify-center p-6 relative">
+                  {/* Actual resume preview with PDF appearance */}
+                  <div className="w-full h-full relative bg-white shadow-lg rounded overflow-hidden">
+                    {/* Document header */}
+                    <div className="absolute top-0 left-0 right-0 h-8 bg-gray-100 border-b flex items-center justify-between px-3">
+                      <div className="flex items-center space-x-2">
+                        <div className="w-3 h-3 bg-red-400 rounded-full"></div>
+                        <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
+                        <div className="w-3 h-3 bg-green-400 rounded-full"></div>
+                      </div>
+                      <div className="text-xs text-gray-500">{resume.fileName || 'resume.pdf'}</div>
+                    </div>
+                    
+                    {/* Resume content - actual data from the user profile */}
+                    <div className="pt-10 px-6 pb-16">
+                      <div className="border-b border-gray-200 pb-4 mb-4">
+                        <h2 className="text-xl font-bold">{user.name}</h2>
+                        <p className="text-sm text-gray-600">{user.title || 'Professional'}</p>
+                        <div className="flex items-center gap-2 mt-1 text-xs text-gray-500">
+                          <span>{user.email}</span>
+                          {user.location && (
+                            <>
+                              <span>•</span>
+                              <span>{user.location}</span>
+                            </>
+                          )}
+                        </div>
                       </div>
                       
-                      <div className="text-sm font-semibold mb-2">Summary</div>
-                      <div className="space-y-1 mb-4">
-                        <div className="w-full h-1.5 bg-muted rounded"></div>
-                        <div className="w-11/12 h-1.5 bg-muted rounded"></div>
-                        <div className="w-10/12 h-1.5 bg-muted rounded"></div>
+                      {/* About section - use real data */}
+                      <div className="mb-4">
+                        <h3 className="text-sm font-semibold mb-2">Profile</h3>
+                        <p className="text-xs text-gray-700 leading-relaxed">
+                          {user.aboutMe || 'Experienced professional with expertise in ' + (user.industry || 'their field')}
+                        </p>
                       </div>
                       
-                      <div className="text-sm font-semibold mb-2">Experience</div>
-                      <div className="space-y-1 mb-4">
-                        <div className="w-full h-1.5 bg-muted rounded"></div>
-                        <div className="w-3/4 h-1.5 bg-muted rounded"></div>
-                        <div className="w-11/12 h-1.5 bg-muted rounded"></div>
-                      </div>
-                      
-                      <div className="text-sm font-semibold mb-2">Skills</div>
-                      <div className="flex flex-wrap gap-1 mb-3">
-                        {[1, 2, 3, 4, 5].map((i) => (
-                          <div key={i} className="px-2 py-0.5 bg-primary/10 text-primary text-xs rounded-full">
-                            Skill {i}
+                      {/* Work Experience */}
+                      <div className="mb-4">
+                        <h3 className="text-sm font-semibold mb-2">Experience</h3>
+                        <div className="text-xs">
+                          <div className="mb-2">
+                            <div className="font-medium">{user.title || 'Professional'}</div>
+                            <div className="text-gray-600">{user.industry || 'Industry'} • {user.domain || 'Domain'}</div>
                           </div>
-                        ))}
+                        </div>
                       </div>
                       
-                      <div className="text-sm font-semibold mb-2">Education</div>
-                      <div className="space-y-1">
-                        <div className="w-full h-1.5 bg-muted rounded"></div>
-                        <div className="w-4/5 h-1.5 bg-muted rounded"></div>
+                      {/* Skills section */}
+                      <div className="mb-4">
+                        <h3 className="text-sm font-semibold mb-2">Skills</h3>
+                        <div className="flex flex-wrap gap-1 mb-2">
+                          {user?.whatIOffer?.split(',').slice(0, 5).map((skill, i) => (
+                            <div key={i} className="px-2 py-0.5 bg-gray-100 text-gray-700 text-xs rounded">
+                              {skill.trim()}
+                            </div>
+                          )) || (
+                            <>
+                              <div className="px-2 py-0.5 bg-gray-100 text-gray-700 text-xs rounded">Professional Skills</div>
+                              <div className="px-2 py-0.5 bg-gray-100 text-gray-700 text-xs rounded">Leadership</div>
+                              <div className="px-2 py-0.5 bg-gray-100 text-gray-700 text-xs rounded">Communication</div>
+                            </>
+                          )}
+                        </div>
                       </div>
                     </div>
                     
-                    <div className="absolute bottom-0 right-0 left-0 p-3 flex justify-center">
-                      <Button
-                        onClick={() => {
-                          // Create a blob URL instead of data URL for better compatibility
-                          try {
-                            const byteCharacters = atob(resume.fileData);
-                            const byteNumbers = new Array(byteCharacters.length);
-                            for (let i = 0; i < byteCharacters.length; i++) {
-                              byteNumbers[i] = byteCharacters.charCodeAt(i);
-                            }
-                            const byteArray = new Uint8Array(byteNumbers);
-                            const blob = new Blob([byteArray], { type: 'application/pdf' });
-                            const blobUrl = URL.createObjectURL(blob);
-                            
-                            // Open in new tab
-                            window.open(blobUrl, '_blank');
-                            
-                            toast({
-                              title: 'Opening PDF',
-                              description: 'Your resume is opening in a new tab',
-                            });
-                          } catch (error) {
-                            console.error("Error opening PDF:", error);
-                            toast({
-                              title: 'Error',
-                              description: 'Could not open the PDF file',
-                              variant: 'destructive',
-                            });
-                          }
-                        }}
-                        variant="secondary"
-                        size="sm"
-                        className="gap-1 bg-primary text-white hover:bg-primary/90"
-                      >
-                        <FileText className="h-4 w-4" />
-                        <span>View Full Resume</span>
-                      </Button>
+                    {/* Document footer */}
+                    <div className="absolute bottom-0 left-0 right-0 h-6 bg-gray-100 border-t flex items-center justify-center">
+                      <div className="text-xs text-gray-500">Generated by Musk AI</div>
                     </div>
+                  </div>
+                  
+                  {/* Action buttons directly below the preview */}
+                  <div className="absolute inset-x-0 bottom-4 flex justify-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="bg-white shadow-sm border-gray-200"
+                      onClick={() => handleDownload()}
+                    >
+                      <Download className="h-4 w-4 mr-1" />
+                      <span>Download</span>
+                    </Button>
+                    
+                    <Button
+                      variant="default"
+                      size="sm"
+                      className="bg-primary text-white shadow-sm"
+                      onClick={() => {
+                        if (!resume?.fileData) {
+                          toast({
+                            title: 'No Resume Available',
+                            description: 'There is no resume to view yet.',
+                            variant: 'destructive',
+                          });
+                          return;
+                        }
+                        
+                        // Direct download approach - most reliable across browsers
+                        try {
+                          // Create a temporary anchor and trigger direct download
+                          const link = document.createElement('a');
+                          
+                          // Use the download attribute to give the file a name
+                          link.download = resume.fileName || 'resume.pdf';
+                          
+                          // Convert base64 to blob
+                          const byteCharacters = atob(resume.fileData);
+                          const byteNumbers = new Array(byteCharacters.length);
+                          for (let i = 0; i < byteCharacters.length; i++) {
+                            byteNumbers[i] = byteCharacters.charCodeAt(i);
+                          }
+                          const byteArray = new Uint8Array(byteNumbers);
+                          const blob = new Blob([byteArray], { type: 'application/pdf' });
+                          
+                          // Create a blob URL
+                          const url = URL.createObjectURL(blob);
+                          
+                          // Set href to blob URL
+                          link.href = url;
+                          
+                          // Set target to _blank to try to open in a new tab
+                          link.target = '_blank';
+                          
+                          // Append to body
+                          document.body.appendChild(link);
+                          
+                          // Trigger click
+                          link.click();
+                          
+                          // Clean up
+                          setTimeout(() => {
+                            document.body.removeChild(link);
+                            URL.revokeObjectURL(url);
+                          }, 100);
+                          
+                          // Notify user
+                          toast({
+                            title: 'Opening Resume',
+                            description: 'Your resume PDF has been downloaded for viewing.',
+                          });
+                        } catch (error) {
+                          console.error("Error processing PDF:", error);
+                          toast({
+                            title: 'Error',
+                            description: 'Could not process the PDF file. Please try again.',
+                            variant: 'destructive',
+                          });
+                        }
+                      }}
+                    >
+                      <Eye className="h-4 w-4 mr-1" />
+                      <span>View PDF</span>
+                    </Button>
                   </div>
                 </div>
               ) : (
@@ -446,10 +517,12 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                 resumeId: resume?.id
               });
               
-              // Open resume in a new tab if data is available
+              // Download and view approach - reliable across all browsers
               if (resume?.fileData) {
                 try {
-                  // Use Blob approach instead of data URL for better compatibility
+                  // Create a temporary anchor and trigger download that opens automatically
+                  const link = document.createElement('a');
+                  
                   // Convert base64 to blob
                   const byteCharacters = atob(resume.fileData);
                   const byteNumbers = new Array(byteCharacters.length);
@@ -458,30 +531,42 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                   }
                   const byteArray = new Uint8Array(byteNumbers);
                   const blob = new Blob([byteArray], { type: 'application/pdf' });
-                  const blobUrl = URL.createObjectURL(blob);
                   
-                  // Log URL for debugging
-                  console.log("Created blob URL:", blobUrl);
+                  // Create a blob URL
+                  const url = URL.createObjectURL(blob);
                   
-                  // Open in new tab
-                  window.open(blobUrl, '_blank');
+                  // Set href to blob URL
+                  link.href = url;
+                  link.target = '_blank';
+                  
+                  // Append to body
+                  document.body.appendChild(link);
+                  
+                  // Trigger click
+                  link.click();
+                  
+                  // Clean up
+                  setTimeout(() => {
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+                  }, 100);
                   
                   toast({
                     title: 'Opening Resume',
-                    description: 'Your shadow resume should open in a new tab.',
+                    description: 'Your resume is being opened for viewing.',
                   });
                 } catch (error) {
-                  console.error("Error opening PDF:", error);
+                  console.error("Error viewing PDF:", error);
                   toast({
                     title: 'Error Opening Resume',
-                    description: 'There was a problem displaying your resume. Please try again.',
+                    description: 'There was a problem opening your resume. Please try again.',
                     variant: 'destructive',
                   });
                 }
               } else {
                 toast({
-                  title: 'No Preview Available',
-                  description: 'This resume has no content to preview yet.',
+                  title: 'No Resume Available',
+                  description: 'There is no resume content to view yet.',
                   variant: 'destructive',
                 });
               }
@@ -496,11 +581,16 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
               size="sm" 
               className="gap-1"
               onClick={() => {
-                // Navigate to edit page or open edit modal
-                toast({
-                  title: 'Edit Resume',
-                  description: 'Resume editing is accessed through the Resume Writer tab.',
-                });
+                // Redirect to the Resume Writer tab
+                const tabElement = document.querySelector('[data-value="resume-writer"]');
+                if (tabElement) {
+                  (tabElement as HTMLElement).click();
+                } else {
+                  toast({
+                    title: 'Edit Resume',
+                    description: 'Resume editing is accessed through the Resume Writer tab.',
+                  });
+                }
               }}
             >
               <Pencil className="h-4 w-4" />
