@@ -5588,9 +5588,11 @@ export class DatabaseStorage implements IStorage {
       }
       
       if (educationData.skillsAcquired !== undefined) {
-        updateFields.push(`skills_acquired = $${valueIndex++}`);
-        // Use standard JSON.stringify with PostgreSQL JSONB casting
+        console.log(`[db.updateEducation] Processing skillsAcquired array:`, educationData.skillsAcquired);
+        updateFields.push(`skills_acquired = $${valueIndex++}::jsonb`);
+        // Use standard JSON.stringify with PostgreSQL JSONB casting explicitly
         values.push(JSON.stringify(educationData.skillsAcquired || []));
+        console.log(`[db.updateEducation] Formatted skillsAcquired for query:`, JSON.stringify(educationData.skillsAcquired || []));
       }
       
       if (educationData.startDate !== undefined) {

@@ -920,18 +920,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const educationId = parseInt(req.params.id);
       const educationData = req.body;
       
-      console.log(`[PATCH /educations/:id] Updating education ID ${educationId} with data:`, educationData);
+      console.log(`[PATCH /educations/:id] Updating education ID ${educationId} with data:`, JSON.stringify(educationData, null, 2));
       const education = await storage.updateEducation(educationId, educationData);
       
       if (!education) {
         return res.status(404).json({ message: "Education not found" });
       }
       
-      console.log(`[PATCH /educations/:id] Updated education ID ${educationId}:`, education);
-      res.json(education);
+      console.log(`[PATCH /educations/:id] Updated education ID ${educationId}:`, JSON.stringify(education, null, 2));
+      // Return the actual updated education record
+      const verifiedEducation = await storage.getEducationById(educationId);
+      console.log(`[PATCH /educations/:id] Verified updated education:`, JSON.stringify(verifiedEducation, null, 2));
+      res.json(verifiedEducation || education);
     } catch (error) {
       console.error(`[PATCH /educations/:id] Error updating education:`, error);
-      res.status(500).json({ message: "Internal server error" });
+      res.status(500).json({ message: "Internal server error", error: String(error) });
     }
   });
 
