@@ -5,6 +5,7 @@ import { useLumosAnimations } from '@/hooks/use-lumos-animations';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { MentorshipButton } from '@/components/shared/mentorship-button';
+import { MentorshipDialog } from '@/components/shared/mentorship-dialog';
 import {
   ArrowRight,
   ChevronDown,
@@ -32,14 +33,6 @@ import {
   Lightbulb,
   Maximize
 } from 'lucide-react';
-import { FaUserGraduate } from 'react-icons/fa';
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
-  DialogTitle, 
-  DialogDescription 
-} from '@/components/ui/dialog';
 import { useTypewriter, Cursor } from 'react-simple-typewriter';
 import { Service, Project, Skill, WorkExperience, Education } from '@shared/schema';
 import { Progress } from '@/components/ui/progress';
@@ -287,45 +280,13 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                   Mentor
                 </Button>
                 
-                {/* Mentorship Dialog */}
-                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                  <DialogContent className="sm:max-w-md">
-                    <DialogHeader>
-                      <DialogTitle className="flex items-center">
-                        <FaUserGraduate className="mr-2" />
-                        Mentorship Connection
-                      </DialogTitle>
-                      <DialogDescription>
-                        Connect with a mentor to accelerate your professional growth.
-                        Mentorships last for 30 days and can be renewed.
-                      </DialogDescription>
-                    </DialogHeader>
-                    
-                    <div className="py-4">
-                      {id && currentUserId && id !== currentUserId ? (
-                        <MentorshipButton
-                          userId={currentUserId}
-                          mentorId={id}
-                          className="w-full bg-purple-600 hover:bg-purple-700"
-                          buttonText="Request Mentorship"
-                          showIcon={true}
-                        />
-                      ) : (
-                        <div className="text-center">
-                          <p className="text-gray-600 mb-4">
-                            Mentoring others is a great way to give back to the community and develop your own leadership skills.
-                          </p>
-                          <Button
-                            variant="outline"
-                            onClick={() => setIsDialogOpen(false)}
-                          >
-                            Close
-                          </Button>
-                        </div>
-                      )}
-                    </div>
-                  </DialogContent>
-                </Dialog>
+                {/* Mentorship Dialog using shared component */}
+                <MentorshipDialog 
+                  isOpen={isDialogOpen}
+                  onOpenChange={setIsDialogOpen}
+                  userId={currentUserId}
+                  mentorId={id}
+                />
               </div>
             </motion.div>
             
