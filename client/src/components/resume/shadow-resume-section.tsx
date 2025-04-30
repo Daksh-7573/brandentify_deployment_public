@@ -271,14 +271,24 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
           <>
             {/* Resume Preview */}
             <div className="aspect-[3/4] bg-card border rounded-lg flex items-center justify-center overflow-hidden">
-              <div className="text-center p-6">
-                <p className="text-muted-foreground text-sm">Resume Preview</p>
-                <h2 className="text-xl font-bold mt-2">{user.name}</h2>
-                <p className="text-sm text-muted-foreground">{user.title}</p>
-                
-                {/* We would render the actual resume preview here */}
-                <div className="w-3/4 mx-auto mt-6 h-64 bg-muted rounded opacity-30"></div>
-              </div>
+              {resume?.fileData ? (
+                <div className="w-full h-full relative">
+                  <iframe 
+                    src={`data:application/pdf;base64,${resume.fileData}`}
+                    className="w-full h-full absolute top-0 left-0 border-0"
+                    title="Resume Preview"
+                  />
+                </div>
+              ) : (
+                <div className="text-center p-6">
+                  <p className="text-muted-foreground text-sm">Resume Preview</p>
+                  <h2 className="text-xl font-bold mt-2">{user.name}</h2>
+                  <p className="text-sm text-muted-foreground">{user.title}</p>
+                  
+                  {/* Fallback if no PDF data is available */}
+                  <div className="w-3/4 mx-auto mt-6 h-64 bg-muted rounded opacity-30"></div>
+                </div>
+              )}
             </div>
 
             {/* Controls */}
