@@ -80,10 +80,18 @@ export function IndustryCombobox({
     }
   };
 
+  // Initialize value to "Technology" if empty to ensure a default value 
+  // that meets validation requirements
+  useEffect(() => {
+    if (!value || value.trim() === '') {
+      onChange('Technology');  // Set a default value if empty
+    }
+  }, [value, onChange]);
+
   // Before rendering, ensure value is properly formatted
   const displayValue = value && value.trim() !== '' 
     ? (INDUSTRIES.find(industry => industry === value) || value) 
-    : null;
+    : 'Technology'; // Always show a default value
     
   // Log the calculated display value
   console.log("IndustryCombobox display value:", displayValue);

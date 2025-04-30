@@ -26,7 +26,8 @@ export const projectSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().nullable(),
   category: z.string().nullable(),
-  industry: z.string().min(1, "Industry is required").nullable().default(null),
+  // Make industry field explicitly required without allowing null
+  industry: z.string().min(1, "Industry is required"),
   startDate: z.string().min(1, "Start date is required"),
   projectUrl: z.string().nullable(),
   mediaUrls: z.array(z.string()).nullable(),
@@ -192,10 +193,10 @@ export default function ProjectForm({
       
       if (existingProject) {
         // Make sure industry field is properly set before sending
+        // The industry field is now required and MUST have a value
         const updatedValues = {
           ...values,
-          // Ensure industry is a non-empty string or null
-          industry: values.industry && values.industry.trim() !== '' ? values.industry : null
+          industry: values.industry.trim() // Just trim, ensure it goes through as a string
         };
         
         // Log industry value before PATCH request
@@ -275,8 +276,8 @@ export default function ProjectForm({
         // Create new project with proper industry value
         const newProjectData = {
           ...values,
-          // Ensure industry is a non-empty string or null
-          industry: values.industry && values.industry.trim() !== '' ? values.industry : null,
+          // The industry field is now required and MUST have a value
+          industry: values.industry.trim(), // Just trim, ensure it goes through as a string
           userId,
         };
         
