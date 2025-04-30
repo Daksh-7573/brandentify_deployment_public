@@ -36,6 +36,16 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
   const [isDownloadable, setIsDownloadable] = useState(resume?.isDownloadable || false);
   const [isEditing, setIsEditing] = useState(false);
   
+  // Add edit states for all editable fields
+  const [editValues, setEditValues] = useState({
+    name: user?.name || '',
+    title: user?.title || '',
+    email: user?.email || '',
+    phoneNumber: user?.phoneNumber || '',
+    location: user?.location || '',
+    aboutMe: user?.aboutMe || '',
+  });
+  
   // Fetch work experiences for the user
   const { data: workExperiences = [] } = useQuery<WorkExperience[]>({
     queryKey: ['/api/users', user?.id, 'experiences'],
@@ -60,7 +70,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
     enabled: !!user?.id,
   });
   
-  // Update resume mutation (simplified to handle download permission only)
+  // Update resume settings mutation
   const updateResumeMutation = useMutation<any, Error, {isDownloadable: boolean}>({
     mutationFn: async (updates) => {
       if (!resume) return null;
@@ -92,6 +102,46 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
       toast({
         title: 'Update Failed',
         description: 'There was a problem updating your resume.',
+        variant: 'destructive',
+      });
+    }
+  });
+  
+  // User update mutation for resume edits
+  const updateUserMutation = useMutation<any, Error, typeof editValues>({
+    mutationFn: async (updates) => {
+      if (!user?.id) return null;
+      
+      return await fetch(`/api/users/${user.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updates),
+      }).then(res => {
+        if (!res.ok) throw new Error('Failed to update user data');
+        return res.json();
+      });
+    },
+    onSuccess: () => {
+      // Turn off editing mode
+      setIsEditing(false);
+      
+      toast({
+        title: 'Resume Updated',
+        description: 'Your resume content has been updated successfully.',
+      });
+      
+      // Invalidate queries to refresh data
+      queryClient.invalidateQueries({
+        queryKey: ['/api/users', user?.id]
+      });
+    },
+    onError: (error) => {
+      console.error('Error updating user data:', error);
+      toast({
+        title: 'Update Failed',
+        description: 'There was a problem updating your resume content.',
         variant: 'destructive',
       });
     }
@@ -147,6 +197,20 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
       setIsDownloadable(resume.isDownloadable || false);
     }
   }, [resume]);
+  
+  // Effect to reset edit values when editing is cancelled or user data changes
+  useEffect(() => {
+    if (user) {
+      setEditValues({
+        name: user.name || '',
+        title: user.title || '',
+        email: user.email || '',
+        phoneNumber: user.phoneNumber || '',
+        location: user.location || '',
+        aboutMe: user.aboutMe || '',
+      });
+    }
+  }, [user, isEditing]);
 
   // Handle download permission change
   const handleDownloadableChange = (checked: boolean) => {
@@ -258,46 +322,99 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                     <div className="pt-10 px-6 pb-16 text-xs overflow-y-auto max-h-full">
                       {/* Header Section */}
                       <div className="border-b pb-3 mb-4" style={{borderColor: fixedTheme.accent}}>
-                        <h2 className="text-xl font-bold" style={{color: fixedTheme.color}}>{user.name}</h2>
-                        <p className="text-sm text-gray-600">{user.title || 'Professional'}</p>
-                        <div className="flex flex-wrap items-center gap-2 mt-1 text-xs text-gray-500">
-                          <span>{user.email}</span>
-                          {user.phoneNumber && (
-                            <>
-                              <span>•</span>
-                              <span>{user.phoneNumber}</span>
-                            </>
-                          )}
-                          {user.location && (
-                            <>
-                              <span>•</span>
-                              <span>{user.location}</span>
-                            </>
-                          )}
-                        </div>
-                        <div className="flex flex-wrap items-center gap-2 mt-1 text-xs text-gray-500">
-                          {user.industry && <span>{user.industry}</span>}
-                          {user.domain && (
-                            <>
-                              <span>•</span>
-                              <span>{user.domain}</span>
-                            </>
-                          )}
-                          {user.lookingFor && (
-                            <>
-                              <span>•</span>
-                              <span>Seeking: {user.lookingFor.replace(/_/g, ' ')}</span>
-                            </>
-                          )}
-                        </div>
+                        {isEditing ? (
+                          <div className="space-y-2">
+                            <input 
+                              type="text" 
+                              className="text-xl font-bold w-full bg-transparent border-b focus:outline-none"
+                              style={{color: fixedTheme.color}}
+                              value={editValues.name}
+                              onChange={(e) => setEditValues({...editValues, name: e.target.value})}
+                            />
+                            <input 
+                              type="text" 
+                              className="text-sm text-gray-600 w-full bg-transparent border-b focus:outline-none" 
+                              placeholder="Professional Title"
+                              value={editValues.title}
+                              onChange={(e) => setEditValues({...editValues, title: e.target.value})}
+                            />
+                            <div className="flex flex-wrap gap-2 mt-1 text-xs">
+                              <input 
+                                type="email" 
+                                className="text-gray-500 bg-transparent border-b focus:outline-none" 
+                                placeholder="Email"
+                                value={editValues.email}
+                                onChange={(e) => setEditValues({...editValues, email: e.target.value})}
+                              />
+                              <input 
+                                type="text" 
+                                className="text-gray-500 bg-transparent border-b focus:outline-none" 
+                                placeholder="Phone Number"
+                                value={editValues.phoneNumber}
+                                onChange={(e) => setEditValues({...editValues, phoneNumber: e.target.value})}
+                              />
+                              <input 
+                                type="text" 
+                                className="text-gray-500 bg-transparent border-b focus:outline-none" 
+                                placeholder="Location"
+                                value={editValues.location}
+                                onChange={(e) => setEditValues({...editValues, location: e.target.value})}
+                              />
+                            </div>
+                          </div>
+                        ) : (
+                          <>
+                            <h2 className="text-xl font-bold" style={{color: fixedTheme.color}}>{user.name}</h2>
+                            <p className="text-sm text-gray-600">{user.title || 'Professional'}</p>
+                            <div className="flex flex-wrap items-center gap-2 mt-1 text-xs text-gray-500">
+                              <span>{user.email}</span>
+                              {user.phoneNumber && (
+                                <>
+                                  <span>•</span>
+                                  <span>{user.phoneNumber}</span>
+                                </>
+                              )}
+                              {user.location && (
+                                <>
+                                  <span>•</span>
+                                  <span>{user.location}</span>
+                                </>
+                              )}
+                            </div>
+                            <div className="flex flex-wrap items-center gap-2 mt-1 text-xs text-gray-500">
+                              {user.industry && <span>{user.industry}</span>}
+                              {user.domain && (
+                                <>
+                                  <span>•</span>
+                                  <span>{user.domain}</span>
+                                </>
+                              )}
+                              {user.lookingFor && (
+                                <>
+                                  <span>•</span>
+                                  <span>Seeking: {user.lookingFor.replace(/_/g, ' ')}</span>
+                                </>
+                              )}
+                            </div>
+                          </>
+                        )}
                       </div>
                       
                       {/* About section - comprehensive profile */}
                       <div className="mb-4 pb-3 border-b border-gray-100">
                         <h3 className="text-sm font-bold mb-2 uppercase" style={{color: fixedTheme.color}}>Professional Summary</h3>
-                        <p className="text-xs text-gray-700 leading-relaxed">
-                          {user.aboutMe || 'Experienced professional with expertise in ' + (user.industry || 'their field') + ' seeking opportunities in ' + (user.domain || 'the industry')}
-                        </p>
+                        {isEditing ? (
+                          <textarea 
+                            className="text-xs text-gray-700 leading-relaxed w-full bg-transparent border rounded min-h-[60px] p-1 focus:outline-none"
+                            value={editValues.aboutMe}
+                            onChange={(e) => setEditValues({...editValues, aboutMe: e.target.value})}
+                            placeholder="Write a professional summary here..."
+                          />
+                        ) : (
+                          <p className="text-xs text-gray-700 leading-relaxed">
+                            {user.aboutMe || 'Experienced professional with expertise in ' + (user.industry || 'their field') + ' seeking opportunities in ' + (user.domain || 'the industry')}
+                          </p>
+                        )}
                       </div>
                       
                       {/* Work Experience - uses real data from experiences */}
@@ -472,14 +589,8 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                         size="sm"
                         className="bg-green-600 hover:bg-green-700 text-white shadow-sm"
                         onClick={() => {
-                          // Save the resume here
-                          // For now we'll just turn off editing mode
-                          setIsEditing(false);
-                          
-                          toast({
-                            title: 'Resume Saved',
-                            description: 'Your resume has been updated successfully.',
-                          });
+                          // Submit user profile updates to save resume content
+                          updateUserMutation.mutate(editValues);
                         }}
                       >
                         <Save className="h-4 w-4 mr-1" />
