@@ -564,6 +564,19 @@ export default function MinimalistPro({
         
         {/* Footer */}
         <footer className="py-6 text-center text-sm text-gray-500">
+          {/* Mentorship Button in Footer - Only show if user is logged in and viewing someone else's profile */}
+          {userInfo.id && currentUserId && userInfo.id !== currentUserId && (
+            <div className="mb-4">
+              <MentorshipButton 
+                userId={currentUserId} 
+                mentorId={userInfo.id} 
+                variant="outline"
+                className="text-sm font-medium mx-auto"
+                buttonText="Connect as Mentee"
+                showIcon={true}
+              />
+            </div>
+          )}
           <p>© {new Date().getFullYear()} {userInfo.name} • Made with Brandentifier</p>
         </footer>
       </div>
