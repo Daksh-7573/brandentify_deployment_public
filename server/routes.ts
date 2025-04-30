@@ -5268,7 +5268,7 @@ ${extractedText.substring(0, 5000)}
   console.log("Mentorship Connect routes loaded");
   
   // Register resume generation routes
-  app.use('/api', resumeRoutes);
+  app.use('/api', resumeRoutes());
   console.log("Resume generation routes loaded");
   
   // Brands of the Day routes
