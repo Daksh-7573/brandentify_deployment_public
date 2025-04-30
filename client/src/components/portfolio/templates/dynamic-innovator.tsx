@@ -2,6 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MentorshipButton } from "@/components/shared/mentorship-button";
+import { MentorshipDialog } from "@/components/shared/mentorship-dialog";
 import { ProfileImage } from "@/components/ui/profile-image";
 import { Education, Project, Service, Skill, WorkExperience } from "@shared/schema";
 import { useEffect, useState, useRef } from "react";
@@ -144,6 +145,7 @@ export function DynamicInnovator({
   const [contactMessage, setContactMessage] = useState<string>("");
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
+  const [isMentorshipDialogOpen, setIsMentorshipDialogOpen] = useState(false);
   
   // State for active tab
   const [activeTab, setActiveTab] = useState("projects");
@@ -774,13 +776,13 @@ export function DynamicInnovator({
               </Button>
               
               {userInfo.id && currentUserId && userInfo.id !== currentUserId && (
-                <MentorshipButton
-                  userId={currentUserId}
-                  mentorId={userInfo.id}
+                <Button
+                  onClick={() => setIsMentorshipDialogOpen(true)}
                   className="neon-button rounded-md text-sm px-4 py-2"
-                  buttonText="Request Mentorship"
-                  showIcon={true}
-                />
+                >
+                  <Code className="h-4 w-4 mr-2" />
+                  Request Mentorship
+                </Button>
               )}
             </div>
           </div>
@@ -872,13 +874,13 @@ export function DynamicInnovator({
               </Button>
               
               {userInfo.id && currentUserId && userInfo.id !== currentUserId && (
-                <MentorshipButton
-                  userId={currentUserId}
-                  mentorId={userInfo.id}
+                <Button
+                  onClick={() => setIsMentorshipDialogOpen(true)}
                   className="neon-button w-full rounded-md py-2.5"
-                  buttonText="Request Mentorship"
-                  showIcon={true}
-                />
+                >
+                  <Code className="h-5 w-5 mr-2" />
+                  Request Mentorship
+                </Button>
               )}
             </div>
           </div>
