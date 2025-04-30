@@ -2,6 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MentorshipButton } from "@/components/shared/mentorship-button";
+import { MentorshipDialog } from "@/components/shared/mentorship-dialog";
 import { ProfileImage } from "@/components/ui/profile-image";
 import { Education, Project, Service, Skill, WorkExperience } from "@shared/schema";
 import { useEffect, useState, useRef } from "react";
@@ -124,6 +125,9 @@ export default function TimelineStoryteller({
   // Project modal state
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
+  
+  // Mentorship dialog state
+  const [isMentorshipDialogOpen, setIsMentorshipDialogOpen] = useState(false);
   
   const { toast } = useToast();
   
@@ -602,25 +606,22 @@ export default function TimelineStoryteller({
               Grab My Resume
             </Button>
             
-            {userInfo.id && currentUserId && userInfo.id !== currentUserId ? (
-              <MentorshipButton
-                userId={currentUserId}
-                mentorId={userInfo.id}
-                variant="outline"
-                className="text-purple-600 border-purple-300 hover:bg-purple-50 px-6 py-3 rounded-md shadow-sm cta-btn"
-                buttonText="Mentor"
-                showIcon={true}
-              />
-            ) : (
-              <Button 
-                variant="outline" 
-                className="text-purple-600 border-purple-300 hover:bg-purple-50 px-6 py-3 rounded-md shadow-sm cta-btn"
-                disabled
-              >
-                <Lightbulb className="h-5 w-5 mr-2" />
-                Mentor
-              </Button>
-            )}
+            <Button 
+              onClick={() => setIsMentorshipDialogOpen(true)}
+              variant="outline" 
+              className="text-purple-600 border-purple-300 hover:bg-purple-50 px-6 py-3 rounded-md shadow-sm cta-btn"
+            >
+              <Lightbulb className="h-5 w-5 mr-2" />
+              Mentor
+            </Button>
+            
+            {/* Mentorship Dialog */}
+            <MentorshipDialog 
+              isOpen={isMentorshipDialogOpen}
+              onOpenChange={setIsMentorshipDialogOpen}
+              userId={currentUserId}
+              mentorId={userInfo.id}
+            />
           </div>
         </div>
       </section>
