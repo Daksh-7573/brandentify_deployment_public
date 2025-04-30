@@ -128,6 +128,7 @@ export interface IStorage {
   
   // Resume operations
   getResumeByUserId(userId: number): Promise<Resume | undefined>;
+  getResumeById(id: number): Promise<Resume | undefined>;
   createResume(resume: InsertResume): Promise<Resume>;
   updateResume(id: number, resume: Partial<Resume>): Promise<Resume | undefined>;
   
