@@ -28,13 +28,15 @@ export default function addProjectUpdateRoutes(apiRouter: any) {
       
       const projectData = req.body;
       console.log(`[PATCH /projects/:id] Updating project ${projectId} with data:`, projectData);
+      console.log(`[PATCH /projects/:id] BEFORE update - Current project data:`, existingProject);
       
       // Special handling for industry field to ensure it's properly updated
       if (projectData.industry !== undefined) {
-        console.log(`[PATCH /projects/:id] Industry field being updated to: "${projectData.industry}"`);
+        console.log(`[PATCH /projects/:id] Industry field being updated to: "${projectData.industry}" (from "${existingProject.industry || 'empty'}")`);
       }
       
       const updatedProject = await storage.updateProject(projectId, projectData);
+      console.log(`[PATCH /projects/:id] AFTER update - Updated project data:`, updatedProject);
       console.log(`[PATCH /projects/:id] Updated project ${projectId} successfully`);
       
       res.json(updatedProject);

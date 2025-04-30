@@ -1638,6 +1638,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const projectData = req.body;
       
+      // Special handling for industry field to help with debugging
+      if (projectData.industry !== undefined) {
+        console.log(`[PUT /projects/:id] Industry field being set to: "${projectData.industry}" (Original route handler, not the PATCH handler)`);
+      }
+      
       // Handle thumbnailFile if provided and create thumbnailUrl
       if (projectData.thumbnailFile && !projectData.thumbnailUrl) {
         const thumbnailUrl = getFileUrl(projectData.thumbnailFile);
@@ -1645,7 +1650,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const updatedProject = await storage.updateProject(projectId, projectData);
-      console.log(`[PUT /projects/:id] Updated project with ID: ${projectId}`);
+      console.log(`[PUT /projects/:id] Updated project with ID: ${projectId}, data returned: `, updatedProject);
       
       res.json(updatedProject);
     } catch (error) {
