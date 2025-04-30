@@ -1506,6 +1506,14 @@ export default function TimelineStoryteller({
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Mentorship Dialog */}
+      <MentorshipDialog
+        isOpen={isMentorshipDialogOpen}
+        onOpenChange={setIsMentorshipDialogOpen}
+        userId={currentUserId}
+        mentorId={id}
+      />
     </div>
   );
 }
