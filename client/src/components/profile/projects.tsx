@@ -27,6 +27,7 @@ import {
   ChevronRight,
   Image
 } from "lucide-react";
+import { IndustryCombobox } from "@/components/ui/industry-combobox";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -1188,7 +1189,11 @@ export default function Projects() {
                           <FormItem>
                             <FormLabel>Industry</FormLabel>
                             <FormControl>
-                              <Input placeholder="e.g. Healthcare" {...field} value={field.value || ''} />
+                              <IndustryCombobox 
+                                value={field.value || ''}
+                                onChange={field.onChange}
+                                placeholder="Select or type an industry"
+                              />
                             </FormControl>
                             <FormDescription>
                               Industry the project belongs to
