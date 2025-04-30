@@ -899,6 +899,16 @@ export default function TimelineStoryteller({
                       </div>
                     )}
                     
+                    {/* Industry and category badges */}
+                    {project.industry && (
+                      <div className="mb-3">
+                        <Badge className="bg-indigo-100 text-indigo-700 font-normal">
+                          <Building2 className="h-3.5 w-3.5 mr-1.5" />
+                          {project.industry}
+                        </Badge>
+                      </div>
+                    )}
+                    
                     {/* Project details with date */}
                     <div className="flex items-center mt-2">
                       <div className="flex items-center text-sm text-gray-500">
