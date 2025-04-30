@@ -191,11 +191,21 @@ export default function ProjectForm({
       let projectData: Project;
       
       if (existingProject) {
+        // Make sure industry field is properly set before sending
+        const updatedValues = {
+          ...values,
+          // Ensure industry is a non-empty string or null
+          industry: values.industry && values.industry.trim() !== '' ? values.industry : null
+        };
+        
+        // Log industry value before PATCH request
+        console.log("Industry value being sent in PATCH:", updatedValues.industry);
+        
         // Update existing project
         response = await apiRequest(
           'PATCH', 
           `/api/projects/${existingProject.id}`, 
-          values
+          updatedValues
         );
         projectData = await response.json();
         
@@ -262,11 +272,16 @@ export default function ProjectForm({
           description: "Your project has been updated successfully",
         });
       } else {
-        // Create new project
+        // Create new project with proper industry value
         const newProjectData = {
           ...values,
+          // Ensure industry is a non-empty string or null
+          industry: values.industry && values.industry.trim() !== '' ? values.industry : null,
           userId,
         };
+        
+        // Log industry value before POST request
+        console.log("Industry value being sent in POST:", newProjectData.industry);
         
         // First create the project
         response = await apiRequest(

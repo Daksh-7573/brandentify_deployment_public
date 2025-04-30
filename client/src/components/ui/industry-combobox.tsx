@@ -55,6 +55,9 @@ export function IndustryCombobox({
   const [open, setOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [filteredIndustries, setFilteredIndustries] = useState<string[]>(INDUSTRIES);
+  
+  // Debug value passed to the component
+  console.log("IndustryCombobox received value:", value);
 
   useEffect(() => {
     if (!searchValue) {
@@ -77,6 +80,14 @@ export function IndustryCombobox({
     }
   };
 
+  // Before rendering, ensure value is properly formatted
+  const displayValue = value && value.trim() !== '' 
+    ? (INDUSTRIES.find(industry => industry === value) || value) 
+    : null;
+    
+  // Log the calculated display value
+  console.log("IndustryCombobox display value:", displayValue);
+  
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -93,8 +104,8 @@ export function IndustryCombobox({
           disabled={disabled}
           onClick={() => setOpen(true)}
         >
-          {value 
-            ? INDUSTRIES.find(industry => industry === value) || value
+          {displayValue 
+            ? displayValue 
             : <span className="text-muted-foreground">{placeholder}</span>
           }
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
