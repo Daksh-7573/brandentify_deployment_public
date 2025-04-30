@@ -1,62 +1,41 @@
 /**
  * Resume Generator Service
  * 
- * This service automatically generates a resume PDF based on user profile data.
- * It compiles information from work experiences, education, skills, and other profile elements
- * to create a professional resume without requiring manual input.
+ * This service creates professional PDFs from user profile data
+ * using HTML templates and Puppeteer.
  */
 
+import { storage } from '../storage';
 import { db } from '../db';
-import { users, workExperiences, educations, skills, services } from '@shared/schema';
+import { users } from '@shared/schema';
 import { eq } from 'drizzle-orm';
-import { User, WorkExperience, Education, Skill, Service } from '@shared/schema';
+import puppeteer from 'puppeteer';
 import fs from 'fs';
 import path from 'path';
-import puppeteer from 'puppeteer';
 
-// Define the resume data interface
-interface ResumeData {
-  user: User;
-  workExperiences: WorkExperience[];
-  educations: Education[];
-  skills: Skill[];
-  services: Service[];
-}
+// Make sure the uploads directory exists
+const UPLOADS_DIR = path.join(process.cwd(), 'public', 'uploads', 'resumes');
+fs.mkdirSync(UPLOADS_DIR, { recursive: true });
 
 /**
- * Checks if a user has sufficient profile data to generate a resume
- * @param userId User ID to check
- * @returns Boolean indicating if resume can be generated
+ * Check if a user is eligible to generate a resume
+ * @param userId ID of the user to check
+ * @returns Boolean indicating eligibility
  */
 export async function canGenerateResume(userId: number): Promise<boolean> {
   try {
-    // Check if user exists
-    const [user] = await db.select().from(users).where(eq(users.id, userId));
-    if (!user) {
+    // Get required data to check eligibility
+    const [userData] = await db.select().from(users).where(eq(users.id, userId));
+    if (!userData) {
       return false;
     }
     
-    // Check if user has at least one work experience
-    const workExperienceCount = await db
-      .select({ count: { id: workExperiences.id } })
-      .from(workExperiences)
-      .where(eq(workExperiences.userId, userId));
+    // Fetch skills and experiences
+    const skills = await storage.getSkillsByUserId(userId);
+    const experiences = await storage.getWorkExperiencesByUserId(userId);
     
-    if (!workExperienceCount[0] || workExperienceCount[0].count < 1) {
-      return false;
-    }
-    
-    // Check if user has at least one skill
-    const skillCount = await db
-      .select({ count: { id: skills.id } })
-      .from(skills)
-      .where(eq(skills.userId, userId));
-    
-    if (!skillCount[0] || skillCount[0].count < 1) {
-      return false;
-    }
-    
-    return true;
+    // User must have at least one skill and one work experience
+    return skills.length > 0 && experiences.length > 0;
   } catch (error) {
     console.error('[canGenerateResume] Error:', error);
     return false;
@@ -64,409 +43,88 @@ export async function canGenerateResume(userId: number): Promise<boolean> {
 }
 
 /**
- * Fetches all relevant user data needed for resume generation
- * @param userId User ID to fetch data for
- * @returns Compiled user data object
- */
-async function fetchUserData(userId: number): Promise<ResumeData> {
-  try {
-    // Fetch user basic info
-    const [user] = await db.select().from(users).where(eq(users.id, userId));
-    if (!user) {
-      throw new Error('User not found');
-    }
-    
-    // Fetch work experiences
-    const userWorkExperiences = await db
-      .select()
-      .from(workExperiences)
-      .where(eq(workExperiences.userId, userId))
-      .orderBy((exp) => exp.startDate);
-    
-    // Fetch education
-    const userEducations = await db
-      .select()
-      .from(educations)
-      .where(eq(educations.userId, userId))
-      .orderBy((edu) => edu.startDate);
-    
-    // Fetch skills
-    const userSkills = await db
-      .select()
-      .from(skills)
-      .where(eq(skills.userId, userId));
-    
-    // Fetch services
-    const userServices = await db
-      .select()
-      .from(services)
-      .where(eq(services.userId, userId));
-    
-    return {
-      user,
-      workExperiences: userWorkExperiences,
-      educations: userEducations,
-      skills: userSkills,
-      services: userServices
-    };
-  } catch (error) {
-    console.error('[fetchUserData] Error:', error);
-    throw error;
-  }
-}
-
-/**
- * Generates an HTML template for the resume from user data
- * @param data User data for resume
- * @returns HTML string for the resume
- */
-function generateResumeHtml(data: ResumeData): string {
-  const { user, workExperiences, educations, skills, services } = data;
-  
-  // Format the date to a readable format
-  const formatDate = (dateStr: string | null): string => {
-    if (!dateStr) return 'Present';
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
-  };
-  
-  // Create a skills section with a max of 9 skills
-  const skillsHtml = skills.slice(0, 9).map(skill => `
-    <div class="skill">
-      <span class="skill-name">${skill.name}</span>
-      <div class="skill-bar">
-        <div class="skill-level" style="width: ${skill.proficiency || 80}%"></div>
-      </div>
-    </div>
-  `).join('');
-  
-  // Create work experience section
-  const workExperienceHtml = workExperiences.map(exp => {
-    let responsibilities = [];
-    try {
-      if (exp.responsibilities && typeof exp.responsibilities === 'string') {
-        responsibilities = JSON.parse(exp.responsibilities);
-      }
-    } catch (e) {
-      responsibilities = [];
-    }
-    
-    const responsibilitiesHtml = Array.isArray(responsibilities) && responsibilities.length > 0
-      ? `<ul class="responsibilities">
-          ${responsibilities.map(item => `<li>${item}</li>`).join('')}
-        </ul>`
-      : '';
-    
-    return `
-      <div class="experience">
-        <div class="experience-header">
-          <h3>${exp.title}</h3>
-          <h4>${exp.company}</h4>
-          <span class="date">${formatDate(exp.startDate)} - ${formatDate(exp.endDate)}</span>
-        </div>
-        <p>${exp.description || ''}</p>
-        ${responsibilitiesHtml}
-      </div>
-    `;
-  }).join('');
-  
-  // Create education section
-  const educationHtml = educations.map(edu => {
-    return `
-      <div class="education">
-        <h3>${edu.institution}</h3>
-        <h4>${edu.degree}${edu.fieldOfStudy ? ` in ${edu.fieldOfStudy}` : ''}</h4>
-        <span class="date">${formatDate(edu.startDate)} - ${formatDate(edu.endDate)}</span>
-      </div>
-    `;
-  }).join('');
-  
-  // Create services section (treated as "What I Offer" in the resume)
-  const servicesHtml = services.length > 0 
-    ? `<div class="services-section">
-        <h2>What I Offer</h2>
-        <div class="services">
-          ${services.map(service => `
-            <div class="service">
-              <h3>${service.title}</h3>
-              <p>${service.description}</p>
-            </div>
-          `).join('')}
-        </div>
-      </div>`
-    : '';
-  
-  // Generate the full HTML
-  return `
-  <!DOCTYPE html>
-  <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${user.name} - Resume</title>
-    <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-      }
-      body {
-        font-size: 12pt;
-        line-height: 1.6;
-        color: #333;
-        background: white;
-        max-width: 8.5in;
-        margin: 0 auto;
-        padding: 0.5in;
-      }
-      .header {
-        text-align: center;
-        margin-bottom: 20px;
-        padding-bottom: 20px;
-        border-bottom: 1px solid #eee;
-      }
-      .header h1 {
-        font-size: 24pt;
-        margin-bottom: 5px;
-        color: #2a4365;
-      }
-      .header h2 {
-        font-size: 14pt;
-        font-weight: 400;
-        color: #4a5568;
-      }
-      .contact-info {
-        display: flex;
-        justify-content: center;
-        flex-wrap: wrap;
-        gap: 15px;
-        margin: 10px 0;
-        font-size: 10pt;
-      }
-      .contact-info span {
-        display: inline-flex;
-        align-items: center;
-      }
-      .section {
-        margin: 20px 0;
-      }
-      .section h2 {
-        font-size: 14pt;
-        color: #2a4365;
-        margin-bottom: 10px;
-        padding-bottom: 5px;
-        border-bottom: 1px solid #eee;
-      }
-      .experience, .education {
-        margin-bottom: 15px;
-      }
-      .experience-header, .education-header {
-        margin-bottom: 5px;
-      }
-      .experience-header h3, .education h3 {
-        font-size: 12pt;
-        color: #1a365d;
-      }
-      .experience-header h4, .education h4 {
-        font-size: 11pt;
-        font-weight: 600;
-        color: #4a5568;
-      }
-      .date {
-        font-size: 10pt;
-        color: #718096;
-        font-style: italic;
-      }
-      .responsibilities {
-        margin-top: 5px;
-        padding-left: 20px;
-      }
-      .responsibilities li {
-        margin-bottom: 3px;
-      }
-      .skills-section {
-        margin: 20px 0;
-      }
-      .skills-container {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 15px;
-      }
-      .skill {
-        flex: 0 0 calc(33.333% - 10px);
-      }
-      .skill-name {
-        font-weight: 600;
-        display: block;
-        margin-bottom: 3px;
-      }
-      .skill-bar {
-        height: 8px;
-        background: #edf2f7;
-        border-radius: 4px;
-        overflow: hidden;
-      }
-      .skill-level {
-        height: 100%;
-        background: #4299e1;
-        border-radius: 4px;
-      }
-      .services-section {
-        margin: 20px 0;
-      }
-      .services {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 15px;
-      }
-      .service {
-        flex: 0 0 calc(50% - 10px);
-        padding: 10px;
-        background: #f7fafc;
-        border-radius: 5px;
-      }
-      .service h3 {
-        font-size: 11pt;
-        color: #2c5282;
-        margin-bottom: 5px;
-      }
-      .about-me {
-        margin: 20px 0;
-      }
-      @media print {
-        body {
-          padding: 0;
-        }
-        .page-break {
-          page-break-after: always;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <div class="header">
-      <h1>${user.name}</h1>
-      <h2>${user.title || 'Professional'}</h2>
-      <div class="contact-info">
-        ${user.email ? `<span>📧 ${user.email}</span>` : ''}
-        ${user.phoneNumber ? `<span>📱 ${user.phoneNumber}</span>` : ''}
-        ${user.location ? `<span>📍 ${user.location}</span>` : ''}
-      </div>
-    </div>
-    
-    ${user.aboutMe ? `
-      <div class="about-me">
-        <h2>About Me</h2>
-        <p>${user.aboutMe}</p>
-      </div>
-    ` : ''}
-    
-    <div class="section">
-      <h2>Work Experience</h2>
-      ${workExperienceHtml}
-    </div>
-    
-    <div class="section">
-      <h2>Education</h2>
-      ${educationHtml}
-    </div>
-    
-    <div class="skills-section">
-      <h2>Skills</h2>
-      <div class="skills-container">
-        ${skillsHtml}
-      </div>
-    </div>
-    
-    ${servicesHtml}
-    
-    <div class="footer">
-      <p style="text-align: center; font-size: 9pt; color: #a0aec0; margin-top: 30px;">
-        Generated by Brandentifier on ${new Date().toLocaleDateString()}
-      </p>
-    </div>
-  </body>
-  </html>
-  `;
-}
-
-/**
- * Service to create a PDF from HTML using puppeteer
- * @param html HTML content to convert to PDF
- * @param outputPath Path to save the PDF file
- * @returns URL to the generated PDF file
- */
-export const generatePdf = async (html: string, outputPath: string): Promise<string> => {
-  try {
-    // Create upload directory if it doesn't exist
-    const dir = path.dirname(outputPath);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
-    
-    // Launch a headless browser
-    const browser = await puppeteer.launch({
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
-      headless: true,
-    });
-    
-    // Create a new page
-    const page = await browser.newPage();
-    
-    // Set the content to our HTML template
-    await page.setContent(html, { waitUntil: 'networkidle0' });
-    
-    // Generate PDF
-    await page.pdf({
-      path: outputPath,
-      format: 'A4',
-      printBackground: true,
-      margin: {
-        top: '20px',
-        right: '20px',
-        bottom: '20px',
-        left: '20px'
-      }
-    });
-    
-    // Close the browser
-    await browser.close();
-    
-    // Return the URL path to the PDF
-    return outputPath.replace(/^public/, '');
-  } catch (error) {
-    console.error('[generatePdf] Error generating PDF:', error);
-    throw error;
-  }
-};
-
-/**
- * Main function to generate a resume for a user
- * @param userId User ID to generate resume for
- * @returns URL to the generated resume
+ * Generate a PDF resume for a user
+ * @param userId ID of the user
+ * @returns URL of the generated resume
  */
 export async function generateResume(userId: number): Promise<string> {
   try {
-    // Fetch user data
-    const userData = await fetchUserData(userId);
+    // Get user data
+    const [userData] = await db.select().from(users).where(eq(users.id, userId));
+    if (!userData) {
+      throw new Error('User not found');
+    }
     
-    // Generate resume HTML
-    const resumeHtml = generateResumeHtml(userData);
+    // Fetch all user profile data
+    const skills = await storage.getSkillsByUserId(userId);
+    const experiences = await storage.getWorkExperiencesByUserId(userId);
+    const education = await storage.getEducationsByUserId(userId);
+    const services = await storage.getServicesByUserId(userId); 
+    const projects = await storage.getProjectsByUserId(userId);
     
-    // Set output file path in public uploads directory
+    // Sort experiences and education by date (newest first)
+    const sortedExperiences = [...experiences].sort((a, b) => {
+      const dateA = new Date(a.startDate).getTime();
+      const dateB = new Date(b.startDate).getTime();
+      return dateB - dateA;
+    });
+    
+    const sortedEducation = [...education].sort((a, b) => {
+      const dateA = new Date(a.startDate).getTime();
+      const dateB = new Date(b.startDate).getTime();
+      return dateB - dateA;
+    });
+    
+    // Generate HTML content for the resume
+    const htmlContent = generateResumeHtml({
+      user: userData,
+      skills,
+      experiences: sortedExperiences,
+      education: sortedEducation,
+      services,
+      projects: projects.slice(0, 2) // Only include first 2 projects
+    });
+    
+    // Generate a unique filename
     const timestamp = Date.now();
-    const filename = `${userData.user.name.replace(/\s+/g, '_')}_Resume_${timestamp}.pdf`;
-    const outputPath = path.join(process.cwd(), 'public', 'uploads', 'resumes', filename);
+    const fileNameWithoutExt = `resume_${userId}_${timestamp}`;
+    const htmlPath = path.join(UPLOADS_DIR, `${fileNameWithoutExt}.html`);
+    const pdfPath = path.join(UPLOADS_DIR, `${fileNameWithoutExt}.pdf`);
     
-    // Generate PDF file
-    const resumeUrl = await generatePdf(resumeHtml, outputPath);
+    // Save HTML version for debugging
+    fs.writeFileSync(htmlPath, htmlContent);
     
-    // Update user record with resume information
+    // Generate PDF with puppeteer
+    const browser = await puppeteer.launch({
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox']
+    });
+    const page = await browser.newPage();
+    await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
+    
+    // Set the page size to Letter (8.5 x 11 inches)
+    await page.pdf({
+      path: pdfPath,
+      format: 'Letter',
+      printBackground: true,
+      margin: {
+        top: '0.5in',
+        right: '0.5in',
+        bottom: '0.5in',
+        left: '0.5in'
+      }
+    });
+    
+    await browser.close();
+    
+    // Create relative URL for the resume
+    const resumeUrl = `/uploads/resumes/${fileNameWithoutExt}.pdf`;
+    
+    // Update user's resume status in the database
     await db.update(users)
       .set({
         hasGeneratedResume: true,
-        resumeUrl: resumeUrl,
+        resumeUrl,
         resumeGeneratedAt: new Date()
       })
       .where(eq(users.id, userId));
@@ -476,4 +134,275 @@ export async function generateResume(userId: number): Promise<string> {
     console.error('[generateResume] Error:', error);
     throw error;
   }
+}
+
+interface ResumeData {
+  user: any;
+  skills: any[];
+  experiences: any[];
+  education: any[];
+  services: any[];
+  projects: any[];
+}
+
+/**
+ * Generate HTML content for the resume
+ * @param data User profile data
+ * @returns HTML string
+ */
+function generateResumeHtml(data: ResumeData): string {
+  const { user, skills, experiences, education, services, projects } = data;
+  
+  // Format date utility
+  const formatDate = (dateString: string | null) => {
+    if (!dateString) return 'Present';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+  };
+  
+  return `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Resume - ${user.name}</title>
+      <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+          font-family: 'Inter', sans-serif;
+          margin: 0;
+          padding: 0;
+          color: #333;
+          line-height: 1.6;
+        }
+        
+        .resume-container {
+          max-width: 100%;
+          margin: 0 auto;
+          padding: 20px;
+        }
+        
+        .header {
+          text-align: center;
+          margin-bottom: 30px;
+          border-bottom: 2px solid #eaeaea;
+          padding-bottom: 20px;
+        }
+        
+        .header h1 {
+          font-size: 28px;
+          margin: 0 0 5px 0;
+          color: #1a1a1a;
+        }
+        
+        .header h2 {
+          font-size: 18px;
+          font-weight: 500;
+          margin: 0 0 10px 0;
+          color: #666;
+        }
+        
+        .contact-info {
+          font-size: 14px;
+          color: #666;
+        }
+        
+        .section {
+          margin-bottom: 25px;
+        }
+        
+        .section-title {
+          font-size: 20px;
+          font-weight: 600;
+          margin: 0 0 15px 0;
+          color: #4169E1;
+          border-bottom: 1px solid #eaeaea;
+          padding-bottom: 5px;
+        }
+        
+        .entry {
+          margin-bottom: 20px;
+        }
+        
+        .entry-header {
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 5px;
+        }
+        
+        .entry-title {
+          font-size: 16px;
+          font-weight: 600;
+          color: #444;
+          margin: 0;
+        }
+        
+        .entry-date {
+          font-size: 14px;
+          color: #666;
+        }
+        
+        .entry-subtitle {
+          font-size: 15px;
+          color: #666;
+          margin: 0 0 5px 0;
+        }
+        
+        .entry-location {
+          font-size: 14px;
+          color: #888;
+          margin: 0 0 5px 0;
+          font-style: italic;
+        }
+        
+        .entry-description {
+          font-size: 14px;
+          color: #555;
+        }
+        
+        .skills-container {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 10px;
+        }
+        
+        .skill-item {
+          font-size: 14px;
+          background-color: #f5f5f5;
+          padding: 5px 12px;
+          border-radius: 15px;
+          color: #555;
+        }
+        
+        .projects-container {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 15px;
+        }
+        
+        .project-item {
+          border: 1px solid #eaeaea;
+          padding: 12px;
+          border-radius: 5px;
+        }
+        
+        .project-title {
+          font-size: 15px;
+          font-weight: 600;
+          color: #444;
+          margin: 0 0 5px 0;
+        }
+        
+        .project-description {
+          font-size: 13px;
+          color: #666;
+          margin: 0;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="resume-container">
+        <!-- Header -->
+        <div class="header">
+          <h1>${user.name}</h1>
+          <h2>${user.title || 'Professional'}</h2>
+          <div class="contact-info">
+            ${user.email ? `<div>${user.email}</div>` : ''}
+            ${user.phoneNumber ? `<div>${user.phoneNumber}</div>` : ''}
+            ${user.location ? `<div>${user.location}</div>` : ''}
+          </div>
+        </div>
+        
+        <!-- Profile Section -->
+        ${user.aboutMe ? `
+        <div class="section">
+          <h3 class="section-title">Professional Summary</h3>
+          <p class="entry-description">${user.aboutMe}</p>
+        </div>
+        ` : ''}
+        
+        <!-- Skills Section -->
+        ${skills.length > 0 ? `
+        <div class="section">
+          <h3 class="section-title">Skills</h3>
+          <div class="skills-container">
+            ${skills.map(skill => `
+              <div class="skill-item">${skill.name} ${skill.level ? `- ${skill.level}` : ''}</div>
+            `).join('')}
+          </div>
+        </div>
+        ` : ''}
+        
+        <!-- Experience Section -->
+        ${experiences.length > 0 ? `
+        <div class="section">
+          <h3 class="section-title">Work Experience</h3>
+          ${experiences.map(exp => `
+            <div class="entry">
+              <div class="entry-header">
+                <h4 class="entry-title">${exp.title}</h4>
+                <div class="entry-date">${formatDate(exp.startDate)} - ${formatDate(exp.endDate)}</div>
+              </div>
+              <div class="entry-subtitle">${exp.company}</div>
+              <div class="entry-location">${exp.location || ''}</div>
+              ${exp.description ? `<p class="entry-description">${exp.description}</p>` : ''}
+            </div>
+          `).join('')}
+        </div>
+        ` : ''}
+        
+        <!-- Education Section -->
+        ${education.length > 0 ? `
+        <div class="section">
+          <h3 class="section-title">Education</h3>
+          ${education.map(edu => `
+            <div class="entry">
+              <div class="entry-header">
+                <h4 class="entry-title">${edu.degree}</h4>
+                <div class="entry-date">${formatDate(edu.startDate)} - ${formatDate(edu.endDate)}</div>
+              </div>
+              <div class="entry-subtitle">${edu.institution}</div>
+              <div class="entry-location">${edu.location || ''}</div>
+              ${edu.fieldOfStudy ? `<p class="entry-description">Field of Study: ${edu.fieldOfStudy}</p>` : ''}
+            </div>
+          `).join('')}
+        </div>
+        ` : ''}
+        
+        <!-- Services Section -->
+        ${services.length > 0 ? `
+        <div class="section">
+          <h3 class="section-title">Services Offered</h3>
+          <ul>
+            ${services.map(service => `
+              <li>
+                <strong>${service.title}</strong>
+                ${service.description ? ` - ${service.description}` : ''}
+              </li>
+            `).join('')}
+          </ul>
+        </div>
+        ` : ''}
+        
+        <!-- Projects Section -->
+        ${projects.length > 0 ? `
+        <div class="section">
+          <h3 class="section-title">Selected Projects</h3>
+          <div class="projects-container">
+            ${projects.map(project => `
+              <div class="project-item">
+                <h4 class="project-title">${project.title}</h4>
+                <p class="project-description">${project.description || ''}</p>
+                ${project.projectUrl ? `<p><small><a href="${project.projectUrl}">${project.projectUrl}</a></small></p>` : ''}
+              </div>
+            `).join('')}
+          </div>
+        </div>
+        ` : ''}
+      </div>
+    </body>
+    </html>
+  `;
 }

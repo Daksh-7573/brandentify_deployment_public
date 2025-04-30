@@ -4,106 +4,123 @@
  * These routes handle the auto-generation and management of resumes from user profile data.
  */
 
-import express from 'express';
+import { Request, Response, Router } from 'express';
+import { storage } from './storage';
+import { canGenerateResume, generateResume } from './services/resume-generator';
 import { db } from './db';
 import { users } from '@shared/schema';
 import { eq } from 'drizzle-orm';
-import { canGenerateResume, generateResume } from './services/resume-generator';
 
-const router = express.Router();
-
-/**
- * Check if a resume can be generated for a user
- * GET /api/resume/check-eligibility/:userId
- */
-router.get('/resume/check-eligibility/:userId', async (req, res) => {
-  try {
-    const userId = parseInt(req.params.userId);
-    if (isNaN(userId)) {
-      return res.status(400).json({ message: 'Invalid user ID' });
-    }
-    
-    const eligible = await canGenerateResume(userId);
-    return res.status(200).json({ eligible });
-  } catch (error) {
-    console.error('[GET /resume/check-eligibility/:userId] Error:', error);
-    return res.status(500).json({ message: 'Failed to check resume eligibility' });
-  }
-});
-
-/**
- * Generate or regenerate a resume for a user
- * POST /api/resume/generate/:userId
- */
-router.post('/resume/generate/:userId', async (req, res) => {
-  try {
-    const userId = parseInt(req.params.userId);
-    if (isNaN(userId)) {
-      return res.status(400).json({ message: 'Invalid user ID' });
-    }
-    
-    // Check if the user exists
-    const userExists = await db.select({ id: users.id }).from(users).where(eq(users.id, userId));
-    if (userExists.length === 0) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-    
-    // Check if the user is eligible to have a resume generated
-    const eligible = await canGenerateResume(userId);
-    if (!eligible) {
-      return res.status(400).json({ 
-        message: 'Unable to generate resume: Complete your profile with work experience and skills',
-        requiredFields: ['work experience', 'skills']
+export default function resumeRoutes(app: Router) {
+  /**
+   * Check if a resume can be generated for a user
+   * GET /api/resume/check-eligibility/:userId
+   */
+  app.get('/resume/check-eligibility/:userId', async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      
+      if (isNaN(userId)) {
+        return res.status(400).json({
+          message: 'Invalid user ID format'
+        });
+      }
+      
+      const eligible = await canGenerateResume(userId);
+      
+      return res.status(200).json({
+        eligible
+      });
+    } catch (error) {
+      console.error('[Check Resume Eligibility] Error:', error);
+      return res.status(500).json({
+        message: 'Error checking resume eligibility',
+        error: error instanceof Error ? error.message : 'Unknown error'
       });
     }
-    
-    // Generate the resume
-    const resumeUrl = await generateResume(userId);
-    
-    return res.status(200).json({ 
-      message: 'Resume generated successfully',
-      resumeUrl 
-    });
-  } catch (error) {
-    console.error('[POST /resume/generate/:userId] Error:', error);
-    return res.status(500).json({ message: 'Failed to generate resume' });
-  }
-});
-
-/**
- * Get the current resume status and URL for a user
- * GET /api/resume/status/:userId
- */
-router.get('/resume/status/:userId', async (req, res) => {
-  try {
-    const userId = parseInt(req.params.userId);
-    if (isNaN(userId)) {
-      return res.status(400).json({ message: 'Invalid user ID' });
+  });
+  
+  /**
+   * Generate or regenerate a resume for a user
+   * POST /api/resume/generate/:userId
+   */
+  app.post('/resume/generate/:userId', async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      
+      if (isNaN(userId)) {
+        return res.status(400).json({
+          message: 'Invalid user ID format'
+        });
+      }
+      
+      // First check if user is eligible for resume generation
+      const eligible = await canGenerateResume(userId);
+      
+      if (!eligible) {
+        return res.status(400).json({
+          message: 'Cannot generate resume. User needs at least one work experience and one skill.'
+        });
+      }
+      
+      // Generate the resume
+      const resumeUrl = await generateResume(userId);
+      
+      return res.status(200).json({
+        message: 'Resume generated successfully',
+        resumeUrl
+      });
+    } catch (error) {
+      console.error('[Generate Resume] Error:', error);
+      return res.status(500).json({
+        message: 'Error generating resume',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
     }
-    
-    // Fetch user resume information
-    const [userResume] = await db
-      .select({
+  });
+  
+  /**
+   * Get the current resume status and URL for a user
+   * GET /api/resume/status/:userId
+   */
+  app.get('/resume/status/:userId', async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      
+      if (isNaN(userId)) {
+        return res.status(400).json({
+          message: 'Invalid user ID format'
+        });
+      }
+      
+      // Get user with resume info
+      const [user] = await db.select({
         hasGeneratedResume: users.hasGeneratedResume,
         resumeUrl: users.resumeUrl,
         resumeGeneratedAt: users.resumeGeneratedAt
       })
       .from(users)
       .where(eq(users.id, userId));
-    
-    if (!userResume) {
-      return res.status(404).json({ message: 'User not found' });
+      
+      if (!user) {
+        return res.status(404).json({
+          message: 'User not found'
+        });
+      }
+      
+      return res.status(200).json({
+        hasGeneratedResume: user.hasGeneratedResume || false,
+        resumeUrl: user.resumeUrl,
+        resumeGeneratedAt: user.resumeGeneratedAt
+      });
+    } catch (error) {
+      console.error('[Get Resume Status] Error:', error);
+      return res.status(500).json({
+        message: 'Error fetching resume status',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
     }
-    
-    return res.status(200).json({
-      hasGeneratedResume: userResume.hasGeneratedResume || false,
-      resumeUrl: userResume.resumeUrl || null,
-      resumeGeneratedAt: userResume.resumeGeneratedAt || null
-    });
-  } catch (error) {
-    console.error('[GET /resume/status/:userId] Error:', error);
-    return res.status(500).json({ message: 'Failed to get resume status' });
-  }
-});
-
-export default router;
+  });
+  
+  console.log('Resume generation routes loaded');
+}
