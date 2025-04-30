@@ -24,6 +24,7 @@ import Radar from "@/pages/radar";
 import SmartConnectPage from "@/pages/smart-connect";
 import MuskMatchPage from "@/pages/musk-match";
 import ResumePage from "@/pages/resume";
+import ResumeCV from "@/pages/resume-cv";
 import FeedTestPage from "@/pages/feed-test";
 import CareerQuestsPage from "@/pages/career-quests";
 import OnboardingPage from "@/pages/onboarding";
@@ -119,6 +120,9 @@ function Router() {
       </Route>
       <Route path="/resume">
         <ProtectedRoute path="/resume" component={ResumePage} />
+      </Route>
+      <Route path="/resume-cv">
+        <ProtectedRoute path="/resume-cv" component={ResumeCV} />
       </Route>
       <Route path="/feed-test">
         <ProtectedRoute path="/feed-test" component={FeedTestPage} />

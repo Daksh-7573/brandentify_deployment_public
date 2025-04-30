@@ -1,6 +1,6 @@
 import { ReactNode, useState } from "react";
 import { Link, useLocation } from "wouter";
-import { Home, Settings, User, BarChart, Briefcase, Menu } from "lucide-react";
+import { Home, Settings, User, BarChart, Briefcase, Menu, FileText } from "lucide-react";
 
 // Navigation items for the sidebar
 const navItems = [
