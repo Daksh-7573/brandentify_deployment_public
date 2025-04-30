@@ -2616,6 +2616,14 @@ export default function FreelancerHub({
       {/* Render Modals */}
       {renderProjectDetailsModal()}
       {renderContactModal()}
+      
+      {/* Mentorship Dialog */}
+      <MentorshipDialog
+        isOpen={isMentorshipDialogOpen}
+        onOpenChange={setIsMentorshipDialogOpen}
+        userId={currentUserId}
+        mentorId={userInfo.id}
+      />
     </div>
   );
 }
