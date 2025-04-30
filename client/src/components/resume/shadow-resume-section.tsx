@@ -17,7 +17,7 @@ import {
 
 import { formatDistanceToNow } from 'date-fns';
 import { UserData } from '@/types/user';
-import { Resume, ResumeTheme } from '@/types/resume';
+import { Resume } from '@/types/resume';
 import { WorkExperience, Education } from '@/types/profile';
 
 interface ShadowResumeProps {
@@ -130,10 +130,8 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
     }
   });
 
-  // Define a default theme for resume display (since we removed theme selection)
-  const defaultTheme = { 
-    value: 'professional', 
-    label: 'Professional', 
+  // Fixed theme for professional resume display
+  const fixedTheme = { 
     color: '#2563eb', 
     accent: '#dbeafe', 
     fontClass: 'font-serif' 
@@ -193,16 +191,11 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
     }
   };
 
-  // All history-related code has been removed
-
   // Get last updated time
   const getLastUpdateText = () => {
     if (!resume?.lastUpdatedByMusk) return 'Not yet updated by Musk';
     return formatDistanceToNow(new Date(resume.lastUpdatedByMusk), { addSuffix: true });
   };
-  
-  // Fixed theme for resume display (since theme selection was removed)
-  const currentTheme = defaultTheme;
 
   return (
     <Card className="w-full shadow-md">
@@ -244,7 +237,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
               {resume?.fileData ? (
                 <div className="w-full h-full flex flex-col items-center justify-center p-6 relative">
                   {/* Actual resume preview with PDF appearance */}
-                  <div className={`w-full h-full relative bg-white shadow-lg rounded overflow-hidden ${currentTheme.fontClass}`} style={{borderTop: `4px solid ${currentTheme.color}`}}>
+                  <div className={`w-full h-full relative bg-white shadow-lg rounded overflow-hidden ${fixedTheme.fontClass}`} style={{borderTop: `4px solid ${fixedTheme.color}`}}>
                     {/* Document header */}
                     <div className="absolute top-0 left-0 right-0 h-8 bg-gray-100 border-b flex items-center justify-between px-3">
                       <div className="flex items-center space-x-2">
@@ -253,15 +246,15 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                         <div className="w-3 h-3 bg-green-400 rounded-full"></div>
                       </div>
                       <div className="text-xs text-gray-500">
-                        {resume.fileName || `${user.name}_Resume_${currentTheme.label}.pdf`}
+                        {resume.fileName || `${user.name}_Resume_Professional.pdf`}
                       </div>
                     </div>
                     
                     {/* Resume content - comprehensive data from the user profile */}
                     <div className="pt-10 px-6 pb-16 text-xs overflow-y-auto max-h-full">
                       {/* Header Section */}
-                      <div className="border-b pb-3 mb-3" style={{borderColor: currentTheme.accent}}>
-                        <h2 className="text-xl font-bold" style={{color: currentTheme.color}}>{user.name}</h2>
+                      <div className="border-b pb-3 mb-3" style={{borderColor: fixedTheme.accent}}>
+                        <h2 className="text-xl font-bold" style={{color: fixedTheme.color}}>{user.name}</h2>
                         <p className="text-sm text-gray-600">{user.title || 'Professional'}</p>
                         <div className="flex flex-wrap items-center gap-2 mt-1 text-xs text-gray-500">
                           <span>{user.email}</span>
@@ -297,7 +290,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                       
                       {/* About section - comprehensive profile */}
                       <div className="mb-3">
-                        <h3 className="text-sm font-bold mb-1.5 uppercase" style={{color: currentTheme.color}}>Professional Summary</h3>
+                        <h3 className="text-sm font-bold mb-1.5 uppercase" style={{color: fixedTheme.color}}>Professional Summary</h3>
                         <p className="text-xs text-gray-700 leading-relaxed">
                           {user.aboutMe || 'Experienced professional with expertise in ' + (user.industry || 'their field') + ' seeking opportunities in ' + (user.domain || 'the industry')}
                         </p>
@@ -305,7 +298,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                       
                       {/* Work Experience - uses real data from experiences */}
                       <div className="mb-3">
-                        <h3 className="text-sm font-bold mb-1.5 uppercase" style={{color: currentTheme.color}}>Professional Experience</h3>
+                        <h3 className="text-sm font-bold mb-1.5 uppercase" style={{color: fixedTheme.color}}>Professional Experience</h3>
                         
                         {workExperiences && workExperiences.length > 0 ? (
                           workExperiences.map((experience, index) => (
@@ -676,28 +669,6 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
             <Eye className="h-4 w-4" />
             <span>View</span>
           </Button>
-          {isOwner && (
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="gap-1"
-              onClick={() => {
-                // Redirect to the Resume Writer tab
-                const tabElement = document.querySelector('[data-value="resume-writer"]');
-                if (tabElement) {
-                  (tabElement as HTMLElement).click();
-                } else {
-                  toast({
-                    title: 'Edit Resume',
-                    description: 'Resume editing is accessed through the Resume Writer tab.',
-                  });
-                }
-              }}
-            >
-              <Pencil className="h-4 w-4" />
-              <span>Edit</span>
-            </Button>
-          )}
         </div>
         <Button 
           variant="default" 
