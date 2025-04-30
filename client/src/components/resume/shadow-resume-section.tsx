@@ -272,12 +272,61 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
             {/* Resume Preview */}
             <div className="aspect-[3/4] bg-card border rounded-lg flex items-center justify-center overflow-hidden">
               {resume?.fileData ? (
-                <div className="w-full h-full relative">
-                  <iframe 
-                    src={`data:application/pdf;base64,${resume.fileData}`}
-                    className="w-full h-full absolute top-0 left-0 border-0"
-                    title="Resume Preview"
-                  />
+                <div className="w-full h-full flex flex-col items-center justify-center p-4">
+                  <div className="text-center mb-4">
+                    <h2 className="text-xl font-bold">{user.name}</h2>
+                    <p className="text-sm text-muted-foreground">{user.title || 'Professional Resume'}</p>
+                    <div className="bg-primary/10 text-primary text-xs px-3 py-1 rounded-full inline-block mt-2">
+                      {user.industry || 'Resume'} • {resume.themeStyle || 'Professional'} Theme
+                    </div>
+                  </div>
+                  
+                  <div className="relative w-full flex-1 bg-muted/30 rounded flex items-center justify-center">
+                    {/* PDF thumbnail representation */}
+                    <div className="w-3/4 h-3/4 bg-white rounded shadow-sm border flex flex-col p-4 text-xs text-muted-foreground">
+                      <div className="w-full border-b pb-2 mb-2 border-dashed">
+                        <div className="font-bold text-sm text-foreground">{user.name}</div>
+                        <div>{user.title || 'Professional'}</div>
+                      </div>
+                      <div className="space-y-1 mb-4">
+                        <div className="w-full h-2 bg-muted rounded"></div>
+                        <div className="w-3/4 h-2 bg-muted rounded"></div>
+                        <div className="w-5/6 h-2 bg-muted rounded"></div>
+                      </div>
+                      <div className="font-semibold text-foreground mb-1">Experience</div>
+                      <div className="space-y-1 mb-4">
+                        <div className="w-full h-2 bg-muted rounded"></div>
+                        <div className="w-3/4 h-2 bg-muted rounded"></div>
+                      </div>
+                      <div className="font-semibold text-foreground mb-1">Skills</div>
+                      <div className="space-y-1">
+                        <div className="w-full h-2 bg-muted rounded"></div>
+                        <div className="w-5/6 h-2 bg-muted rounded"></div>
+                      </div>
+                    </div>
+                    
+                    <div className="absolute inset-0 flex items-center justify-center bg-background/20 backdrop-blur-[1px]">
+                      <div className="flex flex-col items-center gap-2">
+                        <Button 
+                          variant="secondary" 
+                          size="sm" 
+                          className="gap-1 px-4"
+                          onClick={() => {
+                            if (resume?.fileData) {
+                              const dataUrl = `data:application/pdf;base64,${resume.fileData}`;
+                              window.open(dataUrl, '_blank');
+                            }
+                          }}
+                        >
+                          <Eye className="h-4 w-4" />
+                          <span>View Resume</span>
+                        </Button>
+                        <span className="text-xs text-center text-muted-foreground">
+                          Click to view your full resume
+                        </span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               ) : (
                 <div className="text-center p-6">
