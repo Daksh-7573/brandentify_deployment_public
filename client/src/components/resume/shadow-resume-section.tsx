@@ -394,7 +394,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                         
                         {education && education.length > 0 ? (
                           education.map((edu, index) => (
-                            <div key={index} className="mb-2">
+                            <div key={index} className="mb-3">
                               <div className="font-semibold">
                                 {edu.degree}{edu.fieldOfStudy ? `, ${edu.fieldOfStudy}` : ''}
                               </div>
@@ -404,6 +404,35 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                                   {new Date(edu.startDate).getFullYear()} - 
                                   {edu.endDate ? new Date(edu.endDate).getFullYear() : 'Present'}
                                 </span>
+                              </div>
+                              
+                              {/* Additional education details */}
+                              <div className="mt-1 text-xs text-gray-600">
+                                {edu.location && (
+                                  <div className="mt-0.5">
+                                    <span className="font-medium">Location:</span> {edu.location}
+                                  </div>
+                                )}
+                                {edu.industry && (
+                                  <div className="mt-0.5">
+                                    <span className="font-medium">Industry:</span> {edu.industry}
+                                    {edu.domain && <span> • {edu.domain}</span>}
+                                  </div>
+                                )}
+                                
+                                {/* Skills acquired section */}
+                                {edu.skillsAcquired && Array.isArray(edu.skillsAcquired) && edu.skillsAcquired.length > 0 && (
+                                  <div className="mt-1">
+                                    <span className="font-medium">Skills Acquired:</span>
+                                    <div className="flex flex-wrap gap-1 mt-0.5">
+                                      {edu.skillsAcquired.map((skill, i) => (
+                                        <span key={i} className="px-1.5 py-0.5 bg-gray-100 text-[9px] text-gray-700 rounded">
+                                          {skill}
+                                        </span>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
                               </div>
                             </div>
                           ))
