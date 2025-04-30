@@ -3,25 +3,16 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { 
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Slider } from '@/components/ui/slider';
 
 import { 
   Zap,
   Download,
   Eye,
-  FileText,
-  Pencil
+  FileText
 } from 'lucide-react';
 
 import { formatDistanceToNow, format } from 'date-fns';
@@ -210,14 +201,8 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
     return formatDistanceToNow(new Date(resume.lastUpdatedByMusk), { addSuffix: true });
   };
   
-  // Get current theme styling
-  const getCurrentTheme = () => {
-    const theme = themeOptions.find(t => t.value === resumeTheme);
-    return theme || themeOptions[0]; // Default to first theme if not found
-  };
-  
-  // Current theme object with styles
-  const currentTheme = getCurrentTheme();
+  // Fixed theme for resume display (since theme selection was removed)
+  const currentTheme = defaultTheme;
 
   return (
     <Card className="w-full shadow-md">
