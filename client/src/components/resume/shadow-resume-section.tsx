@@ -15,7 +15,7 @@ import {
   FileText
 } from 'lucide-react';
 
-import { formatDistanceToNow, format } from 'date-fns';
+import { formatDistanceToNow } from 'date-fns';
 import { UserData } from '@/types/user';
 import { Resume, ResumeTheme } from '@/types/resume';
 import { WorkExperience, Education } from '@/types/profile';
@@ -56,8 +56,8 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
     enabled: !!user?.id,
   });
   
-  // Update resume mutation
-  const updateResumeMutation = useMutation<any, Error, {themeStyle?: ResumeTheme, isDownloadable?: boolean}>({
+  // Update resume mutation (simplified to handle download permission only)
+  const updateResumeMutation = useMutation<any, Error, {isDownloadable: boolean}>({
     mutationFn: async (updates) => {
       if (!resume) return null;
       
