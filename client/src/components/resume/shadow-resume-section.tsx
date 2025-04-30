@@ -20,7 +20,6 @@ import {
   Zap,
   Download,
   Eye,
-  Calendar,
   FileText,
   Pencil
 } from 'lucide-react';
@@ -39,11 +38,8 @@ interface ShadowResumeProps {
 
 export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwner = true }: ShadowResumeProps) {
   const { toast } = useToast();
-  const [resumeTheme, setResumeTheme] = useState<ResumeTheme>(
-    (resume?.themeStyle as ResumeTheme) || 'professional'
-  );
+  // Only keep downloadable state, remove theme and history states
   const [isDownloadable, setIsDownloadable] = useState(resume?.isDownloadable || false);
-  const [historyVersion, setHistoryVersion] = useState(100); // Percentage representing the latest version
   
   // Fetch work experiences for the user
   const { data: workExperiences = [] } = useQuery<WorkExperience[]>({
@@ -143,52 +139,21 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
     }
   });
 
-  // Mock resume history items (in a real app, these would come from the backend)
-  const mockHistoryItems = [
-    { date: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3), description: 'Added leadership skill from XYZ project', version: 90 },
-    { date: new Date(Date.now() - 1000 * 60 * 60 * 24 * 10), description: 'Updated summary to highlight design skills', version: 70 },
-    { date: new Date(Date.now() - 1000 * 60 * 60 * 24 * 20), description: 'Added certifications section with new AWS certificate', version: 50 },
-    { date: new Date(Date.now() - 1000 * 60 * 60 * 24 * 30), description: 'Initial resume creation based on profile data', version: 30 },
-  ];
-
-  // Format options for themes that match portfolio layouts
-  const themeOptions = [
-    { value: 'professional', label: 'Professional', color: '#2563eb', accent: '#dbeafe', fontClass: 'font-serif' },
-    { value: 'creative', label: 'Creative', color: '#ec4899', accent: '#fce7f3', fontClass: 'font-sans' },
-    { value: 'minimal', label: 'Minimal', color: '#475569', accent: '#f1f5f9', fontClass: 'font-sans' },
-    { value: 'technical', label: 'Technical', color: '#0f766e', accent: '#ccfbf1', fontClass: 'font-mono' },
-    { value: 'executive', label: 'Executive', color: '#334155', accent: '#f8fafc', fontClass: 'font-serif' },
-    { value: 'minimalist_pro', label: 'Minimalist Pro', color: '#1e293b', accent: '#f1f5f9', fontClass: 'font-sans' },
-    { value: 'timeline', label: 'Timeline Storyteller', color: '#4338ca', accent: '#e0e7ff', fontClass: 'font-sans' },
-    { value: 'visual_expert', label: 'Visual Expert', color: '#0284c7', accent: '#e0f2fe', fontClass: 'font-sans' },
-    { value: 'freelancer_hub', label: 'Freelancer Hub', color: '#f59e0b', accent: '#fef3c7', fontClass: 'font-sans' },
-    { value: 'scholar', label: 'Scholar', color: '#7c3aed', accent: '#ede9fe', fontClass: 'font-serif' },
-    { value: 'animated', label: 'Animated', color: '#16a34a', accent: '#d1fae5', fontClass: 'font-sans' },
-    { value: 'dynamic_innovator', label: 'Dynamic Innovator', color: '#9333ea', accent: '#f3e8ff', fontClass: 'font-sans' },
-  ];
+  // Define a default theme for resume display (since we removed theme selection)
+  const defaultTheme = { 
+    value: 'professional', 
+    label: 'Professional', 
+    color: '#2563eb', 
+    accent: '#dbeafe', 
+    fontClass: 'font-serif' 
+  };
 
   // Effect to sync component state with server updates
   useEffect(() => {
     if (resume) {
-      setResumeTheme((resume.themeStyle as ResumeTheme) || 'professional');
       setIsDownloadable(resume.isDownloadable || false);
     }
   }, [resume]);
-
-  // Handle theme change
-  const handleThemeChange = (value: string) => {
-    console.log(`Changing resume theme to: ${value}`);
-    setResumeTheme(value as ResumeTheme);
-    
-    if (resume) {
-      console.log(`Updating resume ${resume.id} with theme: ${value}`);
-      updateResumeMutation.mutate({
-        themeStyle: value as ResumeTheme
-      });
-    } else {
-      console.error('Cannot update resume theme: No resume object available');
-    }
-  };
 
   // Handle download permission change
   const handleDownloadableChange = (checked: boolean) => {
@@ -199,12 +164,6 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
         isDownloadable: checked
       });
     }
-  };
-
-  // Handle history slider change
-  const handleHistoryChange = (value: number[]) => {
-    setHistoryVersion(value[0]);
-    // In a real app, you would load the appropriate version of the resume
   };
 
   // Handle download click
@@ -243,19 +202,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
     }
   };
 
-  // Get the current history item based on slider value
-  const getCurrentHistoryItem = () => {
-    if (historyVersion >= 95) return { date: new Date(), description: 'Current version' };
-    
-    for (let i = 0; i < mockHistoryItems.length; i++) {
-      if (mockHistoryItems[i].version <= historyVersion) {
-        return mockHistoryItems[i];
-      }
-    }
-    return mockHistoryItems[mockHistoryItems.length - 1];
-  };
-
-  const currentHistoryItem = getCurrentHistoryItem();
+  // All history-related code has been removed
 
   // Get last updated time
   const getLastUpdateText = () => {
@@ -653,30 +600,11 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
               )}
             </div>
 
-            {/* Controls */}
+            {/* Controls - Simplified for download-only */}
             <div className="flex flex-wrap gap-4 mt-4">
-              <div className="flex-1 min-w-[200px]">
-                <Label htmlFor="resume-theme">Resume Style</Label>
-                <Select value={resumeTheme} onValueChange={handleThemeChange}>
-                  <SelectTrigger id="resume-theme" className="w-full">
-                    <SelectValue placeholder="Select theme" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {themeOptions.map(theme => (
-                      <SelectItem 
-                        key={theme.value} 
-                        value={theme.value}
-                      >
-                        {theme.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
               {isOwner && (
                 <div className="flex-1 min-w-[200px]">
-                  <div className="flex items-center space-x-2 h-full pt-6">
+                  <div className="flex items-center space-x-2 h-full pt-2">
                     <Switch 
                       id="allow-download" 
                       checked={isDownloadable} 
@@ -687,30 +615,6 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                 </div>
               )}
             </div>
-
-            {/* Resume History Slider */}
-            {isOwner && (
-              <div className="space-y-2 mt-4 pt-4 border-t">
-                <div className="flex justify-between items-center">
-                  <Label htmlFor="history-slider" className="flex items-center gap-1">
-                    <Calendar className="h-4 w-4" />
-                    <span>Resume History</span>
-                  </Label>
-                  <Badge variant="outline" className="text-xs">
-                    {currentHistoryItem.description}
-                  </Badge>
-                </div>
-                <Slider
-                  id="history-slider"
-                  defaultValue={[100]}
-                  max={100}
-                  step={1}
-                  value={[historyVersion]}
-                  onValueChange={handleHistoryChange}
-                  className="w-full"
-                />
-              </div>
-            )}
           </>
         )}
       </CardContent>
