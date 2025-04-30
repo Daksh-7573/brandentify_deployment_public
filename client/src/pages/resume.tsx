@@ -56,6 +56,8 @@ export default function ResumePage() {
           console.log('Direct fetch result:', data);
           if (data.resume) {
             console.log('Shadow resume found via direct fetch, updating UI state...');
+            // Store the resume data directly
+            setManuallyFetchedResume(data.resume);
             setResumeReadyForViewing(true);
             // Force refresh query state
             refetchResume();
@@ -127,8 +129,11 @@ export default function ResumePage() {
     }
   });
 
-  // Use real resume data if available, otherwise use fallback data for UI development
-  const resume = resumeData?.resume || {
+  // Initialize a variable to store the resume from different sources
+  const [manuallyFetchedResume, setManuallyFetchedResume] = useState<any>(null);
+  
+  // Use real resume data from either query or manual fetch, otherwise use fallback
+  const resume = resumeData?.resume || manuallyFetchedResume || {
     id: 0,
     userId: user?.id || 0,
     fileName: `${user?.name?.replace(/\s+/g, '') || 'User'}_Resume.pdf`,
@@ -141,6 +146,21 @@ export default function ResumePage() {
     lastUpdatedByMusk: new Date(),
     visibility: 'private' as const,
   };
+  
+  // Debug log for resume sources
+  useEffect(() => {
+    console.log('Resume sources check:', {
+      fromResumeData: resumeData?.resume ? 'YES' : 'NO',
+      fromManualFetch: manuallyFetchedResume ? 'YES' : 'NO',
+      readyState: resumeReadyForViewing
+    });
+    
+    // If we have a resume from any source and ui isn't showing it yet
+    if ((resumeData?.resume || manuallyFetchedResume) && !resumeReadyForViewing) {
+      console.log('Setting resume ready to true based on available data');
+      setResumeReadyForViewing(true);
+    }
+  }, [resumeData, manuallyFetchedResume, resumeReadyForViewing]);
 
   // Handle resume upload
   const handleUploadResume = () => {

@@ -351,11 +351,37 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
             size="sm" 
             className="gap-1"
             onClick={() => {
-              console.log("View button clicked - resume data:", resume);
-              // Open resume in a new tab
+              console.log("View button clicked - resume data:", {
+                hasData: !!resume,
+                fileDataLength: resume?.fileData ? resume.fileData.length : 0,
+                resumeId: resume?.id
+              });
+              
+              // Open resume in a new tab if data is available
               if (resume?.fileData) {
-                const dataUrl = `data:application/pdf;base64,${resume.fileData}`;
-                window.open(dataUrl, '_blank');
+                try {
+                  // Create data URL and log information for debugging
+                  const dataUrl = `data:application/pdf;base64,${resume.fileData}`;
+                  console.log("Attempting to open PDF with data URL length:", dataUrl.length);
+                  
+                  // Create a temporary link and trigger click
+                  const link = document.createElement('a');
+                  link.href = dataUrl;
+                  link.target = '_blank';
+                  link.click();
+                  
+                  toast({
+                    title: 'Opening Resume',
+                    description: 'Your shadow resume should open in a new tab.',
+                  });
+                } catch (error) {
+                  console.error("Error opening PDF:", error);
+                  toast({
+                    title: 'Error Opening Resume',
+                    description: 'There was a problem displaying your resume. Please try again.',
+                    variant: 'destructive',
+                  });
+                }
               } else {
                 toast({
                   title: 'No Preview Available',
