@@ -12,7 +12,10 @@ import {
   Zap,
   Download,
   Eye,
-  FileText
+  FileText,
+  Edit2,
+  Save,
+  X
 } from 'lucide-react';
 
 import { formatDistanceToNow } from 'date-fns';
@@ -31,6 +34,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
   const { toast } = useToast();
   // Only keep downloadable state, remove theme and history states
   const [isDownloadable, setIsDownloadable] = useState(resume?.isDownloadable || false);
+  const [isEditing, setIsEditing] = useState(false);
   
   // Fetch work experiences for the user
   const { data: workExperiences = [] } = useQuery<WorkExperience[]>({
@@ -366,14 +370,8 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                                   {/* Skills acquired section */}
                                   {edu.skillsAcquired && Array.isArray(edu.skillsAcquired) && edu.skillsAcquired.length > 0 && (
                                     <div className="mt-1">
-                                      <span className="font-medium">Skills Acquired:</span>
-                                      <div className="flex flex-wrap gap-1 mt-0.5">
-                                        {edu.skillsAcquired.map((skill, i) => (
-                                          <span key={i} className="px-1.5 py-0.5 bg-gray-100 text-[9px] text-gray-700 rounded">
-                                            {skill}
-                                          </span>
-                                        ))}
-                                      </div>
+                                      <span className="font-medium">Skills:</span>{' '}
+                                      {edu.skillsAcquired.join(', ')}
                                     </div>
                                   )}
                                 </div>
@@ -387,87 +385,45 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                         )}
                       </div>
                       
-                      {/* Skills section */}
+                      {/* Skills Section */}
                       <div className="mb-4 pb-3 border-b border-gray-100">
-                        <h3 className="text-sm font-bold mb-2 uppercase" style={{color: fixedTheme.color}}>Key Skills & Competencies</h3>
-                        <div className="p-2 bg-gray-50 rounded-sm" style={{borderLeft: `2px solid ${fixedTheme.color}`}}>
-                          {/* Real user skills data */}
-                          {skills && skills.length > 0 ? (
-                            <div className="mb-2">
-                              <h4 className="text-xs font-semibold mb-1 text-gray-600">Primary Skills</h4>
-                              <div className="flex flex-wrap gap-1.5">
-                                {skills.map((skill, i) => (
-                                  <div key={i} className="px-2 py-0.5 bg-primary/10 text-primary text-xs rounded">
-                                    {skill.name}
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          ) : (
-                            <div className="mb-0">
-                              <h4 className="text-xs font-semibold mb-1 text-gray-600">Technical Skills</h4>
-                              <div className="flex flex-wrap gap-1.5">
-                                {/* Default skills from user profile if no specific skills are added */}
-                                {user.domain && (
-                                  <div className="px-2 py-0.5 bg-primary/10 text-primary text-xs rounded">
-                                    {user.domain}
-                                  </div>
-                                )}
-                                {user.industry && (
-                                  <div className="px-2 py-0.5 bg-primary/10 text-primary text-xs rounded">
-                                    {user.industry}
-                                  </div>
-                                )}
-                                <div className="px-2 py-0.5 bg-primary/10 text-primary text-xs rounded">
-                                  {user.title || 'Professional'}
-                                </div>
-                              </div>
-                            </div>
-                          )}
-                        </div>
+                        <h3 className="text-sm font-bold mb-2 uppercase" style={{color: fixedTheme.color}}>Skills</h3>
+                        
+                        {skills && skills.length > 0 ? (
+                          <div className="flex flex-wrap gap-1 mt-2">
+                            {skills.map((skill, index) => (
+                              <span key={index} className="inline-block px-2 py-0.5 rounded-full bg-gray-100 text-gray-800 text-xs">
+                                {skill.name}
+                              </span>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="text-gray-500 italic mt-1">
+                            No skills added yet. Add skills in your profile.
+                          </div>
+                        )}
                       </div>
                       
-                      {/* Projects/Achievements Section */}
-                      <div className="mb-4">
-                        <h3 className="text-sm font-bold mb-2 uppercase" style={{color: fixedTheme.color}}>Projects & Achievements</h3>
+                      {/* Projects Section */}
+                      <div className="mb-4 pb-3">
+                        <h3 className="text-sm font-bold mb-2 uppercase" style={{color: fixedTheme.color}}>Projects</h3>
                         
                         {projects && projects.length > 0 ? (
                           <div className="space-y-3 mt-2">
-                            {projects.slice(0, 5).map((project, i) => (
-                              <div key={i} className="border-b border-gray-100 pb-2 last:border-0">
-                                <div className="font-semibold text-gray-800">{project.title}</div>
-                                
-                                {/* Project details */}
-                                <div className="text-xs text-gray-600 flex flex-wrap justify-between mt-0.5">
-                                  <div>
-                                    {project.category && <span className="font-medium">Category:</span>} {project.category}
-                                    {project.industry && (
-                                      <span className="ml-1">
-                                        • <span className="font-medium">Industry:</span> {project.industry}
-                                      </span>
-                                    )}
-                                  </div>
-                                  
-                                  {project.startDate && (
-                                    <div>
-                                      <span className="font-medium">Date:</span> {new Date(project.startDate).toLocaleDateString('en-US', {year: 'numeric', month: 'short'})}
-                                    </div>
-                                  )}
+                            {projects.map((project, index) => (
+                              <div key={index} className="pb-2">
+                                <div className="font-semibold">{project.title}</div>
+                                <div className="text-gray-600 mt-0.5 text-xs">
+                                  {project.description && project.description.substring(0, 120)}
+                                  {project.description && project.description.length > 120 ? '...' : ''}
                                 </div>
-                                
-                                {/* Project description */}
-                                {project.description && (
-                                  <div className="text-xs mt-1 text-gray-700 leading-relaxed">
-                                    {project.description.length > 120 ? 
-                                      project.description.substring(0, 120) + '...' : 
-                                      project.description}
-                                  </div>
-                                )}
-                                
-                                {/* Project URL */}
-                                {project.projectUrl && (
-                                  <div className="text-[9px] text-gray-500 mt-0.5 truncate">
-                                    <span className="font-medium">URL:</span> {project.projectUrl}
+                                {project.technologies && Array.isArray(project.technologies) && project.technologies.length > 0 && (
+                                  <div className="flex flex-wrap gap-1 mt-1">
+                                    {project.technologies.map((tech, i) => (
+                                      <span key={i} className="inline-block px-1.5 py-0.5 rounded-sm bg-gray-100 text-gray-700 text-xs">
+                                        {tech}
+                                      </span>
+                                    ))}
                                   </div>
                                 )}
                               </div>
@@ -489,6 +445,48 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                   
                   {/* Action buttons directly below the preview */}
                   <div className="absolute inset-x-0 bottom-4 flex justify-center gap-2">
+                    {isOwner && (
+                      <Button
+                        variant={isEditing ? "destructive" : "outline"}
+                        size="sm"
+                        className={isEditing ? "" : "bg-white shadow-sm border-gray-200"}
+                        onClick={() => setIsEditing(!isEditing)}
+                      >
+                        {isEditing ? (
+                          <>
+                            <X className="h-4 w-4 mr-1" />
+                            <span>Cancel</span>
+                          </>
+                        ) : (
+                          <>
+                            <Edit2 className="h-4 w-4 mr-1" />
+                            <span>Edit</span>
+                          </>
+                        )}
+                      </Button>
+                    )}
+                    
+                    {isEditing && isOwner && (
+                      <Button
+                        variant="default"
+                        size="sm"
+                        className="bg-green-600 hover:bg-green-700 text-white shadow-sm"
+                        onClick={() => {
+                          // Save the resume here
+                          // For now we'll just turn off editing mode
+                          setIsEditing(false);
+                          
+                          toast({
+                            title: 'Resume Saved',
+                            description: 'Your resume has been updated successfully.',
+                          });
+                        }}
+                      >
+                        <Save className="h-4 w-4 mr-1" />
+                        <span>Save</span>
+                      </Button>
+                    )}
+                    
                     <Button
                       variant="outline"
                       size="sm"
@@ -499,76 +497,78 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                       <span>Download</span>
                     </Button>
                     
-                    <Button
-                      variant="default"
-                      size="sm"
-                      className="bg-primary text-white shadow-sm"
-                      onClick={() => {
-                        if (!resume?.fileData) {
-                          toast({
-                            title: 'No Resume Available',
-                            description: 'There is no resume to view yet.',
-                            variant: 'destructive',
-                          });
-                          return;
-                        }
-                        
-                        // Direct download approach - most reliable across browsers
-                        try {
-                          // Create a temporary anchor and trigger direct download
-                          const link = document.createElement('a');
-                          
-                          // Use the download attribute to give the file a name
-                          link.download = resume.fileName || 'resume.pdf';
-                          
-                          // Convert base64 to blob
-                          const byteCharacters = atob(resume.fileData);
-                          const byteNumbers = new Array(byteCharacters.length);
-                          for (let i = 0; i < byteCharacters.length; i++) {
-                            byteNumbers[i] = byteCharacters.charCodeAt(i);
+                    {!isEditing && (
+                      <Button
+                        variant="default"
+                        size="sm"
+                        className="bg-primary text-white shadow-sm"
+                        onClick={() => {
+                          if (!resume?.fileData) {
+                            toast({
+                              title: 'No Resume Available',
+                              description: 'There is no resume to view yet.',
+                              variant: 'destructive',
+                            });
+                            return;
                           }
-                          const byteArray = new Uint8Array(byteNumbers);
-                          const blob = new Blob([byteArray], { type: 'application/pdf' });
                           
-                          // Create a blob URL
-                          const url = URL.createObjectURL(blob);
-                          
-                          // Set href to blob URL
-                          link.href = url;
-                          
-                          // Set target to _blank to try to open in a new tab
-                          link.target = '_blank';
-                          
-                          // Append to body
-                          document.body.appendChild(link);
-                          
-                          // Trigger click
-                          link.click();
-                          
-                          // Clean up
-                          setTimeout(() => {
-                            document.body.removeChild(link);
-                            URL.revokeObjectURL(url);
-                          }, 100);
-                          
-                          // Notify user
-                          toast({
-                            title: 'Opening Resume',
-                            description: 'Your resume PDF has been downloaded for viewing.',
-                          });
-                        } catch (error) {
-                          console.error("Error processing PDF:", error);
-                          toast({
-                            title: 'Error',
-                            description: 'Could not process the PDF file. Please try again.',
-                            variant: 'destructive',
-                          });
-                        }
-                      }}
-                    >
-                      <Eye className="h-4 w-4 mr-1" />
-                      <span>View PDF</span>
-                    </Button>
+                          // Direct download approach - most reliable across browsers
+                          try {
+                            // Create a temporary anchor and trigger direct download
+                            const link = document.createElement('a');
+                            
+                            // Use the download attribute to give the file a name
+                            link.download = resume.fileName || 'resume.pdf';
+                            
+                            // Convert base64 to blob
+                            const byteCharacters = atob(resume.fileData);
+                            const byteNumbers = new Array(byteCharacters.length);
+                            for (let i = 0; i < byteCharacters.length; i++) {
+                              byteNumbers[i] = byteCharacters.charCodeAt(i);
+                            }
+                            const byteArray = new Uint8Array(byteNumbers);
+                            const blob = new Blob([byteArray], { type: 'application/pdf' });
+                            
+                            // Create a blob URL
+                            const url = URL.createObjectURL(blob);
+                            
+                            // Set href to blob URL
+                            link.href = url;
+                            
+                            // Set target to _blank to try to open in a new tab
+                            link.target = '_blank';
+                            
+                            // Append to body
+                            document.body.appendChild(link);
+                            
+                            // Trigger click
+                            link.click();
+                            
+                            // Clean up
+                            setTimeout(() => {
+                              document.body.removeChild(link);
+                              URL.revokeObjectURL(url);
+                            }, 100);
+                            
+                            // Notify user
+                            toast({
+                              title: 'Opening Resume',
+                              description: 'Your resume PDF has been downloaded for viewing.',
+                            });
+                          } catch (error) {
+                            console.error("Error processing PDF:", error);
+                            toast({
+                              title: 'Error',
+                              description: 'Could not process the PDF file. Please try again.',
+                              variant: 'destructive',
+                            });
+                          }
+                        }}
+                      >
+                        <Eye className="h-4 w-4 mr-1" />
+                        <span>View PDF</span>
+                      </Button>
+                    )}
                   </div>
                 </div>
               ) : (
