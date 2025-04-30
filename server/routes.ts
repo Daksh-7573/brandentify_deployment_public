@@ -912,6 +912,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Internal server error" });
     }
   });
+  
+  // Add PATCH endpoint for education updates (partial updates)
+  apiRouter.patch("/educations/:id", async (req: Request, res: Response) => {
+    try {
+      console.log(`[PATCH /educations/:id] Updating education with data:`, req.body);
+      const educationId = parseInt(req.params.id);
+      const educationData = req.body;
+      
+      console.log(`[PATCH /educations/:id] Updating education ID ${educationId} with data:`, educationData);
+      const education = await storage.updateEducation(educationId, educationData);
+      
+      if (!education) {
+        return res.status(404).json({ message: "Education not found" });
+      }
+      
+      console.log(`[PATCH /educations/:id] Updated education ID ${educationId}:`, education);
+      res.json(education);
+    } catch (error) {
+      console.error(`[PATCH /educations/:id] Error updating education:`, error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
 
   apiRouter.delete("/educations/:id", async (req: Request, res: Response) => {
     try {
