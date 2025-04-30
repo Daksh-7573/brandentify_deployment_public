@@ -29,9 +29,10 @@ interface ShadowResumeProps {
   resume?: Resume;
   isCurrentUser: boolean;
   isOwner?: boolean;
+  onTabChange?: (tab: string) => void; // Add prop for tab change
 }
 
-export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwner = true }: ShadowResumeProps) {
+export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwner = true, onTabChange }: ShadowResumeProps) {
   const { toast } = useToast();
   const [, navigate] = useLocation();
   // Only keep downloadable state, remove theme and history states
@@ -570,8 +571,13 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                         size="sm"
                         className="bg-white shadow-sm border-gray-200"
                         onClick={() => {
-                          // Use setActiveTab to switch to the resume-editor tab
-                          document.querySelector('[value="resume-editor"]')?.click();
+                          // Use the onTabChange prop to switch to resume-editor tab if provided
+                          if (onTabChange) {
+                            onTabChange('resume-editor');
+                          } else {
+                            // Fallback to direct DOM manipulation
+                            document.querySelector('[value="resume-editor"]')?.click();
+                          }
                         }}
                       >
                         <Edit2 className="h-4 w-4 mr-1" />
