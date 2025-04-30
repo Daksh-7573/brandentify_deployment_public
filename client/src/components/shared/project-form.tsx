@@ -178,11 +178,18 @@ export default function ProjectForm({
       if (existingProject) {
         // Update existing project
         response = await apiRequest(
-          'PUT', 
+          'PATCH', 
           `/api/projects/${existingProject.id}`, 
           values
         );
         projectData = await response.json();
+        
+        // Log detailed information about the PATCH request for debugging
+        console.log("PATCH request made to update project:", {
+          projectId: existingProject.id,
+          requestData: values,
+          responseData: projectData
+        });
         
         // Handle additional media uploads (project images and video)
         if (projectImages.length > 0 || projectVideo) {
