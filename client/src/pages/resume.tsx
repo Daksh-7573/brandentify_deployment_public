@@ -27,15 +27,18 @@ export default function ResumePage() {
   });
   
   // Fetch shadow resume for the user (if it exists)
-  const { data: resumeData, isLoading: isResumeLoading } = useQuery<{resume: any}>({
+  const { data: resumeData, isLoading: isResumeLoading, refetch: refetchResume } = useQuery<{resume: any}>({
     queryKey: ['/api/users', user?.id, 'shadow-resume'],
-    enabled: !!user?.id
+    enabled: !!user?.id,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true
   });
   
   // Log data for debugging
   useEffect(() => {
     if (resumeData) {
       console.log('Shadow resume data loaded:', resumeData);
+      console.log('Resume exists?', !!resumeData.resume);
     }
   }, [resumeData]);
 
@@ -48,6 +51,12 @@ export default function ResumePage() {
     if (resumeData && !resumeData.resume && !isCreationRequested && !createResumeMutation.isPending) {
       console.log('No shadow resume found, auto-creating one...');
       createResumeMutation.mutate();
+    }
+    
+    // If resume exists in data but still showing generating state, update the state
+    if (resumeData && resumeData.resume && !resumeReadyForViewing) {
+      console.log('Resume found in data, updating UI state...');
+      setResumeReadyForViewing(true);
     }
   }, [resumeData]);
 
@@ -153,6 +162,12 @@ export default function ResumePage() {
 
         <TabsContent value="shadow-resume" className="space-y-6">
           <div className="grid grid-cols-1 gap-6">
+            {console.log('Render condition check:', {
+              hasResumeData: !!resumeData,
+              hasResumeObject: resumeData && !!resumeData.resume,
+              resumeDataKeys: resumeData ? Object.keys(resumeData) : [],
+              resumeReadyState: resumeReadyForViewing
+            })}
             {resumeData && resumeData.resume ? (
               <ShadowResumeSection 
                 user={userData || user} 
@@ -175,8 +190,12 @@ export default function ResumePage() {
                       </p>
                       <Button 
                         onClick={() => {
-                          queryClient.invalidateQueries({
-                            queryKey: ['/api/users', user?.id, 'shadow-resume']
+                          // Force refetch the resume data
+                          refetchResume().then(() => {
+                            toast({
+                              title: 'Shadow Resume Updated',
+                              description: 'Your shadow resume has been refreshed with the latest data.',
+                            });
                           });
                         }}
                         className="gap-2"
