@@ -6,6 +6,7 @@ import { Project, Skill, WorkExperience, Education, Service } from "@shared/sche
 import { useEffect, useState } from "react";
 import PortfolioCtaButtons from "../portfolio-cta-buttons";
 import { MentorshipButton } from "../../shared/mentorship-button";
+import { MentorshipDialog } from "../../shared/mentorship-dialog";
 import { 
   Mail, Linkedin, ExternalLink, Calendar, GraduationCap, 
   MapPin, Star, Package, Briefcase, ChevronRight, ArrowUpRight
@@ -44,6 +45,7 @@ export default function MinimalistPro({
   currentUserId
 }: MinimalistProProps) {
   const [projectInLightbox, setProjectInLightbox] = useState<Project | null>(null);
+  const [isMentorshipDialogOpen, setIsMentorshipDialogOpen] = useState(false);
   
   // Sort skills by proficiency
   const sortedSkills = [...userSkills].sort((a, b) => (b.proficiency || 0) - (a.proficiency || 0));
@@ -211,19 +213,25 @@ export default function MinimalistPro({
                   </Badge>
                 )}
                 
-                {/* Mentorship Button - Only show if user is logged in and viewing someone else's profile */}
-                {userInfo.id && currentUserId && userInfo.id !== currentUserId && (
-                  <div className="mt-2">
-                    <MentorshipButton 
-                      userId={currentUserId} 
-                      mentorId={userInfo.id} 
-                      variant="secondary"
-                      className="text-sm font-medium"
-                      buttonText="Request Mentorship"
-                      showIcon={true}
-                    />
-                  </div>
-                )}
+                {/* Mentorship Button */}
+                <div className="mt-2">
+                  <Button
+                    onClick={() => setIsMentorshipDialogOpen(true)}
+                    variant="secondary"
+                    className="text-sm font-medium"
+                  >
+                    <GraduationCap className="mr-2 h-4 w-4" />
+                    Mentor
+                  </Button>
+                  
+                  {/* Mentorship Dialog */}
+                  <MentorshipDialog
+                    isOpen={isMentorshipDialogOpen}
+                    onOpenChange={setIsMentorshipDialogOpen}
+                    userId={currentUserId}
+                    mentorId={userInfo.id}
+                  />
+                </div>
               </div>
             </div>
           </div>
