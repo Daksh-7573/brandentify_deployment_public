@@ -11,12 +11,12 @@ import { db } from './db';
 import { users } from '@shared/schema';
 import { eq } from 'drizzle-orm';
 
-export default function resumeRoutes(app: Router) {
+export default function resumeRoutes(router: Router) {
   /**
    * Check if a resume can be generated for a user
    * GET /api/resume/check-eligibility/:userId
    */
-  app.get('/resume/check-eligibility/:userId', async (req: Request, res: Response) => {
+  router.get('/resume/check-eligibility/:userId', async (req: Request, res: Response) => {
     try {
       const userId = parseInt(req.params.userId);
       
@@ -44,7 +44,7 @@ export default function resumeRoutes(app: Router) {
    * Generate or regenerate a resume for a user
    * POST /api/resume/generate/:userId
    */
-  app.post('/resume/generate/:userId', async (req: Request, res: Response) => {
+  router.post('/resume/generate/:userId', async (req: Request, res: Response) => {
     try {
       const userId = parseInt(req.params.userId);
       
@@ -83,7 +83,7 @@ export default function resumeRoutes(app: Router) {
    * Get the current resume status and URL for a user
    * GET /api/resume/status/:userId
    */
-  app.get('/resume/status/:userId', async (req: Request, res: Response) => {
+  router.get('/resume/status/:userId', async (req: Request, res: Response) => {
     try {
       const userId = parseInt(req.params.userId);
       
