@@ -271,22 +271,24 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                 >
                   Grab My Resume
                 </a>
-                <a 
-                  href="#services"
-                  className="btn-secondary px-6 py-3 rounded-full bg-gray-800 border border-gray-700 text-white font-medium transition-all duration-300 hover:bg-gray-700 hover:-translate-y-1"
-                >
-                  Mentor
-                </a>
-                
-                {id && currentUserId && id !== currentUserId && (
+                {id && currentUserId && id !== currentUserId ? (
                   <MentorshipButton
                     userId={currentUserId}
                     mentorId={id}
-                    className="btn-secondary px-6 py-3 rounded-full bg-gradient-to-r from-purple-600 to-blue-500 text-white font-medium transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/20 hover:-translate-y-1"
-                    buttonText="Request Mentorship"
-                    showIcon={true}
+                    className="btn-secondary px-6 py-3 rounded-full bg-gray-800 border border-gray-700 text-white font-medium transition-all duration-300 hover:bg-gray-700 hover:-translate-y-1"
+                    buttonText="Mentor"
+                    showIcon={false}
                   />
+                ) : (
+                  <a 
+                    href="#services"
+                    className="btn-secondary px-6 py-3 rounded-full bg-gray-800 border border-gray-700 text-white font-medium transition-all duration-300 hover:bg-gray-700 hover:-translate-y-1"
+                  >
+                    Mentor
+                  </a>
                 )}
+                
+
               </div>
             </motion.div>
             
@@ -606,7 +608,7 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
           >
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 section-title">
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-teal-400">
-                Services I Offer
+                Mentorship & Services
               </span>
             </h2>
             <p className="text-gray-400 text-lg max-w-2xl mx-auto">
