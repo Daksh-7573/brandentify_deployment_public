@@ -36,6 +36,7 @@ import { registerMuskAIEnhancedRoutes } from "./routes-musk-ai-enhanced";
 import { setupMuskTestingRoutes } from "./routes-musk-testing";
 import muskFeedbackRoutes from "./routes-musk-feedback";
 import { setupServicesRoutes } from "./routes-services";
+import addProjectUpdateRoutes from "./routes-project-update";
 import { 
   handleSmartConnect, 
   handleCareerRecommendations, 
@@ -5406,6 +5407,10 @@ ${extractedText.substring(0, 5000)}
   // Register Services routes for managing user services
   setupServicesRoutes(app);
   console.log("Services routes loaded");
+  
+  // Register Project Industry PATCH endpoint to fix industry field updates
+  addProjectUpdateRoutes(apiRouter);
+  console.log("Project Update routes loaded");
 
   app.use("/api", apiRouter);
 
