@@ -376,26 +376,60 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                         </div>
                       </div>
                       
-                      {/* Skills section - comprehensive */}
-                      <div className="mb-3">
-                        <h3 className="text-sm font-bold mb-1.5 uppercase text-gray-700">Professional Skills</h3>
-                        <div className="flex flex-wrap gap-1.5 mb-2">
-                          {user?.whatIOffer ? 
-                            user.whatIOffer.split(',').map((skill, i) => (
-                              <div key={i} className="px-2 py-0.5 bg-gray-100 text-gray-700 text-xs rounded">
-                                {skill.trim()}
-                              </div>
-                            )) : 
-                            [
-                              'Product Management', 'User Research', 'Stakeholder Communication',
-                              'Agile Methodologies', 'Product Strategy', 'Market Analysis',
-                              'Cross-functional Collaboration', 'Product Roadmapping'
+                      {/* Skills section - highlighted and comprehensive */}
+                      <div className="mb-4 bg-gray-50 p-2 rounded-sm border-l-2 border-primary">
+                        <h3 className="text-sm font-bold mb-2 uppercase text-gray-700">Key Skills & Competencies</h3>
+                        
+                        {/* Technical Skills Section */}
+                        <div className="mb-2">
+                          <h4 className="text-xs font-semibold mb-1 text-gray-600">Technical Skills</h4>
+                          <div className="flex flex-wrap gap-1.5 mb-2">
+                            {[
+                              'Product Management', 'UI/UX Design', 'Market Analysis',
+                              'Product Strategy', 'Agile/Scrum', 'Data Analysis',
                             ].map((skill, i) => (
-                              <div key={i} className="px-2 py-0.5 bg-gray-100 text-gray-700 text-xs rounded">
+                              <div key={i} className="px-2 py-0.5 bg-primary/10 text-primary text-xs rounded">
                                 {skill}
                               </div>
-                            ))
-                          }
+                            ))}
+                          </div>
+                        </div>
+                        
+                        {/* Soft Skills Section */}
+                        <div className="mb-2">
+                          <h4 className="text-xs font-semibold mb-1 text-gray-600">Soft Skills</h4>
+                          <div className="flex flex-wrap gap-1.5 mb-2">
+                            {[
+                              'Leadership', 'Team Collaboration', 'Communication',
+                              'Problem Solving', 'Critical Thinking', 'Adaptability',
+                            ].map((skill, i) => (
+                              <div key={i} className="px-2 py-0.5 bg-gray-200 text-gray-700 text-xs rounded">
+                                {skill}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                        
+                        {/* Domain Skills - use real data */}
+                        <div>
+                          <h4 className="text-xs font-semibold mb-1 text-gray-600">Domain Expertise</h4>
+                          <div className="flex flex-wrap gap-1.5">
+                            {user?.whatIOffer ? 
+                              user.whatIOffer.split(',').slice(0, 8).map((skill, i) => (
+                                <div key={i} className="px-2 py-0.5 bg-gray-100 text-gray-700 text-xs rounded">
+                                  {skill.trim()}
+                                </div>
+                              )) : 
+                              [
+                                'Healthcare Systems', 'Biotechnology', 'Patient Experience', 
+                                'Medical Device UX', 'Clinical Workflow Optimization'
+                              ].map((skill, i) => (
+                                <div key={i} className="px-2 py-0.5 bg-gray-100 text-gray-700 text-xs rounded">
+                                  {skill}
+                                </div>
+                              ))
+                            }
+                          </div>
                         </div>
                       </div>
                       
