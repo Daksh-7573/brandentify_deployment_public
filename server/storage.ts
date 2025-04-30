@@ -5936,6 +5936,40 @@ export class DatabaseStorage implements IStorage {
       return undefined;
     }
   }
+  
+  async getResumeById(id: number): Promise<Resume | undefined> {
+    try {
+      console.log(`[db.getResumeById] Looking for resume with ID: ${id}`);
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          user_id as "userId",
+          file_name as "fileName",
+          file_data as "fileData",
+          score,
+          uploaded_at as "uploadedAt",
+          is_shadow_resume as "isShadowResume",
+          theme_style as "themeStyle",
+          is_downloadable as "isDownloadable",
+          last_updated_by_musk as "lastUpdatedByMusk",
+          visibility
+        FROM resumes
+        WHERE id = $1
+      `, [id]);
+      
+      if (result.rows.length === 0) {
+        console.log(`[db.getResumeById] No resume found with ID ${id}`);
+        return undefined;
+      }
+      
+      console.log(`[db.getResumeById] Found resume with ID ${id}`);
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.getResumeById] Error fetching resume with ID ${id}:`, error);
+      return undefined;
+    }
+  }
 
   async createResume(insertResume: InsertResume): Promise<Resume> {
     try {
