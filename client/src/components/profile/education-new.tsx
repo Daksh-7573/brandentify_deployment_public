@@ -23,6 +23,10 @@ type EducationItem = {
   location: string;
   startDate: string;
   endDate?: string;
+  fieldOfStudy?: string;
+  industry?: string;
+  domain?: string;
+  skillsAcquired?: string[];
 };
 
 export default function Education() {
@@ -80,7 +84,11 @@ export default function Education() {
     institution: '',
     location: '',
     startDate: '',
-    endDate: ''
+    endDate: '',
+    industry: '',
+    domain: '',
+    fieldOfStudy: '',
+    skillsAcquired: []
   });
   
   // Track if we're in 'Present' status for end date
@@ -99,7 +107,11 @@ export default function Education() {
       institution: '',
       location: '',
       startDate: '',
-      endDate: ''
+      endDate: '',
+      industry: '',
+      domain: '',
+      fieldOfStudy: '',
+      skillsAcquired: []
     });
     setIsCurrentlyStudying(false);
   };
@@ -176,7 +188,11 @@ export default function Education() {
           institution: '',
           location: '',
           startDate: '',
-          endDate: ''
+          endDate: '',
+          industry: '',
+          domain: '',
+          fieldOfStudy: '',
+          skillsAcquired: []
         });
         
         // No need to reset date pickers as SimpleDatePicker manages its own state
@@ -377,6 +393,60 @@ export default function Education() {
                 className="col-span-3"
                 placeholder="University of California"
                 required
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="fieldOfStudy" className="text-right">
+                Field of Study
+              </Label>
+              <Input
+                id="fieldOfStudy"
+                value={newEducation.fieldOfStudy || ''}
+                onChange={(e) => setNewEducation({...newEducation, fieldOfStudy: e.target.value})}
+                className="col-span-3"
+                placeholder="Computer Science"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="industry" className="text-right">
+                Industry
+              </Label>
+              <Input
+                id="industry"
+                value={newEducation.industry || ''}
+                onChange={(e) => setNewEducation({...newEducation, industry: e.target.value})}
+                className="col-span-3"
+                placeholder="Technology"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="domain" className="text-right">
+                Domain
+              </Label>
+              <Input
+                id="domain"
+                value={newEducation.domain || ''}
+                onChange={(e) => setNewEducation({...newEducation, domain: e.target.value})}
+                className="col-span-3"
+                placeholder="Software Development"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="skillsAcquired" className="text-right">
+                Skills Acquired
+              </Label>
+              <Input
+                id="skillsAcquired"
+                value={Array.isArray(newEducation.skillsAcquired) ? newEducation.skillsAcquired.join(', ') : ''}
+                onChange={(e) => {
+                  const skillsArray = e.target.value
+                    .split(',')
+                    .map(skill => skill.trim())
+                    .filter(Boolean);
+                  setNewEducation({...newEducation, skillsAcquired: skillsArray});
+                }}
+                className="col-span-3"
+                placeholder="React, JavaScript, UX Design"
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
