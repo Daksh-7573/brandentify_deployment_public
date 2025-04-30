@@ -21,6 +21,9 @@ export const users = pgTable("users", {
   whatIOffer: text("what_i_offer"), // What skills/services the user offers - max 250 words
   visitingCardType: text("visiting_card_type"), // Type of digital visiting card
   profileCompleted: integer("profile_completed").default(0), // Percentage
+  hasGeneratedResume: boolean("has_generated_resume").default(false), // Whether a resume has been auto-generated
+  resumeUrl: text("resume_url"), // URL to the generated resume
+  resumeGeneratedAt: timestamp("resume_generated_at"), // When resume was last generated
   emailVerified: boolean("email_verified").default(false), // Whether email is verified
   emailVerificationToken: text("email_verification_token"), // Token for email verification
   emailVerificationExpires: timestamp("email_verification_expires"), // When token expires
