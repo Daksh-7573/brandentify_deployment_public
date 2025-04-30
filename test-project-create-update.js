@@ -13,6 +13,7 @@ async function testProjectCreationWithIndustry() {
     
     // Create a new project with industry set to "Technology"
     const newProject = {
+      userId: 2, // Set to a valid user ID in your system
       title: "Test Project with Industry Field",
       description: "This is a test project to verify industry field works correctly",
       category: "Test Category",
