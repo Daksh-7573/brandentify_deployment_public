@@ -564,37 +564,16 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                   <div className="absolute inset-x-0 bottom-4 flex justify-center gap-2">
                     {isOwner && (
                       <Button
-                        variant={isEditing ? "destructive" : "outline"}
+                        variant="outline"
                         size="sm"
-                        className={isEditing ? "" : "bg-white shadow-sm border-gray-200"}
-                        onClick={() => setIsEditing(!isEditing)}
-                      >
-                        {isEditing ? (
-                          <>
-                            <X className="h-4 w-4 mr-1" />
-                            <span>Cancel</span>
-                          </>
-                        ) : (
-                          <>
-                            <Edit2 className="h-4 w-4 mr-1" />
-                            <span>Edit</span>
-                          </>
-                        )}
-                      </Button>
-                    )}
-                    
-                    {isEditing && isOwner && (
-                      <Button
-                        variant="default"
-                        size="sm"
-                        className="bg-green-600 hover:bg-green-700 text-white shadow-sm"
+                        className="bg-white shadow-sm border-gray-200"
                         onClick={() => {
-                          // Submit user profile updates to save resume content
-                          updateUserMutation.mutate(editValues);
+                          // Open resume editor in a new tab
+                          window.open(`/resume/edit/${user.id}`, '_blank');
                         }}
                       >
-                        <Save className="h-4 w-4 mr-1" />
-                        <span>Save</span>
+                        <Edit2 className="h-4 w-4 mr-1" />
+                        <span>Edit</span>
                       </Button>
                     )}
                     
