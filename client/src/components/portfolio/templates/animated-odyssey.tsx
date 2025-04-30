@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MentorshipButton } from "@/components/shared/mentorship-button";
+import { MentorshipDialog } from "@/components/shared/mentorship-dialog";
 
 // Add custom styles for this template
 import "@/styles/animated-odyssey.css";
@@ -144,6 +145,9 @@ const AnimatedOdyssey: React.FC<AnimatedOdysseyProps> = ({
   
   // Set up project modal state
   const [selectedProject, setSelectedProject] = useState<typeof projects[0] | null>(null);
+  
+  // Set up mentorship dialog state
+  const [isMentorshipDialogOpen, setIsMentorshipDialogOpen] = useState(false);
   
   // Get content for About Me section
   const aboutContent = whatIOffer || aboutMe || 
@@ -989,17 +993,27 @@ const AnimatedOdyssey: React.FC<AnimatedOdysseyProps> = ({
             
             {/* Mentorship Button - only shown when viewing someone else's profile */}
             {id && currentUserId && id !== currentUserId && (
-              <MentorshipButton
-                userId={currentUserId}
-                mentorId={id}
+              <button
                 className="cta-button cta-primary"
-                buttonText="Request Mentorship"
-                showIcon={true}
-              />
+                onClick={() => setIsMentorshipDialogOpen(true)}
+              >
+                Request Mentorship
+              </button>
             )}
           </div>
         </div>
       </motion.div>
+      
+      {/* Mentorship Dialog */}
+      {id && currentUserId && id !== currentUserId && (
+        <MentorshipDialog
+          isOpen={isMentorshipDialogOpen}
+          onClose={() => setIsMentorshipDialogOpen(false)}
+          userId={currentUserId}
+          mentorId={id}
+          mentorName={name}
+        />
+      )}
     </div>
   );
 };
