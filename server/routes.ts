@@ -657,7 +657,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
       
-      console.log(`[POST /experiences] Processing with userId: ${req.body.userId}`);
+      // Ensure keyResponsibilities is properly formatted as an array for JSONB
+      if (req.body.keyResponsibilities) {
+        if (Array.isArray(req.body.keyResponsibilities)) {
+          // Ensure we have a clean array for the database
+          req.body.keyResponsibilities = [...req.body.keyResponsibilities];
+        } else {
+          // If it's not an array, make it an empty array
+          req.body.keyResponsibilities = [];
+        }
+      } else if (req.body.keyResponsibilities === null || req.body.keyResponsibilities === undefined) {
+        // If it's null or undefined, set to empty array
+        req.body.keyResponsibilities = [];
+      }
+      
+      console.log(`[POST /experiences] Processing with userId: ${req.body.userId} and formatted data:`, req.body);
       const experienceData = insertWorkExperienceSchema.parse(req.body);
       const experience = await storage.createWorkExperience(experienceData);
       console.log(`[POST /experiences] Created experience with ID: ${experience.id}`);
@@ -675,18 +689,57 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   apiRouter.put("/experiences/:id", async (req: Request, res: Response) => {
     try {
+      console.log(`[PUT /experiences/:id] Updating experience with data:`, req.body);
       const experienceId = parseInt(req.params.id);
-      const experienceData = req.body;
       
-      const experience = await storage.updateWorkExperience(experienceId, experienceData);
-      if (!experience) {
+      if (isNaN(experienceId)) {
+        return res.status(400).json({ message: "Invalid experience ID format" });
+      }
+      
+      // Check if experience exists
+      const existingExperience = await storage.getWorkExperienceById(experienceId);
+      
+      if (!existingExperience) {
         return res.status(404).json({ message: "Experience not found" });
       }
       
+      const experienceData = req.body;
+      
+      // Ensure we don't have nullish values that would fail schema validation
+      if (experienceData.location === '') {
+        experienceData.location = null;
+      }
+      
+      // Ensure keyResponsibilities is properly formatted as an array for JSONB
+      if (experienceData.keyResponsibilities) {
+        if (Array.isArray(experienceData.keyResponsibilities)) {
+          // Ensure we have a clean array for the database
+          experienceData.keyResponsibilities = [...experienceData.keyResponsibilities];
+        } else {
+          // If it's not an array, make it an empty array
+          experienceData.keyResponsibilities = [];
+        }
+      } else if (experienceData.keyResponsibilities === null || experienceData.keyResponsibilities === undefined) {
+        // If it's null or undefined, set to empty array
+        experienceData.keyResponsibilities = [];
+      }
+      
+      console.log(`[PUT /experiences/:id] Processing update with clean data:`, experienceData);
+      const experience = await storage.updateWorkExperience(experienceId, experienceData);
+      
+      if (!experience) {
+        return res.status(404).json({ message: "Failed to update experience" });
+      }
+      
+      console.log(`[PUT /experiences/:id] Successfully updated experience`);
       res.json(experience);
     } catch (error) {
       console.error("[PUT /experiences/:id] Error:", error);
-      res.status(500).json({ message: "Internal server error" });
+      let errorMessage = "Internal server error";
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      res.status(500).json({ message: errorMessage });
     }
   });
   
@@ -713,6 +766,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Especially handle the location field which might be causing issues
       if (experienceData.location === '') {
         experienceData.location = null;
+      }
+      
+      // Ensure keyResponsibilities is properly formatted as an array for JSONB
+      if (experienceData.keyResponsibilities) {
+        if (Array.isArray(experienceData.keyResponsibilities)) {
+          // Ensure we have a clean array for the database
+          experienceData.keyResponsibilities = [...experienceData.keyResponsibilities];
+        } else {
+          // If it's not an array, make it an empty array
+          experienceData.keyResponsibilities = [];
+        }
+      } else if (experienceData.keyResponsibilities === null || experienceData.keyResponsibilities === undefined) {
+        // If it's null or undefined, set to empty array
+        experienceData.keyResponsibilities = [];
       }
       
       console.log(`[PATCH /experiences/:id] Processing update with clean data:`, experienceData);
