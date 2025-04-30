@@ -110,6 +110,7 @@ export default function VisualExpert({
   const [contactMessage, setContactMessage] = useState<string>("");
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
+  const [isMentorshipDialogOpen, setIsMentorshipDialogOpen] = useState(false);
   
   // Toast notifications
   const { toast } = useToast();
@@ -666,24 +667,21 @@ export default function VisualExpert({
                 Grab My Resume
               </Button>
               
-              {userInfo.id && currentUserId && userInfo.id !== currentUserId ? (
-                <MentorshipButton 
-                  userId={currentUserId}
-                  mentorId={userInfo.id}
-                  className="bg-purple-500/20 text-purple-300 border border-purple-400/30 hover:bg-purple-500/30 px-8 py-6 rounded-md shadow-md glow-on-hover"
-                  buttonText="Mentor"
-                  showIcon={true}
-                  customIcon={<Lightbulb className="w-5 h-5 mr-2" />}
-                />
-              ) : (
-                <Button 
-                  className="bg-purple-500/20 text-purple-300 border border-purple-400/30 hover:bg-purple-500/30 px-8 py-6 rounded-md shadow-md glow-on-hover"
-                  disabled
-                >
-                  <Lightbulb className="w-5 h-5 mr-2" />
-                  Mentor
-                </Button>
-              )}
+              <Button 
+                onClick={() => setIsMentorshipDialogOpen(true)}
+                className="bg-purple-500/20 text-purple-300 border border-purple-400/30 hover:bg-purple-500/30 px-8 py-6 rounded-md shadow-md glow-on-hover"
+              >
+                <Lightbulb className="w-5 h-5 mr-2" />
+                Mentor
+              </Button>
+              
+              {/* Mentorship Dialog */}
+              <MentorshipDialog 
+                isOpen={isMentorshipDialogOpen}
+                onOpenChange={setIsMentorshipDialogOpen}
+                userId={currentUserId}
+                mentorId={userInfo.id}
+              />
             </div>
           </div>
         </div>
