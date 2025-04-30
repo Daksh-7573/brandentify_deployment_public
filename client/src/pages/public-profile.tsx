@@ -291,6 +291,7 @@ const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
           
         return (
           <AnimatedOdyssey
+            id={templateProps.userInfo.id}
             name={templateProps.userInfo.name}
             title={templateProps.userInfo.title || ''}
             industry={templateProps.userInfo.industry || ''}
@@ -316,6 +317,7 @@ const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
             }))}
             whatIOffer={whatIOfferContent}
             aboutMe={aboutMeOdysseyContent}
+            currentUserId={templateProps.currentUserId}
           />
         );
       

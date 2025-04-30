@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Education, Project as ProjectSchema, Service, Skill, WorkExperience } from "@shared/schema";
 import { useEffect, useState, useRef } from "react";
 import PortfolioCtaButtons from "../portfolio-cta-buttons";
+import { MentorshipButton } from "@/components/shared/mentorship-button";
 import { 
   Mail, Linkedin, MapPin, Calendar, Download, FileText, ChevronRight,
   Briefcase, GraduationCap, Award, Target, ChartBar, Presentation,
@@ -20,6 +21,7 @@ interface Project extends Omit<ProjectSchema, 'mediaUrls'> {
 
 interface CorporateExecutiveProps {
   userInfo: {
+    id?: number; // User ID for mentorship button (as mentorId)
     name: string;
     title: string | null;
     industry: string | null;
@@ -36,6 +38,7 @@ interface CorporateExecutiveProps {
   userProjects: Project[];
   userEducations?: Education[];
   userServices?: Service[];
+  currentUserId?: number; // Current logged-in user ID for mentorship button
 }
 
 // Enhanced Education type for the Corporate Executive template
@@ -77,7 +80,8 @@ export default function CorporateExecutive({
   userExperiences, 
   userProjects,
   userEducations = [],
-  userServices = []
+  userServices = [],
+  currentUserId
 }: CorporateExecutiveProps) {
   const [activeSection, setActiveSection] = useState<string>('about');
   const [selectedProjectId, setSelectedProjectId] = useState<number | null>(null);
