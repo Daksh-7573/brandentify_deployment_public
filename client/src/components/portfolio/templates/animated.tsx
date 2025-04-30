@@ -263,19 +263,19 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                   href={`mailto:${email}`}
                   className="btn-primary px-6 py-3 rounded-full bg-gradient-to-r from-purple-600 to-blue-500 text-white font-medium transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/20 hover:-translate-y-1"
                 >
-                  Email Me
+                  Let's Talk
                 </a>
                 <a 
                   href="#projects" 
                   className="btn-secondary px-6 py-3 rounded-full bg-gray-800 border border-gray-700 text-white font-medium transition-all duration-300 hover:bg-gray-700 hover:-translate-y-1"
                 >
-                  Projects
+                  Grab My Resume
                 </a>
                 <a 
                   href="#services"
                   className="btn-secondary px-6 py-3 rounded-full bg-gray-800 border border-gray-700 text-white font-medium transition-all duration-300 hover:bg-gray-700 hover:-translate-y-1"
                 >
-                  Services
+                  Mentor
                 </a>
                 
                 {id && currentUserId && id !== currentUserId && (
