@@ -253,7 +253,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                     {/* Resume content - comprehensive data from the user profile */}
                     <div className="pt-10 px-6 pb-16 text-xs overflow-y-auto max-h-full">
                       {/* Header Section */}
-                      <div className="border-b pb-3 mb-3" style={{borderColor: fixedTheme.accent}}>
+                      <div className="border-b pb-3 mb-4" style={{borderColor: fixedTheme.accent}}>
                         <h2 className="text-xl font-bold" style={{color: fixedTheme.color}}>{user.name}</h2>
                         <p className="text-sm text-gray-600">{user.title || 'Professional'}</p>
                         <div className="flex flex-wrap items-center gap-2 mt-1 text-xs text-gray-500">
@@ -289,148 +289,153 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                       </div>
                       
                       {/* About section - comprehensive profile */}
-                      <div className="mb-3">
-                        <h3 className="text-sm font-bold mb-1.5 uppercase" style={{color: fixedTheme.color}}>Professional Summary</h3>
+                      <div className="mb-4 pb-3 border-b border-gray-100">
+                        <h3 className="text-sm font-bold mb-2 uppercase" style={{color: fixedTheme.color}}>Professional Summary</h3>
                         <p className="text-xs text-gray-700 leading-relaxed">
                           {user.aboutMe || 'Experienced professional with expertise in ' + (user.industry || 'their field') + ' seeking opportunities in ' + (user.domain || 'the industry')}
                         </p>
                       </div>
                       
                       {/* Work Experience - uses real data from experiences */}
-                      <div className="mb-3">
-                        <h3 className="text-sm font-bold mb-1.5 uppercase" style={{color: fixedTheme.color}}>Professional Experience</h3>
+                      <div className="mb-4 pb-3 border-b border-gray-100">
+                        <h3 className="text-sm font-bold mb-2 uppercase" style={{color: fixedTheme.color}}>Professional Experience</h3>
                         
                         {workExperiences && workExperiences.length > 0 ? (
-                          workExperiences.map((experience, index) => (
-                            <div key={index} className="mb-2">
-                              <div className="font-semibold">{experience.title}</div>
-                              <div className="text-gray-600 flex justify-between">
-                                <span>{experience.company}{experience.industry ? `, ${experience.industry}` : ''}</span>
-                                <span>
-                                  {new Date(experience.startDate).getFullYear()} - 
-                                  {experience.endDate ? new Date(experience.endDate).getFullYear() : 'Present'}
-                                </span>
+                          <div className="space-y-3 mt-2">
+                            {workExperiences.map((experience, index) => (
+                              <div key={index} className="pb-2">
+                                <div className="font-semibold">{experience.title}</div>
+                                <div className="text-gray-600 flex justify-between">
+                                  <span>{experience.company}{experience.industry ? `, ${experience.industry}` : ''}</span>
+                                  <span>
+                                    {new Date(experience.startDate).getFullYear()} - 
+                                    {experience.endDate ? new Date(experience.endDate).getFullYear() : 'Present'}
+                                  </span>
+                                </div>
+                                <ul className="list-disc ml-4 mt-1 text-gray-700 space-y-0.5">
+                                  {experience.keyResponsibilities && Array.isArray(experience.keyResponsibilities) ? 
+                                    experience.keyResponsibilities.map((responsibility, i) => (
+                                      <li key={i}>{responsibility}</li>
+                                    )) : 
+                                    <li>Contributed to company projects and goals</li>
+                                  }
+                                </ul>
                               </div>
-                              <ul className="list-disc ml-4 mt-1 text-gray-700 space-y-0.5">
-                                {experience.keyResponsibilities && Array.isArray(experience.keyResponsibilities) ? 
-                                  experience.keyResponsibilities.map((responsibility, i) => (
-                                    <li key={i}>{responsibility}</li>
-                                  )) : 
-                                  <li>Contributed to company projects and goals</li>
-                                }
-                              </ul>
-                            </div>
-                          ))
+                            ))}
+                          </div>
                         ) : (
-                          <div className="text-gray-500 italic">
+                          <div className="text-gray-500 italic mt-1">
                             No work experience added yet. Add work experience in your profile.
                           </div>
                         )}
                       </div>
                       
                       {/* Education Section */}
-                      <div className="mb-3">
-                        <h3 className="text-sm font-bold mb-1.5 uppercase" style={{color: fixedTheme.color}}>Education</h3>
+                      <div className="mb-4 pb-3 border-b border-gray-100">
+                        <h3 className="text-sm font-bold mb-2 uppercase" style={{color: fixedTheme.color}}>Education</h3>
                         
                         {education && education.length > 0 ? (
-                          education.map((edu, index) => (
-                            <div key={index} className="mb-3">
-                              <div className="font-semibold">
-                                {edu.degree}{edu.fieldOfStudy ? `, ${edu.fieldOfStudy}` : ''}
-                              </div>
-                              <div className="text-gray-600 flex justify-between">
-                                <span>{edu.institution}</span>
-                                <span>
-                                  {new Date(edu.startDate).getFullYear()} - 
-                                  {edu.endDate ? new Date(edu.endDate).getFullYear() : 'Present'}
-                                </span>
-                              </div>
-                              
-                              {/* Additional education details */}
-                              <div className="mt-1 text-xs text-gray-600">
-                                {edu.location && (
-                                  <div className="mt-0.5">
-                                    <span className="font-medium">Location:</span> {edu.location}
-                                  </div>
-                                )}
-                                {edu.industry && (
-                                  <div className="mt-0.5">
-                                    <span className="font-medium">Industry:</span> {edu.industry}
-                                    {edu.domain && <span> • {edu.domain}</span>}
-                                  </div>
-                                )}
+                          <div className="space-y-3 mt-2">
+                            {education.map((edu, index) => (
+                              <div key={index} className="pb-2">
+                                <div className="font-semibold">
+                                  {edu.degree}{edu.fieldOfStudy ? `, ${edu.fieldOfStudy}` : ''}
+                                </div>
+                                <div className="text-gray-600 flex justify-between">
+                                  <span>{edu.institution}</span>
+                                  <span>
+                                    {new Date(edu.startDate).getFullYear()} - 
+                                    {edu.endDate ? new Date(edu.endDate).getFullYear() : 'Present'}
+                                  </span>
+                                </div>
                                 
-                                {/* Skills acquired section */}
-                                {edu.skillsAcquired && Array.isArray(edu.skillsAcquired) && edu.skillsAcquired.length > 0 && (
-                                  <div className="mt-1">
-                                    <span className="font-medium">Skills Acquired:</span>
-                                    <div className="flex flex-wrap gap-1 mt-0.5">
-                                      {edu.skillsAcquired.map((skill, i) => (
-                                        <span key={i} className="px-1.5 py-0.5 bg-gray-100 text-[9px] text-gray-700 rounded">
-                                          {skill}
-                                        </span>
-                                      ))}
+                                {/* Additional education details */}
+                                <div className="mt-1 text-xs text-gray-600">
+                                  {edu.location && (
+                                    <div className="mt-0.5">
+                                      <span className="font-medium">Location:</span> {edu.location}
                                     </div>
-                                  </div>
-                                )}
+                                  )}
+                                  {edu.industry && (
+                                    <div className="mt-0.5">
+                                      <span className="font-medium">Industry:</span> {edu.industry}
+                                      {edu.domain && <span> • {edu.domain}</span>}
+                                    </div>
+                                  )}
+                                  
+                                  {/* Skills acquired section */}
+                                  {edu.skillsAcquired && Array.isArray(edu.skillsAcquired) && edu.skillsAcquired.length > 0 && (
+                                    <div className="mt-1">
+                                      <span className="font-medium">Skills Acquired:</span>
+                                      <div className="flex flex-wrap gap-1 mt-0.5">
+                                        {edu.skillsAcquired.map((skill, i) => (
+                                          <span key={i} className="px-1.5 py-0.5 bg-gray-100 text-[9px] text-gray-700 rounded">
+                                            {skill}
+                                          </span>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
                               </div>
-                            </div>
-                          ))
+                            ))}
+                          </div>
                         ) : (
-                          <div className="text-gray-500 italic">
+                          <div className="text-gray-500 italic mt-1">
                             No education added yet. Add education in your profile.
                           </div>
                         )}
                       </div>
                       
-                      {/* Skills section - highlighted and comprehensive */}
-                      <div className="mb-4 bg-gray-50 p-2 rounded-sm" style={{borderLeft: `2px solid ${fixedTheme.color}`}}>
+                      {/* Skills section */}
+                      <div className="mb-4 pb-3 border-b border-gray-100">
                         <h3 className="text-sm font-bold mb-2 uppercase" style={{color: fixedTheme.color}}>Key Skills & Competencies</h3>
-                        
-                        {/* Real user skills data */}
-                        {skills && skills.length > 0 ? (
-                          <div className="mb-2">
-                            <h4 className="text-xs font-semibold mb-1 text-gray-600">Primary Skills</h4>
-                            <div className="flex flex-wrap gap-1.5 mb-2">
-                              {skills.map((skill, i) => (
-                                <div key={i} className="px-2 py-0.5 bg-primary/10 text-primary text-xs rounded">
-                                  {skill.name}
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="mb-2">
-                            <h4 className="text-xs font-semibold mb-1 text-gray-600">Technical Skills</h4>
-                            <div className="flex flex-wrap gap-1.5 mb-2">
-                              {/* Default skills from user profile if no specific skills are added */}
-                              {user.domain && (
-                                <div className="px-2 py-0.5 bg-primary/10 text-primary text-xs rounded">
-                                  {user.domain}
-                                </div>
-                              )}
-                              {user.industry && (
-                                <div className="px-2 py-0.5 bg-primary/10 text-primary text-xs rounded">
-                                  {user.industry}
-                                </div>
-                              )}
-                              <div className="px-2 py-0.5 bg-primary/10 text-primary text-xs rounded">
-                                {user.title || 'Professional'}
+                        <div className="p-2 bg-gray-50 rounded-sm" style={{borderLeft: `2px solid ${fixedTheme.color}`}}>
+                          {/* Real user skills data */}
+                          {skills && skills.length > 0 ? (
+                            <div className="mb-2">
+                              <h4 className="text-xs font-semibold mb-1 text-gray-600">Primary Skills</h4>
+                              <div className="flex flex-wrap gap-1.5">
+                                {skills.map((skill, i) => (
+                                  <div key={i} className="px-2 py-0.5 bg-primary/10 text-primary text-xs rounded">
+                                    {skill.name}
+                                  </div>
+                                ))}
                               </div>
                             </div>
-                          </div>
-                        )}
+                          ) : (
+                            <div className="mb-0">
+                              <h4 className="text-xs font-semibold mb-1 text-gray-600">Technical Skills</h4>
+                              <div className="flex flex-wrap gap-1.5">
+                                {/* Default skills from user profile if no specific skills are added */}
+                                {user.domain && (
+                                  <div className="px-2 py-0.5 bg-primary/10 text-primary text-xs rounded">
+                                    {user.domain}
+                                  </div>
+                                )}
+                                {user.industry && (
+                                  <div className="px-2 py-0.5 bg-primary/10 text-primary text-xs rounded">
+                                    {user.industry}
+                                  </div>
+                                )}
+                                <div className="px-2 py-0.5 bg-primary/10 text-primary text-xs rounded">
+                                  {user.title || 'Professional'}
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
                       </div>
                       
                       {/* Projects/Achievements Section */}
-                      <div className="mb-3">
-                        <h3 className="text-sm font-bold mb-1.5 uppercase" style={{color: fixedTheme.color}}>Projects & Achievements</h3>
+                      <div className="mb-4">
+                        <h3 className="text-sm font-bold mb-2 uppercase" style={{color: fixedTheme.color}}>Projects & Achievements</h3>
                         
                         {projects && projects.length > 0 ? (
-                          <div className="space-y-2.5 mt-1.5">
+                          <div className="space-y-3 mt-2">
                             {projects.slice(0, 5).map((project, i) => (
                               <div key={i} className="border-b border-gray-100 pb-2 last:border-0">
-                                <div className="font-medium text-gray-800">{project.title}</div>
+                                <div className="font-semibold text-gray-800">{project.title}</div>
                                 
                                 {/* Project details */}
                                 <div className="text-xs text-gray-600 flex flex-wrap justify-between mt-0.5">
@@ -469,7 +474,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                             ))}
                           </div>
                         ) : (
-                          <div className="text-gray-500 italic">
+                          <div className="text-gray-500 italic mt-1">
                             No projects added yet. Add projects in your profile.
                           </div>
                         )}
