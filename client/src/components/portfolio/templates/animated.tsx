@@ -32,6 +32,14 @@ import {
   Lightbulb,
   Maximize
 } from 'lucide-react';
+import { FaUserGraduate } from 'react-icons/fa';
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogHeader, 
+  DialogTitle, 
+  DialogDescription 
+} from '@/components/ui/dialog';
 import { useTypewriter, Cursor } from 'react-simple-typewriter';
 import { Service, Project, Skill, WorkExperience, Education } from '@shared/schema';
 import { Progress } from '@/components/ui/progress';
@@ -117,9 +125,10 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
   // Animation controls for reactive animations
   const controls = useAnimation();
 
-  // State for navigation
+  // State for navigation and dialogs
   const [navOpen, setNavOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   
   // Track active section based on scroll position
   useEffect(() => {
@@ -271,22 +280,52 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                 >
                   Grab My Resume
                 </a>
-                {id && currentUserId && id !== currentUserId ? (
-                  <MentorshipButton
-                    userId={currentUserId}
-                    mentorId={id}
-                    className="btn-secondary px-6 py-3 rounded-full bg-gray-800 border border-gray-700 text-white font-medium transition-all duration-300 hover:bg-gray-700 hover:-translate-y-1"
-                    buttonText="Mentor"
-                    showIcon={true}
-                  />
-                ) : (
-                  <a 
-                    href="#services"
-                    className="btn-secondary px-6 py-3 rounded-full bg-gray-800 border border-gray-700 text-white font-medium transition-all duration-300 hover:bg-gray-700 hover:-translate-y-1"
-                  >
-                    Mentor
-                  </a>
-                )}
+                <Button
+                  onClick={() => setIsDialogOpen(true)}
+                  className="btn-secondary px-6 py-3 rounded-full bg-gray-800 border border-gray-700 text-white font-medium transition-all duration-300 hover:bg-gray-700 hover:-translate-y-1"
+                >
+                  Mentor
+                </Button>
+                
+                {/* Mentorship Dialog */}
+                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                  <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                      <DialogTitle className="flex items-center">
+                        <FaUserGraduate className="mr-2" />
+                        Mentorship Connection
+                      </DialogTitle>
+                      <DialogDescription>
+                        Connect with a mentor to accelerate your professional growth.
+                        Mentorships last for 30 days and can be renewed.
+                      </DialogDescription>
+                    </DialogHeader>
+                    
+                    <div className="py-4">
+                      {id && currentUserId && id !== currentUserId ? (
+                        <MentorshipButton
+                          userId={currentUserId}
+                          mentorId={id}
+                          className="w-full bg-purple-600 hover:bg-purple-700"
+                          buttonText="Request Mentorship"
+                          showIcon={true}
+                        />
+                      ) : (
+                        <div className="text-center">
+                          <p className="text-gray-600 mb-4">
+                            Mentoring others is a great way to give back to the community and develop your own leadership skills.
+                          </p>
+                          <Button
+                            variant="outline"
+                            onClick={() => setIsDialogOpen(false)}
+                          >
+                            Close
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  </DialogContent>
+                </Dialog>
               </div>
             </motion.div>
             
