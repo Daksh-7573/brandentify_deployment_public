@@ -5471,7 +5471,8 @@ export class DatabaseStorage implements IStorage {
       try {
         const result = await pool.query(`
           SELECT id, user_id as "userId", degree, institution, location, 
-                 start_date as "startDate", end_date as "endDate"
+                 start_date as "startDate", end_date as "endDate",
+                 industry, domain, field_of_study as "fieldOfStudy", skills_acquired as "skillsAcquired"
           FROM educations
           WHERE user_id = $1
         `, [userId]);
@@ -5491,8 +5492,24 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getEducationById(id: number): Promise<Education | undefined> {
-    const [education] = await db.select().from(educations).where(eq(educations.id, id));
-    return education || undefined;
+    try {
+      const result = await pool.query(`
+        SELECT id, user_id as "userId", degree, institution, location, 
+               start_date as "startDate", end_date as "endDate",
+               industry, domain, field_of_study as "fieldOfStudy", skills_acquired as "skillsAcquired"
+        FROM educations
+        WHERE id = $1
+      `, [id]);
+      
+      if (result.rows.length === 0) {
+        return undefined;
+      }
+      
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.getEducationById] Error fetching education with ID ${id}:`, error);
+      return undefined;
+    }
   }
 
   async createEducation(insertEducation: InsertEducation): Promise<Education> {
@@ -5500,19 +5517,25 @@ export class DatabaseStorage implements IStorage {
     try {
       const result = await pool.query(`
         INSERT INTO educations (
-          user_id, degree, institution, location, start_date, end_date
+          user_id, degree, institution, location, start_date, end_date, 
+          industry, domain, field_of_study, skills_acquired
         ) VALUES (
-          $1, $2, $3, $4, $5, $6
+          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10
         ) RETURNING 
           id, user_id as "userId", degree, institution, location, 
-          start_date as "startDate", end_date as "endDate"
+          start_date as "startDate", end_date as "endDate",
+          industry, domain, field_of_study as "fieldOfStudy", skills_acquired as "skillsAcquired"
       `, [
         insertEducation.userId,
         insertEducation.degree,
         insertEducation.institution,
         insertEducation.location,
         insertEducation.startDate,
-        insertEducation.endDate
+        insertEducation.endDate,
+        insertEducation.industry || null,
+        insertEducation.domain || null,
+        insertEducation.fieldOfStudy || null,
+        insertEducation.skillsAcquired || []
       ]);
       
       console.log(`[db.createEducation] Created education record with ID ${result.rows[0].id}`);
@@ -5548,6 +5571,26 @@ export class DatabaseStorage implements IStorage {
         values.push(educationData.location);
       }
       
+      if (educationData.industry !== undefined) {
+        updateFields.push(`industry = $${valueIndex++}`);
+        values.push(educationData.industry);
+      }
+      
+      if (educationData.domain !== undefined) {
+        updateFields.push(`domain = $${valueIndex++}`);
+        values.push(educationData.domain);
+      }
+      
+      if (educationData.fieldOfStudy !== undefined) {
+        updateFields.push(`field_of_study = $${valueIndex++}`);
+        values.push(educationData.fieldOfStudy);
+      }
+      
+      if (educationData.skillsAcquired !== undefined) {
+        updateFields.push(`skills_acquired = $${valueIndex++}`);
+        values.push(educationData.skillsAcquired);
+      }
+      
       if (educationData.startDate !== undefined) {
         updateFields.push(`start_date = $${valueIndex++}`);
         values.push(educationData.startDate);
@@ -5572,7 +5615,8 @@ export class DatabaseStorage implements IStorage {
         SET ${updateFields.join(', ')} 
         WHERE id = $${valueIndex}
         RETURNING id, user_id as "userId", degree, institution, location, 
-                 start_date as "startDate", end_date as "endDate"
+                 start_date as "startDate", end_date as "endDate",
+                 industry, domain, field_of_study as "fieldOfStudy", skills_acquired as "skillsAcquired"
       `;
       
       console.log(`[db.updateEducation] Executing update query for education ${id}`);
