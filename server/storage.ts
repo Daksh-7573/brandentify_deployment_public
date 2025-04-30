@@ -5715,7 +5715,7 @@ export class DatabaseStorage implements IStorage {
       try {
         const result = await pool.query(`
           SELECT id, user_id as "userId", title, description, start_date as "startDate",
-                project_url as "projectUrl", category, thumbnail_url as "thumbnailUrl",
+                project_url as "projectUrl", category, industry, thumbnail_url as "thumbnailUrl",
                 thumbnail_file as "thumbnailFile", media_urls as "mediaUrls",
                 created_at as "createdAt", updated_at as "updatedAt"
           FROM projects
