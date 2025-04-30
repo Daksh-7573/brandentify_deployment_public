@@ -776,15 +776,14 @@ export function DynamicInnovator({
                 Grab My Resume
               </Button>
               
-              {userInfo.id && currentUserId && userInfo.id !== currentUserId && (
-                <Button
-                  onClick={() => setIsMentorshipDialogOpen(true)}
-                  className="neon-button rounded-md text-sm px-4 py-2"
-                >
-                  <Code className="h-4 w-4 mr-2" />
-                  Request Mentorship
-                </Button>
-              )}
+              {/* Mentor Button - Always shown for demo */}
+              <Button
+                onClick={() => setIsMentorshipDialogOpen(true)}
+                className="neon-button rounded-md text-sm px-4 py-2 bg-gradient-to-r from-[#fe53bb]/20 to-[#7122FA]/20 border-[#fe53bb] hover:border-[#7122FA]"
+              >
+                <FaUserGraduate className="h-4 w-4 mr-2" />
+                Mentor
+              </Button>
             </div>
           </div>
         </div>
@@ -874,15 +873,14 @@ export function DynamicInnovator({
                 Grab My Resume
               </Button>
               
-              {userInfo.id && currentUserId && userInfo.id !== currentUserId && (
-                <Button
-                  onClick={() => setIsMentorshipDialogOpen(true)}
-                  className="neon-button w-full rounded-md py-2.5"
-                >
-                  <Code className="h-5 w-5 mr-2" />
-                  Request Mentorship
-                </Button>
-              )}
+              {/* Mentor Button - Always shown for demo */}
+              <Button
+                onClick={() => setIsMentorshipDialogOpen(true)}
+                className="neon-button w-full rounded-md py-2.5 bg-gradient-to-r from-[#fe53bb]/20 to-[#7122FA]/20 border-[#fe53bb] hover:border-[#7122FA]"
+              >
+                <FaUserGraduate className="h-5 w-5 mr-2" />
+                Mentor
+              </Button>
             </div>
           </div>
         </div>
