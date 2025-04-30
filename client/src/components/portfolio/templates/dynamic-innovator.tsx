@@ -773,12 +773,15 @@ export function DynamicInnovator({
                 Grab My Resume
               </Button>
               
-              <Button
-                className="neon-button rounded-md text-sm px-4 py-2"
-              >
-                <Lightbulb className="h-4 w-4 mr-2" />
-                Mentor
-              </Button>
+              {userInfo.id && currentUserId && userInfo.id !== currentUserId && (
+                <MentorshipButton
+                  userId={currentUserId}
+                  mentorId={userInfo.id}
+                  className="neon-button rounded-md text-sm px-4 py-2"
+                  buttonText="Request Mentorship"
+                  showIcon={true}
+                />
+              )}
             </div>
           </div>
         </div>
@@ -868,12 +871,15 @@ export function DynamicInnovator({
                 Grab My Resume
               </Button>
               
-              <Button
-                className="neon-button w-full rounded-md py-2.5"
-              >
-                <Lightbulb className="h-5 w-5 mr-2" />
-                Mentor
-              </Button>
+              {userInfo.id && currentUserId && userInfo.id !== currentUserId && (
+                <MentorshipButton
+                  userId={currentUserId}
+                  mentorId={userInfo.id}
+                  className="neon-button w-full rounded-md py-2.5"
+                  buttonText="Request Mentorship"
+                  showIcon={true}
+                />
+              )}
             </div>
           </div>
         </div>
