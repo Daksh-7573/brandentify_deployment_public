@@ -18,6 +18,7 @@ import {
   ChevronDown,
   BriefcaseBusiness,
   Building,
+  Building2,
   BookOpen, 
   GraduationCap,
   Briefcase,

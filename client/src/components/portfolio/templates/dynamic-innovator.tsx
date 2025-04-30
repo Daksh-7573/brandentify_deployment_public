@@ -45,7 +45,8 @@ import {
   Check,
   Clock,
   Tag,
-  ArrowRight
+  ArrowRight,
+  Building2
 } from "lucide-react";
 import {
   Dialog,
