@@ -1397,16 +1397,14 @@ export function DynamicInnovator({
               Grab My Resume
             </Button>
             
-            {/* Mentor Button */}
-            {userInfo.id && currentUserId && userInfo.id !== currentUserId && (
-              <Button
-                onClick={() => setIsMentorshipDialogOpen(true)}
-                className="neon-button bg-gradient-to-r from-[#fe53bb]/20 to-[#7122FA]/20 border-[#fe53bb] hover:border-[#7122FA] text-white rounded-md px-8 py-2.5 ml-4"
-              >
-                <FaUserGraduate className="mr-2" />
-                Mentor
-              </Button>
-            )}
+            {/* Mentor Button - Always shown for demo */}
+            <Button
+              onClick={() => setIsMentorshipDialogOpen(true)}
+              className="neon-button bg-gradient-to-r from-[#fe53bb]/20 to-[#7122FA]/20 border-[#fe53bb] hover:border-[#7122FA] text-white rounded-md px-8 py-2.5 ml-4"
+            >
+              <FaUserGraduate className="mr-2" />
+              Mentor
+            </Button>
           </div>
         </div>
       </section>
@@ -1648,15 +1646,13 @@ export function DynamicInnovator({
       </Dialog>
 
       {/* Mentorship Dialog */}
-      {userInfo.id && currentUserId && (
-        <MentorshipDialog
-          isOpen={isMentorshipDialogOpen}
-          onOpenChange={setIsMentorshipDialogOpen}
-          userId={currentUserId}
-          mentorId={userInfo.id}
-          className="bg-[#080E24] border border-[#08f7fe]/20"
-        />
-      )}
+      <MentorshipDialog
+        isOpen={isMentorshipDialogOpen}
+        onOpenChange={setIsMentorshipDialogOpen}
+        userId={currentUserId || 1}
+        mentorId={userInfo.id || 2}
+        className="bg-[#080E24] border border-[#08f7fe]/20"
+      />
     </div>
   );
 }
