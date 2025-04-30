@@ -57,6 +57,18 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
     enabled: !!user?.id,
   });
   
+  // Fetch user skills 
+  const { data: skills = [] } = useQuery<any[]>({
+    queryKey: ['/api/users', user?.id, 'skills'],
+    enabled: !!user?.id,
+  });
+  
+  // Fetch user projects
+  const { data: projects = [] } = useQuery<any[]>({
+    queryKey: ['/api/users', user?.id, 'projects'],
+    enabled: !!user?.id,
+  });
+  
   // Update resume mutation
   const updateResumeMutation = useMutation<any, Error, {themeStyle?: ResumeTheme, isDownloadable?: boolean}>({
     mutationFn: async (updates) => {
@@ -344,84 +356,101 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                         </p>
                       </div>
                       
-                      {/* Work Experience - fetch from experiences */}
+                      {/* Work Experience - uses real data from experiences */}
                       <div className="mb-3">
                         <h3 className="text-sm font-bold mb-1.5 uppercase text-gray-700">Professional Experience</h3>
                         
-                        {/* First experience entry */}
-                        <div className="mb-2">
-                          <div className="font-semibold">{user.title || 'Product Manager'}</div>
-                          <div className="text-gray-600 flex justify-between">
-                            <span>{user.industry || 'Healthcare'}</span>
-                            <span>2023 - Present</span>
+                        {workExperiences && workExperiences.length > 0 ? (
+                          workExperiences.map((experience, index) => (
+                            <div key={index} className="mb-2">
+                              <div className="font-semibold">{experience.title}</div>
+                              <div className="text-gray-600 flex justify-between">
+                                <span>{experience.company}{experience.industry ? `, ${experience.industry}` : ''}</span>
+                                <span>
+                                  {new Date(experience.startDate).getFullYear()} - 
+                                  {experience.endDate ? new Date(experience.endDate).getFullYear() : 'Present'}
+                                </span>
+                              </div>
+                              <ul className="list-disc ml-4 mt-1 text-gray-700 space-y-0.5">
+                                {experience.keyResponsibilities && Array.isArray(experience.keyResponsibilities) ? 
+                                  experience.keyResponsibilities.map((responsibility, i) => (
+                                    <li key={i}>{responsibility}</li>
+                                  )) : 
+                                  <li>Contributed to company projects and goals</li>
+                                }
+                              </ul>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="text-gray-500 italic">
+                            No work experience added yet. Add work experience in your profile.
                           </div>
-                          <ul className="list-disc ml-4 mt-1 text-gray-700 space-y-0.5">
-                            <li>Led cross-functional teams to deliver innovative solutions</li>
-                            <li>Conducted comprehensive user research to identify needs</li>
-                            <li>Developed product strategy aligned with business goals</li>
-                          </ul>
-                        </div>
-                        
-                        {/* Second experience entry */}
-                        <div className="mb-2">
-                          <div className="font-semibold">Associate Product Manager</div>
-                          <div className="text-gray-600 flex justify-between">
-                            <span>Biotechnology</span>
-                            <span>2021 - 2023</span>
-                          </div>
-                          <ul className="list-disc ml-4 mt-1 text-gray-700 space-y-0.5">
-                            <li>Assisted in product development lifecycle</li>
-                            <li>Collaborated with stakeholders to gather requirements</li>
-                            <li>Contributed to product roadmap planning</li>
-                          </ul>
-                        </div>
+                        )}
                       </div>
                       
                       {/* Education Section */}
                       <div className="mb-3">
                         <h3 className="text-sm font-bold mb-1.5 uppercase text-gray-700">Education</h3>
-                        <div className="mb-2">
-                          <div className="font-semibold">Bachelor of Science, Biotechnology</div>
-                          <div className="text-gray-600 flex justify-between">
-                            <span>University of Healthcare Sciences</span>
-                            <span>2017 - 2021</span>
+                        
+                        {education && education.length > 0 ? (
+                          education.map((edu, index) => (
+                            <div key={index} className="mb-2">
+                              <div className="font-semibold">
+                                {edu.degree}{edu.fieldOfStudy ? `, ${edu.fieldOfStudy}` : ''}
+                              </div>
+                              <div className="text-gray-600 flex justify-between">
+                                <span>{edu.institution}</span>
+                                <span>
+                                  {new Date(edu.startDate).getFullYear()} - 
+                                  {edu.endDate ? new Date(edu.endDate).getFullYear() : 'Present'}
+                                </span>
+                              </div>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="text-gray-500 italic">
+                            No education added yet. Add education in your profile.
                           </div>
-                        </div>
+                        )}
                       </div>
                       
                       {/* Skills section - highlighted and comprehensive */}
                       <div className="mb-4 bg-gray-50 p-2 rounded-sm border-l-2 border-primary">
                         <h3 className="text-sm font-bold mb-2 uppercase text-gray-700">Key Skills & Competencies</h3>
                         
-                        {/* Technical Skills Section */}
-                        <div className="mb-2">
-                          <h4 className="text-xs font-semibold mb-1 text-gray-600">Technical Skills</h4>
-                          <div className="flex flex-wrap gap-1.5 mb-2">
-                            {[
-                              'Product Management', 'UI/UX Design', 'Market Analysis',
-                              'Product Strategy', 'Agile/Scrum', 'Data Analysis',
-                            ].map((skill, i) => (
-                              <div key={i} className="px-2 py-0.5 bg-primary/10 text-primary text-xs rounded">
-                                {skill}
-                              </div>
-                            ))}
+                        {/* Real user skills data */}
+                        {skills && skills.length > 0 ? (
+                          <div className="mb-2">
+                            <h4 className="text-xs font-semibold mb-1 text-gray-600">Primary Skills</h4>
+                            <div className="flex flex-wrap gap-1.5 mb-2">
+                              {skills.map((skill, i) => (
+                                <div key={i} className="px-2 py-0.5 bg-primary/10 text-primary text-xs rounded">
+                                  {skill.name}
+                                </div>
+                              ))}
+                            </div>
                           </div>
-                        </div>
-                        
-                        {/* Soft Skills Section */}
-                        <div className="mb-2">
-                          <h4 className="text-xs font-semibold mb-1 text-gray-600">Soft Skills</h4>
-                          <div className="flex flex-wrap gap-1.5 mb-2">
-                            {[
-                              'Leadership', 'Team Collaboration', 'Communication',
-                              'Problem Solving', 'Critical Thinking', 'Adaptability',
-                            ].map((skill, i) => (
-                              <div key={i} className="px-2 py-0.5 bg-gray-200 text-gray-700 text-xs rounded">
-                                {skill}
+                        ) : (
+                          <div className="mb-2">
+                            <h4 className="text-xs font-semibold mb-1 text-gray-600">Technical Skills</h4>
+                            <div className="flex flex-wrap gap-1.5 mb-2">
+                              {/* Default skills from user profile if no specific skills are added */}
+                              {user.domain && (
+                                <div className="px-2 py-0.5 bg-primary/10 text-primary text-xs rounded">
+                                  {user.domain}
+                                </div>
+                              )}
+                              {user.industry && (
+                                <div className="px-2 py-0.5 bg-primary/10 text-primary text-xs rounded">
+                                  {user.industry}
+                                </div>
+                              )}
+                              <div className="px-2 py-0.5 bg-primary/10 text-primary text-xs rounded">
+                                {user.title || 'Professional'}
                               </div>
-                            ))}
+                            </div>
                           </div>
-                        </div>
+                        )}
                         
                         {/* Domain Skills - use real data */}
                         <div>
@@ -433,14 +462,15 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                                   {skill.trim()}
                                 </div>
                               )) : 
-                              [
-                                'Healthcare Systems', 'Biotechnology', 'Patient Experience', 
-                                'Medical Device UX', 'Clinical Workflow Optimization'
-                              ].map((skill, i) => (
-                                <div key={i} className="px-2 py-0.5 bg-gray-100 text-gray-700 text-xs rounded">
-                                  {skill}
+                              user.domain ? (
+                                <div className="px-2 py-0.5 bg-gray-100 text-gray-700 text-xs rounded">
+                                  {user.domain}
                                 </div>
-                              ))
+                              ) : (
+                                <div className="text-gray-500 italic text-xs">
+                                  No domain expertise added yet
+                                </div>
+                              )
                             }
                           </div>
                         </div>
@@ -449,11 +479,26 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                       {/* Projects/Achievements Section */}
                       <div className="mb-3">
                         <h3 className="text-sm font-bold mb-1.5 uppercase text-gray-700">Projects & Achievements</h3>
-                        <ul className="list-disc ml-4 mt-1 text-gray-700 space-y-0.5">
-                          <li>Led development of patient management platform resulting in 30% efficiency improvement</li>
-                          <li>Implemented user research methodology that increased product adoption by 25%</li>
-                          <li>Received recognition for innovative approach to healthcare solutions</li>
-                        </ul>
+                        
+                        {projects && projects.length > 0 ? (
+                          <ul className="list-disc ml-4 mt-1 text-gray-700 space-y-0.5">
+                            {projects.slice(0, 5).map((project, i) => (
+                              <li key={i}>
+                                <span className="font-medium">{project.title}</span>
+                                {project.description && (
+                                  <span> - {project.description.length > 80 ? 
+                                    project.description.substring(0, 80) + '...' : 
+                                    project.description}
+                                  </span>
+                                )}
+                              </li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <div className="text-gray-500 italic">
+                            No projects added yet. Add projects in your profile.
+                          </div>
+                        )}
                       </div>
                     </div>
                     
