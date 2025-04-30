@@ -1,19 +1,146 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
+import { apiRequest, queryClient } from '@/lib/queryClient';
+import { Resume } from '@/types/resume';
 
 import { PageLayout } from '@/components/layout/page-layout';
+import { PageHeader } from '@/components/ui/page-header';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
+import ShadowResumeSection from '@/components/resume/shadow-resume-section';
 import MuskResumeWriter from '@/components/resume/musk-resume-writer';
-import SimpleShadowResume from '@/components/resume/simple-shadow-resume';
 
-import { Zap, Upload, FileText } from 'lucide-react';
+import { Zap, Upload, FileText, Eye } from 'lucide-react';
 
 export default function ResumePage() {
   const { user } = useAuth();
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState('shadow-resume');
+
+  // Fetch user data
+  const { data: userData, isLoading: isUserLoading } = useQuery({
+    queryKey: ['/api/users', user?.id],
+    enabled: !!user?.id,
+  });
+  
+  // Fetch shadow resume for the user (if it exists)
+  const { data: resumeData, isLoading: isResumeLoading, refetch: refetchResume } = useQuery<{resume: any}>({
+    queryKey: ['/api/users', user?.id, 'shadow-resume'],
+    enabled: !!user?.id,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true
+  });
+  
+  // Log data for debugging
+  useEffect(() => {
+    if (resumeData) {
+      console.log('Shadow resume data loaded:', resumeData);
+      console.log('Resume exists?', !!resumeData.resume);
+    }
+  }, [resumeData]);
+
+  // State for managing resume creation process
+  const [isCreationRequested, setIsCreationRequested] = useState(false);
+  const [resumeReadyForViewing, setResumeReadyForViewing] = useState(false);
+  
+  // Force initial shadow resume fetch on mount
+  useEffect(() => {
+    if (user?.id) {
+      console.log('Forcing initial shadow resume fetch...');
+      fetch(`/api/users/${user.id}/shadow-resume`)
+        .then(res => res.json())
+        .then(data => {
+          console.log('Direct fetch result:', data);
+          if (data.resume) {
+            console.log('Shadow resume found via direct fetch, updating UI state...');
+            setResumeReadyForViewing(true);
+            // Force refresh query state
+            refetchResume();
+          } else {
+            console.log('No shadow resume from direct fetch, will try creating one...');
+            createResumeMutation.mutate();
+          }
+        })
+        .catch(err => {
+          console.error('Error fetching shadow resume:', err);
+        });
+    }
+  }, [user?.id]);
+  
+  // Auto-create shadow resume if one doesn't exist based on query results
+  useEffect(() => {
+    if (resumeData && !resumeData.resume && !isCreationRequested && !createResumeMutation.isPending) {
+      console.log('No shadow resume found in query data, auto-creating one...');
+      createResumeMutation.mutate();
+    }
+    
+    // If resume exists in data but still showing generating state, update the state
+    if (resumeData && resumeData.resume && !resumeReadyForViewing) {
+      console.log('Resume found in query data, updating UI state...');
+      setResumeReadyForViewing(true);
+    }
+  }, [resumeData]);
+
+  // Create shadow resume mutation
+  const createResumeMutation = useMutation<any, Error, void>({
+    mutationFn: async () => {
+      setIsCreationRequested(true);
+      return await fetch(`/api/users/${user?.id}/create-shadow-resume`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId: user?.id }),
+      }).then(res => {
+        if (!res.ok) throw new Error('Failed to create shadow resume');
+        return res.json();
+      });
+    },
+    onSuccess: (data) => {
+      console.log('Resume created successfully:', data);
+      // Simulate Musk's processing time (in a real app, this would be actual processing)
+      setTimeout(() => {
+        // Set resume as ready and show notification
+        setResumeReadyForViewing(true);
+        toast({
+          title: 'Shadow Resume Ready!',
+          description: 'Musk has analyzed your profile and created a resume tailored to your career journey.',
+          duration: 5000,
+        });
+        // Invalidate queries to refresh data
+        queryClient.invalidateQueries({
+          queryKey: ['/api/users', user?.id, 'shadow-resume']
+        });
+      }, 3000); // Simulate 3 seconds of Musk processing time
+    },
+    onError: (error: any) => {
+      setIsCreationRequested(false);
+      console.error('Error creating shadow resume:', error);
+      toast({
+        title: 'Failed to Create Resume',
+        description: 'There was a problem creating your shadow resume.',
+        variant: 'destructive',
+      });
+    }
+  });
+
+  // Use real resume data if available, otherwise use fallback data for UI development
+  const resume = resumeData?.resume || {
+    id: 0,
+    userId: user?.id || 0,
+    fileName: `${user?.name?.replace(/\s+/g, '') || 'User'}_Resume.pdf`,
+    fileData: '',
+    score: 0,
+    uploadedAt: new Date(),
+    isShadowResume: true,
+    themeStyle: 'professional' as const,
+    isDownloadable: false,
+    lastUpdatedByMusk: new Date(),
+    visibility: 'private' as const,
+  };
 
   // Handle resume upload
   const handleUploadResume = () => {
@@ -44,6 +171,7 @@ export default function ResumePage() {
         </Button>
       }
     >
+
       <Tabs defaultValue="shadow-resume" value={activeTab} onValueChange={setActiveTab} className="mt-6">
         <TabsList className="grid w-full grid-cols-2 mb-6">
           <TabsTrigger value="shadow-resume" className="gap-2">
@@ -58,8 +186,64 @@ export default function ResumePage() {
 
         <TabsContent value="shadow-resume" className="space-y-6">
           <div className="grid grid-cols-1 gap-6">
-            {/* Use our simplified component with direct fetch */}
-            {user?.id && <SimpleShadowResume userId={user.id} />}
+            {console.log('Render condition check:', {
+              hasResumeData: !!resumeData,
+              hasResumeObject: resumeData && !!resumeData.resume,
+              resumeDataKeys: resumeData ? Object.keys(resumeData) : [],
+              resumeReadyState: resumeReadyForViewing
+            })}
+            {(resumeData && resumeData.resume) || (resumeReadyForViewing && resume) ? (
+              <ShadowResumeSection 
+                user={userData || user} 
+                resume={resume}
+                isCurrentUser={true}
+                isOwner={true}
+              />
+            ) : (
+              <div className="flex flex-col items-center justify-center p-10 border rounded-lg bg-card">
+                <Zap className={`h-16 w-16 mb-4 ${isCreationRequested ? 'text-primary animate-pulse' : 'text-primary'}`} />
+                
+                <div className="space-y-4 text-center">
+                  <h3 className="text-2xl font-bold mb-2">{resumeReadyForViewing ? 'Your Shadow Resume is Ready!' : 'Generating Your Shadow Resume'}</h3>
+                  
+                  {resumeReadyForViewing ? (
+                    <>
+                      <p className="text-center text-muted-foreground mb-6">
+                        Musk has analyzed your profile and created a tailored resume for you.
+                        Click below to view your new Shadow Resume.
+                      </p>
+                      <Button 
+                        onClick={() => {
+                          // Force refetch the resume data
+                          refetchResume().then(() => {
+                            toast({
+                              title: 'Shadow Resume Updated',
+                              description: 'Your shadow resume has been refreshed with the latest data.',
+                            });
+                          });
+                        }}
+                        className="gap-2"
+                      >
+                        <Eye className="h-4 w-4" />
+                        <span>View Your Shadow Resume</span>
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <div className="flex items-center justify-center">
+                        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+                      </div>
+                      <p className="text-muted-foreground">
+                        Musk is analyzing your professional profile and automatically creating your Shadow Resume...
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        Your resume will be continuously updated as your career evolves.
+                      </p>
+                    </>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         </TabsContent>
 
