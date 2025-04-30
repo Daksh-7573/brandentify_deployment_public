@@ -5853,6 +5853,168 @@ export class DatabaseStorage implements IStorage {
   // Additional methods from IStorage will be implemented as needed
   // This is a partial implementation for the demo profile data requirement
   
+  // Resume operations
+  async getResumeByUserId(userId: number): Promise<Resume | undefined> {
+    try {
+      console.log(`[db.getResumeByUserId] Looking for resume with userId: ${userId}`);
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          user_id as "userId",
+          file_name as "fileName",
+          file_data as "fileData",
+          score,
+          uploaded_at as "uploadedAt",
+          is_shadow_resume as "isShadowResume",
+          theme_style as "themeStyle",
+          is_downloadable as "isDownloadable",
+          last_updated_by_musk as "lastUpdatedByMusk",
+          visibility
+        FROM resumes
+        WHERE user_id = $1 AND is_shadow_resume = true
+        LIMIT 1
+      `, [userId]);
+      
+      if (result.rows.length === 0) {
+        console.log(`[db.getResumeByUserId] No shadow resume found for user ${userId}`);
+        return undefined;
+      }
+      
+      console.log(`[db.getResumeByUserId] Found shadow resume with ID ${result.rows[0].id} for user ${userId}`);
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.getResumeByUserId] Error fetching resume for user ${userId}:`, error);
+      return undefined;
+    }
+  }
+
+  async createResume(insertResume: InsertResume): Promise<Resume> {
+    try {
+      console.log(`[db.createResume] Creating resume for user ${insertResume.userId}`);
+      
+      const result = await pool.query(`
+        INSERT INTO resumes (
+          user_id,
+          file_name,
+          file_data,
+          score,
+          uploaded_at,
+          is_shadow_resume,
+          theme_style,
+          is_downloadable,
+          last_updated_by_musk,
+          visibility
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+        RETURNING 
+          id,
+          user_id as "userId",
+          file_name as "fileName",
+          file_data as "fileData",
+          score,
+          uploaded_at as "uploadedAt",
+          is_shadow_resume as "isShadowResume",
+          theme_style as "themeStyle",
+          is_downloadable as "isDownloadable",
+          last_updated_by_musk as "lastUpdatedByMusk",
+          visibility
+      `, [
+        insertResume.userId,
+        insertResume.fileName,
+        insertResume.fileData,
+        insertResume.score || 0,
+        new Date(),
+        insertResume.isShadowResume || false,
+        insertResume.themeStyle || 'professional',
+        insertResume.isDownloadable || false,
+        insertResume.lastUpdatedByMusk || null,
+        insertResume.visibility || 'private'
+      ]);
+      
+      console.log(`[db.createResume] Created resume with ID ${result.rows[0].id}`);
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.createResume] Error creating resume:`, error);
+      throw error;
+    }
+  }
+
+  async updateResume(id: number, resumeData: Partial<Resume>): Promise<Resume | undefined> {
+    try {
+      console.log(`[db.updateResume] Updating resume with ID ${id}`);
+      
+      const updateFields = [];
+      const values = [];
+      let valueCounter = 1;
+      
+      // Build dynamic update query based on provided fields
+      for (const [key, value] of Object.entries(resumeData)) {
+        if (value !== undefined) {
+          // Convert camelCase to snake_case for DB column names
+          const snakeKey = key.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
+          updateFields.push(`${snakeKey} = $${valueCounter}`);
+          values.push(value);
+          valueCounter++;
+        }
+      }
+      
+      if (updateFields.length === 0) {
+        console.log(`[db.updateResume] No fields to update for resume with ID ${id}`);
+        
+        // Fetch and return the current resume
+        const currentResult = await pool.query(`
+          SELECT 
+            id,
+            user_id as "userId",
+            file_name as "fileName",
+            file_data as "fileData",
+            score,
+            uploaded_at as "uploadedAt",
+            is_shadow_resume as "isShadowResume",
+            theme_style as "themeStyle",
+            is_downloadable as "isDownloadable",
+            last_updated_by_musk as "lastUpdatedByMusk",
+            visibility
+          FROM resumes
+          WHERE id = $1
+        `, [id]);
+        
+        return currentResult.rows[0] || undefined;
+      }
+      
+      values.push(id); // Add ID as the last parameter
+      
+      const result = await pool.query(`
+        UPDATE resumes
+        SET ${updateFields.join(', ')}
+        WHERE id = $${valueCounter}
+        RETURNING 
+          id,
+          user_id as "userId",
+          file_name as "fileName",
+          file_data as "fileData",
+          score,
+          uploaded_at as "uploadedAt",
+          is_shadow_resume as "isShadowResume",
+          theme_style as "themeStyle",
+          is_downloadable as "isDownloadable",
+          last_updated_by_musk as "lastUpdatedByMusk",
+          visibility
+      `, values);
+      
+      if (result.rows.length === 0) {
+        console.log(`[db.updateResume] No resume found with ID ${id}`);
+        return undefined;
+      }
+      
+      console.log(`[db.updateResume] Updated resume with ID ${id}`);
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.updateResume] Error updating resume with ID ${id}:`, error);
+      return undefined;
+    }
+  }
+  
   // Brand of the Day operations
   async getBrandsOfTheDay(): Promise<BrandOfTheDay[]> {
     try {
