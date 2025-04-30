@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
+import { useLocation } from 'wouter';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
@@ -32,6 +33,7 @@ interface ShadowResumeProps {
 
 export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwner = true }: ShadowResumeProps) {
   const { toast } = useToast();
+  const [, navigate] = useLocation();
   // Only keep downloadable state, remove theme and history states
   const [isDownloadable, setIsDownloadable] = useState(resume?.isDownloadable || false);
   const [isEditing, setIsEditing] = useState(false);
@@ -568,8 +570,8 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                         size="sm"
                         className="bg-white shadow-sm border-gray-200"
                         onClick={() => {
-                          // Navigate to the resume editor tab within the UI
-                          navigate(`/resume/edit/${user.id}`);
+                          // Use setActiveTab to switch to the resume-editor tab
+                          document.querySelector('[value="resume-editor"]')?.click();
                         }}
                       >
                         <Edit2 className="h-4 w-4 mr-1" />
