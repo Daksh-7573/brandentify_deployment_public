@@ -7,6 +7,7 @@ import { Education, Project as ProjectSchema, Service, Skill, WorkExperience } f
 import { useEffect, useState, useRef } from "react";
 import PortfolioCtaButtons from "../portfolio-cta-buttons";
 import { MentorshipButton } from "@/components/shared/mentorship-button";
+import { MentorshipDialog } from "@/components/shared/mentorship-dialog";
 import { 
   Mail, Linkedin, MapPin, Calendar, Download, FileText, ChevronRight,
   Briefcase, GraduationCap, Award, Target, ChartBar, Presentation,
@@ -85,6 +86,7 @@ export default function CorporateExecutive({
 }: CorporateExecutiveProps) {
   const [activeSection, setActiveSection] = useState<string>('about');
   const [selectedProjectId, setSelectedProjectId] = useState<number | null>(null);
+  const [isMentorshipDialogOpen, setIsMentorshipDialogOpen] = useState(false);
   
   // Function to handle opening project details - sets the selected project ID
   const openProjectDetails = (projectId: number) => {
@@ -713,14 +715,13 @@ export default function CorporateExecutive({
                 {/* Mentorship Button */}
                 {userInfo.id && currentUserId && userInfo.id !== currentUserId && (
                   <div className="mr-3">
-                    <MentorshipButton
-                      userId={currentUserId}
-                      mentorId={userInfo.id}
+                    <Button
                       variant="default"
                       className="bg-gradient-to-r from-[#6a0dad] to-[#9c27b0] hover:opacity-90 text-white border-none text-sm h-8 px-3"
-                      buttonText="Request Mentorship"
-                      showIcon={true}
-                    />
+                      onClick={() => setIsMentorshipDialogOpen(true)}
+                    >
+                      Request Mentorship
+                    </Button>
                   </div>
                 )}
                 
@@ -1330,14 +1331,13 @@ export default function CorporateExecutive({
             <div className="flex flex-col items-center sm:items-end gap-4">
               {/* Footer Mentorship Button */}
               {userInfo.id && currentUserId && userInfo.id !== currentUserId && (
-                <MentorshipButton
-                  userId={currentUserId}
-                  mentorId={userInfo.id}
+                <Button
                   variant="default"
                   className="bg-gradient-to-r from-[#6a0dad] to-[#9c27b0] hover:opacity-90 text-white border-none w-full sm:w-auto"
-                  buttonText="Request Mentorship"
-                  showIcon={true}
-                />
+                  onClick={() => setIsMentorshipDialogOpen(true)}
+                >
+                  Request Mentorship
+                </Button>
               )}
               
               {/* Other CTA Buttons */}
@@ -1360,6 +1360,17 @@ export default function CorporateExecutive({
           </div>
         </div>
       </section>
+      
+      {/* Mentorship Dialog */}
+      {userInfo.id && currentUserId && (
+        <MentorshipDialog
+          isOpen={isMentorshipDialogOpen}
+          setIsOpen={setIsMentorshipDialogOpen}
+          userId={currentUserId}
+          mentorId={userInfo.id}
+          mentorName={userInfo.name}
+        />
+      )}
     </div>
   );
 }
