@@ -6,8 +6,11 @@ import { storage } from './storage';
  * This fixes the issue with industry field not being properly updated
  */
 export default function addProjectUpdateRoutes(apiRouter: any) {
+  console.log("Setting up PATCH route for project industry updates at /api/projects/:id");
+  
   // PATCH endpoint for updating project fields (including industry)
   apiRouter.patch("/projects/:id", async (req: Request, res: Response) => {
+    console.log("PATCH /projects/:id handler received request");
     try {
       console.log(`[PATCH /projects/:id] Updating project fields with data:`, req.body);
       const projectId = parseInt(req.params.id);
