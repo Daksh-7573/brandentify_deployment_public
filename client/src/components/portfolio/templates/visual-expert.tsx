@@ -1,6 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { MentorshipButton } from "@/components/shared/mentorship-button";
 import { ProfileImage } from "@/components/ui/profile-image";
 import { Education, Project, Service, Skill, WorkExperience } from "@shared/schema";
 import { useEffect, useState, useRef } from "react";
@@ -70,6 +71,7 @@ interface VisualExpertProps {
   userProjects: Project[];
   userEducations?: Education[];
   userServices?: Service[];
+  currentUserId?: number;
 }
 
 // For icon mappings
@@ -95,7 +97,8 @@ export default function VisualExpert({
   userExperiences, 
   userProjects,
   userEducations = [],
-  userServices = []
+  userServices = [],
+  currentUserId
 }: VisualExpertProps) {
   const [typedText, setTypedText] = useState("");
   const titleText = userInfo.title || "Visual Brand Architect";
@@ -662,12 +665,24 @@ export default function VisualExpert({
                 Grab My Resume
               </Button>
               
-              <Button 
-                className="bg-purple-500/20 text-purple-300 border border-purple-400/30 hover:bg-purple-500/30 px-8 py-6 rounded-md shadow-md glow-on-hover"
-              >
-                <Lightbulb className="w-5 h-5 mr-2" />
-                Mentor
-              </Button>
+              {userInfo.id && currentUserId && userInfo.id !== currentUserId ? (
+                <MentorshipButton 
+                  userId={currentUserId}
+                  mentorId={userInfo.id}
+                  className="bg-purple-500/20 text-purple-300 border border-purple-400/30 hover:bg-purple-500/30 px-8 py-6 rounded-md shadow-md glow-on-hover"
+                  buttonText="Mentor"
+                  showIcon={true}
+                  customIcon={<Lightbulb className="w-5 h-5 mr-2" />}
+                />
+              ) : (
+                <Button 
+                  className="bg-purple-500/20 text-purple-300 border border-purple-400/30 hover:bg-purple-500/30 px-8 py-6 rounded-md shadow-md glow-on-hover"
+                  disabled
+                >
+                  <Lightbulb className="w-5 h-5 mr-2" />
+                  Mentor
+                </Button>
+              )}
             </div>
           </div>
         </div>
