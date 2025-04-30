@@ -153,18 +153,18 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
 
   // Format options for themes that match portfolio layouts
   const themeOptions = [
-    { value: 'professional', label: 'Professional' },
-    { value: 'creative', label: 'Creative' },
-    { value: 'minimal', label: 'Minimal' },
-    { value: 'technical', label: 'Technical' },
-    { value: 'executive', label: 'Executive' },
-    { value: 'minimalist_pro', label: 'Minimalist Pro' },
-    { value: 'timeline', label: 'Timeline Storyteller' },
-    { value: 'visual_expert', label: 'Visual Expert' },
-    { value: 'freelancer_hub', label: 'Freelancer Hub' },
-    { value: 'scholar', label: 'Scholar' },
-    { value: 'animated', label: 'Animated' },
-    { value: 'dynamic_innovator', label: 'Dynamic Innovator' },
+    { value: 'professional', label: 'Professional', color: '#2563eb', accent: '#dbeafe', fontClass: 'font-serif' },
+    { value: 'creative', label: 'Creative', color: '#ec4899', accent: '#fce7f3', fontClass: 'font-sans' },
+    { value: 'minimal', label: 'Minimal', color: '#475569', accent: '#f1f5f9', fontClass: 'font-sans' },
+    { value: 'technical', label: 'Technical', color: '#0f766e', accent: '#ccfbf1', fontClass: 'font-mono' },
+    { value: 'executive', label: 'Executive', color: '#334155', accent: '#f8fafc', fontClass: 'font-serif' },
+    { value: 'minimalist_pro', label: 'Minimalist Pro', color: '#1e293b', accent: '#f1f5f9', fontClass: 'font-sans' },
+    { value: 'timeline', label: 'Timeline Storyteller', color: '#4338ca', accent: '#e0e7ff', fontClass: 'font-sans' },
+    { value: 'visual_expert', label: 'Visual Expert', color: '#0284c7', accent: '#e0f2fe', fontClass: 'font-sans' },
+    { value: 'freelancer_hub', label: 'Freelancer Hub', color: '#f59e0b', accent: '#fef3c7', fontClass: 'font-sans' },
+    { value: 'scholar', label: 'Scholar', color: '#7c3aed', accent: '#ede9fe', fontClass: 'font-serif' },
+    { value: 'animated', label: 'Animated', color: '#16a34a', accent: '#d1fae5', fontClass: 'font-sans' },
+    { value: 'dynamic_innovator', label: 'Dynamic Innovator', color: '#9333ea', accent: '#f3e8ff', fontClass: 'font-sans' },
   ];
 
   // Effect to sync component state with server updates
@@ -262,6 +262,15 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
     if (!resume?.lastUpdatedByMusk) return 'Not yet updated by Musk';
     return formatDistanceToNow(new Date(resume.lastUpdatedByMusk), { addSuffix: true });
   };
+  
+  // Get current theme styling
+  const getCurrentTheme = () => {
+    const theme = themeOptions.find(t => t.value === resumeTheme);
+    return theme || themeOptions[0]; // Default to first theme if not found
+  };
+  
+  // Current theme object with styles
+  const currentTheme = getCurrentTheme();
 
   return (
     <Card className="w-full shadow-md">
@@ -303,7 +312,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
               {resume?.fileData ? (
                 <div className="w-full h-full flex flex-col items-center justify-center p-6 relative">
                   {/* Actual resume preview with PDF appearance */}
-                  <div className="w-full h-full relative bg-white shadow-lg rounded overflow-hidden">
+                  <div className={`w-full h-full relative bg-white shadow-lg rounded overflow-hidden ${currentTheme.fontClass}`} style={{borderTop: `4px solid ${currentTheme.color}`}}>
                     {/* Document header */}
                     <div className="absolute top-0 left-0 right-0 h-8 bg-gray-100 border-b flex items-center justify-between px-3">
                       <div className="flex items-center space-x-2">
@@ -311,14 +320,16 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                         <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
                         <div className="w-3 h-3 bg-green-400 rounded-full"></div>
                       </div>
-                      <div className="text-xs text-gray-500">{resume.fileName || 'resume.pdf'}</div>
+                      <div className="text-xs text-gray-500">
+                        {resume.fileName || `${user.name}_Resume_${currentTheme.label}.pdf`}
+                      </div>
                     </div>
                     
                     {/* Resume content - comprehensive data from the user profile */}
                     <div className="pt-10 px-6 pb-16 text-xs overflow-y-auto max-h-full">
                       {/* Header Section */}
-                      <div className="border-b border-gray-200 pb-3 mb-3">
-                        <h2 className="text-xl font-bold">{user.name}</h2>
+                      <div className="border-b pb-3 mb-3" style={{borderColor: currentTheme.accent}}>
+                        <h2 className="text-xl font-bold" style={{color: currentTheme.color}}>{user.name}</h2>
                         <p className="text-sm text-gray-600">{user.title || 'Professional'}</p>
                         <div className="flex flex-wrap items-center gap-2 mt-1 text-xs text-gray-500">
                           <span>{user.email}</span>
@@ -354,7 +365,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                       
                       {/* About section - comprehensive profile */}
                       <div className="mb-3">
-                        <h3 className="text-sm font-bold mb-1.5 uppercase text-gray-700">Professional Summary</h3>
+                        <h3 className="text-sm font-bold mb-1.5 uppercase" style={{color: currentTheme.color}}>Professional Summary</h3>
                         <p className="text-xs text-gray-700 leading-relaxed">
                           {user.aboutMe || 'Experienced professional with expertise in ' + (user.industry || 'their field') + ' seeking opportunities in ' + (user.domain || 'the industry')}
                         </p>
@@ -362,7 +373,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                       
                       {/* Work Experience - uses real data from experiences */}
                       <div className="mb-3">
-                        <h3 className="text-sm font-bold mb-1.5 uppercase text-gray-700">Professional Experience</h3>
+                        <h3 className="text-sm font-bold mb-1.5 uppercase" style={{color: currentTheme.color}}>Professional Experience</h3>
                         
                         {workExperiences && workExperiences.length > 0 ? (
                           workExperiences.map((experience, index) => (
@@ -394,7 +405,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                       
                       {/* Education Section */}
                       <div className="mb-3">
-                        <h3 className="text-sm font-bold mb-1.5 uppercase text-gray-700">Education</h3>
+                        <h3 className="text-sm font-bold mb-1.5 uppercase" style={{color: currentTheme.color}}>Education</h3>
                         
                         {education && education.length > 0 ? (
                           education.map((edu, index) => (
@@ -448,8 +459,8 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                       </div>
                       
                       {/* Skills section - highlighted and comprehensive */}
-                      <div className="mb-4 bg-gray-50 p-2 rounded-sm border-l-2 border-primary">
-                        <h3 className="text-sm font-bold mb-2 uppercase text-gray-700">Key Skills & Competencies</h3>
+                      <div className="mb-4 bg-gray-50 p-2 rounded-sm" style={{borderLeft: `2px solid ${currentTheme.color}`}}>
+                        <h3 className="text-sm font-bold mb-2 uppercase" style={{color: currentTheme.color}}>Key Skills & Competencies</h3>
                         
                         {/* Real user skills data */}
                         {skills && skills.length > 0 ? (
@@ -488,7 +499,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                       
                       {/* Projects/Achievements Section */}
                       <div className="mb-3">
-                        <h3 className="text-sm font-bold mb-1.5 uppercase text-gray-700">Projects & Achievements</h3>
+                        <h3 className="text-sm font-bold mb-1.5 uppercase" style={{color: currentTheme.color}}>Projects & Achievements</h3>
                         
                         {projects && projects.length > 0 ? (
                           <div className="space-y-2.5 mt-1.5">
