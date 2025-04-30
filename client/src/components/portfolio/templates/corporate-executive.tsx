@@ -710,6 +710,21 @@ export default function CorporateExecutive({
               
               {/* CTA Buttons */}
               <div className="hidden md:flex items-center ml-4">
+                {/* Mentorship Button */}
+                {userInfo.id && currentUserId && userInfo.id !== currentUserId && (
+                  <div className="mr-3">
+                    <MentorshipButton
+                      userId={currentUserId}
+                      mentorId={userInfo.id}
+                      variant="default"
+                      className="bg-gradient-to-r from-[#6a0dad] to-[#9c27b0] hover:opacity-90 text-white border-none text-sm h-8 px-3"
+                      buttonText="Request Mentorship"
+                      showIcon={true}
+                    />
+                  </div>
+                )}
+                
+                {/* Other CTA Buttons */}
                 <PortfolioCtaButtons 
                   variant="corporate"
                   resumeUrl={null} 
@@ -1312,7 +1327,20 @@ export default function CorporateExecutive({
               </p>
             </div>
             
-            <div>
+            <div className="flex flex-col items-center sm:items-end gap-4">
+              {/* Footer Mentorship Button */}
+              {userInfo.id && currentUserId && userInfo.id !== currentUserId && (
+                <MentorshipButton
+                  userId={currentUserId}
+                  mentorId={userInfo.id}
+                  variant="default"
+                  className="bg-gradient-to-r from-[#6a0dad] to-[#9c27b0] hover:opacity-90 text-white border-none w-full sm:w-auto"
+                  buttonText="Request Mentorship"
+                  showIcon={true}
+                />
+              )}
+              
+              {/* Other CTA Buttons */}
               <PortfolioCtaButtons 
                 variant="corporate"
                 resumeUrl={null} 
