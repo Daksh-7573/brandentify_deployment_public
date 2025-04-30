@@ -42,6 +42,14 @@ export default function ResumePage() {
   // State for managing resume creation process
   const [isCreationRequested, setIsCreationRequested] = useState(false);
   const [resumeReadyForViewing, setResumeReadyForViewing] = useState(false);
+  
+  // Auto-create shadow resume if one doesn't exist
+  useEffect(() => {
+    if (resumeData && !resumeData.resume && !isCreationRequested && !createResumeMutation.isPending) {
+      console.log('No shadow resume found, auto-creating one...');
+      createResumeMutation.mutate();
+    }
+  }, [resumeData]);
 
   // Create shadow resume mutation
   const createResumeMutation = useMutation<any, Error, void>({
@@ -156,56 +164,41 @@ export default function ResumePage() {
               <div className="flex flex-col items-center justify-center p-10 border rounded-lg bg-card">
                 <Zap className={`h-16 w-16 mb-4 ${isCreationRequested ? 'text-primary animate-pulse' : 'text-primary'}`} />
                 
-                {resumeReadyForViewing ? (
-                  <>
-                    <h3 className="text-2xl font-bold mb-2">Your Shadow Resume is Ready!</h3>
-                    <p className="text-center text-muted-foreground mb-6">
-                      Musk has analyzed your profile and created a tailored resume for you.
-                      Click below to view your new Shadow Resume.
-                    </p>
-                    <Button 
-                      onClick={() => {
-                        queryClient.invalidateQueries({
-                          queryKey: ['/api/users', user?.id, 'shadow-resume']
-                        });
-                      }}
-                      className="gap-2"
-                    >
-                      <Eye className="h-4 w-4" />
-                      <span>View Your Shadow Resume</span>
-                    </Button>
-                  </>
-                ) : (
-                  <>
-                    <h3 className="text-2xl font-bold mb-2">No Shadow Resume Found</h3>
-                    <p className="text-center text-muted-foreground mb-6">
-                      Let Musk create and maintain a resume for you based on your profile data.
-                      Your shadow resume will continuously update as your career evolves.
-                    </p>
-                    {isCreationRequested ? (
-                      <div className="space-y-4 text-center">
-                        <div className="flex items-center justify-center">
-                          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
-                        </div>
-                        <p className="text-muted-foreground">Musk is analyzing your professional profile and creating your Shadow Resume...</p>
-                        <Button 
-                          disabled={true}
-                          className="gap-2 opacity-70"
-                        >
-                          <span>Preparing Resume...</span>
-                        </Button>
-                      </div>
-                    ) : (
+                <div className="space-y-4 text-center">
+                  <h3 className="text-2xl font-bold mb-2">{resumeReadyForViewing ? 'Your Shadow Resume is Ready!' : 'Generating Your Shadow Resume'}</h3>
+                  
+                  {resumeReadyForViewing ? (
+                    <>
+                      <p className="text-center text-muted-foreground mb-6">
+                        Musk has analyzed your profile and created a tailored resume for you.
+                        Click below to view your new Shadow Resume.
+                      </p>
                       <Button 
-                        onClick={() => createResumeMutation.mutate()}
-                        disabled={createResumeMutation.isPending}
+                        onClick={() => {
+                          queryClient.invalidateQueries({
+                            queryKey: ['/api/users', user?.id, 'shadow-resume']
+                          });
+                        }}
                         className="gap-2"
                       >
-                        {createResumeMutation.isPending ? 'Creating...' : 'Create Shadow Resume'}
+                        <Eye className="h-4 w-4" />
+                        <span>View Your Shadow Resume</span>
                       </Button>
-                    )}
-                  </>
-                )}
+                    </>
+                  ) : (
+                    <>
+                      <div className="flex items-center justify-center">
+                        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+                      </div>
+                      <p className="text-muted-foreground">
+                        Musk is analyzing your professional profile and automatically creating your Shadow Resume...
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        Your resume will be continuously updated as your career evolves.
+                      </p>
+                    </>
+                  )}
+                </div>
               </div>
             )}
           </div>
