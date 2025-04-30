@@ -5,6 +5,7 @@ import { ProfileImage } from "@/components/ui/profile-image";
 import { Project, Skill, WorkExperience, Education, Service } from "@shared/schema";
 import { useEffect, useState } from "react";
 import PortfolioCtaButtons from "../portfolio-cta-buttons";
+import { MentorshipButton } from "../../shared/mentorship-button";
 import { 
   Mail, Linkedin, ExternalLink, Calendar, GraduationCap, 
   MapPin, Star, Package, Briefcase, ChevronRight, ArrowUpRight
@@ -12,6 +13,7 @@ import {
 
 interface MinimalistProProps {
   userInfo: {
+    id?: number; // User ID for mentorship button (as mentorId)
     name: string;
     title: string | null;
     industry: string | null;
@@ -21,12 +23,15 @@ interface MinimalistProProps {
     photoURL: string | null;
     lookingFor: string | null;
     jobLevel: string | null;
+    aboutMe?: string | null;
+    whatIOffer?: string | null;
   };
   userSkills: Skill[];
   userExperiences: WorkExperience[];
   userProjects: Project[];
   userEducations?: Education[];
   userServices?: Service[];
+  currentUserId?: number; // Current logged-in user ID for mentorship button
 }
 
 export default function MinimalistPro({ 
@@ -35,7 +40,8 @@ export default function MinimalistPro({
   userExperiences, 
   userProjects,
   userEducations = [], 
-  userServices = [] 
+  userServices = [],
+  currentUserId
 }: MinimalistProProps) {
   const [projectInLightbox, setProjectInLightbox] = useState<Project | null>(null);
   
@@ -198,11 +204,27 @@ export default function MinimalistPro({
               </div>
               
               {/* Looking for */}
-              {userInfo.lookingFor && (
-                <Badge className="bg-primary text-white hover:bg-primary/90 py-1.5 px-3 text-sm rounded-full">
-                  Looking for {userInfo.lookingFor}
-                </Badge>
-              )}
+              <div className="flex flex-wrap gap-2 justify-center md:justify-start">
+                {userInfo.lookingFor && (
+                  <Badge className="bg-primary text-white hover:bg-primary/90 py-1.5 px-3 text-sm rounded-full">
+                    Looking for {userInfo.lookingFor}
+                  </Badge>
+                )}
+                
+                {/* Mentorship Button - Only show if user is logged in and viewing someone else's profile */}
+                {userInfo.id && currentUserId && userInfo.id !== currentUserId && (
+                  <div className="mt-2">
+                    <MentorshipButton 
+                      userId={currentUserId} 
+                      mentorId={userInfo.id} 
+                      variant="secondary"
+                      className="text-sm font-medium"
+                      buttonText="Request Mentorship"
+                      showIcon={true}
+                    />
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </header>
