@@ -330,7 +330,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                       
                       {/* Education Section */}
                       <div className="mb-3">
-                        <h3 className="text-sm font-bold mb-1.5 uppercase" style={{color: currentTheme.color}}>Education</h3>
+                        <h3 className="text-sm font-bold mb-1.5 uppercase" style={{color: fixedTheme.color}}>Education</h3>
                         
                         {education && education.length > 0 ? (
                           education.map((edu, index) => (
@@ -384,8 +384,8 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                       </div>
                       
                       {/* Skills section - highlighted and comprehensive */}
-                      <div className="mb-4 bg-gray-50 p-2 rounded-sm" style={{borderLeft: `2px solid ${currentTheme.color}`}}>
-                        <h3 className="text-sm font-bold mb-2 uppercase" style={{color: currentTheme.color}}>Key Skills & Competencies</h3>
+                      <div className="mb-4 bg-gray-50 p-2 rounded-sm" style={{borderLeft: `2px solid ${fixedTheme.color}`}}>
+                        <h3 className="text-sm font-bold mb-2 uppercase" style={{color: fixedTheme.color}}>Key Skills & Competencies</h3>
                         
                         {/* Real user skills data */}
                         {skills && skills.length > 0 ? (
@@ -424,7 +424,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                       
                       {/* Projects/Achievements Section */}
                       <div className="mb-3">
-                        <h3 className="text-sm font-bold mb-1.5 uppercase" style={{color: currentTheme.color}}>Projects & Achievements</h3>
+                        <h3 className="text-sm font-bold mb-1.5 uppercase" style={{color: fixedTheme.color}}>Projects & Achievements</h3>
                         
                         {projects && projects.length > 0 ? (
                           <div className="space-y-2.5 mt-1.5">
