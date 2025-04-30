@@ -53,7 +53,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
   
   // Fetch education data for the user
   const { data: education = [] } = useQuery<Education[]>({
-    queryKey: ['/api/users', user?.id, 'education'],
+    queryKey: ['/api/users', user?.id, 'educations'],
     enabled: !!user?.id,
   });
   
