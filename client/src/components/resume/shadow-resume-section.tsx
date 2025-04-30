@@ -480,29 +480,6 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                             </div>
                           </div>
                         )}
-                        
-                        {/* Domain Skills - use real data */}
-                        <div>
-                          <h4 className="text-xs font-semibold mb-1 text-gray-600">Domain Expertise</h4>
-                          <div className="flex flex-wrap gap-1.5">
-                            {user?.whatIOffer ? 
-                              user.whatIOffer.split(',').slice(0, 8).map((skill, i) => (
-                                <div key={i} className="px-2 py-0.5 bg-gray-100 text-gray-700 text-xs rounded">
-                                  {skill.trim()}
-                                </div>
-                              )) : 
-                              user.domain ? (
-                                <div className="px-2 py-0.5 bg-gray-100 text-gray-700 text-xs rounded">
-                                  {user.domain}
-                                </div>
-                              ) : (
-                                <div className="text-gray-500 italic text-xs">
-                                  No domain expertise added yet
-                                </div>
-                              )
-                            }
-                          </div>
-                        </div>
                       </div>
                       
                       {/* Projects/Achievements Section */}
