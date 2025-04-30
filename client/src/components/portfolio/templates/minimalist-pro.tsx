@@ -588,6 +588,14 @@ export default function MinimalistPro({
           <p>© {new Date().getFullYear()} {userInfo.name} • Made with Brandentifier</p>
         </footer>
       </div>
+      
+      {/* Mentorship Dialog */}
+      <MentorshipDialog
+        isOpen={isMentorshipDialogOpen}
+        onOpenChange={setIsMentorshipDialogOpen}
+        userId={currentUserId}
+        mentorId={userInfo.id}
+      />
     </div>
   );
 }

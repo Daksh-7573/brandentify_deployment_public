@@ -1512,7 +1512,7 @@ export default function TimelineStoryteller({
         isOpen={isMentorshipDialogOpen}
         onOpenChange={setIsMentorshipDialogOpen}
         userId={currentUserId}
-        mentorId={id}
+        mentorId={userInfo.id}
       />
     </div>
   );
