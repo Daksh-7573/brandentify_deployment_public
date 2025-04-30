@@ -11,7 +11,9 @@ import { db } from './db';
 import { users } from '@shared/schema';
 import { eq } from 'drizzle-orm';
 
-export default function resumeRoutes(router: Router) {
+export default function resumeRoutes() {
+  const router = Router();
+  
   /**
    * Check if a resume can be generated for a user
    * GET /api/resume/check-eligibility/:userId
@@ -123,4 +125,5 @@ export default function resumeRoutes(router: Router) {
   });
   
   console.log('Resume generation routes loaded');
+  return router;
 }
