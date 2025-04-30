@@ -4,7 +4,6 @@
 
 import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { apiRequest } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 
 interface ResumeStatus {
@@ -30,12 +29,26 @@ export function useResume(userId: number | string | undefined | null) {
   const { data: resumeStatus, isLoading, error } = useQuery({
     queryKey: ['/api/resume/status', numericUserId],
     enabled,
-    queryFn: async () => {
+    queryFn: async ({ queryKey }) => {
       try {
-        const response = await apiRequest(`/api/resume/status/${numericUserId}`, {
-          method: 'GET'
+        const url = `/api/resume/status/${numericUserId}`;
+        console.log("Fetching resume status from:", url);
+        const res = await fetch(url, {
+          method: 'GET',
+          credentials: 'include'
         });
-        return response as ResumeStatus;
+        
+        if (!res.ok) {
+          console.error(`Error ${res.status} fetching resume status:`, await res.text());
+          return {
+            hasGeneratedResume: false,
+            resumeUrl: null,
+            resumeGeneratedAt: null
+          } as ResumeStatus;
+        }
+        
+        const data = await res.json();
+        return data as ResumeStatus;
       } catch (error) {
         console.error('Error fetching resume status:', error);
         return {
@@ -50,9 +63,24 @@ export function useResume(userId: number | string | undefined | null) {
   // Mutation to check eligibility
   const eligibilityMutation = useMutation({
     mutationFn: async () => {
-      return apiRequest(`/api/resume/check-eligibility/${numericUserId}`, {
-        method: 'GET'
-      }) as Promise<{ eligible: boolean }>;
+      try {
+        const url = `/api/resume/check-eligibility/${numericUserId}`;
+        console.log("Checking resume eligibility at:", url);
+        const res = await fetch(url, {
+          method: 'GET',
+          credentials: 'include'
+        });
+        
+        if (!res.ok) {
+          throw new Error(`Error ${res.status}: ${await res.text()}`);
+        }
+        
+        const data = await res.json();
+        return data as { eligible: boolean };
+      } catch (error) {
+        console.error('Error checking resume eligibility:', error);
+        throw error;
+      }
     }
   });
 
@@ -61,9 +89,19 @@ export function useResume(userId: number | string | undefined | null) {
     mutationFn: async () => {
       setIsGenerating(true);
       try {
-        return await apiRequest(`/api/resume/generate/${numericUserId}`, {
-          method: 'POST'
-        }) as { message: string; resumeUrl: string };
+        const url = `/api/resume/generate/${numericUserId}`;
+        console.log("Generating resume at:", url);
+        const res = await fetch(url, {
+          method: 'POST',
+          credentials: 'include'
+        });
+        
+        if (!res.ok) {
+          throw new Error(`Error ${res.status}: ${await res.text()}`);
+        }
+        
+        const data = await res.json();
+        return data as { message: string; resumeUrl: string };
       } catch (error) {
         console.error('Error generating resume:', error);
         throw error;
