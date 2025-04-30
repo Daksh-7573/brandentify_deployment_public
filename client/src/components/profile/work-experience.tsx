@@ -586,6 +586,18 @@ export default function WorkExperience() {
   const updateExperienceMutation = useMutation({
     mutationFn: async (data: any) => {
       console.log("Updating work experience:", data);
+      
+      // Ensure keyResponsibilities is properly formatted as an array for JSON
+      if (data.keyResponsibilities && Array.isArray(data.keyResponsibilities)) {
+        // Make sure it's a plain array of strings for proper JSON serialization
+        data.keyResponsibilities = [...data.keyResponsibilities];
+      } else if (!data.keyResponsibilities) {
+        // If it's undefined or null, set to empty array
+        data.keyResponsibilities = [];
+      }
+      
+      console.log("Formatted work experience data:", data);
+      
       const res = await apiRequest({
         method: 'PATCH', 
         url: `/api/experiences/${data.id}`,
