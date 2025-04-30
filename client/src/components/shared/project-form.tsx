@@ -26,7 +26,7 @@ export const projectSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().nullable(),
   category: z.string().nullable(),
-  industry: z.string().nullable(),
+  industry: z.string().min(1, "Industry is required").nullable().default(null),
   startDate: z.string().min(1, "Start date is required"),
   projectUrl: z.string().nullable(),
   mediaUrls: z.array(z.string()).nullable(),
@@ -88,23 +88,38 @@ export default function ProjectForm({
       title: existingProject?.title || '',
       description: existingProject?.description || null,
       category: existingProject?.category || null,
-      industry: existingProject?.industry || null,
+      industry: existingProject?.industry || null, // Industry field - may need special handling
       startDate: existingProject?.startDate || format(new Date(), 'yyyy-MM-dd'),
       projectUrl: existingProject?.projectUrl || null,
       mediaUrls: existingProject?.mediaUrls || null,
     },
   });
+  
+  // Log the initial industry value for debugging
+  console.log("Initial industry value:", existingProject?.industry);
 
   // Reset form when existingProject changes
   useEffect(() => {
+    // Log the industry value before form reset
+    console.log("Industry value before form reset:", {
+      existingIndustry: existingProject?.industry,
+      formValue: projectForm.getValues().industry
+    });
+    
     projectForm.reset({
       title: existingProject?.title || '',
       description: existingProject?.description || null,
       category: existingProject?.category || null,
-      industry: existingProject?.industry || null,
+      industry: existingProject?.industry || null, // Make sure industry value is properly passed
       startDate: existingProject?.startDate || format(new Date(), 'yyyy-MM-dd'),
       projectUrl: existingProject?.projectUrl || null,
       mediaUrls: existingProject?.mediaUrls || null,
+    });
+    
+    // Log the industry value after form reset
+    console.log("Industry value after form reset:", {
+      existingIndustry: existingProject?.industry,
+      formValue: projectForm.getValues().industry
     });
     
     // Reset all file state
@@ -188,6 +203,7 @@ export default function ProjectForm({
         console.log("PATCH request made to update project:", {
           projectId: existingProject.id,
           requestData: values,
+          industry: values.industry, // Explicitly log industry field
           responseData: projectData
         });
         
