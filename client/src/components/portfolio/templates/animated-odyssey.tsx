@@ -11,11 +11,13 @@ import {
   MessageSquareText
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { MentorshipButton } from "@/components/shared/mentorship-button";
 
 // Add custom styles for this template
 import "@/styles/animated-odyssey.css";
 
 interface AnimatedOdysseyProps {
+  id?: number; // User ID for mentorship button (as mentorId)
   name: string;
   title: string;
   industry: string;
@@ -76,9 +78,11 @@ interface AnimatedOdysseyProps {
   email: string;
   aboutMe: string | null;
   whatIOffer: string | null;
+  currentUserId?: number; // Current logged-in user ID for mentorship button
 }
 
 const AnimatedOdyssey: React.FC<AnimatedOdysseyProps> = ({
+  id,
   name,
   title,
   industry,
@@ -94,6 +98,7 @@ const AnimatedOdyssey: React.FC<AnimatedOdysseyProps> = ({
   email,
   aboutMe,
   whatIOffer,
+  currentUserId,
 }) => {
   // For debugging
   console.log("AnimatedOdyssey template - whatIOffer:", whatIOffer);
@@ -981,6 +986,17 @@ const AnimatedOdyssey: React.FC<AnimatedOdysseyProps> = ({
               <Download className="h-5 w-5 mr-2" />
               Get My Resume
             </button>
+            
+            {/* Mentorship Button - only shown when viewing someone else's profile */}
+            {id && currentUserId && id !== currentUserId && (
+              <MentorshipButton
+                userId={currentUserId}
+                mentorId={id}
+                className="cta-button cta-primary"
+                buttonText="Request Mentorship"
+                showIcon={true}
+              />
+            )}
           </div>
         </div>
       </motion.div>
