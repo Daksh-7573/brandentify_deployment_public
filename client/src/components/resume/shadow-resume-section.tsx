@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -25,9 +25,10 @@ import {
   Pencil
 } from 'lucide-react';
 
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow, format } from 'date-fns';
 import { UserData } from '@/types/user';
 import { Resume, ResumeTheme } from '@/types/resume';
+import { WorkExperience, Education } from '@/types/profile';
 
 interface ShadowResumeProps {
   user: UserData | any; // Using any for demo purposes to handle potential null or partial data
@@ -43,6 +44,18 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
   );
   const [isDownloadable, setIsDownloadable] = useState(resume?.isDownloadable || false);
   const [historyVersion, setHistoryVersion] = useState(100); // Percentage representing the latest version
+  
+  // Fetch work experiences for the user
+  const { data: workExperiences = [] } = useQuery<WorkExperience[]>({
+    queryKey: ['/api/users', user?.id, 'experiences'],
+    enabled: !!user?.id,
+  });
+  
+  // Fetch education data for the user
+  const { data: education = [] } = useQuery<Education[]>({
+    queryKey: ['/api/users', user?.id, 'education'],
+    enabled: !!user?.id,
+  });
   
   // Update resume mutation
   const updateResumeMutation = useMutation<any, Error, {themeStyle?: ResumeTheme, isDownloadable?: boolean}>({
