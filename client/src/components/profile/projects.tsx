@@ -632,12 +632,32 @@ export default function Projects() {
       let projectData: Project;
       
       if (currentProject) {
-        // Update existing project
-        response = await apiRequest(
-          'PUT', 
-          `/api/projects/${currentProject.id}`, 
-          values
-        );
+        // Check if we're updating the industry field
+        if (values.industry !== currentProject.industry) {
+          console.log(`Updating industry field from "${currentProject.industry}" to "${values.industry}"`);
+          
+          // Use the dedicated PATCH endpoint for updating the industry field
+          response = await apiRequest(
+            'PATCH', 
+            `/api/projects/${currentProject.id}`, 
+            { industry: values.industry }
+          );
+          
+          // Then update the rest of the project data with PUT
+          const restOfValues = { ...values };
+          response = await apiRequest(
+            'PUT', 
+            `/api/projects/${currentProject.id}`, 
+            restOfValues
+          );
+        } else {
+          // Standard update without industry changes
+          response = await apiRequest(
+            'PUT', 
+            `/api/projects/${currentProject.id}`, 
+            values
+          );
+        }
         projectData = await response.json();
         
         // Thumbnail is no longer required for existing projects
