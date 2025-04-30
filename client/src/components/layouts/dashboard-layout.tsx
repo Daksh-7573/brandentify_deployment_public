@@ -20,6 +20,11 @@ const navItems = [
     icon: Briefcase
   },
   {
+    name: "Resume & CV",
+    href: "/resume-cv",
+    icon: FileText
+  },
+  {
     name: "Analytics",
     href: "/radar",
     icon: BarChart
