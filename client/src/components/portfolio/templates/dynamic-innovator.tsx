@@ -6,6 +6,7 @@ import { MentorshipDialog } from "@/components/shared/mentorship-dialog";
 import { ProfileImage } from "@/components/ui/profile-image";
 import { Education, Project, Service, Skill, WorkExperience } from "@shared/schema";
 import { useEffect, useState, useRef } from "react";
+import { FaUserGraduate } from "react-icons/fa";
 import PortfolioCtaButtons from "../portfolio-cta-buttons";
 import { 
   Calendar, 
@@ -1395,6 +1396,17 @@ export function DynamicInnovator({
               <Download className="h-5 w-5 mr-2" />
               Grab My Resume
             </Button>
+            
+            {/* Mentor Button */}
+            {userInfo.id && currentUserId && userInfo.id !== currentUserId && (
+              <Button
+                onClick={() => setIsMentorshipDialogOpen(true)}
+                className="neon-button bg-gradient-to-r from-[#fe53bb]/20 to-[#7122FA]/20 border-[#fe53bb] hover:border-[#7122FA] text-white rounded-md px-8 py-2.5 ml-4"
+              >
+                <FaUserGraduate className="mr-2" />
+                Mentor
+              </Button>
+            )}
           </div>
         </div>
       </section>
@@ -1636,13 +1648,15 @@ export function DynamicInnovator({
       </Dialog>
 
       {/* Mentorship Dialog */}
-      <MentorshipDialog
-        isOpen={isMentorshipDialogOpen}
-        onOpenChange={setIsMentorshipDialogOpen}
-        userId={currentUserId}
-        mentorId={userInfo.id}
-        className="bg-[#080E24] border border-[#08f7fe]/20"
-      />
+      {userInfo.id && currentUserId && (
+        <MentorshipDialog
+          isOpen={isMentorshipDialogOpen}
+          onOpenChange={setIsMentorshipDialogOpen}
+          userId={currentUserId}
+          mentorId={userInfo.id}
+          className="bg-[#080E24] border border-[#08f7fe]/20"
+        />
+      )}
     </div>
   );
 }
