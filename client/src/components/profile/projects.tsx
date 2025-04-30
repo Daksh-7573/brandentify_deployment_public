@@ -637,19 +637,32 @@ export default function Projects() {
           console.log(`Updating industry field from "${currentProject.industry}" to "${values.industry}"`);
           
           // Use the dedicated PATCH endpoint for updating the industry field
-          response = await apiRequest(
-            'PATCH', 
-            `/api/projects/${currentProject.id}`, 
-            { industry: values.industry }
-          );
+          console.log('Sending PATCH request to update industry');
+          try {
+            response = await apiRequest(
+              'PATCH', 
+              `/api/projects/${currentProject.id}`, 
+              { industry: values.industry }
+            );
+            console.log('PATCH response status:', response.status);
+            console.log('PATCH response data:', await response.clone().json());
+          } catch (error) {
+            console.error('Error in PATCH request:', error);
+          }
           
           // Then update the rest of the project data with PUT
           const restOfValues = { ...values };
-          response = await apiRequest(
-            'PUT', 
-            `/api/projects/${currentProject.id}`, 
-            restOfValues
-          );
+          console.log('Sending PUT request with the rest of the values:', restOfValues);
+          try {
+            response = await apiRequest(
+              'PUT', 
+              `/api/projects/${currentProject.id}`, 
+              restOfValues
+            );
+            console.log('PUT response status:', response.status);
+          } catch (error) {
+            console.error('Error in PUT request:', error);
+          }
         } else {
           // Standard update without industry changes
           response = await apiRequest(
