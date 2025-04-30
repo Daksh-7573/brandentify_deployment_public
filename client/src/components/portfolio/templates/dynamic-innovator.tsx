@@ -936,9 +936,24 @@ export function DynamicInnovator({
                     </div>
                   )}
                   
-                  {/* Project overlay with details - Simplified to show only name and date */}
+                  {/* Project overlay with details - Enhanced to show industry, name, and date */}
                   <div className="project-overlay">
                     <h3 className="text-xl font-medium mb-2 text-white">{project.title}</h3>
+                    
+                    {/* Added industry and category badges */}
+                    <div className="flex flex-wrap gap-2 mb-3">
+                      {project.industry && (
+                        <div className="bg-[#08f7fe]/30 text-white text-xs px-2.5 py-1 rounded-full border border-[#08f7fe]/50">
+                          {project.industry}
+                        </div>
+                      )}
+                      
+                      {project.category && (
+                        <div className="bg-[#fe53bb]/30 text-white text-xs px-2.5 py-1 rounded-full border border-[#fe53bb]/50">
+                          {project.category}
+                        </div>
+                      )}
+                    </div>
                     
                     <div className="flex items-center text-[#08f7fe] text-sm mb-3">
                       <Calendar className="h-3.5 w-3.5 mr-1.5" />
@@ -1541,6 +1556,13 @@ export function DynamicInnovator({
                   </h2>
                   
                   <div className="flex flex-wrap items-center gap-3 mb-4">
+                    {selectedProject.industry && (
+                      <Badge className="bg-[#0D1D38] border border-[#fe53bb]/40 text-[#fe53bb] py-1.5 px-3">
+                        <Building2 className="h-3.5 w-3.5 mr-1.5" />
+                        {selectedProject.industry}
+                      </Badge>
+                    )}
+                    
                     {selectedProject.category && (
                       <Badge className="bg-[#0D1D38] border border-[#08f7fe]/40 text-[#08f7fe] py-1.5 px-3">
                         <Folder className="h-3.5 w-3.5 mr-1.5" />
