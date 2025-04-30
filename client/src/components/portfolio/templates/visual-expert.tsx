@@ -852,9 +852,23 @@ export default function VisualExpert({
                         </div>
                       )}
                       
-                      {/* Project overlay with only name and date */}
+                      {/* Project overlay with name, industry and date */}
                       <div className="project-overlay">
                         <h3 className="text-xl font-bold text-white mb-2">{project.title}</h3>
+                        
+                        <div className="flex items-center gap-3 mb-2">
+                          {project.industry && (
+                            <div className="bg-purple-500/40 text-white text-xs px-2.5 py-1 rounded-full">
+                              {project.industry}
+                            </div>
+                          )}
+                          
+                          {project.category && (
+                            <div className="bg-pink-500/40 text-white text-xs px-2.5 py-1 rounded-full">
+                              {project.category}
+                            </div>
+                          )}
+                        </div>
                         
                         <div className="flex items-center text-gray-300 text-sm">
                           <Calendar className="w-3.5 h-3.5 mr-1.5" />
@@ -1170,6 +1184,12 @@ export default function VisualExpert({
                     {selectedProject.category && (
                       <Badge className="bg-pink-600/40 text-pink-100 border-0 py-1 px-3">
                         {selectedProject.category}
+                      </Badge>
+                    )}
+                    
+                    {selectedProject.industry && (
+                      <Badge className="bg-purple-600/40 text-purple-100 border-0 py-1 px-3">
+                        {selectedProject.industry}
                       </Badge>
                     )}
                     
