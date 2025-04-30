@@ -16,7 +16,7 @@ const router = express.Router();
  * Check if a resume can be generated for a user
  * GET /api/resume/check-eligibility/:userId
  */
-router.get('/check-eligibility/:userId', async (req, res) => {
+router.get('/resume/check-eligibility/:userId', async (req, res) => {
   try {
     const userId = parseInt(req.params.userId);
     if (isNaN(userId)) {
@@ -35,7 +35,7 @@ router.get('/check-eligibility/:userId', async (req, res) => {
  * Generate or regenerate a resume for a user
  * POST /api/resume/generate/:userId
  */
-router.post('/generate/:userId', async (req, res) => {
+router.post('/resume/generate/:userId', async (req, res) => {
   try {
     const userId = parseInt(req.params.userId);
     if (isNaN(userId)) {
@@ -74,7 +74,7 @@ router.post('/generate/:userId', async (req, res) => {
  * Get the current resume status and URL for a user
  * GET /api/resume/status/:userId
  */
-router.get('/status/:userId', async (req, res) => {
+router.get('/resume/status/:userId', async (req, res) => {
   try {
     const userId = parseInt(req.params.userId);
     if (isNaN(userId)) {

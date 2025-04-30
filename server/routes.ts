@@ -27,6 +27,7 @@ import whatIOfferRoutes from "./routes-what-i-offer";
 import profileServicesRoutes from "./routes-services-sync";
 import { resumeTestRoutes } from "./routes-resume-test";
 import { routesMigrateWorkExperiences } from "./routes-migrate-work-experiences";
+import resumeRoutes from "./routes-resume";
 import { registerMuskAnthropicRoutes } from "./routes-musk-anthropic";
 import { registerMuskMemoryRoutes } from "./routes-musk-memory";
 import { registerTrendGraphRoutes } from "./routes-trend-graph";
@@ -5265,6 +5266,10 @@ ${extractedText.substring(0, 5000)}
   // Mentorship Connect routes
   app.use('/api', mentorshipRoutes);
   console.log("Mentorship Connect routes loaded");
+  
+  // Register resume generation routes
+  app.use('/api', resumeRoutes);
+  console.log("Resume generation routes loaded");
   
   // Brands of the Day routes
   app.use(brandsOfTheDayRoutes);

@@ -6,15 +6,15 @@
  * to create a professional resume without requiring manual input.
  */
 
-import { User, WorkExperience, Education, Skill, Service } from '@shared/schema';
 import { db } from '../db';
-import { eq } from 'drizzle-orm';
 import { users, workExperiences, educations, skills, services } from '@shared/schema';
-import { generatePdf } from './pdf-generator';
-import * as fs from 'fs';
-import * as path from 'path';
+import { eq } from 'drizzle-orm';
+import { User, WorkExperience, Education, Skill, Service } from '@shared/schema';
+import fs from 'fs';
+import path from 'path';
+import puppeteer from 'puppeteer';
 
-// Type to store all user data needed for resume
+// Define the resume data interface
 interface ResumeData {
   user: User;
   workExperiences: WorkExperience[];
@@ -30,21 +30,35 @@ interface ResumeData {
  */
 export async function canGenerateResume(userId: number): Promise<boolean> {
   try {
-    const userData = await fetchUserData(userId);
-    
-    // Basic requirement checks
-    if (!userData.user || !userData.user.name || !userData.user.title) {
-      console.log('[canGenerateResume] Missing basic user data');
+    // Check if user exists
+    const [user] = await db.select().from(users).where(eq(users.id, userId));
+    if (!user) {
       return false;
     }
     
-    // Check for minimum data requirements
-    const hasWorkExperience = userData.workExperiences.length > 0;
-    const hasSkills = userData.skills.length > 0;
+    // Check if user has at least one work experience
+    const workExperienceCount = await db
+      .select({ count: { id: workExperiences.id } })
+      .from(workExperiences)
+      .where(eq(workExperiences.userId, userId));
     
-    return hasWorkExperience && hasSkills;
+    if (!workExperienceCount[0] || workExperienceCount[0].count < 1) {
+      return false;
+    }
+    
+    // Check if user has at least one skill
+    const skillCount = await db
+      .select({ count: { id: skills.id } })
+      .from(skills)
+      .where(eq(skills.userId, userId));
+    
+    if (!skillCount[0] || skillCount[0].count < 1) {
+      return false;
+    }
+    
+    return true;
   } catch (error) {
-    console.error('[canGenerateResume] Error checking resume eligibility:', error);
+    console.error('[canGenerateResume] Error:', error);
     return false;
   }
 }
@@ -56,42 +70,47 @@ export async function canGenerateResume(userId: number): Promise<boolean> {
  */
 async function fetchUserData(userId: number): Promise<ResumeData> {
   try {
-    // Fetch user information
-    const [userResult] = await db.select().from(users).where(eq(users.id, userId));
+    // Fetch user basic info
+    const [user] = await db.select().from(users).where(eq(users.id, userId));
+    if (!user) {
+      throw new Error('User not found');
+    }
     
     // Fetch work experiences
-    const workExperienceResults = await db
+    const userWorkExperiences = await db
       .select()
       .from(workExperiences)
-      .where(eq(workExperiences.userId, userId));
+      .where(eq(workExperiences.userId, userId))
+      .orderBy((exp) => exp.startDate);
     
     // Fetch education
-    const educationResults = await db
+    const userEducations = await db
       .select()
       .from(educations)
-      .where(eq(educations.userId, userId));
+      .where(eq(educations.userId, userId))
+      .orderBy((edu) => edu.startDate);
     
     // Fetch skills
-    const skillResults = await db
+    const userSkills = await db
       .select()
       .from(skills)
       .where(eq(skills.userId, userId));
     
     // Fetch services
-    const serviceResults = await db
+    const userServices = await db
       .select()
       .from(services)
       .where(eq(services.userId, userId));
     
     return {
-      user: userResult,
-      workExperiences: workExperienceResults,
-      educations: educationResults,
-      skills: skillResults,
-      services: serviceResults
+      user,
+      workExperiences: userWorkExperiences,
+      educations: userEducations,
+      skills: userSkills,
+      services: userServices
     };
   } catch (error) {
-    console.error('[fetchUserData] Error fetching user data:', error);
+    console.error('[fetchUserData] Error:', error);
     throw error;
   }
 }
@@ -104,220 +123,318 @@ async function fetchUserData(userId: number): Promise<ResumeData> {
 function generateResumeHtml(data: ResumeData): string {
   const { user, workExperiences, educations, skills, services } = data;
   
-  // Generate the HTML template
-  return `
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Resume - ${user.name}</title>
-      <style>
-        body {
-          font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', sans-serif;
-          margin: 0;
-          padding: 20px;
-          color: #333;
-        }
-        .resume-container {
-          max-width: 800px;
-          margin: 0 auto;
-          border: 1px solid #eaeaea;
-          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-          padding: 40px;
-        }
-        .header {
-          text-align: center;
-          margin-bottom: 30px;
-          border-bottom: 2px solid #f0f0f0;
-          padding-bottom: 20px;
-        }
-        .name {
-          font-size: 28px;
-          font-weight: 700;
-          margin: 0;
-          color: #111;
-        }
-        .title {
-          font-size: 18px;
-          color: #555;
-          margin: 5px 0 10px;
-        }
-        .contact-info {
-          font-size: 14px;
-          color: #666;
-          margin: 5px 0;
-        }
-        .section {
-          margin-bottom: 30px;
-        }
-        .section-title {
-          font-size: 18px;
-          font-weight: 600;
-          color: #222;
-          margin-bottom: 15px;
-          border-bottom: 1px solid #eaeaea;
-          padding-bottom: 5px;
-        }
-        .experience-item, .education-item, .skill-item {
-          margin-bottom: 20px;
-        }
-        .job-title, .degree {
-          font-weight: 600;
-          font-size: 16px;
-          color: #333;
-          margin: 0;
-        }
-        .company, .institution {
-          font-weight: 500;
-          font-size: 15px;
-          color: #444;
-          margin: 5px 0;
-        }
-        .period, .location {
-          font-size: 14px;
-          color: #666;
-          margin: 2px 0;
-        }
-        .description {
-          font-size: 14px;
-          color: #555;
-          margin-top: 8px;
-          line-height: 1.5;
-        }
-        .skills-container {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 10px;
-        }
-        .skill-badge {
-          background-color: #f5f5f5;
-          border-radius: 15px;
-          padding: 5px 12px;
-          font-size: 14px;
-        }
-        .responsibilities {
-          margin-top: 10px;
-          padding-left: 20px;
-        }
-        .responsibilities li {
-          margin-bottom: 5px;
-          font-size: 14px;
-        }
-        .footer {
-          text-align: center;
-          margin-top: 40px;
-          font-size: 12px;
-          color: #999;
-        }
-      </style>
-    </head>
-    <body>
-      <div class="resume-container">
-        <div class="header">
-          <h1 class="name">${user.name}</h1>
-          <p class="title">${user.title || ''}</p>
-          <p class="contact-info">
-            ${user.location ? `${user.location} | ` : ''}
-            ${user.email ? `${user.email} | ` : ''}
-            ${user.phoneNumber ? user.phoneNumber : ''}
-          </p>
-        </div>
-        
-        ${user.aboutMe ? `
-        <div class="section">
-          <h2 class="section-title">Professional Summary</h2>
-          <p class="description">${user.aboutMe}</p>
-        </div>
-        ` : ''}
-        
-        ${workExperiences.length > 0 ? `
-        <div class="section">
-          <h2 class="section-title">Work Experience</h2>
-          ${workExperiences.map(exp => `
-            <div class="experience-item">
-              <h3 class="job-title">${exp.title}</h3>
-              <p class="company">${exp.company}${exp.location ? ` - ${exp.location}` : ''}</p>
-              <p class="period">${exp.startDate} - ${exp.endDate || 'Present'}</p>
-              ${exp.description ? `<p class="description">${exp.description}</p>` : ''}
-              ${exp.keyResponsibilities && Array.isArray(exp.keyResponsibilities) && exp.keyResponsibilities.length > 0 ? `
-                <ul class="responsibilities">
-                  ${exp.keyResponsibilities.map((resp: string) => `<li>${resp}</li>`).join('')}
-                </ul>
-              ` : ''}
-            </div>
-          `).join('')}
-        </div>
-        ` : ''}
-        
-        ${educations.length > 0 ? `
-        <div class="section">
-          <h2 class="section-title">Education</h2>
-          ${educations.map(edu => `
-            <div class="education-item">
-              <h3 class="degree">${edu.degree}${edu.fieldOfStudy ? ` in ${edu.fieldOfStudy}` : ''}</h3>
-              <p class="institution">${edu.institution}${edu.location ? ` - ${edu.location}` : ''}</p>
-              <p class="period">${edu.startDate} - ${edu.endDate || 'Present'}</p>
-            </div>
-          `).join('')}
-        </div>
-        ` : ''}
-        
-        ${skills.length > 0 ? `
-        <div class="section">
-          <h2 class="section-title">Skills</h2>
-          <div class="skills-container">
-            ${skills.map(skill => `
-              <span class="skill-badge">${skill.name}${skill.level ? ` - ${skill.level}` : ''}</span>
-            `).join('')}
-          </div>
-        </div>
-        ` : ''}
-        
-        ${services.length > 0 ? `
-        <div class="section">
-          <h2 class="section-title">Services & Expertise</h2>
-          ${services.map(service => `
-            <div class="experience-item">
-              <h3 class="job-title">${service.title}</h3>
-              ${service.description ? `<p class="description">${service.description}</p>` : ''}
-            </div>
-          `).join('')}
-        </div>
-        ` : ''}
-        
-        <div class="footer">
-          <p>This resume was automatically generated from profile data on ${new Date().toLocaleDateString()}</p>
-        </div>
+  // Format the date to a readable format
+  const formatDate = (dateStr: string | null): string => {
+    if (!dateStr) return 'Present';
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+  };
+  
+  // Create a skills section with a max of 9 skills
+  const skillsHtml = skills.slice(0, 9).map(skill => `
+    <div class="skill">
+      <span class="skill-name">${skill.name}</span>
+      <div class="skill-bar">
+        <div class="skill-level" style="width: ${skill.proficiency || 80}%"></div>
       </div>
-    </body>
-    </html>
+    </div>
+  `).join('');
+  
+  // Create work experience section
+  const workExperienceHtml = workExperiences.map(exp => {
+    let responsibilities = [];
+    try {
+      if (exp.responsibilities && typeof exp.responsibilities === 'string') {
+        responsibilities = JSON.parse(exp.responsibilities);
+      }
+    } catch (e) {
+      responsibilities = [];
+    }
+    
+    const responsibilitiesHtml = Array.isArray(responsibilities) && responsibilities.length > 0
+      ? `<ul class="responsibilities">
+          ${responsibilities.map(item => `<li>${item}</li>`).join('')}
+        </ul>`
+      : '';
+    
+    return `
+      <div class="experience">
+        <div class="experience-header">
+          <h3>${exp.title}</h3>
+          <h4>${exp.company}</h4>
+          <span class="date">${formatDate(exp.startDate)} - ${formatDate(exp.endDate)}</span>
+        </div>
+        <p>${exp.description || ''}</p>
+        ${responsibilitiesHtml}
+      </div>
+    `;
+  }).join('');
+  
+  // Create education section
+  const educationHtml = educations.map(edu => {
+    return `
+      <div class="education">
+        <h3>${edu.institution}</h3>
+        <h4>${edu.degree}${edu.fieldOfStudy ? ` in ${edu.fieldOfStudy}` : ''}</h4>
+        <span class="date">${formatDate(edu.startDate)} - ${formatDate(edu.endDate)}</span>
+      </div>
+    `;
+  }).join('');
+  
+  // Create services section (treated as "What I Offer" in the resume)
+  const servicesHtml = services.length > 0 
+    ? `<div class="services-section">
+        <h2>What I Offer</h2>
+        <div class="services">
+          ${services.map(service => `
+            <div class="service">
+              <h3>${service.title}</h3>
+              <p>${service.description}</p>
+            </div>
+          `).join('')}
+        </div>
+      </div>`
+    : '';
+  
+  // Generate the full HTML
+  return `
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${user.name} - Resume</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      }
+      body {
+        font-size: 12pt;
+        line-height: 1.6;
+        color: #333;
+        background: white;
+        max-width: 8.5in;
+        margin: 0 auto;
+        padding: 0.5in;
+      }
+      .header {
+        text-align: center;
+        margin-bottom: 20px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #eee;
+      }
+      .header h1 {
+        font-size: 24pt;
+        margin-bottom: 5px;
+        color: #2a4365;
+      }
+      .header h2 {
+        font-size: 14pt;
+        font-weight: 400;
+        color: #4a5568;
+      }
+      .contact-info {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin: 10px 0;
+        font-size: 10pt;
+      }
+      .contact-info span {
+        display: inline-flex;
+        align-items: center;
+      }
+      .section {
+        margin: 20px 0;
+      }
+      .section h2 {
+        font-size: 14pt;
+        color: #2a4365;
+        margin-bottom: 10px;
+        padding-bottom: 5px;
+        border-bottom: 1px solid #eee;
+      }
+      .experience, .education {
+        margin-bottom: 15px;
+      }
+      .experience-header, .education-header {
+        margin-bottom: 5px;
+      }
+      .experience-header h3, .education h3 {
+        font-size: 12pt;
+        color: #1a365d;
+      }
+      .experience-header h4, .education h4 {
+        font-size: 11pt;
+        font-weight: 600;
+        color: #4a5568;
+      }
+      .date {
+        font-size: 10pt;
+        color: #718096;
+        font-style: italic;
+      }
+      .responsibilities {
+        margin-top: 5px;
+        padding-left: 20px;
+      }
+      .responsibilities li {
+        margin-bottom: 3px;
+      }
+      .skills-section {
+        margin: 20px 0;
+      }
+      .skills-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+      }
+      .skill {
+        flex: 0 0 calc(33.333% - 10px);
+      }
+      .skill-name {
+        font-weight: 600;
+        display: block;
+        margin-bottom: 3px;
+      }
+      .skill-bar {
+        height: 8px;
+        background: #edf2f7;
+        border-radius: 4px;
+        overflow: hidden;
+      }
+      .skill-level {
+        height: 100%;
+        background: #4299e1;
+        border-radius: 4px;
+      }
+      .services-section {
+        margin: 20px 0;
+      }
+      .services {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+      }
+      .service {
+        flex: 0 0 calc(50% - 10px);
+        padding: 10px;
+        background: #f7fafc;
+        border-radius: 5px;
+      }
+      .service h3 {
+        font-size: 11pt;
+        color: #2c5282;
+        margin-bottom: 5px;
+      }
+      .about-me {
+        margin: 20px 0;
+      }
+      @media print {
+        body {
+          padding: 0;
+        }
+        .page-break {
+          page-break-after: always;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>${user.name}</h1>
+      <h2>${user.title || 'Professional'}</h2>
+      <div class="contact-info">
+        ${user.email ? `<span>📧 ${user.email}</span>` : ''}
+        ${user.phoneNumber ? `<span>📱 ${user.phoneNumber}</span>` : ''}
+        ${user.location ? `<span>📍 ${user.location}</span>` : ''}
+      </div>
+    </div>
+    
+    ${user.aboutMe ? `
+      <div class="about-me">
+        <h2>About Me</h2>
+        <p>${user.aboutMe}</p>
+      </div>
+    ` : ''}
+    
+    <div class="section">
+      <h2>Work Experience</h2>
+      ${workExperienceHtml}
+    </div>
+    
+    <div class="section">
+      <h2>Education</h2>
+      ${educationHtml}
+    </div>
+    
+    <div class="skills-section">
+      <h2>Skills</h2>
+      <div class="skills-container">
+        ${skillsHtml}
+      </div>
+    </div>
+    
+    ${servicesHtml}
+    
+    <div class="footer">
+      <p style="text-align: center; font-size: 9pt; color: #a0aec0; margin-top: 30px;">
+        Generated by Brandentifier on ${new Date().toLocaleDateString()}
+      </p>
+    </div>
+  </body>
+  </html>
   `;
 }
 
 /**
- * Service to create a PDF generator (stub implementation)
- * In a real implementation, this would use a PDF generation library
+ * Service to create a PDF from HTML using puppeteer
+ * @param html HTML content to convert to PDF
+ * @param outputPath Path to save the PDF file
+ * @returns URL to the generated PDF file
  */
 export const generatePdf = async (html: string, outputPath: string): Promise<string> => {
   try {
-    // Simulating PDF generation
-    // In a real implementation, you would use a library like puppeteer or html-pdf
-    // to convert the HTML to a PDF and save it to the output path
-    
-    // For now, we'll just write the HTML to a file as a placeholder
-    const tempDir = path.join(process.cwd(), 'tmp');
-    
-    // Ensure tmp directory exists
-    if (!fs.existsSync(tempDir)) {
-      fs.mkdirSync(tempDir, { recursive: true });
+    // Create upload directory if it doesn't exist
+    const dir = path.dirname(outputPath);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
     }
     
-    // Write HTML to file
-    fs.writeFileSync(outputPath, html);
+    // Launch a headless browser
+    const browser = await puppeteer.launch({
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      headless: true,
+    });
     
-    console.log(`[generatePdf] Generated resume at ${outputPath}`);
-    return outputPath;
+    // Create a new page
+    const page = await browser.newPage();
+    
+    // Set the content to our HTML template
+    await page.setContent(html, { waitUntil: 'networkidle0' });
+    
+    // Generate PDF
+    await page.pdf({
+      path: outputPath,
+      format: 'A4',
+      printBackground: true,
+      margin: {
+        top: '20px',
+        right: '20px',
+        bottom: '20px',
+        left: '20px'
+      }
+    });
+    
+    // Close the browser
+    await browser.close();
+    
+    // Return the URL path to the PDF
+    return outputPath.replace(/^public/, '');
   } catch (error) {
     console.error('[generatePdf] Error generating PDF:', error);
     throw error;
@@ -331,51 +448,32 @@ export const generatePdf = async (html: string, outputPath: string): Promise<str
  */
 export async function generateResume(userId: number): Promise<string> {
   try {
-    // Check if user can have a resume generated
-    const canGenerate = await canGenerateResume(userId);
-    if (!canGenerate) {
-      throw new Error('User does not have sufficient profile data to generate a resume');
-    }
-    
     // Fetch user data
     const userData = await fetchUserData(userId);
     
-    // Generate HTML for the resume
-    const html = generateResumeHtml(userData);
+    // Generate resume HTML
+    const resumeHtml = generateResumeHtml(userData);
     
-    // Generate a unique filename
+    // Set output file path in public uploads directory
     const timestamp = Date.now();
-    const filename = `resume_${userId}_${timestamp}.html`;
+    const filename = `${userData.user.name.replace(/\s+/g, '_')}_Resume_${timestamp}.pdf`;
+    const outputPath = path.join(process.cwd(), 'public', 'uploads', 'resumes', filename);
     
-    // Set the output path
-    const outputDir = path.join(process.cwd(), 'public', 'resumes');
+    // Generate PDF file
+    const resumeUrl = await generatePdf(resumeHtml, outputPath);
     
-    // Ensure directory exists
-    if (!fs.existsSync(outputDir)) {
-      fs.mkdirSync(outputDir, { recursive: true });
-    }
-    
-    const outputPath = path.join(outputDir, filename);
-    
-    // Generate PDF (in this case, just HTML)
-    await generatePdf(html, outputPath);
-    
-    // Public URL for the resume
-    const resumeUrl = `/resumes/${filename}`;
-    
-    // Update user record to indicate resume has been generated
+    // Update user record with resume information
     await db.update(users)
       .set({
         hasGeneratedResume: true,
         resumeUrl: resumeUrl,
-        resumeGeneratedAt: new Date(),
+        resumeGeneratedAt: new Date()
       })
       .where(eq(users.id, userId));
     
-    console.log(`[generateResume] Resume generated for user ${userId}: ${resumeUrl}`);
     return resumeUrl;
   } catch (error) {
-    console.error('[generateResume] Error generating resume:', error);
+    console.error('[generateResume] Error:', error);
     throw error;
   }
 }
