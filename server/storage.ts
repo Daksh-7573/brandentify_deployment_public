@@ -5535,7 +5535,10 @@ export class DatabaseStorage implements IStorage {
         insertEducation.industry || null,
         insertEducation.domain || null,
         insertEducation.fieldOfStudy || null,
-        insertEducation.skillsAcquired || []
+        // Use the proper PostgreSQL jsonb format, not just JSON.stringify
+        Array.isArray(insertEducation.skillsAcquired) ? 
+          `[${insertEducation.skillsAcquired.map(skill => `"${skill}"`).join(',')}]` : 
+          '[]'
       ]);
       
       console.log(`[db.createEducation] Created education record with ID ${result.rows[0].id}`);
@@ -5588,7 +5591,10 @@ export class DatabaseStorage implements IStorage {
       
       if (educationData.skillsAcquired !== undefined) {
         updateFields.push(`skills_acquired = $${valueIndex++}`);
-        values.push(educationData.skillsAcquired);
+        // Use the proper PostgreSQL jsonb format
+        values.push(Array.isArray(educationData.skillsAcquired) ? 
+          `[${educationData.skillsAcquired.map(skill => `"${skill}"`).join(',')}]` : 
+          '[]');
       }
       
       if (educationData.startDate !== undefined) {
