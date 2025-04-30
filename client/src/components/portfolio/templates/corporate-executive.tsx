@@ -1361,16 +1361,13 @@ export default function CorporateExecutive({
         </div>
       </section>
       
-      {/* Mentorship Dialog */}
-      {userInfo.id && currentUserId && (
-        <MentorshipDialog
-          isOpen={isMentorshipDialogOpen}
-          setIsOpen={setIsMentorshipDialogOpen}
-          userId={currentUserId}
-          mentorId={userInfo.id}
-          mentorName={userInfo.name}
-        />
-      )}
+      {/* Mentorship Dialog - Always shown for demo */}
+      <MentorshipDialog
+        isOpen={isMentorshipDialogOpen}
+        onOpenChange={setIsMentorshipDialogOpen}
+        userId={currentUserId}
+        mentorId={userInfo.id}
+      />
     </div>
   );
 }
