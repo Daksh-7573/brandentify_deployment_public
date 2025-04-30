@@ -1,6 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { MentorshipButton } from "@/components/shared/mentorship-button";
 import { ProfileImage } from "@/components/ui/profile-image";
 import { Education, Project, Service, Skill, WorkExperience } from "@shared/schema";
 import { useEffect, useState, useRef } from "react";
@@ -70,6 +71,7 @@ import { useToast } from "@/hooks/use-toast";
 
 interface DynamicInnovatorProps {
   userInfo: {
+    id?: number;
     name: string;
     title: string | null;
     industry: string | null;
@@ -86,6 +88,7 @@ interface DynamicInnovatorProps {
   userProjects: Project[];
   userEducations?: Education[];
   userServices?: Service[];
+  currentUserId?: number;
 }
 
 // For skill icons
@@ -124,7 +127,8 @@ export function DynamicInnovator({
   userExperiences, 
   userProjects,
   userEducations = [],
-  userServices = []
+  userServices = [],
+  currentUserId
 }: DynamicInnovatorProps) {
   // State for terminal typing animation
   const [typedText, setTypedText] = useState("");
