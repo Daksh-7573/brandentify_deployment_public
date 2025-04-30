@@ -178,33 +178,58 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
     // In a real app, you would load the appropriate version of the resume
   };
 
+  // Check if resume has valid fileData
+  const hasValidFileData = () => {
+    try {
+      if (!resume) return false;
+      if (!resume.fileData) return false;
+      if (resume.fileData.length < 10) return false; // Empty or trivial data
+      
+      // Try to decode base64 as a basic validation
+      atob(resume.fileData);
+      return true;
+    } catch (error) {
+      console.error('Invalid fileData:', error);
+      return false;
+    }
+  };
+
   // Handle download click
   const handleDownload = () => {
-    if (resume && resume.fileData) {
-      // Convert base64 to blob for download
-      const byteCharacters = atob(resume.fileData);
-      const byteNumbers = new Array(byteCharacters.length);
-      for (let i = 0; i < byteCharacters.length; i++) {
-        byteNumbers[i] = byteCharacters.charCodeAt(i);
+    if (resume && hasValidFileData()) {
+      try {
+        // Convert base64 to blob for download
+        const byteCharacters = atob(resume.fileData);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], { type: 'application/pdf' });
+        
+        // Create a URL for the blob
+        const url = URL.createObjectURL(blob);
+        
+        // Create a temporary anchor element to trigger download
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = resume.fileName || 'resume.pdf';
+        document.body.appendChild(a);
+        a.click();
+        
+        // Clean up
+        setTimeout(() => {
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        }, 100);
+      } catch (error) {
+        console.error('Error downloading resume:', error);
+        toast({
+          title: 'Download Failed',
+          description: 'There was a problem downloading the resume.',
+          variant: 'destructive',
+        });
       }
-      const byteArray = new Uint8Array(byteNumbers);
-      const blob = new Blob([byteArray], { type: 'application/pdf' });
-      
-      // Create a URL for the blob
-      const url = URL.createObjectURL(blob);
-      
-      // Create a temporary anchor element to trigger download
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = resume.fileName || 'resume.pdf';
-      document.body.appendChild(a);
-      a.click();
-      
-      // Clean up
-      setTimeout(() => {
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-      }, 100);
     } else {
       toast({
         title: 'No Resume Available',
@@ -353,13 +378,22 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
             onClick={() => {
               console.log("View button clicked - resume data:", resume);
               // Open resume in a new tab
-              if (resume?.fileData) {
-                const dataUrl = `data:application/pdf;base64,${resume.fileData}`;
-                window.open(dataUrl, '_blank');
+              if (resume && hasValidFileData()) {
+                try {
+                  const dataUrl = `data:application/pdf;base64,${resume.fileData}`;
+                  window.open(dataUrl, '_blank');
+                } catch (error) {
+                  console.error('Error opening PDF preview:', error);
+                  toast({
+                    title: 'Preview Failed',
+                    description: 'There was a problem opening the resume preview.',
+                    variant: 'destructive',
+                  });
+                }
               } else {
                 toast({
                   title: 'No Preview Available',
-                  description: 'This resume has no content to preview yet.',
+                  description: 'This resume has no content to preview yet. Please try refreshing the page or recreating the shadow resume.',
                   variant: 'destructive',
                 });
               }

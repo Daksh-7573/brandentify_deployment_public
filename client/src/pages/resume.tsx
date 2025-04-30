@@ -127,20 +127,9 @@ export default function ResumePage() {
     }
   });
 
-  // Use real resume data if available, otherwise use fallback data for UI development
-  const resume = resumeData?.resume || {
-    id: 0,
-    userId: user?.id || 0,
-    fileName: `${user?.name?.replace(/\s+/g, '') || 'User'}_Resume.pdf`,
-    fileData: '',
-    score: 0,
-    uploadedAt: new Date(),
-    isShadowResume: true,
-    themeStyle: 'professional' as const,
-    isDownloadable: false,
-    lastUpdatedByMusk: new Date(),
-    visibility: 'private' as const,
-  };
+  // Instead of using fallback data, directly use the resume we know exists from the backend
+  // This ensures we're working with real data from the server
+  const resume = resumeData?.resume;
 
   // Handle resume upload
   const handleUploadResume = () => {
@@ -192,7 +181,8 @@ export default function ResumePage() {
               resumeDataKeys: resumeData ? Object.keys(resumeData) : [],
               resumeReadyState: resumeReadyForViewing
             })}
-            {(resumeData && resumeData.resume) || (resumeReadyForViewing && resume) ? (
+            {/* Check if we have a valid resume with data */}
+            {resumeData?.resume?.fileData || (resumeReadyForViewing && resume?.fileData) ? (
               <ShadowResumeSection 
                 user={userData || user} 
                 resume={resume}
