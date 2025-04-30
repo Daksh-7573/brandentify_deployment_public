@@ -4,6 +4,7 @@ import '../../../styles/animated-template.css';
 import { useLumosAnimations } from '@/hooks/use-lumos-animations';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { MentorshipButton } from '@/components/shared/mentorship-button';
 import {
   ArrowRight,
   ChevronDown,
@@ -54,6 +55,8 @@ interface AnimatedTemplateProps {
   email?: string;
   aboutMe?: string | null;
   whatIOffer?: string | null;
+  id?: number;
+  currentUserId?: number;
 }
 
 // Main animated portfolio component
@@ -72,7 +75,9 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
   lookingFor,
   email,
   aboutMe,
-  whatIOffer
+  whatIOffer,
+  id,
+  currentUserId
 }) => {
   // For debugging purposes
   console.log("Animated template - whatIOffer:", whatIOffer);
@@ -272,6 +277,16 @@ const Animated: React.FC<AnimatedTemplateProps> = ({
                 >
                   Services
                 </a>
+                
+                {id && currentUserId && id !== currentUserId && (
+                  <MentorshipButton
+                    userId={currentUserId}
+                    mentorId={id}
+                    className="btn-secondary px-6 py-3 rounded-full bg-gradient-to-r from-purple-600 to-blue-500 text-white font-medium transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/20 hover:-translate-y-1"
+                    buttonText="Request Mentorship"
+                    showIcon={true}
+                  />
+                )}
               </div>
             </motion.div>
             
