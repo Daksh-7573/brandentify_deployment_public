@@ -991,29 +991,24 @@ const AnimatedOdyssey: React.FC<AnimatedOdysseyProps> = ({
               Get My Resume
             </button>
             
-            {/* Mentorship Button - only shown when viewing someone else's profile */}
-            {id && currentUserId && id !== currentUserId && (
-              <button
-                className="cta-button cta-primary"
-                onClick={() => setIsMentorshipDialogOpen(true)}
-              >
-                Request Mentorship
-              </button>
-            )}
+            {/* Mentorship Button - Always shown for demo */}
+            <button
+              className="cta-button cta-primary"
+              onClick={() => setIsMentorshipDialogOpen(true)}
+            >
+              Mentor
+            </button>
           </div>
         </div>
       </motion.div>
       
-      {/* Mentorship Dialog */}
-      {id && currentUserId && id !== currentUserId && (
-        <MentorshipDialog
-          isOpen={isMentorshipDialogOpen}
-          onClose={() => setIsMentorshipDialogOpen(false)}
-          userId={currentUserId}
-          mentorId={id}
-          mentorName={name}
-        />
-      )}
+      {/* Mentorship Dialog - Always shown for demo */}
+      <MentorshipDialog
+        isOpen={isMentorshipDialogOpen}
+        onOpenChange={setIsMentorshipDialogOpen}
+        userId={currentUserId}
+        mentorId={id}
+      />
     </div>
   );
 };
