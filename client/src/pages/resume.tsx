@@ -12,8 +12,9 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import ShadowResumeSection from '@/components/resume/shadow-resume-section';
 import MuskResumeWriter from '@/components/resume/musk-resume-writer';
+import ResumeEditor from '@/pages/resume-editor';
 
-import { Zap, Upload, FileText, Eye } from 'lucide-react';
+import { Zap, Upload, FileText, Eye, Edit2 } from 'lucide-react';
 
 export default function ResumePage() {
   const { user } = useAuth();
@@ -193,7 +194,7 @@ export default function ResumePage() {
     >
 
       <Tabs defaultValue="shadow-resume" value={activeTab} onValueChange={setActiveTab} className="mt-6">
-        <TabsList className="grid w-full grid-cols-2 mb-6">
+        <TabsList className="grid w-full grid-cols-3 mb-6">
           <TabsTrigger value="shadow-resume" className="gap-2">
             <Zap className="h-4 w-4" />
             <span>Shadow Resume</span>
@@ -201,6 +202,10 @@ export default function ResumePage() {
           <TabsTrigger value="resume-writer" className="gap-2">
             <FileText className="h-4 w-4" />
             <span>Resume Writer</span>
+          </TabsTrigger>
+          <TabsTrigger value="resume-editor" className="gap-2">
+            <Edit2 className="h-4 w-4" />
+            <span>Resume Editor</span>
           </TabsTrigger>
         </TabsList>
 
@@ -271,6 +276,12 @@ export default function ResumePage() {
           <div className="grid grid-cols-1 gap-6">
             <MuskResumeWriter onGenerate={handleGeneratedContent} />
           </div>
+        </TabsContent>
+
+        <TabsContent value="resume-editor" className="space-y-6">
+          {userData && (
+            <ResumeEditor />
+          )}
         </TabsContent>
       </Tabs>
     </PageLayout>

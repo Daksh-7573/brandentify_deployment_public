@@ -568,8 +568,8 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                         size="sm"
                         className="bg-white shadow-sm border-gray-200"
                         onClick={() => {
-                          // Open resume editor in a new tab
-                          window.open(`/resume/edit/${user.id}`, '_blank');
+                          // Navigate to the resume editor tab within the UI
+                          navigate(`/resume/edit/${user.id}`);
                         }}
                       >
                         <Edit2 className="h-4 w-4 mr-1" />
