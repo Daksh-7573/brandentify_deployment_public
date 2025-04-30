@@ -1634,6 +1634,15 @@ export function DynamicInnovator({
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Mentorship Dialog */}
+      <MentorshipDialog
+        isOpen={isMentorshipDialogOpen}
+        onOpenChange={setIsMentorshipDialogOpen}
+        userId={currentUserId}
+        mentorId={userInfo.id}
+        className="bg-[#080E24] border border-[#08f7fe]/20"
+      />
     </div>
   );
 }
