@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MentorshipButton } from "@/components/shared/mentorship-button";
+import { MentorshipDialog } from "@/components/shared/mentorship-dialog";
 import { ProfileImage } from "@/components/ui/profile-image";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -100,6 +101,9 @@ export default function FreelancerHub({
   // Project detail modal state
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
+  
+  // Mentorship dialog state
+  const [isMentorshipDialogOpen, setIsMentorshipDialogOpen] = useState(false);
   
   // Scroll state for horizontal section
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -1268,24 +1272,13 @@ export default function FreelancerHub({
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.8, type: "spring" }}
                   >
-                    {userInfo.id && currentUserId && userInfo.id !== currentUserId ? (
-                      <MentorshipButton 
-                        userId={currentUserId}
-                        mentorId={userInfo.id}
-                        variant="default"
-                        className="bg-gradient-to-r from-amber-500 to-orange-500 text-white text-lg px-6 py-6 rounded-full shadow-lg flex items-center gap-2 font-bold hover:shadow-xl transition-shadow w-full sm:w-auto"
-                        style={{ fontFamily: 'Fredoka, sans-serif' }}
-                        buttonText="Mentor"
-                        showIcon={true}
-                      />
-                    ) : (
-                      <Button 
-                        className="bg-gradient-to-r from-amber-500 to-orange-500 text-white text-lg px-6 py-6 rounded-full shadow-lg flex items-center gap-2 font-bold hover:shadow-xl transition-shadow w-full sm:w-auto"
-                        style={{ fontFamily: 'Fredoka, sans-serif' }}
-                        disabled
-                      >
-                        <span>Mentor</span>
-                        <motion.span
+                    <Button 
+                      onClick={() => setIsMentorshipDialogOpen(true)}
+                      className="bg-gradient-to-r from-amber-500 to-orange-500 text-white text-lg px-6 py-6 rounded-full shadow-lg flex items-center gap-2 font-bold hover:shadow-xl transition-shadow w-full sm:w-auto"
+                      style={{ fontFamily: 'Fredoka, sans-serif' }}
+                    >
+                      <span>Mentor</span>
+                      <motion.span
                           initial={{ scale: 1 }}
                           animate={{ scale: [1, 1.2, 1] }}
                           transition={{ 
@@ -1299,7 +1292,6 @@ export default function FreelancerHub({
                           🚀
                         </motion.span>
                       </Button>
-                    )}
                   </motion.div>
                   
                   {/* Grab My Resume Button */}
