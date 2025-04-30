@@ -487,19 +487,47 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                         <h3 className="text-sm font-bold mb-1.5 uppercase text-gray-700">Projects & Achievements</h3>
                         
                         {projects && projects.length > 0 ? (
-                          <ul className="list-disc ml-4 mt-1 text-gray-700 space-y-0.5">
+                          <div className="space-y-2.5 mt-1.5">
                             {projects.slice(0, 5).map((project, i) => (
-                              <li key={i}>
-                                <span className="font-medium">{project.title}</span>
+                              <div key={i} className="border-b border-gray-100 pb-2 last:border-0">
+                                <div className="font-medium text-gray-800">{project.title}</div>
+                                
+                                {/* Project details */}
+                                <div className="text-xs text-gray-600 flex flex-wrap justify-between mt-0.5">
+                                  <div>
+                                    {project.category && <span className="font-medium">Category:</span>} {project.category}
+                                    {project.industry && (
+                                      <span className="ml-1">
+                                        • <span className="font-medium">Industry:</span> {project.industry}
+                                      </span>
+                                    )}
+                                  </div>
+                                  
+                                  {project.startDate && (
+                                    <div>
+                                      <span className="font-medium">Date:</span> {new Date(project.startDate).toLocaleDateString('en-US', {year: 'numeric', month: 'short'})}
+                                    </div>
+                                  )}
+                                </div>
+                                
+                                {/* Project description */}
                                 {project.description && (
-                                  <span> - {project.description.length > 80 ? 
-                                    project.description.substring(0, 80) + '...' : 
-                                    project.description}
-                                  </span>
+                                  <div className="text-xs mt-1 text-gray-700 leading-relaxed">
+                                    {project.description.length > 120 ? 
+                                      project.description.substring(0, 120) + '...' : 
+                                      project.description}
+                                  </div>
                                 )}
-                              </li>
+                                
+                                {/* Project URL */}
+                                {project.projectUrl && (
+                                  <div className="text-[9px] text-gray-500 mt-0.5 truncate">
+                                    <span className="font-medium">URL:</span> {project.projectUrl}
+                                  </div>
+                                )}
+                              </div>
                             ))}
-                          </ul>
+                          </div>
                         ) : (
                           <div className="text-gray-500 italic">
                             No projects added yet. Add projects in your profile.
