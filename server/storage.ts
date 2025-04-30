@@ -5418,8 +5418,8 @@ export class DatabaseStorage implements IStorage {
       try {
         const result = await pool.query(`
           SELECT id, user_id as "userId", title, company, location, 
-                industry, start_date as "startDate", end_date as "endDate", 
-                description
+                industry, domain, start_date as "startDate", end_date as "endDate", 
+                description, key_responsibilities as "keyResponsibilities"
           FROM work_experiences
           WHERE user_id = $1
         `, [userId]);
