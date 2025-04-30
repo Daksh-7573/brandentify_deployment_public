@@ -11,6 +11,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { apiRequest } from "@/lib/queryClient";
 import { ExternalLink, Github, Globe, Linkedin, Mail, MapPin, Phone, Twitter } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/use-auth";
 
 // Import portfolio templates
 import MinimalistPro from "@/components/portfolio/templates/minimalist-pro";
@@ -70,6 +71,7 @@ interface PublicProfileProps {
 const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
   const [, navigate] = useLocation();
   const { toast } = useToast();
+  const { user } = useAuth(); // Get the current authenticated user
   
   // Get username from props or fallback to URL path
   // This handles both wouter params and direct URL access
@@ -243,6 +245,9 @@ const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
   
   // Render the appropriate portfolio template based on user's selected layout
   const renderPortfolio = (portfolioData: PortfolioData) => {
+    // Get the current user ID from auth context for mentorship functionality
+    const currentUserId = user?.id;
+    
     // Map our portfolio data to the format each template expects
     const templateProps = {
       userInfo: {
@@ -263,7 +268,8 @@ const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
       userExperiences: portfolioData.experiences || [],
       userProjects: portfolioData.projects || [],
       userEducations: portfolioData.educations || [],
-      userServices: portfolioData.services || []
+      userServices: portfolioData.services || [],
+      currentUserId: currentUserId // Pass the current user ID for mentorship button functionality
     };
     
     switch (portfolioData.layout) {
@@ -346,6 +352,8 @@ const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
             email={templateProps.userInfo.email}
             aboutMe={aboutMeContent}
             whatIOffer={aboutMeContent}
+            id={templateProps.userInfo.id}
+            currentUserId={templateProps.currentUserId}
           />
         );
       default:
