@@ -32,11 +32,14 @@ async function testProjectIndustryPatch() {
     const updateData = { industry: newIndustry };
     
     // Make PATCH request directly
+    console.log(`Making PATCH request to ${BASE_URL}/api/projects/${projectId}`);
     const patchResponse = await fetch(`${BASE_URL}/api/projects/${projectId}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(updateData)
     });
+    
+    console.log(`PATCH response status: ${patchResponse.status}`);
     
     if (!patchResponse.ok) {
       throw new Error(`PATCH request failed: ${patchResponse.status} ${patchResponse.statusText}`);
