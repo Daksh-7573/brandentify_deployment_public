@@ -177,12 +177,16 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
 
   // Handle theme change
   const handleThemeChange = (value: string) => {
+    console.log(`Changing resume theme to: ${value}`);
     setResumeTheme(value as ResumeTheme);
     
     if (resume) {
+      console.log(`Updating resume ${resume.id} with theme: ${value}`);
       updateResumeMutation.mutate({
         themeStyle: value as ResumeTheme
       });
+    } else {
+      console.error('Cannot update resume theme: No resume object available');
     }
   };
 

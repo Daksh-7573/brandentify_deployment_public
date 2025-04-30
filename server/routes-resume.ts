@@ -132,21 +132,31 @@ export default function resumeRoutes() {
     try {
       const resumeId = parseInt(req.params.id);
       
+      console.log(`[PUT /resumes/:id] Received update request for resume ID: ${resumeId}`);
+      console.log(`[PUT /resumes/:id] Request body:`, req.body);
+      
       if (isNaN(resumeId)) {
+        console.log(`[PUT /resumes/:id] Invalid resume ID format: ${req.params.id}`);
         return res.status(400).json({
           message: 'Invalid resume ID format'
         });
       }
       
       const { themeStyle, isDownloadable } = req.body;
+      console.log(`[PUT /resumes/:id] Updating resume with theme: ${themeStyle}, downloadable: ${isDownloadable}`);
       
       // Verify the theme style is valid if provided
       if (themeStyle && !resumeThemeEnum.enumValues.includes(themeStyle)) {
+        console.log(`[PUT /resumes/:id] Invalid theme style: ${themeStyle}. Valid themes: ${resumeThemeEnum.enumValues.join(', ')}`);
         return res.status(400).json({
           message: 'Invalid theme style',
           validThemes: resumeThemeEnum.enumValues
         });
       }
+      
+      // Fetch current resume to compare changes
+      const currentResume = await storage.getResumeById(resumeId);
+      console.log(`[PUT /resumes/:id] Current resume:`, currentResume);
       
       // Update the resume
       const updatedResume = await storage.updateResume(resumeId, {
