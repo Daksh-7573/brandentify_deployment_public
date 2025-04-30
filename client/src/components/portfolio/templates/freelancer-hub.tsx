@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { MentorshipButton } from "@/components/shared/mentorship-button";
 import { ProfileImage } from "@/components/ui/profile-image";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -53,6 +54,7 @@ interface Project {
 
 interface FreelancerHubProps {
   userInfo: {
+    id?: number;
     name: string;
     title: string | null;
     industry: string | null;
@@ -69,6 +71,7 @@ interface FreelancerHubProps {
   userExperiences: UserExperience[];
   userEducations: UserEducation[];
   publicUrl?: string | null;
+  currentUserId?: number;
 }
 
 export default function FreelancerHub({ 
@@ -78,7 +81,8 @@ export default function FreelancerHub({
   userServices, 
   userExperiences = [], 
   userEducations = [],
-  publicUrl 
+  publicUrl,
+  currentUserId
 }: FreelancerHubProps) {
   // State for animations and effects
   const [activeProject, setActiveProject] = useState<number | null>(null);
@@ -1264,25 +1268,38 @@ export default function FreelancerHub({
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.8, type: "spring" }}
                   >
-                    <Button 
-                      className="bg-gradient-to-r from-amber-500 to-orange-500 text-white text-lg px-6 py-6 rounded-full shadow-lg flex items-center gap-2 font-bold hover:shadow-xl transition-shadow w-full sm:w-auto"
-                      style={{ fontFamily: 'Fredoka, sans-serif' }}
-                    >
-                      <span>Mentor</span>
-                      <motion.span
-                        initial={{ scale: 1 }}
-                        animate={{ scale: [1, 1.2, 1] }}
-                        transition={{ 
-                          duration: 1,
-                          delay: 1.3,
-                          repeat: 1,
-                          repeatType: "reverse"
-                        }}
-                        className="text-xl"
+                    {userInfo.id && currentUserId && userInfo.id !== currentUserId ? (
+                      <MentorshipButton 
+                        userId={currentUserId}
+                        mentorId={userInfo.id}
+                        variant="default"
+                        className="bg-gradient-to-r from-amber-500 to-orange-500 text-white text-lg px-6 py-6 rounded-full shadow-lg flex items-center gap-2 font-bold hover:shadow-xl transition-shadow w-full sm:w-auto"
+                        style={{ fontFamily: 'Fredoka, sans-serif' }}
+                        buttonText="Mentor"
+                        showIcon={true}
+                      />
+                    ) : (
+                      <Button 
+                        className="bg-gradient-to-r from-amber-500 to-orange-500 text-white text-lg px-6 py-6 rounded-full shadow-lg flex items-center gap-2 font-bold hover:shadow-xl transition-shadow w-full sm:w-auto"
+                        style={{ fontFamily: 'Fredoka, sans-serif' }}
+                        disabled
                       >
-                        🚀
-                      </motion.span>
-                    </Button>
+                        <span>Mentor</span>
+                        <motion.span
+                          initial={{ scale: 1 }}
+                          animate={{ scale: [1, 1.2, 1] }}
+                          transition={{ 
+                            duration: 1,
+                            delay: 1.3,
+                            repeat: 1,
+                            repeatType: "reverse"
+                          }}
+                          className="text-xl"
+                        >
+                          🚀
+                        </motion.span>
+                      </Button>
+                    )}
                   </motion.div>
                   
                   {/* Grab My Resume Button */}
