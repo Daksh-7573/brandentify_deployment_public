@@ -305,55 +305,99 @@ export default function ResumeEditor() {
     console.log('Current form values:', form.getValues());
     
     try {
-      // Use the existing profile data as a backup, in case we can't fetch new data
+      // Initialize data with existing profile data as fallback
       let latestProfileData = profileData;
-      
-      // Try to get the latest profile data with better error handling
-      try {
-        console.log('Fetching latest basic profile data for user', userId);
-        const profileResponse = await fetch(`/api/users/${userId}`);
-        if (profileResponse.ok) {
-          const fetchedProfileData = await profileResponse.json();
-          latestProfileData = fetchedProfileData;
-          console.log('Latest profile data fetched successfully:', latestProfileData);
-        } else {
-          console.warn('Profile data endpoint returned status:', profileResponse.status);
-          console.warn('Using existing profile data from context');
-        }
-      } catch (error) {
-        console.warn('Error fetching profile data:', error);
-        console.warn('Using existing profile data from context');
-      }
-      
-      // Initialize data arrays - use empty arrays for safety
       let workExperiences = [];
       let educations = [];
       let skills = [];
       let projects = [];
       
-      // Try to get existing data from resume form first if available
-      const currentFormValues = form.getValues();
-      console.log('Current form values before update:', currentFormValues);
-      
-      // Use existing form values as fallback
-      if (currentFormValues?.experiences?.experiences?.length > 0) {
-        workExperiences = currentFormValues.experiences.experiences;
-        console.log('Using existing form work experiences:', workExperiences);
-      }
-      
-      if (currentFormValues?.education?.educations?.length > 0) {
-        educations = currentFormValues.education.educations;
-        console.log('Using existing form education data:', educations);
-      }
-      
-      if (currentFormValues?.skills?.skills?.length > 0) {
-        skills = currentFormValues.skills.skills;
-        console.log('Using existing form skills data:', skills);
-      }
-      
-      if (currentFormValues?.projects?.projects?.length > 0) {
-        projects = currentFormValues.projects.projects;
-        console.log('Using existing form projects data:', projects);
+      // Use the comprehensive profile endpoint which includes all related data
+      try {
+        console.log('Fetching comprehensive profile data for user', userId);
+        const profileResponse = await fetch(`/api/users/${userId}/profile`);
+        
+        if (profileResponse.ok) {
+          const comprehensiveData = await profileResponse.json();
+          console.log('Comprehensive profile data fetched successfully:', comprehensiveData);
+          
+          // Update all data from the comprehensive response
+          latestProfileData = comprehensiveData;
+          workExperiences = comprehensiveData.workExperiences || [];
+          educations = comprehensiveData.education || [];
+          skills = comprehensiveData.skills || [];
+          projects = comprehensiveData.projects || [];
+          
+          console.log('Data extracted from comprehensive profile:', {
+            workExperiencesCount: workExperiences.length,
+            educationsCount: educations.length,
+            skillsCount: skills.length,
+            projectsCount: projects.length
+          });
+        } else {
+          console.warn('Comprehensive profile endpoint returned status:', profileResponse.status);
+          console.warn('Falling back to basic profile data');
+          
+          // Try to get basic profile as fallback
+          try {
+            const basicProfileResponse = await fetch(`/api/users/${userId}`);
+            if (basicProfileResponse.ok) {
+              latestProfileData = await basicProfileResponse.json();
+              console.log('Basic profile data fetched as fallback:', latestProfileData);
+            }
+          } catch (error) {
+            console.warn('Error fetching basic profile:', error);
+          }
+          
+          // Use form data as fallback if available
+          const currentFormValues = form.getValues();
+          
+          if (currentFormValues?.experiences?.experiences?.length > 0) {
+            workExperiences = currentFormValues.experiences.experiences;
+            console.log('Using existing form work experiences:', workExperiences);
+          }
+          
+          if (currentFormValues?.education?.educations?.length > 0) {
+            educations = currentFormValues.education.educations;
+            console.log('Using existing form education data:', educations);
+          }
+          
+          if (currentFormValues?.skills?.skills?.length > 0) {
+            skills = currentFormValues.skills.skills;
+            console.log('Using existing form skills data:', skills);
+          }
+          
+          if (currentFormValues?.projects?.projects?.length > 0) {
+            projects = currentFormValues.projects.projects;
+            console.log('Using existing form projects data:', projects);
+          }
+        }
+      } catch (error) {
+        console.warn('Error fetching comprehensive profile data:', error);
+        console.warn('Using fallback data sources');
+        
+        // Use form data as fallback if available
+        const currentFormValues = form.getValues();
+        
+        if (currentFormValues?.experiences?.experiences?.length > 0) {
+          workExperiences = currentFormValues.experiences.experiences;
+          console.log('Using existing form work experiences:', workExperiences);
+        }
+        
+        if (currentFormValues?.education?.educations?.length > 0) {
+          educations = currentFormValues.education.educations;
+          console.log('Using existing form education data:', educations);
+        }
+        
+        if (currentFormValues?.skills?.skills?.length > 0) {
+          skills = currentFormValues.skills.skills;
+          console.log('Using existing form skills data:', skills);
+        }
+        
+        if (currentFormValues?.projects?.projects?.length > 0) {
+          projects = currentFormValues.projects.projects;
+          console.log('Using existing form projects data:', projects);
+        }
       }
       
       // Create base personal info from the latest profile data
