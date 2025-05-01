@@ -155,6 +155,8 @@ export default function ResumeEditor() {
   const { data: resumeData, isLoading: isResumeLoading } = useQuery({
     queryKey: ['/api/users', userId, 'shadow-resume'],
     enabled: !!userId,
+    staleTime: 60000, // 1 minute
+    retry: 2,
   });
   
   // Fetch comprehensive user profile data with our new hook
@@ -190,9 +192,9 @@ export default function ResumeEditor() {
   
   // Update form values when profile data and resume data are loaded
   useEffect(() => {
-    if (profileData && resumeData) {
+    if (profileData) {
       // Handle case where resume might not be available
-      const resume = resumeData.resume || {
+      const resume = resumeData?.resume || {
         isDownloadable: false,
         visibility: 'private',
         themeStyle: 'professional'
@@ -267,6 +269,11 @@ export default function ResumeEditor() {
   // Save resume mutation
   const saveResumeMutation = useMutation({
     mutationFn: async (data: z.infer<typeof resumeSchema>) => {
+      // Make sure we have a valid userId before making the request
+      if (!userId) {
+        throw new Error("User ID not available");
+      }
+      
       return await apiRequest(`/api/users/${userId}/shadow-resume`, {
         method: 'PUT',
         data: {
