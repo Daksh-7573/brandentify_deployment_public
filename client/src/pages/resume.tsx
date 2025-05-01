@@ -8,7 +8,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import MuskResumeWriter from '@/components/resume/musk-resume-writer';
-import ResumeEditor from '@/pages/resume-editor';
+import { SafeResumeEditor } from '@/components/resume/safe-resume-editor';
 
 import { Upload, FileText, Edit2, Zap, AlertCircle, Eye, Download } from 'lucide-react';
 
@@ -230,7 +230,13 @@ export default function ResumePage() {
 
         <TabsContent value="resume-editor" className="space-y-6">
           {userData ? (
-            <ResumeEditor />
+            <React.Suspense fallback={
+              <div className="flex items-center justify-center p-8">
+                <p>Loading editor...</p>
+              </div>
+            }>
+              <SafeResumeEditor />
+            </React.Suspense>
           ) : (
             <div className="flex items-center justify-center p-8">
               <p>Loading editor...</p>
