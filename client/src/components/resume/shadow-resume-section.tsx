@@ -52,29 +52,86 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
   // We should use the resume form data instead of directly fetching from profile
   // This ensures the Shadow Resume shows what's in the Resume Editor, not the profile
   
-  // Extract data from resume form if available
-  // First try to use the form data directly
+  // ENHANCED DEBUGGING AND METADATA PARSING
+  
+  // Function to help with debugging objects
+  const safeStringify = (obj: any) => {
+    try {
+      return JSON.stringify(obj).substring(0, 100) + (JSON.stringify(obj).length > 100 ? '...' : '');
+    } catch (e) {
+      return 'Error stringifying object';
+    }
+  };
+  
+  // Enhanced logging about the resume object itself
+  console.log('ShadowResumeSection - Initial Resume Object:', {
+    resumeExists: !!resume,
+    resumeId: resume?.id,
+    hasFormDirectly: !!resume?.form,
+    hasMetadata: !!resume?.metadata,
+    metadataType: resume?.metadata ? typeof resume.metadata : 'N/A',
+    metadataLength: resume?.metadata ? 
+      (typeof resume.metadata === 'string' ? 
+        resume.metadata.length : 
+        safeStringify(resume.metadata).length) 
+      : 0,
+    metadataPreview: resume?.metadata ? 
+      (typeof resume.metadata === 'string' ? 
+        resume.metadata.substring(0, 50) + '...' : 
+        safeStringify(resume.metadata)) 
+      : 'No metadata'
+  });
+  
+  // Extract data from resume form if available - with enhanced parsing
+  // First try to use the form data directly from resume.form
   let formData = resume?.form || null;
   
   // If no form data is available but we have metadata, try to parse it
+  // with comprehensive error handling and debugging
   if (!formData && resume?.metadata) {
+    console.log('Attempting to parse form data from metadata');
+    
     try {
-      console.log('Attempting to parse form data from metadata');
-      formData = JSON.parse(resume.metadata as string);
-      console.log('Successfully parsed form data from metadata');
+      // Handle both string and object metadata
+      if (typeof resume.metadata === 'string') {
+        formData = JSON.parse(resume.metadata);
+        console.log('Successfully parsed string metadata into formData');
+      } else if (typeof resume.metadata === 'object') {
+        // Already an object, just use it directly
+        formData = resume.metadata;
+        console.log('Metadata is already an object, using directly as formData');
+      }
     } catch (e) {
       console.error('Failed to parse metadata as JSON:', e);
+      
+      // Attempt to fix common JSON parsing issues
+      if (typeof resume.metadata === 'string') {
+        try {
+          // Try to clean the string and parse again
+          const cleanedMetadata = resume.metadata
+            .replace(/\\"/g, '"')
+            .replace(/^"/, '')
+            .replace(/"$/, '');
+          
+          console.log('Attempting to parse cleaned metadata:', cleanedMetadata.substring(0, 50) + '...');
+          formData = JSON.parse(cleanedMetadata);
+          console.log('Successfully parsed cleaned metadata');
+        } catch (cleanErr) {
+          console.error('Failed to parse cleaned metadata:', cleanErr);
+        }
+      }
     }
   }
   
-  // Debug logging to trace data flow
-  console.log('ShadowResumeSection - Resume Form Data:', {
+  // Advanced logging to trace data flow
+  console.log('ShadowResumeSection - Resume Form Data Results:', {
     hasFormData: !!formData,
     formDataKeys: formData ? Object.keys(formData) : [],
+    formDataType: formData ? typeof formData : 'null',
+    hasPersonalInfo: formData?.personalInfo ? 'yes' : 'no',
+    hasExperiences: formData?.experiences ? 'yes' : 'no',
     resumeId: resume?.id,
-    resumeHasMetadata: !!resume?.metadata,
-    metadataLength: resume?.metadata ? (resume.metadata as string).length : 0,
-    resumeObject: resume ? 'Resume exists' : 'No resume'
+    formDataPreview: formData ? safeStringify(formData) : 'No form data'
   });
   
   // DO NOT fetch or use profile data at all
