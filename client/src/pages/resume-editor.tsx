@@ -761,10 +761,16 @@ export default function ResumeEditor() {
     );
   }
 
+  // Update error status using useEffect instead of during render
+  useEffect(() => {
+    if ((resumeError || profileError) && !profileData) {
+      setPageStatus('error-loading');
+    }
+  }, [resumeError, profileError, profileData]);
+
   // Handle error states - but only if we also don't have profile data
   // We can still show the form with profile data even if resume data failed to load
   if ((resumeError || profileError) && !profileData) {
-    setPageStatus('error-loading');
     return (
       <Card className="w-full">
         <CardHeader>
@@ -818,14 +824,17 @@ export default function ResumeEditor() {
   }
   
   // If we have errors but profile data loaded, show a warning but still render the form
-  if ((resumeError || profileError) && profileData) {
-    toast({
-      title: 'Warning',
-      description: 'Some data may not have loaded properly. You can still edit your resume, but saving may create a new resume.',
-      variant: 'default',
-      duration: 7000,
-    });
-  }
+  // Using useEffect to avoid showing toast during every render
+  useEffect(() => {
+    if ((resumeError || profileError) && profileData) {
+      toast({
+        title: 'Warning',
+        description: 'Some data may not have loaded properly. You can still edit your resume, but saving may create a new resume.',
+        variant: 'default',
+        duration: 7000,
+      });
+    }
+  }, [resumeError, profileError, profileData, toast]);
   
   // Check if we're showing a fallback form (happens when resumeData is null/undefined)
   const showFallbackForm = !resumeData || !resumeData.resume;
