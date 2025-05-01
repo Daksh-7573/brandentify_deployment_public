@@ -333,9 +333,9 @@ Sample skills relevant to the ${user.industry || 'industry'} would be listed her
   apiRouter.patch("/users/:userId/shadow-resume/:resumeId", async (req: Request, res: Response) => {
     try {
       const { userId, resumeId } = req.params;
-      const updates = req.body;
+      const { resumeData } = req.body;
       
-      console.log(`[PATCH /users/:userId/shadow-resume/:resumeId] Updating shadow resume: ${resumeId} with:`, updates);
+      console.log(`[PATCH /users/:userId/shadow-resume/:resumeId] Updating shadow resume: ${resumeId}`);
       
       // Get the numeric user ID first
       let numericUserId: number;
@@ -372,14 +372,37 @@ Sample skills relevant to the ${user.industry || 'industry'} would be listed her
         return res.status(403).json({ message: 'You do not have permission to update this resume' });
       }
       
-      // Update the resume
-      const updatedResume = await storage.updateResume(parseInt(resumeId), updates);
+      // Extract resume settings from the resumeData
+      if (!resumeData || !resumeData.settings) {
+        console.log(`[PATCH /users/:userId/shadow-resume/:resumeId] Missing resumeData or settings in the request`, req.body);
+        return res.status(400).json({ message: 'Missing resumeData in the request' });
+      }
       
-      console.log(`[PATCH /users/:userId/shadow-resume/:resumeId] Updated resume: ${resumeId}`);
-      return res.status(200).json({ resume: updatedResume });
+      // Get the settings from resumeData
+      const { settings } = resumeData;
+      console.log(`[PATCH /users/:userId/shadow-resume/:resumeId] Updating with settings:`, settings);
+      
+      // Update the resume with the settings
+      const updatedResume = await storage.updateResume(parseInt(resumeId), {
+        lastUpdatedByMusk: new Date(),
+        isDownloadable: settings.isDownloadable,
+        visibility: settings.visibility,
+        themeStyle: settings.themeStyle,
+      });
+      
+      console.log(`[PATCH /users/:userId/shadow-resume/:resumeId] Successfully updated resume: ${resumeId}`);
+      return res.status(200).json({ 
+        resume: updatedResume,
+        message: 'Resume settings updated successfully',
+        success: true
+      });
     } catch (error) {
       console.error(`[PATCH /users/:userId/shadow-resume/:resumeId] Error:`, error);
-      return res.status(500).json({ message: 'Internal server error', error: (error as Error).message });
+      return res.status(500).json({ 
+        message: 'Failed to update resume settings', 
+        error: (error as Error).message,
+        success: false
+      });
     }
   });
 }
