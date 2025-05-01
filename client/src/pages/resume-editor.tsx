@@ -399,9 +399,9 @@ export default function ResumeEditor() {
     if (profileData) {
       console.log("Updating form with profile data:", profileData);
       
-      // First check if we have form data from the shadow resume
+      // First check if we have form data directly in the API response
       if (resumeData && resumeData.form) {
-        console.log("Using saved resume form data:", resumeData.form);
+        console.log("Using saved resume form data from API response:", resumeData.form);
         form.reset({
           personalInfo: resumeData.form.personalInfo || {
             fullName: profileData.name || '',
@@ -430,6 +430,27 @@ export default function ResumeEditor() {
             themeStyle: resumeData.resume?.themeStyle || 'professional',
           },
         });
+      } 
+      // Next check if we have metadata in the resume object that contains form data
+      else if (resumeData?.resume?.metadata) {
+        try {
+          // Try to parse the metadata JSON string that contains form data
+          const parsedMetadata = JSON.parse(resumeData.resume.metadata);
+          console.log("Using form data from resume metadata:", parsedMetadata);
+          
+          form.reset({
+            ...parsedMetadata,
+            settings: {
+              isDownloadable: resumeData.resume?.isDownloadable || false,
+              visibility: resumeData.resume?.visibility || 'private',
+              themeStyle: resumeData.resume?.themeStyle || 'professional',
+            },
+          });
+        } catch (parseError) {
+          console.error("Error parsing resume metadata:", parseError);
+          // Fall through to profile data fallback
+          console.log("Metadata parse error, falling back to profile data");
+        }
       } else {
         // Fallback to creating form data from profile if resume form data is not available
         // This happens when a user doesn't have a shadow resume yet or when resumeData failed to load
