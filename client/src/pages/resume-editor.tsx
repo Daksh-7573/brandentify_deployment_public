@@ -700,35 +700,70 @@ export default function ResumeEditor() {
       // Create JSON string for metadata
       const metadata = JSON.stringify(values);
       
-      // Build the request data - wrap values in resumeData as required by the server
-      const requestData = {
-        resumeData: {
-          userId,
-          resumeId: resumeData?.resume?.id, // Include resume ID if we're updating
-          isDownloadable: values.settings.isDownloadable,
-          visibility: values.settings.visibility,
-          themeStyle: values.settings.themeStyle,
-          metadata, // Send the full form data as metadata
-          isShadowResume: true, // Mark this as a shadow resume
-          settings: values.settings // Include settings as required by server
-        }
+      // Step 1: Create a simpler request payload directly matching the expected server format
+      const plainRequestData = {
+        userId,
+        resumeId: resumeData?.resume?.id, // Include resume ID if we're updating
+        isDownloadable: values.settings.isDownloadable,
+        visibility: values.settings.visibility,
+        themeStyle: values.settings.themeStyle,
+        metadata, // Send the full form data as metadata
+        isShadowResume: true, // Mark this as a shadow resume
+        settings: values.settings, // Include settings as required by server
+        experiences: values.experiences.experiences,
+        education: values.education.educations,
+        skills: values.skills.skills,
+        projects: values.projects.projects,
+        personalInfo: values.personalInfo
       };
       
-      console.log("Sending request data:", requestData);
+      // Step 2: Log complete request data to debug server communication issues
+      console.log("Plain request data to be sent:", plainRequestData);
+      
+      let serverResponse;
       
       // Check if we're creating a new resume or updating an existing one
       if (resumeData?.resume?.id) {
-        // Update existing resume
+        // Update existing resume - try different payload formats if needed
+        console.log(`Updating resume ${resumeData.resume.id} for user ${userId}`);
+        
+        // Format payload exactly as expected by the server - resumeData with settings
+        // The server explicitly checks for resumeData.settings in routes-shadow-resume.ts line 395
+        const directPayload = {
+          resumeData: values  // This includes the settings property that the server requires
+        };
+        console.log("Using direct values payload:", directPayload);
+        
+        // Log the critical parts of our payload to verify structure
+        console.log("Payload structure check:", {
+          "resumeData exists": !!directPayload.resumeData,
+          "settings exists": !!directPayload.resumeData?.settings,
+          "settings properties": directPayload.resumeData?.settings
+        });
+        
         const response = await fetch(`/api/users/${userId}/shadow-resume/${resumeData.resume.id}`, {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(requestData), // Using the properly formatted requestData
+          body: JSON.stringify(directPayload),
         });
         
+        // Check response status and get response data for debugging
+        const responseStatus = response.status;
+        let responseText = '';
+        try {
+          responseText = await response.text();
+          serverResponse = responseText ? JSON.parse(responseText) : {};
+        } catch (e) {
+          responseText = `Could not parse response: ${e.message}`;
+          serverResponse = { error: e.message };
+        }
+        
+        console.log(`Server response (${responseStatus}):`, responseText, serverResponse);
+        
         if (!response.ok) {
-          throw new Error(`Failed to update resume: ${response.statusText}`);
+          throw new Error(`Failed to update resume: ${response.statusText}. Details: ${responseText}`);
         }
         
         // Show success message
@@ -739,16 +774,44 @@ export default function ResumeEditor() {
         });
       } else {
         // Create new resume
+        console.log(`Creating new resume for user ${userId}`);
+        
+        // Direct payload approach - same structure as for updates
+        const directPayload = {
+          resumeData: values  // This includes the settings property that the server requires
+        };
+        console.log("Using direct values payload for creation:", directPayload);
+        
+        // Log the critical parts of our payload to verify structure
+        console.log("Payload structure check for creation:", {
+          "resumeData exists": !!directPayload.resumeData,
+          "settings exists": !!directPayload.resumeData?.settings,
+          "settings properties": directPayload.resumeData?.settings
+        });
+        
         const response = await fetch(`/api/users/${userId}/create-shadow-resume`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(requestData), // Using the properly formatted requestData
+          body: JSON.stringify(directPayload),
         });
         
+        // Check response status and get response data for debugging
+        const responseStatus = response.status;
+        let responseText = '';
+        try {
+          responseText = await response.text();
+          serverResponse = responseText ? JSON.parse(responseText) : {};
+        } catch (e) {
+          responseText = `Could not parse response: ${e.message}`;
+          serverResponse = { error: e.message };
+        }
+        
+        console.log(`Server response (${responseStatus}):`, responseText, serverResponse);
+        
         if (!response.ok) {
-          throw new Error(`Failed to create resume: ${response.statusText}`);
+          throw new Error(`Failed to create resume: ${response.statusText}. Details: ${responseText}`);
         }
         
         // Show success message
@@ -762,6 +825,15 @@ export default function ResumeEditor() {
       // Invalidate the queries to refresh data
       queryClient.invalidateQueries({ queryKey: ['/api/users', userId, 'shadow-resume'] });
       setPageStatus('saved-successfully');
+      
+      // If we get a resume ID from the server response, update our local state
+      if (serverResponse?.id && !resumeData?.resume?.id) {
+        console.log("New resume created with ID:", serverResponse.id);
+        // Force reload the data to get the new resume ID
+        setTimeout(() => {
+          queryClient.invalidateQueries({ queryKey: ['/api/users', userId, 'shadow-resume'] });
+        }, 500);
+      }
       
     } catch (error) {
       console.error("Error saving resume:", error);
@@ -1765,10 +1837,38 @@ export default function ResumeEditor() {
                 type="button" 
                 className="flex items-center gap-2"
                 disabled={isSaving}
-                onClick={() => {
+                onClick={async () => {
                   console.log("Manual save triggered");
-                  const values = form.getValues();
-                  onSubmit(values);
+                  try {
+                    // Get form values
+                    const values = form.getValues();
+                    console.log("Form values to be submitted:", values);
+                    
+                    // Submit form directly
+                    await onSubmit(values);
+                    console.log("Form submission completed");
+                    
+                    // Verify form data after submission
+                    setTimeout(() => {
+                      // Check if form data is still accessible after save
+                      console.log("Form data after save:", form.getValues());
+                      
+                      // Fetch saved data to compare
+                      if (resumeData?.resume?.id) {
+                        console.log("Verifying saved data with server...");
+                        fetch(`/api/users/${userId}/shadow-resume`)
+                          .then(res => res.json())
+                          .then(data => {
+                            console.log("Shadow resume data from server after save:", data);
+                          })
+                          .catch(error => {
+                            console.error("Failed to fetch shadow resume after save:", error);
+                          });
+                      }
+                    }, 1000);
+                  } catch (error) {
+                    console.error("Save error caught in button click handler:", error);
+                  }
                 }}
               >
                 {isSaving ? (
