@@ -511,18 +511,26 @@ export default function ResumeEditor() {
       console.log("Initializing form with data");
       setPageStatus('initializing-form');
       
+      // Create the base personal info from profile data to ensure we always have fresh profile data
+      const basePersonalInfo = {
+        fullName: profileData.name || '',
+        title: profileData.title || '',
+        email: profileData.email || '',
+        phone: profileData.phoneNumber || '',
+        location: profileData.location || '',
+        summary: profileData.aboutMe || '',
+        website: profileData.website || '',
+      };
+      
+      // Always use profile data as the base, and only supplement with form/metadata data
       // Determine which data source to use
       if (resumeData?.form) {
-        console.log("Using saved resume form data from API response");
+        console.log("Using saved resume form data from API response but ensuring profile data integration");
         form.reset({
-          personalInfo: resumeData.form.personalInfo || {
-            fullName: profileData.name || '',
-            title: profileData.title || '',
-            email: profileData.email || '',
-            phone: profileData.phoneNumber || '',
-            location: profileData.location || '',
-            summary: profileData.aboutMe || '',
-            website: profileData.website || '',
+          personalInfo: {
+            ...basePersonalInfo,
+            // Selectively override with form data only if it's been intentionally changed
+            ...(resumeData.form.personalInfo || {}),
           },
           experiences: { 
             experiences: resumeData.form.experiences?.experiences || []
@@ -544,9 +552,13 @@ export default function ResumeEditor() {
         });
       } 
       else if (metadataFormData) {
-        console.log("Using form data from parsed metadata");
+        console.log("Using form data from parsed metadata with profile integration");
         form.reset({
           ...metadataFormData,
+          personalInfo: {
+            ...basePersonalInfo,
+            ...(metadataFormData.personalInfo || {}),
+          },
           settings: {
             isDownloadable: resumeData?.resume?.isDownloadable || false,
             visibility: resumeData?.resume?.visibility || 'private',
@@ -555,9 +567,13 @@ export default function ResumeEditor() {
         });
       }
       else if (localCachedFormData) {
-        console.log("Using form data from localStorage cache");
+        console.log("Using form data from localStorage cache with profile integration");
         form.reset({
           ...localCachedFormData,
+          personalInfo: {
+            ...basePersonalInfo,
+            ...(localCachedFormData.personalInfo || {}),
+          },
           settings: {
             isDownloadable: resumeData?.resume?.isDownloadable || false,
             visibility: resumeData?.resume?.visibility || 'private',
@@ -568,15 +584,7 @@ export default function ResumeEditor() {
       else {
         console.log("No saved form data, initializing from profile data");
         form.reset({
-          personalInfo: {
-            fullName: profileData.name || '',
-            title: profileData.title || '',
-            email: profileData.email || '',
-            phone: profileData.phoneNumber || '',
-            location: profileData.location || '',
-            summary: profileData.aboutMe || '',
-            website: profileData.website || '',
-          },
+          personalInfo: basePersonalInfo,
           experiences: { experiences: [] },
           education: { educations: [] },
           skills: { skills: [] },
