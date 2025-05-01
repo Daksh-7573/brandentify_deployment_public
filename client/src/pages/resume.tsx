@@ -1,33 +1,167 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
+import { apiRequest, queryClient } from '@/lib/queryClient';
+import { Resume } from '@/types/resume';
 
 import { PageLayout } from '@/components/layout/page-layout';
+import { PageHeader } from '@/components/ui/page-header';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
+import ShadowResumeSection from '@/components/resume/shadow-resume-section';
 import MuskResumeWriter from '@/components/resume/musk-resume-writer';
-import { SafeResumeEditor } from '@/components/resume/safe-resume-editor';
+import ResumeEditor from '@/pages/resume-editor';
 
-import { Upload, FileText, Edit2, Zap, AlertCircle, Eye, Download } from 'lucide-react';
+import { Zap, Upload, FileText, Eye, Edit2 } from 'lucide-react';
 
 export default function ResumePage() {
   const { user } = useAuth();
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState('resume-editor');
+  const [activeTab, setActiveTab] = useState('shadow-resume');
 
   // Fetch user data
-  const { data: userData } = useQuery({
+  const { data: userData, isLoading: isUserLoading } = useQuery({
     queryKey: ['/api/users', user?.id],
     enabled: !!user?.id,
   });
-
+  
   // Fetch shadow resume for the user (if it exists)
   const { data: resumeData, isLoading: isResumeLoading, refetch: refetchResume } = useQuery<{resume: any}>({
     queryKey: ['/api/users', user?.id, 'shadow-resume'],
-    enabled: !!user?.id
+    enabled: !!user?.id,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true
   });
+  
+  // Log data for debugging
+  useEffect(() => {
+    if (resumeData) {
+      console.log('Shadow resume data loaded:', resumeData);
+      console.log('Resume exists?', !!resumeData.resume);
+    }
+  }, [resumeData]);
+
+  // State for managing resume creation process
+  const [isCreationRequested, setIsCreationRequested] = useState(false);
+  const [resumeReadyForViewing, setResumeReadyForViewing] = useState(false);
+  
+  // Force initial shadow resume fetch on mount
+  useEffect(() => {
+    if (user?.id) {
+      console.log('Forcing initial shadow resume fetch...');
+      fetch(`/api/users/${user.id}/shadow-resume`)
+        .then(res => res.json())
+        .then(data => {
+          console.log('Direct fetch result:', data);
+          if (data.resume) {
+            console.log('Shadow resume found via direct fetch, updating UI state...');
+            // Store the resume data directly
+            setManuallyFetchedResume(data.resume);
+            setResumeReadyForViewing(true);
+            // Force refresh query state
+            refetchResume();
+          } else {
+            console.log('No shadow resume from direct fetch, will try creating one...');
+            createResumeMutation.mutate();
+          }
+        })
+        .catch(err => {
+          console.error('Error fetching shadow resume:', err);
+        });
+    }
+  }, [user?.id]);
+  
+  // Auto-create shadow resume if one doesn't exist based on query results
+  useEffect(() => {
+    if (resumeData && !resumeData.resume && !isCreationRequested && !createResumeMutation.isPending) {
+      console.log('No shadow resume found in query data, auto-creating one...');
+      createResumeMutation.mutate();
+    }
+    
+    // If resume exists in data but still showing generating state, update the state
+    if (resumeData && resumeData.resume && !resumeReadyForViewing) {
+      console.log('Resume found in query data, updating UI state...');
+      setResumeReadyForViewing(true);
+    }
+  }, [resumeData]);
+
+  // Create shadow resume mutation
+  const createResumeMutation = useMutation<any, Error, void>({
+    mutationFn: async () => {
+      setIsCreationRequested(true);
+      return await fetch(`/api/users/${user?.id}/create-shadow-resume`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId: user?.id }),
+      }).then(res => {
+        if (!res.ok) throw new Error('Failed to create shadow resume');
+        return res.json();
+      });
+    },
+    onSuccess: (data) => {
+      console.log('Resume created successfully:', data);
+      // Simulate Musk's processing time (in a real app, this would be actual processing)
+      setTimeout(() => {
+        // Set resume as ready and show notification
+        setResumeReadyForViewing(true);
+        toast({
+          title: 'Shadow Resume Ready!',
+          description: 'Musk has analyzed your profile and created a resume tailored to your career journey.',
+          duration: 5000,
+        });
+        // Invalidate queries to refresh data
+        queryClient.invalidateQueries({
+          queryKey: ['/api/users', user?.id, 'shadow-resume']
+        });
+      }, 3000); // Simulate 3 seconds of Musk processing time
+    },
+    onError: (error: any) => {
+      setIsCreationRequested(false);
+      console.error('Error creating shadow resume:', error);
+      toast({
+        title: 'Failed to Create Resume',
+        description: 'There was a problem creating your shadow resume.',
+        variant: 'destructive',
+      });
+    }
+  });
+
+  // Initialize a variable to store the resume from different sources
+  const [manuallyFetchedResume, setManuallyFetchedResume] = useState<any>(null);
+  
+  // Use real resume data from either query or manual fetch, otherwise use fallback
+  const resume = resumeData?.resume || manuallyFetchedResume || {
+    id: 0,
+    userId: user?.id || 0,
+    fileName: `${user?.name?.replace(/\s+/g, '') || 'User'}_Resume.pdf`,
+    fileData: '',
+    score: 0,
+    uploadedAt: new Date(),
+    isShadowResume: true,
+    themeStyle: 'professional' as const,
+    isDownloadable: false,
+    lastUpdatedByMusk: new Date(),
+    visibility: 'private' as const,
+  };
+  
+  // Debug log for resume sources
+  useEffect(() => {
+    console.log('Resume sources check:', {
+      fromResumeData: resumeData?.resume ? 'YES' : 'NO',
+      fromManualFetch: manuallyFetchedResume ? 'YES' : 'NO',
+      readyState: resumeReadyForViewing
+    });
+    
+    // If we have a resume from any source and ui isn't showing it yet
+    if ((resumeData?.resume || manuallyFetchedResume) && !resumeReadyForViewing) {
+      console.log('Setting resume ready to true based on available data');
+      setResumeReadyForViewing(true);
+    }
+  }, [resumeData, manuallyFetchedResume, resumeReadyForViewing]);
 
   // Handle resume upload
   const handleUploadResume = () => {
@@ -46,46 +180,11 @@ export default function ResumePage() {
     });
     // In a real app, this would update the resume in the database
   };
-  
-  // Create shadow resume mutation
-  const createShadowResumeMutation = useMutation({
-    mutationFn: async () => {
-      if (!user?.id) throw new Error("User ID is required");
-      
-      const response = await fetch(`/api/users/${user.id}/create-shadow-resume`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-      });
-      
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Failed to create shadow resume: ${response.status} ${errorText}`);
-      }
-      
-      const data = await response.json();
-      return data;
-    },
-    onSuccess: () => {
-      toast({
-        title: "Shadow Resume Created",
-        description: "Your Shadow Resume has been created successfully.",
-      });
-      // Refresh the resume data
-      refetchResume();
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Error Creating Shadow Resume",
-        description: error.message || "Failed to create Shadow Resume. Please try again.",
-        variant: "destructive",
-      });
-    }
-  });
 
   return (
     <PageLayout
       title="Resume & CV"
-      description="View and manage your professional resume. Changes made in the Resume Editor will automatically update your Shadow Resume."
+      description="View and manage your professional resume"
       actions={
         <Button onClick={handleUploadResume} className="gap-2">
           <Upload className="h-4 w-4" />
@@ -93,7 +192,8 @@ export default function ResumePage() {
         </Button>
       }
     >
-      <Tabs defaultValue="resume-editor" value={activeTab} onValueChange={setActiveTab} className="mt-6">
+
+      <Tabs defaultValue="shadow-resume" value={activeTab} onValueChange={setActiveTab} className="mt-6">
         <TabsList className="grid w-full grid-cols-3 mb-6">
           <TabsTrigger value="shadow-resume" className="gap-2">
             <Zap className="h-4 w-4" />
@@ -110,292 +210,67 @@ export default function ResumePage() {
         </TabsList>
 
         <TabsContent value="shadow-resume" className="space-y-6">
-          <Card className="w-full shadow-md">
-            <CardHeader className="pb-3">
-              <div className="flex justify-between items-center">
-                <div>
-                  <CardTitle>Shadow Resume</CardTitle>
-                  <CardDescription>
-                    View your finalized resume automatically updated from the Resume Editor
-                  </CardDescription>
+          <div className="grid grid-cols-1 gap-6">
+            {console.log('Render condition check:', {
+              hasResumeData: !!resumeData,
+              hasResumeObject: resumeData && !!resumeData.resume,
+              resumeDataKeys: resumeData ? Object.keys(resumeData) : [],
+              resumeReadyState: resumeReadyForViewing
+            })}
+            {(resumeData && resumeData.resume) || (resumeReadyForViewing && resume) ? (
+              <ShadowResumeSection 
+                user={userData || user} 
+                resume={resume}
+                isCurrentUser={true}
+                isOwner={true}
+                onTabChange={setActiveTab}
+              />
+            ) : (
+              <div className="flex flex-col items-center justify-center p-10 border rounded-lg bg-card">
+                <Zap className={`h-16 w-16 mb-4 ${isCreationRequested ? 'text-primary animate-pulse' : 'text-primary'}`} />
+                
+                <div className="space-y-4 text-center">
+                  <h3 className="text-2xl font-bold mb-2">{resumeReadyForViewing ? 'Your Shadow Resume is Ready!' : 'Generating Your Shadow Resume'}</h3>
+                  
+                  {resumeReadyForViewing ? (
+                    <>
+                      <p className="text-center text-muted-foreground mb-6">
+                        Musk has analyzed your profile and created a tailored resume for you.
+                        Click below to view your new Shadow Resume.
+                      </p>
+                      <Button 
+                        onClick={() => {
+                          // Force refetch the resume data
+                          refetchResume().then(() => {
+                            toast({
+                              title: 'Shadow Resume Updated',
+                              description: 'Your shadow resume has been refreshed with the latest data.',
+                            });
+                          });
+                        }}
+                        className="gap-2"
+                      >
+                        <Eye className="h-4 w-4" />
+                        <span>View Your Shadow Resume</span>
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <div className="flex items-center justify-center">
+                        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+                      </div>
+                      <p className="text-muted-foreground">
+                        Musk is analyzing your professional profile and automatically creating your Shadow Resume...
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        Your resume will be continuously updated as your career evolves.
+                      </p>
+                    </>
+                  )}
                 </div>
               </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {isResumeLoading ? (
-                <div className="flex items-center justify-center py-20">
-                  <div className="flex flex-col items-center">
-                    <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary mb-3"></div>
-                    <p className="text-sm text-muted-foreground">Loading your resume...</p>
-                  </div>
-                </div>
-              ) : resumeData?.resume ? (
-                <div className="space-y-4">
-                  <div className="border rounded-md p-4 bg-card">
-                    <div className="text-center mb-4">
-                      <h3 className="text-lg font-bold">Your Resume</h3>
-                      <p className="text-sm text-muted-foreground">
-                        This is the final version of your resume saved from the Resume Editor.
-                      </p>
-                    </div>
-                    
-                    {/* Display resume preview */}
-                    <div className="aspect-[3/4] bg-white rounded-lg border shadow-sm overflow-hidden relative">
-                      {resumeData.resume?.fileUrl ? (
-                        <>
-                          <object
-                            data={resumeData.resume.fileUrl}
-                            type="application/pdf"
-                            className="w-full h-full"
-                          >
-                            <div className="w-full h-full flex flex-col items-center justify-center p-4">
-                              <p className="text-sm text-center mb-4">
-                                Unable to display PDF directly. Please download to view.
-                              </p>
-                              <Button 
-                                variant="default" 
-                                onClick={() => {
-                                  if (resumeData?.resume?.fileUrl) {
-                                    const link = document.createElement('a');
-                                    link.href = resumeData.resume.fileUrl;
-                                    link.download = resumeData.resume.fileName || 'resume.pdf';
-                                    document.body.appendChild(link);
-                                    link.click();
-                                    document.body.removeChild(link);
-                                    
-                                    toast({
-                                      title: "Resume Downloaded",
-                                      description: "Your resume has been downloaded successfully.",
-                                    });
-                                  }
-                                }}
-                              >
-                                <Download className="h-4 w-4 mr-2" />
-                                Download Resume
-                              </Button>
-                            </div>
-                          </object>
-                          <div className="absolute bottom-2 right-2">
-                            <Button
-                              size="sm"
-                              variant="secondary"
-                              className="opacity-70 hover:opacity-100"
-                              onClick={() => {
-                                if (resumeData?.resume?.fileUrl) {
-                                  const link = document.createElement('a');
-                                  link.href = resumeData.resume.fileUrl;
-                                  link.download = resumeData.resume.fileName || 'resume.pdf';
-                                  document.body.appendChild(link);
-                                  link.click();
-                                  document.body.removeChild(link);
-                                  
-                                  toast({
-                                    title: "Resume Downloaded",
-                                    description: "Your resume has been downloaded successfully.",
-                                  });
-                                }
-                              }}
-                            >
-                              <Download className="h-3 w-3 mr-1" />
-                              Download
-                            </Button>
-                          </div>
-                        </>
-                      ) : resumeData.resume?.fileData ? (
-                        <>
-                          <object
-                            data={`data:application/pdf;base64,${String(resumeData.resume.fileData)}`}
-                            type="application/pdf"
-                            className="w-full h-full"
-                          >
-                            <div className="w-full h-full flex flex-col items-center justify-center p-4">
-                              <p className="text-sm text-center mb-4">
-                                Unable to display PDF directly. Please download to view.
-                              </p>
-                              <Button 
-                                variant="default" 
-                                onClick={() => {
-                                  if (resumeData?.resume?.fileData) {
-                                    const link = document.createElement('a');
-                                    link.href = `data:application/pdf;base64,${String(resumeData.resume.fileData)}`;
-                                    link.download = resumeData.resume.fileName || 'resume.pdf';
-                                    document.body.appendChild(link);
-                                    link.click();
-                                    document.body.removeChild(link);
-                                    
-                                    toast({
-                                      title: "Resume Downloaded",
-                                      description: "Your resume has been downloaded successfully.",
-                                    });
-                                  }
-                                }}
-                              >
-                                <Download className="h-4 w-4 mr-2" />
-                                Download Resume
-                              </Button>
-                            </div>
-                          </object>
-                          <div className="absolute bottom-2 right-2">
-                            <Button
-                              size="sm"
-                              variant="secondary"
-                              className="opacity-70 hover:opacity-100"
-                              onClick={() => {
-                                if (resumeData?.resume?.fileData) {
-                                  const link = document.createElement('a');
-                                  link.href = `data:application/pdf;base64,${String(resumeData.resume.fileData)}`;
-                                  link.download = resumeData.resume.fileName || 'resume.pdf';
-                                  document.body.appendChild(link);
-                                  link.click();
-                                  document.body.removeChild(link);
-                                  
-                                  toast({
-                                    title: "Resume Downloaded",
-                                    description: "Your resume has been downloaded successfully.",
-                                  });
-                                }
-                              }}
-                            >
-                              <Download className="h-3 w-3 mr-1" />
-                              Download
-                            </Button>
-                          </div>
-                        </>
-                      ) : (
-                        <div className="flex items-center justify-center h-full">
-                          <p className="text-muted-foreground">Resume preview not available</p>
-                        </div>
-                      )}
-                    </div>
-                    
-                    <div className="flex justify-center gap-3 mt-4">
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => setActiveTab('resume-editor')}
-                      >
-                        <Edit2 className="h-4 w-4 mr-1" />
-                        Edit Resume
-                      </Button>
-                      
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => {
-                          if (resumeData?.resume?.fileUrl) {
-                            // Create anchor element and trigger download using fileUrl
-                            const link = document.createElement('a');
-                            link.href = resumeData.resume.fileUrl;
-                            link.download = resumeData.resume.fileName || 'resume.pdf';
-                            document.body.appendChild(link);
-                            link.click();
-                            document.body.removeChild(link);
-                            
-                            toast({
-                              title: "Resume Downloaded",
-                              description: "Your resume has been downloaded successfully.",
-                            });
-                          } else if (resumeData?.resume?.fileData) {
-                            // Fallback to fileData if fileUrl is not available
-                            const link = document.createElement('a');
-                            link.href = `data:application/pdf;base64,${String(resumeData.resume.fileData)}`;
-                            link.download = resumeData.resume.fileName || 'resume.pdf';
-                            document.body.appendChild(link);
-                            link.click();
-                            document.body.removeChild(link);
-                            
-                            toast({
-                              title: "Resume Downloaded",
-                              description: "Your resume has been downloaded successfully.",
-                            });
-                          }
-                        }}
-                      >
-                        <Eye className="h-4 w-4 mr-1" />
-                        View Full Resume
-                      </Button>
-                      
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => {
-                          if (resumeData?.resume?.id) {
-                            toast({
-                              title: "Refreshing Resume",
-                              description: "Updating your Shadow Resume with the latest profile data...",
-                            });
-                            
-                            fetch(`/api/shadow-resumes/${resumeData.resume.id}/refresh-from-profile`, {
-                              method: 'POST',
-                              headers: { 'Content-Type': 'application/json' },
-                            })
-                              .then(response => {
-                                if (!response.ok) throw new Error("Failed to refresh resume");
-                                return response.json();
-                              })
-                              .then(() => {
-                                refetchResume();
-                                toast({
-                                  title: "Resume Updated",
-                                  description: "Your Shadow Resume has been refreshed with your latest profile data.",
-                                });
-                              })
-                              .catch(error => {
-                                console.error("Error refreshing resume:", error);
-                                toast({
-                                  title: "Error Updating Resume",
-                                  description: "Failed to refresh your resume. Please try again.",
-                                  variant: "destructive"
-                                });
-                              });
-                          }
-                        }}
-                      >
-                        <Zap className="h-4 w-4 mr-1" />
-                        Refresh
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="flex flex-col items-center justify-center p-8 text-center">
-                  <AlertCircle className="h-12 w-12 text-muted-foreground mb-4" />
-                  <h3 className="text-lg font-medium mb-2">No Resume Found</h3>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    You haven't created a shadow resume yet. Create one now or use the Resume Editor.
-                  </p>
-                  <div className="flex gap-3">
-                    <Button 
-                      variant="default" 
-                      size="sm"
-                      onClick={() => createShadowResumeMutation.mutate()}
-                      disabled={createShadowResumeMutation.isPending}
-                    >
-                      {createShadowResumeMutation.isPending ? (
-                        <>
-                          <div className="animate-spin h-4 w-4 mr-2 border-2 border-white border-t-transparent rounded-full"></div>
-                          Creating...
-                        </>
-                      ) : (
-                        <>
-                          <Zap className="h-4 w-4 mr-1" />
-                          Create Shadow Resume
-                        </>
-                      )}
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => setActiveTab('resume-editor')}
-                    >
-                      <Edit2 className="h-4 w-4 mr-1" />
-                      Go to Editor
-                    </Button>
-                  </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+            )}
+          </div>
         </TabsContent>
 
         <TabsContent value="resume-writer" className="space-y-6">
@@ -405,18 +280,8 @@ export default function ResumePage() {
         </TabsContent>
 
         <TabsContent value="resume-editor" className="space-y-6">
-          {userData ? (
-            <React.Suspense fallback={
-              <div className="flex items-center justify-center p-8">
-                <p>Loading editor...</p>
-              </div>
-            }>
-              <SafeResumeEditor />
-            </React.Suspense>
-          ) : (
-            <div className="flex items-center justify-center p-8">
-              <p>Loading editor...</p>
-            </div>
+          {userData && (
+            <ResumeEditor />
           )}
         </TabsContent>
       </Tabs>

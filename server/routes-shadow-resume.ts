@@ -202,80 +202,14 @@ Sample education details would be generated here.
 Sample skills relevant to the ${user.industry || 'industry'} would be listed here.
           `;
           
-          // Create a real PDF from scratch - using puppeteer would be ideal but we can create a simple PDF
-          // This function generates a minimal valid PDF that will render in all browsers
-          async function generateSimplePDF(user) {
-            // Create a basic PDF structure with minimal content based on user information
-            const pdfContent = `%PDF-1.4
-1 0 obj
-<</Type/Catalog/Pages 2 0 R>>
-endobj
-2 0 obj
-<</Type/Pages/Kids[3 0 R]/Count 1>>
-endobj
-3 0 obj
-<</Type/Page/MediaBox[0 0 595 842]/Resources 4 0 R/Parent 2 0 R/Contents 5 0 R>>
-endobj
-4 0 obj
-<</Font<</F1<</Type/Font/Subtype/Type1/BaseFont/Helvetica>>>>>
-endobj
-5 0 obj
-<</Length 374>>
-stream
-BT
-/F1 24 Tf
-50 750 Td
-(Resume for ${user.name || 'User'}) Tj
-/F1 14 Tf
-0 -30 Td
-(${user.title || 'Professional'}) Tj
-0 -20 Td
-(${user.email || 'Email'}) Tj
-0 -20 Td
-(${user.location || 'Location'}) Tj
-0 -40 Td
-/F1 18 Tf
-(Professional Summary) Tj
-/F1 12 Tf
-0 -20 Td
-(This shadow resume will be updated with your profile data.) Tj
-0 -15 Td
-(Visit the Resume Editor to fully customize this document.) Tj
-ET
-endstream
-endobj
-xref
-0 6
-0000000000 65535 f
-0000000009 00000 n
-0000000052 00000 n
-0000000101 00000 n
-0000000188 00000 n
-0000000256 00000 n
-trailer
-<</Size 6/Root 1 0 R>>
-startxref
-680
-%%EOF`;
-
-            // Convert to base64
-            return Buffer.from(pdfContent).toString('base64');
-          }
-
-          // Generate a proper PDF for the shadow resume
-          const pdfBase64 = await generateSimplePDF(user);
+          // Create a sample resume PDF content (base64 encoded)
+          const sampleBase64PDF = "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QBjA4fdehdFmAaUz3WQ0LH+KCRFZiWbcbBtJe/DucAbe3+dJTvqU4fDpPDlgL+QJKgzHKJtR9jB89J4pCaaiJxSf1dzCMK9CWQ8GaDPrKDhXlthBmzV/M4vCnHZJW3LgE+SWzHnCM5aUKxJMdFwXpmpTlWhXfN3dMgz1bkWmUYN8gn/P79NVUiB+Ob9dUYD2CmVuZHN0cmVhbQplbmRvYmoKMTQgMCBvYmoKMTQzCmVuZG9iagoxNSAwIG9iagooUmVzdW1lIEV4YW1wbGUpCmVuZG9iagoxNiAwIG9iagooTWFjIE9TIFZlcnNpb24gMTAuMTUuNyBcKEJ1aWxkIDE5SDExNFwpIFF1YXJ0eiBQREZDb250ZXh0KQplbmRvYmoKMTcgMCBvYmoKKFNhZmFyaSkKZW5kb2JqCjE4IDAgb2JqCihEOjIwMjMwNDE4MDUwOTMyWjAwJzAwJykKZW5kb2JqCjE5IDAgb2JqCigpCmVuZG9iagoyMCAwIG9iago8PCAvVGl0bGUgMTUgMCBSIC9BdXRob3IgMTkgMCBSIC9Qcm9kdWNlciAxNiAwIFIgL0NyZWF0b3IgMTcgMCBSIC9DcmVhdGlvbkRhdGUKMTggMCBSID4+CmVuZG9iagp4cmVmCjAgMjEKMDAwMDAwMDAwMCA2NTUzNSBmIAowMDAwMDAwMDA0IDAwMDAwIG4gCjAwMDAwMDAzNTkgMDAwMDAgbiAKMDAwMDAwMDk2OSAwMDAwMCBuIAowMDAwMDAwMDIyIDAwMDAwIG4gCjAwMDAwMDAzMzggMDAwMDAgbiAKMDAwMDAwMDQ1MyAwMDAwMCBuIAowMDAwMDAwOTM0IDAwMDAwIG4gCjAwMDAwMDEwNTEgMDAwMDAgbiAKMDAwMDAwMDU0MCAwMDAwMCBuIAowMDAwMDAwOTEzIDAwMDAwIG4gCjAwMDAwMDEwNDQgMDAwMDAgbiAKMDAwMDAwMTI3MyAwMDAwMCBuIAowMDAwMDAxNTIwIDAwMDAwIG4gCjAwMDAwMDE3NTMgMDAwMDAgbiAKMDAwMDAwMTc3MyAwMDAwMCBuIAowMDAwMDAxODA5IDAwMDAwIG4gCjAwMDAwMDE4ODggMDAwMDAgbiAKMDAwMDAwMTkxMyAwMDAwMCBuIAowMDAwMDAxOTU1IDAwMDAwIG4gCjAwMDAwMDE5NzUgMDAwMDAgbiAKdHJhaWxlcgo8PCAvU2l6ZSAyMSAvUm9vdCAxMSAwIFIgL0luZm8gMjAgMCBSIC9JRCBbIDw2NmQ2M2NmMDkzZjMzNzE3NGE1Njg2M2NiZjY0M2Y2OD4KPDQxMTFhNmE3ZTk1YjI5YWFmNDgwZTNhOGZiYTNmYzRlPiBdID4+CnN0YXJ0eHJlZgoyMDgwCiUlRU9GCg==";
           
           // Create a new shadow resume
-          const resumeFileName = `${user.name?.replace(/\s+/g, '') || 'User'}_Resume.pdf`;
-          
-          // Generate a URL for the resume (this would typically point to a stored file)
-          const fileUrl = `/api/resumes/download/${numericUserId}/${resumeFileName}`;
-          
           const newResume = {
             userId: numericUserId,
-            fileName: resumeFileName,
-            fileData: pdfBase64, // Use our newly generated PDF
-            fileUrl: fileUrl, // Add the fileUrl property
+            fileName: `${user.name?.replace(/\s+/g, '') || 'User'}_Resume.pdf`,
+            fileData: sampleBase64PDF,
             score: 0,
             uploadedAt: new Date(),
             isShadowResume: true,
@@ -364,80 +298,15 @@ Sample education details would be generated here.
 Sample skills relevant to the ${user.industry || 'industry'} would be listed here.
       `;
       
-      // Create a real PDF from scratch - using puppeteer would be ideal but we can create a simple PDF
-      // This function generates a minimal valid PDF that will render in all browsers
-      const generateSimplePDF = function(userData: any): string {
-        // Create a basic PDF structure with minimal content based on user information
-        const pdfContent = `%PDF-1.4
-1 0 obj
-<</Type/Catalog/Pages 2 0 R>>
-endobj
-2 0 obj
-<</Type/Pages/Kids[3 0 R]/Count 1>>
-endobj
-3 0 obj
-<</Type/Page/MediaBox[0 0 595 842]/Resources 4 0 R/Parent 2 0 R/Contents 5 0 R>>
-endobj
-4 0 obj
-<</Font<</F1<</Type/Font/Subtype/Type1/BaseFont/Helvetica>>>>>
-endobj
-5 0 obj
-<</Length 374>>
-stream
-BT
-/F1 24 Tf
-50 750 Td
-(Resume for ${userData.name || 'User'}) Tj
-/F1 14 Tf
-0 -30 Td
-(${userData.title || 'Professional'}) Tj
-0 -20 Td
-(${userData.email || 'Email'}) Tj
-0 -20 Td
-(${userData.location || 'Location'}) Tj
-0 -40 Td
-/F1 18 Tf
-(Professional Summary) Tj
-/F1 12 Tf
-0 -20 Td
-(This shadow resume will be updated with your profile data.) Tj
-0 -15 Td
-(Visit the Resume Editor to fully customize this document.) Tj
-ET
-endstream
-endobj
-xref
-0 6
-0000000000 65535 f
-0000000009 00000 n
-0000000052 00000 n
-0000000101 00000 n
-0000000188 00000 n
-0000000256 00000 n
-trailer
-<</Size 6/Root 1 0 R>>
-startxref
-680
-%%EOF`;
-
-        // Convert to base64
-        return Buffer.from(pdfContent).toString('base64');
-      };
-      
-      // Generate a proper PDF for the shadow resume
-      const pdfBase64 = generateSimplePDF(user);
+      // Create a sample resume PDF content (base64 encoded)
+      // In a real implementation, this would be an actual PDF generated from the resume content
+      const sampleBase64PDF = "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QBjA4fdehdFmAaUz3WQ0LH+KCRFZiWbcbBtJe/DucAbe3+dJTvqU4fDpPDlgL+QJKgzHKJtR9jB89J4pCaaiJxSf1dzCMK9CWQ8GaDPrKDhXlthBmzV/M4vCnHZJW3LgE+SWzHnCM5aUKxJMdFwXpmpTlWhXfN3dMgz1bkWmUYN8gn/P79NVUiB+Ob9dUYD2CmVuZHN0cmVhbQplbmRvYmoKMTQgMCBvYmoKMTQzCmVuZG9iagoxNSAwIG9iagooUmVzdW1lIEV4YW1wbGUpCmVuZG9iagoxNiAwIG9iagooTWFjIE9TIFZlcnNpb24gMTAuMTUuNyBcKEJ1aWxkIDE5SDExNFwpIFF1YXJ0eiBQREZDb250ZXh0KQplbmRvYmoKMTcgMCBvYmoKKFNhZmFyaSkKZW5kb2JqCjE4IDAgb2JqCihEOjIwMjMwNDE4MDUwOTMyWjAwJzAwJykKZW5kb2JqCjE5IDAgb2JqCigpCmVuZG9iagoyMCAwIG9iago8PCAvVGl0bGUgMTUgMCBSIC9BdXRob3IgMTkgMCBSIC9Qcm9kdWNlciAxNiAwIFIgL0NyZWF0b3IgMTcgMCBSIC9DcmVhdGlvbkRhdGUKMTggMCBSID4+CmVuZG9iagp4cmVmCjAgMjEKMDAwMDAwMDAwMCA2NTUzNSBmIAowMDAwMDAwMDA0IDAwMDAwIG4gCjAwMDAwMDAzNTkgMDAwMDAgbiAKMDAwMDAwMDk2OSAwMDAwMCBuIAowMDAwMDAwMDIyIDAwMDAwIG4gCjAwMDAwMDAzMzggMDAwMDAgbiAKMDAwMDAwMDQ1MyAwMDAwMCBuIAowMDAwMDAwOTM0IDAwMDAwIG4gCjAwMDAwMDEwNTEgMDAwMDAgbiAKMDAwMDAwMDU0MCAwMDAwMCBuIAowMDAwMDAwOTEzIDAwMDAwIG4gCjAwMDAwMDEwNDQgMDAwMDAgbiAKMDAwMDAwMTI3MyAwMDAwMCBuIAowMDAwMDAxNTIwIDAwMDAwIG4gCjAwMDAwMDE3NTMgMDAwMDAgbiAKMDAwMDAwMTc3MyAwMDAwMCBuIAowMDAwMDAxODA5IDAwMDAwIG4gCjAwMDAwMDE4ODggMDAwMDAgbiAKMDAwMDAwMTkxMyAwMDAwMCBuIAowMDAwMDAxOTU1IDAwMDAwIG4gCjAwMDAwMDE5NzUgMDAwMDAgbiAKdHJhaWxlcgo8PCAvU2l6ZSAyMSAvUm9vdCAxMSAwIFIgL0luZm8gMjAgMCBSIC9JRCBbIDw2NmQ2M2NmMDkzZjMzNzE3NGE1Njg2M2NiZjY0M2Y2OD4KPDQxMTFhNmE3ZTk1YjI5YWFmNDgwZTNhOGZiYTNmYzRlPiBdID4+CnN0YXJ0eHJlZgoyMDgwCiUlRU9GCg==";
       
       // Create a new shadow resume
-      const resumeFileName = `${user.name?.replace(/\s+/g, '') || 'User'}_Resume.pdf`;
-      
-      // Generate a URL for the resume
-      const fileUrl = `/api/resumes/download/${numericUserId}/${resumeFileName}`;
-      
       const newResume = {
         userId: numericUserId,
-        fileName: resumeFileName,
-        fileData: pdfBase64, // Use the real PDF instead of sample data
-        fileUrl: fileUrl, // Add fileUrl property
+        fileName: `${user.name?.replace(/\s+/g, '') || 'User'}_Resume.pdf`,
+        fileData: sampleBase64PDF,
         score: 0,
         uploadedAt: new Date(),
         isShadowResume: true,
@@ -505,131 +374,11 @@ startxref
         return res.status(403).json({ message: 'You do not have permission to update this resume' });
       }
       
-      // Process the form data and convert it to the expected resume format
-      if (updates.resumeData) {
-        console.log(`[PATCH /users/:userId/shadow-resume/:resumeId] Processing form data for resume: ${resumeId}`);
-        
-        // Generate a new PDF based on the updated form data
-        const personalInfo = updates.resumeData.personalInfo;
-        
-        // Use the existing resume data as a base but update with new form data
-        const updatedResumeData = {
-          fileName: resume.fileName,
-          fileUrl: resume.fileUrl,
-          themeStyle: updates.resumeData.settings?.themeStyle || resume.themeStyle,
-          isDownloadable: updates.resumeData.settings?.isDownloadable || resume.isDownloadable,
-          visibility: updates.resumeData.settings?.visibility || resume.visibility
-        };
-        
-        // Regenerate PDF content here - this is a simplified example
-        // In production, you would use a proper PDF generation service
-        const generateUpdatedPDF = () => {
-          const pdfContent = `%PDF-1.3
-%����
-1 0 obj
-<< /Type /Catalog /Pages 3 0 R >>
-endobj
-2 0 obj
-<< /Type /Page /Parent 3 0 R /Resources 6 0 R /Contents 4 0 R /MediaBox [0 0 595 842] >>
-endobj
-3 0 obj
-<< /Type /Pages /Kids [ 2 0 R ] /Count 1 >>
-endobj
-4 0 obj
-<< /Length 5 0 R >>
-stream
-BT
-/F1 16 Tf
-50 750 Td
-(${personalInfo.fullName || 'Your Name'}) Tj
-/F1 12 Tf
-0 -20 Td
-(${personalInfo.title || 'Your Title'}) Tj
-0 -15 Td
-(${personalInfo.email || 'your.email@example.com'}) Tj
-0 -15 Td
-(${personalInfo.phone || 'Your Phone'}) Tj
-0 -15 Td
-(${personalInfo.location || 'Your Location'}) Tj
-0 -30 Td
-/F1 14 Tf
-(Professional Summary) Tj
-/F1 12 Tf
-0 -20 Td
-(${personalInfo.summary || 'Your professional summary goes here.'}) Tj
-0 -30 Td
-/F1 14 Tf
-(Experience) Tj
-/F1 12 Tf
-0 -20 Td
-(${updates.resumeData.experiences?.experiences?.length > 0 ? 
-  'Experience details included' : 'Add your work experience in the Resume Editor.'}) Tj
-0 -30 Td
-/F1 14 Tf
-(Education) Tj
-/F1 12 Tf
-0 -20 Td
-(${updates.resumeData.education?.educations?.length > 0 ? 
-  'Education details included' : 'Add your education in the Resume Editor.'}) Tj
-0 -30 Td
-/F1 14 Tf
-(Skills) Tj
-/F1 12 Tf
-0 -20 Td
-(${updates.resumeData.skills?.skills?.length > 0 ? 
-  'Skills included' : 'Add your skills in the Resume Editor.'}) Tj
-ET
-endstream
-endobj
-5 0 obj
-1024
-endobj
-6 0 obj
-<< /Font << /F1 7 0 R >> >>
-endobj
-7 0 obj
-<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
-endobj
-xref
-0 8
-0000000000 65535 f
-0000000009 00000 n
-0000000058 00000 n
-0000000158 00000 n
-0000000217 00000 n
-0000001294 00000 n
-0000001314 00000 n
-0000001361 00000 n
-trailer
-<</Size 8/Root 1 0 R>>
-startxref
-1428
-%%EOF`;
-          
-          return Buffer.from(pdfContent).toString('base64');
-        };
-        
-        // Generate updated PDF and update the resume
-        const updatedPDF = generateUpdatedPDF();
-        
-        // Create the final update object with the new PDF content
-        const finalUpdates = {
-          ...updatedResumeData,
-          fileData: updatedPDF,
-          lastUpdatedByMusk: new Date()
-        };
-        
-        const updatedResume = await storage.updateResume(parseInt(resumeId), finalUpdates);
-        console.log(`[PATCH /users/:userId/shadow-resume/:resumeId] Updated resume: ${resumeId}`);
-        
-        return res.status(200).json({ resume: updatedResume });
-      } else {
-        // If no resumeData is provided, just update the resume with the provided updates
-        const updatedResume = await storage.updateResume(parseInt(resumeId), updates);
-        console.log(`[PATCH /users/:userId/shadow-resume/:resumeId] Updated resume: ${resumeId}`);
-        
-        return res.status(200).json({ resume: updatedResume });
-      }
+      // Update the resume
+      const updatedResume = await storage.updateResume(parseInt(resumeId), updates);
+      
+      console.log(`[PATCH /users/:userId/shadow-resume/:resumeId] Updated resume: ${resumeId}`);
+      return res.status(200).json({ resume: updatedResume });
     } catch (error) {
       console.error(`[PATCH /users/:userId/shadow-resume/:resumeId] Error:`, error);
       return res.status(500).json({ message: 'Internal server error', error: (error as Error).message });

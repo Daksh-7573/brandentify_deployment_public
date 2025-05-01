@@ -51,8 +51,7 @@ import {
   MapPin,
   Trash,
   Plus,
-  School,
-  RefreshCw
+  School
 } from 'lucide-react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -339,17 +338,10 @@ export default function ResumeEditor() {
     onSuccess: () => {
       toast({
         title: 'Resume Saved',
-        description: 'Your resume has been updated successfully. The Shadow Resume tab has been updated with your changes.',
+        description: 'Your resume has been updated successfully.',
       });
-      
-      // Invalidate both the shadow resume and the user profile queries
-      // This ensures that both tabs get the latest data
       queryClient.invalidateQueries({
         queryKey: ['/api/users', userId, 'shadow-resume'],
-      });
-      
-      queryClient.invalidateQueries({
-        queryKey: ['/api/users', userId],
       });
     },
     onError: (error) => {
@@ -361,104 +353,6 @@ export default function ResumeEditor() {
       });
     },
   });
-  
-  // Update resume with latest profile data
-  const updateResumeFromProfile = () => {
-    if (!profileData) {
-      toast({
-        title: 'Error',
-        description: 'Unable to fetch profile data. Please try again later.',
-        variant: 'destructive',
-      });
-      return;
-    }
-    
-    // Refresh profile data first
-    queryClient.invalidateQueries({
-      queryKey: ['/api/users', userId],
-    });
-    
-    // Handle case where resume data might not be available
-    const resume = resumeData && resumeData.resume
-      ? resumeData.resume 
-      : {
-          isDownloadable: false,
-          visibility: 'private',
-          themeStyle: 'professional'
-        };
-    
-    form.reset({
-      personalInfo: {
-        fullName: profileData.name || '',
-        title: profileData.title || '',
-        email: profileData.email || '',
-        phone: profileData.phoneNumber || '',
-        location: profileData.location || '',
-        summary: profileData.aboutMe || '',
-        website: profileData.website || '',
-      },
-      experiences: { 
-        experiences: profileData.workExperiences?.map((exp: any) => ({
-          id: exp.id,
-          title: exp.title || '',
-          company: exp.company || '',
-          location: exp.location || '',
-          startDate: exp.startDate?.split('T')[0] || '',
-          endDate: exp.endDate ? exp.endDate.split('T')[0] : null,
-          isCurrent: !exp.endDate,
-          description: exp.description || '',
-          responsibilities: exp.keyResponsibilities || [],
-        })) || []
-      },
-      education: {
-        educations: profileData.education?.map((edu: any) => ({
-          id: edu.id,
-          institution: edu.institution || '',
-          degree: edu.degree || '',
-          fieldOfStudy: edu.fieldOfStudy || '',
-          location: edu.location || '',
-          startDate: edu.startDate?.split('T')[0] || '',
-          endDate: edu.endDate ? edu.endDate.split('T')[0] : null,
-          isCurrentlyEnrolled: !edu.endDate,
-          gpa: edu.gpa || '',
-          achievements: edu.achievements || '',
-        })) || []
-      },
-      skills: {
-        skills: profileData.skills?.map((skill: any) => ({
-          id: skill.id,
-          name: skill.name || '',
-          level: skill.level || '',
-          category: skill.category || '',
-        })) || []
-      },
-      projects: {
-        projects: profileData.projects?.map((project: any) => ({
-          id: project.id,
-          title: project.title || '',
-          description: project.description || '',
-          startDate: project.startDate?.split('T')[0] || '',
-          endDate: project.endDate ? project.endDate.split('T')[0] : null,
-          url: project.projectUrl || '',
-          skills: project.skills || [],
-          achievements: project.achievements || '',
-        })) || []
-      },
-      settings: {
-        isDownloadable: resume.isDownloadable || false,
-        visibility: resume.visibility || 'private',
-        themeStyle: resume.themeStyle || 'professional',
-      },
-    });
-    
-    // Automatically save the resume with the updated data
-    saveResumeMutation.mutate(form.getValues());
-    
-    toast({
-      title: 'Resume Updated',
-      description: 'Your resume has been refreshed with the latest profile data and saved to your Shadow Resume.',
-    });
-  };
   
   // Handle form submission
   const onSubmit = (data: z.infer<typeof resumeSchema>) => {
@@ -1015,7 +909,7 @@ export default function ResumeEditor() {
                 ))}
                 
                 {(!form.watch('experiences.experiences') || 
-                  form.watch('experiences.experiences')?.length === 0) && (
+                  form.watch('experiences.experiences').length === 0) && (
                   <div className="text-center py-8 border border-dashed rounded-lg">
                     <p className="text-muted-foreground">No work experiences added yet.</p>
                     <Button
@@ -1209,7 +1103,7 @@ export default function ResumeEditor() {
                 ))}
                 
                 {(!form.watch('education.educations') ||
-                  form.watch('education.educations')?.length === 0) && (
+                  form.watch('education.educations').length === 0) && (
                   <div className="text-center py-8 border border-dashed rounded-lg">
                     <p className="text-muted-foreground">No education added yet.</p>
                     <Button
@@ -1304,7 +1198,7 @@ export default function ResumeEditor() {
                   ))}
                 </div>
                 
-                {(!form.watch('skills.skills') || form.watch('skills.skills')?.length === 0) && (
+                {(!form.watch('skills.skills') || form.watch('skills.skills').length === 0) && (
                   <div className="text-center py-8 border border-dashed rounded-lg">
                     <p className="text-muted-foreground">No skills added yet.</p>
                     <Button
@@ -1446,7 +1340,7 @@ export default function ResumeEditor() {
                   </Card>
                 ))}
                 
-                {(!form.watch('projects.projects') || form.watch('projects.projects')?.length === 0) && (
+                {(!form.watch('projects.projects') || form.watch('projects.projects').length === 0) && (
                   <div className="text-center py-8 border border-dashed rounded-lg">
                     <p className="text-muted-foreground">No projects added yet.</p>
                     <Button
@@ -1482,35 +1376,23 @@ export default function ResumeEditor() {
               />
             </div>
             
-            <div className="flex gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                className="gap-2"
-                onClick={updateResumeFromProfile}
-              >
-                <RefreshCw className="h-4 w-4" />
-                <span>Update Resume</span>
-              </Button>
-              
-              <Button
-                type="submit"
-                className="gap-2"
-                disabled={saveResumeMutation.isPending || !form.formState.isDirty}
-              >
-                {saveResumeMutation.isPending ? (
-                  <>
-                    <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full"></div>
-                    <span>Saving...</span>
-                  </>
-                ) : (
-                  <>
-                    <Save className="h-4 w-4" />
-                    <span>Save Resume</span>
-                  </>
-                )}
-              </Button>
-            </div>
+            <Button
+              type="submit"
+              className="gap-2"
+              disabled={saveResumeMutation.isPending || !form.formState.isDirty}
+            >
+              {saveResumeMutation.isPending ? (
+                <>
+                  <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full"></div>
+                  <span>Saving...</span>
+                </>
+              ) : (
+                <>
+                  <Save className="h-4 w-4" />
+                  <span>Save Resume</span>
+                </>
+              )}
+            </Button>
           </CardFooter>
         </form>
       </Form>

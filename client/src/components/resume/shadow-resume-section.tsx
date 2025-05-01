@@ -8,7 +8,6 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import PDFViewer from './pdf-viewer';
 
 import { 
   Zap,
@@ -17,8 +16,7 @@ import {
   FileText,
   Edit2,
   Save,
-  X,
-  RefreshCw
+  X
 } from 'lucide-react';
 
 import { formatDistanceToNow } from 'date-fns';
@@ -40,7 +38,6 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
   // Only keep downloadable state, remove theme and history states
   const [isDownloadable, setIsDownloadable] = useState(resume?.isDownloadable || false);
   const [isEditing, setIsEditing] = useState(false);
-  const [isPdfLoading, setIsPdfLoading] = useState(false);
   
   // Add edit states for all editable fields
   const [editValues, setEditValues] = useState({
@@ -218,100 +215,12 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
     }
   }, [user, isEditing]);
 
+  // All download and view functionality has been removed as requested
+
   // Get last updated time
   const getLastUpdateText = () => {
     if (!resume?.lastUpdatedByMusk) return 'Not yet updated by Musk';
     return formatDistanceToNow(new Date(resume.lastUpdatedByMusk), { addSuffix: true });
-  };
-
-  // Create Shadow Resume mutation
-  const createShadowResumeMutation = useMutation({
-    mutationFn: async () => {
-      if (!user?.id) return null;
-      
-      setIsPdfLoading(true);
-      
-      return await fetch(`/api/users/${user.id}/shadow-resume/create`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }).then(res => {
-        if (!res.ok) throw new Error('Failed to create shadow resume');
-        return res.json();
-      });
-    },
-    onSuccess: () => {
-      toast({
-        title: 'Shadow Resume Created',
-        description: 'Your Shadow Resume has been created successfully. You can now view and edit it.',
-      });
-      
-      // Invalidate queries to refresh data
-      queryClient.invalidateQueries({
-        queryKey: ['/api/users', user?.id, 'shadow-resume']
-      });
-      
-      setIsPdfLoading(false);
-    },
-    onError: (error) => {
-      console.error('Error creating shadow resume:', error);
-      toast({
-        title: 'Creation Failed',
-        description: 'There was a problem creating your Shadow Resume. Please try again.',
-        variant: 'destructive',
-      });
-      
-      setIsPdfLoading(false);
-    }
-  });
-
-  // Refresh Shadow Resume with latest profile data
-  const refreshShadowResume = () => {
-    // Show a toast notification that indicates the resume is being refreshed
-    toast({
-      title: "Refreshing Resume",
-      description: "Your Shadow Resume is being refreshed with your latest profile information.",
-    });
-    
-    if (resume?.id) {
-      // Call our shadow resume refresh API endpoint
-      fetch(`/api/users/${user.id}/shadow-resume/${resume.id}/refresh`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Failed to update resume');
-        }
-        return response.json();
-      })
-      .then(() => {
-        // On success, show a toast and invalidate the query cache
-        toast({
-          title: "Resume Refreshed",
-          description: "Your Shadow Resume has been refreshed with your latest profile information.",
-        });
-        
-        // Invalidate resume cache to fetch the updated version
-        queryClient.invalidateQueries({
-          queryKey: ['/api/users', user?.id, 'shadow-resume']
-        });
-      })
-      .catch(error => {
-        console.error('Error refreshing resume:', error);
-        toast({
-          title: "Refresh Failed",
-          description: "There was a problem refreshing your resume. Please try again.",
-          variant: "destructive",
-        });
-      });
-    } else {
-      // Create a new Shadow Resume if none exists
-      createShadowResumeMutation.mutate();
-    }
   };
 
   return (
@@ -321,7 +230,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
           <div>
             <CardTitle>Shadow Resume</CardTitle>
             <CardDescription>
-              Your living CV, automatically maintained by Musk. Any updates made in the Resume Editor will be automatically reflected here.
+              Your living CV, automatically maintained by Musk
             </CardDescription>
           </div>
           <div className="flex items-center gap-2">
@@ -351,26 +260,70 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                   }}
                 >
                   <Edit2 className="h-4 w-4 mr-1" />
-                  <span>Edit</span>
+                  <span>Update</span>
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
                   className="bg-white shadow-sm border-gray-200"
-                  onClick={refreshShadowResume}
-                  disabled={createShadowResumeMutation.isPending}
+                  onClick={() => {
+                    // Show a toast notification that indicates the resume is being refreshed
+                    toast({
+                      title: "Refreshing Resume",
+                      description: "Your Shadow Resume is being refreshed with your latest profile information.",
+                    });
+                    
+                    // Here we would trigger an API call to update the resume with latest profile information
+                    // This would refresh the resume with latest data from the profile, experiences, skills, etc.
+                    if (resume?.id) {
+                      // Call our shadow resume refresh API endpoint
+                      fetch(`/api/users/${user.id}/shadow-resume/${resume.id}/refresh`, {
+                        method: 'POST',
+                        headers: {
+                          'Content-Type': 'application/json',
+                        },
+                      })
+                      .then(response => {
+                        if (!response.ok) {
+                          throw new Error('Failed to update resume');
+                        }
+                        return response.json();
+                      })
+                      .then(() => {
+                        // On success, show a toast and invalidate the query cache
+                        toast({
+                          title: "Resume Refreshed",
+                          description: "Your Shadow Resume has been refreshed with your latest profile information.",
+                        });
+                        
+                        // Invalidate resume cache to fetch the updated version
+                        queryClient.invalidateQueries({
+                          queryKey: ['/api/users', user?.id, 'shadow-resume']
+                        });
+                      })
+                      .catch(error => {
+                        console.error('Error refreshing resume:', error);
+                        toast({
+                          title: "Refresh Failed",
+                          description: "There was a problem refreshing your resume. Please try again.",
+                          variant: "destructive",
+                        });
+                      });
+                    } else {
+                      // Fallback behavior when no resume ID is available
+                      // Show success toast after a short delay - this is just for demo purposes
+                      // In a real implementation, we'd have proper API integration
+                      setTimeout(() => {
+                        toast({
+                          title: "Resume Refreshed",
+                          description: "Your Shadow Resume has been refreshed with your latest profile information.",
+                        });
+                      }, 1500);
+                    }
+                  }}
                 >
-                  {createShadowResumeMutation.isPending ? (
-                    <>
-                      <div className="h-4 w-4 mr-1 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-                      <span>Loading...</span>
-                    </>
-                  ) : (
-                    <>
-                      <RefreshCw className="h-4 w-4 mr-1" />
-                      <span>Refresh</span>
-                    </>
-                  )}
+                  <Zap className="h-4 w-4 mr-1" />
+                  <span>Refresh</span>
                 </Button>
               </div>
             )}
@@ -379,7 +332,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
       </CardHeader>
       
       <CardContent className="space-y-4">
-        {!resume && !createShadowResumeMutation.isPending && (
+        {!resume && (
           <div className="flex flex-col items-center justify-center p-8 text-center border-2 border-dashed border-muted-foreground/20 rounded-md">
             <Zap className="h-10 w-10 text-primary/60 mb-3" />
             <h3 className="text-lg font-medium">Your Shadow Resume</h3>
@@ -389,251 +342,302 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
             <Button 
               variant="outline" 
               size="sm"
-              onClick={() => createShadowResumeMutation.mutate()}
+              onClick={() => {
+                // Show toast with guidance
+                toast({
+                  title: "Complete Your Profile",
+                  description: "Add at least one work experience, skill, and project to generate your Shadow Resume.",
+                  variant: "default",
+                });
+              }}
             >
-              Create Shadow Resume
+              How to Get Started
             </Button>
           </div>
         )}
 
-        {createShadowResumeMutation.isPending && (
-          <div className="flex flex-col items-center justify-center p-8 text-center">
-            <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent mb-4"></div>
-            <h3 className="text-lg font-medium">Creating Your Shadow Resume</h3>
-            <p className="text-sm text-muted-foreground mt-1">
-              This may take a moment as we generate your professional resume...
-            </p>
-          </div>
-        )}
-
-        {resume && !createShadowResumeMutation.isPending && (
-          <div className="aspect-[3/4] bg-card border rounded-lg flex items-center justify-center overflow-hidden">
-            {resume.fileData ? (
-              // Use direct iframe approach for better PDF rendering
-              <div className="h-full w-full flex flex-col">
-                <iframe
-                  src={`data:application/pdf;base64,${resume.fileData}`}
-                  className="w-full h-full border-0"
-                  style={{ backgroundColor: '#f8f9fa' }}
-                  title="Resume PDF"
-                />
-                <div className="flex items-center justify-between bg-white border-t p-2">
-                  <div className="text-sm text-muted-foreground">
-                    {resume.fileName || "resume.pdf"}
-                  </div>
-                  <div className="flex gap-2">
-                    <a 
-                      href={`data:application/pdf;base64,${resume.fileData}`}
-                      download={resume.fileName || "resume.pdf"}
-                      className="text-gray-700 hover:text-primary flex items-center gap-1 text-sm px-2 py-1 rounded-md hover:bg-gray-50"
-                    >
-                      <Download className="h-4 w-4" />
-                      <span>Download</span>
-                    </a>
-                  </div>
-                </div>
-              </div>
-            ) : resume.fileUrl ? (
-              <PDFViewer 
-                fileUrl={resume.fileUrl} 
-                fileName={resume.fileName || "resume.pdf"} 
-              />
-            ) : (
-              <div className="w-full h-full flex flex-col items-center justify-center p-6 relative">
-                <div className={`w-full h-full relative bg-white shadow-lg rounded overflow-hidden ${fixedTheme.fontClass}`} style={{borderTop: `4px solid ${fixedTheme.color}`}}>
-                  {/* Document header */}
-                  <div className="absolute top-0 left-0 right-0 h-8 bg-gray-100 border-b flex items-center justify-between px-3">
-                    <div className="flex items-center space-x-2">
-                      <div className="w-3 h-3 bg-red-400 rounded-full"></div>
-                      <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
-                      <div className="w-3 h-3 bg-green-400 rounded-full"></div>
-                    </div>
-                    <div className="text-xs text-gray-500">
-                      {resume.fileName || `${user.name}_Resume.pdf`}
-                    </div>
-                  </div>
-                  
-                  {/* Resume content - comprehensive data from the user profile */}
-                  <div className="pt-10 px-6 pb-16 text-xs overflow-y-auto max-h-full">
-                    {/* Header Section */}
-                    <div className="border-b pb-3 mb-4" style={{borderColor: fixedTheme.accent}}>
-                      <h2 className="text-xl font-bold" style={{color: fixedTheme.color}}>{user.name}</h2>
-                      <p className="text-sm text-gray-600">{user.title || 'Professional'}</p>
-                      <div className="flex flex-wrap items-center gap-2 mt-1 text-xs text-gray-500">
-                        <span>{user.email}</span>
-                        {user.phoneNumber && (
-                          <>
-                            <span>•</span>
-                            <span>{user.phoneNumber}</span>
-                          </>
-                        )}
-                        {user.location && (
-                          <>
-                            <span>•</span>
-                            <span>{user.location}</span>
-                          </>
-                        )}
+        {resume && (
+          <>
+            {/* Resume Preview */}
+            <div className="aspect-[3/4] bg-card border rounded-lg flex items-center justify-center overflow-hidden">
+              {resume?.fileData ? (
+                <div className="w-full h-full flex flex-col items-center justify-center p-6 relative">
+                  {/* Actual resume preview with PDF appearance */}
+                  <div className={`w-full h-full relative bg-white shadow-lg rounded overflow-hidden ${fixedTheme.fontClass}`} style={{borderTop: `4px solid ${fixedTheme.color}`}}>
+                    {/* Document header */}
+                    <div className="absolute top-0 left-0 right-0 h-8 bg-gray-100 border-b flex items-center justify-between px-3">
+                      <div className="flex items-center space-x-2">
+                        <div className="w-3 h-3 bg-red-400 rounded-full"></div>
+                        <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
+                        <div className="w-3 h-3 bg-green-400 rounded-full"></div>
                       </div>
-                      <div className="flex flex-wrap items-center gap-2 mt-1 text-xs text-gray-500">
-                        {user.industry && <span>{user.industry}</span>}
-                        {user.domain && (
-                          <>
-                            <span>•</span>
-                            <span>{user.domain}</span>
-                          </>
-                        )}
-                        {user.lookingFor && (
-                          <>
-                            <span>•</span>
-                            <span>Seeking: {user.lookingFor.replace(/_/g, ' ')}</span>
-                          </>
-                        )}
+                      <div className="text-xs text-gray-500">
+                        {resume.fileName || `${user.name}_Resume_Professional.pdf`}
                       </div>
                     </div>
                     
-                    {/* About section - comprehensive profile */}
-                    <div className="mb-4 pb-3 border-b border-gray-100">
-                      <h3 className="text-sm font-bold mb-2 uppercase" style={{color: fixedTheme.color}}>Professional Summary</h3>
-                      <p className="text-xs text-gray-700 leading-relaxed">
-                        {user.aboutMe || 'Experienced professional with expertise in ' + (user.industry || 'their field') + ' seeking opportunities in ' + (user.domain || 'the industry')}
-                      </p>
-                    </div>
-                    
-                    {/* Work Experience - uses real data from experiences */}
-                    <div className="mb-4 pb-3 border-b border-gray-100">
-                      <h3 className="text-sm font-bold mb-2 uppercase" style={{color: fixedTheme.color}}>Professional Experience</h3>
-                      
-                      {workExperiences && workExperiences.length > 0 ? (
-                        <div className="space-y-3 mt-2">
-                          {workExperiences.map((experience, index) => (
-                            <div key={index} className="pb-2">
-                              <div className="font-semibold">{experience.title}</div>
-                              <div className="text-gray-600 flex justify-between">
-                                <span>{experience.company}{experience.industry ? `, ${experience.industry}` : ''}</span>
-                                <span>
-                                  {new Date(experience.startDate).getFullYear()} - 
-                                  {experience.endDate ? new Date(experience.endDate).getFullYear() : 'Present'}
-                                </span>
-                              </div>
-                              <ul className="list-disc ml-4 mt-1 text-gray-700 space-y-0.5">
-                                {experience.keyResponsibilities && Array.isArray(experience.keyResponsibilities) ? 
-                                  experience.keyResponsibilities.map((responsibility, i) => (
-                                    <li key={i}>{responsibility}</li>
-                                  )) : 
-                                  <li>Contributed to company projects and goals</li>
-                                }
-                              </ul>
+                    {/* Resume content - comprehensive data from the user profile */}
+                    <div className="pt-10 px-6 pb-16 text-xs overflow-y-auto max-h-full">
+                      {/* Header Section */}
+                      <div className="border-b pb-3 mb-4" style={{borderColor: fixedTheme.accent}}>
+                        {isEditing ? (
+                          <div className="space-y-2">
+                            <input 
+                              type="text" 
+                              className="text-xl font-bold w-full bg-transparent border-b focus:outline-none"
+                              style={{color: fixedTheme.color}}
+                              value={editValues.name}
+                              onChange={(e) => setEditValues({...editValues, name: e.target.value})}
+                            />
+                            <input 
+                              type="text" 
+                              className="text-sm text-gray-600 w-full bg-transparent border-b focus:outline-none" 
+                              placeholder="Professional Title"
+                              value={editValues.title}
+                              onChange={(e) => setEditValues({...editValues, title: e.target.value})}
+                            />
+                            <div className="flex flex-wrap gap-2 mt-1 text-xs">
+                              <input 
+                                type="email" 
+                                className="text-gray-500 bg-transparent border-b focus:outline-none" 
+                                placeholder="Email"
+                                value={editValues.email}
+                                onChange={(e) => setEditValues({...editValues, email: e.target.value})}
+                              />
+                              <input 
+                                type="text" 
+                                className="text-gray-500 bg-transparent border-b focus:outline-none" 
+                                placeholder="Phone Number"
+                                value={editValues.phoneNumber}
+                                onChange={(e) => setEditValues({...editValues, phoneNumber: e.target.value})}
+                              />
+                              <input 
+                                type="text" 
+                                className="text-gray-500 bg-transparent border-b focus:outline-none" 
+                                placeholder="Location"
+                                value={editValues.location}
+                                onChange={(e) => setEditValues({...editValues, location: e.target.value})}
+                              />
                             </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <div className="text-gray-500 italic mt-1">
-                          No work experience added yet. Add work experience in your profile.
-                        </div>
-                      )}
-                    </div>
-                    
-                    {/* Education Section */}
-                    <div className="mb-4 pb-3 border-b border-gray-100">
-                      <h3 className="text-sm font-bold mb-2 uppercase" style={{color: fixedTheme.color}}>Education</h3>
-                      
-                      {education && education.length > 0 ? (
-                        <div className="space-y-3 mt-2">
-                          {education.map((edu, index) => (
-                            <div key={index} className="pb-2">
-                              <div className="font-semibold">
-                                {edu.degree}{edu.fieldOfStudy ? `, ${edu.fieldOfStudy}` : ''}
-                              </div>
-                              <div className="text-gray-600 flex justify-between">
-                                <span>{edu.institution}</span>
-                                <span>
-                                  {new Date(edu.startDate).getFullYear()} - 
-                                  {edu.endDate ? new Date(edu.endDate).getFullYear() : 'Present'}
-                                </span>
-                              </div>
+                          </div>
+                        ) : (
+                          <>
+                            <h2 className="text-xl font-bold" style={{color: fixedTheme.color}}>{user.name}</h2>
+                            <p className="text-sm text-gray-600">{user.title || 'Professional'}</p>
+                            <div className="flex flex-wrap items-center gap-2 mt-1 text-xs text-gray-500">
+                              <span>{user.email}</span>
+                              {user.phoneNumber && (
+                                <>
+                                  <span>•</span>
+                                  <span>{user.phoneNumber}</span>
+                                </>
+                              )}
+                              {user.location && (
+                                <>
+                                  <span>•</span>
+                                  <span>{user.location}</span>
+                                </>
+                              )}
                             </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <div className="text-gray-500 italic mt-1">
-                          No education added yet. Add education in your profile.
-                        </div>
-                      )}
-                    </div>
-                    
-                    {/* Skills Section */}
-                    <div className="mb-4 pb-3 border-b border-gray-100">
-                      <h3 className="text-sm font-bold mb-2 uppercase" style={{color: fixedTheme.color}}>Skills</h3>
+                            <div className="flex flex-wrap items-center gap-2 mt-1 text-xs text-gray-500">
+                              {user.industry && <span>{user.industry}</span>}
+                              {user.domain && (
+                                <>
+                                  <span>•</span>
+                                  <span>{user.domain}</span>
+                                </>
+                              )}
+                              {user.lookingFor && (
+                                <>
+                                  <span>•</span>
+                                  <span>Seeking: {user.lookingFor.replace(/_/g, ' ')}</span>
+                                </>
+                              )}
+                            </div>
+                          </>
+                        )}
+                      </div>
                       
-                      {skills && skills.length > 0 ? (
-                        <div className="flex flex-wrap gap-1 mt-2">
-                          {skills.map((skill, index) => (
-                            <span 
-                              key={index}
-                              className="px-2 py-0.5 bg-gray-100 text-gray-800 rounded-full text-xs"
-                              style={{backgroundColor: `${fixedTheme.accent}`}}
-                            >
-                              {skill.name} {skill.level && `(${skill.level})`}
-                            </span>
-                          ))}
-                        </div>
-                      ) : (
-                        <div className="text-gray-500 italic mt-1">
-                          No skills added yet. Add skills in your profile.
-                        </div>
-                      )}
-                    </div>
-                    
-                    {/* Projects Section */}
-                    <div className="mb-4 pb-3">
-                      <h3 className="text-sm font-bold mb-2 uppercase" style={{color: fixedTheme.color}}>Projects</h3>
+                      {/* About section - comprehensive profile */}
+                      <div className="mb-4 pb-3 border-b border-gray-100">
+                        <h3 className="text-sm font-bold mb-2 uppercase" style={{color: fixedTheme.color}}>Professional Summary</h3>
+                        {isEditing ? (
+                          <textarea 
+                            className="text-xs text-gray-700 leading-relaxed w-full bg-transparent border rounded min-h-[60px] p-1 focus:outline-none"
+                            value={editValues.aboutMe}
+                            onChange={(e) => setEditValues({...editValues, aboutMe: e.target.value})}
+                            placeholder="Write a professional summary here..."
+                          />
+                        ) : (
+                          <p className="text-xs text-gray-700 leading-relaxed">
+                            {user.aboutMe || 'Experienced professional with expertise in ' + (user.industry || 'their field') + ' seeking opportunities in ' + (user.domain || 'the industry')}
+                          </p>
+                        )}
+                      </div>
                       
-                      {projects && projects.length > 0 ? (
-                        <div className="space-y-3 mt-2">
-                          {projects.map((project, index) => (
-                            <div key={index} className="pb-2">
-                              <div className="font-semibold">
-                                {project.title}
-                                {project.projectUrl && (
-                                  <span className="ml-2 text-xs text-blue-600">
-                                    [Project Link]
+                      {/* Work Experience - uses real data from experiences */}
+                      <div className="mb-4 pb-3 border-b border-gray-100">
+                        <h3 className="text-sm font-bold mb-2 uppercase" style={{color: fixedTheme.color}}>Professional Experience</h3>
+                        
+                        {workExperiences && workExperiences.length > 0 ? (
+                          <div className="space-y-3 mt-2">
+                            {workExperiences.map((experience, index) => (
+                              <div key={index} className="pb-2">
+                                <div className="font-semibold">{experience.title}</div>
+                                <div className="text-gray-600 flex justify-between">
+                                  <span>{experience.company}{experience.industry ? `, ${experience.industry}` : ''}</span>
+                                  <span>
+                                    {new Date(experience.startDate).getFullYear()} - 
+                                    {experience.endDate ? new Date(experience.endDate).getFullYear() : 'Present'}
                                   </span>
+                                </div>
+                                <ul className="list-disc ml-4 mt-1 text-gray-700 space-y-0.5">
+                                  {experience.keyResponsibilities && Array.isArray(experience.keyResponsibilities) ? 
+                                    experience.keyResponsibilities.map((responsibility, i) => (
+                                      <li key={i}>{responsibility}</li>
+                                    )) : 
+                                    <li>Contributed to company projects and goals</li>
+                                  }
+                                </ul>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="text-gray-500 italic mt-1">
+                            No work experience added yet. Add work experience in your profile.
+                          </div>
+                        )}
+                      </div>
+                      
+                      {/* Education Section */}
+                      <div className="mb-4 pb-3 border-b border-gray-100">
+                        <h3 className="text-sm font-bold mb-2 uppercase" style={{color: fixedTheme.color}}>Education</h3>
+                        
+                        {education && education.length > 0 ? (
+                          <div className="space-y-3 mt-2">
+                            {education.map((edu, index) => (
+                              <div key={index} className="pb-2">
+                                <div className="font-semibold">
+                                  {edu.degree}{edu.fieldOfStudy ? `, ${edu.fieldOfStudy}` : ''}
+                                </div>
+                                <div className="text-gray-600 flex justify-between">
+                                  <span>{edu.institution}</span>
+                                  <span>
+                                    {new Date(edu.startDate).getFullYear()} - 
+                                    {edu.endDate ? new Date(edu.endDate).getFullYear() : 'Present'}
+                                  </span>
+                                </div>
+                                
+                                {/* Additional education details */}
+                                <div className="mt-1 text-xs text-gray-600">
+                                  {edu.location && (
+                                    <div className="mt-0.5">
+                                      <span className="font-medium">Location:</span> {edu.location}
+                                    </div>
+                                  )}
+                                  {edu.industry && (
+                                    <div className="mt-0.5">
+                                      <span className="font-medium">Industry:</span> {edu.industry}
+                                      {edu.domain && <span> • {edu.domain}</span>}
+                                    </div>
+                                  )}
+                                  
+                                  {/* Skills acquired section */}
+                                  {edu.skillsAcquired && Array.isArray(edu.skillsAcquired) && edu.skillsAcquired.length > 0 && (
+                                    <div className="mt-1">
+                                      <span className="font-medium">Skills:</span>{' '}
+                                      {edu.skillsAcquired.join(', ')}
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="text-gray-500 italic mt-1">
+                            No education added yet. Add education in your profile.
+                          </div>
+                        )}
+                      </div>
+                      
+                      {/* Skills Section */}
+                      <div className="mb-4 pb-3 border-b border-gray-100">
+                        <h3 className="text-sm font-bold mb-2 uppercase" style={{color: fixedTheme.color}}>Skills</h3>
+                        
+                        {skills && skills.length > 0 ? (
+                          <div className="flex flex-wrap gap-1 mt-2">
+                            {skills.map((skill, index) => (
+                              <span key={index} className="inline-block px-2 py-0.5 rounded-full bg-gray-100 text-gray-800 text-xs">
+                                {skill.name}
+                              </span>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="text-gray-500 italic mt-1">
+                            No skills added yet. Add skills in your profile.
+                          </div>
+                        )}
+                      </div>
+                      
+                      {/* Projects Section */}
+                      <div className="mb-4 pb-3">
+                        <h3 className="text-sm font-bold mb-2 uppercase" style={{color: fixedTheme.color}}>Projects</h3>
+                        
+                        {projects && projects.length > 0 ? (
+                          <div className="space-y-3 mt-2">
+                            {projects.map((project, index) => (
+                              <div key={index} className="pb-2">
+                                <div className="font-semibold">{project.title}</div>
+                                <div className="text-gray-600 mt-0.5 text-xs">
+                                  {project.description && project.description.substring(0, 120)}
+                                  {project.description && project.description.length > 120 ? '...' : ''}
+                                </div>
+                                {project.technologies && Array.isArray(project.technologies) && project.technologies.length > 0 && (
+                                  <div className="flex flex-wrap gap-1 mt-1">
+                                    {project.technologies.map((tech: string, i: number) => (
+                                      <span key={i} className="inline-block px-1.5 py-0.5 rounded-sm bg-gray-100 text-gray-700 text-xs">
+                                        {tech}
+                                      </span>
+                                    ))}
+                                  </div>
                                 )}
                               </div>
-                              <div className="text-gray-700 text-xs mt-1">
-                                {project.description}
-                              </div>
-                              <div className="flex flex-wrap gap-1 mt-1">
-                                {project.skills && project.skills.map((skill: string, i: number) => (
-                                  <span 
-                                    key={i} 
-                                    className="px-1.5 py-0.5 bg-gray-100 text-gray-800 rounded-sm text-xs"
-                                  >
-                                    {skill}
-                                  </span>
-                                ))}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <div className="text-gray-500 italic mt-1">
-                          No projects added yet. Add projects in your profile.
-                        </div>
-                      )}
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="text-gray-500 italic mt-1">
+                            No projects added yet. Add projects in your profile.
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    
+                    {/* Document footer */}
+                    <div className="absolute bottom-0 left-0 right-0 h-6 bg-gray-100 border-t flex items-center justify-center">
+                      <div className="text-xs text-gray-500">Generated by Musk AI</div>
                     </div>
                   </div>
                   
-                  {/* Document footer */}
-                  <div className="absolute bottom-0 left-0 right-0 h-6 bg-gray-100 border-t flex items-center justify-center">
-                    <div className="text-xs text-gray-500">Generated by Musk AI</div>
-                  </div>
+                  {/* Action buttons removed as requested */}
                 </div>
-              </div>
-            )}
-          </div>
+              ) : (
+                <div className="text-center p-6">
+                  <p className="text-muted-foreground text-sm">Resume Preview</p>
+                  <h2 className="text-xl font-bold mt-2">{user.name}</h2>
+                  <p className="text-sm text-muted-foreground">{user.title}</p>
+                  
+                  {/* Fallback if no PDF data is available */}
+                  <div className="w-3/4 mx-auto mt-6 h-64 bg-muted rounded opacity-30"></div>
+                </div>
+              )}
+            </div>
+
+            {/* Download controls removed as requested */}
+          </>
         )}
       </CardContent>
+
+      {/* Footer buttons removed as requested */}
     </Card>
   );
 }

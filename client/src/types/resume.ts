@@ -23,7 +23,6 @@ export interface Resume {
   userId: number;
   fileName: string;
   fileData: string; 
-  fileUrl?: string; // URL to download the file
   score?: number;
   uploadedAt: Date;
   isShadowResume: boolean;
