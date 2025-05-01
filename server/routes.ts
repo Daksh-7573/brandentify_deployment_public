@@ -5383,7 +5383,8 @@ ${extractedText.substring(0, 5000)}
   app.use(profileServicesRoutes);
   
   // Comprehensive user profile routes for efficient data fetching
-  app.use('/api', userProfileRoutes());
+  const profileRouter = userProfileRoutes();
+  apiRouter.use(profileRouter);
   console.log("Comprehensive user profile routes loaded");
   
   // Resume test routes for testing enhanced resume analysis
