@@ -269,6 +269,68 @@ export default function resumeRoutes() {
     }
   });
 
+  /**
+   * Download resume file
+   * GET /api/resumes/download/:userId/:fileName
+   * This endpoint is referenced in fileUrl property in the resume object
+   */
+  router.get('/resumes/download/:userId/:fileName', async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const fileName = req.params.fileName;
+      
+      console.log(`[GET /resumes/download/:userId/:fileName] Downloading resume for user: ${userId}, fileName: ${fileName}`);
+      
+      if (isNaN(userId)) {
+        console.log(`[GET /resumes/download] Invalid user ID format: ${req.params.userId}`);
+        return res.status(400).json({
+          message: 'Invalid user ID format'
+        });
+      }
+      
+      // Get the most recent resume for this user
+      const resume = await storage.getResumeByUserId(userId);
+      
+      if (!resume) {
+        console.log(`[GET /resumes/download] No resume found for user: ${userId}`);
+        return res.status(404).json({
+          message: 'Resume not found'
+        });
+      }
+      
+      // Get the PDF data
+      const pdfData = resume.fileData;
+      
+      if (!pdfData) {
+        console.log(`[GET /resumes/download] Resume has no file data: ${resume.id}`);
+        return res.status(404).json({
+          message: 'Resume file data not found'
+        });
+      }
+      
+      console.log(`[GET /resumes/download] Found resume ID: ${resume.id} for user: ${userId}`);
+      
+      // Set proper headers
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `inline; filename=${encodeURIComponent(fileName || 'resume.pdf')}`);
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
+      
+      // If fileData is base64, convert it to buffer
+      const buffer = Buffer.from(pdfData, 'base64');
+      
+      // Send the PDF data
+      return res.send(buffer);
+    } catch (error) {
+      console.error('[Download Resume] Error:', error);
+      return res.status(500).json({
+        message: 'Error downloading resume',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+  
   console.log('Resume generation routes loaded');
   return router;
 }
