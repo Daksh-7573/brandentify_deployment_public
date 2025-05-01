@@ -229,7 +229,23 @@ Sample skills relevant to the ${user.industry || 'industry'} would be listed her
       }
       
       console.log(`[GET /users/:userId/shadow-resume] Found shadow resume ID: ${resume.id}`);
-      return res.status(200).json({ resume });
+      
+      // Check if we have stored form data in the metadata field
+      let formData = null;
+      if (resume.metadata) {
+        try {
+          // Parse the stored JSON form data
+          formData = JSON.parse(resume.metadata as string);
+          console.log(`[GET /users/:userId/shadow-resume] Found stored form data for resume ID: ${resume.id}`);
+        } catch (parseError) {
+          console.error(`[GET /users/:userId/shadow-resume] Error parsing metadata:`, parseError);
+        }
+      }
+      
+      return res.status(200).json({ 
+        resume,
+        form: formData // Include the parsed form data in the response
+      });
     } catch (error) {
       console.error(`[GET /users/:userId/shadow-resume] Error:`, error);
       return res.status(500).json({ message: 'Internal server error', error: (error as Error).message });
@@ -382,18 +398,24 @@ Sample skills relevant to the ${user.industry || 'industry'} would be listed her
       const { settings } = resumeData;
       console.log(`[PATCH /users/:userId/shadow-resume/:resumeId] Updating with settings:`, settings);
       
-      // Update the resume with the settings
+      // Store the form data in the database as a JSON string
+      const formDataJson = JSON.stringify(resumeData);
+      
+      // Update the resume with the settings and form data
       const updatedResume = await storage.updateResume(parseInt(resumeId), {
         lastUpdatedByMusk: new Date(),
         isDownloadable: settings.isDownloadable,
         visibility: settings.visibility,
         themeStyle: settings.themeStyle,
+        // Store the form data in a metadata field (will be converted to JSON)
+        metadata: formDataJson
       });
       
-      console.log(`[PATCH /users/:userId/shadow-resume/:resumeId] Successfully updated resume: ${resumeId}`);
+      console.log(`[PATCH /users/:userId/shadow-resume/:resumeId] Successfully updated resume with form data: ${resumeId}`);
       return res.status(200).json({ 
         resume: updatedResume,
-        message: 'Resume settings updated successfully',
+        form: resumeData, // Send the form data back directly
+        message: 'Resume settings and form data updated successfully',
         success: true
       });
     } catch (error) {

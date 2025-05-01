@@ -60,6 +60,7 @@ export const resumes = pgTable("resumes", {
   isDownloadable: boolean("is_downloadable").default(false), // Whether others can download this resume
   lastUpdatedByMusk: timestamp("last_updated_by_musk"), // When Musk last updated this resume
   visibility: text("visibility").default("private"), // private, connections, public
+  metadata: text("metadata"), // Stores form data for Resume Editor
 });
 
 // Shadow Resume model - stores automatically generated resume content by Musk
