@@ -215,52 +215,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
     }
   }, [user, isEditing]);
 
-  // Handle download permission change
-  const handleDownloadableChange = (checked: boolean) => {
-    setIsDownloadable(checked);
-    
-    if (resume) {
-      updateResumeMutation.mutate({
-        isDownloadable: checked
-      });
-    }
-  };
-
-  // Handle download click
-  const handleDownload = () => {
-    if (resume && resume.fileData) {
-      // Convert base64 to blob for download
-      const byteCharacters = atob(resume.fileData);
-      const byteNumbers = new Array(byteCharacters.length);
-      for (let i = 0; i < byteCharacters.length; i++) {
-        byteNumbers[i] = byteCharacters.charCodeAt(i);
-      }
-      const byteArray = new Uint8Array(byteNumbers);
-      const blob = new Blob([byteArray], { type: 'application/pdf' });
-      
-      // Create a URL for the blob
-      const url = URL.createObjectURL(blob);
-      
-      // Create a temporary anchor element to trigger download
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = resume.fileName || 'resume.pdf';
-      document.body.appendChild(a);
-      a.click();
-      
-      // Clean up
-      setTimeout(() => {
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-      }, 100);
-    } else {
-      toast({
-        title: 'No Resume Available',
-        description: 'There is no resume content to download yet.',
-        variant: 'destructive',
-      });
-    }
-  };
+  // All download and view functionality has been removed as requested
 
   // Get last updated time
   const getLastUpdateText = () => {
@@ -585,17 +540,9 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                       </Button>
                     )}
                     
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="bg-white shadow-sm border-gray-200"
-                      onClick={() => handleDownload()}
-                    >
-                      <Download className="h-4 w-4 mr-1" />
-                      <span>Download</span>
-                    </Button>
+                    {/* All download and view buttons removed as requested */}
                     
-                    {!isEditing && (
+                    {false && (
                       <Button
                         variant="default"
                         size="sm"
@@ -681,115 +628,12 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
               )}
             </div>
 
-            {/* Controls - Simplified for download-only */}
-            <div className="flex flex-wrap gap-4 mt-4">
-              {isOwner && (
-                <div className="flex-1 min-w-[200px]">
-                  <div className="flex items-center space-x-2 h-full pt-2">
-                    <Switch 
-                      id="allow-download" 
-                      checked={isDownloadable} 
-                      onCheckedChange={handleDownloadableChange} 
-                    />
-                    <Label htmlFor="allow-download">Allow others to download</Label>
-                  </div>
-                </div>
-              )}
-            </div>
+            {/* Download controls removed as requested */}
           </>
         )}
       </CardContent>
 
-      {/* Always show the buttons for the resume */}
-      <CardFooter className="flex justify-between border-t pt-4">
-        <div className="flex gap-2">
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="gap-1"
-            onClick={() => {
-              console.log("View button clicked - resume data:", {
-                hasData: !!resume,
-                fileDataLength: resume?.fileData ? resume.fileData.length : 0,
-                resumeId: resume?.id
-              });
-              
-              // Download and view approach - reliable across all browsers
-              if (resume?.fileData) {
-                try {
-                  // Create a temporary anchor and trigger download that opens automatically
-                  const link = document.createElement('a');
-                  
-                  // Convert base64 to blob
-                  const byteCharacters = atob(resume.fileData);
-                  const byteNumbers = new Array(byteCharacters.length);
-                  for (let i = 0; i < byteCharacters.length; i++) {
-                    byteNumbers[i] = byteCharacters.charCodeAt(i);
-                  }
-                  const byteArray = new Uint8Array(byteNumbers);
-                  const blob = new Blob([byteArray], { type: 'application/pdf' });
-                  
-                  // Create a blob URL
-                  const url = URL.createObjectURL(blob);
-                  
-                  // Set href to blob URL
-                  link.href = url;
-                  link.target = '_blank';
-                  
-                  // Append to body
-                  document.body.appendChild(link);
-                  
-                  // Trigger click
-                  link.click();
-                  
-                  // Clean up
-                  setTimeout(() => {
-                    document.body.removeChild(link);
-                    URL.revokeObjectURL(url);
-                  }, 100);
-                  
-                  toast({
-                    title: 'Opening Resume',
-                    description: 'Your resume is being opened for viewing.',
-                  });
-                } catch (error) {
-                  console.error("Error viewing PDF:", error);
-                  toast({
-                    title: 'Error Opening Resume',
-                    description: 'There was a problem opening your resume. Please try again.',
-                    variant: 'destructive',
-                  });
-                }
-              } else {
-                toast({
-                  title: 'No Resume Available',
-                  description: 'There is no resume content to view yet.',
-                  variant: 'destructive',
-                });
-              }
-            }}
-          >
-            <Eye className="h-4 w-4" />
-            <span>View</span>
-          </Button>
-        </div>
-        <Button 
-          variant="default" 
-          size="sm" 
-          className="gap-1"
-          onClick={handleDownload}
-          disabled={(!isOwner && !resume?.isDownloadable) || updateResumeMutation.isPending}
-        >
-          {updateResumeMutation.isPending ? (
-            <span>Saving...</span>
-          ) : (
-            <>
-              <Download className="h-4 w-4" />
-              <span>Download</span>
-            </>
-          )}
-        </Button>
-      </CardFooter>
+      {/* Footer buttons removed as requested */}
     </Card>
   );
 }
