@@ -277,7 +277,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                     // This would refresh the resume with latest data from the profile, experiences, skills, etc.
                     if (resume?.id) {
                       // Call our shadow resume refresh API endpoint
-                      fetch(`/api/shadow-resumes/${resume.id}/refresh-from-profile`, {
+                      fetch(`/api/users/${user.id}/shadow-resume/${resume.id}/refresh`, {
                         method: 'POST',
                         headers: {
                           'Content-Type': 'application/json',

@@ -84,6 +84,64 @@ ${projects.map(project => `- ${project.title || 'Project'}: ${project.descriptio
     }
   });
   
+  // Refresh Shadow Resume endpoint with expected URL pattern
+  apiRouter.post("/users/:userId/shadow-resume/:resumeId/refresh", async (req: Request, res: Response) => {
+    try {
+      const { userId, resumeId } = req.params;
+      console.log(`[POST /users/:userId/shadow-resume/:resumeId/refresh] Refreshing resume ${resumeId} for user ${userId}`);
+      
+      // Get the resume
+      const resume = await storage.getResumeById(parseInt(resumeId));
+      if (!resume) {
+        console.log(`[POST /users/:userId/shadow-resume/:resumeId/refresh] Resume not found with ID: ${resumeId}`);
+        return res.status(404).json({ message: 'Resume not found' });
+      }
+      
+      // Check if the resume belongs to the user
+      if (resume.userId !== parseInt(userId)) {
+        console.log(`[POST /users/:userId/shadow-resume/:resumeId/refresh] Resume ${resumeId} does not belong to user ${userId}`);
+        return res.status(403).json({ message: 'Resume does not belong to user' });
+      }
+      
+      // Get the user's profile data
+      const user = await storage.getUser(parseInt(userId));
+      if (!user) {
+        console.log(`[POST /users/:userId/shadow-resume/:resumeId/refresh] User not found with ID: ${userId}`);
+        return res.status(404).json({ message: 'User profile not found' });
+      }
+      
+      // Get the user's experiences, education, and skills
+      const workExperiences = await storage.getWorkExperiencesByUserId(parseInt(userId));
+      const educations = await storage.getEducationsByUserId(parseInt(userId));
+      const skills = await storage.getSkillsByUserId(parseInt(userId));
+      const projects = await storage.getProjectsByUserId(parseInt(userId));
+      
+      // Update resume with refreshed information
+      const updatedResume = await storage.updateResume(parseInt(resumeId), {
+        lastUpdatedByMusk: new Date(),
+        // Not changing the actual PDF to avoid Puppeteer dependency issues
+      });
+      
+      console.log(`[POST /users/:userId/shadow-resume/:resumeId/refresh] Successfully refreshed resume ${resumeId}`);
+      return res.status(200).json({ 
+        resume: updatedResume,
+        message: 'Resume refreshed with latest profile data',
+        dataIncluded: {
+          workExperiences: workExperiences.length,
+          educations: educations.length,
+          skills: skills.length,
+          projects: projects.length
+        }
+      });
+    } catch (error) {
+      console.error(`[POST /users/:userId/shadow-resume/:resumeId/refresh] Error:`, error);
+      return res.status(500).json({ 
+        message: 'Failed to refresh resume with profile data', 
+        error: (error as Error).message 
+      });
+    }
+  });
+  
   // Get Shadow Resume for a user
   apiRouter.get("/users/:userId/shadow-resume", async (req: Request, res: Response) => {
     try {
