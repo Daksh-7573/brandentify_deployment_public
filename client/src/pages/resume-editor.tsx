@@ -683,6 +683,7 @@ export default function ResumeEditor() {
 
   // Handle form submission
   const onSubmit = async (values: z.infer<typeof resumeSchema>) => {
+    console.log("===== FORM SUBMISSION TRIGGERED =====");
     setIsSaving(true);
     try {
       console.log("Form submitted with values:", values);
@@ -1755,11 +1756,6 @@ export default function ResumeEditor() {
                 type="submit" 
                 className="flex items-center gap-2"
                 disabled={isSaving}
-                onClick={() => {
-                  console.log("Save button clicked");
-                  console.log("Form state:", form.formState);
-                  console.log("Form values:", form.getValues());
-                }}
               >
                 {isSaving ? (
                   <>
