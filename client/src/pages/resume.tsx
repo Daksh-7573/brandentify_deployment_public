@@ -141,7 +141,67 @@ export default function ResumePage() {
                     
                     {/* Display resume preview */}
                     <div className="aspect-[3/4] bg-white rounded-lg border shadow-sm overflow-hidden relative">
-                      {resumeData.resume?.fileData ? (
+                      {resumeData.resume?.fileUrl ? (
+                        <>
+                          <object
+                            data={resumeData.resume.fileUrl}
+                            type="application/pdf"
+                            className="w-full h-full"
+                          >
+                            <div className="w-full h-full flex flex-col items-center justify-center p-4">
+                              <p className="text-sm text-center mb-4">
+                                Unable to display PDF directly. Please download to view.
+                              </p>
+                              <Button 
+                                variant="default" 
+                                onClick={() => {
+                                  if (resumeData?.resume?.fileUrl) {
+                                    const link = document.createElement('a');
+                                    link.href = resumeData.resume.fileUrl;
+                                    link.download = resumeData.resume.fileName || 'resume.pdf';
+                                    document.body.appendChild(link);
+                                    link.click();
+                                    document.body.removeChild(link);
+                                    
+                                    toast({
+                                      title: "Resume Downloaded",
+                                      description: "Your resume has been downloaded successfully.",
+                                    });
+                                  }
+                                }}
+                              >
+                                <Download className="h-4 w-4 mr-2" />
+                                Download Resume
+                              </Button>
+                            </div>
+                          </object>
+                          <div className="absolute bottom-2 right-2">
+                            <Button
+                              size="sm"
+                              variant="secondary"
+                              className="opacity-70 hover:opacity-100"
+                              onClick={() => {
+                                if (resumeData?.resume?.fileUrl) {
+                                  const link = document.createElement('a');
+                                  link.href = resumeData.resume.fileUrl;
+                                  link.download = resumeData.resume.fileName || 'resume.pdf';
+                                  document.body.appendChild(link);
+                                  link.click();
+                                  document.body.removeChild(link);
+                                  
+                                  toast({
+                                    title: "Resume Downloaded",
+                                    description: "Your resume has been downloaded successfully.",
+                                  });
+                                }
+                              }}
+                            >
+                              <Download className="h-3 w-3 mr-1" />
+                              Download
+                            </Button>
+                          </div>
+                        </>
+                      ) : resumeData.resume?.fileData ? (
                         <>
                           <object
                             data={`data:application/pdf;base64,${String(resumeData.resume.fileData)}`}
@@ -222,8 +282,21 @@ export default function ResumePage() {
                         variant="outline" 
                         size="sm"
                         onClick={() => {
-                          if (resumeData?.resume?.fileData) {
-                            // Create anchor element and trigger download
+                          if (resumeData?.resume?.fileUrl) {
+                            // Create anchor element and trigger download using fileUrl
+                            const link = document.createElement('a');
+                            link.href = resumeData.resume.fileUrl;
+                            link.download = resumeData.resume.fileName || 'resume.pdf';
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                            
+                            toast({
+                              title: "Resume Downloaded",
+                              description: "Your resume has been downloaded successfully.",
+                            });
+                          } else if (resumeData?.resume?.fileData) {
+                            // Fallback to fileData if fileUrl is not available
                             const link = document.createElement('a');
                             link.href = `data:application/pdf;base64,${String(resumeData.resume.fileData)}`;
                             link.download = resumeData.resume.fileName || 'resume.pdf';
