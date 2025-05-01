@@ -220,7 +220,8 @@ export default function ResumeEditor() {
   const hasMetadataForm = !!metadataFormData;
   const hasCachedForm = !!localCachedFormData;
   const resumeDataKeys = resumeData ? Object.keys(resumeData) : [];
-  const resumeReadyState = hasResumeData && hasResumeObject;
+  // Fixed condition: We're ready if we have either the resume object or any form data
+  const resumeReadyState = hasResumeObject || hasApiFormData || hasMetadataForm || hasCachedForm;
   
   // Determine the actual form data source we'll use
   const effectiveFormData = resumeData?.form || metadataFormData || localCachedFormData;

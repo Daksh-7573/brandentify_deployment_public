@@ -30,6 +30,8 @@ export interface Resume {
   isDownloadable: boolean;
   lastUpdatedByMusk?: Date;
   visibility: ResumeVisibility;
+  // Metadata field can store serialized form data as a string
+  metadata?: string;
   // The form property contains the saved form data from the Resume Editor
   form?: {
     personalInfo?: {

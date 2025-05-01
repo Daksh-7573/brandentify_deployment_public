@@ -60,7 +60,9 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
     hasFormData: !!formData,
     formDataKeys: formData ? Object.keys(formData) : [],
     resumeId: resume?.id,
-    resumeHasMetadata: !!resume?.metadata
+    // Safely handle case where metadata might be undefined
+    resumeHasMetadata: !!resume?.metadata,
+    resumeObject: resume ? 'Resume exists' : 'No resume'
   });
   
   // IMPORTANT: Always fetch profile data as a fallback, but PRIORITIZE form data in the render
