@@ -287,6 +287,9 @@ export default function ResumeEditor() {
     navigate('/resume');
   };
   
+  // Create a loading state for the update operation
+  const [isUpdatingFromProfile, setIsUpdatingFromProfile] = useState(false);
+  
   // Update resume data from profile
   const updateFromProfile = async () => {
     if (!profileData) {
@@ -298,7 +301,7 @@ export default function ResumeEditor() {
       return;
     }
     
-    setIsLoading(true);
+    setIsUpdatingFromProfile(true);
     console.log('Current form values:', form.getValues());
     
     try {
@@ -444,7 +447,7 @@ export default function ResumeEditor() {
           variant: 'default',
         });
         
-        setIsLoading(false);
+        setIsUpdatingFromProfile(false);
       }, 100);
       
     } catch (error) {
@@ -454,7 +457,7 @@ export default function ResumeEditor() {
         description: `Failed to update from profile: ${error instanceof Error ? error.message : 'Unknown error'}`,
         variant: 'destructive',
       });
-      setIsLoading(false);
+      setIsUpdatingFromProfile(false);
     }
   };
   
