@@ -1753,9 +1753,14 @@ export default function ResumeEditor() {
                 Back
               </Button>
               <Button 
-                type="submit" 
+                type="button" 
                 className="flex items-center gap-2"
                 disabled={isSaving}
+                onClick={() => {
+                  console.log("Manual save triggered");
+                  const values = form.getValues();
+                  onSubmit(values);
+                }}
               >
                 {isSaving ? (
                   <>
