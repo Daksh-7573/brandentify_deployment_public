@@ -92,6 +92,23 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
     enabled: !!user?.id, // Always fetch regardless of form data status
   });
   
+  // Create combined data from form and profile
+  // These variables will be used in the render to ensure form data takes precedence
+  const effectiveExperiences = formData?.experiences?.experiences || workExperiences;
+  const effectiveEducation = formData?.education?.educations || education;
+  const effectiveSkills = formData?.skills?.skills || skills;
+  const effectiveProjects = formData?.projects?.projects || projects;
+  
+  // Personal info is also prioritized from form
+  const effectivePersonalInfo = formData?.personalInfo || {
+    fullName: user?.name || '',
+    title: user?.title || '',
+    email: user?.email || '',
+    phone: user?.phoneNumber || '',
+    location: user?.location || '',
+    summary: user?.aboutMe || '',
+  };
+  
   // Update resume settings mutation
   const updateResumeMutation = useMutation<any, Error, {isDownloadable: boolean}>({
     mutationFn: async (updates) => {
@@ -459,8 +476,8 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                           />
                         ) : (
                           <p className="text-xs text-gray-700 leading-relaxed">
-                            {/* Prioritize form data from resume editor over profile data */}
-                            {formData?.personalInfo?.summary || user.aboutMe || 'Experienced professional with expertise in ' + (user.industry || 'their field') + ' seeking opportunities in ' + (user.domain || 'the industry')}
+                            {/* Use our combined effective data which prioritizes form data */}
+                            {effectivePersonalInfo.summary || 'Experienced professional with expertise in ' + (user.industry || 'their field') + ' seeking opportunities in ' + (user.domain || 'the industry')}
                           </p>
                         )}
                       </div>
@@ -469,16 +486,16 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                       <div className="mb-4 pb-3 border-b border-gray-100">
                         <h3 className="text-sm font-bold mb-2 uppercase" style={{color: fixedTheme.color}}>Professional Experience</h3>
                         
-                        {/* ALWAYS prioritize form data from Resume Editor over profile data */}
-                        {formData && formData.experiences?.experiences && formData.experiences.experiences.length > 0 ? (
+                        {/* Use the combined effective data with proper prioritization */}
+                        {effectiveExperiences && effectiveExperiences.length > 0 ? (
                           <div className="space-y-3 mt-2">
-                            {formData.experiences && formData.experiences.experiences && formData.experiences.experiences.map((experience: any, index: number) => (
+                            {effectiveExperiences.map((experience: any, index: number) => (
                               <div key={index} className="pb-2">
                                 <div className="font-semibold">{experience.title || experience.position}</div>
                                 <div className="text-gray-600 flex justify-between">
                                   <span>{experience.company}{experience.industry ? `, ${experience.industry}` : ''}</span>
                                   <span>
-                                    {new Date(experience.startDate).getFullYear()} - 
+                                    {experience.startDate ? new Date(experience.startDate).getFullYear() : ''} - 
                                     {experience.endDate ? new Date(experience.endDate).getFullYear() : 'Present'}
                                   </span>
                                 </div>
@@ -494,31 +511,8 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                               </div>
                             ))}
                           </div>
-                        ) : workExperiences && workExperiences.length > 0 ? (
-                          // Fall back to profile data if no form data
-                          <div className="space-y-3 mt-2">
-                            {workExperiences.map((experience, index) => (
-                              <div key={index} className="pb-2">
-                                <div className="font-semibold">{experience.title}</div>
-                                <div className="text-gray-600 flex justify-between">
-                                  <span>{experience.company}{experience.industry ? `, ${experience.industry}` : ''}</span>
-                                  <span>
-                                    {new Date(experience.startDate).getFullYear()} - 
-                                    {experience.endDate ? new Date(experience.endDate).getFullYear() : 'Present'}
-                                  </span>
-                                </div>
-                                <ul className="list-disc ml-4 mt-1 text-gray-700 space-y-0.5">
-                                  {experience.keyResponsibilities && Array.isArray(experience.keyResponsibilities) ? 
-                                    experience.keyResponsibilities.map((responsibility: string, i: number) => (
-                                      <li key={i}>{responsibility}</li>
-                                    )) : 
-                                    <li>Contributed to company projects and goals</li>
-                                  }
-                                </ul>
-                              </div>
-                            ))}
-                          </div>
                         ) : (
+                          // Empty state when no experiences are available
                           <div className="text-gray-500 italic mt-1">
                             No work experience added yet. Add work experience in your profile.
                           </div>
@@ -529,10 +523,10 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                       <div className="mb-4 pb-3 border-b border-gray-100">
                         <h3 className="text-sm font-bold mb-2 uppercase" style={{color: fixedTheme.color}}>Education</h3>
                         
-                        {/* ALWAYS prioritize form data from Resume Editor over profile data */}
-                        {formData && formData.education?.educations && formData.education.educations.length > 0 ? (
+                        {/* Use the combined effective data with proper prioritization */}
+                        {effectiveEducation && effectiveEducation.length > 0 ? (
                           <div className="space-y-3 mt-2">
-                            {formData.education && formData.education.educations && formData.education.educations.map((edu: any, index: number) => (
+                            {effectiveEducation.map((edu: any, index: number) => (
                               <div key={index} className="pb-2">
                                 <div className="font-semibold">
                                   {edu.degree}{edu.fieldOfStudy ? `, ${edu.fieldOfStudy}` : ''}
@@ -540,48 +534,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                                 <div className="text-gray-600 flex justify-between">
                                   <span>{edu.institution}</span>
                                   <span>
-                                    {new Date(edu.startDate).getFullYear()} - 
-                                    {edu.endDate ? new Date(edu.endDate).getFullYear() : 'Present'}
-                                  </span>
-                                </div>
-                                
-                                {/* Additional education details */}
-                                <div className="mt-1 text-xs text-gray-600">
-                                  {edu.location && (
-                                    <div className="mt-0.5">
-                                      <span className="font-medium">Location:</span> {edu.location}
-                                    </div>
-                                  )}
-                                  {edu.industry && (
-                                    <div className="mt-0.5">
-                                      <span className="font-medium">Industry:</span> {edu.industry}
-                                      {edu.domain && <span> • {edu.domain}</span>}
-                                    </div>
-                                  )}
-                                  
-                                  {/* Skills acquired section */}
-                                  {edu.skillsAcquired && Array.isArray(edu.skillsAcquired) && edu.skillsAcquired.length > 0 && (
-                                    <div className="mt-1">
-                                      <span className="font-medium">Skills:</span>{' '}
-                                      {edu.skillsAcquired.join(', ')}
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        ) : education && education.length > 0 ? (
-                          // Fall back to profile data if no form data
-                          <div className="space-y-3 mt-2">
-                            {education.map((edu, index) => (
-                              <div key={index} className="pb-2">
-                                <div className="font-semibold">
-                                  {edu.degree}{edu.fieldOfStudy ? `, ${edu.fieldOfStudy}` : ''}
-                                </div>
-                                <div className="text-gray-600 flex justify-between">
-                                  <span>{edu.institution}</span>
-                                  <span>
-                                    {new Date(edu.startDate).getFullYear()} - 
+                                    {edu.startDate ? new Date(edu.startDate).getFullYear() : ''} - 
                                     {edu.endDate ? new Date(edu.endDate).getFullYear() : 'Present'}
                                   </span>
                                 </div>
@@ -612,6 +565,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                             ))}
                           </div>
                         ) : (
+                          // Empty state when no educations are available
                           <div className="text-gray-500 italic mt-1">
                             No education added yet. Add education in your profile.
                           </div>
@@ -622,21 +576,12 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                       <div className="mb-4 pb-3 border-b border-gray-100">
                         <h3 className="text-sm font-bold mb-2 uppercase" style={{color: fixedTheme.color}}>Skills</h3>
                         
-                        {/* ALWAYS prioritize form data from Resume Editor over profile data */}
-                        {formData && formData.skills?.skills && formData.skills.skills.length > 0 ? (
+                        {/* Use the combined effective data with proper prioritization */}
+                        {effectiveSkills && effectiveSkills.length > 0 ? (
                           <div className="flex flex-wrap gap-1 mt-2">
-                            {formData.skills && formData.skills.skills && formData.skills.skills.map((skill: any, index: number) => (
+                            {effectiveSkills.map((skill: any, index: number) => (
                               <span key={index} className="inline-block px-2 py-0.5 rounded-full bg-gray-100 text-gray-800 text-xs">
                                 {skill.name || skill}
-                              </span>
-                            ))}
-                          </div>
-                        ) : skills && skills.length > 0 ? (
-                          // Fall back to profile data if no form data
-                          <div className="flex flex-wrap gap-1 mt-2">
-                            {skills.map((skill, index) => (
-                              <span key={index} className="inline-block px-2 py-0.5 rounded-full bg-gray-100 text-gray-800 text-xs">
-                                {skill.name}
                               </span>
                             ))}
                           </div>
@@ -651,32 +596,10 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                       <div className="mb-4 pb-3">
                         <h3 className="text-sm font-bold mb-2 uppercase" style={{color: fixedTheme.color}}>Projects</h3>
                         
-                        {/* ALWAYS prioritize form data from Resume Editor over profile data */}
-                        {formData && formData.projects?.projects && formData.projects.projects.length > 0 ? (
+                        {/* Use the combined effective data with proper prioritization */}
+                        {effectiveProjects && effectiveProjects.length > 0 ? (
                           <div className="space-y-3 mt-2">
-                            {formData.projects && formData.projects.projects && formData.projects.projects.map((project: any, index: number) => (
-                              <div key={index} className="pb-2">
-                                <div className="font-semibold">{project.title}</div>
-                                <div className="text-gray-600 mt-0.5 text-xs">
-                                  {project.description && project.description.substring(0, 120)}
-                                  {project.description && project.description.length > 120 ? '...' : ''}
-                                </div>
-                                {project.technologies && Array.isArray(project.technologies) && project.technologies.length > 0 && (
-                                  <div className="flex flex-wrap gap-1 mt-1">
-                                    {project.technologies.map((tech: string, i: number) => (
-                                      <span key={i} className="inline-block px-1.5 py-0.5 rounded-sm bg-gray-100 text-gray-700 text-xs">
-                                        {tech}
-                                      </span>
-                                    ))}
-                                  </div>
-                                )}
-                              </div>
-                            ))}
-                          </div>
-                        ) : projects && projects.length > 0 ? (
-                          // Fall back to profile data if no form data
-                          <div className="space-y-3 mt-2">
-                            {projects.map((project, index) => (
+                            {effectiveProjects.map((project: any, index: number) => (
                               <div key={index} className="pb-2">
                                 <div className="font-semibold">{project.title}</div>
                                 <div className="text-gray-600 mt-0.5 text-xs">
