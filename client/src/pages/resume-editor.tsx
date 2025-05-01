@@ -1,26 +1,22 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'wouter';
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiRequest } from '@/lib/queryClient';
-import { useUserProfile } from '@/hooks/use-user-profile';
+import { useQueryClient } from '@tanstack/react-query';
 import { useShadowResume } from '@/hooks/use-shadow-resume';
-import { useLocation } from 'wouter';
+import { useUserProfile } from '@/hooks/use-user-profile';
 
 import {
   Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
   CardHeader,
-  CardTitle
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
 } from '@/components/ui/card';
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger
-} from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import {
   Form,
   FormControl,
@@ -28,11 +24,14 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage
+  FormMessage,
 } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@/components/ui/tabs';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
@@ -151,124 +150,109 @@ const resumeSchema = z.object({
   settings: resumeSettingsSchema,
 });
 
-// Resume editor component
+// Separate component for error display to avoid hook ordering issues
+function ErrorDisplay({ resumeError, profileError, handleBack }) {
+  return (
+    <Card className="w-full">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-destructive">
+          <AlertCircle className="h-5 w-5" />
+          Error Loading Resume Editor
+        </CardTitle>
+        <CardDescription>
+          We encountered a problem loading your data
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          <p className="text-muted-foreground">
+            There was a problem loading your resume data. Please try again later.
+          </p>
+          {resumeError && (
+            <div className="p-4 bg-destructive/10 rounded-md">
+              <p className="font-medium">Resume Error:</p>
+              <p className="text-sm">{resumeError.message || 'Unknown error occurred'}</p>
+            </div>
+          )}
+          {profileError && (
+            <div className="p-4 bg-destructive/10 rounded-md">
+              <p className="font-medium">Profile Error:</p>
+              <p className="text-sm">{profileError.message || 'Unknown error occurred'}</p>
+            </div>
+          )}
+          <div className="flex justify-end gap-2">
+            <Button 
+              variant="outline" 
+              onClick={() => window.location.reload()}
+              className="flex items-center gap-2"
+            >
+              <RefreshCw className="h-4 w-4" />
+              Retry
+            </Button>
+            <Button 
+              variant="outline" 
+              onClick={handleBack}
+              className="flex items-center gap-2"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Back to Resume
+            </Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// Separate component for loading display
+function LoadingDisplay() {
+  return (
+    <Card className="w-full">
+      <CardHeader>
+        <CardTitle>Loading Resume Editor...</CardTitle>
+        <CardDescription>Please wait while we fetch your data</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="flex justify-center items-center py-10">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// Main resume editor component
 export default function ResumeEditor() {
+  // Initialize all hooks at the top level without conditional execution
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [location, navigate] = useLocation();
   
   // Get user ID from the URL or use the logged-in user's ID
-  // Using test data by default (user ID 2)
   const userId = user?.id || 2;
   
-  // Current editing section state
+  // State variables
   const [activeTab, setActiveTab] = useState('personal-info');
-  
-  // Track page status for better debugging
   const [pageStatus, setPageStatus] = useState('initializing');
+  const [localCachedFormData, setLocalCachedFormData] = useState<any>(null);
+  const [metadataFormData, setMetadataFormData] = useState<any>(null);
+  const [formInitialized, setFormInitialized] = useState(false);
   
-  useEffect(() => {
-    console.log(`Resume Editor - Status: ${pageStatus} for userId: ${userId}`);
-  }, [pageStatus, userId]);
-
-  // Use the enhanced shadow resume hook with better persistence and caching
+  // Data fetching hooks
   const { 
     data: resumeData, 
     isLoading: isResumeLoading, 
     error: resumeError
   } = useShadowResume(userId);
   
-  // Enhanced logging with conditional checks to aid debugging
-  console.log("Resume Editor - resumeData:", resumeData);
-  
-  // Cache resume form data to localStorage for added persistence
-  useEffect(() => {
-    if (resumeData?.resume?.id && resumeData?.form) {
-      console.log("Caching resume form data to localStorage", resumeData.form);
-      localStorage.setItem(`resume_form_${resumeData.resume.id}`, JSON.stringify(resumeData.form));
-    }
-  }, [resumeData?.form, resumeData?.resume?.id]);
-  
-  // Attempt to retrieve cached form data for the current resume if API data is missing form
-  const [localCachedFormData, setLocalCachedFormData] = useState<any>(null);
-  
-  useEffect(() => {
-    if (resumeData?.resume?.id && !resumeData?.form) {
-      const cachedData = localStorage.getItem(`resume_form_${resumeData.resume.id}`);
-      
-      if (cachedData) {
-        try {
-          const parsedData = JSON.parse(cachedData);
-          console.log("Restored resume form data from localStorage cache", parsedData);
-          setLocalCachedFormData(parsedData);
-        } catch (e) {
-          console.error("Failed to parse cached resume form data", e);
-        }
-      }
-    }
-  }, [resumeData?.resume?.id, resumeData?.form]);
-  
-  // Check if we have form data directly in the metadata field
-  const [metadataFormData, setMetadataFormData] = useState<any>(null);
-  
-  useEffect(() => {
-    if (resumeData?.resume?.metadata && !resumeData?.form) {
-      try {
-        const parsedMetadata = JSON.parse(resumeData.resume.metadata as string);
-        console.log("Found form data in resume metadata field", parsedMetadata);
-        setMetadataFormData(parsedMetadata);
-        // Update the page status when we successfully parse metadata
-        setPageStatus('metadata-parsed');
-      } catch (e) {
-        console.error("Failed to parse resume metadata", e);
-        setPageStatus('metadata-parse-failed');
-      }
-    }
-  }, [resumeData?.resume?.metadata, resumeData?.form]);
-  
-  // Verify the resume data structure
-  const hasResumeData = !!resumeData;
-  const hasResumeObject = !!resumeData?.resume;
-  const hasApiFormData = !!resumeData?.form;
-  const hasMetadataForm = !!metadataFormData;
-  const hasCachedForm = !!localCachedFormData;
-  const resumeDataKeys = resumeData ? Object.keys(resumeData) : [];
-  // Fixed condition: We're ready if we have either the resume object or any form data
-  const resumeReadyState = hasResumeObject || hasApiFormData || hasMetadataForm || hasCachedForm;
-  
-  // Determine the actual form data source we'll use
-  const effectiveFormData = resumeData?.form || metadataFormData || localCachedFormData;
-  
-  console.log("Render condition check:", {
-    hasResumeData,
-    hasResumeObject,
-    hasApiFormData,
-    hasMetadataForm,
-    hasCachedForm,
-    resumeDataKeys,
-    resumeReadyState,
-    effectiveFormDataExists: !!effectiveFormData
+  const { 
+    data: profileData, 
+    isLoading: isProfileLoading, 
+    error: profileError 
+  } = useUserProfile(userId, { 
+    enabled: !!userId 
   });
-  
-  // Determine where resume data is coming from for debugging
-  const resumeSources = {
-    fromResumeData: resumeData?.resume ? "YES" : "NO",
-    hasApiForm: resumeData?.form ? "YES" : "NO",
-    hasMetadataForm: metadataFormData ? "YES" : "NO",
-    hasCachedForm: localCachedFormData ? "YES" : "NO",
-    fromManualFetch: "YES", // We're doing a manual fetch in the component
-    readyState: resumeReadyState
-  };
-  
-  const resumeExists = !!resumeData?.resume;
-  console.log("Resume exists?", resumeExists);
-  console.log("Resume sources check:", resumeSources);
-  
-  // Fetch comprehensive user profile data with our new hook
-  const { data: profileData, isLoading: isProfileLoading, error: profileError } = useUserProfile(userId, { enabled: !!userId });
-  
-  console.log("Resume Editor - profileData:", profileData, "isProfileLoading:", isProfileLoading, "profileError:", profileError);
   
   // Combined loading state
   const isLoading = isResumeLoading || isProfileLoading;
@@ -298,20 +282,238 @@ export default function ResumeEditor() {
     },
   });
   
-  // Keep track of whether form has been initialized to prevent continuous resets
-  const [formInitialized, setFormInitialized] = useState(false);
+  // Navigation helpers
+  const handleBack = () => {
+    navigate('/resume');
+  };
+  
+  // Helper functions for form array management
+  const addExperience = () => {
+    const experiences = form.getValues('experiences.experiences') || [];
+    form.setValue('experiences.experiences', [
+      ...experiences,
+      {
+        title: '',
+        company: '',
+        location: '',
+        startDate: '',
+        endDate: '',
+        isCurrent: false,
+        description: '',
+      },
+    ]);
+  };
+  
+  const removeExperience = (index: number) => {
+    const experiences = form.getValues('experiences.experiences') || [];
+    form.setValue(
+      'experiences.experiences',
+      experiences.filter((_, i) => i !== index)
+    );
+  };
+  
+  const addEducation = () => {
+    const educations = form.getValues('education.educations') || [];
+    form.setValue('education.educations', [
+      ...educations,
+      {
+        institution: '',
+        degree: '',
+        fieldOfStudy: '',
+        location: '',
+        startDate: '',
+        endDate: '',
+        isCurrentlyEnrolled: false,
+        gpa: '',
+        achievements: '',
+      },
+    ]);
+  };
+  
+  const removeEducation = (index: number) => {
+    const educations = form.getValues('education.educations') || [];
+    form.setValue(
+      'education.educations',
+      educations.filter((_, i) => i !== index)
+    );
+  };
+  
+  const addSkill = () => {
+    const skills = form.getValues('skills.skills') || [];
+    form.setValue('skills.skills', [
+      ...skills,
+      {
+        name: '',
+        level: 'Intermediate',
+        category: '',
+      },
+    ]);
+  };
+  
+  const removeSkill = (index: number) => {
+    const skills = form.getValues('skills.skills') || [];
+    form.setValue(
+      'skills.skills',
+      skills.filter((_, i) => i !== index)
+    );
+  };
+  
+  const addProject = () => {
+    const projects = form.getValues('projects.projects') || [];
+    form.setValue('projects.projects', [
+      ...projects,
+      {
+        title: '',
+        description: '',
+        startDate: '',
+        endDate: '',
+        url: '',
+        skills: [],
+        achievements: '',
+      },
+    ]);
+  };
+  
+  const removeProject = (index: number) => {
+    const projects = form.getValues('projects.projects') || [];
+    form.setValue(
+      'projects.projects',
+      projects.filter((_, i) => i !== index)
+    );
+  };
 
-  // Update form values when profile data and resume data are loaded
+  // Handle form submission
+  const onSubmit = async (values: z.infer<typeof resumeSchema>) => {
+    try {
+      console.log("Form submitted with values:", values);
+      
+      // Create JSON string for metadata
+      const metadata = JSON.stringify(values);
+      
+      // Build the request data
+      const requestData = {
+        userId,
+        resumeId: resumeData?.resume?.id, // Include resume ID if we're updating
+        isDownloadable: values.settings.isDownloadable,
+        visibility: values.settings.visibility,
+        themeStyle: values.settings.themeStyle,
+        metadata, // Send the full form data as metadata
+        isShadowResume: true // Mark this as a shadow resume
+      };
+      
+      // Check if we're creating a new resume or updating an existing one
+      if (resumeData?.resume?.id) {
+        // Update existing resume
+        const response = await fetch(`/api/shadow-resume/${resumeData.resume.id}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(requestData),
+        });
+        
+        if (!response.ok) {
+          throw new Error(`Failed to update resume: ${response.statusText}`);
+        }
+        
+        // Show success message
+        toast({
+          title: 'Resume updated',
+          description: 'Your resume has been updated successfully.',
+          variant: 'default',
+        });
+      } else {
+        // Create new resume
+        const response = await fetch('/api/shadow-resume', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(requestData),
+        });
+        
+        if (!response.ok) {
+          throw new Error(`Failed to create resume: ${response.statusText}`);
+        }
+        
+        // Show success message
+        toast({
+          title: 'Resume created',
+          description: 'Your resume has been created successfully.',
+          variant: 'default',
+        });
+      }
+      
+      // Invalidate the queries to refresh data
+      queryClient.invalidateQueries({ queryKey: ['/api/shadow-resume', userId] });
+      setPageStatus('saved-successfully');
+      
+    } catch (error) {
+      console.error("Error saving resume:", error);
+      toast({
+        title: 'Error',
+        description: `Failed to save resume: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        variant: 'destructive',
+      });
+      setPageStatus('save-error');
+    }
+  };
+  
+  // All useEffect hooks consolidated
+  // Log page status
   useEffect(() => {
-    // Only initialize the form once - fixes infinite loop issue
+    console.log(`Resume Editor - Status: ${pageStatus} for userId: ${userId}`);
+  }, [pageStatus, userId]);
+  
+  // Cache resume form data
+  useEffect(() => {
+    if (resumeData?.resume?.id && resumeData?.form) {
+      console.log("Caching resume form data to localStorage", resumeData.form);
+      localStorage.setItem(`resume_form_${resumeData.resume.id}`, JSON.stringify(resumeData.form));
+    }
+  }, [resumeData?.form, resumeData?.resume?.id]);
+  
+  // Retrieve cached form data
+  useEffect(() => {
+    if (resumeData?.resume?.id && !resumeData?.form) {
+      const cachedData = localStorage.getItem(`resume_form_${resumeData.resume.id}`);
+      
+      if (cachedData) {
+        try {
+          const parsedData = JSON.parse(cachedData);
+          console.log("Restored resume form data from localStorage cache", parsedData);
+          setLocalCachedFormData(parsedData);
+        } catch (e) {
+          console.error("Failed to parse cached resume form data", e);
+        }
+      }
+    }
+  }, [resumeData?.resume?.id, resumeData?.form]);
+  
+  // Parse metadata
+  useEffect(() => {
+    if (resumeData?.resume?.metadata && !resumeData?.form) {
+      try {
+        const parsedMetadata = JSON.parse(resumeData.resume.metadata as string);
+        console.log("Found form data in resume metadata field", parsedMetadata);
+        setMetadataFormData(parsedMetadata);
+        setPageStatus('metadata-parsed');
+      } catch (e) {
+        console.error("Failed to parse resume metadata", e);
+        setPageStatus('metadata-parse-failed');
+      }
+    }
+  }, [resumeData?.resume?.metadata, resumeData?.form]);
+  
+  // Initialize form data
+  useEffect(() => {
     if (profileData && !formInitialized && !isLoading) {
       console.log("Initializing form with data");
       setPageStatus('initializing-form');
       
-      // Check all possible sources of form data and use the first available one
+      // Determine which data source to use
       if (resumeData?.form) {
-        // First priority: Form data directly in the API response
-        console.log("Using saved resume form data from API response:", resumeData.form);
+        console.log("Using saved resume form data from API response");
         form.reset({
           personalInfo: resumeData.form.personalInfo || {
             fullName: profileData.name || '',
@@ -340,12 +542,9 @@ export default function ResumeEditor() {
             themeStyle: resumeData.resume?.themeStyle || 'professional',
           },
         });
-        setFormInitialized(true);
       } 
       else if (metadataFormData) {
-        // Second priority: Parsed metadata form data
-        console.log("Using form data from parsed metadata:", metadataFormData);
-        
+        console.log("Using form data from parsed metadata");
         form.reset({
           ...metadataFormData,
           settings: {
@@ -354,12 +553,9 @@ export default function ResumeEditor() {
             themeStyle: resumeData?.resume?.themeStyle || 'professional',
           },
         });
-        setFormInitialized(true);
       }
       else if (localCachedFormData) {
-        // Third priority: Cached form data from localStorage
-        console.log("Using form data from localStorage cache:", localCachedFormData);
-        
+        console.log("Using form data from localStorage cache");
         form.reset({
           ...localCachedFormData,
           settings: {
@@ -368,19 +564,9 @@ export default function ResumeEditor() {
             themeStyle: resumeData?.resume?.themeStyle || 'professional',
           },
         });
-        setFormInitialized(true);
       }
       else {
-        // Fallback to creating form data from profile if no resume form data is available
-        console.log("No resume form data available, using profile data as fallback");
-        
-        // Handle case where resume data might not be available
-        const resume = resumeData?.resume || {
-          isDownloadable: false,
-          visibility: 'private',
-          themeStyle: 'professional'
-        };
-        
+        console.log("No saved form data, initializing from profile data");
         form.reset({
           personalInfo: {
             fullName: profileData.name || '',
@@ -391,441 +577,24 @@ export default function ResumeEditor() {
             summary: profileData.aboutMe || '',
             website: profileData.website || '',
           },
-          experiences: { 
-            experiences: profileData.workExperiences?.map((exp: any) => ({
-              id: exp.id,
-              title: exp.title || '',
-              company: exp.company || '',
-              location: exp.location || '',
-              startDate: exp.startDate?.split('T')[0] || '',
-              endDate: exp.endDate ? exp.endDate.split('T')[0] : null,
-              isCurrent: !exp.endDate,
-              description: exp.description || '',
-              responsibilities: exp.keyResponsibilities || [],
-            })) || []
-          },
-          education: {
-            educations: profileData.education?.map((edu: any) => ({
-              id: edu.id,
-              institution: edu.institution || '',
-              degree: edu.degree || '',
-              fieldOfStudy: edu.fieldOfStudy || '',
-              location: edu.location || '',
-              startDate: edu.startDate?.split('T')[0] || '',
-              endDate: edu.endDate ? edu.endDate.split('T')[0] : null,
-              isCurrentlyEnrolled: !edu.endDate,
-              gpa: edu.gpa || '',
-              achievements: edu.achievements || '',
-            })) || []
-          },
-          skills: {
-            skills: profileData.skills?.map((skill: any) => ({
-              id: skill.id,
-              name: skill.name || '',
-              level: skill.level || '',
-              category: skill.category || '',
-            })) || []
-          },
-          projects: {
-            projects: profileData.projects?.map((project: any) => ({
-              id: project.id,
-              title: project.title || '',
-              description: project.description || '',
-              startDate: project.startDate?.split('T')[0] || '',
-              endDate: project.endDate ? project.endDate.split('T')[0] : null,
-              url: project.projectUrl || '',
-              skills: project.skills || [],
-              achievements: project.achievements || '',
-            })) || []
-          },
+          experiences: { experiences: [] },
+          education: { educations: [] },
+          skills: { skills: [] },
+          projects: { projects: [] },
           settings: {
-            isDownloadable: resume.isDownloadable || false,
-            visibility: resume.visibility || 'private',
-            themeStyle: resume.themeStyle || 'professional',
+            isDownloadable: resumeData?.resume?.isDownloadable || false,
+            visibility: resumeData?.resume?.visibility || 'private',
+            themeStyle: resumeData?.resume?.themeStyle || 'professional',
           },
         });
-        setFormInitialized(true);
-      }
-    }
-  }, [profileData, resumeData?.resume?.id, resumeData?.form, metadataFormData, localCachedFormData, isLoading, formInitialized]);
-  
-  // Save resume mutation - enhanced for better form data persistence
-  const saveResumeMutation = useMutation({
-    mutationFn: async (data: z.infer<typeof resumeSchema>) => {
-      // Make sure we have a valid userId before making the request
-      if (!userId) {
-        throw new Error("User ID not available");
       }
       
-      // Get the resume ID from the resumeData
-      const resumeId = resumeData?.resume?.id;
-      
-      // Cache the form data to localStorage for added persistence
-      console.log("Saving form data to localStorage cache before API request");
-      localStorage.setItem(`resume_form_latest_${userId}`, JSON.stringify(data));
-      
-      // Check if we need to create a new shadow resume or update an existing one
-      if (!resumeId) {
-        console.log(`Creating new shadow resume for user ${userId}`);
-        
-        // Create a new shadow resume first
-        const createResponse = await fetch(`/api/users/${userId}/shadow-resume`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            themeStyle: data.settings.themeStyle || 'professional',
-            visibility: data.settings.visibility || 'private',
-            isDownloadable: data.settings.isDownloadable || false,
-            isShadowResume: true,
-            fileName: `${data.personalInfo.fullName || 'User'}_Resume.pdf`,
-            // Add metadata field with form data for immediate persistence
-            metadata: JSON.stringify(data)
-          }),
-        });
-        
-        if (!createResponse.ok) {
-          const errorText = await createResponse.text();
-          console.error(`Failed to create shadow resume: ${createResponse.status} ${errorText}`);
-          throw new Error(`Failed to create shadow resume: ${createResponse.status}`);
-        }
-        
-        // Get the newly created resume ID
-        const createResult = await createResponse.json();
-        const newResumeId = createResult.id;
-        
-        if (!newResumeId) {
-          throw new Error("Failed to get new resume ID from create response");
-        }
-        
-        console.log(`New shadow resume created with ID ${newResumeId}`);
-        
-        // Cache form data with the new resumeId for reliable retrieval
-        localStorage.setItem(`resume_form_${newResumeId}`, JSON.stringify(data));
-        
-        // Now update the newly created resume with the form data
-        const updateResponse = await fetch(`/api/users/${userId}/shadow-resume/${newResumeId}`, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            resumeData: data,
-          }),
-        });
-        
-        if (!updateResponse.ok) {
-          const errorText = await updateResponse.text();
-          console.error(`Failed to update new shadow resume: ${updateResponse.status} ${errorText}`);
-          throw new Error(`Failed to update new shadow resume: ${updateResponse.status}`);
-        }
-        
-        // We no longer update profile from resume - just return the updated resume response
-        console.log(`Resume settings updated successfully (ID: ${newResumeId})`);
-        return await updateResponse.json();
-      } else {
-        // If resume exists, update it normally
-        console.log(`Updating existing resume ${resumeId} for user ${userId}`);
-        
-        // Cache form data with the resumeId for reliable retrieval
-        localStorage.setItem(`resume_form_${resumeId}`, JSON.stringify(data));
-        
-        // Update the shadow resume data with form data in both places (resumeData and metadata)
-        const response = await fetch(`/api/users/${userId}/shadow-resume/${resumeId}`, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            resumeData: data,
-          }),
-        });
-        
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error(`Failed to update shadow resume: ${response.status} ${errorText}`);
-          throw new Error(`Failed to update shadow resume: ${response.status}`);
-        }
-        
-        // We no longer update profile from resume - just return the updated resume response
-        console.log(`Resume settings updated successfully (ID: ${resumeId})`);
-        return await response.json();
-      }
-    },
-    onSuccess: (data) => {
-      toast({
-        title: 'Resume Saved',
-        description: 'Your resume settings have been updated successfully. Your profile remains unchanged.',
-      });
-      
-      // After successful save, make sure we update our local cached form data
-      if (data?.resume?.id) {
-        console.log("Updating localStorage cache after successful save for resume ID:", data.resume.id);
-        
-        // If the server sent back form data, cache that
-        if (data.form) {
-          localStorage.setItem(`resume_form_${data.resume.id}`, JSON.stringify(data.form));
-        }
-      }
-      
-      // Invalidate only resume data, not profile
-      queryClient.invalidateQueries({
-        queryKey: ['/api/users', userId, 'shadow-resume'],
-      });
-      
-      // This simple timeout allows the UI to show success before refreshing resume data
-      setTimeout(() => {
-        // Force a refresh of the resume data to ensure we have the latest with updated metadata
-        queryClient.refetchQueries({
-          queryKey: ['/api/users', userId, 'shadow-resume'],
-        });
-      }, 300);
-    },
-    onError: (error) => {
-      console.error('Error saving resume:', error);
-      toast({
-        title: 'Error',
-        description: 'There was a problem saving your resume settings. Please try again.',
-        variant: 'destructive',
-      });
-    },
-  });
-  
-  // Handle form submission
-  const onSubmit = (data: z.infer<typeof resumeSchema>) => {
-    saveResumeMutation.mutate(data);
-  };
-  
-  // Handle back to resume page
-  const handleBack = () => {
-    navigate('/resume');
-  };
-  
-  // Add experience item
-  const addExperience = () => {
-    const currentExperiences = form.getValues('experiences.experiences') || [];
-    form.setValue('experiences.experiences', [
-      ...currentExperiences,
-      {
-        title: '',
-        company: '',
-        location: '',
-        startDate: '',
-        endDate: null,
-        isCurrent: false,
-        description: '',
-        responsibilities: [],
-      },
-    ]);
-  };
-  
-  // Remove experience item
-  const removeExperience = (index: number) => {
-    const currentExperiences = form.getValues('experiences.experiences') || [];
-    const newExperiences = [...currentExperiences];
-    newExperiences.splice(index, 1);
-    form.setValue('experiences.experiences', newExperiences);
-  };
-  
-  // Add education item
-  const addEducation = () => {
-    const currentEducations = form.getValues('education.educations') || [];
-    form.setValue('education.educations', [
-      ...currentEducations,
-      {
-        institution: '',
-        degree: '',
-        fieldOfStudy: '',
-        location: '',
-        startDate: '',
-        endDate: null,
-        isCurrentlyEnrolled: false,
-        gpa: '',
-        achievements: '',
-      },
-    ]);
-  };
-  
-  // Remove education item
-  const removeEducation = (index: number) => {
-    const currentEducations = form.getValues('education.educations') || [];
-    const newEducations = [...currentEducations];
-    newEducations.splice(index, 1);
-    form.setValue('education.educations', newEducations);
-  };
-  
-  // Add skill item
-  const addSkill = () => {
-    const currentSkills = form.getValues('skills.skills') || [];
-    form.setValue('skills.skills', [
-      ...currentSkills,
-      {
-        name: '',
-        level: '',
-        category: '',
-      },
-    ]);
-  };
-  
-  // Remove skill item
-  const removeSkill = (index: number) => {
-    const currentSkills = form.getValues('skills.skills') || [];
-    const newSkills = [...currentSkills];
-    newSkills.splice(index, 1);
-    form.setValue('skills.skills', newSkills);
-  };
-  
-  // Add project item
-  const addProject = () => {
-    const currentProjects = form.getValues('projects.projects') || [];
-    form.setValue('projects.projects', [
-      ...currentProjects,
-      {
-        title: '',
-        description: '',
-        startDate: '',
-        endDate: null,
-        url: '',
-        skills: [],
-        achievements: '',
-      },
-    ]);
-  };
-  
-  // Remove project item
-  const removeProject = (index: number) => {
-    const currentProjects = form.getValues('projects.projects') || [];
-    const newProjects = [...currentProjects];
-    newProjects.splice(index, 1);
-    form.setValue('projects.projects', newProjects);
-  };
-  
-  // Add responsibility to an experience
-  const addResponsibility = (expIndex: number) => {
-    const currentExperiences = form.getValues('experiences.experiences') || [];
-    if (currentExperiences[expIndex]) {
-      const currentResponsibilities = currentExperiences[expIndex].responsibilities || [];
-      const newResponsibilities = [...currentResponsibilities, ''];
-      const newExperiences = [...currentExperiences];
-      newExperiences[expIndex] = {
-        ...newExperiences[expIndex],
-        responsibilities: newResponsibilities,
-      };
-      form.setValue('experiences.experiences', newExperiences);
+      setFormInitialized(true);
+      setPageStatus('form-initialized');
     }
-  };
+  }, [profileData, resumeData, metadataFormData, localCachedFormData, form, formInitialized, isLoading]);
   
-  // Remove responsibility from an experience
-  const removeResponsibility = (expIndex: number, respIndex: number) => {
-    const currentExperiences = form.getValues('experiences.experiences') || [];
-    if (currentExperiences[expIndex] && currentExperiences[expIndex].responsibilities) {
-      const newResponsibilities = [...currentExperiences[expIndex].responsibilities!];
-      newResponsibilities.splice(respIndex, 1);
-      const newExperiences = [...currentExperiences];
-      newExperiences[expIndex] = {
-        ...newExperiences[expIndex],
-        responsibilities: newResponsibilities,
-      };
-      form.setValue('experiences.experiences', newExperiences);
-    }
-  };
-  
-  // Update loading status using useEffect instead of during render
-  useEffect(() => {
-    if (isLoading) {
-      setPageStatus('loading');
-    }
-  }, [isLoading]);
-  
-  // Handle loading state with improved user feedback
-  if (isLoading) {
-    return (
-      <Card className="w-full">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <FileText className="h-5 w-5" />
-            Loading Resume Editor...
-          </CardTitle>
-          <CardDescription>
-            Please wait while we fetch your resume data
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col items-center justify-center py-8">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mb-4"></div>
-            <p className="text-sm text-muted-foreground">Current state: {pageStatus}</p>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  // Setup all hooks at component top level
-  // Handle errors and loading states
-  useEffect(() => {
-    if ((resumeError || profileError) && !profileData) {
-      setPageStatus('error-loading');
-    }
-  }, [resumeError, profileError, profileData]);
-  
-  // Handle error states - but only if we also don't have profile data
-  // We can still show the form with profile data even if resume data failed to load
-  if ((resumeError || profileError) && !profileData) {
-    return (
-      <Card className="w-full">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-destructive">
-            <AlertCircle className="h-5 w-5" />
-            Error Loading Resume Editor
-          </CardTitle>
-          <CardDescription>
-            We encountered a problem loading your data
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <p className="text-muted-foreground">
-              There was a problem loading your resume data. Please try again later.
-            </p>
-            {resumeError && (
-              <div className="p-4 bg-destructive/10 rounded-md">
-                <p className="font-medium">Resume Error:</p>
-                <p className="text-sm">{resumeError.message || 'Unknown error occurred'}</p>
-              </div>
-            )}
-            {profileError && (
-              <div className="p-4 bg-destructive/10 rounded-md">
-                <p className="font-medium">Profile Error:</p>
-                <p className="text-sm">{profileError.message || 'Unknown error occurred'}</p>
-              </div>
-            )}
-            <div className="flex justify-end gap-2">
-              <Button 
-                variant="outline" 
-                onClick={() => window.location.reload()}
-                className="flex items-center gap-2"
-              >
-                <RefreshCw className="h-4 w-4" />
-                Retry
-              </Button>
-              <Button 
-                variant="outline" 
-                onClick={handleBack}
-                className="flex items-center gap-2"
-              >
-                <ArrowLeft className="h-4 w-4" />
-                Back to Resume
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-  
-  // If we have errors but profile data loaded, show a warning but still render the form
-  // Using useEffect to avoid showing toast during every render
+  // Show error toast for partial data loading
   useEffect(() => {
     if ((resumeError || profileError) && profileData) {
       toast({
@@ -837,9 +606,68 @@ export default function ResumeEditor() {
     }
   }, [resumeError, profileError, profileData, toast]);
   
-  // Check if we're showing a fallback form (happens when resumeData is null/undefined)
-  const showFallbackForm = !resumeData || !resumeData.resume;
+  // Set error status
+  useEffect(() => {
+    if ((resumeError || profileError) && !profileData) {
+      setPageStatus('error-loading');
+    }
+  }, [resumeError, profileError, profileData]);
   
+  // Logging for debugging
+  useEffect(() => {
+    console.log("Resume Editor - resumeData:", resumeData);
+    
+    // Verify the resume data structure
+    const hasResumeData = !!resumeData;
+    const hasResumeObject = !!resumeData?.resume;
+    const hasApiFormData = !!resumeData?.form;
+    const hasMetadataForm = !!metadataFormData;
+    const hasCachedForm = !!localCachedFormData;
+    const resumeDataKeys = resumeData ? Object.keys(resumeData) : [];
+    const resumeReadyState = hasResumeObject || hasApiFormData || hasMetadataForm || hasCachedForm;
+    const effectiveFormData = resumeData?.form || metadataFormData || localCachedFormData;
+    
+    console.log("Render condition check:", {
+      hasResumeData,
+      hasResumeObject,
+      hasApiFormData,
+      hasMetadataForm,
+      hasCachedForm,
+      resumeDataKeys,
+      resumeReadyState,
+      effectiveFormDataExists: !!effectiveFormData
+    });
+    
+    // Determine where resume data is coming from for debugging
+    const resumeSources = {
+      fromResumeData: resumeData?.resume ? "YES" : "NO",
+      hasApiForm: resumeData?.form ? "YES" : "NO",
+      hasMetadataForm: metadataFormData ? "YES" : "NO",
+      hasCachedForm: localCachedFormData ? "YES" : "NO",
+      fromManualFetch: "YES", // We're doing a manual fetch in the component
+      readyState: resumeReadyState
+    };
+    
+    const resumeExists = !!resumeData?.resume;
+    console.log("Resume exists?", resumeExists);
+    console.log("Resume sources check:", resumeSources);
+    console.log("Resume Editor - profileData:", profileData, "isProfileLoading:", isProfileLoading, "profileError:", profileError);
+  }, [resumeData, resumeError, profileData, profileError, isProfileLoading, metadataFormData, localCachedFormData]);
+  
+  // Conditional rendering based on state
+  if (isLoading) {
+    return <LoadingDisplay />;
+  }
+  
+  if ((resumeError || profileError) && !profileData) {
+    return <ErrorDisplay 
+      resumeError={resumeError} 
+      profileError={profileError} 
+      handleBack={handleBack} 
+    />;
+  }
+  
+  // Main content render
   return (
     <Card className="w-full">
       <CardHeader>
@@ -1100,12 +928,7 @@ export default function ResumeEditor() {
                               <FormItem>
                                 <FormLabel>End Date</FormLabel>
                                 <FormControl>
-                                  <Input
-                                    {...field}
-                                    type="date"
-                                    value={field.value || ''}
-                                    onChange={(e) => field.onChange(e.target.value || null)}
-                                  />
+                                  <Input {...field} type="date" />
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
@@ -1118,19 +941,15 @@ export default function ResumeEditor() {
                         control={form.control}
                         name={`experiences.experiences.${index}.isCurrent`}
                         render={({ field }) => (
-                          <FormItem className="flex flex-row items-center space-x-2 space-y-0">
+                          <FormItem className="flex flex-row items-center space-x-3 space-y-0">
                             <FormControl>
                               <Switch
-                                checked={field.value}
-                                onCheckedChange={(checked) => {
-                                  field.onChange(checked);
-                                  if (checked) {
-                                    form.setValue(`experiences.experiences.${index}.endDate`, null);
-                                  }
-                                }}
+                                checked={field.value as boolean}
+                                onCheckedChange={field.onChange}
                               />
                             </FormControl>
-                            <FormLabel>Current Position</FormLabel>
+                            <FormLabel>This is my current position</FormLabel>
+                            <FormMessage />
                           </FormItem>
                         )}
                       />
@@ -1142,72 +961,26 @@ export default function ResumeEditor() {
                           <FormItem>
                             <FormLabel>Description</FormLabel>
                             <FormControl>
-                              <Textarea
-                                {...field}
-                                placeholder="Description of your role and responsibilities..."
-                                className="min-h-[100px]"
-                              />
+                              <Textarea {...field} className="min-h-[80px]" />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
                         )}
                       />
-                      
-                      <div className="space-y-2">
-                        <div className="flex justify-between items-center">
-                          <FormLabel>Key Responsibilities</FormLabel>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={() => addResponsibility(index)}
-                          >
-                            Add
-                          </Button>
-                        </div>
-                        
-                        {form.watch(`experiences.experiences.${index}.responsibilities`)?.map(
-                          (_, respIndex) => (
-                            <div key={respIndex} className="flex gap-2 items-start">
-                              <FormField
-                                control={form.control}
-                                name={`experiences.experiences.${index}.responsibilities.${respIndex}`}
-                                render={({ field }) => (
-                                  <FormItem className="flex-1">
-                                    <FormControl>
-                                      <Input {...field} placeholder={`Responsibility ${respIndex + 1}`} />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                              <Button
-                                type="button"
-                                variant="destructive"
-                                size="sm"
-                                onClick={() => removeResponsibility(index, respIndex)}
-                              >
-                                Remove
-                              </Button>
-                            </div>
-                          )
-                        )}
-                      </div>
                     </div>
                   </Card>
                 ))}
                 
-                {(!form.watch('experiences.experiences') || 
-                  form.watch('experiences.experiences').length === 0) && (
-                  <div className="text-center py-8 border border-dashed rounded-lg">
-                    <p className="text-muted-foreground">No work experiences added yet.</p>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      className="mt-2"
-                      onClick={addExperience}
-                    >
+                {(!form.watch('experiences.experiences') || form.watch('experiences.experiences').length === 0) && (
+                  <div className="flex flex-col items-center justify-center p-8 text-center">
+                    <div className="rounded-full bg-secondary/25 p-4 mb-4">
+                      <BriefcaseBusiness className="h-6 w-6 text-muted-foreground" />
+                    </div>
+                    <h4 className="text-lg font-medium">No work experience added yet</h4>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Add your professional experience to showcase your career growth.
+                    </p>
+                    <Button type="button" onClick={addExperience}>
                       Add Experience
                     </Button>
                   </div>
@@ -1238,21 +1011,21 @@ export default function ResumeEditor() {
                     </div>
                     
                     <div className="space-y-4">
-                      <FormField
-                        control={form.control}
-                        name={`education.educations.${index}.institution`}
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Institution</FormLabel>
-                            <FormControl>
-                              <Input {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <FormField
+                          control={form.control}
+                          name={`education.educations.${index}.institution`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Institution</FormLabel>
+                              <FormControl>
+                                <Input {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
                         <FormField
                           control={form.control}
                           name={`education.educations.${index}.degree`}
@@ -1266,7 +1039,9 @@ export default function ResumeEditor() {
                             </FormItem>
                           )}
                         />
-                        
+                      </div>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <FormField
                           control={form.control}
                           name={`education.educations.${index}.fieldOfStudy`}
@@ -1280,21 +1055,21 @@ export default function ResumeEditor() {
                             </FormItem>
                           )}
                         />
+                        
+                        <FormField
+                          control={form.control}
+                          name={`education.educations.${index}.location`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Location</FormLabel>
+                              <FormControl>
+                                <Input {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
                       </div>
-                      
-                      <FormField
-                        control={form.control}
-                        name={`education.educations.${index}.location`}
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Location</FormLabel>
-                            <FormControl>
-                              <Input {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
                       
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <FormField
@@ -1319,12 +1094,7 @@ export default function ResumeEditor() {
                               <FormItem>
                                 <FormLabel>End Date</FormLabel>
                                 <FormControl>
-                                  <Input
-                                    {...field}
-                                    type="date"
-                                    value={field.value || ''}
-                                    onChange={(e) => field.onChange(e.target.value || null)}
-                                  />
+                                  <Input {...field} type="date" />
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
@@ -1337,19 +1107,15 @@ export default function ResumeEditor() {
                         control={form.control}
                         name={`education.educations.${index}.isCurrentlyEnrolled`}
                         render={({ field }) => (
-                          <FormItem className="flex flex-row items-center space-x-2 space-y-0">
+                          <FormItem className="flex flex-row items-center space-x-3 space-y-0">
                             <FormControl>
                               <Switch
-                                checked={field.value}
-                                onCheckedChange={(checked) => {
-                                  field.onChange(checked);
-                                  if (checked) {
-                                    form.setValue(`education.educations.${index}.endDate`, null);
-                                  }
-                                }}
+                                checked={field.value as boolean}
+                                onCheckedChange={field.onChange}
                               />
                             </FormControl>
-                            <FormLabel>Currently Enrolled</FormLabel>
+                            <FormLabel>Currently enrolled</FormLabel>
+                            <FormMessage />
                           </FormItem>
                         )}
                       />
@@ -1377,11 +1143,7 @@ export default function ResumeEditor() {
                           <FormItem>
                             <FormLabel>Achievements (Optional)</FormLabel>
                             <FormControl>
-                              <Textarea
-                                {...field}
-                                placeholder="Honors, awards, relevant coursework..."
-                                className="min-h-[100px]"
-                              />
+                              <Textarea {...field} className="min-h-[80px]" />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -1391,17 +1153,16 @@ export default function ResumeEditor() {
                   </Card>
                 ))}
                 
-                {(!form.watch('education.educations') ||
-                  form.watch('education.educations').length === 0) && (
-                  <div className="text-center py-8 border border-dashed rounded-lg">
-                    <p className="text-muted-foreground">No education added yet.</p>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      className="mt-2"
-                      onClick={addEducation}
-                    >
+                {(!form.watch('education.educations') || form.watch('education.educations').length === 0) && (
+                  <div className="flex flex-col items-center justify-center p-8 text-center">
+                    <div className="rounded-full bg-secondary/25 p-4 mb-4">
+                      <School className="h-6 w-6 text-muted-foreground" />
+                    </div>
+                    <h4 className="text-lg font-medium">No education added yet</h4>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Add your educational background to highlight your academic achievements.
+                    </p>
+                    <Button type="button" onClick={addEducation}>
                       Add Education
                     </Button>
                   </div>
@@ -1428,7 +1189,7 @@ export default function ResumeEditor() {
                           size="sm"
                           onClick={() => removeSkill(index)}
                         >
-                          Remove
+                          <Trash className="h-4 w-4" />
                         </Button>
                       </div>
                       
@@ -1447,56 +1208,56 @@ export default function ResumeEditor() {
                           )}
                         />
                         
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <FormField
-                            control={form.control}
-                            name={`skills.skills.${index}.level`}
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Skill Level (Optional)</FormLabel>
-                                <FormControl>
-                                  <Input
-                                    {...field}
-                                    placeholder="e.g., Beginner, Intermediate, Expert"
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          
-                          <FormField
-                            control={form.control}
-                            name={`skills.skills.${index}.category`}
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Category (Optional)</FormLabel>
-                                <FormControl>
-                                  <Input
-                                    {...field}
-                                    placeholder="e.g., Technical, Soft Skills, Languages"
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
+                        <FormField
+                          control={form.control}
+                          name={`skills.skills.${index}.level`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Proficiency Level</FormLabel>
+                              <FormControl>
+                                <select
+                                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                  {...field}
+                                >
+                                  <option value="Beginner">Beginner</option>
+                                  <option value="Intermediate">Intermediate</option>
+                                  <option value="Advanced">Advanced</option>
+                                  <option value="Expert">Expert</option>
+                                </select>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={form.control}
+                          name={`skills.skills.${index}.category`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Category (Optional)</FormLabel>
+                              <FormControl>
+                                <Input {...field} placeholder="e.g., Programming, Design, Marketing" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
                       </div>
                     </Card>
                   ))}
                 </div>
                 
                 {(!form.watch('skills.skills') || form.watch('skills.skills').length === 0) && (
-                  <div className="text-center py-8 border border-dashed rounded-lg">
-                    <p className="text-muted-foreground">No skills added yet.</p>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      className="mt-2"
-                      onClick={addSkill}
-                    >
+                  <div className="flex flex-col items-center justify-center p-8 text-center">
+                    <div className="rounded-full bg-secondary/25 p-4 mb-4">
+                      <Trophy className="h-6 w-6 text-muted-foreground" />
+                    </div>
+                    <h4 className="text-lg font-medium">No skills added yet</h4>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Add your professional skills to showcase your expertise.
+                    </p>
+                    <Button type="button" onClick={addSkill}>
                       Add Skill
                     </Button>
                   </div>
@@ -1548,11 +1309,7 @@ export default function ResumeEditor() {
                           <FormItem>
                             <FormLabel>Description</FormLabel>
                             <FormControl>
-                              <Textarea
-                                {...field}
-                                placeholder="Description of the project, its purpose, and your role..."
-                                className="min-h-[100px]"
-                              />
+                              <Textarea {...field} className="min-h-[80px]" />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -1565,7 +1322,7 @@ export default function ResumeEditor() {
                           name={`projects.projects.${index}.startDate`}
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Start Date (Optional)</FormLabel>
+                              <FormLabel>Start Date</FormLabel>
                               <FormControl>
                                 <Input {...field} type="date" />
                               </FormControl>
@@ -1579,14 +1336,9 @@ export default function ResumeEditor() {
                           name={`projects.projects.${index}.endDate`}
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>End Date (Optional)</FormLabel>
+                              <FormLabel>End Date (leave empty if ongoing)</FormLabel>
                               <FormControl>
-                                <Input
-                                  {...field}
-                                  type="date"
-                                  value={field.value || ''}
-                                  onChange={(e) => field.onChange(e.target.value || null)}
-                                />
+                                <Input {...field} type="date" />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -1601,24 +1353,26 @@ export default function ResumeEditor() {
                           <FormItem>
                             <FormLabel>Project URL (Optional)</FormLabel>
                             <FormControl>
-                              <Input {...field} placeholder="https://example.com/project" />
+                              <Input {...field} placeholder="https://example.com" />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
                         )}
                       />
                       
+                      {/* Note: Skills array input would be more complex and require custom implementation */}
+                      
                       <FormField
                         control={form.control}
                         name={`projects.projects.${index}.achievements`}
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Achievements (Optional)</FormLabel>
+                            <FormLabel>Key Achievements (Optional)</FormLabel>
                             <FormControl>
-                              <Textarea
-                                {...field}
-                                placeholder="Key achievements, outcomes, or metrics..."
-                                className="min-h-[100px]"
+                              <Textarea 
+                                {...field} 
+                                className="min-h-[80px]"
+                                placeholder="Describe the key achievements and outcomes of this project" 
                               />
                             </FormControl>
                             <FormMessage />
@@ -1630,15 +1384,15 @@ export default function ResumeEditor() {
                 ))}
                 
                 {(!form.watch('projects.projects') || form.watch('projects.projects').length === 0) && (
-                  <div className="text-center py-8 border border-dashed rounded-lg">
-                    <p className="text-muted-foreground">No projects added yet.</p>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      className="mt-2"
-                      onClick={addProject}
-                    >
+                  <div className="flex flex-col items-center justify-center p-8 text-center">
+                    <div className="rounded-full bg-secondary/25 p-4 mb-4">
+                      <Layout className="h-6 w-6 text-muted-foreground" />
+                    </div>
+                    <h4 className="text-lg font-medium">No projects added yet</h4>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Add your projects to showcase your portfolio work.
+                    </p>
+                    <Button type="button" onClick={addProject}>
                       Add Project
                     </Button>
                   </div>
@@ -1647,117 +1401,43 @@ export default function ResumeEditor() {
             </Tabs>
           </CardContent>
           
-          <Separator className="my-4" />
-          
-          <CardFooter className="flex justify-between">
-            <div className="flex items-center space-x-2">
+          <CardFooter className="flex justify-between border-t pt-6">
+            <div className="flex items-center gap-4">
               <FormField
                 control={form.control}
                 name="settings.isDownloadable"
                 render={({ field }) => (
-                  <FormItem className="flex flex-row items-center space-x-2 space-y-0">
+                  <FormItem className="flex flex-row items-center space-x-3 space-y-0">
                     <FormControl>
-                      <Switch checked={field.value} onCheckedChange={field.onChange} />
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
                     </FormControl>
-                    <FormLabel>Allow others to download your resume</FormLabel>
+                    <div>
+                      <FormLabel>Make Downloadable</FormLabel>
+                      <FormDescription className="text-xs">
+                        Allow others to download your resume
+                      </FormDescription>
+                    </div>
                   </FormItem>
                 )}
               />
             </div>
             
             <div className="flex gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                className="gap-2"
-                onClick={() => {
-                  // Show a loading toast
-                  toast({
-                    title: "Updating Resume",
-                    description: "Refreshing with your latest profile information...",
-                  });
-                  
-                  if (resumeData?.resume?.id && userId) {
-                    // Fetch the latest profile data from the API endpoint
-                    fetch(`/api/users/${userId}/shadow-resume/${resumeData.resume.id}/refresh`, {
-                      method: 'POST',
-                      headers: {
-                        'Content-Type': 'application/json',
-                      }
-                    })
-                    .then(response => {
-                      // Save response status for debugging
-                      console.log(`Update resume API status: ${response.status}`);
-                      
-                      if (!response.ok) {
-                        // Parse error message if possible
-                        return response.text().then(errorText => {
-                          console.error(`Error response text: ${errorText}`);
-                          throw new Error(`Failed to update resume: ${response.status} ${errorText || 'No error details'}`);
-                        });
-                      }
-                      return response.json();
-                    })
-                    .then(data => {
-                      console.log("Resume update successful:", data);
-                      // First reload comprehensive profile data
-                      queryClient.invalidateQueries({
-                        queryKey: ['/api/users', userId]
-                      });
-                      
-                      // Then reload the shadow resume data
-                      queryClient.invalidateQueries({
-                        queryKey: ['/api/users', userId, 'shadow-resume']
-                      });
-                      
-                      // Show success toast
-                      toast({
-                        title: "Resume Updated",
-                        description: "Your resume has been updated with the latest profile information.",
-                      });
-                      
-                      // Wait for data to refresh
-                      setTimeout(() => {
-                        window.location.reload(); // Safer approach to ensure clean state
-                      }, 1000);
-                    })
-                    .catch(error => {
-                      console.error('Error updating resume:', error);
-                      toast({
-                        title: "Update Failed",
-                        description: error.message || "There was a problem updating your resume. Please try again.",
-                        variant: "destructive",
-                      });
-                    });
-                  } else {
-                    toast({
-                      title: "Update Failed",
-                      description: "Resume data not available. Please try again later.",
-                      variant: "destructive",
-                    });
-                  }
-                }}
+              <Button 
+                variant="outline" 
+                type="button" 
+                onClick={handleBack}
+                className="flex items-center gap-2"
               >
-                <PenLine className="h-4 w-4" />
-                <span>Update</span>
+                <ArrowLeft className="h-4 w-4" />
+                Cancel
               </Button>
-              
-              <Button
-                type="submit"
-                className="gap-2"
-                disabled={saveResumeMutation.isPending || !form.formState.isDirty}
-              >
-                {saveResumeMutation.isPending ? (
-                  <>
-                    <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full"></div>
-                    <span>Saving...</span>
-                  </>
-                ) : (
-                  <>
-                    <Save className="h-4 w-4" />
-                    <span>Save Resume</span>
-                  </>
-                )}
+              <Button type="submit" className="flex items-center gap-2">
+                <Save className="h-4 w-4" />
+                Save Resume
               </Button>
             </div>
           </CardFooter>
