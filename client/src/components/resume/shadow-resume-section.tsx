@@ -408,7 +408,27 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
 
         {resume && !createShadowResumeMutation.isPending && (
           <div className="aspect-[3/4] bg-card border rounded-lg flex items-center justify-center overflow-hidden">
-            {resume.fileUrl ? (
+            {resume.fileData ? (
+              // Use the PDF data directly from base64
+              <object 
+                data={`data:application/pdf;base64,${resume.fileData}`}
+                type="application/pdf"
+                className="w-full h-full"
+                title="Resume PDF"
+              >
+                <div className="w-full h-full flex flex-col items-center justify-center p-6">
+                  <p className="text-center mb-3">Unable to display PDF directly. Please download it to view.</p>
+                  <a 
+                    href={`data:application/pdf;base64,${resume.fileData}`}
+                    download={resume.fileName || "resume.pdf"}
+                    className="bg-primary text-white px-4 py-2 rounded-md text-sm flex items-center justify-center gap-2"
+                  >
+                    <Download className="h-4 w-4" />
+                    <span>Download Resume</span>
+                  </a>
+                </div>
+              </object>
+            ) : resume.fileUrl ? (
               <PDFViewer 
                 fileUrl={resume.fileUrl} 
                 fileName={resume.fileName || "resume.pdf"} 
