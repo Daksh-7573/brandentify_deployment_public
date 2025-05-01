@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Eye, Download, FileText, Loader2 } from 'lucide-react';
+import { Eye, Download, FileText, Loader2, RefreshCw } from 'lucide-react';
 
 interface PDFViewerProps {
   fileUrl: string;
@@ -9,9 +9,10 @@ interface PDFViewerProps {
 const PDFViewer: React.FC<PDFViewerProps> = ({ fileUrl, fileName = 'resume.pdf' }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
-  const [showObjectElement, setShowObjectElement] = useState(false);
-
-  // Add console logs to track component lifecycle and props
+  const [embedUrl, setEmbedUrl] = useState<string>('');
+  const timestamp = Date.now(); // Cache busting
+  
+  // Add debugging info
   useEffect(() => {
     console.log("PDFViewer mounted with fileUrl:", fileUrl);
     
@@ -22,52 +23,25 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ fileUrl, fileName = 'resume.pdf' 
       return;
     }
 
-    // Check if the PDF is accessible
-    const checkPdfAccess = async () => {
-      try {
-        console.log("Checking PDF access for:", fileUrl);
-        setIsLoading(true);
-        
-        // Try with simple fetch first
-        const response = await fetch(fileUrl, { 
-          method: 'HEAD',
-          // Add cache busting query param
-          headers: { 'Cache-Control': 'no-cache' }
-        });
-        
-        if (!response.ok) {
-          console.error("PDF access check failed with status:", response.status);
-          setHasError(true);
-        } else {
-          console.log("PDF access check successful");
-          // Try with object element first as it's more compatible
-          setShowObjectElement(true);
-        }
-      } catch (error) {
-        console.error("Error checking PDF access:", error);
-        setHasError(true);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    checkPdfAccess();
+    // Create a timestamp-based URL to prevent caching issues
+    const url = `${fileUrl}?t=${timestamp}`;
+    setEmbedUrl(url);
+    
+    // Use direct iframe technique for better PDF rendering
+    setIsLoading(false);
     
     // Clean up function
     return () => {
       console.log("PDFViewer unmounting");
     };
-  }, [fileUrl]);
-
-  const handleLoad = () => {
-    console.log("PDF loaded successfully");
-    setIsLoading(false);
-  };
-
-  const handleError = (e: React.SyntheticEvent<HTMLObjectElement | HTMLIFrameElement>) => {
-    console.error("Error loading PDF in viewer:", e);
-    setHasError(true);
-    setIsLoading(false);
+  }, [fileUrl, timestamp]);
+  
+  // Function to force reload the PDF
+  const reloadPdf = () => {
+    setIsLoading(true);
+    const newTimestamp = Date.now();
+    setEmbedUrl(`${fileUrl}?t=${newTimestamp}`);
+    setTimeout(() => setIsLoading(false), 500);
   };
 
   // Show loading spinner
@@ -83,116 +57,85 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ fileUrl, fileName = 'resume.pdf' 
     );
   }
 
-  // Show error state with fallback options
-  if (hasError) {
-    return (
-      <div className="flex flex-col items-center justify-center h-full w-full p-6">
-        <FileText className="h-16 w-16 text-primary mx-auto" />
-        <h3 className="text-lg font-medium mt-4">Your Resume is Ready</h3>
-        <p className="text-sm text-muted-foreground max-w-md mt-2 text-center">
-          To view your resume, please use one of the options below:
-        </p>
-        <div className="flex flex-col sm:flex-row gap-2 justify-center mt-4">
+  // A simpler approach using a direct embedded iframe
+  return (
+    <div className="relative h-full w-full flex flex-col">
+      {/* The main PDF viewer */}
+      <div className="flex-1 relative">
+        <iframe 
+          src={embedUrl}
+          className="w-full h-full border-0"
+          style={{ backgroundColor: '#f8f9fa' }}
+          title="Resume PDF Viewer"
+        />
+      </div>
+      
+      {/* Better controls at the bottom */}
+      <div className="flex items-center justify-between bg-white border-t p-2">
+        <div className="text-sm text-muted-foreground">
+          {fileName}
+        </div>
+        <div className="flex gap-2">
+          <button
+            onClick={reloadPdf}
+            className="text-gray-700 hover:text-primary flex items-center gap-1 text-sm px-2 py-1 rounded-md hover:bg-gray-50"
+          >
+            <RefreshCw className="h-4 w-4" />
+            <span>Reload</span>
+          </button>
+          
           <a 
             href={fileUrl} 
             target="_blank" 
             rel="noopener noreferrer" 
-            className="bg-primary text-white px-4 py-2 rounded-md text-sm flex items-center justify-center gap-2 shadow-md hover:bg-primary/90 transition-colors"
+            className="text-gray-700 hover:text-primary flex items-center gap-1 text-sm px-2 py-1 rounded-md hover:bg-gray-50"
           >
             <Eye className="h-4 w-4" />
-            <span>View Resume</span>
+            <span>Open</span>
           </a>
+          
           <a 
             href={fileUrl} 
             download={fileName}
-            className="bg-white border border-gray-200 text-gray-800 px-4 py-2 rounded-md text-sm flex items-center justify-center gap-2 shadow-sm hover:bg-gray-50 transition-colors"
+            className="text-gray-700 hover:text-primary flex items-center gap-1 text-sm px-2 py-1 rounded-md hover:bg-gray-50"
           >
             <Download className="h-4 w-4" />
-            <span>Download PDF</span>
+            <span>Download</span>
           </a>
         </div>
       </div>
-    );
-  }
-
-  // Show PDF using object tag (better browser compatibility)
-  if (showObjectElement) {
-    return (
-      <div className="relative h-full w-full">
-        <object
-          data={`${fileUrl}?t=${Date.now()}`} // Add timestamp to prevent caching
-          type="application/pdf"
-          className="w-full h-full"
-          onLoad={handleLoad}
-          onError={handleError as any}
-        >
-          <p className="text-center p-4">
-            Your browser can't display PDFs directly. 
+      
+      {/* Fallback message if iframe doesn't load properly */}
+      <div 
+        className="absolute inset-0 flex flex-col items-center justify-center bg-white/80 opacity-0 hover:opacity-100 transition-opacity pointer-events-none"
+        style={{ backdropFilter: 'blur(2px)' }}
+      >
+        <div className="bg-white shadow-lg rounded-lg p-6 max-w-sm pointer-events-auto">
+          <FileText className="h-12 w-12 text-primary mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-center">Having trouble viewing?</h3>
+          <p className="text-sm text-muted-foreground my-3 text-center">
+            If the PDF isn't displaying correctly, you can:
+          </p>
+          <div className="flex flex-col gap-2">
             <a 
               href={fileUrl} 
               target="_blank" 
               rel="noopener noreferrer" 
-              className="text-primary underline ml-1"
+              className="bg-primary text-white px-4 py-2 rounded-md text-sm flex items-center justify-center gap-2 shadow-md hover:bg-primary/90 transition-colors"
             >
-              View the PDF here
+              <Eye className="h-4 w-4" />
+              <span>View in New Tab</span>
             </a>
-          </p>
-        </object>
-        
-        {/* Floating action buttons */}
-        <div className="absolute top-2 right-2 flex gap-2">
-          <a 
-            href={fileUrl} 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            className="bg-primary text-white p-2 rounded-full shadow-md hover:bg-primary/90 transition-colors"
-            title="Open in new tab"
-          >
-            <Eye className="h-4 w-4" />
-          </a>
-          <a 
-            href={fileUrl} 
-            download={fileName}
-            className="bg-white border border-gray-200 text-gray-800 p-2 rounded-full shadow-sm hover:bg-gray-50 transition-colors"
-            title="Download PDF"
-          >
-            <Download className="h-4 w-4" />
-          </a>
+            <a 
+              href={fileUrl} 
+              download={fileName}
+              className="bg-white border border-gray-200 text-gray-800 px-4 py-2 rounded-md text-sm flex items-center justify-center gap-2 shadow-sm hover:bg-gray-50 transition-colors"
+            >
+              <Download className="h-4 w-4" />
+              <span>Download PDF</span>
+            </a>
+          </div>
         </div>
-      </div>
-    );
-  }
-
-  // Fallback to iframe if object tag doesn't work
-  return (
-    <div className="relative h-full w-full">
-      <iframe
-        src={`${fileUrl}?t=${Date.now()}`} // Add timestamp to prevent caching
-        className="w-full h-full border-0"
-        title="Resume PDF"
-        onLoad={handleLoad}
-        onError={handleError as any}
-      />
-      
-      {/* Floating action buttons */}
-      <div className="absolute top-2 right-2 flex gap-2">
-        <a 
-          href={fileUrl} 
-          target="_blank" 
-          rel="noopener noreferrer" 
-          className="bg-primary text-white p-2 rounded-full shadow-md hover:bg-primary/90 transition-colors"
-          title="Open in new tab"
-        >
-          <Eye className="h-4 w-4" />
-        </a>
-        <a 
-          href={fileUrl} 
-          download={fileName}
-          className="bg-white border border-gray-200 text-gray-800 p-2 rounded-full shadow-sm hover:bg-gray-50 transition-colors"
-          title="Download PDF"
-        >
-          <Download className="h-4 w-4" />
-        </a>
       </div>
     </div>
   );
