@@ -187,7 +187,7 @@ export default function ResumeEditor() {
   console.log("Resume Editor - resumeData:", resumeData, "isResumeLoading:", isResumeLoading, "resumeError:", resumeError);
   
   // Fetch comprehensive user profile data with our new hook
-  const { data: profileData, isLoading: isProfileLoading, error: profileError } = useUserProfile(userId);
+  const { data: profileData, isLoading: isProfileLoading, error: profileError } = useUserProfile(userId, { enabled: !!userId });
   
   console.log("Resume Editor - profileData:", profileData, "isProfileLoading:", isProfileLoading, "profileError:", profileError);
   
