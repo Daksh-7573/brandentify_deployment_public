@@ -292,8 +292,8 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                       .then(() => {
                         // On success, show a toast and invalidate the query cache
                         toast({
-                          title: "Resume Updated",
-                          description: "Your Shadow Resume has been refreshed with your latest information.",
+                          title: "Resume Refreshed",
+                          description: "Your Shadow Resume has been refreshed with your latest profile information.",
                         });
                         
                         // Invalidate resume cache to fetch the updated version
@@ -302,10 +302,10 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                         });
                       })
                       .catch(error => {
-                        console.error('Error updating resume:', error);
+                        console.error('Error refreshing resume:', error);
                         toast({
-                          title: "Update Failed",
-                          description: "There was a problem updating your resume. Please try again.",
+                          title: "Refresh Failed",
+                          description: "There was a problem refreshing your resume. Please try again.",
                           variant: "destructive",
                         });
                       });
@@ -315,8 +315,8 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                       // In a real implementation, we'd have proper API integration
                       setTimeout(() => {
                         toast({
-                          title: "Resume Updated",
-                          description: "Your Shadow Resume has been refreshed with your latest information.",
+                          title: "Resume Refreshed",
+                          description: "Your Shadow Resume has been refreshed with your latest profile information.",
                         });
                       }, 1500);
                     }
