@@ -609,7 +609,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                         <h3 className="text-sm font-bold mb-2 uppercase" style={{color: fixedTheme.color}}>Skills</h3>
                         
                         {/* Check for form data first, then fall back to profile data */}
-                        {formData?.skills?.skills && formData.skills.skills.length > 0 ? (
+                        {formData?.skills?.skills && formData.skills?.skills?.length > 0 ? (
                           <div className="flex flex-wrap gap-1 mt-2">
                             {formData.skills?.skills?.map((skill: NonNullable<Resume['form']>['skills']['skills'][0], index: number) => (
                               <span key={index} className="inline-block px-2 py-0.5 rounded-full bg-gray-100 text-gray-800 text-xs">
@@ -638,7 +638,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                         <h3 className="text-sm font-bold mb-2 uppercase" style={{color: fixedTheme.color}}>Projects</h3>
                         
                         {/* Check for form data first, then fall back to profile data */}
-                        {formData?.projects?.projects && formData.projects.projects.length > 0 ? (
+                        {formData?.projects?.projects && formData.projects?.projects?.length > 0 ? (
                           <div className="space-y-3 mt-2">
                             {formData.projects?.projects?.map((project: NonNullable<Resume['form']>['projects']['projects'][0], index: number) => (
                               <div key={index} className="pb-2">
