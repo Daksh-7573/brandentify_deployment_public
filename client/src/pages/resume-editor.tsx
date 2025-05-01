@@ -538,25 +538,9 @@ export default function ResumeEditor() {
           throw new Error(`Failed to update new shadow resume: ${updateResponse.status}`);
         }
         
-        // Then update the profile from the resume
-        const profileUpdateResponse = await fetch(`/api/shadow-resumes/${newResumeId}/refresh-from-profile`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            resumeData: data,
-          }),
-        });
-        
-        if (!profileUpdateResponse.ok) {
-          const errorText = await profileUpdateResponse.text();
-          console.error(`Failed to update profile from new resume: ${profileUpdateResponse.status} ${errorText}`);
-          console.warn("Profile update failed, but resume was created and saved.");
-          return await updateResponse.json();
-        }
-        
-        return await profileUpdateResponse.json();
+        // We no longer update profile from resume - just return the updated resume response
+        console.log(`Resume settings updated successfully (ID: ${newResumeId})`);
+        return await updateResponse.json();
       } else {
         // If resume exists, update it normally
         console.log(`Updating existing resume ${resumeId} for user ${userId} and updating profile with the same data`);
@@ -578,52 +562,20 @@ export default function ResumeEditor() {
           throw new Error(`Failed to update shadow resume: ${response.status}`);
         }
         
-        // Then, update the profile data using the shadow-resume/refresh-from-profile endpoint
-        // which now has reversed logic to update profile FROM resume
-        const profileUpdateResponse = await fetch(`/api/shadow-resumes/${resumeId}/refresh-from-profile`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            resumeData: data,
-          }),
-        });
-        
-        if (!profileUpdateResponse.ok) {
-          const errorText = await profileUpdateResponse.text();
-          console.error(`Failed to update profile from resume: ${profileUpdateResponse.status} ${errorText}`);
-          
-          // Don't throw error here, as we did save the resume data successfully
-          console.warn("Profile update failed, but resume was saved.");
-          
-          // Return the original resume response
-          return await response.json();
-        }
-        
-        // If everything succeeded, return the profile update response
-        return await profileUpdateResponse.json();
+        // We no longer update profile from resume - just return the updated resume response
+        console.log(`Resume settings updated successfully (ID: ${resumeId})`);
+        return await response.json();
       }
     },
     onSuccess: () => {
       toast({
-        title: 'Resume & Profile Saved',
-        description: 'Your resume and profile have been updated successfully.',
+        title: 'Resume Saved',
+        description: 'Your resume settings have been updated successfully. Your profile remains unchanged.',
       });
       
-      // Invalidate multiple queries to refresh all data
+      // Invalidate only resume data, not profile
       queryClient.invalidateQueries({
         queryKey: ['/api/users', userId, 'shadow-resume'],
-      });
-      
-      // Also invalidate profile data
-      queryClient.invalidateQueries({
-        queryKey: ['/api/users', userId],
-      });
-      
-      // Also invalidate the comprehensive profile data
-      queryClient.invalidateQueries({
-        queryKey: ['/api/user-profile', userId],
       });
       
       // Reload the page to ensure all data is fresh (can be removed once stable)
@@ -633,7 +585,7 @@ export default function ResumeEditor() {
       console.error('Error saving resume:', error);
       toast({
         title: 'Error',
-        description: 'There was a problem saving your resume and profile. Please try again.',
+        description: 'There was a problem saving your resume settings. Please try again.',
         variant: 'destructive',
       });
     },
