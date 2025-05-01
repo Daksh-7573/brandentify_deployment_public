@@ -53,15 +53,27 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
   // This ensures the Shadow Resume shows what's in the Resume Editor, not the profile
   
   // Extract data from resume form if available
-  const formData = resume?.form || null;
+  // First try to use the form data directly
+  let formData = resume?.form || null;
+  
+  // If no form data is available but we have metadata, try to parse it
+  if (!formData && resume?.metadata) {
+    try {
+      console.log('Attempting to parse form data from metadata');
+      formData = JSON.parse(resume.metadata as string);
+      console.log('Successfully parsed form data from metadata');
+    } catch (e) {
+      console.error('Failed to parse metadata as JSON:', e);
+    }
+  }
   
   // Debug logging to trace data flow
   console.log('ShadowResumeSection - Resume Form Data:', {
     hasFormData: !!formData,
     formDataKeys: formData ? Object.keys(formData) : [],
     resumeId: resume?.id,
-    // Safely handle case where metadata might be undefined
     resumeHasMetadata: !!resume?.metadata,
+    metadataLength: resume?.metadata ? (resume.metadata as string).length : 0,
     resumeObject: resume ? 'Resume exists' : 'No resume'
   });
   
