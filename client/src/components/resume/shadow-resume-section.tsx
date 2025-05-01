@@ -256,7 +256,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                 }}
               >
                 <Edit2 className="h-4 w-4 mr-1" />
-                <span>Edit</span>
+                <span>Modify</span>
               </Button>
             )}
           </div>
