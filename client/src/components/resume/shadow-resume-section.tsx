@@ -55,6 +55,14 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
   // Extract data from resume form if available
   const formData = resume?.form || null;
   
+  // Debug logging to trace data flow
+  console.log('ShadowResumeSection - Resume Form Data:', {
+    hasFormData: !!formData,
+    formDataKeys: formData ? Object.keys(formData) : [],
+    resumeId: resume?.id,
+    resumeHasMetadata: !!resume?.metadata
+  });
+  
   // IMPORTANT: Always fetch profile data as a fallback, but PRIORITIZE form data in the render
   // This ensures the Shadow Resume shows data from the Resume Editor, not directly from the profile
   
@@ -449,7 +457,8 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                           />
                         ) : (
                           <p className="text-xs text-gray-700 leading-relaxed">
-                            {user.aboutMe || 'Experienced professional with expertise in ' + (user.industry || 'their field') + ' seeking opportunities in ' + (user.domain || 'the industry')}
+                            {/* Prioritize form data from resume editor over profile data */}
+                            {formData?.personalInfo?.summary || user.aboutMe || 'Experienced professional with expertise in ' + (user.industry || 'their field') + ' seeking opportunities in ' + (user.domain || 'the industry')}
                           </p>
                         )}
                       </div>
