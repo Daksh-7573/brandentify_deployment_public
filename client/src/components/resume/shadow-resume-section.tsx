@@ -55,28 +55,31 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
   // Extract data from resume form if available
   const formData = resume?.form || null;
   
-  // Use form data for experiences, or fall back to profile data if not available
+  // IMPORTANT: Always fetch profile data as a fallback, but PRIORITIZE form data in the render
+  // This ensures the Shadow Resume shows data from the Resume Editor, not directly from the profile
+  
+  // Experiences - always fetch but prioritize form data when rendering
   const { data: workExperiences = [] } = useQuery<WorkExperience[]>({
     queryKey: ['/api/users', user?.id, 'experiences'],
-    enabled: !!user?.id && !formData?.experiences?.experiences, // Only query if no form data
+    enabled: !!user?.id, // Always fetch regardless of form data status
   });
   
-  // Use form data for education, or fall back to profile data if not available
+  // Education - always fetch but prioritize form data when rendering
   const { data: education = [] } = useQuery<Education[]>({
     queryKey: ['/api/users', user?.id, 'educations'],
-    enabled: !!user?.id && !formData?.education?.educations, // Only query if no form data
+    enabled: !!user?.id, // Always fetch regardless of form data status
   });
   
-  // Use form data for skills, or fall back to profile data if not available
+  // Skills - always fetch but prioritize form data when rendering
   const { data: skills = [] } = useQuery<any[]>({
     queryKey: ['/api/users', user?.id, 'skills'],
-    enabled: !!user?.id && !formData?.skills?.skills, // Only query if no form data
+    enabled: !!user?.id, // Always fetch regardless of form data status
   });
   
-  // Use form data for projects, or fall back to profile data if not available
+  // Projects - always fetch but prioritize form data when rendering
   const { data: projects = [] } = useQuery<any[]>({
     queryKey: ['/api/users', user?.id, 'projects'],
-    enabled: !!user?.id && !formData?.projects?.projects, // Only query if no form data
+    enabled: !!user?.id, // Always fetch regardless of form data status
   });
   
   // Update resume settings mutation
@@ -455,10 +458,10 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                       <div className="mb-4 pb-3 border-b border-gray-100">
                         <h3 className="text-sm font-bold mb-2 uppercase" style={{color: fixedTheme.color}}>Professional Experience</h3>
                         
-                        {/* Check for form data first, then fall back to profile data */}
-                        {formData?.experiences?.experiences && formData.experiences?.experiences?.length > 0 ? (
+                        {/* ALWAYS prioritize form data from Resume Editor over profile data */}
+                        {formData && formData.experiences?.experiences && formData.experiences.experiences.length > 0 ? (
                           <div className="space-y-3 mt-2">
-                            {formData.experiences?.experiences?.map((experience: NonNullable<Resume['form']>['experiences']['experiences'][0], index: number) => (
+                            {formData.experiences && formData.experiences.experiences && formData.experiences.experiences.map((experience: any, index: number) => (
                               <div key={index} className="pb-2">
                                 <div className="font-semibold">{experience.title || experience.position}</div>
                                 <div className="text-gray-600 flex justify-between">
@@ -515,10 +518,10 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                       <div className="mb-4 pb-3 border-b border-gray-100">
                         <h3 className="text-sm font-bold mb-2 uppercase" style={{color: fixedTheme.color}}>Education</h3>
                         
-                        {/* Check for form data first, then fall back to profile data */}
-                        {formData?.education?.educations && formData.education?.educations?.length > 0 ? (
+                        {/* ALWAYS prioritize form data from Resume Editor over profile data */}
+                        {formData && formData.education?.educations && formData.education.educations.length > 0 ? (
                           <div className="space-y-3 mt-2">
-                            {formData.education?.educations?.map((edu: NonNullable<Resume['form']>['education']['educations'][0], index: number) => (
+                            {formData.education && formData.education.educations && formData.education.educations.map((edu: any, index: number) => (
                               <div key={index} className="pb-2">
                                 <div className="font-semibold">
                                   {edu.degree}{edu.fieldOfStudy ? `, ${edu.fieldOfStudy}` : ''}
@@ -608,10 +611,10 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                       <div className="mb-4 pb-3 border-b border-gray-100">
                         <h3 className="text-sm font-bold mb-2 uppercase" style={{color: fixedTheme.color}}>Skills</h3>
                         
-                        {/* Check for form data first, then fall back to profile data */}
-                        {formData?.skills?.skills && formData.skills?.skills?.length > 0 ? (
+                        {/* ALWAYS prioritize form data from Resume Editor over profile data */}
+                        {formData && formData.skills?.skills && formData.skills.skills.length > 0 ? (
                           <div className="flex flex-wrap gap-1 mt-2">
-                            {formData.skills?.skills?.map((skill: NonNullable<Resume['form']>['skills']['skills'][0], index: number) => (
+                            {formData.skills && formData.skills.skills && formData.skills.skills.map((skill: any, index: number) => (
                               <span key={index} className="inline-block px-2 py-0.5 rounded-full bg-gray-100 text-gray-800 text-xs">
                                 {skill.name || skill}
                               </span>
@@ -637,8 +640,8 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                       <div className="mb-4 pb-3">
                         <h3 className="text-sm font-bold mb-2 uppercase" style={{color: fixedTheme.color}}>Projects</h3>
                         
-                        {/* Check for form data first, then fall back to profile data */}
-                        {formData?.projects?.projects && formData.projects?.projects?.length > 0 ? (
+                        {/* ALWAYS prioritize form data from Resume Editor over profile data */}
+                        {formData && formData.projects?.projects && formData.projects.projects.length > 0 ? (
                           <div className="space-y-3 mt-2">
                             {formData.projects?.projects?.map((project: NonNullable<Resume['form']>['projects']['projects'][0], index: number) => (
                               <div key={index} className="pb-2">
