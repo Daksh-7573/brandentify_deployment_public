@@ -456,9 +456,9 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                         <h3 className="text-sm font-bold mb-2 uppercase" style={{color: fixedTheme.color}}>Professional Experience</h3>
                         
                         {/* Check for form data first, then fall back to profile data */}
-                        {formData?.experiences?.experiences && formData.experiences.experiences.length > 0 ? (
+                        {formData?.experiences?.experiences && formData.experiences?.experiences?.length > 0 ? (
                           <div className="space-y-3 mt-2">
-                            {formData.experiences.experiences.map((experience: NonNullable<Resume['form']>['experiences']['experiences'][0], index: number) => (
+                            {formData.experiences?.experiences?.map((experience: NonNullable<Resume['form']>['experiences']['experiences'][0], index: number) => (
                               <div key={index} className="pb-2">
                                 <div className="font-semibold">{experience.title || experience.position}</div>
                                 <div className="text-gray-600 flex justify-between">
@@ -470,7 +470,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                                 </div>
                                 <ul className="list-disc ml-4 mt-1 text-gray-700 space-y-0.5">
                                   {experience.responsibilities && Array.isArray(experience.responsibilities) ? 
-                                    experience.responsibilities.map((responsibility, i) => (
+                                    experience.responsibilities.map((responsibility: string, i: number) => (
                                       <li key={i}>{responsibility}</li>
                                     )) : 
                                     experience.description ? <li>{experience.description}</li> :
@@ -495,7 +495,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                                 </div>
                                 <ul className="list-disc ml-4 mt-1 text-gray-700 space-y-0.5">
                                   {experience.keyResponsibilities && Array.isArray(experience.keyResponsibilities) ? 
-                                    experience.keyResponsibilities.map((responsibility, i) => (
+                                    experience.keyResponsibilities.map((responsibility: string, i: number) => (
                                       <li key={i}>{responsibility}</li>
                                     )) : 
                                     <li>Contributed to company projects and goals</li>
@@ -516,9 +516,9 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                         <h3 className="text-sm font-bold mb-2 uppercase" style={{color: fixedTheme.color}}>Education</h3>
                         
                         {/* Check for form data first, then fall back to profile data */}
-                        {formData?.education?.educations && formData.education.educations.length > 0 ? (
+                        {formData?.education?.educations && formData.education?.educations?.length > 0 ? (
                           <div className="space-y-3 mt-2">
-                            {formData.education.educations.map((edu: NonNullable<Resume['form']>['education']['educations'][0], index: number) => (
+                            {formData.education?.educations?.map((edu: NonNullable<Resume['form']>['education']['educations'][0], index: number) => (
                               <div key={index} className="pb-2">
                                 <div className="font-semibold">
                                   {edu.degree}{edu.fieldOfStudy ? `, ${edu.fieldOfStudy}` : ''}
@@ -611,7 +611,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                         {/* Check for form data first, then fall back to profile data */}
                         {formData?.skills?.skills && formData.skills.skills.length > 0 ? (
                           <div className="flex flex-wrap gap-1 mt-2">
-                            {formData.skills.skills.map((skill: Resume['form']['skills']['skills'][0], index: number) => (
+                            {formData.skills?.skills?.map((skill: NonNullable<Resume['form']>['skills']['skills'][0], index: number) => (
                               <span key={index} className="inline-block px-2 py-0.5 rounded-full bg-gray-100 text-gray-800 text-xs">
                                 {skill.name || skill}
                               </span>
@@ -640,7 +640,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                         {/* Check for form data first, then fall back to profile data */}
                         {formData?.projects?.projects && formData.projects.projects.length > 0 ? (
                           <div className="space-y-3 mt-2">
-                            {formData.projects.projects.map((project: Resume['form']['projects']['projects'][0], index: number) => (
+                            {formData.projects?.projects?.map((project: NonNullable<Resume['form']>['projects']['projects'][0], index: number) => (
                               <div key={index} className="pb-2">
                                 <div className="font-semibold">{project.title}</div>
                                 <div className="text-gray-600 mt-0.5 text-xs">
