@@ -761,13 +761,14 @@ export default function ResumeEditor() {
     );
   }
 
-  // Update error status using useEffect instead of during render
+  // Setup all hooks at component top level
+  // Handle errors and loading states
   useEffect(() => {
     if ((resumeError || profileError) && !profileData) {
       setPageStatus('error-loading');
     }
   }, [resumeError, profileError, profileData]);
-
+  
   // Handle error states - but only if we also don't have profile data
   // We can still show the form with profile data even if resume data failed to load
   if ((resumeError || profileError) && !profileData) {
