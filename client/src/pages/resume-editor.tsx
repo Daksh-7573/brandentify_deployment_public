@@ -4,6 +4,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { useUserProfile } from '@/hooks/use-user-profile';
+import { useShadowResume } from '@/hooks/use-shadow-resume';
 import { useLocation } from 'wouter';
 
 import {
@@ -160,179 +161,12 @@ export default function ResumeEditor() {
   // Debug info
   console.log("Resume Editor - userId:", userId);
 
-  // Fetch resume data with better error handling and direct fallback support
-  const { data: resumeData, isLoading: isResumeLoading, error: resumeError } = useQuery({
-    queryKey: ['/api/users', userId, 'shadow-resume'],
-    queryFn: async () => {
-      if (!userId) {
-        throw new Error('User ID is required to fetch shadow resume');
-      }
-      
-      console.log(`Fetching shadow resume data for user ${userId}`);
-      try {
-        const response = await fetch(`/api/users/${userId}/shadow-resume`);
-        
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error(`Failed to fetch shadow resume: ${response.status} ${errorText}`);
-          // Instead of throwing immediately, let's create a manual temporary data structure
-          if (response.status === 404) {
-            // Create a manual resume data structure for new users who don't have a resume yet
-            console.log("No shadow resume found, creating temp structure for UI");
-            
-            // Direct fetch for user data to ensure we have something to work with
-            console.log("Attempting direct fetch for user data to use as fallback...");
-            try {
-              const userResponse = await fetch(`/api/users/${userId}`);
-              if (userResponse.ok) {
-                const userData = await userResponse.json();
-                console.log("Direct fetch result:", userData);
-                
-                // Return minimal valid structure for UI
-                return { 
-                  resume: {
-                    id: null,
-                    userId: userId,
-                    fileName: `${userData.name || 'User'}_Resume.pdf`,
-                    fileData: null,
-                    themeStyle: 'professional',
-                    isDownloadable: false,
-                    visibility: 'private',
-                  },
-                  form: {
-                    personalInfo: {
-                      fullName: userData.name || '',
-                      title: userData.title || '',
-                      email: userData.email || '',
-                      phone: userData.phoneNumber || '',
-                      location: userData.location || '',
-                      summary: userData.aboutMe || '',
-                      website: '',
-                    },
-                    experiences: { 
-                      experiences: []
-                    },
-                    education: { 
-                      educations: [] 
-                    },
-                    skills: { 
-                      skills: [] 
-                    },
-                    projects: { 
-                      projects: [] 
-                    },
-                  },
-                  message: "Creating new shadow resume"
-                };
-              }
-            } catch (userErr) {
-              console.error("Error in backup user fetch:", userErr);
-            }
-          }
-          
-          // If we get here with a non-404 error or if the user fetch fails, proceed with a minimal structure
-          return { 
-            resume: {
-              id: null,
-              userId: userId,
-              fileName: 'Resume.pdf',
-              fileData: null,
-              themeStyle: 'professional',
-              isDownloadable: false,
-              visibility: 'private',
-            },
-            form: {
-              personalInfo: {
-                fullName: '',
-                title: '',
-                email: '',
-                phone: '',
-                location: '',
-                summary: '',
-                website: '',
-              },
-              experiences: { experiences: [] },
-              education: { educations: [] },
-              skills: { skills: [] },
-              projects: { projects: [] },
-            },
-            message: "Failed to load resume data, creating blank template"
-          };
-        }
-        
-        const data = await response.json();
-        console.log("Shadow resume data loaded:", data);
-        
-        // Validate that we got a proper response with a resume object
-        if (!data || !data.resume) {
-          console.error("Invalid shadow resume data structure:", data);
-          // Create a valid data structure instead of throwing
-          return { 
-            resume: {
-              id: null,
-              userId: userId,
-              fileName: 'Resume.pdf',
-              fileData: null,
-              themeStyle: 'professional',
-              isDownloadable: false,
-              visibility: 'private',
-            },
-            form: {
-              personalInfo: {
-                fullName: '',
-                title: '',
-                email: '',
-                phone: '',
-                location: '',
-                summary: '',
-                website: '',
-              },
-              experiences: { experiences: [] },
-              education: { educations: [] },
-              skills: { skills: [] },
-              projects: { projects: [] },
-            },
-            message: "Invalid resume structure, creating blank template"
-          };
-        }
-        
-        return data;
-      } catch (err) {
-        console.error("Error fetching shadow resume:", err);
-        // Return a more complete fallback structure to prevent UI errors
-        return { 
-          resume: {
-            id: null,
-            userId: userId,
-            fileName: 'Resume.pdf',
-            fileData: null,
-            themeStyle: 'professional',
-            isDownloadable: false,
-            visibility: 'private',
-          },
-          form: {
-            personalInfo: {
-              fullName: '',
-              title: '',
-              email: '',
-              phone: '',
-              location: '',
-              summary: '',
-              website: '',
-            },
-            experiences: { experiences: [] },
-            education: { educations: [] },
-            skills: { skills: [] },
-            projects: { projects: [] },
-          },
-          message: "Failed to load resume data due to error"
-        };
-      }
-    },
-    enabled: !!userId,
-    staleTime: 60000, // 1 minute
-    retry: 1, // Only retry once since we have good fallbacks
-  });
+  // Use the enhanced shadow resume hook with better persistence and caching
+  const { 
+    data: resumeData, 
+    isLoading: isResumeLoading, 
+    error: resumeError
+  } = useShadowResume(userId);
   
   // Enhanced logging with conditional checks to aid debugging
   console.log("Resume Editor - resumeData:", resumeData);
@@ -346,7 +180,7 @@ export default function ResumeEditor() {
   }, [resumeData?.form, resumeData?.resume?.id]);
   
   // Attempt to retrieve cached form data for the current resume if API data is missing form
-  const [cachedFormData, setCachedFormData] = useState<any>(null);
+  const [localCachedFormData, setLocalCachedFormData] = useState<any>(null);
   
   useEffect(() => {
     if (resumeData?.resume?.id && !resumeData?.form) {
@@ -356,7 +190,7 @@ export default function ResumeEditor() {
         try {
           const parsedData = JSON.parse(cachedData);
           console.log("Restored resume form data from localStorage cache", parsedData);
-          setCachedFormData(parsedData);
+          setLocalCachedFormData(parsedData);
         } catch (e) {
           console.error("Failed to parse cached resume form data", e);
         }
@@ -384,12 +218,12 @@ export default function ResumeEditor() {
   const hasResumeObject = !!resumeData?.resume;
   const hasApiFormData = !!resumeData?.form;
   const hasMetadataForm = !!metadataFormData;
-  const hasCachedForm = !!cachedFormData;
+  const hasCachedForm = !!localCachedFormData;
   const resumeDataKeys = resumeData ? Object.keys(resumeData) : [];
   const resumeReadyState = hasResumeData && hasResumeObject;
   
   // Determine the actual form data source we'll use
-  const effectiveFormData = resumeData?.form || metadataFormData || cachedFormData;
+  const effectiveFormData = resumeData?.form || metadataFormData || localCachedFormData;
   
   console.log("Render condition check:", {
     hasResumeData,
@@ -407,7 +241,7 @@ export default function ResumeEditor() {
     fromResumeData: resumeData?.resume ? "YES" : "NO",
     hasApiForm: resumeData?.form ? "YES" : "NO",
     hasMetadataForm: metadataFormData ? "YES" : "NO",
-    hasCachedForm: cachedFormData ? "YES" : "NO",
+    hasCachedForm: localCachedFormData ? "YES" : "NO",
     fromManualFetch: "YES", // We're doing a manual fetch in the component
     readyState: resumeReadyState
   };
@@ -500,12 +334,12 @@ export default function ResumeEditor() {
           },
         });
       }
-      else if (cachedFormData) {
+      else if (localCachedFormData) {
         // Third priority: Cached form data from localStorage
-        console.log("Using form data from localStorage cache:", cachedFormData);
+        console.log("Using form data from localStorage cache:", localCachedFormData);
         
         form.reset({
-          ...cachedFormData,
+          ...localCachedFormData,
           settings: {
             isDownloadable: resumeData?.resume?.isDownloadable || false,
             visibility: resumeData?.resume?.visibility || 'private',
@@ -589,7 +423,7 @@ export default function ResumeEditor() {
         });
       }
     }
-  }, [profileData, resumeData, form, metadataFormData, cachedFormData]);
+  }, [profileData, resumeData, form, metadataFormData, localCachedFormData]);
   
   // Save resume mutation - enhanced for better form data persistence
   const saveResumeMutation = useMutation({
