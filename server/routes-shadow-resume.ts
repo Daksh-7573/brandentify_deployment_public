@@ -505,11 +505,131 @@ startxref
         return res.status(403).json({ message: 'You do not have permission to update this resume' });
       }
       
-      // Update the resume
-      const updatedResume = await storage.updateResume(parseInt(resumeId), updates);
-      
-      console.log(`[PATCH /users/:userId/shadow-resume/:resumeId] Updated resume: ${resumeId}`);
-      return res.status(200).json({ resume: updatedResume });
+      // Process the form data and convert it to the expected resume format
+      if (updates.resumeData) {
+        console.log(`[PATCH /users/:userId/shadow-resume/:resumeId] Processing form data for resume: ${resumeId}`);
+        
+        // Generate a new PDF based on the updated form data
+        const personalInfo = updates.resumeData.personalInfo;
+        
+        // Use the existing resume data as a base but update with new form data
+        const updatedResumeData = {
+          fileName: resume.fileName,
+          fileUrl: resume.fileUrl,
+          themeStyle: updates.resumeData.settings?.themeStyle || resume.themeStyle,
+          isDownloadable: updates.resumeData.settings?.isDownloadable || resume.isDownloadable,
+          visibility: updates.resumeData.settings?.visibility || resume.visibility
+        };
+        
+        // Regenerate PDF content here - this is a simplified example
+        // In production, you would use a proper PDF generation service
+        const generateUpdatedPDF = () => {
+          const pdfContent = `%PDF-1.3
+%����
+1 0 obj
+<< /Type /Catalog /Pages 3 0 R >>
+endobj
+2 0 obj
+<< /Type /Page /Parent 3 0 R /Resources 6 0 R /Contents 4 0 R /MediaBox [0 0 595 842] >>
+endobj
+3 0 obj
+<< /Type /Pages /Kids [ 2 0 R ] /Count 1 >>
+endobj
+4 0 obj
+<< /Length 5 0 R >>
+stream
+BT
+/F1 16 Tf
+50 750 Td
+(${personalInfo.fullName || 'Your Name'}) Tj
+/F1 12 Tf
+0 -20 Td
+(${personalInfo.title || 'Your Title'}) Tj
+0 -15 Td
+(${personalInfo.email || 'your.email@example.com'}) Tj
+0 -15 Td
+(${personalInfo.phone || 'Your Phone'}) Tj
+0 -15 Td
+(${personalInfo.location || 'Your Location'}) Tj
+0 -30 Td
+/F1 14 Tf
+(Professional Summary) Tj
+/F1 12 Tf
+0 -20 Td
+(${personalInfo.summary || 'Your professional summary goes here.'}) Tj
+0 -30 Td
+/F1 14 Tf
+(Experience) Tj
+/F1 12 Tf
+0 -20 Td
+(${updates.resumeData.experiences?.experiences?.length > 0 ? 
+  'Experience details included' : 'Add your work experience in the Resume Editor.'}) Tj
+0 -30 Td
+/F1 14 Tf
+(Education) Tj
+/F1 12 Tf
+0 -20 Td
+(${updates.resumeData.education?.educations?.length > 0 ? 
+  'Education details included' : 'Add your education in the Resume Editor.'}) Tj
+0 -30 Td
+/F1 14 Tf
+(Skills) Tj
+/F1 12 Tf
+0 -20 Td
+(${updates.resumeData.skills?.skills?.length > 0 ? 
+  'Skills included' : 'Add your skills in the Resume Editor.'}) Tj
+ET
+endstream
+endobj
+5 0 obj
+1024
+endobj
+6 0 obj
+<< /Font << /F1 7 0 R >> >>
+endobj
+7 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+xref
+0 8
+0000000000 65535 f
+0000000009 00000 n
+0000000058 00000 n
+0000000158 00000 n
+0000000217 00000 n
+0000001294 00000 n
+0000001314 00000 n
+0000001361 00000 n
+trailer
+<</Size 8/Root 1 0 R>>
+startxref
+1428
+%%EOF`;
+          
+          return Buffer.from(pdfContent).toString('base64');
+        };
+        
+        // Generate updated PDF and update the resume
+        const updatedPDF = generateUpdatedPDF();
+        
+        // Create the final update object with the new PDF content
+        const finalUpdates = {
+          ...updatedResumeData,
+          fileData: updatedPDF,
+          lastUpdatedByMusk: new Date()
+        };
+        
+        const updatedResume = await storage.updateResume(parseInt(resumeId), finalUpdates);
+        console.log(`[PATCH /users/:userId/shadow-resume/:resumeId] Updated resume: ${resumeId}`);
+        
+        return res.status(200).json({ resume: updatedResume });
+      } else {
+        // If no resumeData is provided, just update the resume with the provided updates
+        const updatedResume = await storage.updateResume(parseInt(resumeId), updates);
+        console.log(`[PATCH /users/:userId/shadow-resume/:resumeId] Updated resume: ${resumeId}`);
+        
+        return res.status(200).json({ resume: updatedResume });
+      }
     } catch (error) {
       console.error(`[PATCH /users/:userId/shadow-resume/:resumeId] Error:`, error);
       return res.status(500).json({ message: 'Internal server error', error: (error as Error).message });
