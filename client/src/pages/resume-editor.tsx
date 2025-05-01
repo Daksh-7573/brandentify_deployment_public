@@ -3,6 +3,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
+import useUserProfile from '@/hooks/use-user-profile';
 import { useLocation } from 'wouter';
 
 import {
@@ -156,14 +157,11 @@ export default function ResumeEditor() {
     enabled: !!userId,
   });
   
-  // Fetch user data
-  const { data: userData, isLoading: isUserLoading } = useQuery({
-    queryKey: ['/api/users', userId],
-    enabled: !!userId,
-  });
+  // Fetch comprehensive user profile data with our new hook
+  const { data: profileData, isLoading: isProfileLoading } = useUserProfile(userId);
   
   // Combined loading state
-  const isLoading = isResumeLoading || isUserLoading;
+  const isLoading = isResumeLoading || isProfileLoading;
   
   // Form setup with combined schema
   const form = useForm<z.infer<typeof resumeSchema>>({
@@ -190,23 +188,23 @@ export default function ResumeEditor() {
     },
   });
   
-  // Update form values when user/resume data is loaded
+  // Update form values when profile data and resume data are loaded
   useEffect(() => {
-    if (userData && resumeData?.resume) {
+    if (profileData && resumeData?.resume) {
       const resume = resumeData.resume;
       
       form.reset({
         personalInfo: {
-          fullName: userData.name || '',
-          title: userData.title || '',
-          email: userData.email || '',
-          phone: userData.phoneNumber || '',
-          location: userData.location || '',
-          summary: userData.aboutMe || '',
-          website: userData.website || '',
+          fullName: profileData.name || '',
+          title: profileData.title || '',
+          email: profileData.email || '',
+          phone: profileData.phoneNumber || '',
+          location: profileData.location || '',
+          summary: profileData.aboutMe || '',
+          website: profileData.website || '',
         },
         experiences: { 
-          experiences: userData.experiences?.map((exp: any) => ({
+          experiences: profileData.workExperiences?.map((exp: any) => ({
             id: exp.id,
             title: exp.title || '',
             company: exp.company || '',
@@ -219,7 +217,7 @@ export default function ResumeEditor() {
           })) || []
         },
         education: {
-          educations: userData.educations?.map((edu: any) => ({
+          educations: profileData.education?.map((edu: any) => ({
             id: edu.id,
             institution: edu.institution || '',
             degree: edu.degree || '',
@@ -233,7 +231,7 @@ export default function ResumeEditor() {
           })) || []
         },
         skills: {
-          skills: userData.skills?.map((skill: any) => ({
+          skills: profileData.skills?.map((skill: any) => ({
             id: skill.id,
             name: skill.name || '',
             level: skill.level || '',
@@ -241,7 +239,7 @@ export default function ResumeEditor() {
           })) || []
         },
         projects: {
-          projects: userData.projects?.map((project: any) => ({
+          projects: profileData.projects?.map((project: any) => ({
             id: project.id,
             title: project.title || '',
             description: project.description || '',
@@ -259,7 +257,7 @@ export default function ResumeEditor() {
         },
       });
     }
-  }, [userData, resumeData, form]);
+  }, [profileData, resumeData, form]);
   
   // Save resume mutation
   const saveResumeMutation = useMutation({
@@ -499,12 +497,12 @@ export default function ResumeEditor() {
                   <div className="md:w-1/3">
                     <div className="flex flex-col items-center gap-4">
                       <Avatar className="h-24 w-24">
-                        <AvatarImage src={userData?.photoURL || ''} alt={userData?.name || 'User'} />
-                        <AvatarFallback>{userData?.name?.charAt(0) || 'U'}</AvatarFallback>
+                        <AvatarImage src={profileData?.photoURL || ''} alt={profileData?.name || 'User'} />
+                        <AvatarFallback>{profileData?.name?.charAt(0) || 'U'}</AvatarFallback>
                       </Avatar>
                       <div className="text-center">
-                        <h3 className="text-lg font-medium">{userData?.name}</h3>
-                        <p className="text-sm text-muted-foreground">{userData?.title}</p>
+                        <h3 className="text-lg font-medium">{profileData?.name}</h3>
+                        <p className="text-sm text-muted-foreground">{profileData?.title}</p>
                       </div>
                     </div>
                   </div>
