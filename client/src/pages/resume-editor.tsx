@@ -151,16 +151,23 @@ export default function ResumeEditor() {
   // Current editing section state
   const [activeTab, setActiveTab] = useState('personal-info');
   
+  // Debug info
+  console.log("Resume Editor - userId:", userId);
+
   // Fetch resume data
-  const { data: resumeData, isLoading: isResumeLoading } = useQuery({
+  const { data: resumeData, isLoading: isResumeLoading, error: resumeError } = useQuery({
     queryKey: ['/api/users', userId, 'shadow-resume'],
     enabled: !!userId,
     staleTime: 60000, // 1 minute
     retry: 2,
   });
   
+  console.log("Resume Editor - resumeData:", resumeData, "isResumeLoading:", isResumeLoading, "resumeError:", resumeError);
+  
   // Fetch comprehensive user profile data with our new hook
-  const { data: profileData, isLoading: isProfileLoading } = useUserProfile(userId);
+  const { data: profileData, isLoading: isProfileLoading, error: profileError } = useUserProfile(userId);
+  
+  console.log("Resume Editor - profileData:", profileData, "isProfileLoading:", isProfileLoading, "profileError:", profileError);
   
   // Combined loading state
   const isLoading = isResumeLoading || isProfileLoading;
