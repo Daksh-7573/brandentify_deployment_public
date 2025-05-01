@@ -732,6 +732,28 @@ export default function ResumeEditor() {
       projects.filter((_, i) => i !== index)
     );
   };
+  
+  // Helper functions for date formatting
+  // Convert ISO date to YYYY-MM-DD format for HTML date inputs
+  const formatDateForInput = (isoDate: string | null | undefined): string => {
+    if (!isoDate) return '';
+    
+    try {
+      const date = new Date(isoDate);
+      
+      // Check if the date is valid
+      if (isNaN(date.getTime())) {
+        console.warn('Invalid date for input formatting:', isoDate);
+        return '';
+      }
+      
+      // Format as YYYY-MM-DD for HTML date input
+      return date.toISOString().split('T')[0];
+    } catch (error) {
+      console.error('Error formatting date for input:', error);
+      return '';
+    }
+  };
 
   // Create a state for form submission loading
   const [isSaving, setIsSaving] = useState(false);
@@ -1357,7 +1379,16 @@ export default function ResumeEditor() {
                             <FormItem>
                               <FormLabel>Start Date</FormLabel>
                               <FormControl>
-                                <Input {...field} type="date" />
+                                <Input 
+                                  {...field} 
+                                  type="date" 
+                                  value={formatDateForInput(field.value)}
+                                  onChange={(e) => {
+                                    // Convert back to ISO format when the user changes the date
+                                    const date = e.target.value ? new Date(e.target.value) : null;
+                                    field.onChange(date ? date.toISOString() : '');
+                                  }}
+                                />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -1372,7 +1403,16 @@ export default function ResumeEditor() {
                               <FormItem>
                                 <FormLabel>End Date</FormLabel>
                                 <FormControl>
-                                  <Input {...field} type="date" />
+                                  <Input 
+                                    {...field} 
+                                    type="date" 
+                                    value={formatDateForInput(field.value)}
+                                    onChange={(e) => {
+                                      // Convert back to ISO format when the user changes the date
+                                      const date = e.target.value ? new Date(e.target.value) : null;
+                                      field.onChange(date ? date.toISOString() : '');
+                                    }}
+                                  />
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
@@ -1523,7 +1563,16 @@ export default function ResumeEditor() {
                             <FormItem>
                               <FormLabel>Start Date</FormLabel>
                               <FormControl>
-                                <Input {...field} type="date" />
+                                <Input 
+                                  {...field} 
+                                  type="date" 
+                                  value={formatDateForInput(field.value)}
+                                  onChange={(e) => {
+                                    // Convert back to ISO format when the user changes the date
+                                    const date = e.target.value ? new Date(e.target.value) : null;
+                                    field.onChange(date ? date.toISOString() : '');
+                                  }}
+                                />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -1538,7 +1587,16 @@ export default function ResumeEditor() {
                               <FormItem>
                                 <FormLabel>End Date</FormLabel>
                                 <FormControl>
-                                  <Input {...field} type="date" />
+                                  <Input 
+                                    {...field} 
+                                    type="date" 
+                                    value={formatDateForInput(field.value)}
+                                    onChange={(e) => {
+                                      // Convert back to ISO format when the user changes the date
+                                      const date = e.target.value ? new Date(e.target.value) : null;
+                                      field.onChange(date ? date.toISOString() : '');
+                                    }}
+                                  />
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
@@ -1768,7 +1826,16 @@ export default function ResumeEditor() {
                             <FormItem>
                               <FormLabel>Start Date</FormLabel>
                               <FormControl>
-                                <Input {...field} type="date" />
+                                <Input 
+                                  {...field} 
+                                  type="date" 
+                                  value={formatDateForInput(field.value)}
+                                  onChange={(e) => {
+                                    // Convert back to ISO format when the user changes the date
+                                    const date = e.target.value ? new Date(e.target.value) : null;
+                                    field.onChange(date ? date.toISOString() : '');
+                                  }}
+                                />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -1782,7 +1849,16 @@ export default function ResumeEditor() {
                             <FormItem>
                               <FormLabel>End Date (leave empty if ongoing)</FormLabel>
                               <FormControl>
-                                <Input {...field} type="date" />
+                                <Input 
+                                  {...field} 
+                                  type="date" 
+                                  value={formatDateForInput(field.value)}
+                                  onChange={(e) => {
+                                    // Convert back to ISO format when the user changes the date
+                                    const date = e.target.value ? new Date(e.target.value) : null;
+                                    field.onChange(date ? date.toISOString() : '');
+                                  }}
+                                />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
