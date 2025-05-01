@@ -412,15 +412,45 @@ export default function ResumeEditor() {
         website: latestProfileData.website || '',
       };
       
+      // Format date helper - ensures ISO format
+      const formatDateToISO = (dateStr: string | null | undefined): string | null => {
+        if (!dateStr) return null;
+        
+        try {
+          // Convert the date string to a Date object
+          const date = new Date(dateStr);
+          
+          // Check if the date is valid
+          if (isNaN(date.getTime())) {
+            console.warn('Invalid date:', dateStr);
+            return null;
+          }
+          
+          // Return the date in ISO format
+          return date.toISOString();
+        } catch (error) {
+          console.error('Error formatting date:', error);
+          return null;
+        }
+      };
+      
       // Map work experiences to resume format
       const mappedExperiences = workExperiences.map(exp => {
-        console.log('Mapping work experience:', exp);
+        // Log raw date for debugging
+        console.log('Mapping work experience:', {
+          ...exp,
+          rawStartDate: exp.startDate,
+          formattedStartDate: formatDateToISO(exp.startDate),
+          rawEndDate: exp.endDate,
+          formattedEndDate: formatDateToISO(exp.endDate)
+        });
+        
         return {
           title: exp.position || exp.title || '',
           company: exp.company || '',
           location: exp.location || '',
-          startDate: exp.startDate || '',
-          endDate: exp.endDate || null,
+          startDate: formatDateToISO(exp.startDate) || '',
+          endDate: formatDateToISO(exp.endDate),
           isCurrent: exp.isCurrent || false,
           description: exp.description || '',
           industry: exp.industry || '',
@@ -431,14 +461,22 @@ export default function ResumeEditor() {
       
       // Map education to resume format
       const mappedEducations = educations.map(edu => {
-        console.log('Mapping education:', edu);
+        // Log raw date for debugging
+        console.log('Mapping education:', { 
+          ...edu,
+          rawStartDate: edu.startDate,
+          formattedStartDate: formatDateToISO(edu.startDate),
+          rawEndDate: edu.endDate,
+          formattedEndDate: formatDateToISO(edu.endDate)
+        });
+        
         return {
           institution: edu.institution || '',
           degree: edu.degree || '',
           fieldOfStudy: edu.fieldOfStudy || '',
           location: edu.location || '',
-          startDate: edu.startDate || '',
-          endDate: edu.endDate || '',
+          startDate: formatDateToISO(edu.startDate) || '',
+          endDate: formatDateToISO(edu.endDate),
           isCurrentlyEnrolled: edu.isCurrent || edu.isCurrentlyEnrolled || false,
           gpa: edu.gpa || '',
           achievements: edu.achievements || '',
@@ -455,12 +493,20 @@ export default function ResumeEditor() {
       
       // Map projects to resume format
       const mappedProjects = projects.map(proj => {
-        console.log('Mapping project:', proj);
+        // Log raw date for debugging
+        console.log('Mapping project:', {
+          ...proj,
+          rawStartDate: proj.startDate,
+          formattedStartDate: formatDateToISO(proj.startDate),
+          rawEndDate: proj.endDate,
+          formattedEndDate: formatDateToISO(proj.endDate)
+        });
+        
         return {
           title: proj.title || '',
           description: proj.description || '',
-          startDate: proj.startDate || '',
-          endDate: proj.endDate || null,
+          startDate: formatDateToISO(proj.startDate) || '',
+          endDate: formatDateToISO(proj.endDate),
           url: proj.projectUrl || proj.url || '',
           skills: proj.technologies || proj.skills || [],
           achievements: proj.achievements || proj.description || '',
