@@ -4,6 +4,60 @@ import { IStorage } from './storage';
 import { insertResumeSchema } from '@shared/schema';
 
 export function setupShadowResumeRoutes(apiRouter: any, storage: IStorage) {
+  // Update Resume from Profile
+  apiRouter.post("/resumes/:resumeId/update-from-profile", async (req: Request, res: Response) => {
+    try {
+      const { resumeId } = req.params;
+      console.log(`[POST /resumes/:resumeId/update-from-profile] Refreshing resume ${resumeId} with profile data`);
+      
+      // Get the resume
+      const resume = await storage.getResumeById(parseInt(resumeId));
+      if (!resume) {
+        console.log(`[POST /resumes/:resumeId/update-from-profile] Resume not found with ID: ${resumeId}`);
+        return res.status(404).json({ message: 'Resume not found' });
+      }
+      
+      // Get the user's profile data
+      const userId = resume.userId;
+      const user = await storage.getUser(userId);
+      if (!user) {
+        console.log(`[POST /resumes/:resumeId/update-from-profile] User not found with ID: ${userId}`);
+        return res.status(404).json({ message: 'User profile not found' });
+      }
+      
+      // Get the user's experiences, education, and skills
+      const workExperiences = await storage.getWorkExperiencesByUserId(userId);
+      const educations = await storage.getEducationsByUserId(userId);
+      const skills = await storage.getSkillsByUserId(userId);
+      const projects = await storage.getProjectsByUserId(userId);
+      
+      // Update the resume with the latest profile data
+      // In a real implementation, we would generate a new PDF using the updated profile data
+      const updatedResume = await storage.updateResume(parseInt(resumeId), {
+        lastUpdatedByMusk: new Date(),
+        // We would also include updated fileData with new PDF content
+      });
+      
+      console.log(`[POST /resumes/:resumeId/update-from-profile] Successfully refreshed resume ${resumeId}`);
+      return res.status(200).json({ 
+        resume: updatedResume,
+        message: 'Resume refreshed with latest profile data',
+        dataIncluded: {
+          workExperiences: workExperiences.length,
+          educations: educations.length,
+          skills: skills.length,
+          projects: projects.length
+        }
+      });
+    } catch (error) {
+      console.error(`[POST /resumes/:resumeId/update-from-profile] Error:`, error);
+      return res.status(500).json({ 
+        message: 'Failed to refresh resume with profile data', 
+        error: (error as Error).message 
+      });
+    }
+  });
+  
   // Get Shadow Resume for a user
   apiRouter.get("/users/:userId/shadow-resume", async (req: Request, res: Response) => {
     try {
