@@ -284,10 +284,14 @@ export default function ResumeEditor() {
     },
   });
   
+  // Keep track of whether form has been initialized to prevent continuous resets
+  const [formInitialized, setFormInitialized] = useState(false);
+
   // Update form values when profile data and resume data are loaded
   useEffect(() => {
-    if (profileData) {
-      console.log("Updating form with profile data:", profileData);
+    // Only initialize the form once - fixes infinite loop issue
+    if (profileData && !formInitialized && !isLoading) {
+      console.log("Initializing form with data");
       
       // Check all possible sources of form data and use the first available one
       if (resumeData?.form) {
@@ -321,6 +325,7 @@ export default function ResumeEditor() {
             themeStyle: resumeData.resume?.themeStyle || 'professional',
           },
         });
+        setFormInitialized(true);
       } 
       else if (metadataFormData) {
         // Second priority: Parsed metadata form data
@@ -334,6 +339,7 @@ export default function ResumeEditor() {
             themeStyle: resumeData?.resume?.themeStyle || 'professional',
           },
         });
+        setFormInitialized(true);
       }
       else if (localCachedFormData) {
         // Third priority: Cached form data from localStorage
@@ -347,6 +353,7 @@ export default function ResumeEditor() {
             themeStyle: resumeData?.resume?.themeStyle || 'professional',
           },
         });
+        setFormInitialized(true);
       }
       else {
         // Fallback to creating form data from profile if no resume form data is available
@@ -422,9 +429,10 @@ export default function ResumeEditor() {
             themeStyle: resume.themeStyle || 'professional',
           },
         });
+        setFormInitialized(true);
       }
     }
-  }, [profileData, resumeData?.resume?.id, resumeData?.form, metadataFormData, localCachedFormData]);
+  }, [profileData, resumeData?.resume?.id, resumeData?.form, metadataFormData, localCachedFormData, isLoading, formInitialized]);
   
   // Save resume mutation - enhanced for better form data persistence
   const saveResumeMutation = useMutation({
