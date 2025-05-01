@@ -309,19 +309,43 @@ export default function resumeRoutes() {
       }
       
       console.log(`[GET /resumes/download] Found resume ID: ${resume.id} for user: ${userId}`);
+      console.log(`[GET /resumes/download] PDF data length: ${pdfData.length} characters`);
       
-      // Set proper headers
+      // Try to find what looks like a PDF header
+      const isPdfHeader = pdfData.startsWith('JVBERi0') || pdfData.startsWith('%PDF-');
+      console.log(`[GET /resumes/download] Has PDF header: ${isPdfHeader}`);
+      
+      // Set proper headers - these are critical for PDF rendering
       res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', `inline; filename=${encodeURIComponent(fileName || 'resume.pdf')}`);
+      res.setHeader('Content-Disposition', `inline; filename="${encodeURIComponent(fileName || 'resume.pdf')}"`);
       res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
       res.setHeader('Pragma', 'no-cache');
       res.setHeader('Expires', '0');
       
-      // If fileData is base64, convert it to buffer
-      const buffer = Buffer.from(pdfData, 'base64');
+      // Convert base64 data to buffer
+      let buffer;
+      try {
+        buffer = Buffer.from(pdfData, 'base64');
+        console.log(`[GET /resumes/download] Successfully created buffer with length: ${buffer.length}`);
+      } catch (e) {
+        console.error(`[GET /resumes/download] Error creating buffer:`, e);
+        return res.status(500).json({
+          message: 'Error processing PDF data',
+          error: e instanceof Error ? e.message : 'Unknown error'
+        });
+      }
       
-      // Send the PDF data
-      return res.send(buffer);
+      // Verify the buffer looks like a PDF (should start with %PDF-)
+      const bufferStart = buffer.slice(0, 5).toString();
+      const isPdfByContent = bufferStart.includes('%PDF-');
+      console.log(`[GET /resumes/download] Buffer starts with: ${bufferStart}, is valid PDF: ${isPdfByContent}`);
+      
+      if (!isPdfByContent) {
+        console.log(`[GET /resumes/download] Warning: Buffer does not appear to be a valid PDF (starts with "${bufferStart}")`);
+      }
+      
+      // Send the PDF data with proper mime type
+      return res.end(buffer);
     } catch (error) {
       console.error('[Download Resume] Error:', error);
       return res.status(500).json({
