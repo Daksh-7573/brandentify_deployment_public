@@ -399,78 +399,115 @@ export default function ResumeEditor() {
     if (profileData) {
       console.log("Updating form with profile data:", profileData);
       
-      // Handle case where resume data might not be available
-      const resume = resumeData && resumeData.resume
-        ? resumeData.resume 
-        : {
-            isDownloadable: false,
-            visibility: 'private',
-            themeStyle: 'professional'
-          };
-      
-      form.reset({
-        personalInfo: {
-          fullName: profileData.name || '',
-          title: profileData.title || '',
-          email: profileData.email || '',
-          phone: profileData.phoneNumber || '',
-          location: profileData.location || '',
-          summary: profileData.aboutMe || '',
-          website: profileData.website || '',
-        },
-        experiences: { 
-          experiences: profileData.workExperiences?.map((exp: any) => ({
-            id: exp.id,
-            title: exp.title || '',
-            company: exp.company || '',
-            location: exp.location || '',
-            startDate: exp.startDate?.split('T')[0] || '',
-            endDate: exp.endDate ? exp.endDate.split('T')[0] : null,
-            isCurrent: !exp.endDate,
-            description: exp.description || '',
-            responsibilities: exp.keyResponsibilities || [],
-          })) || []
-        },
-        education: {
-          educations: profileData.education?.map((edu: any) => ({
-            id: edu.id,
-            institution: edu.institution || '',
-            degree: edu.degree || '',
-            fieldOfStudy: edu.fieldOfStudy || '',
-            location: edu.location || '',
-            startDate: edu.startDate?.split('T')[0] || '',
-            endDate: edu.endDate ? edu.endDate.split('T')[0] : null,
-            isCurrentlyEnrolled: !edu.endDate,
-            gpa: edu.gpa || '',
-            achievements: edu.achievements || '',
-          })) || []
-        },
-        skills: {
-          skills: profileData.skills?.map((skill: any) => ({
-            id: skill.id,
-            name: skill.name || '',
-            level: skill.level || '',
-            category: skill.category || '',
-          })) || []
-        },
-        projects: {
-          projects: profileData.projects?.map((project: any) => ({
-            id: project.id,
-            title: project.title || '',
-            description: project.description || '',
-            startDate: project.startDate?.split('T')[0] || '',
-            endDate: project.endDate ? project.endDate.split('T')[0] : null,
-            url: project.projectUrl || '',
-            skills: project.skills || [],
-            achievements: project.achievements || '',
-          })) || []
-        },
-        settings: {
-          isDownloadable: resume.isDownloadable || false,
-          visibility: resume.visibility || 'private',
-          themeStyle: resume.themeStyle || 'professional',
-        },
-      });
+      // First check if we have form data from the shadow resume
+      if (resumeData && resumeData.form) {
+        console.log("Using saved resume form data:", resumeData.form);
+        form.reset({
+          personalInfo: resumeData.form.personalInfo || {
+            fullName: profileData.name || '',
+            title: profileData.title || '',
+            email: profileData.email || '',
+            phone: profileData.phoneNumber || '',
+            location: profileData.location || '',
+            summary: profileData.aboutMe || '',
+            website: profileData.website || '',
+          },
+          experiences: { 
+            experiences: resumeData.form.experiences?.experiences || []
+          },
+          education: { 
+            educations: resumeData.form.education?.educations || []
+          },
+          skills: { 
+            skills: resumeData.form.skills?.skills || []
+          },
+          projects: { 
+            projects: resumeData.form.projects?.projects || []
+          },
+          settings: {
+            isDownloadable: resumeData.resume?.isDownloadable || false,
+            visibility: resumeData.resume?.visibility || 'private',
+            themeStyle: resumeData.resume?.themeStyle || 'professional',
+          },
+        });
+      } else {
+        // Fallback to creating form data from profile if resume form data is not available
+        // This happens when a user doesn't have a shadow resume yet or when resumeData failed to load
+        console.log("No resume form data available, using profile data as fallback");
+        
+        // Handle case where resume data might not be available
+        const resume = resumeData && resumeData.resume
+          ? resumeData.resume 
+          : {
+              isDownloadable: false,
+              visibility: 'private',
+              themeStyle: 'professional'
+            };
+        
+        form.reset({
+          personalInfo: {
+            fullName: profileData.name || '',
+            title: profileData.title || '',
+            email: profileData.email || '',
+            phone: profileData.phoneNumber || '',
+            location: profileData.location || '',
+            summary: profileData.aboutMe || '',
+            website: profileData.website || '',
+          },
+          experiences: { 
+            experiences: profileData.workExperiences?.map((exp: any) => ({
+              id: exp.id,
+              title: exp.title || '',
+              company: exp.company || '',
+              location: exp.location || '',
+              startDate: exp.startDate?.split('T')[0] || '',
+              endDate: exp.endDate ? exp.endDate.split('T')[0] : null,
+              isCurrent: !exp.endDate,
+              description: exp.description || '',
+              responsibilities: exp.keyResponsibilities || [],
+            })) || []
+          },
+          education: {
+            educations: profileData.education?.map((edu: any) => ({
+              id: edu.id,
+              institution: edu.institution || '',
+              degree: edu.degree || '',
+              fieldOfStudy: edu.fieldOfStudy || '',
+              location: edu.location || '',
+              startDate: edu.startDate?.split('T')[0] || '',
+              endDate: edu.endDate ? edu.endDate.split('T')[0] : null,
+              isCurrentlyEnrolled: !edu.endDate,
+              gpa: edu.gpa || '',
+              achievements: edu.achievements || '',
+            })) || []
+          },
+          skills: {
+            skills: profileData.skills?.map((skill: any) => ({
+              id: skill.id,
+              name: skill.name || '',
+              level: skill.level || '',
+              category: skill.category || '',
+            })) || []
+          },
+          projects: {
+            projects: profileData.projects?.map((project: any) => ({
+              id: project.id,
+              title: project.title || '',
+              description: project.description || '',
+              startDate: project.startDate?.split('T')[0] || '',
+              endDate: project.endDate ? project.endDate.split('T')[0] : null,
+              url: project.projectUrl || '',
+              skills: project.skills || [],
+              achievements: project.achievements || '',
+            })) || []
+          },
+          settings: {
+            isDownloadable: resume.isDownloadable || false,
+            visibility: resume.visibility || 'private',
+            themeStyle: resume.themeStyle || 'professional',
+          },
+        });
+      }
     }
   }, [profileData, resumeData, form]);
   
