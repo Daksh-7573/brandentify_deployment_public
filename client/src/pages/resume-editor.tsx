@@ -50,6 +50,7 @@ import {
   CircleMinus,
   Building,
   Calendar,
+  Loader2,
   MapPin,
   ArrowUpRight, 
   BookText,
@@ -677,24 +678,33 @@ export default function ResumeEditor() {
     );
   };
 
+  // Create a state for form submission loading
+  const [isSaving, setIsSaving] = useState(false);
+
   // Handle form submission
   const onSubmit = async (values: z.infer<typeof resumeSchema>) => {
+    setIsSaving(true);
     try {
       console.log("Form submitted with values:", values);
       
       // Create JSON string for metadata
       const metadata = JSON.stringify(values);
       
-      // Build the request data
+      // Build the request data - wrap values in resumeData as required by the server
       const requestData = {
-        userId,
-        resumeId: resumeData?.resume?.id, // Include resume ID if we're updating
-        isDownloadable: values.settings.isDownloadable,
-        visibility: values.settings.visibility,
-        themeStyle: values.settings.themeStyle,
-        metadata, // Send the full form data as metadata
-        isShadowResume: true // Mark this as a shadow resume
+        resumeData: {
+          userId,
+          resumeId: resumeData?.resume?.id, // Include resume ID if we're updating
+          isDownloadable: values.settings.isDownloadable,
+          visibility: values.settings.visibility,
+          themeStyle: values.settings.themeStyle,
+          metadata, // Send the full form data as metadata
+          isShadowResume: true, // Mark this as a shadow resume
+          settings: values.settings // Include settings as required by server
+        }
       };
+      
+      console.log("Sending request data:", requestData);
       
       // Check if we're creating a new resume or updating an existing one
       if (resumeData?.resume?.id) {
@@ -704,9 +714,7 @@ export default function ResumeEditor() {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({
-            resumeData: values  // The server expects a 'resumeData' field
-          }),
+          body: JSON.stringify(requestData), // Using the properly formatted requestData
         });
         
         if (!response.ok) {
@@ -726,9 +734,7 @@ export default function ResumeEditor() {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({
-            resumeData: values  // The server expects a 'resumeData' field
-          }),
+          body: JSON.stringify(requestData), // Using the properly formatted requestData
         });
         
         if (!response.ok) {
@@ -755,6 +761,9 @@ export default function ResumeEditor() {
         variant: 'destructive',
       });
       setPageStatus('save-error');
+    } finally {
+      // Always reset the saving state, whether successful or not
+      setIsSaving(false);
     }
   };
   
@@ -1745,14 +1754,24 @@ export default function ResumeEditor() {
               <Button 
                 type="submit" 
                 className="flex items-center gap-2"
+                disabled={isSaving}
                 onClick={() => {
                   console.log("Save button clicked");
                   console.log("Form state:", form.formState);
                   console.log("Form values:", form.getValues());
                 }}
               >
-                <Save className="h-4 w-4" />
-                Save Resume
+                {isSaving ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  <>
+                    <Save className="h-4 w-4" />
+                    Save Resume
+                  </>
+                )}
               </Button>
             </div>
           </CardFooter>
