@@ -145,10 +145,33 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
   
   // ONLY use form data - NO FALLBACK to profile data
   // Shadow Resume should exclusively use data from the Resume Editor
-  const effectiveExperiences = formData?.experiences?.experiences || [];
-  const effectiveEducation = formData?.education?.educations || [];
-  const effectiveSkills = formData?.skills?.skills || [];
-  const effectiveProjects = formData?.projects?.projects || [];
+  // Handle both old and new form data structures
+  const effectiveExperiences = 
+    formData?.experiences?.experiences || // New nested structure
+    formData?.experiences || // Simple array structure
+    []; // Default empty
+    
+  const effectiveEducation = 
+    formData?.education?.educations || // New nested structure
+    formData?.education || // Simple array structure
+    []; // Default empty
+    
+  const effectiveSkills = 
+    formData?.skills?.skills || // New nested structure
+    formData?.skills || // Simple array structure
+    []; // Default empty
+    
+  const effectiveProjects = 
+    formData?.projects?.projects || // New nested structure
+    formData?.projects || // Simple array structure
+    []; // Default empty
+    
+  console.log('Effective data check:', {
+    expCount: effectiveExperiences.length,
+    eduCount: effectiveEducation.length,
+    skillCount: effectiveSkills.length,
+    projCount: effectiveProjects.length
+  });
   
   // ONLY use personal info from form data, never fallback to profile
   const effectivePersonalInfo = formData?.personalInfo || {
