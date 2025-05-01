@@ -260,17 +260,17 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                   }}
                 >
                   <Edit2 className="h-4 w-4 mr-1" />
-                  <span>Modify</span>
+                  <span>Update</span>
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
                   className="bg-white shadow-sm border-gray-200"
                   onClick={() => {
-                    // Show a toast notification that indicates the resume is being updated
+                    // Show a toast notification that indicates the resume is being refreshed
                     toast({
-                      title: "Updating Resume",
-                      description: "Your Shadow Resume is being updated with your latest profile information.",
+                      title: "Refreshing Resume",
+                      description: "Your Shadow Resume is being refreshed with your latest profile information.",
                     });
                     
                     // Here we would trigger an API call to update the resume with latest profile information
@@ -323,7 +323,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                   }}
                 >
                   <Zap className="h-4 w-4 mr-1" />
-                  <span>Update</span>
+                  <span>Refresh</span>
                 </Button>
               </div>
             )}
