@@ -489,15 +489,80 @@ export default function ResumeEditor() {
       form.reset(updatedValues);
       
       // Force re-render to ensure all fields display properly
-      setTimeout(() => {
+      setTimeout(async () => {
         form.reset(updatedValues);
         
-        // Show success toast
-        toast({
-          title: 'Profile data updated',
-          description: 'Your resume has been updated with the latest profile information.',
-          variant: 'default',
-        });
+        // After updating form values, also save to the database
+        try {
+          // Create JSON string for metadata
+          const metadata = JSON.stringify(updatedValues);
+          
+          // Build the request data
+          const requestData = {
+            userId,
+            resumeId: resumeData?.resume?.id, // Include resume ID if we're updating
+            isDownloadable: updatedValues.settings.isDownloadable,
+            visibility: updatedValues.settings.visibility,
+            themeStyle: updatedValues.settings.themeStyle,
+            metadata, // Send the full form data as metadata
+            isShadowResume: true // Mark this as a shadow resume
+          };
+          
+          // Check if we're creating a new resume or updating an existing one
+          if (resumeData?.resume?.id) {
+            // Update existing resume
+            console.log("Saving updated resume data to server...");
+            const response = await fetch(`/api/shadow-resume/${resumeData.resume.id}`, {
+              method: 'PATCH',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(requestData),
+            });
+            
+            if (!response.ok) {
+              throw new Error(`Failed to update resume: ${response.statusText}`);
+            }
+            
+            console.log("Resume data saved successfully after profile update");
+            
+            // Invalidate the queries to refresh data
+            queryClient.invalidateQueries({ queryKey: ['/api/shadow-resume', userId] });
+          } else {
+            // Create new resume if none exists
+            console.log("Creating new resume from profile data...");
+            const response = await fetch('/api/shadow-resume', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(requestData),
+            });
+            
+            if (!response.ok) {
+              throw new Error(`Failed to create resume: ${response.statusText}`);
+            }
+            
+            console.log("New resume created successfully from profile data");
+            
+            // Invalidate the queries to refresh data
+            queryClient.invalidateQueries({ queryKey: ['/api/shadow-resume', userId] });
+          }
+          
+          // Show success toast
+          toast({
+            title: 'Profile data updated and saved',
+            description: 'Your resume has been updated with the latest profile information and saved.',
+            variant: 'default',
+          });
+        } catch (error) {
+          console.error("Error saving resume after profile update:", error);
+          toast({
+            title: 'Data updated but not saved',
+            description: `Resume shows updated data but failed to save: ${error instanceof Error ? error.message : 'Unknown error'}. Please click Save to save changes.`,
+            variant: 'warning',
+          });
+        }
         
         setIsUpdatingFromProfile(false);
       }, 100);
