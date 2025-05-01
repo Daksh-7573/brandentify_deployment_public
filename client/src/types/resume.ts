@@ -30,6 +30,68 @@ export interface Resume {
   isDownloadable: boolean;
   lastUpdatedByMusk?: Date;
   visibility: ResumeVisibility;
+  // The form property contains the saved form data from the Resume Editor
+  form?: {
+    personalInfo?: {
+      fullName?: string;
+      title?: string;
+      email?: string;
+      phone?: string;
+      location?: string;
+      linkedin?: string;
+      website?: string;
+      summary?: string;
+    };
+    experiences?: {
+      experiences?: Array<{
+        title?: string;
+        position?: string;
+        company?: string;
+        location?: string;
+        startDate?: string;
+        endDate?: string | null;
+        description?: string;
+        industry?: string;
+        domain?: string;
+        responsibilities?: string[];
+      }>;
+    };
+    education?: {
+      educations?: Array<{
+        degree?: string;
+        institution?: string;
+        location?: string;
+        fieldOfStudy?: string;
+        startDate?: string;
+        endDate?: string | null;
+        gpa?: string;
+        description?: string;
+        industry?: string;
+        domain?: string;
+        skillsAcquired?: string[];
+      }>;
+    };
+    skills?: {
+      skills?: Array<string | {
+        name: string;
+        level?: string;
+        category?: string;
+      }>;
+    };
+    projects?: {
+      projects?: Array<{
+        title?: string;
+        description?: string;
+        startDate?: string;
+        endDate?: string | null;
+        category?: string;
+        industry?: string;
+        projectUrl?: string;
+        thumbnailUrl?: string;
+        technologies?: string[];
+      }>;
+    };
+  };
 }
 
 export interface ShadowResume {
