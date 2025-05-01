@@ -298,35 +298,61 @@ export default function ResumeEditor() {
       return;
     }
     
-    // Create base personal info from profile data
-    const basePersonalInfo = {
-      fullName: profileData.name || '',
-      title: profileData.title || '',
-      email: profileData.email || '',
-      phone: profileData.phoneNumber || '',
-      location: profileData.location || '',
-      summary: profileData.aboutMe || '',
-      website: profileData.website || '',
-    };
-    
-    // Keep existing form data for other sections
-    const currentValues = form.getValues();
-    
-    // Reset form with updated personal info
-    form.reset({
-      personalInfo: basePersonalInfo,
-      experiences: currentValues.experiences,
-      education: currentValues.education,
-      skills: currentValues.skills,
-      projects: currentValues.projects,
-      settings: currentValues.settings,
-    });
-    
-    toast({
-      title: 'Profile data updated',
-      description: 'Your resume has been updated with the latest profile information.',
-      variant: 'default',
-    });
+    // Get the latest profile data directly from the server
+    fetch(`/api/users/${userId}`)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Failed to fetch latest profile data');
+        }
+        return response.json();
+      })
+      .then(latestProfileData => {
+        console.log('Latest profile data fetched for update:', latestProfileData);
+        
+        // Create base personal info from the latest profile data
+        const basePersonalInfo = {
+          fullName: latestProfileData.name || '',
+          title: latestProfileData.title || '',
+          email: latestProfileData.email || '',
+          phone: latestProfileData.phoneNumber || '',
+          location: latestProfileData.location || '',
+          summary: latestProfileData.aboutMe || '',
+          website: latestProfileData.website || '',
+        };
+        
+        // Keep existing form data for other sections
+        const currentValues = form.getValues();
+        
+        // Reset form with updated personal info
+        form.setValue('personalInfo', basePersonalInfo);
+        
+        // Force re-render the input fields to display the updated values
+        setTimeout(() => {
+          form.reset({
+            personalInfo: basePersonalInfo,
+            experiences: currentValues.experiences,
+            education: currentValues.education,
+            skills: currentValues.skills,
+            projects: currentValues.projects,
+            settings: currentValues.settings,
+          });
+          
+          // Show success toast
+          toast({
+            title: 'Profile data updated',
+            description: 'Your resume has been updated with the latest profile information.',
+            variant: 'default',
+          });
+        }, 100);
+      })
+      .catch(error => {
+        console.error('Error updating from profile:', error);
+        toast({
+          title: 'Update failed',
+          description: `Failed to update from profile: ${error.message}`,
+          variant: 'destructive',
+        });
+      });
   };
   
   // Helper functions for form array management
@@ -726,16 +752,10 @@ export default function ResumeEditor() {
             <FileText className="h-5 w-5" />
             Resume Editor
           </CardTitle>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={updateFromProfile}>
-              <RefreshCw className="h-4 w-4 mr-2" />
-              Update from Profile
-            </Button>
-            <Button variant="outline" size="sm" onClick={handleBack}>
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Resume
-            </Button>
-          </div>
+          <Button variant="outline" size="sm" onClick={updateFromProfile}>
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Update from Profile
+          </Button>
         </div>
         <CardDescription>
           Edit your professional resume information
