@@ -643,7 +643,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                         {/* ALWAYS prioritize form data from Resume Editor over profile data */}
                         {formData && formData.projects?.projects && formData.projects.projects.length > 0 ? (
                           <div className="space-y-3 mt-2">
-                            {formData.projects?.projects?.map((project: NonNullable<Resume['form']>['projects']['projects'][0], index: number) => (
+                            {formData.projects && formData.projects.projects && formData.projects.projects.map((project: any, index: number) => (
                               <div key={index} className="pb-2">
                                 <div className="font-semibold">{project.title}</div>
                                 <div className="text-gray-600 mt-0.5 text-xs">
