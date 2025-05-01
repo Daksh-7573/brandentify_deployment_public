@@ -230,7 +230,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
           <div>
             <CardTitle>Shadow Resume</CardTitle>
             <CardDescription>
-              Your living CV, automatically maintained by Musk
+              Your living CV, automatically maintained by Musk. Any updates made in the Resume Editor will be automatically reflected here.
             </CardDescription>
           </div>
           <div className="flex items-center gap-2">

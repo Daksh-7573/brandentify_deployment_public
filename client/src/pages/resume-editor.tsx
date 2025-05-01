@@ -339,10 +339,17 @@ export default function ResumeEditor() {
     onSuccess: () => {
       toast({
         title: 'Resume Saved',
-        description: 'Your resume has been updated successfully.',
+        description: 'Your resume has been updated successfully. The Shadow Resume tab has been updated with your changes.',
       });
+      
+      // Invalidate both the shadow resume and the user profile queries
+      // This ensures that both tabs get the latest data
       queryClient.invalidateQueries({
         queryKey: ['/api/users', userId, 'shadow-resume'],
+      });
+      
+      queryClient.invalidateQueries({
+        queryKey: ['/api/users', userId],
       });
     },
     onError: (error) => {
@@ -444,9 +451,12 @@ export default function ResumeEditor() {
       },
     });
     
+    // Automatically save the resume with the updated data
+    saveResumeMutation.mutate(form.getValues());
+    
     toast({
       title: 'Resume Updated',
-      description: 'Your resume has been refreshed with the latest profile data.',
+      description: 'Your resume has been refreshed with the latest profile data and saved to your Shadow Resume.',
     });
   };
   
