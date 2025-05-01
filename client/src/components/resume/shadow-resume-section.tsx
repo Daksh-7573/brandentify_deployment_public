@@ -8,6 +8,7 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import PDFViewer from './pdf-viewer';
 
 import { 
   Zap,
@@ -408,35 +409,10 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
         {resume && !createShadowResumeMutation.isPending && (
           <div className="aspect-[3/4] bg-card border rounded-lg flex items-center justify-center overflow-hidden">
             {resume.fileUrl ? (
-              <div className="relative w-full h-full flex flex-col items-center justify-center">
-                {/* Display a link to view the PDF instead of embedding it */}
-                <div className="text-center space-y-4">
-                  <FileText className="h-16 w-16 text-primary mx-auto" />
-                  <h3 className="text-lg font-medium">Your Resume is Ready</h3>
-                  <p className="text-sm text-muted-foreground max-w-md">
-                    Your Shadow Resume has been generated and is ready to view or download.
-                  </p>
-                  <div className="flex flex-col sm:flex-row gap-2 justify-center mt-4">
-                    <a 
-                      href={resume.fileUrl} 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
-                      className="bg-primary text-white px-4 py-2 rounded-md text-sm flex items-center justify-center gap-2 shadow-md hover:bg-primary/90 transition-colors"
-                    >
-                      <Eye className="h-4 w-4" />
-                      <span>View Resume</span>
-                    </a>
-                    <a 
-                      href={resume.fileUrl} 
-                      download={resume.fileName || "resume.pdf"}
-                      className="bg-white border border-gray-200 text-gray-800 px-4 py-2 rounded-md text-sm flex items-center justify-center gap-2 shadow-sm hover:bg-gray-50 transition-colors"
-                    >
-                      <Download className="h-4 w-4" />
-                      <span>Download PDF</span>
-                    </a>
-                  </div>
-                </div>
-              </div>
+              <PDFViewer 
+                fileUrl={resume.fileUrl} 
+                fileName={resume.fileName || "resume.pdf"} 
+              />
             ) : (
               <div className="w-full h-full flex flex-col items-center justify-center p-6 relative">
                 <div className={`w-full h-full relative bg-white shadow-lg rounded overflow-hidden ${fixedTheme.fontClass}`} style={{borderTop: `4px solid ${fixedTheme.color}`}}>
