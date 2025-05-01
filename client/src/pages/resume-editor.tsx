@@ -305,48 +305,98 @@ export default function ResumeEditor() {
     console.log('Current form values:', form.getValues());
     
     try {
+      // Use the existing profile data as a backup, in case we can't fetch new data
+      let latestProfileData = profileData;
+      
       // Fetch all the data we need
       console.log('Fetching all profile data from API for user', userId);
       
-      // Get the latest profile data
-      const profileResponse = await fetch(`/api/users/${userId}`);
-      if (!profileResponse.ok) {
-        throw new Error('Failed to fetch latest profile data');
+      // Try to get the latest profile data
+      try {
+        const profileResponse = await fetch(`/api/users/${userId}`);
+        if (profileResponse.ok) {
+          const fetchedProfileData = await profileResponse.json();
+          latestProfileData = fetchedProfileData;
+          console.log('Latest profile data fetched successfully:', latestProfileData);
+        } else {
+          console.warn('Profile data endpoint returned status:', profileResponse.status);
+          console.warn('Using existing profile data from context');
+        }
+      } catch (error) {
+        console.warn('Error fetching profile data:', error);
+        console.warn('Using existing profile data from context');
       }
-      const latestProfileData = await profileResponse.json();
       console.log('Latest profile data fetched:', latestProfileData);
       
-      // Get work experiences
-      const experiencesResponse = await fetch(`/api/users/${userId}/work-experiences`);
-      if (!experiencesResponse.ok) {
-        throw new Error('Failed to fetch work experiences');
+      // Initialize empty arrays for each section
+      let workExperiences = [];
+      let educations = [];
+      let skills = [];
+      let projects = [];
+
+      // Try to get work experiences
+      try {
+        console.log('Fetching work experiences...');
+        const experiencesResponse = await fetch(`/api/users/${userId}/work-experiences`);
+        if (experiencesResponse.ok) {
+          workExperiences = await experiencesResponse.json();
+          console.log('Work experiences fetched successfully:', workExperiences);
+        } else {
+          console.warn('Work experiences endpoint returned status:', experiencesResponse.status);
+          console.warn('Using empty array for work experiences');
+        }
+      } catch (error) {
+        console.warn('Error fetching work experiences:', error);
+        console.warn('Using empty array for work experiences');
       }
-      const workExperiences = await experiencesResponse.json();
-      console.log('Work experiences fetched:', workExperiences);
       
-      // Get education
-      const educationResponse = await fetch(`/api/users/${userId}/educations`);
-      if (!educationResponse.ok) {
-        throw new Error('Failed to fetch education');
+      // Try to get education
+      try {
+        console.log('Fetching education...');
+        const educationResponse = await fetch(`/api/users/${userId}/educations`);
+        if (educationResponse.ok) {
+          educations = await educationResponse.json();
+          console.log('Education fetched successfully:', educations);
+        } else {
+          console.warn('Education endpoint returned status:', educationResponse.status);
+          console.warn('Using empty array for education');
+        }
+      } catch (error) {
+        console.warn('Error fetching education:', error);
+        console.warn('Using empty array for education');
       }
-      const educations = await educationResponse.json();
-      console.log('Education fetched:', educations);
       
-      // Get skills
-      const skillsResponse = await fetch(`/api/users/${userId}/skills`);
-      if (!skillsResponse.ok) {
-        throw new Error('Failed to fetch skills');
+      // Try to get skills
+      try {
+        console.log('Fetching skills...');
+        const skillsResponse = await fetch(`/api/users/${userId}/skills`);
+        if (skillsResponse.ok) {
+          skills = await skillsResponse.json();
+          console.log('Skills fetched successfully:', skills);
+        } else {
+          console.warn('Skills endpoint returned status:', skillsResponse.status);
+          console.warn('Using empty array for skills');
+        }
+      } catch (error) {
+        console.warn('Error fetching skills:', error);
+        console.warn('Using empty array for skills');
       }
-      const skills = await skillsResponse.json();
-      console.log('Skills fetched:', skills);
       
-      // Get projects
-      const projectsResponse = await fetch(`/api/users/${userId}/projects`);
-      if (!projectsResponse.ok) {
-        throw new Error('Failed to fetch projects');
+      // Try to get projects
+      try {
+        console.log('Fetching projects...');
+        const projectsResponse = await fetch(`/api/users/${userId}/projects`);
+        if (projectsResponse.ok) {
+          projects = await projectsResponse.json();
+          console.log('Projects fetched successfully:', projects);
+        } else {
+          console.warn('Projects endpoint returned status:', projectsResponse.status);
+          console.warn('Using empty array for projects');
+        }
+      } catch (error) {
+        console.warn('Error fetching projects:', error);
+        console.warn('Using empty array for projects');
       }
-      const projects = await projectsResponse.json();
-      console.log('Projects fetched:', projects);
       
       // Create base personal info from the latest profile data
       const basePersonalInfo = {
