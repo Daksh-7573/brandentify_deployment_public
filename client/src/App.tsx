@@ -25,7 +25,7 @@ import SmartConnectPage from "@/pages/smart-connect";
 import MuskMatchPage from "@/pages/musk-match";
 import ResumePage from "@/pages/resume";
 import ResumeCV from "@/pages/resume-cv";
-import ResumeEditor from "@/pages/resume-editor";
+import ResumeEditor from "@/pages/resume-editor-fixed";
 import UnifiedProfilePage from "@/pages/unified-profile";
 import FeedTestPage from "@/pages/feed-test";
 import CareerQuestsPage from "@/pages/career-quests";
