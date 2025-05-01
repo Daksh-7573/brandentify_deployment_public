@@ -3,9 +3,7 @@
  * This provides a unified way to access all user-related data in one place
  */
 
-import { useQuery } from '@tanstack/react-query';
-import { queryClient } from '@/lib/queryClient';
-import { useState } from 'react';
+import { useQuery } from "@tanstack/react-query";
 
 export interface UserProfileData {
   // Basic user data
@@ -14,6 +12,7 @@ export interface UserProfileData {
   email: string;
   name: string | null;
   photoURL: string | null;
+  phoneNumber: string | null;
   title: string | null;
   aboutMe: string | null;
   location: string | null;
@@ -24,6 +23,10 @@ export interface UserProfileData {
   visitingCardType: string | null;
   profileCompleted: number | null;
   createdAt: string | null;
+  emailVerified: boolean;
+  emailVerificationToken: string | null;
+  emailVerificationExpires: string | null;
+  website?: string | null;
   
   // Related data
   workExperiences: any[]; // Work experience data
@@ -44,62 +47,28 @@ interface UseUserProfileOptions {
  * @returns Query result with the comprehensive user profile data
  */
 export function useUserProfile(
-  userId: number | string | null | undefined,
+  userId: number | undefined | null,
   options: UseUserProfileOptions = {}
 ) {
-  const [profileData, setProfileData] = useState<UserProfileData | null>(null);
-
-  // Normalize userId to a number or null
-  const normalizedUserId = userId 
-    ? (typeof userId === 'string' ? parseInt(userId, 10) : userId) 
-    : null;
-
-  // Only enable the query if we have a valid userId and it's explicitly enabled
-  const enabled = !!normalizedUserId && options.enabled !== false;
-
-  const query = useQuery({
-    queryKey: ['/api/users', normalizedUserId, 'profile'],
-    enabled,
+  return useQuery<UserProfileData>({
+    queryKey: ['/api/users', userId, 'profile'],
+    enabled: Boolean(userId) && options.enabled !== false,
     queryFn: async () => {
-      if (!normalizedUserId) {
+      if (!userId) {
         throw new Error('User ID is required');
       }
-
-      const response = await fetch(`/api/users/${normalizedUserId}/profile`);
+      
+      console.log(`Fetching comprehensive profile data for user ${userId}`);
+      const response = await fetch(`/api/users/${userId}/profile`);
       
       if (!response.ok) {
-        // If the response is not ok, try to parse the error message
-        const errorData = await response.json().catch(() => null);
-        throw new Error(
-          errorData?.message || 
-          `Failed to fetch user profile data: ${response.status} ${response.statusText}`
-        );
+        throw new Error(`Failed to fetch user profile data: ${response.statusText}`);
       }
       
       const data = await response.json();
-      setProfileData(data);
+      console.log(`Received comprehensive profile data for user ${userId}:`, data);
       return data;
     },
+    retry: 1,
   });
-
-  // Helper functions to update the cache when data changes
-  const updateCache = (updatedData: Partial<UserProfileData>) => {
-    if (!normalizedUserId) return;
-
-    queryClient.setQueryData(
-      ['/api/users', normalizedUserId, 'profile'], 
-      (oldData: UserProfileData | undefined) => {
-        if (!oldData) return updatedData;
-        return { ...oldData, ...updatedData };
-      }
-    );
-  };
-
-  return {
-    ...query,
-    profileData,
-    updateCache,
-  };
 }
-
-export default useUserProfile;

@@ -5,11 +5,11 @@
  * including all related information (work experiences, education, skills, projects).
  */
 
-import { Router, Request, Response } from 'express';
+import express, { Request, Response } from 'express';
 import { storage } from './storage';
 
 export default function userProfileRoutes() {
-  const router = Router();
+  const router = express.Router();
 
   /**
    * Get comprehensive user profile data including all related information
@@ -17,42 +17,53 @@ export default function userProfileRoutes() {
    */
   router.get('/users/:userId/profile', async (req: Request, res: Response) => {
     try {
-      const userId = parseInt(req.params.userId, 10);
-
+      const userId = parseInt(req.params.userId);
+      
       if (isNaN(userId)) {
-        return res.status(400).json({ message: 'Invalid user ID format' });
+        return res.status(400).json({ message: 'Invalid user ID' });
       }
-
+      
+      console.log(`[GET /users/:userId/profile] Fetching comprehensive profile for user ${userId}`);
+      
       // Fetch basic user data
       const user = await storage.getUser(userId);
-
+      
       if (!user) {
+        console.log(`[GET /users/:userId/profile] User not found: ${userId}`);
         return res.status(404).json({ message: 'User not found' });
       }
-
+      
       // Fetch all related data in parallel
-      const [workExperiences, education, skills, projects, services] = await Promise.all([
+      const [
+        workExperiences,
+        education,
+        skills,
+        projects,
+        services
+      ] = await Promise.all([
         storage.getWorkExperiencesByUserId(userId),
         storage.getEducationsByUserId(userId),
         storage.getSkillsByUserId(userId),
         storage.getProjectsByUserId(userId),
-        storage.getServicesByUserId(userId),
+        storage.getServicesByUserId(userId)
       ]);
-
-      // Combine all data into a comprehensive profile object
+      
+      // Combine all data into a single comprehensive response
       const profileData = {
-        ...user, // Basic user data
+        ...user,
         workExperiences: workExperiences || [],
         education: education || [],
         skills: skills || [],
         projects: projects || [],
-        services: services || [],
+        services: services || []
       };
-
-      res.status(200).json(profileData);
+      
+      console.log(`[GET /users/:userId/profile] Successfully fetched profile data for user ${userId}`);
+      
+      return res.json(profileData);
     } catch (error) {
-      console.error('Error fetching comprehensive user profile:', error);
-      res.status(500).json({ message: 'Failed to fetch user profile data' });
+      console.error('Error fetching comprehensive profile data:', error);
+      return res.status(500).json({ message: 'Internal server error' });
     }
   });
 

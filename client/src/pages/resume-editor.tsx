@@ -3,7 +3,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
-import useUserProfile from '@/hooks/use-user-profile';
+import { useUserProfile } from '@/hooks/use-user-profile';
 import { useLocation } from 'wouter';
 
 import {
@@ -190,8 +190,13 @@ export default function ResumeEditor() {
   
   // Update form values when profile data and resume data are loaded
   useEffect(() => {
-    if (profileData && resumeData?.resume) {
-      const resume = resumeData.resume;
+    if (profileData && resumeData) {
+      // Handle case where resume might not be available
+      const resume = resumeData.resume || {
+        isDownloadable: false,
+        visibility: 'private',
+        themeStyle: 'professional'
+      };
       
       form.reset({
         personalInfo: {
