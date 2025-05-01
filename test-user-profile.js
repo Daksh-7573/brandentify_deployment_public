@@ -5,7 +5,7 @@
  * that returns all user data in a single request.
  */
 
-const fetch = require('node-fetch');
+import fetch from 'node-fetch';
 
 async function testUserProfile() {
   try {

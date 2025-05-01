@@ -26,6 +26,7 @@ import MuskMatchPage from "@/pages/musk-match";
 import ResumePage from "@/pages/resume";
 import ResumeCV from "@/pages/resume-cv";
 import ResumeEditor from "@/pages/resume-editor";
+import UnifiedProfilePage from "@/pages/unified-profile";
 import FeedTestPage from "@/pages/feed-test";
 import CareerQuestsPage from "@/pages/career-quests";
 import OnboardingPage from "@/pages/onboarding";
@@ -142,6 +143,13 @@ function Router() {
       </Route>
       <Route path="/musk-testing">
         <ProtectedRoute path="/musk-testing" component={MuskTestingPage} />
+      </Route>
+      {/* Unified Profile Page with comprehensive data fetching */}
+      <Route path="/unified-profile">
+        <ProtectedRoute path="/unified-profile" component={UnifiedProfilePage} />
+      </Route>
+      <Route path="/unified-profile/:userId">
+        {(params) => <ProtectedRoute path="/unified-profile/:userId" component={() => <UnifiedProfilePage />} />}
       </Route>
       {/* Shared Quantum Card View route */}
       <Route path="/profile/card/:userId">
