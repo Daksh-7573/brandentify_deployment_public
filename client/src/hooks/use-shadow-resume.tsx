@@ -137,17 +137,61 @@ export function useShadowResume(userId: string | number | undefined, options?: U
     }
   }, [data?.resume?.metadata, data?.form, data?.resume?.id]);
   
+  // Enhanced log for debugging the data flow
+  console.log('Shadow Resume Data Processing:', {
+    hasAPIForm: !!data?.form,
+    hasEnhancedForm: !!enhancedData?.form,
+    hasMetadataForm: !!metadataFormData,
+    hasCachedForm: !!cachedFormData
+  });
+  
+  // Combine all the data sources with proper prioritization:
+  // 1. Form data from API response (highest priority)
+  // 2. Parsed metadata from resume.metadata
+  // 3. Cached form data from localStorage
+  const combinedData = useMemo(() => {
+    // If API already provides form data, use it (highest priority)
+    if (data?.form) {
+      console.log('Using form data directly from API response');
+      return data;
+    }
+    
+    // If we have API data with resume but no form data, add form data from other sources
+    if (data?.resume) {
+      // Try to use metadata form data first
+      if (metadataFormData) {
+        console.log('Using form data from resume metadata');
+        return {
+          ...data,
+          form: metadataFormData
+        };
+      }
+      
+      // Then try cached form data
+      if (cachedFormData) {
+        console.log('Using cached form data from localStorage');
+        return {
+          ...data,
+          form: cachedFormData
+        };
+      }
+    }
+    
+    // Return whatever we have from the API as fallback
+    return query.data;
+  }, [data, query.data, metadataFormData, cachedFormData]);
+  
   // Return the query with potentially enhanced data
   return {
     ...query,
-    data: enhancedData || 
-          (data?.resume && !data.form && metadataFormData ? {...data, form: metadataFormData} : query.data),
+    data: combinedData,
     cachedFormData,
     metadataFormData,
     hasFormData: !!(
-      (enhancedData?.form) || 
+      (combinedData?.form) || 
       (data?.form) || 
-      (data?.resume && !data.form && metadataFormData)
+      (metadataFormData) ||
+      (cachedFormData)
     )
   };
 }
