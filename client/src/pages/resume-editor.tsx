@@ -212,8 +212,11 @@ export default function ResumeEditor() {
         const parsedMetadata = JSON.parse(resumeData.resume.metadata as string);
         console.log("Found form data in resume metadata field", parsedMetadata);
         setMetadataFormData(parsedMetadata);
+        // Update the page status when we successfully parse metadata
+        setPageStatus('metadata-parsed');
       } catch (e) {
         console.error("Failed to parse resume metadata", e);
+        setPageStatus('metadata-parse-failed');
       }
     }
   }, [resumeData?.resume?.metadata, resumeData?.form]);
@@ -297,6 +300,7 @@ export default function ResumeEditor() {
     // Only initialize the form once - fixes infinite loop issue
     if (profileData && !formInitialized && !isLoading) {
       console.log("Initializing form with data");
+      setPageStatus('initializing-form');
       
       // Check all possible sources of form data and use the first available one
       if (resumeData?.form) {
@@ -721,8 +725,9 @@ export default function ResumeEditor() {
     }
   };
   
-  // Handle loading state
+  // Handle loading state with improved user feedback
   if (isLoading) {
+    setPageStatus('loading');
     return (
       <Card className="w-full">
         <CardHeader>
@@ -730,10 +735,14 @@ export default function ResumeEditor() {
             <FileText className="h-5 w-5" />
             Loading Resume Editor...
           </CardTitle>
+          <CardDescription>
+            Please wait while we fetch your resume data
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex justify-center py-8">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+          <div className="flex flex-col items-center justify-center py-8">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mb-4"></div>
+            <p className="text-sm text-muted-foreground">Current state: {pageStatus}</p>
           </div>
         </CardContent>
       </Card>
@@ -743,6 +752,7 @@ export default function ResumeEditor() {
   // Handle error states - but only if we also don't have profile data
   // We can still show the form with profile data even if resume data failed to load
   if ((resumeError || profileError) && !profileData) {
+    setPageStatus('error-loading');
     return (
       <Card className="w-full">
         <CardHeader>
@@ -750,6 +760,9 @@ export default function ResumeEditor() {
             <AlertCircle className="h-5 w-5" />
             Error Loading Resume Editor
           </CardTitle>
+          <CardDescription>
+            We encountered a problem loading your data
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -768,9 +781,21 @@ export default function ResumeEditor() {
                 <p className="text-sm">{profileError.message || 'Unknown error occurred'}</p>
               </div>
             )}
-            <div className="flex justify-end">
-              <Button variant="outline" onClick={handleBack}>
-                <ArrowLeft className="h-4 w-4 mr-2" />
+            <div className="flex justify-end gap-2">
+              <Button 
+                variant="outline" 
+                onClick={() => window.location.reload()}
+                className="flex items-center gap-2"
+              >
+                <RefreshCw className="h-4 w-4" />
+                Retry
+              </Button>
+              <Button 
+                variant="outline" 
+                onClick={handleBack}
+                className="flex items-center gap-2"
+              >
+                <ArrowLeft className="h-4 w-4" />
                 Back to Resume
               </Button>
             </div>
