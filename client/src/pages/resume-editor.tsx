@@ -153,13 +153,18 @@ export default function ResumeEditor() {
   const [location, navigate] = useLocation();
   
   // Get user ID from the URL or use the logged-in user's ID
-  const userId = user?.id || 1; // Fallback to ID 1 for demo if no user ID is available
+  // Using test data by default (user ID 2)
+  const userId = user?.id || 2;
   
   // Current editing section state
   const [activeTab, setActiveTab] = useState('personal-info');
   
-  // Debug info
-  console.log("Resume Editor - userId:", userId);
+  // Track page status for better debugging
+  const [pageStatus, setPageStatus] = useState('initializing');
+  
+  useEffect(() => {
+    console.log(`Resume Editor - Status: ${pageStatus} for userId: ${userId}`);
+  }, [pageStatus, userId]);
 
   // Use the enhanced shadow resume hook with better persistence and caching
   const { 
