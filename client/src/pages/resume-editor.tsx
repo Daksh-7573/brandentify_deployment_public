@@ -342,7 +342,7 @@ export default function ResumeEditor() {
     }
   }, [profileData, resumeData, form]);
   
-  // Save resume mutation
+  // Save resume mutation - now with reverse flow to update profile data from resume editor data
   const saveResumeMutation = useMutation({
     mutationFn: async (data: z.infer<typeof resumeSchema>) => {
       // Make sure we have a valid userId before making the request
@@ -357,9 +357,9 @@ export default function ResumeEditor() {
         throw new Error("Resume ID not available");
       }
       
-      console.log(`Saving shadow resume ${resumeId} for user ${userId}`);
+      console.log(`Saving resume ${resumeId} for user ${userId} and updating profile with the same data`);
       
-      // Use direct fetch instead of apiRequest to ensure correct method is used
+      // First, update the shadow resume data
       const response = await fetch(`/api/users/${userId}/shadow-resume/${resumeId}`, {
         method: 'PATCH',
         headers: {
@@ -376,22 +376,61 @@ export default function ResumeEditor() {
         throw new Error(`Failed to update shadow resume: ${response.status}`);
       }
       
-      return await response.json();
+      // Then, update the profile data using the shadow-resume/refresh-from-profile endpoint
+      // which now has reversed logic to update profile FROM resume
+      const profileUpdateResponse = await fetch(`/api/shadow-resumes/${resumeId}/refresh-from-profile`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          resumeData: data,
+        }),
+      });
+      
+      if (!profileUpdateResponse.ok) {
+        const errorText = await profileUpdateResponse.text();
+        console.error(`Failed to update profile from resume: ${profileUpdateResponse.status} ${errorText}`);
+        
+        // Don't throw error here, as we did save the resume data successfully
+        console.warn("Profile update failed, but resume was saved.");
+        
+        // Return the original resume response
+        return await response.json();
+      }
+      
+      // If everything succeeded, return the profile update response
+      return await profileUpdateResponse.json();
     },
     onSuccess: () => {
       toast({
-        title: 'Resume Saved',
-        description: 'Your resume has been updated successfully.',
+        title: 'Resume & Profile Saved',
+        description: 'Your resume and profile have been updated successfully.',
       });
+      
+      // Invalidate multiple queries to refresh all data
       queryClient.invalidateQueries({
         queryKey: ['/api/users', userId, 'shadow-resume'],
       });
+      
+      // Also invalidate profile data
+      queryClient.invalidateQueries({
+        queryKey: ['/api/users', userId],
+      });
+      
+      // Also invalidate the comprehensive profile data
+      queryClient.invalidateQueries({
+        queryKey: ['/api/user-profile', userId],
+      });
+      
+      // Reload the page to ensure all data is fresh (can be removed once stable)
+      // setTimeout(() => window.location.reload(), 1500);
     },
     onError: (error) => {
       console.error('Error saving resume:', error);
       toast({
         title: 'Error',
-        description: 'There was a problem saving your resume. Please try again.',
+        description: 'There was a problem saving your resume and profile. Please try again.',
         variant: 'destructive',
       });
     },

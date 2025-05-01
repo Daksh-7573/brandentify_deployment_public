@@ -4,20 +4,20 @@ import { IStorage } from './storage';
 import { insertResumeSchema } from '@shared/schema';
 
 export function setupShadowResumeRoutes(apiRouter: any, storage: IStorage) {
-  // Refresh Shadow Resume from Profile (specifically for the Shadow Resume feature)
+  // Refresh Profile from Shadow Resume (reverse flow - push Resume Editor data to Profile)
   apiRouter.post("/shadow-resumes/:resumeId/refresh-from-profile", async (req: Request, res: Response) => {
     try {
       const { resumeId } = req.params;
-      console.log(`[POST /shadow-resumes/:resumeId/refresh-from-profile] Refreshing resume ${resumeId} with profile data`);
+      console.log(`[POST /shadow-resumes/:resumeId/refresh-from-profile] Refreshing PROFILE with resume data from ID ${resumeId}`);
       
-      // Get the resume
+      // Get the resume editor data (that contains saved form data)
       const resume = await storage.getResumeById(parseInt(resumeId));
       if (!resume) {
         console.log(`[POST /shadow-resumes/:resumeId/refresh-from-profile] Resume not found with ID: ${resumeId}`);
         return res.status(404).json({ message: 'Resume not found' });
       }
       
-      // Get the user's profile data
+      // Get the user's ID from the resume
       const userId = resume.userId;
       const user = await storage.getUser(userId);
       if (!user) {
@@ -25,61 +25,244 @@ export function setupShadowResumeRoutes(apiRouter: any, storage: IStorage) {
         return res.status(404).json({ message: 'User profile not found' });
       }
       
-      // Get the user's experiences, education, and skills
-      const workExperiences = await storage.getWorkExperiencesByUserId(userId);
-      const educations = await storage.getEducationsByUserId(userId);
-      const skills = await storage.getSkillsByUserId(userId);
-      const projects = await storage.getProjectsByUserId(userId);
+      // Get the resume data (which should contain the edited form data)
+      const resumeData = req.body?.resumeData || {};
       
-      // Update the resume with the latest profile data
-      // Generate a simple text content based on user's profile data
-      const generatedResumeContent = `
-%Resume for ${user.name || 'User'}%
-
-# ${user.name || 'Professional'} 
-## ${user.title || 'Senior Professional'}
-${user.location || 'Location'} | ${user.email || 'Email'} | Phone
-
-## Professional Summary
-Accomplished ${user.title || 'professional'} with extensive experience in the ${user.industry || 'technology'} industry. 
-Demonstrated expertise in designing and implementing solutions that drive business growth and efficiency.
-
-## Work Experience
-${workExperiences.map(exp => `- ${exp.title || 'Role'} at ${exp.company || 'Company'} (${exp.startDate ? new Date(exp.startDate).getFullYear() : 'Year'} - ${exp.endDate ? new Date(exp.endDate).getFullYear() : 'Present'})`).join('\n')}
-
-## Education
-${educations.map(edu => `- ${edu.degree || 'Degree'} in ${edu.fieldOfStudy || 'Field'} from ${edu.institution || 'Institution'} (${edu.endDate ? new Date(edu.endDate).getFullYear() : 'Year'})`).join('\n')}
-
-## Skills
-${skills.map(skill => `- ${skill.name || 'Skill'}`).join(', ')}
-
-## Projects
-${projects.map(project => `- ${project.title || 'Project'}: ${project.description?.substring(0, 50) || 'Description'}`).join('\n')}
-        `;
+      console.log(`[POST /shadow-resumes/:resumeId/refresh-from-profile] Processing resume editor data to update profile for user ${userId}`);
+      
+      // Extract data from the resume editor form
+      const { personalInfo, experiences, education, skills, projects } = resumeData;
+      
+      // First update user profile with personal info
+      if (personalInfo) {
+        const userUpdate = {
+          name: personalInfo.fullName || user.name,
+          title: personalInfo.title || user.title,
+          // Only update email if it's different and valid
+          email: personalInfo.email && personalInfo.email !== user.email ? personalInfo.email : user.email,
+          phoneNumber: personalInfo.phone || user.phoneNumber,
+          location: personalInfo.location || user.location,
+          aboutMe: personalInfo.summary || user.aboutMe,
+        };
         
-      // Update resume with refreshed information
+        console.log(`[POST /shadow-resumes/:resumeId/refresh-from-profile] Updating user profile for ${userId}`, userUpdate);
+        await storage.updateUser(userId, userUpdate);
+      }
+      
+      // Update work experiences if provided
+      if (experiences && experiences.experiences && Array.isArray(experiences.experiences)) {
+        // First, get existing work experiences to compare
+        const existingExperiences = await storage.getWorkExperiencesByUserId(userId);
+        
+        // Process each experience from the form
+        for (const exp of experiences.experiences) {
+          // Find if this experience already exists by ID
+          const existingExp = exp.id ? existingExperiences.find(e => e.id === exp.id) : null;
+          
+          // Prepare the experience data
+          const experienceData = {
+            title: exp.title,
+            company: exp.company,
+            location: exp.location || null,
+            startDate: exp.startDate,
+            endDate: exp.isCurrent ? null : exp.endDate,
+            description: exp.description || null,
+            // Keep existing fields or set defaults
+            industry: existingExp?.industry || user.industry || null,
+            domain: existingExp?.domain || user.domain || null,
+            keyResponsibilities: exp.responsibilities || existingExp?.keyResponsibilities || null,
+          };
+          
+          // Update or create
+          if (existingExp) {
+            console.log(`[POST /shadow-resumes/:resumeId/refresh-from-profile] Updating work experience: ${existingExp.id}`);
+            await storage.updateWorkExperience(existingExp.id, experienceData);
+          } else {
+            console.log(`[POST /shadow-resumes/:resumeId/refresh-from-profile] Creating new work experience`);
+            await storage.createWorkExperience({
+              ...experienceData,
+              userId,
+            });
+          }
+        }
+        
+        // Remove experiences that are in DB but not in the form (if they were deleted)
+        const formExperienceIds = experiences.experiences
+          .filter(exp => exp.id)
+          .map(exp => exp.id);
+          
+        for (const existingExp of existingExperiences) {
+          if (!formExperienceIds.includes(existingExp.id)) {
+            console.log(`[POST /shadow-resumes/:resumeId/refresh-from-profile] Deleting work experience: ${existingExp.id}`);
+            await storage.deleteWorkExperience(existingExp.id);
+          }
+        }
+      }
+      
+      // Update education entries if provided
+      if (education && education.educations && Array.isArray(education.educations)) {
+        // First, get existing education to compare
+        const existingEducations = await storage.getEducationsByUserId(userId);
+        
+        // Process each education from the form
+        for (const edu of education.educations) {
+          // Find if this education already exists by ID
+          const existingEdu = edu.id ? existingEducations.find(e => e.id === edu.id) : null;
+          
+          // Prepare the education data
+          const educationData = {
+            institution: edu.institution,
+            degree: edu.degree,
+            fieldOfStudy: edu.fieldOfStudy || null,
+            location: edu.location || null,
+            startDate: edu.startDate,
+            endDate: edu.isCurrentlyEnrolled ? null : edu.endDate,
+            // Keep existing fields or set defaults
+            industry: existingEdu?.industry || user.industry || null,
+            domain: existingEdu?.domain || user.domain || null,
+            skillsAcquired: existingEdu?.skillsAcquired || null,
+          };
+          
+          // Update or create
+          if (existingEdu) {
+            console.log(`[POST /shadow-resumes/:resumeId/refresh-from-profile] Updating education: ${existingEdu.id}`);
+            await storage.updateEducation(existingEdu.id, educationData);
+          } else {
+            console.log(`[POST /shadow-resumes/:resumeId/refresh-from-profile] Creating new education`);
+            await storage.createEducation({
+              ...educationData,
+              userId,
+            });
+          }
+        }
+        
+        // Remove educations that are in DB but not in the form (if they were deleted)
+        const formEducationIds = education.educations
+          .filter(edu => edu.id)
+          .map(edu => edu.id);
+          
+        for (const existingEdu of existingEducations) {
+          if (!formEducationIds.includes(existingEdu.id)) {
+            console.log(`[POST /shadow-resumes/:resumeId/refresh-from-profile] Deleting education: ${existingEdu.id}`);
+            await storage.deleteEducation(existingEdu.id);
+          }
+        }
+      }
+      
+      // Update skills if provided
+      if (skills && skills.skills && Array.isArray(skills.skills)) {
+        // First, get existing skills to compare
+        const existingSkills = await storage.getSkillsByUserId(userId);
+        
+        // Process each skill from the form
+        for (const skill of skills.skills) {
+          // Find if this skill already exists by ID
+          const existingSkill = skill.id ? existingSkills.find(s => s.id === skill.id) : null;
+          
+          // Prepare the skill data
+          const skillData = {
+            name: skill.name,
+            level: skill.level || null,
+            category: skill.category || null,
+            // Keep any other existing fields
+          };
+          
+          // Update or create
+          if (existingSkill) {
+            console.log(`[POST /shadow-resumes/:resumeId/refresh-from-profile] Updating skill: ${existingSkill.id}`);
+            await storage.updateSkill(existingSkill.id, skillData);
+          } else {
+            console.log(`[POST /shadow-resumes/:resumeId/refresh-from-profile] Creating new skill`);
+            await storage.createSkill({
+              ...skillData,
+              userId,
+            });
+          }
+        }
+        
+        // Remove skills that are in DB but not in the form (if they were deleted)
+        const formSkillIds = skills.skills
+          .filter(skill => skill.id)
+          .map(skill => skill.id);
+          
+        for (const existingSkill of existingSkills) {
+          if (!formSkillIds.includes(existingSkill.id)) {
+            console.log(`[POST /shadow-resumes/:resumeId/refresh-from-profile] Deleting skill: ${existingSkill.id}`);
+            await storage.deleteSkill(existingSkill.id);
+          }
+        }
+      }
+      
+      // Update projects if provided
+      if (projects && projects.projects && Array.isArray(projects.projects)) {
+        // First, get existing projects to compare
+        const existingProjects = await storage.getProjectsByUserId(userId);
+        
+        // Process each project from the form
+        for (const project of projects.projects) {
+          // Find if this project already exists by ID
+          const existingProject = project.id ? existingProjects.find(p => p.id === project.id) : null;
+          
+          // Prepare the project data
+          const projectData = {
+            title: project.title,
+            description: project.description || null,
+            startDate: project.startDate || null,
+            projectUrl: project.url || null,
+            // Keep existing fields or set defaults
+            category: existingProject?.category || null,
+            industry: existingProject?.industry || user.industry || null,
+            thumbnailUrl: existingProject?.thumbnailUrl || null,
+            thumbnailFile: existingProject?.thumbnailFile || null,
+            mediaUrls: existingProject?.mediaUrls || [],
+          };
+          
+          // Update or create
+          if (existingProject) {
+            console.log(`[POST /shadow-resumes/:resumeId/refresh-from-profile] Updating project: ${existingProject.id}`);
+            await storage.updateProject(existingProject.id, projectData);
+          } else {
+            console.log(`[POST /shadow-resumes/:resumeId/refresh-from-profile] Creating new project`);
+            await storage.createProject({
+              ...projectData,
+              userId,
+            });
+          }
+        }
+        
+        // Remove projects that are in DB but not in the form (if they were deleted)
+        const formProjectIds = projects.projects
+          .filter(project => project.id)
+          .map(project => project.id);
+          
+        for (const existingProject of existingProjects) {
+          if (!formProjectIds.includes(existingProject.id)) {
+            console.log(`[POST /shadow-resumes/:resumeId/refresh-from-profile] Deleting project: ${existingProject.id}`);
+            await storage.deleteProject(existingProject.id);
+          }
+        }
+      }
+      
+      // Update resume with settings and timestamp
       const updatedResume = await storage.updateResume(parseInt(resumeId), {
         lastUpdatedByMusk: new Date(),
-        // Not changing the actual PDF to avoid Puppeteer dependency issues
-        // In a production environment, we would generate a proper PDF
+        isDownloadable: resumeData.settings?.isDownloadable,
+        visibility: resumeData.settings?.visibility,
+        themeStyle: resumeData.settings?.themeStyle,
       });
       
-      console.log(`[POST /shadow-resumes/:resumeId/refresh-from-profile] Successfully refreshed resume ${resumeId}`);
+      console.log(`[POST /shadow-resumes/:resumeId/refresh-from-profile] Successfully updated profile from resume ${resumeId}`);
       return res.status(200).json({ 
         resume: updatedResume,
-        message: 'Resume refreshed with latest profile data',
-        dataIncluded: {
-          workExperiences: workExperiences.length,
-          educations: educations.length,
-          skills: skills.length,
-          projects: projects.length
-        }
+        message: 'Profile updated with resume editor data',
+        success: true
       });
     } catch (error) {
       console.error(`[POST /shadow-resumes/:resumeId/refresh-from-profile] Error:`, error);
       return res.status(500).json({ 
-        message: 'Failed to refresh resume with profile data', 
-        error: (error as Error).message 
+        message: 'Failed to update profile with resume editor data', 
+        error: (error as Error).message,
+        success: false
       });
     }
   });

@@ -247,58 +247,32 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                   size="sm"
                   className="bg-white shadow-sm border-gray-200"
                   onClick={() => {
-                    // Show a toast notification that indicates the resume is being updated
+                    // Show a toast notification that the resume editor is being opened
                     toast({
-                      title: "Updating Resume",
-                      description: "Fetching your latest profile information for editing.",
+                      title: "Opening Resume Editor",
+                      description: "Opening the Resume Editor where you can make changes.",
                     });
                     
-                    // First fetch the latest profile data
+                    // Simply go to the resume editor - with the new flow, changes from resume editor
+                    // will be saved to both resume and profile
                     if (resume?.id) {
-                      // Call our shadow resume refresh API endpoint to ensure data is synced
-                      fetch(`/api/users/${user.id}/shadow-resume/${resume.id}/refresh`, {
-                        method: 'POST',
-                        headers: {
-                          'Content-Type': 'application/json',
-                        },
-                      })
-                      .then(response => {
-                        if (!response.ok) {
-                          throw new Error('Failed to update resume');
+                      // No need to refresh from profile anymore since data now flows in the opposite direction
+                      // Just navigate to the resume editor with the current data
+                      if (onTabChange) {
+                        onTabChange('resume-editor');
+                      } else {
+                        // Fallback to direct DOM manipulation
+                        const element = document.querySelector('[value="resume-editor"]');
+                        if (element instanceof HTMLElement) {
+                          element.click();
                         }
-                        return response.json();
-                      })
-                      .then(() => {
-                        // Invalidate resume cache to fetch the updated version
-                        queryClient.invalidateQueries({
-                          queryKey: ['/api/users', user?.id, 'shadow-resume']
-                        });
-                        
-                        // After data is synced, navigate to the resume editor
-                        // Use the onTabChange prop to switch to resume-editor tab if provided
-                        if (onTabChange) {
-                          onTabChange('resume-editor');
-                        } else {
-                          // Fallback to direct DOM manipulation
-                          const element = document.querySelector('[value="resume-editor"]');
-                          if (element instanceof HTMLElement) {
-                            element.click();
-                          }
-                        }
-                        
-                        // On success, show a toast
-                        toast({
-                          title: "Resume Updated",
-                          description: "Now you can edit your resume with the latest profile information.",
-                        });
-                      })
-                      .catch(error => {
-                        console.error('Error updating resume:', error);
-                        toast({
-                          title: "Update Failed",
-                          description: "There was a problem updating your resume. Please try again.",
-                          variant: "destructive",
-                        });
+                      }
+                      
+                      // Provide instructions to the user about the new flow
+                      toast({
+                        title: "Resume Editor Instructions",
+                        description: "Make changes in the Resume Editor and click Save to update both your profile and resume.",
+                        duration: 5000, // Show for 5 seconds
                       });
                     } else {
                       // Fallback when no resume ID is available
@@ -315,7 +289,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                   }}
                 >
                   <Edit2 className="h-4 w-4 mr-1" />
-                  <span>Update</span>
+                  <span>Edit in Resume Editor</span>
                 </Button>
               </div>
             )}
