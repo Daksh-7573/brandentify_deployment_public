@@ -2,64 +2,86 @@ import React, { useState, useEffect } from 'react';
 import { Eye, Download, FileText, Loader2, RefreshCw, AlertTriangle } from 'lucide-react';
 
 interface PDFViewerProps {
-  fileUrl: string;
+  fileUrl?: string;
+  fileData?: string;  // Add support for direct base64 data
   fileName?: string;
 }
 
-const PDFViewer: React.FC<PDFViewerProps> = ({ fileUrl, fileName = 'resume.pdf' }) => {
+const PDFViewer: React.FC<PDFViewerProps> = ({ fileUrl, fileData, fileName = 'resume.pdf' }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [pdfData, setPdfData] = useState<string | null>(null);
   const [hasError, setHasError] = useState(false);
   
   // Load the PDF data directly
   useEffect(() => {
-    console.log("PDFViewer mounted with fileUrl:", fileUrl);
+    console.log("PDFViewer mounted with fileUrl:", fileUrl, "fileData provided:", !!fileData);
     
-    if (!fileUrl) {
-      console.error("No fileUrl provided to PDFViewer");
+    // If base64 data is provided, use it directly
+    if (fileData) {
+      try {
+        // Create a data URL for the PDF
+        const dataUrl = `data:application/pdf;base64,${fileData}`;
+        setPdfData(dataUrl);
+        setIsLoading(false);
+        setHasError(false);
+        return;
+      } catch (error) {
+        console.error("Error processing base64 PDF data:", error);
+        setHasError(true);
+        setIsLoading(false);
+        return;
+      }
+    }
+    
+    // If no fileUrl is provided and no fileData, show error
+    if (!fileUrl && !fileData) {
+      console.error("Neither fileUrl nor fileData provided to PDFViewer");
       setHasError(true);
       setIsLoading(false);
       return;
     }
-
-    setIsLoading(true);
     
-    // Directly fetch the PDF data
-    fetch(fileUrl, {
-      headers: {
-        'Cache-Control': 'no-cache, no-store, must-revalidate',
-        'Pragma': 'no-cache',
-        'Expires': '0',
-      }
-    })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(`Failed to fetch PDF: ${response.status}`);
-      }
-      return response.blob();
-    })
-    .then(blob => {
-      // Create an object URL from the blob
-      const url = URL.createObjectURL(blob);
-      setPdfData(url);
-      setIsLoading(false);
-      setHasError(false);
-    })
-    .catch(error => {
-      console.error("Error fetching PDF:", error);
-      setHasError(true);
-      setIsLoading(false);
-    });
+    // If we have a URL but no fileData, fetch the PDF
+    if (fileUrl) {
+      setIsLoading(true);
+      
+      // Directly fetch the PDF data
+      fetch(fileUrl, {
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0',
+        }
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`Failed to fetch PDF: ${response.status}`);
+        }
+        return response.blob();
+      })
+      .then(blob => {
+        // Create an object URL from the blob
+        const url = URL.createObjectURL(blob);
+        setPdfData(url);
+        setIsLoading(false);
+        setHasError(false);
+      })
+      .catch(error => {
+        console.error("Error fetching PDF:", error);
+        setHasError(true);
+        setIsLoading(false);
+      });
+    }
     
     // Clean up function
     return () => {
       console.log("PDFViewer unmounting");
       // Revoke object URL if it exists to prevent memory leaks
-      if (pdfData) {
+      if (pdfData && pdfData.startsWith('blob:')) {
         URL.revokeObjectURL(pdfData);
       }
     };
-  }, [fileUrl]);
+  }, [fileUrl, fileData]);
   
   // Function to force reload the PDF
   const reloadPdf = () => {
@@ -116,6 +138,11 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ fileUrl, fileName = 'resume.pdf' 
 
   // Show error state
   if (hasError || !pdfData) {
+    // Calculate download URL based on what we have
+    const downloadUrl = fileData 
+      ? `data:application/pdf;base64,${fileData}` 
+      : fileUrl || '#';
+    
     return (
       <div className="flex flex-col items-center justify-center h-full w-full p-6 bg-red-50/50">
         <AlertTriangle className="h-12 w-12 text-orange-500 mb-4" />
@@ -125,7 +152,7 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ fileUrl, fileName = 'resume.pdf' 
         </p>
         <div className="flex flex-col gap-2 w-full max-w-xs">
           <a 
-            href={fileUrl} 
+            href={downloadUrl} 
             download={fileName}
             className="bg-primary text-white px-4 py-2 rounded-md text-sm flex items-center justify-center gap-2 shadow-md hover:bg-primary/90 transition-colors"
           >
