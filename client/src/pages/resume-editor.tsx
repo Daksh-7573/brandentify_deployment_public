@@ -39,17 +39,23 @@ import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { 
   AlertCircle,
-  BriefcaseBusiness, 
-  GraduationCap, 
-  User2, 
-  Trophy, 
-  FileText, 
-  Save, 
   ArrowLeft,
-  PenLine,
+  RefreshCw,
+  FileText,
+  User2,
+  BriefcaseBusiness,
+  GraduationCap,
+  Trophy,
   Layout,
+  CirclePlus,
+  CircleMinus,
+  Building,
   Calendar,
   MapPin,
+  ArrowUpRight, 
+  BookText,
+  Save,
+  PenLine,
   Trash,
   Plus,
   School
@@ -725,9 +731,15 @@ export default function ResumeEditor() {
     }
   };
   
+  // Update loading status using useEffect instead of during render
+  useEffect(() => {
+    if (isLoading) {
+      setPageStatus('loading');
+    }
+  }, [isLoading]);
+  
   // Handle loading state with improved user feedback
   if (isLoading) {
-    setPageStatus('loading');
     return (
       <Card className="w-full">
         <CardHeader>
