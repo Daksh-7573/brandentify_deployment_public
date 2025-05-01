@@ -5417,6 +5417,10 @@ ${extractedText.substring(0, 5000)}
   // Register Project Industry PATCH endpoint to fix industry field updates
   addProjectUpdateRoutes(apiRouter);
   console.log("Project Update routes loaded");
+  
+  // Register comprehensive user profile routes
+  app.use('/api', userProfileRoutes());
+  console.log("Comprehensive user profile routes loaded");
 
   app.use("/api", apiRouter);
 
