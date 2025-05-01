@@ -1441,7 +1441,7 @@ export default function ResumeEditor() {
                 className="flex items-center gap-2"
               >
                 <ArrowLeft className="h-4 w-4" />
-                Cancel
+                Back
               </Button>
               <Button type="submit" className="flex items-center gap-2">
                 <Save className="h-4 w-4" />
