@@ -413,32 +413,38 @@ export default function ResumeEditor() {
       };
       
       // Map work experiences to resume format
-      const mappedExperiences = workExperiences.map(exp => ({
-        title: exp.position || '',
-        company: exp.company || '',
-        location: exp.location || '',
-        startDate: exp.startDate || '',
-        endDate: exp.endDate || null,
-        isCurrent: exp.isCurrent || false,
-        description: exp.description || '',
-        industry: exp.industry || '',
-        domain: exp.domain || '',
-        responsibilities: exp.responsibilities || '',
-      }));
+      const mappedExperiences = workExperiences.map(exp => {
+        console.log('Mapping work experience:', exp);
+        return {
+          title: exp.position || exp.title || '',
+          company: exp.company || '',
+          location: exp.location || '',
+          startDate: exp.startDate || '',
+          endDate: exp.endDate || null,
+          isCurrent: exp.isCurrent || false,
+          description: exp.description || '',
+          industry: exp.industry || '',
+          domain: exp.domain || '',
+          responsibilities: exp.responsibilities || '',
+        };
+      });
       
       // Map education to resume format
-      const mappedEducations = educations.map(edu => ({
-        institution: edu.institution || '',
-        degree: edu.degree || '',
-        fieldOfStudy: edu.fieldOfStudy || '',
-        location: edu.location || '',
-        startDate: edu.startDate || '',
-        endDate: edu.endDate || '',
-        isCurrentlyEnrolled: edu.isCurrent || false,
-        gpa: edu.gpa || '',
-        achievements: edu.achievements || '',
-        skillsAcquired: edu.skillsAcquired || [],
-      }));
+      const mappedEducations = educations.map(edu => {
+        console.log('Mapping education:', edu);
+        return {
+          institution: edu.institution || '',
+          degree: edu.degree || '',
+          fieldOfStudy: edu.fieldOfStudy || '',
+          location: edu.location || '',
+          startDate: edu.startDate || '',
+          endDate: edu.endDate || '',
+          isCurrentlyEnrolled: edu.isCurrent || edu.isCurrentlyEnrolled || false,
+          gpa: edu.gpa || '',
+          achievements: edu.achievements || '',
+          skillsAcquired: edu.skillsAcquired || [],
+        };
+      });
       
       // Map skills to resume format
       const mappedSkills = skills.map(skill => ({
@@ -448,16 +454,19 @@ export default function ResumeEditor() {
       }));
       
       // Map projects to resume format
-      const mappedProjects = projects.map(proj => ({
-        title: proj.title || '',
-        description: proj.description || '',
-        startDate: proj.startDate || '',
-        endDate: proj.endDate || null,
-        url: proj.projectUrl || '',
-        skills: proj.technologies || [],
-        achievements: proj.description || '',
-        category: proj.category || '',
-      }));
+      const mappedProjects = projects.map(proj => {
+        console.log('Mapping project:', proj);
+        return {
+          title: proj.title || '',
+          description: proj.description || '',
+          startDate: proj.startDate || '',
+          endDate: proj.endDate || null,
+          url: proj.projectUrl || proj.url || '',
+          skills: proj.technologies || proj.skills || [],
+          achievements: proj.achievements || proj.description || '',
+          category: proj.category || '',
+        };
+      });
       
       // Create updated form values
       const settings = resumeData?.form?.settings || {
