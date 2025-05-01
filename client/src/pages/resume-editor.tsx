@@ -37,6 +37,7 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { 
+  AlertCircle,
   BriefcaseBusiness, 
   GraduationCap, 
   User2, 
@@ -45,7 +46,12 @@ import {
   Save, 
   ArrowLeft,
   PenLine,
-  Layout
+  Layout,
+  Calendar,
+  MapPin,
+  Trash,
+  Plus,
+  School
 } from 'lucide-react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
