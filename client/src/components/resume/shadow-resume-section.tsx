@@ -233,12 +233,33 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
               Your living CV, automatically maintained by Musk
             </CardDescription>
           </div>
-          {resume?.lastUpdatedByMusk && (
-            <Badge variant="secondary" className="flex items-center gap-1">
-              <Zap className="h-3 w-3" />
-              <span>Last Updated by Musk: {getLastUpdateText()}</span>
-            </Badge>
-          )}
+          <div className="flex items-center gap-2">
+            {resume?.lastUpdatedByMusk && (
+              <Badge variant="secondary" className="flex items-center gap-1">
+                <Zap className="h-3 w-3" />
+                <span>Last Updated by Musk: {getLastUpdateText()}</span>
+              </Badge>
+            )}
+            {isOwner && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="bg-white shadow-sm border-gray-200"
+                onClick={() => {
+                  // Use the onTabChange prop to switch to resume-editor tab if provided
+                  if (onTabChange) {
+                    onTabChange('resume-editor');
+                  } else {
+                    // Fallback to direct DOM manipulation
+                    document.querySelector('[value="resume-editor"]')?.click();
+                  }
+                }}
+              >
+                <Edit2 className="h-4 w-4 mr-1" />
+                <span>Edit</span>
+              </Button>
+            )}
+          </div>
         </div>
       </CardHeader>
       
@@ -518,103 +539,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                     </div>
                   </div>
                   
-                  {/* Action buttons directly below the preview */}
-                  <div className="absolute inset-x-0 bottom-4 flex justify-center gap-2">
-                    {isOwner && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="bg-white shadow-sm border-gray-200"
-                        onClick={() => {
-                          // Use the onTabChange prop to switch to resume-editor tab if provided
-                          if (onTabChange) {
-                            onTabChange('resume-editor');
-                          } else {
-                            // Fallback to direct DOM manipulation
-                            document.querySelector('[value="resume-editor"]')?.click();
-                          }
-                        }}
-                      >
-                        <Edit2 className="h-4 w-4 mr-1" />
-                        <span>Edit</span>
-                      </Button>
-                    )}
-                    
-                    {/* All download and view buttons removed as requested */}
-                    
-                    {false && (
-                      <Button
-                        variant="default"
-                        size="sm"
-                        className="bg-primary text-white shadow-sm"
-                        onClick={() => {
-                          if (!resume?.fileData) {
-                            toast({
-                              title: 'No Resume Available',
-                              description: 'There is no resume to view yet.',
-                              variant: 'destructive',
-                            });
-                            return;
-                          }
-                          
-                          // Direct download approach - most reliable across browsers
-                          try {
-                            // Create a temporary anchor and trigger direct download
-                            const link = document.createElement('a');
-                            
-                            // Use the download attribute to give the file a name
-                            link.download = resume.fileName || 'resume.pdf';
-                            
-                            // Convert base64 to blob
-                            const byteCharacters = atob(resume.fileData);
-                            const byteNumbers = new Array(byteCharacters.length);
-                            for (let i = 0; i < byteCharacters.length; i++) {
-                              byteNumbers[i] = byteCharacters.charCodeAt(i);
-                            }
-                            const byteArray = new Uint8Array(byteNumbers);
-                            const blob = new Blob([byteArray], { type: 'application/pdf' });
-                            
-                            // Create a blob URL
-                            const url = URL.createObjectURL(blob);
-                            
-                            // Set href to blob URL
-                            link.href = url;
-                            
-                            // Set target to _blank to try to open in a new tab
-                            link.target = '_blank';
-                            
-                            // Append to body
-                            document.body.appendChild(link);
-                            
-                            // Trigger click
-                            link.click();
-                            
-                            // Clean up
-                            setTimeout(() => {
-                              document.body.removeChild(link);
-                              URL.revokeObjectURL(url);
-                            }, 100);
-                            
-                            // Notify user
-                            toast({
-                              title: 'Opening Resume',
-                              description: 'Your resume PDF has been downloaded for viewing.',
-                            });
-                          } catch (error) {
-                            console.error("Error processing PDF:", error);
-                            toast({
-                              title: 'Error',
-                              description: 'Could not process the PDF file. Please try again.',
-                              variant: 'destructive',
-                            });
-                          }
-                        }}
-                      >
-                        <Eye className="h-4 w-4 mr-1" />
-                        <span>View PDF</span>
-                      </Button>
-                    )}
-                  </div>
+                  {/* Action buttons removed as requested */}
                 </div>
               ) : (
                 <div className="text-center p-6">
