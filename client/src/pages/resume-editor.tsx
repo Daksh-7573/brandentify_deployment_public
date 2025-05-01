@@ -287,6 +287,48 @@ export default function ResumeEditor() {
     navigate('/resume');
   };
   
+  // Update resume data from profile
+  const updateFromProfile = () => {
+    if (!profileData) {
+      toast({
+        title: 'Profile data not loaded',
+        description: 'Unable to update from profile because the profile data is not loaded.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    
+    // Create base personal info from profile data
+    const basePersonalInfo = {
+      fullName: profileData.name || '',
+      title: profileData.title || '',
+      email: profileData.email || '',
+      phone: profileData.phoneNumber || '',
+      location: profileData.location || '',
+      summary: profileData.aboutMe || '',
+      website: profileData.website || '',
+    };
+    
+    // Keep existing form data for other sections
+    const currentValues = form.getValues();
+    
+    // Reset form with updated personal info
+    form.reset({
+      personalInfo: basePersonalInfo,
+      experiences: currentValues.experiences,
+      education: currentValues.education,
+      skills: currentValues.skills,
+      projects: currentValues.projects,
+      settings: currentValues.settings,
+    });
+    
+    toast({
+      title: 'Profile data updated',
+      description: 'Your resume has been updated with the latest profile information.',
+      variant: 'default',
+    });
+  };
+  
   // Helper functions for form array management
   const addExperience = () => {
     const experiences = form.getValues('experiences.experiences') || [];
@@ -684,10 +726,16 @@ export default function ResumeEditor() {
             <FileText className="h-5 w-5" />
             Resume Editor
           </CardTitle>
-          <Button variant="outline" size="sm" onClick={handleBack}>
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Resume
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={updateFromProfile}>
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Update from Profile
+            </Button>
+            <Button variant="outline" size="sm" onClick={handleBack}>
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Resume
+            </Button>
+          </div>
         </div>
         <CardDescription>
           Edit your professional resume information
