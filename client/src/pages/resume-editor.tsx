@@ -160,7 +160,7 @@ export default function ResumeEditor() {
   // Debug info
   console.log("Resume Editor - userId:", userId);
 
-  // Fetch resume data with better error handling
+  // Fetch resume data with better error handling and direct fallback support
   const { data: resumeData, isLoading: isResumeLoading, error: resumeError } = useQuery({
     queryKey: ['/api/users', userId, 'shadow-resume'],
     queryFn: async () => {
@@ -175,7 +175,89 @@ export default function ResumeEditor() {
         if (!response.ok) {
           const errorText = await response.text();
           console.error(`Failed to fetch shadow resume: ${response.status} ${errorText}`);
-          throw new Error(`Failed to fetch shadow resume: ${response.status}`);
+          // Instead of throwing immediately, let's create a manual temporary data structure
+          if (response.status === 404) {
+            // Create a manual resume data structure for new users who don't have a resume yet
+            console.log("No shadow resume found, creating temp structure for UI");
+            
+            // Direct fetch for user data to ensure we have something to work with
+            console.log("Attempting direct fetch for user data to use as fallback...");
+            try {
+              const userResponse = await fetch(`/api/users/${userId}`);
+              if (userResponse.ok) {
+                const userData = await userResponse.json();
+                console.log("Direct fetch result:", userData);
+                
+                // Return minimal valid structure for UI
+                return { 
+                  resume: {
+                    id: null,
+                    userId: userId,
+                    fileName: `${userData.name || 'User'}_Resume.pdf`,
+                    fileData: null,
+                    themeStyle: 'professional',
+                    isDownloadable: false,
+                    visibility: 'private',
+                  },
+                  form: {
+                    personalInfo: {
+                      fullName: userData.name || '',
+                      title: userData.title || '',
+                      email: userData.email || '',
+                      phone: userData.phoneNumber || '',
+                      location: userData.location || '',
+                      summary: userData.aboutMe || '',
+                      website: '',
+                    },
+                    experiences: { 
+                      experiences: []
+                    },
+                    education: { 
+                      educations: [] 
+                    },
+                    skills: { 
+                      skills: [] 
+                    },
+                    projects: { 
+                      projects: [] 
+                    },
+                  },
+                  message: "Creating new shadow resume"
+                };
+              }
+            } catch (userErr) {
+              console.error("Error in backup user fetch:", userErr);
+            }
+          }
+          
+          // If we get here with a non-404 error or if the user fetch fails, proceed with a minimal structure
+          return { 
+            resume: {
+              id: null,
+              userId: userId,
+              fileName: 'Resume.pdf',
+              fileData: null,
+              themeStyle: 'professional',
+              isDownloadable: false,
+              visibility: 'private',
+            },
+            form: {
+              personalInfo: {
+                fullName: '',
+                title: '',
+                email: '',
+                phone: '',
+                location: '',
+                summary: '',
+                website: '',
+              },
+              experiences: { experiences: [] },
+              education: { educations: [] },
+              skills: { skills: [] },
+              projects: { projects: [] },
+            },
+            message: "Failed to load resume data, creating blank template"
+          };
         }
         
         const data = await response.json();
@@ -184,22 +266,72 @@ export default function ResumeEditor() {
         // Validate that we got a proper response with a resume object
         if (!data || !data.resume) {
           console.error("Invalid shadow resume data structure:", data);
-          throw new Error('Invalid resume data structure returned from API');
+          // Create a valid data structure instead of throwing
+          return { 
+            resume: {
+              id: null,
+              userId: userId,
+              fileName: 'Resume.pdf',
+              fileData: null,
+              themeStyle: 'professional',
+              isDownloadable: false,
+              visibility: 'private',
+            },
+            form: {
+              personalInfo: {
+                fullName: '',
+                title: '',
+                email: '',
+                phone: '',
+                location: '',
+                summary: '',
+                website: '',
+              },
+              experiences: { experiences: [] },
+              education: { educations: [] },
+              skills: { skills: [] },
+              projects: { projects: [] },
+            },
+            message: "Invalid resume structure, creating blank template"
+          };
         }
         
         return data;
       } catch (err) {
         console.error("Error fetching shadow resume:", err);
-        // Return a minimal valid structure to prevent UI errors
+        // Return a more complete fallback structure to prevent UI errors
         return { 
-          resume: null,
-          message: "Failed to load resume data"
+          resume: {
+            id: null,
+            userId: userId,
+            fileName: 'Resume.pdf',
+            fileData: null,
+            themeStyle: 'professional',
+            isDownloadable: false,
+            visibility: 'private',
+          },
+          form: {
+            personalInfo: {
+              fullName: '',
+              title: '',
+              email: '',
+              phone: '',
+              location: '',
+              summary: '',
+              website: '',
+            },
+            experiences: { experiences: [] },
+            education: { educations: [] },
+            skills: { skills: [] },
+            projects: { projects: [] },
+          },
+          message: "Failed to load resume data due to error"
         };
       }
     },
     enabled: !!userId,
     staleTime: 60000, // 1 minute
-    retry: 2,
+    retry: 1, // Only retry once since we have good fallbacks
   });
   
   // Enhanced logging with conditional checks to aid debugging
@@ -353,54 +485,125 @@ export default function ResumeEditor() {
       // Get the resume ID from the resumeData
       const resumeId = resumeData?.resume?.id;
       
+      // Check if we need to create a new shadow resume or update an existing one
       if (!resumeId) {
-        throw new Error("Resume ID not available");
-      }
-      
-      console.log(`Saving resume ${resumeId} for user ${userId} and updating profile with the same data`);
-      
-      // First, update the shadow resume data
-      const response = await fetch(`/api/users/${userId}/shadow-resume/${resumeId}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          resumeData: data,
-        }),
-      });
-      
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error(`Failed to update shadow resume: ${response.status} ${errorText}`);
-        throw new Error(`Failed to update shadow resume: ${response.status}`);
-      }
-      
-      // Then, update the profile data using the shadow-resume/refresh-from-profile endpoint
-      // which now has reversed logic to update profile FROM resume
-      const profileUpdateResponse = await fetch(`/api/shadow-resumes/${resumeId}/refresh-from-profile`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          resumeData: data,
-        }),
-      });
-      
-      if (!profileUpdateResponse.ok) {
-        const errorText = await profileUpdateResponse.text();
-        console.error(`Failed to update profile from resume: ${profileUpdateResponse.status} ${errorText}`);
+        console.log(`Creating new shadow resume for user ${userId}`);
         
-        // Don't throw error here, as we did save the resume data successfully
-        console.warn("Profile update failed, but resume was saved.");
+        // Create a new shadow resume first
+        const createResponse = await fetch(`/api/users/${userId}/shadow-resume`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            themeStyle: data.settings.themeStyle || 'professional',
+            visibility: data.settings.visibility || 'private',
+            isDownloadable: data.settings.isDownloadable || false,
+            isShadowResume: true,
+            fileName: `${data.personalInfo.fullName || 'User'}_Resume.pdf`,
+            // Other fields will be populated by the server
+          }),
+        });
         
-        // Return the original resume response
-        return await response.json();
+        if (!createResponse.ok) {
+          const errorText = await createResponse.text();
+          console.error(`Failed to create shadow resume: ${createResponse.status} ${errorText}`);
+          throw new Error(`Failed to create shadow resume: ${createResponse.status}`);
+        }
+        
+        // Get the newly created resume ID
+        const createResult = await createResponse.json();
+        const newResumeId = createResult.id;
+        
+        if (!newResumeId) {
+          throw new Error("Failed to get new resume ID from create response");
+        }
+        
+        console.log(`New shadow resume created with ID ${newResumeId}`);
+        
+        // Now update the newly created resume with the form data
+        const updateResponse = await fetch(`/api/users/${userId}/shadow-resume/${newResumeId}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            resumeData: data,
+          }),
+        });
+        
+        if (!updateResponse.ok) {
+          const errorText = await updateResponse.text();
+          console.error(`Failed to update new shadow resume: ${updateResponse.status} ${errorText}`);
+          throw new Error(`Failed to update new shadow resume: ${updateResponse.status}`);
+        }
+        
+        // Then update the profile from the resume
+        const profileUpdateResponse = await fetch(`/api/shadow-resumes/${newResumeId}/refresh-from-profile`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            resumeData: data,
+          }),
+        });
+        
+        if (!profileUpdateResponse.ok) {
+          const errorText = await profileUpdateResponse.text();
+          console.error(`Failed to update profile from new resume: ${profileUpdateResponse.status} ${errorText}`);
+          console.warn("Profile update failed, but resume was created and saved.");
+          return await updateResponse.json();
+        }
+        
+        return await profileUpdateResponse.json();
+      } else {
+        // If resume exists, update it normally
+        console.log(`Updating existing resume ${resumeId} for user ${userId} and updating profile with the same data`);
+        
+        // First, update the shadow resume data
+        const response = await fetch(`/api/users/${userId}/shadow-resume/${resumeId}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            resumeData: data,
+          }),
+        });
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error(`Failed to update shadow resume: ${response.status} ${errorText}`);
+          throw new Error(`Failed to update shadow resume: ${response.status}`);
+        }
+        
+        // Then, update the profile data using the shadow-resume/refresh-from-profile endpoint
+        // which now has reversed logic to update profile FROM resume
+        const profileUpdateResponse = await fetch(`/api/shadow-resumes/${resumeId}/refresh-from-profile`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            resumeData: data,
+          }),
+        });
+        
+        if (!profileUpdateResponse.ok) {
+          const errorText = await profileUpdateResponse.text();
+          console.error(`Failed to update profile from resume: ${profileUpdateResponse.status} ${errorText}`);
+          
+          // Don't throw error here, as we did save the resume data successfully
+          console.warn("Profile update failed, but resume was saved.");
+          
+          // Return the original resume response
+          return await response.json();
+        }
+        
+        // If everything succeeded, return the profile update response
+        return await profileUpdateResponse.json();
       }
-      
-      // If everything succeeded, return the profile update response
-      return await profileUpdateResponse.json();
     },
     onSuccess: () => {
       toast({
@@ -594,8 +797,9 @@ export default function ResumeEditor() {
     );
   }
 
-  // Handle error states
-  if (resumeError || profileError) {
+  // Handle error states - but only if we also don't have profile data
+  // We can still show the form with profile data even if resume data failed to load
+  if ((resumeError || profileError) && !profileData) {
     return (
       <Card className="w-full">
         <CardHeader>
@@ -632,6 +836,19 @@ export default function ResumeEditor() {
       </Card>
     );
   }
+  
+  // If we have errors but profile data loaded, show a warning but still render the form
+  if ((resumeError || profileError) && profileData) {
+    toast({
+      title: 'Warning',
+      description: 'Some data may not have loaded properly. You can still edit your resume, but saving may create a new resume.',
+      variant: 'warning',
+      duration: 7000,
+    });
+  }
+  
+  // Check if we're showing a fallback form (happens when resumeData is null/undefined)
+  const showFallbackForm = !resumeData || !resumeData.resume;
   
   return (
     <Card className="w-full">
