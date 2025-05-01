@@ -409,11 +409,30 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
         {resume && !createShadowResumeMutation.isPending && (
           <div className="aspect-[3/4] bg-card border rounded-lg flex items-center justify-center overflow-hidden">
             {resume.fileData ? (
-              // Use our enhanced PDFViewer with direct base64 data support
-              <PDFViewer
-                fileData={resume.fileData}
-                fileName={resume.fileName || "resume.pdf"}
-              />
+              // Use direct iframe approach for better PDF rendering
+              <div className="h-full w-full flex flex-col">
+                <iframe
+                  src={`data:application/pdf;base64,${resume.fileData}`}
+                  className="w-full h-full border-0"
+                  style={{ backgroundColor: '#f8f9fa' }}
+                  title="Resume PDF"
+                />
+                <div className="flex items-center justify-between bg-white border-t p-2">
+                  <div className="text-sm text-muted-foreground">
+                    {resume.fileName || "resume.pdf"}
+                  </div>
+                  <div className="flex gap-2">
+                    <a 
+                      href={`data:application/pdf;base64,${resume.fileData}`}
+                      download={resume.fileName || "resume.pdf"}
+                      className="text-gray-700 hover:text-primary flex items-center gap-1 text-sm px-2 py-1 rounded-md hover:bg-gray-50"
+                    >
+                      <Download className="h-4 w-4" />
+                      <span>Download</span>
+                    </a>
+                  </div>
+                </div>
+              </div>
             ) : resume.fileUrl ? (
               <PDFViewer 
                 fileUrl={resume.fileUrl} 
