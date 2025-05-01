@@ -8,12 +8,12 @@ export function setupShadowResumeRoutes(apiRouter: any, storage: IStorage) {
   apiRouter.post("/shadow-resumes/:resumeId/refresh-from-profile", async (req: Request, res: Response) => {
     try {
       const { resumeId } = req.params;
-      console.log(`[POST /resumes/:resumeId/update-from-profile] Refreshing resume ${resumeId} with profile data`);
+      console.log(`[POST /shadow-resumes/:resumeId/refresh-from-profile] Refreshing resume ${resumeId} with profile data`);
       
       // Get the resume
       const resume = await storage.getResumeById(parseInt(resumeId));
       if (!resume) {
-        console.log(`[POST /resumes/:resumeId/update-from-profile] Resume not found with ID: ${resumeId}`);
+        console.log(`[POST /shadow-resumes/:resumeId/refresh-from-profile] Resume not found with ID: ${resumeId}`);
         return res.status(404).json({ message: 'Resume not found' });
       }
       
@@ -21,7 +21,7 @@ export function setupShadowResumeRoutes(apiRouter: any, storage: IStorage) {
       const userId = resume.userId;
       const user = await storage.getUser(userId);
       if (!user) {
-        console.log(`[POST /resumes/:resumeId/update-from-profile] User not found with ID: ${userId}`);
+        console.log(`[POST /shadow-resumes/:resumeId/refresh-from-profile] User not found with ID: ${userId}`);
         return res.status(404).json({ message: 'User profile not found' });
       }
       
@@ -48,7 +48,7 @@ Demonstrated expertise in designing and implementing solutions that drive busine
 ${workExperiences.map(exp => `- ${exp.title || 'Role'} at ${exp.company || 'Company'} (${exp.startDate ? new Date(exp.startDate).getFullYear() : 'Year'} - ${exp.endDate ? new Date(exp.endDate).getFullYear() : 'Present'})`).join('\n')}
 
 ## Education
-${educations.map(edu => `- ${edu.degree || 'Degree'} in ${edu.fieldOfStudy || 'Field'} from ${edu.institution || 'Institution'} (${edu.graduationYear || 'Year'})`).join('\n')}
+${educations.map(edu => `- ${edu.degree || 'Degree'} in ${edu.fieldOfStudy || 'Field'} from ${edu.institution || 'Institution'} (${edu.endDate ? new Date(edu.endDate).getFullYear() : 'Year'})`).join('\n')}
 
 ## Skills
 ${skills.map(skill => `- ${skill.name || 'Skill'}`).join(', ')}
@@ -64,7 +64,7 @@ ${projects.map(project => `- ${project.title || 'Project'}: ${project.descriptio
         // In a production environment, we would generate a proper PDF
       });
       
-      console.log(`[POST /resumes/:resumeId/update-from-profile] Successfully refreshed resume ${resumeId}`);
+      console.log(`[POST /shadow-resumes/:resumeId/refresh-from-profile] Successfully refreshed resume ${resumeId}`);
       return res.status(200).json({ 
         resume: updatedResume,
         message: 'Resume refreshed with latest profile data',
@@ -76,7 +76,7 @@ ${projects.map(project => `- ${project.title || 'Project'}: ${project.descriptio
         }
       });
     } catch (error) {
-      console.error(`[POST /resumes/:resumeId/update-from-profile] Error:`, error);
+      console.error(`[POST /shadow-resumes/:resumeId/refresh-from-profile] Error:`, error);
       return res.status(500).json({ 
         message: 'Failed to refresh resume with profile data', 
         error: (error as Error).message 
