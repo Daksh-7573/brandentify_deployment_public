@@ -157,6 +157,22 @@ export default function ResumeEditor() {
   // Fetch resume data
   const { data: resumeData, isLoading: isResumeLoading, error: resumeError } = useQuery({
     queryKey: ['/api/users', userId, 'shadow-resume'],
+    queryFn: async () => {
+      if (!userId) {
+        throw new Error('User ID is required to fetch shadow resume');
+      }
+      
+      console.log(`Fetching shadow resume data for user ${userId}`);
+      const response = await fetch(`/api/users/${userId}/shadow-resume`);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`Failed to fetch shadow resume: ${response.status} ${errorText}`);
+        throw new Error(`Failed to fetch shadow resume: ${response.status}`);
+      }
+      
+      return await response.json();
+    },
     enabled: !!userId,
     staleTime: 60000, // 1 minute
     retry: 2,
@@ -200,12 +216,16 @@ export default function ResumeEditor() {
   // Update form values when profile data and resume data are loaded
   useEffect(() => {
     if (profileData) {
-      // Handle case where resume might not be available
-      const resume = resumeData?.resume || {
-        isDownloadable: false,
-        visibility: 'private',
-        themeStyle: 'professional'
-      };
+      console.log("Updating form with profile data:", profileData);
+      
+      // Handle case where resume data might not be available
+      const resume = resumeData && resumeData.resume
+        ? resumeData.resume 
+        : {
+            isDownloadable: false,
+            visibility: 'private',
+            themeStyle: 'professional'
+          };
       
       form.reset({
         personalInfo: {
@@ -281,12 +301,33 @@ export default function ResumeEditor() {
         throw new Error("User ID not available");
       }
       
-      return await apiRequest(`/api/users/${userId}/shadow-resume`, {
-        method: 'PUT' as const, // Use type assertion to fix TypeScript error
-        data: {
-          resumeData: data,
+      // Get the resume ID from the resumeData
+      const resumeId = resumeData?.resume?.id;
+      
+      if (!resumeId) {
+        throw new Error("Resume ID not available");
+      }
+      
+      console.log(`Saving shadow resume ${resumeId} for user ${userId}`);
+      
+      // Use direct fetch instead of apiRequest to ensure correct method is used
+      const response = await fetch(`/api/users/${userId}/shadow-resume/${resumeId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
         },
+        body: JSON.stringify({
+          resumeData: data,
+        }),
       });
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`Failed to update shadow resume: ${response.status} ${errorText}`);
+        throw new Error(`Failed to update shadow resume: ${response.status}`);
+      }
+      
+      return await response.json();
     },
     onSuccess: () => {
       toast({
@@ -446,7 +487,7 @@ export default function ResumeEditor() {
     }
   };
   
-  // Loading state
+  // Handle loading state
   if (isLoading) {
     return (
       <Card className="w-full">
@@ -459,6 +500,45 @@ export default function ResumeEditor() {
         <CardContent>
           <div className="flex justify-center py-8">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Handle error states
+  if (resumeError || profileError) {
+    return (
+      <Card className="w-full">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-destructive">
+            <AlertCircle className="h-5 w-5" />
+            Error Loading Resume Editor
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <p className="text-muted-foreground">
+              There was a problem loading your resume data. Please try again later.
+            </p>
+            {resumeError && (
+              <div className="p-4 bg-destructive/10 rounded-md">
+                <p className="font-medium">Resume Error:</p>
+                <p className="text-sm">{resumeError.message || 'Unknown error occurred'}</p>
+              </div>
+            )}
+            {profileError && (
+              <div className="p-4 bg-destructive/10 rounded-md">
+                <p className="font-medium">Profile Error:</p>
+                <p className="text-sm">{profileError.message || 'Unknown error occurred'}</p>
+              </div>
+            )}
+            <div className="flex justify-end">
+              <Button variant="outline" onClick={handleBack}>
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to Resume
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>
