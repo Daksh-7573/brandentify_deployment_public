@@ -512,12 +512,14 @@ export default function ResumeEditor() {
           if (resumeData?.resume?.id) {
             // Update existing resume
             console.log("Saving updated resume data to server...");
-            const response = await fetch(`/api/shadow-resume/${resumeData.resume.id}`, {
+            const response = await fetch(`/api/users/${userId}/shadow-resume/${resumeData.resume.id}`, {
               method: 'PATCH',
               headers: {
                 'Content-Type': 'application/json',
               },
-              body: JSON.stringify(requestData),
+              body: JSON.stringify({
+                resumeData: updatedValues  // The server expects a 'resumeData' field
+              }),
             });
             
             if (!response.ok) {
@@ -527,16 +529,18 @@ export default function ResumeEditor() {
             console.log("Resume data saved successfully after profile update");
             
             // Invalidate the queries to refresh data
-            queryClient.invalidateQueries({ queryKey: ['/api/shadow-resume', userId] });
+            queryClient.invalidateQueries({ queryKey: ['/api/users', userId, 'shadow-resume'] });
           } else {
             // Create new resume if none exists
             console.log("Creating new resume from profile data...");
-            const response = await fetch('/api/shadow-resume', {
+            const response = await fetch(`/api/users/${userId}/create-shadow-resume`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
               },
-              body: JSON.stringify(requestData),
+              body: JSON.stringify({
+                resumeData: updatedValues  // The server expects a 'resumeData' field
+              }),
             });
             
             if (!response.ok) {
@@ -546,7 +550,7 @@ export default function ResumeEditor() {
             console.log("New resume created successfully from profile data");
             
             // Invalidate the queries to refresh data
-            queryClient.invalidateQueries({ queryKey: ['/api/shadow-resume', userId] });
+            queryClient.invalidateQueries({ queryKey: ['/api/users', userId, 'shadow-resume'] });
           }
           
           // Show success toast
@@ -695,12 +699,14 @@ export default function ResumeEditor() {
       // Check if we're creating a new resume or updating an existing one
       if (resumeData?.resume?.id) {
         // Update existing resume
-        const response = await fetch(`/api/shadow-resume/${resumeData.resume.id}`, {
+        const response = await fetch(`/api/users/${userId}/shadow-resume/${resumeData.resume.id}`, {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(requestData),
+          body: JSON.stringify({
+            resumeData: values  // The server expects a 'resumeData' field
+          }),
         });
         
         if (!response.ok) {
@@ -715,12 +721,14 @@ export default function ResumeEditor() {
         });
       } else {
         // Create new resume
-        const response = await fetch('/api/shadow-resume', {
+        const response = await fetch(`/api/users/${userId}/create-shadow-resume`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(requestData),
+          body: JSON.stringify({
+            resumeData: values  // The server expects a 'resumeData' field
+          }),
         });
         
         if (!response.ok) {
@@ -736,7 +744,7 @@ export default function ResumeEditor() {
       }
       
       // Invalidate the queries to refresh data
-      queryClient.invalidateQueries({ queryKey: ['/api/shadow-resume', userId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/users', userId, 'shadow-resume'] });
       setPageStatus('saved-successfully');
       
     } catch (error) {
