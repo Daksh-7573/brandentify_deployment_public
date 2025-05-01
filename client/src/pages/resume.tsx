@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
 
@@ -208,7 +208,7 @@ export default function ResumePage() {
                       )}
                     </div>
                     
-                    <div className="flex justify-center gap-4 mt-4">
+                    <div className="flex justify-center gap-3 mt-4">
                       <Button 
                         variant="outline" 
                         size="sm"
@@ -240,6 +240,46 @@ export default function ResumePage() {
                       >
                         <Eye className="h-4 w-4 mr-1" />
                         View Full Resume
+                      </Button>
+                      
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => {
+                          if (resumeData?.resume?.id) {
+                            toast({
+                              title: "Refreshing Resume",
+                              description: "Updating your Shadow Resume with the latest profile data...",
+                            });
+                            
+                            fetch(`/api/shadow-resumes/${resumeData.resume.id}/refresh-from-profile`, {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                            })
+                              .then(response => {
+                                if (!response.ok) throw new Error("Failed to refresh resume");
+                                return response.json();
+                              })
+                              .then(() => {
+                                refetchResume();
+                                toast({
+                                  title: "Resume Updated",
+                                  description: "Your Shadow Resume has been refreshed with your latest profile data.",
+                                });
+                              })
+                              .catch(error => {
+                                console.error("Error refreshing resume:", error);
+                                toast({
+                                  title: "Error Updating Resume",
+                                  description: "Failed to refresh your resume. Please try again.",
+                                  variant: "destructive"
+                                });
+                              });
+                          }
+                        }}
+                      >
+                        <Zap className="h-4 w-4 mr-1" />
+                        Refresh
                       </Button>
                     </div>
                   </div>
