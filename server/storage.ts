@@ -5954,7 +5954,8 @@ export class DatabaseStorage implements IStorage {
           theme_style as "themeStyle",
           is_downloadable as "isDownloadable",
           last_updated_by_musk as "lastUpdatedByMusk",
-          visibility
+          visibility,
+          metadata
         FROM resumes
         WHERE id = $1
       `, [id]);
@@ -6057,7 +6058,8 @@ export class DatabaseStorage implements IStorage {
             theme_style as "themeStyle",
             is_downloadable as "isDownloadable",
             last_updated_by_musk as "lastUpdatedByMusk",
-            visibility
+            visibility,
+            metadata
           FROM resumes
           WHERE id = $1
         `, [id]);
@@ -6082,7 +6084,8 @@ export class DatabaseStorage implements IStorage {
           theme_style as "themeStyle",
           is_downloadable as "isDownloadable",
           last_updated_by_musk as "lastUpdatedByMusk",
-          visibility
+          visibility,
+          metadata
       `, values);
       
       if (result.rows.length === 0) {
