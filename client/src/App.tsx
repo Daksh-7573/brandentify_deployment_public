@@ -127,10 +127,15 @@ function Router() {
         <ProtectedRoute path="/resume-cv" component={ResumeCV} />
       </Route>
       <Route path="/resume-editor">
+        {/* Explicitly using the fixed version to avoid hook ordering issues */}
         <ProtectedRoute path="/resume-editor" component={ResumeEditor} />
       </Route>
       <Route path="/resume/edit/:userId">
-        {(params) => <ProtectedRoute path="/resume/edit/:userId" component={() => <ResumeEditor />} />}
+        {/* Explicitly using the fixed version with direct import to ensure consistent usage */}
+        {(params) => <ProtectedRoute path="/resume/edit/:userId" component={() => {
+          const FixedResumeEditor = require('@/pages/resume-editor-fixed').default;
+          return <FixedResumeEditor />;
+        }} />}
       </Route>
       <Route path="/feed-test">
         <ProtectedRoute path="/feed-test" component={FeedTestPage} />
