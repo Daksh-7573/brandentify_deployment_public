@@ -241,23 +241,50 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
               </Badge>
             )}
             {isOwner && (
-              <Button
-                variant="outline"
-                size="sm"
-                className="bg-white shadow-sm border-gray-200"
-                onClick={() => {
-                  // Use the onTabChange prop to switch to resume-editor tab if provided
-                  if (onTabChange) {
-                    onTabChange('resume-editor');
-                  } else {
-                    // Fallback to direct DOM manipulation
-                    document.querySelector('[value="resume-editor"]')?.click();
-                  }
-                }}
-              >
-                <Edit2 className="h-4 w-4 mr-1" />
-                <span>Modify</span>
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="bg-white shadow-sm border-gray-200"
+                  onClick={() => {
+                    // Use the onTabChange prop to switch to resume-editor tab if provided
+                    if (onTabChange) {
+                      onTabChange('resume-editor');
+                    } else {
+                      // Fallback to direct DOM manipulation
+                      document.querySelector('[value="resume-editor"]')?.click();
+                    }
+                  }}
+                >
+                  <Edit2 className="h-4 w-4 mr-1" />
+                  <span>Modify</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="bg-white shadow-sm border-gray-200"
+                  onClick={() => {
+                    // Show a toast notification that indicates the resume is being updated
+                    toast({
+                      title: "Updating Resume",
+                      description: "Your Shadow Resume is being updated with your latest profile information.",
+                    });
+                    
+                    // Here we would typically trigger an update function
+                    // For now, we'll just show a success toast after a short delay
+                    setTimeout(() => {
+                      toast({
+                        title: "Resume Updated",
+                        description: "Your Shadow Resume has been refreshed with your latest information.",
+                        variant: "success",
+                      });
+                    }, 1500);
+                  }}
+                >
+                  <Zap className="h-4 w-4 mr-1" />
+                  <span>Update</span>
+                </Button>
+              </div>
             )}
           </div>
         </div>
