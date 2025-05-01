@@ -126,6 +126,9 @@ function Router() {
       <Route path="/resume-cv">
         <ProtectedRoute path="/resume-cv" component={ResumeCV} />
       </Route>
+      <Route path="/resume-editor">
+        <ProtectedRoute path="/resume-editor" component={ResumeEditor} />
+      </Route>
       <Route path="/resume/edit/:userId">
         {(params) => <ProtectedRoute path="/resume/edit/:userId" component={() => <ResumeEditor />} />}
       </Route>

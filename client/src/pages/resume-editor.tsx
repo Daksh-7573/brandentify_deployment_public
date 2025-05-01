@@ -146,7 +146,7 @@ export default function ResumeEditor() {
   const [location, navigate] = useLocation();
   
   // Get user ID from the URL or use the logged-in user's ID
-  const userId = user?.id;
+  const userId = user?.id || 1; // Fallback to ID 1 for demo if no user ID is available
   
   // Current editing section state
   const [activeTab, setActiveTab] = useState('personal-info');
@@ -275,7 +275,7 @@ export default function ResumeEditor() {
       }
       
       return await apiRequest(`/api/users/${userId}/shadow-resume`, {
-        method: 'PUT',
+        method: 'PUT' as const, // Use type assertion to fix TypeScript error
         data: {
           resumeData: data,
         },
