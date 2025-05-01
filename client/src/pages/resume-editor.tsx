@@ -1742,7 +1742,15 @@ export default function ResumeEditor() {
                 <ArrowLeft className="h-4 w-4" />
                 Back
               </Button>
-              <Button type="submit" className="flex items-center gap-2">
+              <Button 
+                type="submit" 
+                className="flex items-center gap-2"
+                onClick={() => {
+                  console.log("Save button clicked");
+                  console.log("Form state:", form.formState);
+                  console.log("Form values:", form.getValues());
+                }}
+              >
                 <Save className="h-4 w-4" />
                 Save Resume
               </Button>
