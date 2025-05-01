@@ -337,25 +337,77 @@ export default function ResumeEditor() {
   // Enhanced logging with conditional checks to aid debugging
   console.log("Resume Editor - resumeData:", resumeData);
   
+  // Cache resume form data to localStorage for added persistence
+  useEffect(() => {
+    if (resumeData?.resume?.id && resumeData?.form) {
+      console.log("Caching resume form data to localStorage", resumeData.form);
+      localStorage.setItem(`resume_form_${resumeData.resume.id}`, JSON.stringify(resumeData.form));
+    }
+  }, [resumeData?.form, resumeData?.resume?.id]);
+  
+  // Attempt to retrieve cached form data for the current resume if API data is missing form
+  const [cachedFormData, setCachedFormData] = useState<any>(null);
+  
+  useEffect(() => {
+    if (resumeData?.resume?.id && !resumeData?.form) {
+      const cachedData = localStorage.getItem(`resume_form_${resumeData.resume.id}`);
+      
+      if (cachedData) {
+        try {
+          const parsedData = JSON.parse(cachedData);
+          console.log("Restored resume form data from localStorage cache", parsedData);
+          setCachedFormData(parsedData);
+        } catch (e) {
+          console.error("Failed to parse cached resume form data", e);
+        }
+      }
+    }
+  }, [resumeData?.resume?.id, resumeData?.form]);
+  
+  // Check if we have form data directly in the metadata field
+  const [metadataFormData, setMetadataFormData] = useState<any>(null);
+  
+  useEffect(() => {
+    if (resumeData?.resume?.metadata && !resumeData?.form) {
+      try {
+        const parsedMetadata = JSON.parse(resumeData.resume.metadata as string);
+        console.log("Found form data in resume metadata field", parsedMetadata);
+        setMetadataFormData(parsedMetadata);
+      } catch (e) {
+        console.error("Failed to parse resume metadata", e);
+      }
+    }
+  }, [resumeData?.resume?.metadata, resumeData?.form]);
+  
   // Verify the resume data structure
   const hasResumeData = !!resumeData;
   const hasResumeObject = !!resumeData?.resume;
-  const hasFormData = !!resumeData?.form;
+  const hasApiFormData = !!resumeData?.form;
+  const hasMetadataForm = !!metadataFormData;
+  const hasCachedForm = !!cachedFormData;
   const resumeDataKeys = resumeData ? Object.keys(resumeData) : [];
   const resumeReadyState = hasResumeData && hasResumeObject;
+  
+  // Determine the actual form data source we'll use
+  const effectiveFormData = resumeData?.form || metadataFormData || cachedFormData;
   
   console.log("Render condition check:", {
     hasResumeData,
     hasResumeObject,
-    hasFormData,
+    hasApiFormData,
+    hasMetadataForm,
+    hasCachedForm,
     resumeDataKeys,
-    resumeReadyState
+    resumeReadyState,
+    effectiveFormDataExists: !!effectiveFormData
   });
   
   // Determine where resume data is coming from for debugging
   const resumeSources = {
     fromResumeData: resumeData?.resume ? "YES" : "NO",
-    hasStoredForm: resumeData?.form ? "YES" : "NO", 
+    hasApiForm: resumeData?.form ? "YES" : "NO",
+    hasMetadataForm: metadataFormData ? "YES" : "NO",
+    hasCachedForm: cachedFormData ? "YES" : "NO",
     fromManualFetch: "YES", // We're doing a manual fetch in the component
     readyState: resumeReadyState
   };
@@ -402,8 +454,9 @@ export default function ResumeEditor() {
     if (profileData) {
       console.log("Updating form with profile data:", profileData);
       
-      // First check if we have form data directly in the API response
-      if (resumeData && resumeData.form) {
+      // Check all possible sources of form data and use the first available one
+      if (resumeData?.form) {
+        // First priority: Form data directly in the API response
         console.log("Using saved resume form data from API response:", resumeData.form);
         form.reset({
           personalInfo: resumeData.form.personalInfo || {
@@ -434,39 +487,42 @@ export default function ResumeEditor() {
           },
         });
       } 
-      // Next check if we have metadata in the resume object that contains form data
-      else if (resumeData?.resume?.metadata) {
-        try {
-          // Try to parse the metadata JSON string that contains form data
-          const parsedMetadata = JSON.parse(resumeData.resume.metadata);
-          console.log("Using form data from resume metadata:", parsedMetadata);
-          
-          form.reset({
-            ...parsedMetadata,
-            settings: {
-              isDownloadable: resumeData.resume?.isDownloadable || false,
-              visibility: resumeData.resume?.visibility || 'private',
-              themeStyle: resumeData.resume?.themeStyle || 'professional',
-            },
-          });
-        } catch (parseError) {
-          console.error("Error parsing resume metadata:", parseError);
-          // Fall through to profile data fallback
-          console.log("Metadata parse error, falling back to profile data");
-        }
-      } else {
-        // Fallback to creating form data from profile if resume form data is not available
-        // This happens when a user doesn't have a shadow resume yet or when resumeData failed to load
+      else if (metadataFormData) {
+        // Second priority: Parsed metadata form data
+        console.log("Using form data from parsed metadata:", metadataFormData);
+        
+        form.reset({
+          ...metadataFormData,
+          settings: {
+            isDownloadable: resumeData?.resume?.isDownloadable || false,
+            visibility: resumeData?.resume?.visibility || 'private',
+            themeStyle: resumeData?.resume?.themeStyle || 'professional',
+          },
+        });
+      }
+      else if (cachedFormData) {
+        // Third priority: Cached form data from localStorage
+        console.log("Using form data from localStorage cache:", cachedFormData);
+        
+        form.reset({
+          ...cachedFormData,
+          settings: {
+            isDownloadable: resumeData?.resume?.isDownloadable || false,
+            visibility: resumeData?.resume?.visibility || 'private',
+            themeStyle: resumeData?.resume?.themeStyle || 'professional',
+          },
+        });
+      }
+      else {
+        // Fallback to creating form data from profile if no resume form data is available
         console.log("No resume form data available, using profile data as fallback");
         
         // Handle case where resume data might not be available
-        const resume = resumeData && resumeData.resume
-          ? resumeData.resume 
-          : {
-              isDownloadable: false,
-              visibility: 'private',
-              themeStyle: 'professional'
-            };
+        const resume = resumeData?.resume || {
+          isDownloadable: false,
+          visibility: 'private',
+          themeStyle: 'professional'
+        };
         
         form.reset({
           personalInfo: {
@@ -533,9 +589,9 @@ export default function ResumeEditor() {
         });
       }
     }
-  }, [profileData, resumeData, form]);
+  }, [profileData, resumeData, form, metadataFormData, cachedFormData]);
   
-  // Save resume mutation - now with reverse flow to update profile data from resume editor data
+  // Save resume mutation - enhanced for better form data persistence
   const saveResumeMutation = useMutation({
     mutationFn: async (data: z.infer<typeof resumeSchema>) => {
       // Make sure we have a valid userId before making the request
@@ -545,6 +601,10 @@ export default function ResumeEditor() {
       
       // Get the resume ID from the resumeData
       const resumeId = resumeData?.resume?.id;
+      
+      // Cache the form data to localStorage for added persistence
+      console.log("Saving form data to localStorage cache before API request");
+      localStorage.setItem(`resume_form_latest_${userId}`, JSON.stringify(data));
       
       // Check if we need to create a new shadow resume or update an existing one
       if (!resumeId) {
@@ -562,7 +622,8 @@ export default function ResumeEditor() {
             isDownloadable: data.settings.isDownloadable || false,
             isShadowResume: true,
             fileName: `${data.personalInfo.fullName || 'User'}_Resume.pdf`,
-            // Other fields will be populated by the server
+            // Add metadata field with form data for immediate persistence
+            metadata: JSON.stringify(data)
           }),
         });
         
@@ -581,6 +642,9 @@ export default function ResumeEditor() {
         }
         
         console.log(`New shadow resume created with ID ${newResumeId}`);
+        
+        // Cache form data with the new resumeId for reliable retrieval
+        localStorage.setItem(`resume_form_${newResumeId}`, JSON.stringify(data));
         
         // Now update the newly created resume with the form data
         const updateResponse = await fetch(`/api/users/${userId}/shadow-resume/${newResumeId}`, {
@@ -604,9 +668,12 @@ export default function ResumeEditor() {
         return await updateResponse.json();
       } else {
         // If resume exists, update it normally
-        console.log(`Updating existing resume ${resumeId} for user ${userId} and updating profile with the same data`);
+        console.log(`Updating existing resume ${resumeId} for user ${userId}`);
         
-        // First, update the shadow resume data
+        // Cache form data with the resumeId for reliable retrieval
+        localStorage.setItem(`resume_form_${resumeId}`, JSON.stringify(data));
+        
+        // Update the shadow resume data with form data in both places (resumeData and metadata)
         const response = await fetch(`/api/users/${userId}/shadow-resume/${resumeId}`, {
           method: 'PATCH',
           headers: {
@@ -628,19 +695,34 @@ export default function ResumeEditor() {
         return await response.json();
       }
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       toast({
         title: 'Resume Saved',
         description: 'Your resume settings have been updated successfully. Your profile remains unchanged.',
       });
+      
+      // After successful save, make sure we update our local cached form data
+      if (data?.resume?.id) {
+        console.log("Updating localStorage cache after successful save for resume ID:", data.resume.id);
+        
+        // If the server sent back form data, cache that
+        if (data.form) {
+          localStorage.setItem(`resume_form_${data.resume.id}`, JSON.stringify(data.form));
+        }
+      }
       
       // Invalidate only resume data, not profile
       queryClient.invalidateQueries({
         queryKey: ['/api/users', userId, 'shadow-resume'],
       });
       
-      // Reload the page to ensure all data is fresh (can be removed once stable)
-      // setTimeout(() => window.location.reload(), 1500);
+      // This simple timeout allows the UI to show success before refreshing resume data
+      setTimeout(() => {
+        // Force a refresh of the resume data to ensure we have the latest with updated metadata
+        queryClient.refetchQueries({
+          queryKey: ['/api/users', userId, 'shadow-resume'],
+        });
+      }, 300);
     },
     onError: (error) => {
       console.error('Error saving resume:', error);
