@@ -10,7 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import MuskResumeWriter from '@/components/resume/musk-resume-writer';
 import ResumeEditor from '@/pages/resume-editor';
 
-import { Upload, FileText, Edit2, Zap, AlertCircle } from 'lucide-react';
+import { Upload, FileText, Edit2, Zap, AlertCircle, Eye } from 'lucide-react';
 
 export default function ResumePage() {
   const { user } = useAuth();
@@ -21,6 +21,12 @@ export default function ResumePage() {
   const { data: userData } = useQuery({
     queryKey: ['/api/users', user?.id],
     enabled: !!user?.id,
+  });
+
+  // Fetch shadow resume for the user (if it exists)
+  const { data: resumeData } = useQuery<{resume: any}>({
+    queryKey: ['/api/users', user?.id, 'shadow-resume'],
+    enabled: !!user?.id
   });
 
   // Handle resume upload
@@ -75,26 +81,88 @@ export default function ResumePage() {
                 <div>
                   <CardTitle>Shadow Resume</CardTitle>
                   <CardDescription>
-                    This feature has been discontinued
+                    View your finalized resume
                   </CardDescription>
                 </div>
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex flex-col items-center justify-center p-8 text-center">
-                <AlertCircle className="h-12 w-12 text-muted-foreground mb-4" />
-                <h3 className="text-lg font-medium mb-2">Shadow Resume Feature Removed</h3>
-                <p className="text-sm text-muted-foreground mb-4">
-                  The Shadow Resume functionality has been removed. Please use the Resume Editor or Resume Writer tabs instead.
-                </p>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => setActiveTab('resume-editor')}
-                >
-                  Go to Resume Editor
-                </Button>
-              </div>
+              {resumeData?.resume ? (
+                <div className="space-y-4">
+                  <div className="border rounded-md p-4 bg-card">
+                    <div className="text-center mb-4">
+                      <h3 className="text-lg font-bold">Your Resume</h3>
+                      <p className="text-sm text-muted-foreground">
+                        This is the final version of your resume saved from the Resume Editor.
+                      </p>
+                    </div>
+                    
+                    {/* Display resume preview */}
+                    <div className="aspect-[3/4] bg-white rounded-lg border shadow-sm overflow-hidden">
+                      {resumeData.resume && resumeData.resume.fileData ? (
+                        <iframe 
+                          src={`data:application/pdf;base64,${String(resumeData.resume.fileData)}`} 
+                          className="w-full h-full"
+                        />
+                      ) : (
+                        <div className="flex items-center justify-center h-full">
+                          <p className="text-muted-foreground">Resume preview not available</p>
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div className="flex justify-center gap-4 mt-4">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => setActiveTab('resume-editor')}
+                      >
+                        <Edit2 className="h-4 w-4 mr-1" />
+                        Edit Resume
+                      </Button>
+                      
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => {
+                          if (resumeData?.resume?.fileData) {
+                            // Create anchor element and trigger download
+                            const link = document.createElement('a');
+                            link.href = `data:application/pdf;base64,${String(resumeData.resume.fileData)}`;
+                            link.download = resumeData.resume.fileName || 'resume.pdf';
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                            
+                            toast({
+                              title: "Resume Downloaded",
+                              description: "Your resume has been downloaded successfully.",
+                            });
+                          }
+                        }}
+                      >
+                        <Eye className="h-4 w-4 mr-1" />
+                        View Full Resume
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center p-8 text-center">
+                  <AlertCircle className="h-12 w-12 text-muted-foreground mb-4" />
+                  <h3 className="text-lg font-medium mb-2">No Resume Found</h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    You haven't created a resume yet. Use the Resume Editor to create and save your resume.
+                  </p>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => setActiveTab('resume-editor')}
+                  >
+                    Go to Resume Editor
+                  </Button>
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
@@ -106,8 +174,12 @@ export default function ResumePage() {
         </TabsContent>
 
         <TabsContent value="resume-editor" className="space-y-6">
-          {userData && (
+          {userData ? (
             <ResumeEditor />
+          ) : (
+            <div className="flex items-center justify-center p-8">
+              <p>Loading editor...</p>
+            </div>
           )}
         </TabsContent>
       </Tabs>
