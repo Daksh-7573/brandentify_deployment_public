@@ -65,32 +65,14 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
     resumeObject: resume ? 'Resume exists' : 'No resume'
   });
   
-  // IMPORTANT: Always fetch profile data as a fallback, but PRIORITIZE form data in the render
-  // This ensures the Shadow Resume shows data from the Resume Editor, not directly from the profile
+  // DO NOT fetch or use profile data at all
+  // Shadow Resume ONLY shows data from Resume Editor with no fallbacks
   
-  // Experiences - always fetch but prioritize form data when rendering
-  const { data: workExperiences = [] } = useQuery<WorkExperience[]>({
-    queryKey: ['/api/users', user?.id, 'experiences'],
-    enabled: !!user?.id, // Always fetch regardless of form data status
-  });
-  
-  // Education - always fetch but prioritize form data when rendering
-  const { data: education = [] } = useQuery<Education[]>({
-    queryKey: ['/api/users', user?.id, 'educations'],
-    enabled: !!user?.id, // Always fetch regardless of form data status
-  });
-  
-  // Skills - always fetch but prioritize form data when rendering
-  const { data: skills = [] } = useQuery<any[]>({
-    queryKey: ['/api/users', user?.id, 'skills'],
-    enabled: !!user?.id, // Always fetch regardless of form data status
-  });
-  
-  // Projects - always fetch but prioritize form data when rendering
-  const { data: projects = [] } = useQuery<any[]>({
-    queryKey: ['/api/users', user?.id, 'projects'],
-    enabled: !!user?.id, // Always fetch regardless of form data status
-  });
+  // No longer fetch profile data - using empty arrays as defaults
+  const workExperiences: WorkExperience[] = [];
+  const education: Education[] = [];
+  const skills: any[] = [];
+  const projects: any[] = [];
   
   // ONLY use form data - NO FALLBACK to profile data
   // Shadow Resume should exclusively use data from the Resume Editor
@@ -374,7 +356,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                         <div className="w-3 h-3 bg-green-400 rounded-full"></div>
                       </div>
                       <div className="text-xs text-gray-500">
-                        {resume.fileName || `${user.name}_Resume_Professional.pdf`}
+                        {resume.fileName || `Resume_Professional.pdf`}
                       </div>
                     </div>
                     
@@ -425,41 +407,27 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                         ) : (
                           <>
                             <h2 className="text-xl font-bold" style={{color: fixedTheme.color}}>
-                              {formData?.personalInfo?.fullName || user.name}
+                              {effectivePersonalInfo.fullName || 'Professional Name'}
                             </h2>
                             <p className="text-sm text-gray-600">
-                              {formData?.personalInfo?.title || user.title || 'Professional'}
+                              {effectivePersonalInfo.title || 'Professional Title'}
                             </p>
                             <div className="flex flex-wrap items-center gap-2 mt-1 text-xs text-gray-500">
-                              <span>{formData?.personalInfo?.email || user.email}</span>
-                              {(formData?.personalInfo?.phone || user.phoneNumber) && (
+                              <span>{effectivePersonalInfo.email || 'Email'}</span>
+                              {effectivePersonalInfo.phone && (
                                 <>
                                   <span>•</span>
-                                  <span>{formData?.personalInfo?.phone || user.phoneNumber}</span>
+                                  <span>{effectivePersonalInfo.phone}</span>
                                 </>
                               )}
-                              {(formData?.personalInfo?.location || user.location) && (
+                              {effectivePersonalInfo.location && (
                                 <>
                                   <span>•</span>
-                                  <span>{formData?.personalInfo?.location || user.location}</span>
-                                </>
-                              )}
-                            </div>
-                            <div className="flex flex-wrap items-center gap-2 mt-1 text-xs text-gray-500">
-                              {user.industry && <span>{user.industry}</span>}
-                              {user.domain && (
-                                <>
-                                  <span>•</span>
-                                  <span>{user.domain}</span>
-                                </>
-                              )}
-                              {user.lookingFor && (
-                                <>
-                                  <span>•</span>
-                                  <span>Seeking: {user.lookingFor.replace(/_/g, ' ')}</span>
+                                  <span>{effectivePersonalInfo.location}</span>
                                 </>
                               )}
                             </div>
+                            {/* Industry info section completely removed */}
                           </>
                         )}
                       </div>
@@ -476,8 +444,8 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                           />
                         ) : (
                           <p className="text-xs text-gray-700 leading-relaxed">
-                            {/* Use our combined effective data which prioritizes form data */}
-                            {effectivePersonalInfo.summary || 'Experienced professional with expertise in ' + (user.industry || 'their field') + ' seeking opportunities in ' + (user.domain || 'the industry')}
+                            {/* ONLY use form data - no fallback to profile data */}
+                            {effectivePersonalInfo.summary || 'Professional summary will appear here. Edit in Resume Editor.'}
                           </p>
                         )}
                       </div>
@@ -637,8 +605,8 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
               ) : (
                 <div className="text-center p-6">
                   <p className="text-muted-foreground text-sm">Resume Preview</p>
-                  <h2 className="text-xl font-bold mt-2">{user.name}</h2>
-                  <p className="text-sm text-muted-foreground">{user.title}</p>
+                  <h2 className="text-xl font-bold mt-2">Resume Preview</h2>
+                  <p className="text-sm text-muted-foreground">Resume data will appear here</p>
                   
                   {/* Fallback if no PDF data is available */}
                   <div className="w-3/4 mx-auto mt-6 h-64 bg-muted rounded opacity-30"></div>
