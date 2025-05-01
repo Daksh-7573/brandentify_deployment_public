@@ -50,7 +50,7 @@ export default function ResumePage() {
   return (
     <PageLayout
       title="Resume & CV"
-      description="View and manage your professional resume"
+      description="View and manage your professional resume. Changes made in the Resume Editor will automatically update your Shadow Resume."
       actions={
         <Button onClick={handleUploadResume} className="gap-2">
           <Upload className="h-4 w-4" />
@@ -81,7 +81,7 @@ export default function ResumePage() {
                 <div>
                   <CardTitle>Shadow Resume</CardTitle>
                   <CardDescription>
-                    View your finalized resume
+                    View your finalized resume automatically updated from the Resume Editor
                   </CardDescription>
                 </div>
               </div>
