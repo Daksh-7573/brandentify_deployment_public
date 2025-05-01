@@ -16,9 +16,14 @@ import { Separator } from '@/components/ui/separator';
 import { BriefcaseBusiness, GraduationCap, Medal, Layout, Hammer, User2 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 
-export const UnifiedProfileView: FC = () => {
-  const { userId } = useParams<{ userId: string }>();
-  const parsedUserId = userId ? parseInt(userId) : undefined;
+interface UnifiedProfileViewProps {
+  userId?: string;
+}
+
+export const UnifiedProfileView: FC<UnifiedProfileViewProps> = ({ userId: propUserId }) => {
+  const { userId: paramUserId } = useParams<{ userId: string }>();
+  const userId = propUserId || paramUserId;
+  const parsedUserId = userId ? parseInt(userId) : 1; // Default to user ID 1 if none provided
   
   const { data: profileData, isLoading, error } = useUserProfile(parsedUserId);
   

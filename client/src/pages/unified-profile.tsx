@@ -11,7 +11,8 @@ import { UnifiedProfileView } from '@/components/profile/unified-profile-view';
 import { ArrowLeft } from 'lucide-react';
 
 export default function UnifiedProfilePage() {
-  const [, setLocation] = useLocation();
+  const [location, setLocation] = useLocation();
+  const { userId } = useParams<{ userId: string }>();
   
   return (
     <div className="container max-w-7xl mx-auto py-8 px-4">
