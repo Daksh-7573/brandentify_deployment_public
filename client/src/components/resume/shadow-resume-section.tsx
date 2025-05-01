@@ -92,21 +92,21 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
     enabled: !!user?.id, // Always fetch regardless of form data status
   });
   
-  // Create combined data from form and profile
-  // These variables will be used in the render to ensure form data takes precedence
-  const effectiveExperiences = formData?.experiences?.experiences || workExperiences;
-  const effectiveEducation = formData?.education?.educations || education;
-  const effectiveSkills = formData?.skills?.skills || skills;
-  const effectiveProjects = formData?.projects?.projects || projects;
+  // ONLY use form data - NO FALLBACK to profile data
+  // Shadow Resume should exclusively use data from the Resume Editor
+  const effectiveExperiences = formData?.experiences?.experiences || [];
+  const effectiveEducation = formData?.education?.educations || [];
+  const effectiveSkills = formData?.skills?.skills || [];
+  const effectiveProjects = formData?.projects?.projects || [];
   
-  // Personal info is also prioritized from form
+  // ONLY use personal info from form data, never fallback to profile
   const effectivePersonalInfo = formData?.personalInfo || {
-    fullName: user?.name || '',
-    title: user?.title || '',
-    email: user?.email || '',
-    phone: user?.phoneNumber || '',
-    location: user?.location || '',
-    summary: user?.aboutMe || '',
+    fullName: '',
+    title: '',
+    email: '',
+    phone: '',
+    location: '',
+    summary: '',
   };
   
   // Update resume settings mutation
