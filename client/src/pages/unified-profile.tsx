@@ -5,14 +5,17 @@
  * gets all user profile data in a single API request.
  */
 
-import { useLocation, Link } from 'wouter';
+import { useLocation, Link, useParams } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { UnifiedProfileView } from '@/components/profile/unified-profile-view';
 import { ArrowLeft } from 'lucide-react';
 
 export default function UnifiedProfilePage() {
-  const [location, setLocation] = useLocation();
+  const [locationPath, setLocation] = useLocation();
   const { userId } = useParams<{ userId: string }>();
+  
+  // Create location object to match pathname type checking
+  const location = { pathname: locationPath };
   
   return (
     <div className="container max-w-7xl mx-auto py-8 px-4">
@@ -87,7 +90,7 @@ export default function UnifiedProfilePage() {
         </div>
         
         {/* The Unified Profile Component */}
-        <UnifiedProfileView />
+        <UnifiedProfileView userId={userId} />
       </div>
     </div>
   );

@@ -205,7 +205,7 @@ export const UnifiedProfileView: FC<UnifiedProfileViewProps> = ({ userId: propUs
                         <div>
                           <h5 className="text-sm font-medium mb-1">Key Responsibilities</h5>
                           <ul className="list-disc list-inside text-sm space-y-1">
-                            {experience.keyResponsibilities.map((responsibility, index) => (
+                            {experience.keyResponsibilities.map((responsibility: string, index: number) => (
                               <li key={index}>{responsibility}</li>
                             ))}
                           </ul>
@@ -359,7 +359,7 @@ export const UnifiedProfileView: FC<UnifiedProfileViewProps> = ({ userId: propUs
                           <div className="mt-4">
                             <h5 className="text-sm font-medium mb-2">Features</h5>
                             <ul className="list-disc list-inside text-sm space-y-1">
-                              {service.features.map((feature, index) => (
+                              {service.features.map((feature: string, index: number) => (
                                 <li key={index}>{feature}</li>
                               ))}
                             </ul>
