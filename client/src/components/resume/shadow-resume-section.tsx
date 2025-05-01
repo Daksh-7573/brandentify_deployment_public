@@ -247,36 +247,15 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                   size="sm"
                   className="bg-white shadow-sm border-gray-200"
                   onClick={() => {
-                    // Use the onTabChange prop to switch to resume-editor tab if provided
-                    if (onTabChange) {
-                      onTabChange('resume-editor');
-                    } else {
-                      // Fallback to direct DOM manipulation
-                      const element = document.querySelector('[value="resume-editor"]');
-                      if (element instanceof HTMLElement) {
-                        element.click();
-                      }
-                    }
-                  }}
-                >
-                  <Edit2 className="h-4 w-4 mr-1" />
-                  <span>Update</span>
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="bg-white shadow-sm border-gray-200"
-                  onClick={() => {
-                    // Show a toast notification that indicates the resume is being refreshed
+                    // Show a toast notification that indicates the resume is being updated
                     toast({
-                      title: "Refreshing Resume",
-                      description: "Your Shadow Resume is being refreshed with your latest profile information.",
+                      title: "Updating Resume",
+                      description: "Fetching your latest profile information for editing.",
                     });
                     
-                    // Here we would trigger an API call to update the resume with latest profile information
-                    // This would refresh the resume with latest data from the profile, experiences, skills, etc.
+                    // First fetch the latest profile data
                     if (resume?.id) {
-                      // Call our shadow resume refresh API endpoint
+                      // Call our shadow resume refresh API endpoint to ensure data is synced
                       fetch(`/api/users/${user.id}/shadow-resume/${resume.id}/refresh`, {
                         method: 'POST',
                         headers: {
@@ -290,40 +269,53 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                         return response.json();
                       })
                       .then(() => {
-                        // On success, show a toast and invalidate the query cache
-                        toast({
-                          title: "Resume Refreshed",
-                          description: "Your Shadow Resume has been refreshed with your latest profile information.",
-                        });
-                        
                         // Invalidate resume cache to fetch the updated version
                         queryClient.invalidateQueries({
                           queryKey: ['/api/users', user?.id, 'shadow-resume']
                         });
+                        
+                        // After data is synced, navigate to the resume editor
+                        // Use the onTabChange prop to switch to resume-editor tab if provided
+                        if (onTabChange) {
+                          onTabChange('resume-editor');
+                        } else {
+                          // Fallback to direct DOM manipulation
+                          const element = document.querySelector('[value="resume-editor"]');
+                          if (element instanceof HTMLElement) {
+                            element.click();
+                          }
+                        }
+                        
+                        // On success, show a toast
+                        toast({
+                          title: "Resume Updated",
+                          description: "Now you can edit your resume with the latest profile information.",
+                        });
                       })
                       .catch(error => {
-                        console.error('Error refreshing resume:', error);
+                        console.error('Error updating resume:', error);
                         toast({
-                          title: "Refresh Failed",
-                          description: "There was a problem refreshing your resume. Please try again.",
+                          title: "Update Failed",
+                          description: "There was a problem updating your resume. Please try again.",
                           variant: "destructive",
                         });
                       });
                     } else {
-                      // Fallback behavior when no resume ID is available
-                      // Show success toast after a short delay - this is just for demo purposes
-                      // In a real implementation, we'd have proper API integration
-                      setTimeout(() => {
-                        toast({
-                          title: "Resume Refreshed",
-                          description: "Your Shadow Resume has been refreshed with your latest profile information.",
-                        });
-                      }, 1500);
+                      // Fallback when no resume ID is available
+                      if (onTabChange) {
+                        onTabChange('resume-editor');
+                      } else {
+                        // Fallback to direct DOM manipulation
+                        const element = document.querySelector('[value="resume-editor"]');
+                        if (element instanceof HTMLElement) {
+                          element.click();
+                        }
+                      }
                     }
                   }}
                 >
-                  <Zap className="h-4 w-4 mr-1" />
-                  <span>Refresh</span>
+                  <Edit2 className="h-4 w-4 mr-1" />
+                  <span>Update</span>
                 </Button>
               </div>
             )}
