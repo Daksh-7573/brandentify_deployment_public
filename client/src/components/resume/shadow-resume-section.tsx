@@ -360,9 +360,21 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
           <>
             {/* Resume Preview */}
             <div className="aspect-[3/4] bg-card border rounded-lg flex items-center justify-center overflow-hidden">
-              {resume?.fileData ? (
-                <div className="w-full h-full flex flex-col items-center justify-center p-6 relative">
-                  {/* Actual resume preview with PDF appearance */}
+              {/* Removed resume?.fileData check to always display resume content */}
+              <div className="w-full h-full flex flex-col items-center justify-center p-6 relative">
+                {resume?.fileUrl ? (
+                  <object
+                    data={resume.fileUrl}
+                    type="application/pdf"
+                    width="100%"
+                    height="100%"
+                    className="w-full h-full shadow-lg rounded overflow-hidden"
+                  >
+                    <p>Your browser does not support PDFs. 
+                      <a href={resume.fileUrl} target="_blank" rel="noopener noreferrer">Click here to view the PDF</a>
+                    </p>
+                  </object>
+                ) : (
                   <div className={`w-full h-full relative bg-white shadow-lg rounded overflow-hidden ${fixedTheme.fontClass}`} style={{borderTop: `4px solid ${fixedTheme.color}`}}>
                     {/* Document header */}
                     <div className="absolute top-0 left-0 right-0 h-8 bg-gray-100 border-b flex items-center justify-between px-3">
@@ -372,7 +384,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                         <div className="w-3 h-3 bg-green-400 rounded-full"></div>
                       </div>
                       <div className="text-xs text-gray-500">
-                        {resume.fileName || `${user.name}_Resume_Professional.pdf`}
+                        {resume?.fileName || `${user.name}_Resume_Professional.pdf`}
                       </div>
                     </div>
                     
@@ -619,15 +631,6 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                   </div>
                   
                   {/* Action buttons removed as requested */}
-                </div>
-              ) : (
-                <div className="text-center p-6">
-                  <p className="text-muted-foreground text-sm">Resume Preview</p>
-                  <h2 className="text-xl font-bold mt-2">{user.name}</h2>
-                  <p className="text-sm text-muted-foreground">{user.title}</p>
-                  
-                  {/* Fallback if no PDF data is available */}
-                  <div className="w-3/4 mx-auto mt-6 h-64 bg-muted rounded opacity-30"></div>
                 </div>
               )}
             </div>
