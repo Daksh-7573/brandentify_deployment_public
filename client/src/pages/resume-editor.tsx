@@ -1376,23 +1376,83 @@ export default function ResumeEditor() {
               />
             </div>
             
-            <Button
-              type="submit"
-              className="gap-2"
-              disabled={saveResumeMutation.isPending || !form.formState.isDirty}
-            >
-              {saveResumeMutation.isPending ? (
-                <>
-                  <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full"></div>
-                  <span>Saving...</span>
-                </>
-              ) : (
-                <>
-                  <Save className="h-4 w-4" />
-                  <span>Save Resume</span>
-                </>
-              )}
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                className="gap-2"
+                onClick={() => {
+                  // Show a loading toast
+                  toast({
+                    title: "Updating Resume",
+                    description: "Refreshing with your latest profile information...",
+                  });
+                  
+                  if (resumeData?.resume?.id && userId) {
+                    // Fetch the latest profile data from the API endpoint
+                    fetch(`/api/users/${userId}/shadow-resume/${resumeData.resume.id}/refresh`, {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json',
+                      }
+                    })
+                    .then(response => {
+                      if (!response.ok) {
+                        throw new Error('Failed to update resume');
+                      }
+                      return response.json();
+                    })
+                    .then(() => {
+                      // Invalidate queries to refresh data
+                      queryClient.invalidateQueries({
+                        queryKey: ['/api/users', userId, 'shadow-resume']
+                      });
+                      
+                      // Show success toast
+                      toast({
+                        title: "Resume Updated",
+                        description: "Your resume has been updated with the latest profile information.",
+                      });
+                    })
+                    .catch(error => {
+                      console.error('Error updating resume:', error);
+                      toast({
+                        title: "Update Failed",
+                        description: "There was a problem updating your resume. Please try again.",
+                        variant: "destructive",
+                      });
+                    });
+                  } else {
+                    toast({
+                      title: "Update Failed",
+                      description: "Resume data not available. Please try again later.",
+                      variant: "destructive",
+                    });
+                  }
+                }}
+              >
+                <PenLine className="h-4 w-4" />
+                <span>Update</span>
+              </Button>
+              
+              <Button
+                type="submit"
+                className="gap-2"
+                disabled={saveResumeMutation.isPending || !form.formState.isDirty}
+              >
+                {saveResumeMutation.isPending ? (
+                  <>
+                    <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full"></div>
+                    <span>Saving...</span>
+                  </>
+                ) : (
+                  <>
+                    <Save className="h-4 w-4" />
+                    <span>Save Resume</span>
+                  </>
+                )}
+              </Button>
+            </div>
           </CardFooter>
         </form>
       </Form>
