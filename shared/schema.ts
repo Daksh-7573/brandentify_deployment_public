@@ -53,6 +53,7 @@ export const resumes = pgTable("resumes", {
   userId: integer("user_id").references(() => users.id).notNull(),
   fileName: text("file_name").notNull(),
   fileData: text("file_data").notNull(), // Base64 encoded data
+  fileUrl: text("file_url"), // URL to download the file
   score: integer("score").default(0), // AI-generated score
   uploadedAt: timestamp("uploaded_at").defaultNow(),
   isShadowResume: boolean("is_shadow_resume").default(false), // Whether this is a Musk-generated shadow resume
