@@ -237,9 +237,12 @@ Sample skills relevant to the ${user.industry || 'industry'} would be listed her
           // Parse the stored JSON form data
           formData = JSON.parse(resume.metadata as string);
           console.log(`[GET /users/:userId/shadow-resume] Found stored form data for resume ID: ${resume.id}`);
+          console.log(`[GET /users/:userId/shadow-resume] Parsed metadata:`, formData);
         } catch (parseError) {
           console.error(`[GET /users/:userId/shadow-resume] Error parsing metadata:`, parseError);
         }
+      } else {
+        console.log(`[GET /users/:userId/shadow-resume] No metadata found for resume ID: ${resume.id}`);
       }
       
       return res.status(200).json({ 

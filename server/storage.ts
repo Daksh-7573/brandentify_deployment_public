@@ -5919,7 +5919,8 @@ export class DatabaseStorage implements IStorage {
           theme_style as "themeStyle",
           is_downloadable as "isDownloadable",
           last_updated_by_musk as "lastUpdatedByMusk",
-          visibility
+          visibility,
+          metadata
         FROM resumes
         WHERE user_id = $1 AND is_shadow_resume = true
         LIMIT 1
@@ -5988,8 +5989,9 @@ export class DatabaseStorage implements IStorage {
           theme_style,
           is_downloadable,
           last_updated_by_musk,
-          visibility
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+          visibility,
+          metadata
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
         RETURNING 
           id,
           user_id as "userId",
@@ -6001,7 +6003,8 @@ export class DatabaseStorage implements IStorage {
           theme_style as "themeStyle",
           is_downloadable as "isDownloadable",
           last_updated_by_musk as "lastUpdatedByMusk",
-          visibility
+          visibility,
+          metadata
       `, [
         insertResume.userId,
         insertResume.fileName,
@@ -6012,7 +6015,8 @@ export class DatabaseStorage implements IStorage {
         insertResume.themeStyle || 'professional',
         insertResume.isDownloadable || false,
         insertResume.lastUpdatedByMusk || null,
-        insertResume.visibility || 'private'
+        insertResume.visibility || 'private',
+        insertResume.metadata || null
       ]);
       
       console.log(`[db.createResume] Created resume with ID ${result.rows[0].id}`);
