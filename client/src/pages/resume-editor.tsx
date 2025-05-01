@@ -423,7 +423,7 @@ export default function ResumeEditor() {
         });
       }
     }
-  }, [profileData, resumeData, form, metadataFormData, localCachedFormData]);
+  }, [profileData, resumeData?.resume?.id, resumeData?.form, metadataFormData, localCachedFormData]);
   
   // Save resume mutation - enhanced for better form data persistence
   const saveResumeMutation = useMutation({
