@@ -340,12 +340,14 @@ export default function ResumeEditor() {
   // Verify the resume data structure
   const hasResumeData = !!resumeData;
   const hasResumeObject = !!resumeData?.resume;
+  const hasFormData = !!resumeData?.form;
   const resumeDataKeys = resumeData ? Object.keys(resumeData) : [];
   const resumeReadyState = hasResumeData && hasResumeObject;
   
   console.log("Render condition check:", {
     hasResumeData,
     hasResumeObject,
+    hasFormData,
     resumeDataKeys,
     resumeReadyState
   });
@@ -353,6 +355,7 @@ export default function ResumeEditor() {
   // Determine where resume data is coming from for debugging
   const resumeSources = {
     fromResumeData: resumeData?.resume ? "YES" : "NO",
+    hasStoredForm: resumeData?.form ? "YES" : "NO", 
     fromManualFetch: "YES", // We're doing a manual fetch in the component
     readyState: resumeReadyState
   };
@@ -852,7 +855,7 @@ export default function ResumeEditor() {
     toast({
       title: 'Warning',
       description: 'Some data may not have loaded properly. You can still edit your resume, but saving may create a new resume.',
-      variant: 'warning',
+      variant: 'default',
       duration: 7000,
     });
   }
