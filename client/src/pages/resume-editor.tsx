@@ -298,43 +298,111 @@ export default function ResumeEditor() {
       return;
     }
     
-    // Get the latest profile data directly from the server
-    fetch(`/api/users/${userId}`)
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Failed to fetch latest profile data');
-        }
-        return response.json();
-      })
-      .then(latestProfileData => {
-        console.log('Latest profile data fetched for update:', latestProfileData);
-        
-        // Create base personal info from the latest profile data
-        const basePersonalInfo = {
-          fullName: latestProfileData.name || '',
-          title: latestProfileData.title || '',
-          email: latestProfileData.email || '',
-          phone: latestProfileData.phoneNumber || '',
-          location: latestProfileData.location || '',
-          summary: latestProfileData.aboutMe || '',
-          website: latestProfileData.website || '',
-        };
-        
-        // Keep existing form data for other sections
-        const currentValues = form.getValues();
-        
-        // Reset form with updated personal info
-        form.setValue('personalInfo', basePersonalInfo);
-        
-        // Force re-render the input fields to display the updated values
-        setTimeout(() => {
+    console.log('Current form values:', form.getValues());
+    
+    // If we have resumeData, use it as a starting point
+    if (resumeData?.form) {
+      console.log('Using resumeData.form as starting point', resumeData.form);
+      // Get the latest profile data directly from the server
+      fetch(`/api/users/${userId}`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Failed to fetch latest profile data');
+          }
+          return response.json();
+        })
+        .then(latestProfileData => {
+          console.log('Latest profile data fetched for update:', latestProfileData);
+          
+          // Create base personal info from the latest profile data
+          const basePersonalInfo = {
+            fullName: latestProfileData.name || '',
+            title: latestProfileData.title || '',
+            email: latestProfileData.email || '',
+            phone: latestProfileData.phoneNumber || '',
+            location: latestProfileData.location || '',
+            summary: latestProfileData.aboutMe || '',
+            website: latestProfileData.website || '',
+          };
+          
+          // Directly use the resumeData.form to ensure we have all sections
+          const updatedValues = {
+            personalInfo: basePersonalInfo,
+            experiences: resumeData.form.experiences || { experiences: [] },
+            education: resumeData.form.education || { educations: [] },
+            skills: resumeData.form.skills || { skills: [] },
+            projects: resumeData.form.projects || { projects: [] },
+            settings: resumeData.form.settings || {
+              isDownloadable: resumeData.resume?.isDownloadable || false,
+              visibility: resumeData.resume?.visibility || 'private',
+              themeStyle: resumeData.resume?.themeStyle || 'professional',
+            },
+          };
+          
+          console.log('About to reset form with values:', updatedValues);
+          
+          // Reset form with updated values
+          form.reset(updatedValues);
+          
+          // Force re-render to ensure all fields display properly
+          setTimeout(() => {
+            form.reset(updatedValues);
+            
+            // Show success toast
+            toast({
+              title: 'Profile data updated',
+              description: 'Your resume has been updated with the latest profile information.',
+              variant: 'default',
+            });
+          }, 100);
+        })
+        .catch(error => {
+          console.error('Error updating from profile:', error);
+          toast({
+            title: 'Update failed',
+            description: `Failed to update from profile: ${error.message}`,
+            variant: 'destructive',
+          });
+        });
+    } else {
+      // If no resumeData.form, use current form values
+      const currentValues = form.getValues();
+      console.log('No resumeData.form, using current values:', currentValues);
+      
+      // Get the latest profile data directly from the server
+      fetch(`/api/users/${userId}`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Failed to fetch latest profile data');
+          }
+          return response.json();
+        })
+        .then(latestProfileData => {
+          console.log('Latest profile data fetched for update:', latestProfileData);
+          
+          // Create base personal info from the latest profile data
+          const basePersonalInfo = {
+            fullName: latestProfileData.name || '',
+            title: latestProfileData.title || '',
+            email: latestProfileData.email || '',
+            phone: latestProfileData.phoneNumber || '',
+            location: latestProfileData.location || '',
+            summary: latestProfileData.aboutMe || '',
+            website: latestProfileData.website || '',
+          };
+          
+          // Reset form with updated values
           form.reset({
             personalInfo: basePersonalInfo,
-            experiences: currentValues.experiences,
-            education: currentValues.education,
-            skills: currentValues.skills,
-            projects: currentValues.projects,
-            settings: currentValues.settings,
+            experiences: currentValues.experiences || { experiences: [] },
+            education: currentValues.education || { educations: [] },
+            skills: currentValues.skills || { skills: [] },
+            projects: currentValues.projects || { projects: [] },
+            settings: currentValues.settings || {
+              isDownloadable: false,
+              visibility: 'private',
+              themeStyle: 'professional',
+            },
           });
           
           // Show success toast
@@ -343,16 +411,16 @@ export default function ResumeEditor() {
             description: 'Your resume has been updated with the latest profile information.',
             variant: 'default',
           });
-        }, 100);
-      })
-      .catch(error => {
-        console.error('Error updating from profile:', error);
-        toast({
-          title: 'Update failed',
-          description: `Failed to update from profile: ${error.message}`,
-          variant: 'destructive',
+        })
+        .catch(error => {
+          console.error('Error updating from profile:', error);
+          toast({
+            title: 'Update failed',
+            description: `Failed to update from profile: ${error.message}`,
+            variant: 'destructive',
+          });
         });
-      });
+    }
   };
   
   // Helper functions for form array management
