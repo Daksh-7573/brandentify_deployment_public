@@ -1015,7 +1015,7 @@ export default function ResumeEditor() {
                 ))}
                 
                 {(!form.watch('experiences.experiences') || 
-                  form.watch('experiences.experiences').length === 0) && (
+                  form.watch('experiences.experiences')?.length === 0) && (
                   <div className="text-center py-8 border border-dashed rounded-lg">
                     <p className="text-muted-foreground">No work experiences added yet.</p>
                     <Button
@@ -1209,7 +1209,7 @@ export default function ResumeEditor() {
                 ))}
                 
                 {(!form.watch('education.educations') ||
-                  form.watch('education.educations').length === 0) && (
+                  form.watch('education.educations')?.length === 0) && (
                   <div className="text-center py-8 border border-dashed rounded-lg">
                     <p className="text-muted-foreground">No education added yet.</p>
                     <Button
@@ -1304,7 +1304,7 @@ export default function ResumeEditor() {
                   ))}
                 </div>
                 
-                {(!form.watch('skills.skills') || form.watch('skills.skills').length === 0) && (
+                {(!form.watch('skills.skills') || form.watch('skills.skills')?.length === 0) && (
                   <div className="text-center py-8 border border-dashed rounded-lg">
                     <p className="text-muted-foreground">No skills added yet.</p>
                     <Button
@@ -1446,7 +1446,7 @@ export default function ResumeEditor() {
                   </Card>
                 ))}
                 
-                {(!form.watch('projects.projects') || form.watch('projects.projects').length === 0) && (
+                {(!form.watch('projects.projects') || form.watch('projects.projects')?.length === 0) && (
                   <div className="text-center py-8 border border-dashed rounded-lg">
                     <p className="text-muted-foreground">No projects added yet.</p>
                     <Button

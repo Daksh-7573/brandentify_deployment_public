@@ -10,7 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import MuskResumeWriter from '@/components/resume/musk-resume-writer';
 import ResumeEditor from '@/pages/resume-editor';
 
-import { Upload, FileText, Edit2, Zap, AlertCircle, Eye } from 'lucide-react';
+import { Upload, FileText, Edit2, Zap, AlertCircle, Eye, Download } from 'lucide-react';
 
 export default function ResumePage() {
   const { user } = useAuth();
@@ -100,10 +100,33 @@ export default function ResumePage() {
                     {/* Display resume preview */}
                     <div className="aspect-[3/4] bg-white rounded-lg border shadow-sm overflow-hidden">
                       {resumeData.resume && resumeData.resume.fileData ? (
-                        <iframe 
-                          src={`data:application/pdf;base64,${String(resumeData.resume.fileData)}`} 
-                          className="w-full h-full"
-                        />
+                        <div className="w-full h-full flex flex-col items-center justify-center p-4">
+                          <p className="text-sm text-center mb-4">
+                            Your resume is ready to view or download
+                          </p>
+                          <Button 
+                            variant="default" 
+                            onClick={() => {
+                              if (resumeData?.resume?.fileData) {
+                                // Create anchor element and trigger download
+                                const link = document.createElement('a');
+                                link.href = `data:application/pdf;base64,${String(resumeData.resume.fileData)}`;
+                                link.download = resumeData.resume.fileName || 'resume.pdf';
+                                document.body.appendChild(link);
+                                link.click();
+                                document.body.removeChild(link);
+                                
+                                toast({
+                                  title: "Resume Downloaded",
+                                  description: "Your resume has been downloaded successfully.",
+                                });
+                              }
+                            }}
+                          >
+                            <Download className="h-4 w-4 mr-2" />
+                            Download Resume
+                          </Button>
+                        </div>
                       ) : (
                         <div className="flex items-center justify-center h-full">
                           <p className="text-muted-foreground">Resume preview not available</p>
