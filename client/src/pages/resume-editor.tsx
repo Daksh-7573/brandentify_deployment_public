@@ -308,95 +308,107 @@ export default function ResumeEditor() {
       // Use the existing profile data as a backup, in case we can't fetch new data
       let latestProfileData = profileData;
       
-      // Fetch all the data we need
-      console.log('Fetching all profile data from API for user', userId);
+      console.log('Fetching comprehensive profile data for user', userId);
       
-      // Try to get the latest profile data
+      // Try to get the comprehensive profile data first, which includes all sections
+      let workExperiences = profileData.workExperiences || [];
+      let educations = profileData.education || [];
+      let skills = profileData.skills || [];
+      let projects = profileData.projects || [];
+      
       try {
-        const profileResponse = await fetch(`/api/users/${userId}`);
+        // First, try the comprehensive profile endpoint which should have all data
+        const profileResponse = await fetch(`/api/users/${userId}/profile`);
         if (profileResponse.ok) {
-          const fetchedProfileData = await profileResponse.json();
-          latestProfileData = fetchedProfileData;
-          console.log('Latest profile data fetched successfully:', latestProfileData);
+          const comprehensiveData = await profileResponse.json();
+          console.log('Comprehensive profile data fetched successfully:', comprehensiveData);
+          
+          // Update all of our data with the comprehensive data
+          latestProfileData = comprehensiveData;
+          workExperiences = comprehensiveData.workExperiences || workExperiences;
+          educations = comprehensiveData.education || educations;
+          skills = comprehensiveData.skills || skills;
+          projects = comprehensiveData.projects || projects;
         } else {
-          console.warn('Profile data endpoint returned status:', profileResponse.status);
-          console.warn('Using existing profile data from context');
+          console.warn('Comprehensive profile endpoint returned status:', profileResponse.status);
+          console.warn('Falling back to individual endpoints or existing data');
+          
+          // Try to get the basic profile data separately
+          try {
+            const basicProfileResponse = await fetch(`/api/users/${userId}`);
+            if (basicProfileResponse.ok) {
+              const fetchedProfileData = await basicProfileResponse.json();
+              latestProfileData = fetchedProfileData;
+              console.log('Basic profile data fetched successfully:', latestProfileData);
+            } else {
+              console.warn('Basic profile endpoint returned status:', basicProfileResponse.status);
+            }
+          } catch (error) {
+            console.warn('Error fetching basic profile data:', error);
+          }
+          
+          // Try to fetch individual endpoints as a fallback
+          // Try to get work experiences
+          try {
+            console.log('Fetching work experiences...');
+            const experiencesResponse = await fetch(`/api/users/${userId}/work-experiences`);
+            if (experiencesResponse.ok) {
+              workExperiences = await experiencesResponse.json();
+              console.log('Work experiences fetched successfully:', workExperiences);
+            }
+          } catch (error) {
+            console.warn('Error fetching work experiences:', error);
+          }
+          
+          // Try to get education
+          try {
+            console.log('Fetching education...');
+            const educationResponse = await fetch(`/api/users/${userId}/educations`);
+            if (educationResponse.ok) {
+              educations = await educationResponse.json();
+              console.log('Education fetched successfully:', educations);
+            }
+          } catch (error) {
+            console.warn('Error fetching education:', error);
+          }
+          
+          // Try to get skills
+          try {
+            console.log('Fetching skills...');
+            const skillsResponse = await fetch(`/api/users/${userId}/skills`);
+            if (skillsResponse.ok) {
+              skills = await skillsResponse.json();
+              console.log('Skills fetched successfully:', skills);
+            }
+          } catch (error) {
+            console.warn('Error fetching skills:', error);
+          }
+          
+          // Try to get projects
+          try {
+            console.log('Fetching projects...');
+            const projectsResponse = await fetch(`/api/users/${userId}/projects`);
+            if (projectsResponse.ok) {
+              projects = await projectsResponse.json();
+              console.log('Projects fetched successfully:', projects);
+            }
+          } catch (error) {
+            console.warn('Error fetching projects:', error);
+          }
         }
       } catch (error) {
-        console.warn('Error fetching profile data:', error);
+        console.warn('Error fetching comprehensive profile data:', error);
         console.warn('Using existing profile data from context');
       }
-      console.log('Latest profile data fetched:', latestProfileData);
       
-      // Initialize empty arrays for each section
-      let workExperiences = [];
-      let educations = [];
-      let skills = [];
-      let projects = [];
-
-      // Try to get work experiences
-      try {
-        console.log('Fetching work experiences...');
-        const experiencesResponse = await fetch(`/api/users/${userId}/work-experiences`);
-        if (experiencesResponse.ok) {
-          workExperiences = await experiencesResponse.json();
-          console.log('Work experiences fetched successfully:', workExperiences);
-        } else {
-          console.warn('Work experiences endpoint returned status:', experiencesResponse.status);
-          console.warn('Using empty array for work experiences');
-        }
-      } catch (error) {
-        console.warn('Error fetching work experiences:', error);
-        console.warn('Using empty array for work experiences');
-      }
-      
-      // Try to get education
-      try {
-        console.log('Fetching education...');
-        const educationResponse = await fetch(`/api/users/${userId}/educations`);
-        if (educationResponse.ok) {
-          educations = await educationResponse.json();
-          console.log('Education fetched successfully:', educations);
-        } else {
-          console.warn('Education endpoint returned status:', educationResponse.status);
-          console.warn('Using empty array for education');
-        }
-      } catch (error) {
-        console.warn('Error fetching education:', error);
-        console.warn('Using empty array for education');
-      }
-      
-      // Try to get skills
-      try {
-        console.log('Fetching skills...');
-        const skillsResponse = await fetch(`/api/users/${userId}/skills`);
-        if (skillsResponse.ok) {
-          skills = await skillsResponse.json();
-          console.log('Skills fetched successfully:', skills);
-        } else {
-          console.warn('Skills endpoint returned status:', skillsResponse.status);
-          console.warn('Using empty array for skills');
-        }
-      } catch (error) {
-        console.warn('Error fetching skills:', error);
-        console.warn('Using empty array for skills');
-      }
-      
-      // Try to get projects
-      try {
-        console.log('Fetching projects...');
-        const projectsResponse = await fetch(`/api/users/${userId}/projects`);
-        if (projectsResponse.ok) {
-          projects = await projectsResponse.json();
-          console.log('Projects fetched successfully:', projects);
-        } else {
-          console.warn('Projects endpoint returned status:', projectsResponse.status);
-          console.warn('Using empty array for projects');
-        }
-      } catch (error) {
-        console.warn('Error fetching projects:', error);
-        console.warn('Using empty array for projects');
-      }
+      // Log what data we ended up with
+      console.log('Data sources for update:', {
+        profileData: latestProfileData,
+        workExperiences,
+        educations,
+        skills,
+        projects
+      });
       
       // Create base personal info from the latest profile data
       const basePersonalInfo = {
