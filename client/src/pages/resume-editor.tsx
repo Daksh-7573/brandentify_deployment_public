@@ -288,7 +288,7 @@ export default function ResumeEditor() {
   };
   
   // Update resume data from profile
-  const updateFromProfile = () => {
+  const updateFromProfile = async () => {
     if (!profileData) {
       toast({
         title: 'Profile data not loaded',
@@ -298,128 +298,163 @@ export default function ResumeEditor() {
       return;
     }
     
+    setIsLoading(true);
     console.log('Current form values:', form.getValues());
     
-    // If we have resumeData, use it as a starting point
-    if (resumeData?.form) {
-      console.log('Using resumeData.form as starting point', resumeData.form);
-      // Get the latest profile data directly from the server
-      fetch(`/api/users/${userId}`)
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Failed to fetch latest profile data');
-          }
-          return response.json();
-        })
-        .then(latestProfileData => {
-          console.log('Latest profile data fetched for update:', latestProfileData);
-          
-          // Create base personal info from the latest profile data
-          const basePersonalInfo = {
-            fullName: latestProfileData.name || '',
-            title: latestProfileData.title || '',
-            email: latestProfileData.email || '',
-            phone: latestProfileData.phoneNumber || '',
-            location: latestProfileData.location || '',
-            summary: latestProfileData.aboutMe || '',
-            website: latestProfileData.website || '',
-          };
-          
-          // Directly use the resumeData.form to ensure we have all sections
-          const updatedValues = {
-            personalInfo: basePersonalInfo,
-            experiences: resumeData.form.experiences || { experiences: [] },
-            education: resumeData.form.education || { educations: [] },
-            skills: resumeData.form.skills || { skills: [] },
-            projects: resumeData.form.projects || { projects: [] },
-            settings: resumeData.form.settings || {
-              isDownloadable: resumeData.resume?.isDownloadable || false,
-              visibility: resumeData.resume?.visibility || 'private',
-              themeStyle: resumeData.resume?.themeStyle || 'professional',
-            },
-          };
-          
-          console.log('About to reset form with values:', updatedValues);
-          
-          // Reset form with updated values
-          form.reset(updatedValues);
-          
-          // Force re-render to ensure all fields display properly
-          setTimeout(() => {
-            form.reset(updatedValues);
-            
-            // Show success toast
-            toast({
-              title: 'Profile data updated',
-              description: 'Your resume has been updated with the latest profile information.',
-              variant: 'default',
-            });
-          }, 100);
-        })
-        .catch(error => {
-          console.error('Error updating from profile:', error);
-          toast({
-            title: 'Update failed',
-            description: `Failed to update from profile: ${error.message}`,
-            variant: 'destructive',
-          });
-        });
-    } else {
-      // If no resumeData.form, use current form values
-      const currentValues = form.getValues();
-      console.log('No resumeData.form, using current values:', currentValues);
+    try {
+      // Fetch all the data we need
+      console.log('Fetching all profile data from API for user', userId);
       
-      // Get the latest profile data directly from the server
-      fetch(`/api/users/${userId}`)
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Failed to fetch latest profile data');
-          }
-          return response.json();
-        })
-        .then(latestProfileData => {
-          console.log('Latest profile data fetched for update:', latestProfileData);
-          
-          // Create base personal info from the latest profile data
-          const basePersonalInfo = {
-            fullName: latestProfileData.name || '',
-            title: latestProfileData.title || '',
-            email: latestProfileData.email || '',
-            phone: latestProfileData.phoneNumber || '',
-            location: latestProfileData.location || '',
-            summary: latestProfileData.aboutMe || '',
-            website: latestProfileData.website || '',
-          };
-          
-          // Reset form with updated values
-          form.reset({
-            personalInfo: basePersonalInfo,
-            experiences: currentValues.experiences || { experiences: [] },
-            education: currentValues.education || { educations: [] },
-            skills: currentValues.skills || { skills: [] },
-            projects: currentValues.projects || { projects: [] },
-            settings: currentValues.settings || {
-              isDownloadable: false,
-              visibility: 'private',
-              themeStyle: 'professional',
-            },
-          });
-          
-          // Show success toast
-          toast({
-            title: 'Profile data updated',
-            description: 'Your resume has been updated with the latest profile information.',
-            variant: 'default',
-          });
-        })
-        .catch(error => {
-          console.error('Error updating from profile:', error);
-          toast({
-            title: 'Update failed',
-            description: `Failed to update from profile: ${error.message}`,
-            variant: 'destructive',
-          });
+      // Get the latest profile data
+      const profileResponse = await fetch(`/api/users/${userId}`);
+      if (!profileResponse.ok) {
+        throw new Error('Failed to fetch latest profile data');
+      }
+      const latestProfileData = await profileResponse.json();
+      console.log('Latest profile data fetched:', latestProfileData);
+      
+      // Get work experiences
+      const experiencesResponse = await fetch(`/api/users/${userId}/work-experiences`);
+      if (!experiencesResponse.ok) {
+        throw new Error('Failed to fetch work experiences');
+      }
+      const workExperiences = await experiencesResponse.json();
+      console.log('Work experiences fetched:', workExperiences);
+      
+      // Get education
+      const educationResponse = await fetch(`/api/users/${userId}/educations`);
+      if (!educationResponse.ok) {
+        throw new Error('Failed to fetch education');
+      }
+      const educations = await educationResponse.json();
+      console.log('Education fetched:', educations);
+      
+      // Get skills
+      const skillsResponse = await fetch(`/api/users/${userId}/skills`);
+      if (!skillsResponse.ok) {
+        throw new Error('Failed to fetch skills');
+      }
+      const skills = await skillsResponse.json();
+      console.log('Skills fetched:', skills);
+      
+      // Get projects
+      const projectsResponse = await fetch(`/api/users/${userId}/projects`);
+      if (!projectsResponse.ok) {
+        throw new Error('Failed to fetch projects');
+      }
+      const projects = await projectsResponse.json();
+      console.log('Projects fetched:', projects);
+      
+      // Create base personal info from the latest profile data
+      const basePersonalInfo = {
+        fullName: latestProfileData.name || '',
+        title: latestProfileData.title || '',
+        email: latestProfileData.email || '',
+        phone: latestProfileData.phoneNumber || '',
+        location: latestProfileData.location || '',
+        summary: latestProfileData.aboutMe || '',
+        website: latestProfileData.website || '',
+      };
+      
+      // Map work experiences to resume format
+      const mappedExperiences = workExperiences.map(exp => ({
+        title: exp.position || '',
+        company: exp.company || '',
+        location: exp.location || '',
+        startDate: exp.startDate || '',
+        endDate: exp.endDate || null,
+        isCurrent: exp.isCurrent || false,
+        description: exp.description || '',
+        industry: exp.industry || '',
+        domain: exp.domain || '',
+        responsibilities: exp.responsibilities || '',
+      }));
+      
+      // Map education to resume format
+      const mappedEducations = educations.map(edu => ({
+        institution: edu.institution || '',
+        degree: edu.degree || '',
+        fieldOfStudy: edu.fieldOfStudy || '',
+        location: edu.location || '',
+        startDate: edu.startDate || '',
+        endDate: edu.endDate || '',
+        isCurrentlyEnrolled: edu.isCurrent || false,
+        gpa: edu.gpa || '',
+        achievements: edu.achievements || '',
+        skillsAcquired: edu.skillsAcquired || [],
+      }));
+      
+      // Map skills to resume format
+      const mappedSkills = skills.map(skill => ({
+        name: typeof skill === 'string' ? skill : skill.name || '',
+        level: typeof skill === 'object' ? skill.level || 'Intermediate' : 'Intermediate',
+        category: typeof skill === 'object' ? skill.category || '' : '',
+      }));
+      
+      // Map projects to resume format
+      const mappedProjects = projects.map(proj => ({
+        title: proj.title || '',
+        description: proj.description || '',
+        startDate: proj.startDate || '',
+        endDate: proj.endDate || null,
+        url: proj.projectUrl || '',
+        skills: proj.technologies || [],
+        achievements: proj.description || '',
+        category: proj.category || '',
+      }));
+      
+      // Create updated form values
+      const settings = resumeData?.form?.settings || {
+        isDownloadable: resumeData?.resume?.isDownloadable || false,
+        visibility: resumeData?.resume?.visibility || 'private',
+        themeStyle: resumeData?.resume?.themeStyle || 'professional',
+      };
+      
+      // Complete form object
+      const updatedValues = {
+        personalInfo: basePersonalInfo,
+        experiences: { 
+          experiences: mappedExperiences 
+        },
+        education: { 
+          educations: mappedEducations 
+        },
+        skills: { 
+          skills: mappedSkills 
+        },
+        projects: { 
+          projects: mappedProjects 
+        },
+        settings: settings,
+      };
+      
+      console.log('Complete form data to be set:', updatedValues);
+      
+      // Reset form with updated values
+      form.reset(updatedValues);
+      
+      // Force re-render to ensure all fields display properly
+      setTimeout(() => {
+        form.reset(updatedValues);
+        
+        // Show success toast
+        toast({
+          title: 'Profile data updated',
+          description: 'Your resume has been updated with the latest profile information.',
+          variant: 'default',
         });
+        
+        setIsLoading(false);
+      }, 100);
+      
+    } catch (error) {
+      console.error('Error updating from profile:', error);
+      toast({
+        title: 'Update failed',
+        description: `Failed to update from profile: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        variant: 'destructive',
+      });
+      setIsLoading(false);
     }
   };
   
