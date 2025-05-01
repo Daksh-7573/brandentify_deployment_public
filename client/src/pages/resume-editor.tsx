@@ -160,7 +160,7 @@ export default function ResumeEditor() {
   // Debug info
   console.log("Resume Editor - userId:", userId);
 
-  // Fetch resume data
+  // Fetch resume data with better error handling
   const { data: resumeData, isLoading: isResumeLoading, error: resumeError } = useQuery({
     queryKey: ['/api/users', userId, 'shadow-resume'],
     queryFn: async () => {
@@ -169,22 +169,65 @@ export default function ResumeEditor() {
       }
       
       console.log(`Fetching shadow resume data for user ${userId}`);
-      const response = await fetch(`/api/users/${userId}/shadow-resume`);
-      
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error(`Failed to fetch shadow resume: ${response.status} ${errorText}`);
-        throw new Error(`Failed to fetch shadow resume: ${response.status}`);
+      try {
+        const response = await fetch(`/api/users/${userId}/shadow-resume`);
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error(`Failed to fetch shadow resume: ${response.status} ${errorText}`);
+          throw new Error(`Failed to fetch shadow resume: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log("Shadow resume data loaded:", data);
+        
+        // Validate that we got a proper response with a resume object
+        if (!data || !data.resume) {
+          console.error("Invalid shadow resume data structure:", data);
+          throw new Error('Invalid resume data structure returned from API');
+        }
+        
+        return data;
+      } catch (err) {
+        console.error("Error fetching shadow resume:", err);
+        // Return a minimal valid structure to prevent UI errors
+        return { 
+          resume: null,
+          message: "Failed to load resume data"
+        };
       }
-      
-      return await response.json();
     },
     enabled: !!userId,
     staleTime: 60000, // 1 minute
     retry: 2,
   });
   
-  console.log("Resume Editor - resumeData:", resumeData, "isResumeLoading:", isResumeLoading, "resumeError:", resumeError);
+  // Enhanced logging with conditional checks to aid debugging
+  console.log("Resume Editor - resumeData:", resumeData);
+  
+  // Verify the resume data structure
+  const hasResumeData = !!resumeData;
+  const hasResumeObject = !!resumeData?.resume;
+  const resumeDataKeys = resumeData ? Object.keys(resumeData) : [];
+  const resumeReadyState = hasResumeData && hasResumeObject;
+  
+  console.log("Render condition check:", {
+    hasResumeData,
+    hasResumeObject,
+    resumeDataKeys,
+    resumeReadyState
+  });
+  
+  // Determine where resume data is coming from for debugging
+  const resumeSources = {
+    fromResumeData: resumeData?.resume ? "YES" : "NO",
+    fromManualFetch: "YES", // We're doing a manual fetch in the component
+    readyState: resumeReadyState
+  };
+  
+  const resumeExists = !!resumeData?.resume;
+  console.log("Resume exists?", resumeExists);
+  console.log("Resume sources check:", resumeSources);
   
   // Fetch comprehensive user profile data with our new hook
   const { data: profileData, isLoading: isProfileLoading, error: profileError } = useUserProfile(userId, { enabled: !!userId });
@@ -1397,13 +1440,26 @@ export default function ResumeEditor() {
                       }
                     })
                     .then(response => {
+                      // Save response status for debugging
+                      console.log(`Update resume API status: ${response.status}`);
+                      
                       if (!response.ok) {
-                        throw new Error('Failed to update resume');
+                        // Parse error message if possible
+                        return response.text().then(errorText => {
+                          console.error(`Error response text: ${errorText}`);
+                          throw new Error(`Failed to update resume: ${response.status} ${errorText || 'No error details'}`);
+                        });
                       }
                       return response.json();
                     })
-                    .then(() => {
-                      // Invalidate queries to refresh data
+                    .then(data => {
+                      console.log("Resume update successful:", data);
+                      // First reload comprehensive profile data
+                      queryClient.invalidateQueries({
+                        queryKey: ['/api/users', userId]
+                      });
+                      
+                      // Then reload the shadow resume data
                       queryClient.invalidateQueries({
                         queryKey: ['/api/users', userId, 'shadow-resume']
                       });
@@ -1413,12 +1469,17 @@ export default function ResumeEditor() {
                         title: "Resume Updated",
                         description: "Your resume has been updated with the latest profile information.",
                       });
+                      
+                      // Wait for data to refresh
+                      setTimeout(() => {
+                        window.location.reload(); // Safer approach to ensure clean state
+                      }, 1000);
                     })
                     .catch(error => {
                       console.error('Error updating resume:', error);
                       toast({
                         title: "Update Failed",
-                        description: "There was a problem updating your resume. Please try again.",
+                        description: error.message || "There was a problem updating your resume. Please try again.",
                         variant: "destructive",
                       });
                     });
