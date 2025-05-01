@@ -28,6 +28,7 @@ import profileServicesRoutes from "./routes-services-sync";
 import { resumeTestRoutes } from "./routes-resume-test";
 import { routesMigrateWorkExperiences } from "./routes-migrate-work-experiences";
 import resumeRoutes from "./routes-resume";
+import userProfileRoutes from "./routes-user-profile";
 import { registerMuskAnthropicRoutes } from "./routes-musk-anthropic";
 import { registerMuskMemoryRoutes } from "./routes-musk-memory";
 import { registerTrendGraphRoutes } from "./routes-trend-graph";
