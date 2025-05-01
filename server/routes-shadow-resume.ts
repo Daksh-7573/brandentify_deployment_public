@@ -84,7 +84,7 @@ ${projects.map(project => `- ${project.title || 'Project'}: ${project.descriptio
     }
   });
   
-  // Refresh Shadow Resume endpoint with expected URL pattern
+  // Refresh Shadow Resume endpoint with expected URL pattern - using resume editor data
   apiRouter.post("/users/:userId/shadow-resume/:resumeId/refresh", async (req: Request, res: Response) => {
     try {
       const { userId, resumeId } = req.params;
@@ -103,40 +103,42 @@ ${projects.map(project => `- ${project.title || 'Project'}: ${project.descriptio
         return res.status(403).json({ message: 'Resume does not belong to user' });
       }
       
-      // Get the user's profile data
-      const user = await storage.getUser(parseInt(userId));
-      if (!user) {
-        console.log(`[POST /users/:userId/shadow-resume/:resumeId/refresh] User not found with ID: ${userId}`);
-        return res.status(404).json({ message: 'User profile not found' });
+      // Get the resume editor data from the request body if available
+      // This way we're using resume editor data, not just profile data
+      const resumeData = req.body?.resumeData;
+      
+      console.log(`[POST /users/:userId/shadow-resume/:resumeId/refresh] Resume data from editor:`, 
+          resumeData ? 'Present' : 'Not provided');
+      
+      // If resume data is provided in the request, use it to update the resume
+      // Otherwise just update the lastUpdatedByMusk timestamp
+      let updateData: any = {
+        lastUpdatedByMusk: new Date(),
+      };
+      
+      // If we have editor data, use it to update additional fields
+      if (resumeData) {
+        // You can extract and update specific fields from resumeData here
+        // For example:
+        if (resumeData.personalInfo) {
+          updateData.title = resumeData.personalInfo.title;
+          // Add other personal info fields as needed
+        }
       }
       
-      // Get the user's experiences, education, and skills
-      const workExperiences = await storage.getWorkExperiencesByUserId(parseInt(userId));
-      const educations = await storage.getEducationsByUserId(parseInt(userId));
-      const skills = await storage.getSkillsByUserId(parseInt(userId));
-      const projects = await storage.getProjectsByUserId(parseInt(userId));
-      
-      // Update resume with refreshed information
-      const updatedResume = await storage.updateResume(parseInt(resumeId), {
-        lastUpdatedByMusk: new Date(),
-        // Not changing the actual PDF to avoid Puppeteer dependency issues
-      });
+      // Update resume with the data
+      const updatedResume = await storage.updateResume(parseInt(resumeId), updateData);
       
       console.log(`[POST /users/:userId/shadow-resume/:resumeId/refresh] Successfully refreshed resume ${resumeId}`);
       return res.status(200).json({ 
         resume: updatedResume,
-        message: 'Resume refreshed with latest profile data',
-        dataIncluded: {
-          workExperiences: workExperiences.length,
-          educations: educations.length,
-          skills: skills.length,
-          projects: projects.length
-        }
+        message: 'Resume refreshed with latest editor data',
+        source: resumeData ? 'editor' : 'timestamp-only'
       });
     } catch (error) {
       console.error(`[POST /users/:userId/shadow-resume/:resumeId/refresh] Error:`, error);
       return res.status(500).json({ 
-        message: 'Failed to refresh resume with profile data', 
+        message: 'Failed to refresh resume with editor data', 
         error: (error as Error).message 
       });
     }

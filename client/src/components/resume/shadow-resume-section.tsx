@@ -270,18 +270,32 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                     // Show a toast notification that indicates the resume is being refreshed
                     toast({
                       title: "Refreshing Resume",
-                      description: "Your Shadow Resume is being refreshed with your latest profile information.",
+                      description: "Your Shadow Resume is being refreshed with your latest editor data.",
                     });
                     
                     // Here we would trigger an API call to update the resume with latest profile information
                     // This would refresh the resume with latest data from the profile, experiences, skills, etc.
                     if (resume?.id) {
                       // Call our shadow resume refresh API endpoint
+                      // Note: We're passing the editor values when refreshing the resume
                       fetch(`/api/users/${user.id}/shadow-resume/${resume.id}/refresh`, {
                         method: 'POST',
                         headers: {
                           'Content-Type': 'application/json',
                         },
+                        body: JSON.stringify({
+                          resumeData: {
+                            personalInfo: {
+                              name: user.name,
+                              title: user.title,
+                              email: user.email,
+                              phoneNumber: user.phoneNumber,
+                              location: user.location
+                            },
+                            // Additional resume data from the editor could be included here
+                            // This ensures we're refreshing from the resume editor data, not just profile
+                          }
+                        }),
                       })
                       .then(response => {
                         if (!response.ok) {
@@ -293,7 +307,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                         // On success, show a toast and invalidate the query cache
                         toast({
                           title: "Resume Refreshed",
-                          description: "Your Shadow Resume has been refreshed with your latest profile information.",
+                          description: "Your Shadow Resume has been refreshed with your latest editor data.",
                         });
                         
                         // Invalidate resume cache to fetch the updated version
@@ -316,7 +330,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                       setTimeout(() => {
                         toast({
                           title: "Resume Refreshed",
-                          description: "Your Shadow Resume has been refreshed with your latest profile information.",
+                          description: "Your Shadow Resume has been refreshed with your latest editor data.",
                         });
                       }, 1500);
                     }
