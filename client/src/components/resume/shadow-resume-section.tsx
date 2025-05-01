@@ -49,28 +49,34 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
     aboutMe: user?.aboutMe || '',
   });
   
-  // Fetch work experiences for the user
+  // We should use the resume form data instead of directly fetching from profile
+  // This ensures the Shadow Resume shows what's in the Resume Editor, not the profile
+  
+  // Extract data from resume form if available
+  const formData = resume?.form || null;
+  
+  // Use form data for experiences, or fall back to profile data if not available
   const { data: workExperiences = [] } = useQuery<WorkExperience[]>({
     queryKey: ['/api/users', user?.id, 'experiences'],
-    enabled: !!user?.id,
+    enabled: !!user?.id && !formData?.experiences?.experiences, // Only query if no form data
   });
   
-  // Fetch education data for the user
+  // Use form data for education, or fall back to profile data if not available
   const { data: education = [] } = useQuery<Education[]>({
     queryKey: ['/api/users', user?.id, 'educations'],
-    enabled: !!user?.id,
+    enabled: !!user?.id && !formData?.education?.educations, // Only query if no form data
   });
   
-  // Fetch user skills 
+  // Use form data for skills, or fall back to profile data if not available
   const { data: skills = [] } = useQuery<any[]>({
     queryKey: ['/api/users', user?.id, 'skills'],
-    enabled: !!user?.id,
+    enabled: !!user?.id && !formData?.skills?.skills, // Only query if no form data
   });
   
-  // Fetch user projects
+  // Use form data for projects, or fall back to profile data if not available
   const { data: projects = [] } = useQuery<any[]>({
     queryKey: ['/api/users', user?.id, 'projects'],
-    enabled: !!user?.id,
+    enabled: !!user?.id && !formData?.projects?.projects, // Only query if no form data
   });
   
   // Update resume settings mutation
@@ -388,20 +394,24 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                           </div>
                         ) : (
                           <>
-                            <h2 className="text-xl font-bold" style={{color: fixedTheme.color}}>{user.name}</h2>
-                            <p className="text-sm text-gray-600">{user.title || 'Professional'}</p>
+                            <h2 className="text-xl font-bold" style={{color: fixedTheme.color}}>
+                              {formData?.personalInfo?.fullName || user.name}
+                            </h2>
+                            <p className="text-sm text-gray-600">
+                              {formData?.personalInfo?.title || user.title || 'Professional'}
+                            </p>
                             <div className="flex flex-wrap items-center gap-2 mt-1 text-xs text-gray-500">
-                              <span>{user.email}</span>
-                              {user.phoneNumber && (
+                              <span>{formData?.personalInfo?.email || user.email}</span>
+                              {(formData?.personalInfo?.phone || user.phoneNumber) && (
                                 <>
                                   <span>•</span>
-                                  <span>{user.phoneNumber}</span>
+                                  <span>{formData?.personalInfo?.phone || user.phoneNumber}</span>
                                 </>
                               )}
-                              {user.location && (
+                              {(formData?.personalInfo?.location || user.location) && (
                                 <>
                                   <span>•</span>
-                                  <span>{user.location}</span>
+                                  <span>{formData?.personalInfo?.location || user.location}</span>
                                 </>
                               )}
                             </div>
@@ -441,11 +451,37 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                         )}
                       </div>
                       
-                      {/* Work Experience - uses real data from experiences */}
+                      {/* Work Experience - uses form data if available, otherwise profile data */}
                       <div className="mb-4 pb-3 border-b border-gray-100">
                         <h3 className="text-sm font-bold mb-2 uppercase" style={{color: fixedTheme.color}}>Professional Experience</h3>
                         
-                        {workExperiences && workExperiences.length > 0 ? (
+                        {/* Check for form data first, then fall back to profile data */}
+                        {formData?.experiences?.experiences && formData.experiences.experiences.length > 0 ? (
+                          <div className="space-y-3 mt-2">
+                            {formData.experiences.experiences.map((experience, index) => (
+                              <div key={index} className="pb-2">
+                                <div className="font-semibold">{experience.title || experience.position}</div>
+                                <div className="text-gray-600 flex justify-between">
+                                  <span>{experience.company}{experience.industry ? `, ${experience.industry}` : ''}</span>
+                                  <span>
+                                    {new Date(experience.startDate).getFullYear()} - 
+                                    {experience.endDate ? new Date(experience.endDate).getFullYear() : 'Present'}
+                                  </span>
+                                </div>
+                                <ul className="list-disc ml-4 mt-1 text-gray-700 space-y-0.5">
+                                  {experience.responsibilities && Array.isArray(experience.responsibilities) ? 
+                                    experience.responsibilities.map((responsibility, i) => (
+                                      <li key={i}>{responsibility}</li>
+                                    )) : 
+                                    experience.description ? <li>{experience.description}</li> :
+                                    <li>Contributed to company projects and goals</li>
+                                  }
+                                </ul>
+                              </div>
+                            ))}
+                          </div>
+                        ) : workExperiences && workExperiences.length > 0 ? (
+                          // Fall back to profile data if no form data
                           <div className="space-y-3 mt-2">
                             {workExperiences.map((experience, index) => (
                               <div key={index} className="pb-2">
@@ -479,7 +515,49 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                       <div className="mb-4 pb-3 border-b border-gray-100">
                         <h3 className="text-sm font-bold mb-2 uppercase" style={{color: fixedTheme.color}}>Education</h3>
                         
-                        {education && education.length > 0 ? (
+                        {/* Check for form data first, then fall back to profile data */}
+                        {formData?.education?.educations && formData.education.educations.length > 0 ? (
+                          <div className="space-y-3 mt-2">
+                            {formData.education.educations.map((edu, index) => (
+                              <div key={index} className="pb-2">
+                                <div className="font-semibold">
+                                  {edu.degree}{edu.fieldOfStudy ? `, ${edu.fieldOfStudy}` : ''}
+                                </div>
+                                <div className="text-gray-600 flex justify-between">
+                                  <span>{edu.institution}</span>
+                                  <span>
+                                    {new Date(edu.startDate).getFullYear()} - 
+                                    {edu.endDate ? new Date(edu.endDate).getFullYear() : 'Present'}
+                                  </span>
+                                </div>
+                                
+                                {/* Additional education details */}
+                                <div className="mt-1 text-xs text-gray-600">
+                                  {edu.location && (
+                                    <div className="mt-0.5">
+                                      <span className="font-medium">Location:</span> {edu.location}
+                                    </div>
+                                  )}
+                                  {edu.industry && (
+                                    <div className="mt-0.5">
+                                      <span className="font-medium">Industry:</span> {edu.industry}
+                                      {edu.domain && <span> • {edu.domain}</span>}
+                                    </div>
+                                  )}
+                                  
+                                  {/* Skills acquired section */}
+                                  {edu.skillsAcquired && Array.isArray(edu.skillsAcquired) && edu.skillsAcquired.length > 0 && (
+                                    <div className="mt-1">
+                                      <span className="font-medium">Skills:</span>{' '}
+                                      {edu.skillsAcquired.join(', ')}
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        ) : education && education.length > 0 ? (
+                          // Fall back to profile data if no form data
                           <div className="space-y-3 mt-2">
                             {education.map((edu, index) => (
                               <div key={index} className="pb-2">
@@ -530,7 +608,17 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                       <div className="mb-4 pb-3 border-b border-gray-100">
                         <h3 className="text-sm font-bold mb-2 uppercase" style={{color: fixedTheme.color}}>Skills</h3>
                         
-                        {skills && skills.length > 0 ? (
+                        {/* Check for form data first, then fall back to profile data */}
+                        {formData?.skills?.skills && formData.skills.skills.length > 0 ? (
+                          <div className="flex flex-wrap gap-1 mt-2">
+                            {formData.skills.skills.map((skill: any, index: number) => (
+                              <span key={index} className="inline-block px-2 py-0.5 rounded-full bg-gray-100 text-gray-800 text-xs">
+                                {skill.name || skill}
+                              </span>
+                            ))}
+                          </div>
+                        ) : skills && skills.length > 0 ? (
+                          // Fall back to profile data if no form data
                           <div className="flex flex-wrap gap-1 mt-2">
                             {skills.map((skill, index) => (
                               <span key={index} className="inline-block px-2 py-0.5 rounded-full bg-gray-100 text-gray-800 text-xs">
