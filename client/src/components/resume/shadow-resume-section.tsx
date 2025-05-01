@@ -252,7 +252,10 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                       onTabChange('resume-editor');
                     } else {
                       // Fallback to direct DOM manipulation
-                      document.querySelector('[value="resume-editor"]')?.click();
+                      const element = document.querySelector('[value="resume-editor"]');
+                      if (element instanceof HTMLElement) {
+                        element.click();
+                      }
                     }
                   }}
                 >
@@ -270,15 +273,53 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                       description: "Your Shadow Resume is being updated with your latest profile information.",
                     });
                     
-                    // Here we would typically trigger an update function
-                    // For now, we'll just show a success toast after a short delay
-                    setTimeout(() => {
-                      toast({
-                        title: "Resume Updated",
-                        description: "Your Shadow Resume has been refreshed with your latest information.",
-                        variant: "success",
+                    // Here we would trigger an API call to update the resume with latest profile information
+                    // This would refresh the resume with latest data from the profile, experiences, skills, etc.
+                    if (resume?.id) {
+                      // Call our resume update API endpoint
+                      fetch(`/api/resumes/${resume.id}/update-from-profile`, {
+                        method: 'POST',
+                        headers: {
+                          'Content-Type': 'application/json',
+                        },
+                      })
+                      .then(response => {
+                        if (!response.ok) {
+                          throw new Error('Failed to update resume');
+                        }
+                        return response.json();
+                      })
+                      .then(() => {
+                        // On success, show a toast and invalidate the query cache
+                        toast({
+                          title: "Resume Updated",
+                          description: "Your Shadow Resume has been refreshed with your latest information.",
+                        });
+                        
+                        // Invalidate resume cache to fetch the updated version
+                        queryClient.invalidateQueries({
+                          queryKey: ['/api/users', user?.id, 'shadow-resume']
+                        });
+                      })
+                      .catch(error => {
+                        console.error('Error updating resume:', error);
+                        toast({
+                          title: "Update Failed",
+                          description: "There was a problem updating your resume. Please try again.",
+                          variant: "destructive",
+                        });
                       });
-                    }, 1500);
+                    } else {
+                      // Fallback behavior when no resume ID is available
+                      // Show success toast after a short delay - this is just for demo purposes
+                      // In a real implementation, we'd have proper API integration
+                      setTimeout(() => {
+                        toast({
+                          title: "Resume Updated",
+                          description: "Your Shadow Resume has been refreshed with your latest information.",
+                        });
+                      }, 1500);
+                    }
                   }}
                 >
                   <Zap className="h-4 w-4 mr-1" />
@@ -296,10 +337,21 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
             <Zap className="h-10 w-10 text-primary/60 mb-3" />
             <h3 className="text-lg font-medium">Your Shadow Resume</h3>
             <p className="text-sm text-muted-foreground mt-1 mb-3">
-              Musk will automatically create and maintain your resume as you grow professionally
+              Complete your profile to generate your Shadow Resume. Add your work experiences, skills, and projects to qualify.
             </p>
-            <Button variant="outline" size="sm">
-              Upload Resume to Get Started
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => {
+                // Show toast with guidance
+                toast({
+                  title: "Complete Your Profile",
+                  description: "Add at least one work experience, skill, and project to generate your Shadow Resume.",
+                  variant: "default",
+                });
+              }}
+            >
+              How to Get Started
             </Button>
           </div>
         )}
@@ -542,7 +594,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                                 </div>
                                 {project.technologies && Array.isArray(project.technologies) && project.technologies.length > 0 && (
                                   <div className="flex flex-wrap gap-1 mt-1">
-                                    {project.technologies.map((tech, i) => (
+                                    {project.technologies.map((tech: string, i: number) => (
                                       <span key={i} className="inline-block px-1.5 py-0.5 rounded-sm bg-gray-100 text-gray-700 text-xs">
                                         {tech}
                                       </span>
