@@ -216,6 +216,59 @@ export default function resumeRoutes() {
     }
   });
   
+  /**
+   * Update resume with latest profile data
+   * POST /api/resumes/:id/update-from-profile
+   */
+  router.post('/resumes/:id/update-from-profile', async (req: Request, res: Response) => {
+    try {
+      const resumeId = parseInt(req.params.id);
+      
+      if (isNaN(resumeId)) {
+        return res.status(400).json({
+          message: 'Invalid resume ID format'
+        });
+      }
+      
+      // Get the current resume to identify the user
+      const currentResume = await storage.getResumeById(resumeId);
+      
+      if (!currentResume) {
+        return res.status(404).json({
+          message: 'Resume not found'
+        });
+      }
+      
+      const userId = currentResume.userId;
+      
+      // Check if the profile is eligible for resume generation
+      const eligible = await canGenerateResume(userId);
+      
+      if (!eligible) {
+        return res.status(400).json({
+          message: 'Cannot update resume. User needs at least one work experience and one skill.'
+        });
+      }
+      
+      // Regenerate the resume with the latest profile data
+      const resumeUrl = await generateResume(userId);
+      
+      // Return the updated resume
+      const updatedResume = await storage.getResumeById(resumeId);
+      
+      return res.status(200).json({
+        message: 'Resume updated successfully with the latest profile data',
+        resume: updatedResume
+      });
+    } catch (error) {
+      console.error('[Update Resume From Profile] Error:', error);
+      return res.status(500).json({
+        message: 'Error updating resume with profile data',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+
   console.log('Resume generation routes loaded');
   return router;
 }
