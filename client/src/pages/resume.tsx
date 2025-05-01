@@ -98,35 +98,67 @@ export default function ResumePage() {
                     </div>
                     
                     {/* Display resume preview */}
-                    <div className="aspect-[3/4] bg-white rounded-lg border shadow-sm overflow-hidden">
+                    <div className="aspect-[3/4] bg-white rounded-lg border shadow-sm overflow-hidden relative">
                       {resumeData.resume && resumeData.resume.fileData ? (
-                        <div className="w-full h-full flex flex-col items-center justify-center p-4">
-                          <p className="text-sm text-center mb-4">
-                            Your resume is ready to view or download
-                          </p>
-                          <Button 
-                            variant="default" 
-                            onClick={() => {
-                              if (resumeData?.resume?.fileData) {
-                                // Create anchor element and trigger download
-                                const link = document.createElement('a');
-                                link.href = `data:application/pdf;base64,${String(resumeData.resume.fileData)}`;
-                                link.download = resumeData.resume.fileName || 'resume.pdf';
-                                document.body.appendChild(link);
-                                link.click();
-                                document.body.removeChild(link);
-                                
-                                toast({
-                                  title: "Resume Downloaded",
-                                  description: "Your resume has been downloaded successfully.",
-                                });
-                              }
-                            }}
+                        <>
+                          <object
+                            data={`data:application/pdf;base64,${String(resumeData.resume.fileData)}`}
+                            type="application/pdf"
+                            className="w-full h-full"
                           >
-                            <Download className="h-4 w-4 mr-2" />
-                            Download Resume
-                          </Button>
-                        </div>
+                            <div className="w-full h-full flex flex-col items-center justify-center p-4">
+                              <p className="text-sm text-center mb-4">
+                                Unable to display PDF directly. Please download to view.
+                              </p>
+                              <Button 
+                                variant="default" 
+                                onClick={() => {
+                                  if (resumeData?.resume?.fileData) {
+                                    const link = document.createElement('a');
+                                    link.href = `data:application/pdf;base64,${String(resumeData.resume.fileData)}`;
+                                    link.download = resumeData.resume.fileName || 'resume.pdf';
+                                    document.body.appendChild(link);
+                                    link.click();
+                                    document.body.removeChild(link);
+                                    
+                                    toast({
+                                      title: "Resume Downloaded",
+                                      description: "Your resume has been downloaded successfully.",
+                                    });
+                                  }
+                                }}
+                              >
+                                <Download className="h-4 w-4 mr-2" />
+                                Download Resume
+                              </Button>
+                            </div>
+                          </object>
+                          <div className="absolute bottom-2 right-2">
+                            <Button
+                              size="sm"
+                              variant="secondary"
+                              className="opacity-70 hover:opacity-100"
+                              onClick={() => {
+                                if (resumeData?.resume?.fileData) {
+                                  const link = document.createElement('a');
+                                  link.href = `data:application/pdf;base64,${String(resumeData.resume.fileData)}`;
+                                  link.download = resumeData.resume.fileName || 'resume.pdf';
+                                  document.body.appendChild(link);
+                                  link.click();
+                                  document.body.removeChild(link);
+                                  
+                                  toast({
+                                    title: "Resume Downloaded",
+                                    description: "Your resume has been downloaded successfully.",
+                                  });
+                                }
+                              }}
+                            >
+                              <Download className="h-3 w-3 mr-1" />
+                              Download
+                            </Button>
+                          </div>
+                        </>
                       ) : (
                         <div className="flex items-center justify-center h-full">
                           <p className="text-muted-foreground">Resume preview not available</p>
