@@ -24,7 +24,7 @@ export default function ResumePage() {
   });
 
   // Fetch shadow resume for the user (if it exists)
-  const { data: resumeData } = useQuery<{resume: any}>({
+  const { data: resumeData, isLoading: isResumeLoading, refetch: refetchResume } = useQuery<{resume: any}>({
     queryKey: ['/api/users', user?.id, 'shadow-resume'],
     enabled: !!user?.id
   });
@@ -46,6 +46,41 @@ export default function ResumePage() {
     });
     // In a real app, this would update the resume in the database
   };
+  
+  // Create shadow resume mutation
+  const createShadowResumeMutation = useMutation({
+    mutationFn: async () => {
+      if (!user?.id) throw new Error("User ID is required");
+      
+      const response = await fetch(`/api/users/${user.id}/create-shadow-resume`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to create shadow resume: ${response.status} ${errorText}`);
+      }
+      
+      const data = await response.json();
+      return data;
+    },
+    onSuccess: () => {
+      toast({
+        title: "Shadow Resume Created",
+        description: "Your Shadow Resume has been created successfully.",
+      });
+      // Refresh the resume data
+      refetchResume();
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error Creating Shadow Resume",
+        description: error.message || "Failed to create Shadow Resume. Please try again.",
+        variant: "destructive",
+      });
+    }
+  });
 
   return (
     <PageLayout
@@ -87,7 +122,14 @@ export default function ResumePage() {
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
-              {resumeData?.resume ? (
+              {isResumeLoading ? (
+                <div className="flex items-center justify-center py-20">
+                  <div className="flex flex-col items-center">
+                    <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary mb-3"></div>
+                    <p className="text-sm text-muted-foreground">Loading your resume...</p>
+                  </div>
+                </div>
+              ) : resumeData?.resume ? (
                 <div className="space-y-4">
                   <div className="border rounded-md p-4 bg-card">
                     <div className="text-center mb-4">
@@ -99,7 +141,7 @@ export default function ResumePage() {
                     
                     {/* Display resume preview */}
                     <div className="aspect-[3/4] bg-white rounded-lg border shadow-sm overflow-hidden relative">
-                      {resumeData.resume && resumeData.resume.fileData ? (
+                      {resumeData.resume?.fileData ? (
                         <>
                           <object
                             data={`data:application/pdf;base64,${String(resumeData.resume.fileData)}`}
@@ -207,15 +249,36 @@ export default function ResumePage() {
                   <AlertCircle className="h-12 w-12 text-muted-foreground mb-4" />
                   <h3 className="text-lg font-medium mb-2">No Resume Found</h3>
                   <p className="text-sm text-muted-foreground mb-4">
-                    You haven't created a resume yet. Use the Resume Editor to create and save your resume.
+                    You haven't created a shadow resume yet. Create one now or use the Resume Editor.
                   </p>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => setActiveTab('resume-editor')}
-                  >
-                    Go to Resume Editor
-                  </Button>
+                  <div className="flex gap-3">
+                    <Button 
+                      variant="default" 
+                      size="sm"
+                      onClick={() => createShadowResumeMutation.mutate()}
+                      disabled={createShadowResumeMutation.isPending}
+                    >
+                      {createShadowResumeMutation.isPending ? (
+                        <>
+                          <div className="animate-spin h-4 w-4 mr-2 border-2 border-white border-t-transparent rounded-full"></div>
+                          Creating...
+                        </>
+                      ) : (
+                        <>
+                          <Zap className="h-4 w-4 mr-1" />
+                          Create Shadow Resume
+                        </>
+                      )}
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => setActiveTab('resume-editor')}
+                    >
+                      <Edit2 className="h-4 w-4 mr-1" />
+                      Go to Editor
+                    </Button>
+                  </div>
                 </div>
               )}
             </CardContent>
