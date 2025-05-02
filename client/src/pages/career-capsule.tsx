@@ -182,21 +182,36 @@ export default function CareerCapsulePage() {
 
   // Handle create year submission
   const onSubmitCreateYear = async (data: z.infer<typeof createYearSchema>) => {
-    if (!capsule) return;
+    if (!capsule) {
+      console.error("Cannot create year: No active capsule");
+      toast({
+        title: "Error",
+        description: "Please create a career capsule first",
+        variant: "destructive",
+      });
+      return;
+    }
     
     try {
+      // Map yearNumber to year field as expected by the server
       await createYear.mutateAsync({
         capsuleId: capsule.id,
         data: {
-          yearNumber: data.yearNumber,
+          year: data.yearNumber, // Changed to match server expectation
           title: data.title,
           description: data.description || null,
+          goalType: "milestone", // Added default goalType as required by server
         }
       });
       setCreateYearOpen(false);
       yearForm.reset();
     } catch (error) {
       console.error("Error creating year:", error);
+      toast({
+        title: "Error",
+        description: "Failed to add your goal. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 
