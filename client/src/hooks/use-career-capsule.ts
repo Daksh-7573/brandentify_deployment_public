@@ -193,7 +193,8 @@ export const useUpdateCapsuleYear = () => {
   
   return useMutation({
     mutationFn: async ({ yearId, data }: { yearId: number, data: Partial<CapsuleYear> }) => {
-      const response = await apiRequest(`/api/capsule-years/${yearId}`, {
+      const response = await apiRequest({
+        url: `/api/capsule-years/${yearId}`,
         method: 'PUT',
         data,
       });
@@ -225,7 +226,8 @@ export const useDeleteCapsuleYear = () => {
   return {
     ...useMutation({
       mutationFn: async ({ yearId }: { yearId: number, capsuleId: number }) => {
-        const response = await apiRequest(`/api/capsule-years/${yearId}`, {
+        const response = await apiRequest({
+          url: `/api/capsule-years/${yearId}`,
           method: 'DELETE',
         });
         return response;
@@ -274,7 +276,8 @@ export const useCreateCapsuleTask = () => {
   
   return useMutation({
     mutationFn: async ({ yearId, data }: { yearId: number, data: Omit<CapsuleTask, 'id' | 'yearId' | 'createdAt' | 'updatedAt'> }) => {
-      const response = await apiRequest(`/api/capsule-years/${yearId}/tasks`, {
+      const response = await apiRequest({
+        url: `/api/capsule-years/${yearId}/tasks`,
         method: 'POST',
         data,
       });
@@ -304,7 +307,8 @@ export const useUpdateCapsuleTask = () => {
   
   return useMutation({
     mutationFn: async ({ taskId, data }: { taskId: number, data: Partial<CapsuleTask> }) => {
-      const response = await apiRequest(`/api/capsule-tasks/${taskId}`, {
+      const response = await apiRequest({
+        url: `/api/capsule-tasks/${taskId}`,
         method: 'PUT',
         data,
       });
@@ -334,7 +338,8 @@ export const useToggleTaskCompletion = () => {
   
   return useMutation({
     mutationFn: async ({ taskId }: { taskId: number }) => {
-      const response = await apiRequest(`/api/capsule-tasks/${taskId}/toggle`, {
+      const response = await apiRequest({
+        url: `/api/capsule-tasks/${taskId}/toggle`,
         method: 'POST',
       });
       return response as CapsuleTask;
@@ -365,7 +370,8 @@ export const useDeleteCapsuleTask = () => {
   return {
     ...useMutation({
       mutationFn: async ({ taskId }: { taskId: number }) => {
-        const response = await apiRequest(`/api/capsule-tasks/${taskId}`, {
+        const response = await apiRequest({
+          url: `/api/capsule-tasks/${taskId}`,
           method: 'DELETE',
         });
         return response;
@@ -414,7 +420,8 @@ export const useCreateCapsuleJournal = () => {
   
   return useMutation({
     mutationFn: async ({ yearId, data }: { yearId: number, data: Omit<CapsuleJournal, 'id' | 'yearId' | 'createdAt' | 'updatedAt'> }) => {
-      const response = await apiRequest(`/api/capsule-years/${yearId}/journals`, {
+      const response = await apiRequest({
+        url: `/api/capsule-years/${yearId}/journals`,
         method: 'POST',
         data,
       });
@@ -444,7 +451,8 @@ export const useUpdateCapsuleJournal = () => {
   
   return useMutation({
     mutationFn: async ({ journalId, data }: { journalId: number, data: Partial<CapsuleJournal> }) => {
-      const response = await apiRequest(`/api/capsule-journals/${journalId}`, {
+      const response = await apiRequest({
+        url: `/api/capsule-journals/${journalId}`,
         method: 'PUT',
         data,
       });
@@ -476,7 +484,8 @@ export const useDeleteCapsuleJournal = () => {
   return {
     ...useMutation({
       mutationFn: async ({ journalId }: { journalId: number }) => {
-        const response = await apiRequest(`/api/capsule-journals/${journalId}`, {
+        const response = await apiRequest({
+          url: `/api/capsule-journals/${journalId}`,
           method: 'DELETE',
         });
         return response;
