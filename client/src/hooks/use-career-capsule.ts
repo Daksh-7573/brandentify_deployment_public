@@ -65,39 +65,53 @@ export const useUserCareerCapsule = (userId: number) => {
           return null;
         }
         
-        const response = await apiRequest({
-          url: `/api/users/${userId}/career-capsule`,
-          method: 'GET'
+        // Force a direct network request, bypassing the cache
+        const response = await fetch(`/api/users/${userId}/career-capsule`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-cache'
+          }
         });
         
-        console.log("Career capsule API response:", response);
-        
-        // Validate the response has the expected properties
-        if (!response || typeof response !== 'object' || !('id' in response)) {
-          console.log("Invalid career capsule response:", response);
-          return null;
-        }
-        
-        return response as CareerCapsule;
-      } catch (error) {
-        // If 404, it means the user doesn't have a career capsule yet
-        if ((error as any)?.status === 404) {
+        // Handle 404 specifically
+        if (response.status === 404) {
           console.log(`No career capsule found for user ${userId}`);
           return null;
         }
+        
+        // Handle other error status codes
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error(`Error fetching career capsule: ${response.status} ${errorText}`);
+          throw new Error(`Server error: ${response.status}`);
+        }
+        
+        // Parse the JSON response
+        const data = await response.json();
+        console.log("Career capsule API response:", data);
+        
+        // Be more forgiving with response validation
+        if (!data) {
+          console.log("Empty career capsule response");
+          return null;
+        }
+        
+        return data as CareerCapsule;
+      } catch (error) {
         console.error("Error fetching career capsule:", error);
-        throw error;
+        return null; // Return null instead of throwing to avoid breaking the UI
       }
     },
-    retry: (failureCount, error) => {
-      // Don't retry on 404
-      if ((error as any)?.status === 404) {
-        return false;
-      }
-      return failureCount < 3;
-    },
+    // Reduce stale time to ensure we get fresh data
+    staleTime: 0,
+    // Newer version uses gcTime instead of cacheTime
+    gcTime: 0,
     // Only enable the query if userId is valid
     enabled: !!userId && userId > 0,
+    // Refresh data more frequently 
+    refetchInterval: 5000, // Refetch every 5 seconds
+    refetchOnWindowFocus: true,
   });
 };
 
@@ -114,27 +128,51 @@ export const useCreateCareerCapsule = () => {
         throw new Error("Invalid user ID");
       }
       
-      const response = await apiRequest({
-        url: `/api/users/${userId}/career-capsule`,
+      // Use fetch directly to ensure we're not affected by caching issues
+      const response = await fetch(`/api/users/${userId}/career-capsule`, {
         method: 'POST',
-        data,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
       });
       
-      console.log("Career capsule creation response:", response);
-      
-      // Be more flexible in response validation
-      // The server returns a successful response with the new capsule data
-      if (!response) {
-        console.error("Empty career capsule creation response");
-        throw new Error("Empty server response when creating career capsule");
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`Error creating career capsule: ${response.status} ${errorText}`);
+        throw new Error(`Server error: ${response.status}`);
       }
       
-      // Accept any object as a valid response from the server
-      return response as CareerCapsule;
+      // Parse the response JSON
+      const createdCapsule = await response.json();
+      console.log("Career capsule creation response:", createdCapsule);
+      
+      // After successful creation, immediately fetch the capsule to ensure we have the latest data
+      console.log("Fetching updated capsule data after creation");
+      const freshDataResponse = await fetch(`/api/users/${userId}/career-capsule`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
+      
+      if (!freshDataResponse.ok) {
+        console.warn("Failed to fetch fresh capsule data after creation, using creation response");
+        return createdCapsule as CareerCapsule;
+      }
+      
+      const freshData = await freshDataResponse.json();
+      console.log("Fresh career capsule data after creation:", freshData);
+      
+      // Return the freshly fetched data
+      return freshData as CareerCapsule;
     },
     onSuccess: (data, { userId }) => {
       console.log("Successfully created career capsule:", data);
-      // Immediately invalidate the cache to force a fresh fetch
+      // Force cache invalidation and refetch
+      queryClient.removeQueries({ queryKey: ['/api/users', userId, 'career-capsule'] });
       queryClient.invalidateQueries({ queryKey: ['/api/users', userId, 'career-capsule'] });
       toast({
         title: "Success!",
