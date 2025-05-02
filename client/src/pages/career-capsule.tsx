@@ -591,9 +591,13 @@ export default function CareerCapsulePage() {
 
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold">Year by Year Plan</h2>
-          <Button onClick={() => setCreateYearOpen(true)} size="sm">
+          <Button 
+            onClick={() => setCreateYearOpen(true)} 
+            size="sm"
+            disabled={!capsule || !capsule.id}
+          >
             <Plus className="mr-1 h-4 w-4" />
-            Create Capsule
+            Add Year Goal
           </Button>
         </div>
 
@@ -614,7 +618,7 @@ export default function CareerCapsulePage() {
                     <p className="text-sm text-muted-foreground mb-2">You have two options to get started:</p>
                     <ol className="list-decimal ml-4 text-sm text-muted-foreground space-y-1">
                       <li><span className="font-medium">Use Musk AI</span> - Click "Generate with Musk AI" to automatically create milestones</li>
-                      <li><span className="font-medium">Add manually</span> - Click "Create Capsule" to create your own yearly milestones</li>
+                      <li><span className="font-medium">Add manually</span> - Click "Add Year Goal" to create your own yearly milestones</li>
                     </ol>
                   </div>
                 </CardContent>
@@ -676,7 +680,7 @@ export default function CareerCapsulePage() {
                       )}
                     </Button>
                     <p className="text-xs text-muted-foreground mt-4">
-                      Or create a capsule manually by clicking the "Create Capsule" button above
+                      Or create your career plan manually by clicking the "Add Year Goal" button above
                     </p>
                   </div>
                 </CardContent>
@@ -800,7 +804,7 @@ export default function CareerCapsulePage() {
               <Card>
                 <CardContent className="p-8 text-center">
                   <p className="text-muted-foreground">
-                    Select a year from the sidebar or create a capsule to get started.
+                    Select a year from the sidebar or add a year goal to get started.
                   </p>
                 </CardContent>
               </Card>
