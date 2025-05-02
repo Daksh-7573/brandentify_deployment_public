@@ -14,6 +14,8 @@ import {
 import { QuestCard } from './quest-card';
 import { XpProgressBar } from './xp-progress-bar';
 import { cn } from '@/lib/utils';
+import { Link } from 'wouter';
+import { BadgeCheck, Lightbulb, GraduationCap } from 'lucide-react';
 
 interface QuestPanelProps {
   userId: number;
@@ -84,6 +86,16 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
   const activeQuests = allQuests?.filter(quest => quest.status === 'active') || [];
   const completedQuests = allQuests?.filter(quest => quest.status === 'completed') || [];
   
+  // Count skill-related quests
+  const skillQuests = allQuests?.filter(quest => {
+    const action = quest.definition?.targetAction;
+    return action === 'add_skill' || 
+           action === 'add_skill_category' ||
+           action === 'add_industry_skill' ||
+           action === 'update_resume_skills' ||
+           action === 'add_project_technologies';
+  }) || [];
+  
   const renderQuestsList = (quests: typeof weeklyQuests, loading: boolean) => {
     if (loading) {
       return (
@@ -119,9 +131,17 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
     <Card className={cn("w-full", className)}>
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <CardTitle className="text-2xl">Career Quests</CardTitle>
-        <Button variant="ghost" size="sm" asChild>
-          <a href="/career-quests">View All</a>
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" asChild>
+            <Link href="/skill-quests">
+              <GraduationCap className="h-4 w-4 mr-2" />
+              Skill Quests
+            </Link>
+          </Button>
+          <Button variant="ghost" size="sm" asChild>
+            <Link href="/career-quests">View All</Link>
+          </Button>
+        </div>
       </CardHeader>
       <CardContent>
         {/* XP Progress Bar */}
@@ -136,6 +156,22 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
               className="mb-4"
             />
           )
+        )}
+        
+        {/* Skill Quests Highlight Card */}
+        {!isLoadingAll && skillQuests.length > 0 && (
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 p-4 rounded-md border border-blue-100 dark:border-blue-900 mb-6 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Lightbulb className="h-8 w-8 text-blue-500" />
+              <div>
+                <h3 className="font-medium">New Skill Quests Available!</h3>
+                <p className="text-sm text-muted-foreground">Complete specific skill quests to boost your profile</p>
+              </div>
+            </div>
+            <Button size="sm" asChild>
+              <Link href="/skill-quests">View Skill Quests</Link>
+            </Button>
+          </div>
         )}
         
         <Tabs defaultValue="weekly" value={tabValue} onValueChange={setTabValue}>
