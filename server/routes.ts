@@ -39,7 +39,7 @@ import { setupMuskTestingRoutes } from "./routes-musk-testing";
 import muskFeedbackRoutes from "./routes-musk-feedback";
 import { setupServicesRoutes } from "./routes-services";
 import addProjectUpdateRoutes from "./routes-project-update";
-import careerCapsuleRoutes from "./routes-career-capsule";
+// Career Capsule routes removed
 import { 
   handleSmartConnect, 
   handleCareerRecommendations, 
@@ -5372,9 +5372,9 @@ ${extractedText.substring(0, 5000)}
   app.use('/api', mentorshipRoutes);
   console.log("Mentorship Connect routes loaded");
   
-  // Career Capsule routes
-  app.use('/api', careerCapsuleRoutes);
-  console.log("Career Capsule routes loaded");
+  // Career Capsule routes - removed
+  // app.use('/api', careerCapsuleRoutes);
+  // console.log("Career Capsule routes loaded");
   
   // Register resume generation routes
   app.use('/api', resumeRoutes());
