@@ -193,11 +193,12 @@ export default function CareerCapsulePage() {
     }
     
     try {
-      // Map yearNumber to year field as expected by the server
+      console.log(`Creating year goal for capsule ID: ${capsule.id}`);
+      // Submit with the proper field names expected by the server
       await createYear.mutateAsync({
         capsuleId: capsule.id,
         data: {
-          year: data.yearNumber, // Changed to match server expectation
+          yearNumber: data.yearNumber, // Client-side field name
           title: data.title,
           description: data.description || null,
           goalType: "milestone", // Added default goalType as required by server

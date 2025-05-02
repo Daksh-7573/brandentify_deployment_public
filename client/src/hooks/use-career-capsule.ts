@@ -164,11 +164,26 @@ export const useCreateCapsuleYear = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: async ({ capsuleId, data }: { capsuleId: number, data: Omit<CapsuleYear, 'id' | 'capsuleId' | 'createdAt' | 'updatedAt' | 'completionStatus'> }) => {
+    mutationFn: async ({ capsuleId, data }: { 
+      capsuleId: number, 
+      data: { 
+        year?: number; 
+        yearNumber?: number;
+        title: string; 
+        description: string | null;
+        goalType: string;
+      } 
+    }) => {
+      // Ensure we're sending the expected server-side field names
+      const serverData = {
+        ...data,
+        year: data.year || data.yearNumber, // Make sure 'year' is included for the server
+      };
+      
       const response = await apiRequest({
         url: `/api/career-capsules/${capsuleId}/years`,
         method: 'POST',
-        data,
+        data: serverData,
       });
       return response as CapsuleYear;
     },
