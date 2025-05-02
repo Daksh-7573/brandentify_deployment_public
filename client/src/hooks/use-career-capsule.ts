@@ -164,7 +164,7 @@ export const useCreateCapsuleYear = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: async ({ capsuleId, data }: { capsuleId: number, data: Omit<CapsuleYear, 'id' | 'capsuleId' | 'createdAt' | 'updatedAt' | 'progress'> }) => {
+    mutationFn: async ({ capsuleId, data }: { capsuleId: number, data: Omit<CapsuleYear, 'id' | 'capsuleId' | 'createdAt' | 'updatedAt' | 'completionStatus'> }) => {
       const response = await apiRequest({
         url: `/api/career-capsules/${capsuleId}/years`,
         method: 'POST',

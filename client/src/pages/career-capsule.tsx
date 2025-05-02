@@ -191,7 +191,6 @@ export default function CareerCapsulePage() {
           yearNumber: data.yearNumber,
           title: data.title,
           description: data.description || null,
-          milestone: null // Setting the milestone field required by the schema
         }
       });
       setCreateYearOpen(false);
@@ -594,7 +593,7 @@ export default function CareerCapsulePage() {
                       </div>
                       <div className="flex items-center space-x-2">
                         <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                          <span className="text-xs font-medium">{Math.round(year.progress)}%</span>
+                          <span className="text-xs font-medium">{Math.round(year.completionStatus)}%</span>
                         </div>
                         <ChevronRight className="h-4 w-4 text-muted-foreground" />
                       </div>
