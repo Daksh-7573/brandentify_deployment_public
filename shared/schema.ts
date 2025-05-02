@@ -1118,18 +1118,12 @@ export const insertMentorshipFeedbackSchema = createInsertSchema(mentorshipFeedb
 export type MentorshipRequest = typeof mentorshipRequests.$inferSelect;
 export type InsertMentorshipRequest = z.infer<typeof insertMentorshipRequestSchema>;
 
-// Career Capsule functionality removed
-// Code removed as per requested change to completely remove Career Capsule functionality
+// Career Roadmap Feature
+// This feature allows users to set 1-5 year career goals and receive AI-generated
+// milestones/steps with timeline to achieve those goals.
 
-// The following models and their associated types/schemas have been commented out:
-// - careerCapsules
-// - capsuleYears
-// - capsuleTasks
-// - capsuleJournals
-
-/*
-// Career Capsule enums
-export const capsuleGoalTypeEnum = pgEnum("capsule_goal_type", [
+// Career Roadmap enums for goal types
+export const careerGoalTypeEnum = pgEnum("career_goal_type", [
   "position_change", // e.g., "Become a Product Manager"
   "skill_acquisition", // e.g., "Master AI/ML"
   "promotion", // e.g., "Get promoted to VP-level"
@@ -1141,101 +1135,118 @@ export const capsuleGoalTypeEnum = pgEnum("capsule_goal_type", [
   "custom" // Custom user-defined goal
 ]);
 
-// Career Capsules model - parent container for 5-year plans
-export const careerCapsules = pgTable("career_capsules", {
+// Status enum for career goals
+export const goalStatusEnum = pgEnum("goal_status", [
+  "not_started", // Just created, no progress
+  "in_progress", // Some milestones completed
+  "completed", // All milestones completed
+  "abandoned" // User decided to abandon this goal
+]);
+
+// Career Goal model - parent container for the roadmap
+export const careerGoals = pgTable("career_goals", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id).notNull(),
   title: text("title").notNull(),
-  goalType: capsuleGoalTypeEnum("goal_type").notNull(),
-  customGoal: text("custom_goal"), // Only used if goalType is "custom"
+  goalType: careerGoalTypeEnum("goal_type").notNull(),
   timeframe: integer("timeframe").notNull().default(5), // 1-5 years
   description: text("description"),
-  industry: text("industry"), // Target industry
+  targetIndustry: text("target_industry"), // Target industry for the goal
+  targetRole: text("target_role"), // Target role/position
+  currentSkills: jsonb("current_skills").default("[]"), // Skills the user currently has
+  requiredSkills: jsonb("required_skills").default("[]"), // Skills needed to achieve the goal
+  status: goalStatusEnum("status").default("not_started"),
+  progress: integer("progress").default(0), // 0-100%
   isPrivate: boolean("is_private").default(true),
-  overallProgress: integer("overall_progress").default(0), // 0-100%
-  isMuskGenerated: boolean("is_musk_generated").default(true), // Whether created with Musk or manually
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
+  isMuskGenerated: boolean("is_musk_generated").default(true), // Whether AI helped create the roadmap
+  startDate: timestamp("start_date").defaultNow(),
+  targetDate: timestamp("target_date"), // Estimated completion date
+  lastUpdated: timestamp("last_updated").defaultNow()
 });
 
-// Capsule Years model - yearly milestones within a Career Capsule
-export const capsuleYears = pgTable("capsule_years", {
+// Goal Milestone model - key achievements/steps toward the goal
+export const goalMilestones = pgTable("goal_milestones", {
   id: serial("id").primaryKey(),
-  capsuleId: integer("capsule_id").references(() => careerCapsules.id).notNull(),
-  yearNumber: integer("year_number").notNull(), // 1-5
+  goalId: integer("goal_id").references(() => careerGoals.id).notNull(),
   title: text("title").notNull(),
   description: text("description"),
-  completionStatus: integer("completion_status").default(0), // 0-100%
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
-
-// Capsule Tasks model - individual tasks within each Capsule Year
-export const capsuleTasks = pgTable("capsule_tasks", {
-  id: serial("id").primaryKey(),
-  yearId: integer("year_id").references(() => capsuleYears.id).notNull(),
-  title: text("title").notNull(),
-  description: text("description"),
+  category: text("category"), // e.g., "skill", "networking", "education", "certification"
+  timeframeMonths: integer("timeframe_months"), // When this should be completed (in months from start)
   isCompleted: boolean("is_completed").default(false),
-  dueDate: timestamp("due_date"),
-  category: text("category"), // e.g., "skill", "networking", "education", "application"
-  priority: integer("priority").default(1), // 1 (low) to 3 (high)
-  difficulty: integer("difficulty").default(1), // 1 (easy) to 3 (hard)
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
+  completedDate: timestamp("completed_date"), // When the milestone was completed
+  priority: integer("priority").default(2), // 1 (low) to 3 (high)
+  difficulty: integer("difficulty").default(2), // 1 (easy) to 3 (hard)
+  muskTips: text("musk_tips"), // AI tips on how to accomplish this milestone
+  resources: jsonb("resources").default("[]"), // Relevant resources (links, courses, etc.)
+  createdAt: timestamp("created_at").defaultNow()
 });
 
-// Capsule Journal model - for users to track progress and reflections
-export const capsuleJournals = pgTable("capsule_journals", {
+// Goal Skills model - specific skills to acquire for the goal
+export const goalSkills = pgTable("goal_skills", {
   id: serial("id").primaryKey(),
-  capsuleId: integer("capsule_id").references(() => careerCapsules.id).notNull(),
-  title: text("title").notNull().default("Journal Entry"),
+  goalId: integer("goal_id").references(() => careerGoals.id).notNull(),
+  name: text("name").notNull(),
+  importance: integer("importance").default(3), // 1-5 scale
+  currentLevel: integer("current_level").default(0), // 0-100
+  targetLevel: integer("target_level").default(80), // 0-100
+  learningResources: jsonb("learning_resources").default("[]"), // Resources for learning this skill
+  timeToAcquire: integer("time_to_acquire"), // Estimated time in months
+  isAcquired: boolean("is_acquired").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
+// Progress Log model - for users to track progress and reflections
+export const goalProgressLogs = pgTable("goal_progress_logs", {
+  id: serial("id").primaryKey(),
+  goalId: integer("goal_id").references(() => careerGoals.id).notNull(),
+  title: text("title").notNull().default("Progress Update"),
   content: text("content").notNull(),
-  mood: text("mood"), // e.g., "motivated", "challenged", "proud"
-  entryDate: timestamp("entry_date").defaultNow(),
-  isPrivate: boolean("is_private").default(true),
+  sentiment: text("sentiment"), // e.g., "positive", "neutral", "challenged"
+  milestoneId: integer("milestone_id").references(() => goalMilestones.id), // Optional related milestone
+  logDate: timestamp("log_date").defaultNow(),
+  isPrivate: boolean("is_private").default(true)
 });
 
-// Insert schemas for Career Capsule
-export const insertCareerCapsuleSchema = createInsertSchema(careerCapsules).omit({
+// Insert schemas for Career Roadmap
+export const insertCareerGoalSchema = createInsertSchema(careerGoals).omit({
   id: true,
-  overallProgress: true,
-  createdAt: true,
-  updatedAt: true
+  progress: true,
+  startDate: true,
+  lastUpdated: true
 });
 
-export const insertCapsuleYearSchema = createInsertSchema(capsuleYears).omit({
-  id: true,
-  completionStatus: true,
-  createdAt: true,
-  updatedAt: true
-});
-
-export const insertCapsuleTaskSchema = createInsertSchema(capsuleTasks).omit({
+export const insertGoalMilestoneSchema = createInsertSchema(goalMilestones).omit({
   id: true,
   isCompleted: true,
+  completedDate: true,
+  createdAt: true
+});
+
+export const insertGoalSkillSchema = createInsertSchema(goalSkills).omit({
+  id: true,
+  isAcquired: true,
   createdAt: true,
   updatedAt: true
 });
 
-export const insertCapsuleJournalSchema = createInsertSchema(capsuleJournals).omit({
+export const insertGoalProgressLogSchema = createInsertSchema(goalProgressLogs).omit({
   id: true,
-  entryDate: true
+  logDate: true
 });
 
-// Export types for Career Capsule
-export type CareerCapsule = typeof careerCapsules.$inferSelect;
-export type InsertCareerCapsule = z.infer<typeof insertCareerCapsuleSchema>;
+// Export types for Career Roadmap
+export type CareerGoal = typeof careerGoals.$inferSelect;
+export type InsertCareerGoal = z.infer<typeof insertCareerGoalSchema>;
 
-export type CapsuleYear = typeof capsuleYears.$inferSelect;
-export type InsertCapsuleYear = z.infer<typeof insertCapsuleYearSchema>;
+export type GoalMilestone = typeof goalMilestones.$inferSelect;
+export type InsertGoalMilestone = z.infer<typeof insertGoalMilestoneSchema>;
 
-export type CapsuleTask = typeof capsuleTasks.$inferSelect;
-export type InsertCapsuleTask = z.infer<typeof insertCapsuleTaskSchema>;
+export type GoalSkill = typeof goalSkills.$inferSelect;
+export type InsertGoalSkill = z.infer<typeof insertGoalSkillSchema>;
 
-export type CapsuleJournal = typeof capsuleJournals.$inferSelect;
-export type InsertCapsuleJournal = z.infer<typeof insertCapsuleJournalSchema>;
-*/
+export type GoalProgressLog = typeof goalProgressLogs.$inferSelect;
+export type InsertGoalProgressLog = z.infer<typeof insertGoalProgressLogSchema>;
 
 export type MentorshipFeedback = typeof mentorshipFeedback.$inferSelect;
 export type InsertMentorshipFeedback = z.infer<typeof insertMentorshipFeedbackSchema>;
