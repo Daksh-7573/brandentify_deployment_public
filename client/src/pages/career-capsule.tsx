@@ -556,7 +556,7 @@ export default function CareerCapsulePage() {
           <h2 className="text-xl font-bold">Year by Year Plan</h2>
           <Button onClick={() => setCreateYearOpen(true)} size="sm">
             <Plus className="mr-1 h-4 w-4" />
-            Add Year
+            Create Capsule
           </Button>
         </div>
 
@@ -577,7 +577,7 @@ export default function CareerCapsulePage() {
                     <p className="text-sm text-muted-foreground mb-2">You have two options to get started:</p>
                     <ol className="list-decimal ml-4 text-sm text-muted-foreground space-y-1">
                       <li><span className="font-medium">Use Musk AI</span> - Click "Generate with Musk AI" to automatically create milestones</li>
-                      <li><span className="font-medium">Add manually</span> - Click "Add Year" to create your own yearly milestones</li>
+                      <li><span className="font-medium">Add manually</span> - Click "Create Capsule" to create your own yearly milestones</li>
                     </ol>
                   </div>
                 </CardContent>
@@ -639,7 +639,7 @@ export default function CareerCapsulePage() {
                       )}
                     </Button>
                     <p className="text-xs text-muted-foreground mt-4">
-                      Or add years manually by clicking the "Add Year" button above
+                      Or add years manually by clicking the "Create Capsule" button above
                     </p>
                   </div>
                 </CardContent>
