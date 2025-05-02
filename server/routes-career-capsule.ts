@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { storage } from './storage';
+import { generateCapsuleMilestones, saveCapsuleMilestones } from './services/musk-capsule-milestones';
 
 const router = Router();
 
@@ -318,6 +319,61 @@ router.delete('/capsule-journals/:journalId', async (req, res) => {
   } catch (error) {
     console.error('Error deleting capsule journal:', error);
     return res.status(500).json({ message: 'Error deleting capsule journal' });
+  }
+});
+
+// Generate AI milestones for a career capsule
+router.post('/career-capsules/:capsuleId/generate-milestones', async (req, res) => {
+  try {
+    const capsuleId = parseInt(req.params.capsuleId);
+    if (isNaN(capsuleId)) {
+      return res.status(400).json({ message: 'Invalid capsule ID' });
+    }
+    
+    // Get the capsule to verify it exists and access its data
+    const capsule = await storage.getCareerCapsuleById(capsuleId);
+    if (!capsule) {
+      return res.status(404).json({ message: 'Career capsule not found' });
+    }
+    
+    const options = {
+      userId: capsule.userId,
+      capsuleId: capsule.id,
+      goalType: req.body.goalType || capsule.goalType,
+      customGoal: req.body.customGoal || capsule.customGoal,
+      timeframe: req.body.timeframe || capsule.timeframe,
+      industry: req.body.industry || capsule.industry,
+      description: req.body.description || capsule.description,
+      useModel: req.body.useModel || 'openai',
+    };
+    
+    // Generate the milestones
+    const result = await generateCapsuleMilestones(options);
+    
+    if (!result.success) {
+      return res.status(500).json({ message: result.message });
+    }
+    
+    // Save the generated milestones
+    const saved = await saveCapsuleMilestones(capsuleId, result.years);
+    
+    if (!saved) {
+      return res.status(500).json({ message: 'Failed to save generated milestones' });
+    }
+    
+    // Return the generated years
+    const years = await storage.getCapsuleYears(capsuleId);
+    return res.json({
+      success: true,
+      message: 'Successfully generated and saved milestones',
+      data: years
+    });
+  } catch (error) {
+    console.error('Error generating capsule milestones:', error);
+    return res.status(500).json({ 
+      message: 'Error generating capsule milestones',
+      error: error.message 
+    });
   }
 });
 

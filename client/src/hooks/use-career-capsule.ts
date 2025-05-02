@@ -515,3 +515,56 @@ export const useDeleteCapsuleJournal = () => {
     setYearId,
   };
 };
+
+// Types for AI milestone generation
+export interface MilestoneGenerationOptions {
+  goalType?: string;
+  customGoal?: string;
+  timeframe?: number;
+  industry?: string;
+  description?: string;
+  useModel?: 'openai' | 'anthropic';
+}
+
+export interface MilestoneGenerationResponse {
+  success: boolean;
+  message: string;
+  data?: CapsuleYear[];
+}
+
+// Hook for generating AI milestones for a career capsule
+export const useGenerateCapsuleMilestones = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async ({ 
+      capsuleId, 
+      options 
+    }: { 
+      capsuleId: number, 
+      options: MilestoneGenerationOptions 
+    }) => {
+      const response = await apiRequest({
+        url: `/api/career-capsules/${capsuleId}/generate-milestones`,
+        method: 'POST',
+        data: options,
+      });
+      return response as MilestoneGenerationResponse;
+    },
+    onSuccess: (data, { capsuleId }) => {
+      queryClient.invalidateQueries({ queryKey: ['/api/career-capsules', capsuleId, 'years'] });
+      toast({
+        title: "Success!",
+        description: "AI-powered career milestones generated successfully.",
+      });
+    },
+    onError: (error) => {
+      console.error("Error generating capsule milestones:", error);
+      toast({
+        title: "Error",
+        description: "Failed to generate career milestones. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+};
