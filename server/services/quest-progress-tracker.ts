@@ -6,8 +6,10 @@
  */
 
 import { IStorage } from "../storage";
-import { QuestDefinition, UserQuest } from "../../shared/schema";
 
+/**
+ * Types of user actions that can trigger quest progress updates
+ */
 type ActionType = 
   | 'create_pulse'
   | 'add_hashtag'
@@ -32,7 +34,7 @@ export async function trackUserAction(
 ): Promise<void> {
   try {
     // 1. Get user's active quests for the current week
-    const currentWeekQuests = await storage.getCurrentWeekQuests(userId);
+    const currentWeekQuests = await storage.getCurrentWeekUserQuests(userId);
     if (!currentWeekQuests || currentWeekQuests.length === 0) {
       console.log(`[trackUserAction] No active quests found for user ${userId}`);
       return;
@@ -59,7 +61,7 @@ export async function trackUserAction(
     const targetAction = targetActionMapping[actionType];
     
     // 4. Find matching quests that track this type of action
-    const matchingQuests = currentWeekQuests.filter(quest => {
+    const matchingQuests = currentWeekQuests.filter((quest: any) => {
       // Get the definition for this quest
       const definition = questDefinitions.find(
         def => def.id === quest.questDefinitionId

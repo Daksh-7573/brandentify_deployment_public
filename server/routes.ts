@@ -20,6 +20,7 @@ import { registerSmartConnectRoutes } from "./routes-smart-connect";
 import { setupShadowResumeRoutes } from "./routes-shadow-resume";
 import { setupNowboardRoutes } from "./routes-nowboard";
 import { setupCareerQuestsRoutes } from "./routes-career-quests";
+import { setupQuestProgressMiddleware } from "./routes-quest-progress";
 import mentorshipRoutes from "./routes-mentorship";
 import brandsOfTheDayRoutes from "./routes-brands-of-the-day";
 import enhancedUserRoutes from "./routes-enhanced-user";
@@ -5361,6 +5362,10 @@ ${extractedText.substring(0, 5000)}
   
   // Career Quests routes
   setupCareerQuestsRoutes(apiRouter, storage);
+  
+  // Setup Quest Progress Tracking Middleware
+  setupQuestProgressMiddleware(apiRouter, storage);
+  console.log("Quest Progress Tracking Middleware loaded");
   
   // Mentorship Connect routes
   app.use('/api', mentorshipRoutes);
