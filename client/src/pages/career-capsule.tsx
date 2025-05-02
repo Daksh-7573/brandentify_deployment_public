@@ -34,6 +34,7 @@ import {
   useToggleTaskCompletion,
   useCapsuleJournals,
   useCreateCapsuleJournal,
+  useGenerateCapsuleMilestones,
   CapsuleYear,
   CapsuleTask,
   CapsuleJournal
@@ -80,6 +81,8 @@ export default function CareerCapsulePage() {
   const [activeYear, setActiveYear] = useState<CapsuleYear | null>(null);
   const [createTaskOpen, setCreateTaskOpen] = useState(false);
   const [createJournalOpen, setCreateJournalOpen] = useState(false);
+  const [generateMilestonesOpen, setGenerateMilestonesOpen] = useState(false);
+  const [aiModel, setAiModel] = useState<'openai' | 'anthropic'>('openai');
   const [activeTab, setActiveTab] = useState("timeline");
 
   // Career capsule data
@@ -94,6 +97,7 @@ export default function CareerCapsulePage() {
   const createTask = useCreateCapsuleTask();
   const toggleTask = useToggleTaskCompletion();
   const createJournal = useCreateCapsuleJournal();
+  const generateMilestones = useGenerateCapsuleMilestones();
 
   // Forms
   const capsuleForm = useForm<z.infer<typeof createCapsuleSchema>>({
@@ -246,6 +250,39 @@ export default function CareerCapsulePage() {
       await toggleTask.mutateAsync({ taskId });
     } catch (error) {
       console.error("Error toggling task:", error);
+    }
+  };
+  
+  // Handle generation of AI milestones
+  const handleGenerateMilestones = async () => {
+    if (!capsule) return;
+    
+    try {
+      toast({
+        title: "Generating milestones...",
+        description: "This may take a moment while Musk analyzes your profile and creates tailored milestones.",
+      });
+      
+      await generateMilestones.mutateAsync({ 
+        capsuleId: capsule.id,
+        options: {
+          goalType: capsule.goalType,
+          customGoal: capsule.customGoal,
+          timeframe: capsule.timeframe,
+          industry: capsule.industry,
+          description: capsule.description,
+          useModel: aiModel
+        }
+      });
+      
+      setGenerateMilestonesOpen(false);
+    } catch (error) {
+      console.error("Error generating AI milestones:", error);
+      toast({
+        title: "Error",
+        description: "Failed to generate AI milestones. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -478,19 +515,30 @@ export default function CareerCapsulePage() {
             <div className="text-sm text-muted-foreground">
               {capsule.createdAt && `Created on ${format(parseISO(capsule.createdAt), "MMMM d, yyyy")}`}
             </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => {
-                toast({
-                  title: "AI Analysis",
-                  description: "Musk is analyzing your progress. This feature will be available soon!",
-                });
-              }}
-            >
-              <BrainCircuit className="h-4 w-4 mr-1" />
-              AI Guidance
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setGenerateMilestonesOpen(true)}
+                disabled={years.length > 0 || generateMilestones.isPending}
+              >
+                <BrainCircuit className="h-4 w-4 mr-1" />
+                {generateMilestones.isPending ? 'Generating...' : 'Generate with Musk AI'}
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  toast({
+                    title: "AI Analysis",
+                    description: "Musk is analyzing your progress. This feature will be available soon!",
+                  });
+                }}
+              >
+                <BrainCircuit className="h-4 w-4 mr-1" />
+                AI Guidance
+              </Button>
+            </div>
           </CardFooter>
         </Card>
 
@@ -903,6 +951,96 @@ export default function CareerCapsulePage() {
               </DialogFooter>
             </form>
           </Form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Generate Milestones with Musk AI Dialog */}
+      <Dialog open={generateMilestonesOpen} onOpenChange={setGenerateMilestonesOpen}>
+        <DialogContent className="sm:max-w-[525px]">
+          <DialogHeader>
+            <DialogTitle>Generate Career Milestones with Musk AI</DialogTitle>
+            <DialogDescription>
+              Let Musk analyze your goals, profile data, and market trends to generate personalized career milestones.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <h4 className="font-medium">AI Model Selection</h4>
+              <p className="text-sm text-muted-foreground">
+                Choose which AI model you'd like to use for generating your career milestones.
+              </p>
+              <div className="flex gap-4 pt-2">
+                <div
+                  className={`flex-1 border rounded-md p-4 cursor-pointer transition-all ${
+                    aiModel === 'openai' ? 'border-primary bg-primary/5' : ''
+                  }`}
+                  onClick={() => setAiModel('openai')}
+                >
+                  <div className="flex justify-between items-center">
+                    <h3 className="font-medium">OpenAI</h3>
+                    {aiModel === 'openai' && (
+                      <div className="w-4 h-4 rounded-full bg-primary" />
+                    )}
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    GPT-4o for detailed, strategic career planning with balanced milestone targets.
+                  </p>
+                </div>
+                <div
+                  className={`flex-1 border rounded-md p-4 cursor-pointer transition-all ${
+                    aiModel === 'anthropic' ? 'border-primary bg-primary/5' : ''
+                  }`}
+                  onClick={() => setAiModel('anthropic')}
+                >
+                  <div className="flex justify-between items-center">
+                    <h3 className="font-medium">Anthropic</h3>
+                    {aiModel === 'anthropic' && (
+                      <div className="w-4 h-4 rounded-full bg-primary" />
+                    )}
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Claude model for nuanced, thoughtful career guidance with detailed narratives.
+                  </p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <h4 className="font-medium">What to Expect</h4>
+              <div className="text-sm text-muted-foreground space-y-2">
+                <p>
+                  Based on your Career Capsule goals and timeframe, Musk AI will generate:
+                </p>
+                <ul className="list-disc pl-5 space-y-1">
+                  <li>Year-by-year milestones tailored to your career path</li>
+                  <li>Key tasks and targets for each milestone</li>
+                  <li>Strategic guidance aligned to market trends</li>
+                  <li>Skill development recommendations</li>
+                </ul>
+                <p className="pt-2">
+                  Generation typically takes 15-30 seconds. You can always edit or refine the milestones after generation.
+                </p>
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setGenerateMilestonesOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleGenerateMilestones} disabled={generateMilestones.isPending}>
+              {generateMilestones.isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Generating...
+                </>
+              ) : (
+                <>
+                  <BrainCircuit className="mr-2 h-4 w-4" />
+                  Generate Milestones
+                </>
+              )}
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </PageLayout>
