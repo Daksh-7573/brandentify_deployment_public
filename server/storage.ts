@@ -6937,6 +6937,262 @@ export class DatabaseStorage implements IStorage {
       return [];
     }
   }
+  // Career Capsule operations
+  async getUserCareerCapsule(userId: number): Promise<CareerCapsule | null> {
+    console.log(`[db.getUserCareerCapsule] Looking for career capsule for user ${userId}`);
+    
+    return executeWithRetry(async () => {
+      try {
+        const result = await pool.query(`
+          SELECT id, user_id as "userId", title, goal_type as "goalType", 
+                custom_goal as "customGoal", timeframe, description, industry, 
+                is_private as "isPrivate", overall_progress as "overallProgress", 
+                is_musk_generated as "isMuskGenerated", created_at as "createdAt", 
+                updated_at as "updatedAt"
+          FROM career_capsules
+          WHERE user_id = $1
+          ORDER BY created_at DESC
+          LIMIT 1
+        `, [userId]);
+        
+        if (result.rows.length === 0) {
+          console.log(`[db.getUserCareerCapsule] No career capsule found for user ${userId}`);
+          return null;
+        }
+        
+        console.log(`[db.getUserCareerCapsule] Found career capsule for user ${userId}`);
+        return result.rows[0];
+      } catch (error) {
+        console.error(`[db.getUserCareerCapsule] Error fetching career capsule for user ${userId}:`, error);
+        throw error;
+      }
+    }, 3, 800);
+  }
+  
+  async getCareerCapsulesByUserId(userId: number): Promise<CareerCapsule[]> {
+    console.log(`[db.getCareerCapsulesByUserId] Looking for career capsules for user ${userId}`);
+    
+    return executeWithRetry(async () => {
+      try {
+        const result = await pool.query(`
+          SELECT id, user_id as "userId", title, goal_type as "goalType", 
+                custom_goal as "customGoal", timeframe, description, industry, 
+                is_private as "isPrivate", overall_progress as "overallProgress", 
+                is_musk_generated as "isMuskGenerated", created_at as "createdAt", 
+                updated_at as "updatedAt"
+          FROM career_capsules
+          WHERE user_id = $1
+          ORDER BY created_at DESC
+        `, [userId]);
+        
+        console.log(`[db.getCareerCapsulesByUserId] Found ${result.rows.length} career capsules for user ${userId}`);
+        return result.rows;
+      } catch (error) {
+        console.error(`[db.getCareerCapsulesByUserId] Error fetching career capsules for user ${userId}:`, error);
+        throw error;
+      }
+    }, 3, 800);
+  }
+  
+  async getCareerCapsuleById(id: number): Promise<CareerCapsule | undefined> {
+    console.log(`[db.getCareerCapsuleById] Looking for career capsule with ID ${id}`);
+    
+    return executeWithRetry(async () => {
+      try {
+        const result = await pool.query(`
+          SELECT id, user_id as "userId", title, goal_type as "goalType", 
+                custom_goal as "customGoal", timeframe, description, industry, 
+                is_private as "isPrivate", overall_progress as "overallProgress", 
+                is_musk_generated as "isMuskGenerated", created_at as "createdAt", 
+                updated_at as "updatedAt"
+          FROM career_capsules
+          WHERE id = $1
+        `, [id]);
+        
+        if (result.rows.length === 0) {
+          console.log(`[db.getCareerCapsuleById] No career capsule found with ID ${id}`);
+          return undefined;
+        }
+        
+        console.log(`[db.getCareerCapsuleById] Found career capsule with ID ${id}`);
+        return result.rows[0];
+      } catch (error) {
+        console.error(`[db.getCareerCapsuleById] Error fetching career capsule with ID ${id}:`, error);
+        throw error;
+      }
+    }, 3, 800);
+  }
+  
+  async createCareerCapsule(capsule: InsertCareerCapsule): Promise<CareerCapsule> {
+    console.log(`[db.createCareerCapsule] Creating career capsule for user ${capsule.userId}`);
+    
+    return executeWithRetry(async () => {
+      try {
+        const result = await pool.query(`
+          INSERT INTO career_capsules (
+            user_id, title, goal_type, custom_goal, timeframe, description, 
+            industry, is_private, is_musk_generated
+          ) VALUES (
+            $1, $2, $3, $4, $5, $6, $7, $8, $9
+          ) RETURNING 
+            id, user_id as "userId", title, goal_type as "goalType", 
+            custom_goal as "customGoal", timeframe, description, industry, 
+            is_private as "isPrivate", overall_progress as "overallProgress", 
+            is_musk_generated as "isMuskGenerated", created_at as "createdAt", 
+            updated_at as "updatedAt"
+        `, [
+          capsule.userId,
+          capsule.title,
+          capsule.goalType,
+          capsule.customGoal || null,
+          capsule.timeframe || 5,
+          capsule.description || null,
+          capsule.industry || null,
+          capsule.isPrivate !== undefined ? capsule.isPrivate : true,
+          capsule.isMuskGenerated !== undefined ? capsule.isMuskGenerated : true,
+        ]);
+        
+        console.log(`[db.createCareerCapsule] Created career capsule with ID ${result.rows[0].id}`);
+        return result.rows[0];
+      } catch (error) {
+        console.error(`[db.createCareerCapsule] Error creating career capsule:`, error);
+        throw error;
+      }
+    }, 3, 800);
+  }
+  
+  async updateCareerCapsule(id: number, data: Partial<CareerCapsule>): Promise<CareerCapsule | undefined> {
+    console.log(`[db.updateCareerCapsule] Updating career capsule with ID ${id}`);
+    
+    return executeWithRetry(async () => {
+      try {
+        // Build the update query dynamically based on the provided data
+        const updateFields: string[] = [];
+        const values: any[] = [];
+        let paramIndex = 1;
+        
+        if (data.title !== undefined) {
+          updateFields.push(`title = $${paramIndex++}`);
+          values.push(data.title);
+        }
+        
+        if (data.goalType !== undefined) {
+          updateFields.push(`goal_type = $${paramIndex++}`);
+          values.push(data.goalType);
+        }
+        
+        if (data.customGoal !== undefined) {
+          updateFields.push(`custom_goal = $${paramIndex++}`);
+          values.push(data.customGoal);
+        }
+        
+        if (data.timeframe !== undefined) {
+          updateFields.push(`timeframe = $${paramIndex++}`);
+          values.push(data.timeframe);
+        }
+        
+        if (data.description !== undefined) {
+          updateFields.push(`description = $${paramIndex++}`);
+          values.push(data.description);
+        }
+        
+        if (data.industry !== undefined) {
+          updateFields.push(`industry = $${paramIndex++}`);
+          values.push(data.industry);
+        }
+        
+        if (data.isPrivate !== undefined) {
+          updateFields.push(`is_private = $${paramIndex++}`);
+          values.push(data.isPrivate);
+        }
+        
+        if (data.overallProgress !== undefined) {
+          updateFields.push(`overall_progress = $${paramIndex++}`);
+          values.push(data.overallProgress);
+        }
+        
+        if (data.isMuskGenerated !== undefined) {
+          updateFields.push(`is_musk_generated = $${paramIndex++}`);
+          values.push(data.isMuskGenerated);
+        }
+        
+        // Add updated_at
+        updateFields.push(`updated_at = NOW()`);
+        
+        // If no fields to update, return the existing capsule
+        if (updateFields.length === 0) {
+          return this.getCareerCapsuleById(id);
+        }
+        
+        // Add the id parameter
+        values.push(id);
+        
+        const result = await pool.query(`
+          UPDATE career_capsules
+          SET ${updateFields.join(', ')}
+          WHERE id = $${paramIndex}
+          RETURNING 
+            id, user_id as "userId", title, goal_type as "goalType", 
+            custom_goal as "customGoal", timeframe, description, industry, 
+            is_private as "isPrivate", overall_progress as "overallProgress", 
+            is_musk_generated as "isMuskGenerated", created_at as "createdAt", 
+            updated_at as "updatedAt"
+        `, values);
+        
+        if (result.rows.length === 0) {
+          console.log(`[db.updateCareerCapsule] No career capsule found with ID ${id}`);
+          return undefined;
+        }
+        
+        console.log(`[db.updateCareerCapsule] Updated career capsule with ID ${id}`);
+        return result.rows[0];
+      } catch (error) {
+        console.error(`[db.updateCareerCapsule] Error updating career capsule with ID ${id}:`, error);
+        throw error;
+      }
+    }, 3, 800);
+  }
+  
+  async deleteCareerCapsule(id: number): Promise<boolean> {
+    console.log(`[db.deleteCareerCapsule] Deleting career capsule with ID ${id}`);
+    
+    return executeWithRetry(async () => {
+      try {
+        const result = await pool.query(`
+          DELETE FROM career_capsules
+          WHERE id = $1
+          RETURNING id
+        `, [id]);
+        
+        const deleted = result.rows.length > 0;
+        console.log(`[db.deleteCareerCapsule] Deleted career capsule with ID ${id}: ${deleted}`);
+        return deleted;
+      } catch (error) {
+        console.error(`[db.deleteCareerCapsule] Error deleting career capsule with ID ${id}:`, error);
+        throw error;
+      }
+    }, 3, 800);
+  }
+  
+  async updateCapsuleProgress(id: number): Promise<CareerCapsule | undefined> {
+    console.log(`[db.updateCapsuleProgress] Updating progress for career capsule with ID ${id}`);
+    
+    try {
+      // Get the capsule first to make sure it exists
+      const capsule = await this.getCareerCapsuleById(id);
+      if (!capsule) {
+        console.log(`[db.updateCapsuleProgress] No career capsule found with ID ${id}`);
+        return undefined;
+      }
+      
+      // TODO: Calculate progress based on tasks when Capsule Tasks are implemented
+      
+      return capsule;
+    } catch (error) {
+      console.error(`[db.updateCapsuleProgress] Error updating progress for career capsule with ID ${id}:`, error);
+      throw error;
+    }
+  }
 }
 
 // Switch to database storage
