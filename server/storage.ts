@@ -3681,10 +3681,13 @@ export class MemStorage implements IStorage {
   }
 
   // Career Capsule operations
-  async getCareerCapsuleByUserId(userId: number): Promise<CareerCapsule | undefined> {
-    return Array.from(this.careerCapsules.values()).find(
-      capsule => capsule.userId === userId
-    );
+  async getCareerCapsulesByUserId(userId: number): Promise<CareerCapsule[]> {
+    return Array.from(this.careerCapsules.values())
+      .filter(capsule => capsule.userId === userId);
+  }
+  
+  async getCareerCapsuleById(id: number): Promise<CareerCapsule | undefined> {
+    return this.careerCapsules.get(id);
   }
   
   async createCareerCapsule(capsule: InsertCareerCapsule): Promise<CareerCapsule> {
@@ -3711,6 +3714,39 @@ export class MemStorage implements IStorage {
     const updatedCapsule = {
       ...capsule,
       ...data,
+      updatedAt: new Date()
+    };
+    
+    this.careerCapsules.set(id, updatedCapsule);
+    return updatedCapsule;
+  }
+  
+  async deleteCareerCapsule(id: number): Promise<boolean> {
+    return this.careerCapsules.delete(id);
+  }
+  
+  async updateCapsuleProgress(id: number): Promise<CareerCapsule | undefined> {
+    const capsule = this.careerCapsules.get(id);
+    if (!capsule) return undefined;
+    
+    // Get all years for this capsule
+    const years = await this.getCapsuleYearsByCapsuleId(id);
+    
+    // Calculate total tasks and completed tasks
+    let totalTasks = 0;
+    let completedTasks = 0;
+    
+    for (const year of years) {
+      const tasks = await this.getCapsuleTasksByYearId(year.id);
+      totalTasks += tasks.length;
+      completedTasks += tasks.filter(task => task.isCompleted).length;
+    }
+    
+    // Update the capsule
+    const updatedCapsule = {
+      ...capsule,
+      totalTasks,
+      completedTasks,
       updatedAt: new Date()
     };
     
@@ -3755,6 +3791,59 @@ export class MemStorage implements IStorage {
     };
     
     this.capsuleYears.set(id, updatedYear);
+    return updatedYear;
+  }
+  
+  async deleteCapsuleYear(id: number): Promise<boolean> {
+    const year = this.capsuleYears.get(id);
+    if (!year) return false;
+    
+    // Delete all tasks for this year
+    const tasks = await this.getCapsuleTasksByYearId(id);
+    for (const task of tasks) {
+      await this.deleteCapsuleTask(task.id);
+    }
+    
+    // Delete all journals for this year
+    const journals = await this.getCapsuleJournalsByYearId(id);
+    for (const journal of journals) {
+      await this.deleteCapsuleJournal(journal.id);
+    }
+    
+    // Update the career capsule
+    if (year.capsuleId) {
+      await this.updateCapsuleProgress(year.capsuleId);
+    }
+    
+    return this.capsuleYears.delete(id);
+  }
+  
+  async updateCapsuleYearProgress(id: number): Promise<CapsuleYear | undefined> {
+    const year = this.capsuleYears.get(id);
+    if (!year) return undefined;
+    
+    // Get all tasks for this year
+    const tasks = await this.getCapsuleTasksByYearId(id);
+    
+    // Calculate total tasks and completed tasks
+    const totalTasks = tasks.length;
+    const completedTasks = tasks.filter(task => task.isCompleted).length;
+    
+    // Update the year
+    const updatedYear = {
+      ...year,
+      totalTasks,
+      completedTasks,
+      updatedAt: new Date()
+    };
+    
+    this.capsuleYears.set(id, updatedYear);
+    
+    // Update the capsule
+    if (year.capsuleId) {
+      await this.updateCapsuleProgress(year.capsuleId);
+    }
+    
     return updatedYear;
   }
   
@@ -3879,10 +3968,40 @@ export class MemStorage implements IStorage {
     return this.capsuleTasks.delete(id);
   }
   
+  async toggleCapsuleTaskCompletion(id: number): Promise<CapsuleTask | undefined> {
+    const task = this.capsuleTasks.get(id);
+    if (!task) return undefined;
+    
+    // Toggle completion status
+    const isCompleted = !task.isCompleted;
+    
+    // Use the existing updateCapsuleTask method to handle all the updates
+    return this.updateCapsuleTask(id, { 
+      isCompleted,
+      completedAt: isCompleted ? new Date() : null
+    });
+  }
+  
   async getCapsuleJournalsByYearId(yearId: number): Promise<CapsuleJournal[]> {
     return Array.from(this.capsuleJournals.values())
       .filter(journal => journal.yearId === yearId)
       .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()); // Sort by newest first
+  }
+  
+  async getCapsuleJournalsByCapsuleId(capsuleId: number): Promise<CapsuleJournal[]> {
+    // First, get all years for this capsule
+    const years = await this.getCapsuleYearsByCapsuleId(capsuleId);
+    
+    // Get journals for each year and combine them
+    const journals: CapsuleJournal[] = [];
+    
+    for (const year of years) {
+      const yearJournals = await this.getCapsuleJournalsByYearId(year.id);
+      journals.push(...yearJournals);
+    }
+    
+    // Sort by newest first
+    return journals.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
   }
   
   async getCapsuleJournalById(id: number): Promise<CapsuleJournal | undefined> {
