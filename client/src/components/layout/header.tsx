@@ -151,10 +151,10 @@ export default function Header() {
                 onClick={() => setLocation('/career-roadmap')}
               >
                 <Flag className="h-4 w-4" />
-                <span>Career Roadmap</span>
+                <span>Career Capsule</span>
               </Button>
               
-              {/* Career Capsule button removed */}
+              {/* Career Capsule feature added */}
               
               {/* Brand of the Day feature is now integrated into Nowboard panel */}
             </div>
@@ -323,10 +323,10 @@ export default function Header() {
               }}
             >
               <Flag className="h-4 w-4 mr-3 ml-0.5" />
-              <span>Career Roadmap</span>
+              <span>Career Capsule</span>
             </Button>
             
-            {/* Career Capsule button removed from mobile menu */}
+            {/* Career Capsule feature added to mobile menu */}
             
             {/* Brand of the Day feature is now integrated into Nowboard panel */}
 
