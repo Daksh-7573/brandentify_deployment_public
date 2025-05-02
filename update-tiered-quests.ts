@@ -25,10 +25,21 @@ async function executeQuery(query: string, params: any[] = []) {
 
 async function updateTieredQuests() {
   try {
-    // First, reset quest definitions to ensure clean state
+    // First, delete user_quests entries to avoid foreign key constraint issues
+    await executeQuery(`
+      DELETE FROM user_quests 
+      WHERE quest_definition_id IN (
+        SELECT id FROM quest_definitions
+        WHERE target_action IN ('react_to_pulse', 'comment_on_pulse', 'share_pulse', 'create_pulse',
+                               'use_hashtag', 'receive_reactions', 'make_connection')
+      );
+    `);
+    
+    // Then, delete the quest_definitions
     await executeQuery(`
       DELETE FROM quest_definitions
-      WHERE type IN ('daily', 'weekly', 'monthly', 'pulse_creation', 'networking');
+      WHERE target_action IN ('react_to_pulse', 'comment_on_pulse', 'share_pulse', 'create_pulse',
+                             'use_hashtag', 'receive_reactions', 'make_connection');
     `);
 
     // Add Daily Quests (Light, quick tasks)
@@ -37,9 +48,9 @@ async function updateTieredQuests() {
         (title, description, type, target_count, target_action, xp_reward, musk_tip, is_active)
       VALUES
         (
-          'Daily Reactor',
+          '[Daily] Quick Reactor',
           'React to 3 pulses today',
-          'daily',
+          'pulse_creation',
           3,
           'react_to_pulse',
           10,
@@ -47,9 +58,9 @@ async function updateTieredQuests() {
           true
         ),
         (
-          'Daily Commenter',
+          '[Daily] Thoughtful Commenter',
           'Leave 1 thoughtful comment on a pulse today',
-          'daily',
+          'networking',
           1,
           'comment_on_pulse',
           15,
@@ -57,9 +68,9 @@ async function updateTieredQuests() {
           true
         ),
         (
-          'Quick Connection',
+          '[Daily] Content Sharer',
           'Share 1 pulse with someone in your network today',
-          'daily',
+          'networking',
           1,
           'share_pulse',
           10,
@@ -74,9 +85,9 @@ async function updateTieredQuests() {
         (title, description, type, target_count, target_action, xp_reward, badge_reward, musk_tip, is_active)
       VALUES
         (
-          'Pulse Creator',
+          '[Weekly] Pulse Creator',
           'Create 3 pulse posts this week',
-          'weekly',
+          'pulse_creation',
           3,
           'create_pulse',
           30,
@@ -85,9 +96,9 @@ async function updateTieredQuests() {
           true
         ),
         (
-          'Hashtag Champion',
+          '[Weekly] Hashtag Champion',
           'Use at least 15 relevant hashtags across your pulses this week',
-          'weekly',
+          'pulse_creation',
           15,
           'use_hashtag',
           25,
@@ -96,9 +107,9 @@ async function updateTieredQuests() {
           true
         ),
         (
-          'Content Curator',
+          '[Weekly] Content Curator',
           'React to 10 different pulses this week',
-          'weekly',
+          'networking',
           10,
           'react_to_pulse',
           20,
@@ -114,9 +125,9 @@ async function updateTieredQuests() {
         (title, description, type, target_count, target_action, xp_reward, badge_reward, musk_tip, is_active)
       VALUES
         (
-          'Thought Leader',
+          '[Monthly] Thought Leader',
           'Receive 25 reactions on your pulses this month',
-          'monthly',
+          'visibility',
           25,
           'receive_reactions',
           100,
@@ -125,9 +136,9 @@ async function updateTieredQuests() {
           true
         ),
         (
-          'Networking Master',
+          '[Monthly] Networking Master',
           'Connect with 10 new professionals in your industry this month',
-          'monthly',
+          'networking',
           10,
           'make_connection',
           75,
