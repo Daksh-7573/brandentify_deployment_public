@@ -639,7 +639,7 @@ export default function CareerCapsulePage() {
                       )}
                     </Button>
                     <p className="text-xs text-muted-foreground mt-4">
-                      Or add years manually by clicking the "Create Capsule" button above
+                      Or create a capsule manually by clicking the "Create Capsule" button above
                     </p>
                   </div>
                 </CardContent>
@@ -766,7 +766,7 @@ export default function CareerCapsulePage() {
               <Card>
                 <CardContent className="p-8 text-center">
                   <p className="text-muted-foreground">
-                    Select a year from the sidebar or add a new year to get started.
+                    Select a year from the sidebar or create a capsule to get started.
                   </p>
                 </CardContent>
               </Card>
@@ -775,11 +775,11 @@ export default function CareerCapsulePage() {
         </div>
       </div>
 
-      {/* Create Year Dialog */}
+      {/* Create Capsule Dialog */}
       <Dialog open={createYearOpen} onOpenChange={setCreateYearOpen}>
         <DialogContent className="sm:max-w-[525px]">
           <DialogHeader>
-            <DialogTitle>Add a Year to Your Plan</DialogTitle>
+            <DialogTitle>Create a Career Capsule</DialogTitle>
             <DialogDescription>
               Set specific goals and milestones for this year of your career journey.
             </DialogDescription>
@@ -855,10 +855,10 @@ export default function CareerCapsulePage() {
                   {createYear.isPending ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Adding...
+                      Creating...
                     </>
                   ) : (
-                    "Add Year"
+                    "Create Capsule"
                   )}
                 </Button>
               </DialogFooter>
