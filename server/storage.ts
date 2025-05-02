@@ -920,7 +920,7 @@ export class MemStorage implements IStorage {
     this.currentMentorshipRequestId = 1;
     this.currentMentorshipFeedbackId = 1;
     
-    // Reset Career Roadmap IDs
+    // Reset Career Capsule IDs
     this.currentCareerGoalId = 1;
     this.currentGoalMilestoneId = 1;
     this.currentGoalSkillId = 1;
@@ -1009,7 +1009,7 @@ export class MemStorage implements IStorage {
     this.services.set(service3.id, service3);
     this.currentServiceId = 4;
     
-    // Create sample Career Roadmap data for the demo user
+    // Create sample Career Capsule data for the demo user
     const careerGoal: CareerGoal = {
       id: 1,
       userId: 1,
@@ -1137,7 +1137,7 @@ export class MemStorage implements IStorage {
     this.goalProgressLogs.set(progressLog2.id, progressLog2);
     this.currentGoalProgressLogId++;
     
-    console.log("Demo data reinitialized with minimal values, skill, portfolio, services, and career roadmap data");
+    console.log("Demo data reinitialized with minimal values, skill, portfolio, services, and Career Capsule data");
   }
   
   /**
@@ -1205,7 +1205,7 @@ export class MemStorage implements IStorage {
     // Clear all news sources
     this.newsSources.clear();
     
-    // Clear all Career Roadmap data
+    // Clear all Career Capsule data
     this.careerGoals.clear();
     this.goalMilestones.clear();
     this.goalSkills.clear();
