@@ -3680,6 +3680,261 @@ export class MemStorage implements IStorage {
     return (activeCount + pendingCount) < 5;
   }
 
+  // Career Capsule operations
+  async getCareerCapsuleByUserId(userId: number): Promise<CareerCapsule | undefined> {
+    return Array.from(this.careerCapsules.values()).find(
+      capsule => capsule.userId === userId
+    );
+  }
+  
+  async createCareerCapsule(capsule: InsertCareerCapsule): Promise<CareerCapsule> {
+    const id = this.currentCareerCapsuleId++;
+    const careerCapsule: CareerCapsule = {
+      ...capsule,
+      id,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      lastReviewedAt: new Date(),
+      xpEarned: 0,
+      completedTasks: 0,
+      totalTasks: 0
+    };
+    
+    this.careerCapsules.set(id, careerCapsule);
+    return careerCapsule;
+  }
+  
+  async updateCareerCapsule(id: number, data: Partial<CareerCapsule>): Promise<CareerCapsule | undefined> {
+    const capsule = this.careerCapsules.get(id);
+    if (!capsule) return undefined;
+    
+    const updatedCapsule = {
+      ...capsule,
+      ...data,
+      updatedAt: new Date()
+    };
+    
+    this.careerCapsules.set(id, updatedCapsule);
+    return updatedCapsule;
+  }
+  
+  async getCapsuleYearsByCapsuleId(capsuleId: number): Promise<CapsuleYear[]> {
+    return Array.from(this.capsuleYears.values()).filter(
+      year => year.capsuleId === capsuleId
+    );
+  }
+  
+  async getCapsuleYearById(id: number): Promise<CapsuleYear | undefined> {
+    return this.capsuleYears.get(id);
+  }
+  
+  async createCapsuleYear(year: InsertCapsuleYear): Promise<CapsuleYear> {
+    const id = this.currentCapsuleYearId++;
+    const capsuleYear: CapsuleYear = {
+      ...year,
+      id,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      completedTasks: 0,
+      totalTasks: 0,
+      muskFeedback: year.muskFeedback || null
+    };
+    
+    this.capsuleYears.set(id, capsuleYear);
+    return capsuleYear;
+  }
+  
+  async updateCapsuleYear(id: number, data: Partial<CapsuleYear>): Promise<CapsuleYear | undefined> {
+    const year = this.capsuleYears.get(id);
+    if (!year) return undefined;
+    
+    const updatedYear = {
+      ...year,
+      ...data,
+      updatedAt: new Date()
+    };
+    
+    this.capsuleYears.set(id, updatedYear);
+    return updatedYear;
+  }
+  
+  async getCapsuleTasksByYearId(yearId: number): Promise<CapsuleTask[]> {
+    return Array.from(this.capsuleTasks.values()).filter(
+      task => task.yearId === yearId
+    );
+  }
+  
+  async getCapsuleTaskById(id: number): Promise<CapsuleTask | undefined> {
+    return this.capsuleTasks.get(id);
+  }
+  
+  async createCapsuleTask(task: InsertCapsuleTask): Promise<CapsuleTask> {
+    const id = this.currentCapsuleTaskId++;
+    const capsuleTask: CapsuleTask = {
+      ...task,
+      id,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      isCompleted: false,
+      completedAt: null,
+      difficulty: task.difficulty || "medium"
+    };
+    
+    this.capsuleTasks.set(id, capsuleTask);
+    
+    // Update the total tasks count for the year
+    const year = this.capsuleYears.get(task.yearId);
+    if (year) {
+      const updatedYear = {
+        ...year,
+        totalTasks: year.totalTasks + 1
+      };
+      this.capsuleYears.set(year.id, updatedYear);
+      
+      // Update the career capsule total tasks count
+      const capsule = this.careerCapsules.get(year.capsuleId);
+      if (capsule) {
+        const updatedCapsule = {
+          ...capsule,
+          totalTasks: capsule.totalTasks + 1
+        };
+        this.careerCapsules.set(capsule.id, updatedCapsule);
+      }
+    }
+    
+    return capsuleTask;
+  }
+  
+  async updateCapsuleTask(id: number, data: Partial<CapsuleTask>): Promise<CapsuleTask | undefined> {
+    const task = this.capsuleTasks.get(id);
+    if (!task) return undefined;
+    
+    // Check if the task is being marked as completed
+    const isCompletingTask = !task.isCompleted && data.isCompleted === true;
+    
+    const updatedTask = {
+      ...task,
+      ...data,
+      updatedAt: new Date(),
+      completedAt: isCompletingTask ? new Date() : task.completedAt
+    };
+    
+    this.capsuleTasks.set(id, updatedTask);
+    
+    // If the task is being marked as completed, update the year and capsule completed tasks count
+    if (isCompletingTask) {
+      const year = this.capsuleYears.get(task.yearId);
+      if (year) {
+        const updatedYear = {
+          ...year,
+          completedTasks: year.completedTasks + 1
+        };
+        this.capsuleYears.set(year.id, updatedYear);
+        
+        // Update the career capsule completed tasks count
+        const capsule = this.careerCapsules.get(year.capsuleId);
+        if (capsule) {
+          const updatedCapsule = {
+            ...capsule,
+            completedTasks: capsule.completedTasks + 1,
+            xpEarned: capsule.xpEarned + this.getXpForTaskDifficulty(task.difficulty)
+          };
+          this.careerCapsules.set(capsule.id, updatedCapsule);
+        }
+      }
+    }
+    
+    return updatedTask;
+  }
+  
+  async deleteCapsuleTask(id: number): Promise<boolean> {
+    const task = this.capsuleTasks.get(id);
+    if (!task) return false;
+    
+    // Update the total tasks count for the year
+    const year = this.capsuleYears.get(task.yearId);
+    if (year) {
+      const updatedYear = {
+        ...year,
+        totalTasks: Math.max(0, year.totalTasks - 1),
+        completedTasks: task.isCompleted ? Math.max(0, year.completedTasks - 1) : year.completedTasks
+      };
+      this.capsuleYears.set(year.id, updatedYear);
+      
+      // Update the career capsule tasks count
+      const capsule = this.careerCapsules.get(year.capsuleId);
+      if (capsule) {
+        const updatedCapsule = {
+          ...capsule,
+          totalTasks: Math.max(0, capsule.totalTasks - 1),
+          completedTasks: task.isCompleted ? Math.max(0, capsule.completedTasks - 1) : capsule.completedTasks,
+          xpEarned: task.isCompleted ? 
+            Math.max(0, capsule.xpEarned - this.getXpForTaskDifficulty(task.difficulty)) : 
+            capsule.xpEarned
+        };
+        this.careerCapsules.set(capsule.id, updatedCapsule);
+      }
+    }
+    
+    return this.capsuleTasks.delete(id);
+  }
+  
+  async getCapsuleJournalsByYearId(yearId: number): Promise<CapsuleJournal[]> {
+    return Array.from(this.capsuleJournals.values())
+      .filter(journal => journal.yearId === yearId)
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()); // Sort by newest first
+  }
+  
+  async getCapsuleJournalById(id: number): Promise<CapsuleJournal | undefined> {
+    return this.capsuleJournals.get(id);
+  }
+  
+  async createCapsuleJournal(journal: InsertCapsuleJournal): Promise<CapsuleJournal> {
+    const id = this.currentCapsuleJournalId++;
+    const capsuleJournal: CapsuleJournal = {
+      ...journal,
+      id,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      muskFeedback: journal.muskFeedback || null
+    };
+    
+    this.capsuleJournals.set(id, capsuleJournal);
+    return capsuleJournal;
+  }
+  
+  async updateCapsuleJournal(id: number, data: Partial<CapsuleJournal>): Promise<CapsuleJournal | undefined> {
+    const journal = this.capsuleJournals.get(id);
+    if (!journal) return undefined;
+    
+    const updatedJournal = {
+      ...journal,
+      ...data,
+      updatedAt: new Date()
+    };
+    
+    this.capsuleJournals.set(id, updatedJournal);
+    return updatedJournal;
+  }
+  
+  async deleteCapsuleJournal(id: number): Promise<boolean> {
+    return this.capsuleJournals.delete(id);
+  }
+  
+  // Helper function to determine XP based on task difficulty
+  private getXpForTaskDifficulty(difficulty: string): number {
+    switch (difficulty) {
+      case "easy":
+        return 10;
+      case "medium":
+        return 20;
+      case "hard":
+        return 30;
+      default:
+        return 20; // Default to medium
+    }
+  }
+
   // Nowboard Item operations
   async getNowboardItems(): Promise<NowboardItem[]> {
     return Array.from(this.nowboardItems.values())
