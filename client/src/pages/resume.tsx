@@ -225,9 +225,9 @@ export default function ResumePage() {
                 isOwner={true}
                 onTabChange={setActiveTab}
               />
-            ) : (
+            ) : isCreationRequested ? (
               <div className="flex flex-col items-center justify-center p-10 border rounded-lg bg-card">
-                <Zap className={`h-16 w-16 mb-4 ${isCreationRequested ? 'text-primary animate-pulse' : 'text-primary'}`} />
+                <Zap className={`h-16 w-16 mb-4 text-primary animate-pulse`} />
                 
                 <div className="space-y-4 text-center">
                   <h3 className="text-2xl font-bold mb-2">{resumeReadyForViewing ? 'Your Shadow Resume is Ready!' : 'Generating Your Shadow Resume'}</h3>
@@ -267,6 +267,36 @@ export default function ResumePage() {
                       </p>
                     </>
                   )}
+                </div>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center p-10 border rounded-lg bg-card">
+                <FileText className="h-16 w-16 mb-4 text-muted-foreground" />
+                
+                <div className="space-y-4 text-center">
+                  <h3 className="text-2xl font-bold mb-2">Resume Not Created Yet</h3>
+                  <p className="text-center text-muted-foreground mb-4">
+                    Please complete your profile to generate a professional resume. You can also switch to the Resume Editor tab to create your resume manually.
+                  </p>
+                  <div className="flex flex-wrap gap-4 justify-center">
+                    <Button 
+                      onClick={() => {
+                        createResumeMutation.mutate();
+                      }}
+                      className="gap-2"
+                    >
+                      <Zap className="h-4 w-4" />
+                      <span>Generate Resume Now</span>
+                    </Button>
+                    <Button 
+                      variant="outline"
+                      onClick={() => setActiveTab('resume-editor')}
+                      className="gap-2"
+                    >
+                      <Edit2 className="h-4 w-4" />
+                      <span>Create Manually</span>
+                    </Button>
+                  </div>
                 </div>
               </div>
             )}
