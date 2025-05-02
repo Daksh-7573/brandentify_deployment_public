@@ -241,7 +241,7 @@ export default function ResumePage() {
                       <Button 
                         onClick={() => {
                           // Force refetch the resume data
-                          refetchResume().then(() => {
+                          void refetchResume().then(() => {
                             toast({
                               title: 'Shadow Resume Updated',
                               description: 'Your shadow resume has been refreshed with the latest data.',
@@ -281,7 +281,7 @@ export default function ResumePage() {
                   <div className="flex flex-wrap gap-4 justify-center">
                     <Button 
                       onClick={() => {
-                        createResumeMutation.mutate();
+                        void createResumeMutation.mutate();
                       }}
                       className="gap-2"
                     >
@@ -310,9 +310,9 @@ export default function ResumePage() {
         </TabsContent>
 
         <TabsContent value="resume-editor" className="space-y-6">
-          {userData && (
+          {userData ? (
             <ResumeEditor />
-          )}
+          ) : null}
         </TabsContent>
       </Tabs>
     </PageLayout>

@@ -58,12 +58,10 @@ export function setupShadowResumeRoutes(apiRouter: any, storage: IStorage) {
         console.log(`[POST /shadow-resumes/:resumeId/refresh-from-profile] Skipping projects update (${projects.projects.length} items) to preserve profile data`);
       }
       
-      // Update resume with settings and timestamp
+      // Update resume with timestamp only (settings have been removed from frontend)
       const updatedResume = await storage.updateResume(parseInt(resumeId), {
         lastUpdatedByMusk: new Date(),
-        isDownloadable: resumeData.settings?.isDownloadable,
-        visibility: resumeData.settings?.visibility,
-        themeStyle: resumeData.settings?.themeStyle,
+        // Settings have been removed from frontend, so we don't update them here
       });
       
       console.log(`[POST /shadow-resumes/:resumeId/refresh-from-profile] Successfully updated RESUME ONLY (not profile) ${resumeId}`);
@@ -391,25 +389,18 @@ Sample skills relevant to the ${user.industry || 'industry'} would be listed her
         return res.status(403).json({ message: 'You do not have permission to update this resume' });
       }
       
-      // Extract resume settings from the resumeData
-      if (!resumeData || !resumeData.settings) {
-        console.log(`[PATCH /users/:userId/shadow-resume/:resumeId] Missing resumeData or settings in the request`, req.body);
+      // Check if we have resumeData
+      if (!resumeData) {
+        console.log(`[PATCH /users/:userId/shadow-resume/:resumeId] Missing resumeData in the request`, req.body);
         return res.status(400).json({ message: 'Missing resumeData in the request' });
       }
-      
-      // Get the settings from resumeData
-      const { settings } = resumeData;
-      console.log(`[PATCH /users/:userId/shadow-resume/:resumeId] Updating with settings:`, settings);
       
       // Store the form data in the database as a JSON string
       const formDataJson = JSON.stringify(resumeData);
       
-      // Update the resume with the settings and form data
+      // Update the resume with form data (settings have been removed from frontend)
       const updatedResume = await storage.updateResume(parseInt(resumeId), {
         lastUpdatedByMusk: new Date(),
-        isDownloadable: settings.isDownloadable,
-        visibility: settings.visibility,
-        themeStyle: settings.themeStyle,
         // Store the form data in a metadata field (will be converted to JSON)
         metadata: formDataJson
       });
@@ -418,13 +409,13 @@ Sample skills relevant to the ${user.industry || 'industry'} would be listed her
       return res.status(200).json({ 
         resume: updatedResume,
         form: resumeData, // Send the form data back directly
-        message: 'Resume settings and form data updated successfully',
+        message: 'Resume form data updated successfully',
         success: true
       });
     } catch (error) {
       console.error(`[PATCH /users/:userId/shadow-resume/:resumeId] Error:`, error);
       return res.status(500).json({ 
-        message: 'Failed to update resume settings', 
+        message: 'Failed to update resume data', 
         error: (error as Error).message,
         success: false
       });
