@@ -421,4 +421,159 @@ Sample skills relevant to the ${user.industry || 'industry'} would be listed her
       });
     }
   });
+
+  // Download resume as Word document
+  apiRouter.get("/shadow-resume/:resumeId/download-word", async (req: Request, res: Response) => {
+    try {
+      const resumeId = parseInt(req.params.resumeId);
+      console.log(`[GET /shadow-resume/:resumeId/download-word] Downloading resume ${resumeId} as Word document`);
+      
+      // Get the resume
+      const resume = await storage.getResumeById(resumeId);
+      if (!resume) {
+        console.log(`[GET /shadow-resume/:resumeId/download-word] Resume not found with ID: ${resumeId}`);
+        return res.status(404).json({ message: 'Resume not found' });
+      }
+      
+      // Get the form data from metadata
+      let formData = null;
+      if (resume.metadata) {
+        try {
+          formData = JSON.parse(resume.metadata as string);
+        } catch (parseError) {
+          console.error(`[GET /shadow-resume/:resumeId/download-word] Error parsing metadata:`, parseError);
+          return res.status(500).json({ message: 'Error parsing resume data' });
+        }
+      } else {
+        console.log(`[GET /shadow-resume/:resumeId/download-word] No metadata found for resume ID: ${resumeId}`);
+        return res.status(400).json({ message: 'No resume data available for download' });
+      }
+      
+      // Format the resume content as a downloadable Word document
+      // In a real implementation, we would use a library like docx to generate a proper Word document
+      // For now, we'll just create a simple HTML file and set the correct headers for Word download
+      
+      // Create a simple HTML representation of the resume
+      const { personalInfo, experiences, education, skills, projects } = formData;
+      
+      let resumeHTML = `
+<!DOCTYPE html>
+<html>
+<head>
+  <title>${personalInfo?.fullName || 'Resume'}</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 30px; }
+    h1 { color: #2c3e50; }
+    h2 { color: #3498db; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+    .section { margin-bottom: 20px; }
+    .item { margin-bottom: 15px; }
+    .dates { color: #7f8c8d; font-style: italic; }
+  </style>
+</head>
+<body>
+  <h1>${personalInfo?.fullName || 'Full Name'}</h1>
+  <p>${personalInfo?.title || 'Title'} | ${personalInfo?.email || 'Email'} | ${personalInfo?.phone || 'Phone'}</p>
+  <p>${personalInfo?.location || 'Location'}</p>
+  
+  <div class="section">
+    <h2>Professional Summary</h2>
+    <p>${personalInfo?.summary || 'Professional summary not available.'}</p>
+  </div>
+`;
+      
+      // Add Work Experience section
+      if (experiences?.experiences && experiences.experiences.length > 0) {
+        resumeHTML += `
+  <div class="section">
+    <h2>Work Experience</h2>`;
+        
+        experiences.experiences.forEach((exp: any) => {
+          resumeHTML += `
+    <div class="item">
+      <h3>${exp.position || 'Position'} at ${exp.company || 'Company'}</h3>
+      <p class="dates">${exp.startDate || 'Start Date'} - ${exp.endDate || 'Present'} | ${exp.location || 'Location'}</p>
+      <p>${exp.description || 'Description not available.'}</p>
+    </div>`;
+        });
+        
+        resumeHTML += `
+  </div>`;
+      }
+      
+      // Add Education section
+      if (education?.educations && education.educations.length > 0) {
+        resumeHTML += `
+  <div class="section">
+    <h2>Education</h2>`;
+        
+        education.educations.forEach((edu: any) => {
+          resumeHTML += `
+    <div class="item">
+      <h3>${edu.degree || 'Degree'} - ${edu.institution || 'Institution'}</h3>
+      <p class="dates">${edu.startDate || 'Start Date'} - ${edu.endDate || 'End Date'} | ${edu.location || 'Location'}</p>
+      <p>${edu.description || ''}</p>
+    </div>`;
+        });
+        
+        resumeHTML += `
+  </div>`;
+      }
+      
+      // Add Skills section
+      if (skills?.skills && skills.skills.length > 0) {
+        resumeHTML += `
+  <div class="section">
+    <h2>Skills</h2>
+    <ul>`;
+        
+        skills.skills.forEach((skill: any) => {
+          const skillName = typeof skill === 'string' ? skill : skill.name;
+          resumeHTML += `
+      <li>${skillName}</li>`;
+        });
+        
+        resumeHTML += `
+    </ul>
+  </div>`;
+      }
+      
+      // Add Projects section
+      if (projects?.projects && projects.projects.length > 0) {
+        resumeHTML += `
+  <div class="section">
+    <h2>Projects</h2>`;
+        
+        projects.projects.forEach((project: any) => {
+          resumeHTML += `
+    <div class="item">
+      <h3>${project.title || 'Project Title'}</h3>
+      <p class="dates">${project.startDate || ''} - ${project.endDate || ''}</p>
+      <p>${project.description || 'Description not available.'}</p>
+    </div>`;
+        });
+        
+        resumeHTML += `
+  </div>`;
+      }
+      
+      // Close the HTML document
+      resumeHTML += `
+</body>
+</html>`;
+      
+      // Set headers for a Word document download
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+      res.setHeader('Content-Disposition', `attachment; filename="${personalInfo?.fullName || 'Resume'}.docx"`);
+      
+      // Send the HTML content to be interpreted as a Word document
+      return res.send(resumeHTML);
+      
+    } catch (error) {
+      console.error(`[GET /shadow-resume/:resumeId/download-word] Error:`, error);
+      return res.status(500).json({ 
+        message: 'Error downloading resume as Word document', 
+        error: (error as Error).message 
+      });
+    }
+  });
 }
