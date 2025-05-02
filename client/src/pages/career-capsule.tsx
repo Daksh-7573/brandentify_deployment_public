@@ -728,30 +728,19 @@ export default function CareerCapsulePage() {
               />
               <FormField
                 control={yearForm.control}
-                name="goalType"
+                name="milestone"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Goal Type</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select a goal type" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="career_growth">Career Growth</SelectItem>
-                        <SelectItem value="skill_development">Skill Development</SelectItem>
-                        <SelectItem value="financial">Financial Goal</SelectItem>
-                        <SelectItem value="entrepreneurship">Entrepreneurship</SelectItem>
-                        <SelectItem value="well_being">Work-Life Balance</SelectItem>
-                        <SelectItem value="other">Other</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <FormLabel>Key Milestone</FormLabel>
+                    <FormControl>
+                      <Textarea 
+                        placeholder="Describe the key milestone for this year..."
+                        className="min-h-[80px]"
+                        {...field} 
+                      />
+                    </FormControl>
                     <FormDescription>
-                      Choose the primary focus area for this year
+                      What specific achievement do you aim to reach by the end of this year?
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
