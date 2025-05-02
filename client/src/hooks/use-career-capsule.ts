@@ -55,7 +55,8 @@ export const useUserCareerCapsule = (userId: number) => {
     queryKey: ['/api/users', userId, 'career-capsule'],
     queryFn: async () => {
       try {
-        const response = await apiRequest(`/api/users/${userId}/career-capsule`, {
+        const response = await apiRequest({
+          url: `/api/users/${userId}/career-capsule`,
           method: 'GET'
         });
         return response as CareerCapsule;
@@ -83,7 +84,8 @@ export const useCreateCareerCapsule = () => {
   
   return useMutation({
     mutationFn: async ({ userId, data }: { userId: number, data: Omit<CareerCapsule, 'id' | 'userId' | 'createdAt' | 'updatedAt' | 'overallProgress'> }) => {
-      const response = await apiRequest(`/api/users/${userId}/career-capsule`, {
+      const response = await apiRequest({
+        url: `/api/users/${userId}/career-capsule`,
         method: 'POST',
         data,
       });
@@ -113,7 +115,8 @@ export const useUpdateCareerCapsule = () => {
   
   return useMutation({
     mutationFn: async ({ capsuleId, data }: { capsuleId: number, data: Partial<CareerCapsule> }) => {
-      const response = await apiRequest(`/api/career-capsules/${capsuleId}`, {
+      const response = await apiRequest({
+        url: `/api/career-capsules/${capsuleId}`,
         method: 'PUT',
         data,
       });
@@ -143,7 +146,8 @@ export const useCapsuleYears = (capsuleId: number | null) => {
     queryKey: ['/api/career-capsules', capsuleId, 'years'],
     queryFn: async () => {
       if (!capsuleId) return [];
-      const response = await apiRequest(`/api/career-capsules/${capsuleId}/years`, {
+      const response = await apiRequest({
+        url: `/api/career-capsules/${capsuleId}/years`,
         method: 'GET'
       });
       return response as CapsuleYear[];
@@ -158,7 +162,8 @@ export const useCreateCapsuleYear = () => {
   
   return useMutation({
     mutationFn: async ({ capsuleId, data }: { capsuleId: number, data: Omit<CapsuleYear, 'id' | 'capsuleId' | 'createdAt' | 'updatedAt' | 'progress'> }) => {
-      const response = await apiRequest(`/api/career-capsules/${capsuleId}/years`, {
+      const response = await apiRequest({
+        url: `/api/career-capsules/${capsuleId}/years`,
         method: 'POST',
         data,
       });
@@ -253,7 +258,8 @@ export const useCapsuleTasks = (yearId: number | null) => {
     queryKey: ['/api/capsule-years', yearId, 'tasks'],
     queryFn: async () => {
       if (!yearId) return [];
-      const response = await apiRequest(`/api/capsule-years/${yearId}/tasks`, {
+      const response = await apiRequest({
+        url: `/api/capsule-years/${yearId}/tasks`,
         method: 'GET'
       });
       return response as CapsuleTask[];
@@ -392,7 +398,8 @@ export const useCapsuleJournals = (yearId: number | null) => {
     queryKey: ['/api/capsule-years', yearId, 'journals'],
     queryFn: async () => {
       if (!yearId) return [];
-      const response = await apiRequest(`/api/capsule-years/${yearId}/journals`, {
+      const response = await apiRequest({
+        url: `/api/capsule-years/${yearId}/journals`,
         method: 'GET'
       });
       return response as CapsuleJournal[];
