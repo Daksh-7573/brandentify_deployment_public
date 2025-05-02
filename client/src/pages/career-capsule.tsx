@@ -87,6 +87,12 @@ export default function CareerCapsulePage() {
 
   // Career capsule data
   const { data: capsule, isLoading: isCapsuleLoading } = useUserCareerCapsule(user?.id || 0);
+  
+  // Log the capsule data to diagnose issues
+  useEffect(() => {
+    console.log("Career Capsule Data:", capsule);
+  }, [capsule]);
+  
   const { data: years = [], isLoading: isYearsLoading } = useCapsuleYears(capsule?.id || null);
   const { data: tasks = [], isLoading: isTasksLoading } = useCapsuleTasks(activeYear?.id || null);
   const { data: journals = [], isLoading: isJournalsLoading } = useCapsuleJournals(activeYear?.id || null);
@@ -159,7 +165,19 @@ export default function CareerCapsulePage() {
     if (!user) return;
     
     try {
-      await createCapsule.mutateAsync({
+      console.log("Creating career capsule for user:", user.id);
+      console.log("Career capsule data:", {
+        title: data.title,
+        goalType: data.goalType,
+        customGoal: data.customGoal || null,
+        timeframe: data.timeframe,
+        description: data.description || null,
+        industry: data.industry || null,
+        isPrivate: data.isPrivate,
+        isMuskGenerated: false,
+      });
+      
+      const result = await createCapsule.mutateAsync({
         userId: user.id,
         data: {
           title: data.title,
@@ -173,10 +191,17 @@ export default function CareerCapsulePage() {
           // overallProgress is handled by the backend
         }
       });
+      
+      console.log("Career capsule creation result:", result);
       setCreateCapsuleOpen(false);
       capsuleForm.reset();
     } catch (error) {
       console.error("Error creating career capsule:", error);
+      toast({
+        title: "Error",
+        description: "Failed to create your Career Capsule. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 
