@@ -1,0 +1,82 @@
+ Feature Name: Career Capsule
+“Plan your next 5 years with clarity. Musk turns your dreams into doable timelines.”
+
+🎯 Core Objective
+Help users break down long-term career goals into actionable yearly capsules, guided by Musk.
+
+🧠 Feature Concept Breakdown
+🪐 Step 1: Create Your Capsule
+User chooses a timeframe: 1–5 years
+
+Gives their career vision (text or choose from dropdown goals)
+
+Examples:
+
+“Become a Product Manager in a top company”
+
+“Launch my own marketing agency”
+
+“Work remotely in Canada”
+
+“Get promoted to VP-level”
+
+“Transition to AI/ML domain”
+
+🧩 Step 2: Musk Timeline Builder
+Musk analyzes:
+
+User’s current profile, skills, gaps
+
+Industry & domain shifts
+
+Their selected goal
+
+Then auto-generates a Career Timeline broken into yearly Capsules:
+
+
+Year	Title	Steps
+Year 1	Skill Foundation	Learn X, take Y course, update resume
+Year 2	Domain Positioning	Publish content, network with Z, join forums
+Year 3	Apply Strategically	Build case studies, pitch to companies
+Year 4	Achieve Milestone	Apply to dream job/start venture
+Year 5	Elevate Brand	Mentor others, grow team, public speaking
+Each step has a ✅ button — users mark completed as they go.
+
+🧭 Step 3: Interactive Tracker
+A vertical or horizontal visual timeline (with animations)
+
+Musk provides nudges:
+
+“You're behind on Year 2. Want a catch-up plan?”
+
+“You completed Year 1 early! Let’s accelerate Year 2?”
+
+Tasks can be edited/added manually too.
+
+🌟 Step 4: Gamification & Rewards
+
+Action	Reward
+Completing a year	Badge + +10 Brand Score
+Completing all goals	Career Capsule Completion Trophy (digital)
+Sharing success	Optional public post/Pulse with story
+📱 UI Ideas
+
+Section	Visual
+Goal Setup	Type + select multiple goals + timeline slider (1–5y)
+Timeline View	Scrollable capsule with progress bars and Musk tips
+Task Cards	Micro cards per step: “Start AI Foundations Course”, “Publish case study”
+Dashboard Widget	“You’re 40% through Year 2 of your Capsule”
+Journal Entries (Optional)	Log learnings and progress reflections
+🔒 Privacy
+By default: private
+
+Option to share Capsule with mentor or network
+
+Option to show Capsule progress badge on public profile
+
+🎯 Smart Suggestions
+🎯 “Convert a completed Capsule into a Case Study Pulse”
+
+🧠 “You’re trending behind — want Musk to replan with 1 extra year?”
+
+🔁 Allow users to run multiple Capsules (ex: 1 for career, 1 for business, 1 for study abroad)
