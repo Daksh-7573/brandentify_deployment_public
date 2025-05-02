@@ -35,7 +35,8 @@ interface ShadowResumeProps {
 export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwner = true, onTabChange }: ShadowResumeProps) {
   const { toast } = useToast();
   const [, navigate] = useLocation();
-  // Only keep downloadable state, remove theme and history states
+  // Add state for publish/unpublish and downloadable features
+  const [isPublished, setIsPublished] = useState(resume?.visibility === 'public');
   const [isDownloadable, setIsDownloadable] = useState(resume?.isDownloadable || false);
   const [isEditing, setIsEditing] = useState(false);
   
@@ -184,7 +185,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
   };
   
   // Update resume settings mutation
-  const updateResumeMutation = useMutation<any, Error, {isDownloadable: boolean}>({
+  const updateResumeMutation = useMutation<any, Error, {isDownloadable?: boolean, visibility?: string}>({
     mutationFn: async (updates) => {
       if (!resume) return null;
       
@@ -199,7 +200,15 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
         return res.json();
       });
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      // Update local state based on response
+      if (data && data.visibility) {
+        setIsPublished(data.visibility === 'public');
+      }
+      if (data && data.hasOwnProperty('isDownloadable')) {
+        setIsDownloadable(data.isDownloadable);
+      }
+      
       toast({
         title: 'Resume Updated',
         description: 'Your resume settings have been updated.',
@@ -308,6 +317,7 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
   useEffect(() => {
     if (resume) {
       setIsDownloadable(resume.isDownloadable || false);
+      setIsPublished(resume.visibility === 'public');
     }
   }, [resume]);
   
@@ -711,7 +721,58 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
         )}
       </CardContent>
 
-      {/* Footer buttons removed as requested */}
+      {/* Resume action buttons */}
+      {resume && (
+        <CardFooter className="flex justify-between gap-2 border-t pt-4">
+          {isOwner && (
+            <>
+              {/* Publish/Unpublish button */}
+              <Button
+                variant={isPublished ? "default" : "outline"}
+                size="sm"
+                className="flex-1"
+                onClick={() => {
+                  updateResumeMutation.mutate({
+                    visibility: isPublished ? 'private' : 'public'
+                  });
+                }}
+                disabled={updateResumeMutation.isPending}
+              >
+                <Eye className="h-4 w-4 mr-1" />
+                {isPublished ? 'Unpublish Resume' : 'Publish Resume'}
+              </Button>
+              
+              {/* Download button */}
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex-1"
+                onClick={() => {
+                  if (!resume?.id) {
+                    toast({
+                      title: "No Resume Found",
+                      description: "Please create a resume first.",
+                      variant: "destructive",
+                    });
+                    return;
+                  }
+                  
+                  // Generate and download the resume
+                  window.open(`/api/resumes/${resume.id}/download`, '_blank');
+                  
+                  toast({
+                    title: "Resume Downloaded",
+                    description: "Your resume has been downloaded.",
+                  });
+                }}
+              >
+                <Download className="h-4 w-4 mr-1" />
+                Download Resume
+              </Button>
+            </>
+          )}
+        </CardFooter>
+      )}
     </Card>
   );
 }
