@@ -1118,11 +1118,11 @@ export const insertMentorshipFeedbackSchema = createInsertSchema(mentorshipFeedb
 export type MentorshipRequest = typeof mentorshipRequests.$inferSelect;
 export type InsertMentorshipRequest = z.infer<typeof insertMentorshipRequestSchema>;
 
-// Career Roadmap Feature
+// Career Capsule Feature (formerly Career Roadmap)
 // This feature allows users to set 1-5 year career goals and receive AI-generated
 // milestones/steps with timeline to achieve those goals.
 
-// Career Roadmap enums for goal types
+// Career Capsule enums for goal types
 export const careerGoalTypeEnum = pgEnum("career_goal_type", [
   "position_change", // e.g., "Become a Product Manager"
   "skill_acquisition", // e.g., "Master AI/ML"
@@ -1143,7 +1143,7 @@ export const goalStatusEnum = pgEnum("goal_status", [
   "abandoned" // User decided to abandon this goal
 ]);
 
-// Career Goal model - parent container for the roadmap
+// Career Goal model - parent container for the capsule
 export const careerGoals = pgTable("career_goals", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id).notNull(),
@@ -1158,7 +1158,7 @@ export const careerGoals = pgTable("career_goals", {
   status: goalStatusEnum("status").default("not_started"),
   progress: integer("progress").default(0), // 0-100%
   isPrivate: boolean("is_private").default(true),
-  isMuskGenerated: boolean("is_musk_generated").default(true), // Whether AI helped create the roadmap
+  isMuskGenerated: boolean("is_musk_generated").default(true), // Whether AI helped create the capsule
   startDate: timestamp("start_date").defaultNow(),
   targetDate: timestamp("target_date"), // Estimated completion date
   lastUpdated: timestamp("last_updated").defaultNow()
