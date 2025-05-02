@@ -5,7 +5,10 @@ export type QuestType =
   | 'learning'
   | 'portfolio'
   | 'resume'
-  | 'visibility';
+  | 'visibility'
+  | 'daily'
+  | 'weekly'
+  | 'monthly';
 
 export type QuestStatus = 
   | 'active'
@@ -112,14 +115,17 @@ export const getBadgeLabel = (badgeType: BadgeType): string => {
 };
 
 export const getQuestTypeIcon = (type: QuestType): string => {
-  const icons: Record<QuestType, string> = {
+  const icons: Record<Partial<QuestType>, string> = {
     profile_update: '👤',
     pulse_creation: '📝',
     networking: '🔗',
     learning: '📚',
     portfolio: '💼',
     resume: '📄',
-    visibility: '👁️'
+    visibility: '👁️',
+    daily: '⏱️',
+    weekly: '📅',
+    monthly: '🗓️'
   };
   return icons[type] || '🎯';
 };
