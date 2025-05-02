@@ -1118,5 +1118,113 @@ export const insertMentorshipFeedbackSchema = createInsertSchema(mentorshipFeedb
 export type MentorshipRequest = typeof mentorshipRequests.$inferSelect;
 export type InsertMentorshipRequest = z.infer<typeof insertMentorshipRequestSchema>;
 
+// Career Capsule enums
+export const capsuleGoalTypeEnum = pgEnum("capsule_goal_type", [
+  "position_change", // e.g., "Become a Product Manager"
+  "skill_acquisition", // e.g., "Master AI/ML"
+  "promotion", // e.g., "Get promoted to VP-level"
+  "industry_switch", // e.g., "Move from Finance to Tech"
+  "entrepreneurship", // e.g., "Launch my own agency"
+  "relocation", // e.g., "Work remotely in Canada"
+  "education", // e.g., "Get an MBA"
+  "certification", // e.g., "Get certified in data science"
+  "custom" // Custom user-defined goal
+]);
+
+// Career Capsules model - parent container for 5-year plans
+export const careerCapsules = pgTable("career_capsules", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  title: text("title").notNull(),
+  goalType: capsuleGoalTypeEnum("goal_type").notNull(),
+  customGoal: text("custom_goal"), // Only used if goalType is "custom"
+  timeframe: integer("timeframe").notNull().default(5), // 1-5 years
+  description: text("description"),
+  industry: text("industry"), // Target industry
+  isPrivate: boolean("is_private").default(true),
+  overallProgress: integer("overall_progress").default(0), // 0-100%
+  isMuskGenerated: boolean("is_musk_generated").default(true), // Whether created with Musk or manually
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Capsule Years model - yearly milestones within a Career Capsule
+export const capsuleYears = pgTable("capsule_years", {
+  id: serial("id").primaryKey(),
+  capsuleId: integer("capsule_id").references(() => careerCapsules.id).notNull(),
+  yearNumber: integer("year_number").notNull(), // 1-5
+  title: text("title").notNull(),
+  description: text("description"),
+  completionStatus: integer("completion_status").default(0), // 0-100%
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Capsule Tasks model - individual tasks within each Capsule Year
+export const capsuleTasks = pgTable("capsule_tasks", {
+  id: serial("id").primaryKey(),
+  yearId: integer("year_id").references(() => capsuleYears.id).notNull(),
+  title: text("title").notNull(),
+  description: text("description"),
+  isCompleted: boolean("is_completed").default(false),
+  dueDate: timestamp("due_date"),
+  category: text("category"), // e.g., "skill", "networking", "education", "application"
+  priority: integer("priority").default(1), // 1 (low) to 3 (high)
+  difficulty: integer("difficulty").default(1), // 1 (easy) to 3 (hard)
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Capsule Journal model - for users to track progress and reflections
+export const capsuleJournals = pgTable("capsule_journals", {
+  id: serial("id").primaryKey(),
+  capsuleId: integer("capsule_id").references(() => careerCapsules.id).notNull(),
+  title: text("title").notNull().default("Journal Entry"),
+  content: text("content").notNull(),
+  mood: text("mood"), // e.g., "motivated", "challenged", "proud"
+  entryDate: timestamp("entry_date").defaultNow(),
+  isPrivate: boolean("is_private").default(true),
+});
+
+// Insert schemas for Career Capsule
+export const insertCareerCapsuleSchema = createInsertSchema(careerCapsules).omit({
+  id: true,
+  overallProgress: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+export const insertCapsuleYearSchema = createInsertSchema(capsuleYears).omit({
+  id: true,
+  completionStatus: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+export const insertCapsuleTaskSchema = createInsertSchema(capsuleTasks).omit({
+  id: true,
+  isCompleted: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+export const insertCapsuleJournalSchema = createInsertSchema(capsuleJournals).omit({
+  id: true,
+  entryDate: true
+});
+
+// Export types for Career Capsule
+export type CareerCapsule = typeof careerCapsules.$inferSelect;
+export type InsertCareerCapsule = z.infer<typeof insertCareerCapsuleSchema>;
+
+export type CapsuleYear = typeof capsuleYears.$inferSelect;
+export type InsertCapsuleYear = z.infer<typeof insertCapsuleYearSchema>;
+
+export type CapsuleTask = typeof capsuleTasks.$inferSelect;
+export type InsertCapsuleTask = z.infer<typeof insertCapsuleTaskSchema>;
+
+export type CapsuleJournal = typeof capsuleJournals.$inferSelect;
+export type InsertCapsuleJournal = z.infer<typeof insertCapsuleJournalSchema>;
+
 export type MentorshipFeedback = typeof mentorshipFeedback.$inferSelect;
 export type InsertMentorshipFeedback = z.infer<typeof insertMentorshipFeedbackSchema>;

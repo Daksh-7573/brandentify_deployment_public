@@ -42,7 +42,12 @@ import {
   brandsOfTheDay, BrandOfTheDay, InsertBrandOfTheDay,
   // Mentorship Connect models
   mentorshipRequests, MentorshipRequest, InsertMentorshipRequest,
-  mentorshipFeedback, MentorshipFeedback, InsertMentorshipFeedback
+  mentorshipFeedback, MentorshipFeedback, InsertMentorshipFeedback,
+  // Career Capsule models
+  careerCapsules, CareerCapsule, InsertCareerCapsule,
+  capsuleYears, CapsuleYear, InsertCapsuleYear,
+  capsuleTasks, CapsuleTask, InsertCapsuleTask,
+  capsuleJournals, CapsuleJournal, InsertCapsuleJournal
 } from "@shared/schema";
 
 // Import Musk suggestion models
