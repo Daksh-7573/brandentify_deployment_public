@@ -52,7 +52,7 @@ const createCapsuleSchema = z.object({
 
 // Create year form schema
 const createYearSchema = z.object({
-  year: z.coerce.number().min(2020, "Year must be 2020 or later").max(2050, "Year must be 2050 or earlier"),
+  yearNumber: z.coerce.number().min(1, "Year number must be between 1 and 5").max(5, "Year number must be between 1 and 5"),
   title: z.string().min(3, "Title must be at least 3 characters").max(100, "Title cannot exceed 100 characters"),
   description: z.string().max(500, "Description cannot exceed 500 characters").optional(),
   milestone: z.string().max(200, "Milestone cannot exceed 200 characters").optional()
@@ -112,7 +112,7 @@ export default function CareerCapsulePage() {
   const yearForm = useForm<z.infer<typeof createYearSchema>>({
     resolver: zodResolver(createYearSchema),
     defaultValues: {
-      year: new Date().getFullYear(),
+      yearNumber: 1, // Default to first year (1-5)
       title: "",
       description: "",
       milestone: ""
@@ -185,7 +185,7 @@ export default function CareerCapsulePage() {
       await createYear.mutateAsync({
         capsuleId: capsule.id,
         data: {
-          year: data.year,
+          yearNumber: data.yearNumber,
           title: data.title,
           description: data.description || null,
           milestone: data.milestone || null,
@@ -685,13 +685,14 @@ export default function CareerCapsulePage() {
             <form onSubmit={yearForm.handleSubmit(onSubmitCreateYear)} className="space-y-4">
               <FormField
                 control={yearForm.control}
-                name="year"
+                name="yearNumber"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Year</FormLabel>
+                    <FormLabel>Year Number</FormLabel>
                     <FormControl>
-                      <Input type="number" {...field} />
+                      <Input type="number" min="1" max="5" placeholder="1-5" {...field} />
                     </FormControl>
+                    <FormDescription>Enter a number between 1 and 5 (Year 1-5 of your plan)</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -769,7 +770,7 @@ export default function CareerCapsulePage() {
           <DialogHeader>
             <DialogTitle>Add a Task</DialogTitle>
             <DialogDescription>
-              Create a new task or goal for {activeYear?.year}.
+              Create a new task or goal for Year {activeYear?.yearNumber}.
             </DialogDescription>
           </DialogHeader>
           <Form {...taskForm}>
@@ -840,7 +841,7 @@ export default function CareerCapsulePage() {
           <DialogHeader>
             <DialogTitle>Add Journal Entry</DialogTitle>
             <DialogDescription>
-              Record your thoughts, progress, and reflections for {activeYear?.year}.
+              Record your thoughts, progress, and reflections for Year {activeYear?.yearNumber}.
             </DialogDescription>
           </DialogHeader>
           <Form {...journalForm}>
