@@ -140,19 +140,7 @@ export default function Header() {
                 <span>Career Quests</span>
               </Button>
               
-              <Button
-                variant="ghost"
-                size="sm" 
-                className={`flex items-center gap-2 font-medium px-3 py-2 h-auto ${
-                  isActive('/career-capsule') 
-                    ? 'text-primary bg-primary/5 hover:bg-primary/10' 
-                    : 'text-gray-800 hover:text-primary hover:bg-gray-50'
-                }`}
-                onClick={() => setLocation('/career-capsule')}
-              >
-                <Calendar className="h-4 w-4" />
-                <span>Career Capsule</span>
-              </Button>
+              {/* Career Capsule button removed */}
               
               {/* Brand of the Day feature is now integrated into Nowboard panel */}
             </div>
@@ -307,22 +295,7 @@ export default function Header() {
               <span>Career Quests</span>
             </Button>
             
-            <Button
-              variant="ghost"
-              size="sm"
-              className={`w-full justify-start py-2.5 text-sm font-medium rounded-md ${
-                isActive('/career-capsule') 
-                  ? 'text-primary bg-primary/5' 
-                  : 'text-gray-700 hover:bg-gray-50 hover:text-primary'
-              }`}
-              onClick={() => {
-                setLocation('/career-capsule');
-                setIsMobileMenuOpen(false);
-              }}
-            >
-              <Calendar className="h-4 w-4 mr-3 ml-0.5" />
-              <span>Career Capsule</span>
-            </Button>
+            {/* Career Capsule button removed from mobile menu */}
             
             {/* Brand of the Day feature is now integrated into Nowboard panel */}
 
