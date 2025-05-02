@@ -316,13 +316,71 @@ export default function CareerCapsulePage() {
                 />
                 <FormField
                   control={capsuleForm.control}
+                  name="goalType"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Goal Type</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select a goal type" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="position_change">Position Change</SelectItem>
+                          <SelectItem value="skill_acquisition">Skill Acquisition</SelectItem>
+                          <SelectItem value="promotion">Promotion</SelectItem>
+                          <SelectItem value="industry_switch">Industry Switch</SelectItem>
+                          <SelectItem value="entrepreneurship">Entrepreneurship</SelectItem>
+                          <SelectItem value="relocation">Relocation</SelectItem>
+                          <SelectItem value="education">Education</SelectItem>
+                          <SelectItem value="certification">Certification</SelectItem>
+                          <SelectItem value="custom">Custom Goal</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={capsuleForm.control}
+                  name="customGoal"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Custom Goal (if applicable)</FormLabel>
+                      <FormControl>
+                        <Input placeholder="E.g., Sabbatical, Leadership position, etc." {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={capsuleForm.control}
+                  name="timeframe"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Timeframe (years)</FormLabel>
+                      <FormControl>
+                        <Input type="number" min="1" max="10" {...field} />
+                      </FormControl>
+                      <FormDescription>Plan for 1-10 years</FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={capsuleForm.control}
                   name="description"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Description</FormLabel>
                       <FormControl>
                         <Textarea 
-                          placeholder="Describe your overall career goals for the next 5 years..."
+                          placeholder="Describe your overall career goals..."
                           className="min-h-[100px]"
                           {...field} 
                         />
@@ -331,34 +389,41 @@ export default function CareerCapsulePage() {
                     </FormItem>
                   )}
                 />
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={capsuleForm.control}
-                    name="startDate"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Start Date</FormLabel>
-                        <FormControl>
-                          <Input type="date" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={capsuleForm.control}
-                    name="endDate"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>End Date</FormLabel>
-                        <FormControl>
-                          <Input type="date" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+                
+                <FormField
+                  control={capsuleForm.control}
+                  name="industry"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Target Industry (optional)</FormLabel>
+                      <FormControl>
+                        <Input placeholder="E.g., Technology, Healthcare, Finance, etc." {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={capsuleForm.control}
+                  name="isPrivate"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                      <div className="space-y-1 leading-none">
+                        <FormLabel>Private Capsule</FormLabel>
+                        <FormDescription>
+                          Keep this career capsule private and visible only to you
+                        </FormDescription>
+                      </div>
+                    </FormItem>
+                  )}
+                />
                 <DialogFooter>
                   <Button type="submit" disabled={createCapsule.isPending}>
                     {createCapsule.isPending ? (
