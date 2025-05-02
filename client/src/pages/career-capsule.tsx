@@ -376,7 +376,7 @@ export default function CareerCapsulePage() {
               <div>
                 <CardTitle>{capsule.title}</CardTitle>
                 <CardDescription>
-                  {format(parseISO(capsule.startDate), "MMMM yyyy")} - {format(parseISO(capsule.endDate), "MMMM yyyy")}
+                  {capsule.createdAt && format(parseISO(capsule.createdAt), "MMMM yyyy")} - {capsule.timeframe} year plan
                 </CardDescription>
               </div>
               <Button variant="ghost" size="sm">
@@ -399,7 +399,7 @@ export default function CareerCapsulePage() {
           </CardContent>
           <CardFooter className="border-t pt-4 flex justify-between">
             <div className="text-sm text-muted-foreground">
-              Created on {format(new Date(capsule.createdAt), "MMMM d, yyyy")}
+              {capsule.createdAt && `Created on ${format(parseISO(capsule.createdAt), "MMMM d, yyyy")}`}
             </div>
             <Button
               variant="ghost"
@@ -532,7 +532,7 @@ export default function CareerCapsulePage() {
                                   <div className="flex items-center mt-2">
                                     <Calendar className="h-3 w-3 mr-1 text-muted-foreground" />
                                     <span className="text-xs text-muted-foreground">
-                                      Due: {format(parseISO(task.dueDate), "MMM d, yyyy")}
+                                      {task.dueDate && `Due: ${format(parseISO(task.dueDate), "MMM d, yyyy")}`}
                                     </span>
                                   </div>
                                 )}
@@ -567,7 +567,7 @@ export default function CareerCapsulePage() {
                                 <div className="flex justify-between items-center">
                                   <CardTitle className="text-base">{journal.title}</CardTitle>
                                   <div className="text-xs text-muted-foreground">
-                                    {format(parseISO(journal.entryDate), "MMM d, yyyy")}
+                                    {journal.createdAt && format(parseISO(journal.createdAt), "MMM d, yyyy")}
                                   </div>
                                 </div>
                               </CardHeader>
