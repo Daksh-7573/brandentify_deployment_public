@@ -649,9 +649,6 @@ export default function CareerCapsulePage() {
                       <CardTitle>{activeYear.title} (Year {activeYear.yearNumber})</CardTitle>
                       <CardDescription>{activeYear.description}</CardDescription>
                     </div>
-                    <div className="bg-primary/10 px-3 py-1 rounded-full text-xs font-medium">
-                      {activeYear.milestone}
-                    </div>
                   </div>
                 </CardHeader>
                 <CardContent className="p-0">
@@ -668,10 +665,10 @@ export default function CareerCapsulePage() {
                     </TabsList>
                     <TabsContent value="timeline" className="p-4">
                       <div className="flex justify-between items-center mb-4">
-                        <h3 className="font-medium">Tasks & Goals</h3>
+                        <h3 className="font-medium">Milestone Tasks</h3>
                         <Button size="sm" onClick={() => setCreateTaskOpen(true)}>
                           <Plus className="h-3 w-3 mr-1" />
-                          Add Task
+                          Add Milestone Task
                         </Button>
                       </div>
 
@@ -681,7 +678,7 @@ export default function CareerCapsulePage() {
                         </div>
                       ) : tasks.length === 0 ? (
                         <div className="text-center p-6 bg-muted/20 rounded-md">
-                          <p className="text-sm text-muted-foreground">No tasks added for this year yet.</p>
+                          <p className="text-sm text-muted-foreground">No milestone tasks added for this year yet.</p>
                         </div>
                       ) : (
                         <div className="space-y-2">
@@ -778,7 +775,7 @@ export default function CareerCapsulePage() {
           <DialogHeader>
             <DialogTitle>Create a Career Capsule</DialogTitle>
             <DialogDescription>
-              Set specific goals and milestones for this year of your career journey.
+              Set specific goals for this year of your career journey that Musk will analyze to suggest milestone tasks.
             </DialogDescription>
           </DialogHeader>
           <Form {...yearForm}>
@@ -849,9 +846,9 @@ export default function CareerCapsulePage() {
       <Dialog open={createTaskOpen} onOpenChange={setCreateTaskOpen}>
         <DialogContent className="sm:max-w-[525px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Add a Task</DialogTitle>
+            <DialogTitle>Add a Milestone Task</DialogTitle>
             <DialogDescription>
-              Create a new task or goal for Year {activeYear?.yearNumber}.
+              Create a specific milestone task to help achieve your goal for Year {activeYear?.yearNumber}.
             </DialogDescription>
           </DialogHeader>
           <Form {...taskForm}>
@@ -907,7 +904,7 @@ export default function CareerCapsulePage() {
                       Adding...
                     </>
                   ) : (
-                    "Add Task"
+                    "Add Milestone Task"
                   )}
                 </Button>
               </DialogFooter>
@@ -993,7 +990,7 @@ export default function CareerCapsulePage() {
           <DialogHeader>
             <DialogTitle>Generate Career Milestones with Musk AI</DialogTitle>
             <DialogDescription>
-              Let Musk analyze your goals, profile data, and market trends to generate personalized career milestones.
+              Musk will analyze your Goal, Goal Years, profile data, and current market trends to suggest personalized milestone tasks to help you achieve your objectives.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
@@ -1042,13 +1039,14 @@ export default function CareerCapsulePage() {
               <h4 className="font-medium">What to Expect</h4>
               <div className="text-sm text-muted-foreground space-y-2">
                 <p>
-                  Based on your Career Capsule goals and timeframe, Musk AI will generate:
+                  Musk AI analyzes your Goal, Goal Years, and profile information together with current market conditions to suggest personalized milestone tasks:
                 </p>
                 <ul className="list-disc pl-5 space-y-1">
-                  <li>Year-by-year milestones tailored to your career path</li>
-                  <li>Key tasks and targets for each milestone</li>
-                  <li>Strategic guidance aligned to market trends</li>
-                  <li>Skill development recommendations</li>
+                  <li>Intelligent analysis of your specific career goals and timeline</li>
+                  <li>Detailed year-by-year milestone tasks tailored to your profile</li>
+                  <li>Market-aware recommendations based on industry trends</li>
+                  <li>Strategic skill development tasks aligned with your objectives</li>
+                  <li>Actionable tasks to help you achieve your goals on schedule</li>
                 </ul>
                 <p className="pt-2">
                   Generation typically takes 15-30 seconds. You can always edit or refine the milestones after generation.
