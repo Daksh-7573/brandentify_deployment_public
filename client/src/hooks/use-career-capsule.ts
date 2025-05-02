@@ -58,16 +58,34 @@ export const useUserCareerCapsule = (userId: number) => {
     queryKey: ['/api/users', userId, 'career-capsule'],
     queryFn: async () => {
       try {
+        console.log(`Fetching career capsule for user ID: ${userId}`);
+        
+        if (!userId || userId <= 0) {
+          console.log("Invalid user ID for career capsule fetch:", userId);
+          return null;
+        }
+        
         const response = await apiRequest({
           url: `/api/users/${userId}/career-capsule`,
           method: 'GET'
         });
+        
+        console.log("Career capsule API response:", response);
+        
+        // Validate the response has the expected properties
+        if (!response || typeof response !== 'object' || !('id' in response)) {
+          console.log("Invalid career capsule response:", response);
+          return null;
+        }
+        
         return response as CareerCapsule;
       } catch (error) {
         // If 404, it means the user doesn't have a career capsule yet
         if ((error as any)?.status === 404) {
+          console.log(`No career capsule found for user ${userId}`);
           return null;
         }
+        console.error("Error fetching career capsule:", error);
         throw error;
       }
     },
@@ -78,6 +96,8 @@ export const useUserCareerCapsule = (userId: number) => {
       }
       return failureCount < 3;
     },
+    // Only enable the query if userId is valid
+    enabled: !!userId && userId > 0,
   });
 };
 
@@ -87,14 +107,32 @@ export const useCreateCareerCapsule = () => {
   
   return useMutation({
     mutationFn: async ({ userId, data }: { userId: number, data: Omit<CareerCapsule, 'id' | 'userId' | 'createdAt' | 'updatedAt' | 'overallProgress'> }) => {
+      console.log(`Creating career capsule for user ID: ${userId}`, data);
+      
+      if (!userId || userId <= 0) {
+        console.error("Invalid user ID for career capsule creation:", userId);
+        throw new Error("Invalid user ID");
+      }
+      
       const response = await apiRequest({
         url: `/api/users/${userId}/career-capsule`,
         method: 'POST',
         data,
       });
+      
+      console.log("Career capsule creation response:", response);
+      
+      // Validate the response
+      if (!response || typeof response !== 'object' || !('id' in response)) {
+        console.error("Invalid career capsule creation response:", response);
+        throw new Error("Invalid server response when creating career capsule");
+      }
+      
       return response as CareerCapsule;
     },
     onSuccess: (data, { userId }) => {
+      console.log("Successfully created career capsule:", data);
+      // Immediately invalidate the cache to force a fresh fetch
       queryClient.invalidateQueries({ queryKey: ['/api/users', userId, 'career-capsule'] });
       toast({
         title: "Success!",
@@ -148,14 +186,35 @@ export const useCapsuleYears = (capsuleId: number | null) => {
   return useQuery({
     queryKey: ['/api/career-capsules', capsuleId, 'years'],
     queryFn: async () => {
-      if (!capsuleId) return [];
-      const response = await apiRequest({
-        url: `/api/career-capsules/${capsuleId}/years`,
-        method: 'GET'
-      });
-      return response as CapsuleYear[];
+      console.log(`Fetching year goals for capsule ID: ${capsuleId}`);
+      
+      if (!capsuleId) {
+        console.log("No capsule ID provided, returning empty array");
+        return [];
+      }
+      
+      try {
+        const response = await apiRequest({
+          url: `/api/career-capsules/${capsuleId}/years`,
+          method: 'GET'
+        });
+        
+        console.log("Year goals API response:", response);
+        
+        // Check if we got a valid array
+        if (!response || !Array.isArray(response)) {
+          console.log("Invalid year goals response (not an array):", response);
+          return [];
+        }
+        
+        return response as CapsuleYear[];
+      } catch (error) {
+        console.error(`Error fetching year goals for capsule ${capsuleId}:`, error);
+        return [];
+      }
     },
     enabled: !!capsuleId,
+    staleTime: 30000, // Data remains fresh for 30 seconds
   });
 };
 
@@ -174,20 +233,42 @@ export const useCreateCapsuleYear = () => {
         goalType: string;
       } 
     }) => {
+      console.log(`Creating year goal for capsule ID: ${capsuleId}`, data);
+      
+      // Validate capsuleId
+      if (!capsuleId || isNaN(capsuleId)) {
+        console.error("Invalid capsule ID for creating year goal:", capsuleId);
+        throw new Error("Invalid capsule ID. Please create a Career Capsule first.");
+      }
+      
       // Ensure we're sending the expected server-side field names
       const serverData = {
         ...data,
-        yearNumber: data.yearNumber || data.year, // Make sure 'yearNumber' is included for the server
+        yearNumber: data.yearNumber || data.year || 1, // Make sure 'yearNumber' is included with a fallback
+        goalType: data.goalType || 'milestone', // Ensure goalType is always set
       };
+      
+      console.log(`Sending year goal data to server:`, serverData);
       
       const response = await apiRequest({
         url: `/api/career-capsules/${capsuleId}/years`,
         method: 'POST',
         data: serverData,
       });
+      
+      console.log("Year goal creation response:", response);
+      
+      // Validate the response
+      if (!response || typeof response !== 'object' || !('id' in response)) {
+        console.error("Invalid year goal creation response:", response);
+        throw new Error("Invalid server response when creating year goal");
+      }
+      
       return response as CapsuleYear;
     },
     onSuccess: (data) => {
+      console.log("Successfully created year goal:", data);
+      // Immediately invalidate the cache to force a fresh fetch
       queryClient.invalidateQueries({ queryKey: ['/api/career-capsules', data.capsuleId, 'years'] });
       toast({
         title: "Success!",
@@ -198,7 +279,7 @@ export const useCreateCapsuleYear = () => {
       console.error("Error creating capsule year:", error);
       toast({
         title: "Error",
-        description: "Failed to add year goal. Please try again.",
+        description: "Failed to add year goal. Please make sure you've created a Career Capsule first.",
         variant: "destructive",
       });
     },
