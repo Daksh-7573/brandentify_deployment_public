@@ -39,6 +39,7 @@ async function updateEngagementQuests() {
 
     // Define new engagement-focused quests
     // Available badge types: quest_initiate, weekly_hustler, musk_learner, thought_leader, portfolio_star, visibility_boosted
+    // Available quest types: profile_update, pulse_creation, networking, learning, portfolio, resume, visibility
     const engagementQuests = [
       {
         title: "Trending Topic Pulse",
@@ -67,7 +68,7 @@ async function updateEngagementQuests() {
       {
         title: "Meaningful Comment",
         description: "Leave a thoughtful comment on a high-engagement pulse",
-        type: "pulse_engagement",
+        type: "networking", // Changed from pulse_engagement to valid type
         target_count: 2,
         target_action: "comment_on_pulse",
         xp_reward: 50,
@@ -79,7 +80,7 @@ async function updateEngagementQuests() {
       {
         title: "React and Connect",
         description: "React to 5 pulses from professionals in your target industry",
-        type: "pulse_engagement",
+        type: "networking", // Changed from pulse_engagement to valid type
         target_count: 5,
         target_action: "react_to_pulse",
         xp_reward: 40,
@@ -91,7 +92,7 @@ async function updateEngagementQuests() {
       {
         title: "Content Amplifier",
         description: "Share a valuable pulse with your network",
-        type: "pulse_engagement",
+        type: "networking", // Changed from pulse_engagement to valid type
         target_count: 3,
         target_action: "share_pulse",
         xp_reward: 65,
@@ -127,7 +128,7 @@ async function updateEngagementQuests() {
       {
         title: "Daily Engagement Streak",
         description: "Interact with at least one pulse every day for 5 consecutive days",
-        type: "pulse_engagement",
+        type: "networking", // Changed from pulse_engagement to valid type
         target_count: 5,
         target_action: "daily_pulse_interaction",
         xp_reward: 100,
