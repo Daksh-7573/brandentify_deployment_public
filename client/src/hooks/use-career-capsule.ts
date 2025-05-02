@@ -177,7 +177,7 @@ export const useCreateCapsuleYear = () => {
       // Ensure we're sending the expected server-side field names
       const serverData = {
         ...data,
-        year: data.year || data.yearNumber, // Make sure 'year' is included for the server
+        yearNumber: data.yearNumber || data.year, // Make sure 'yearNumber' is included for the server
       };
       
       const response = await apiRequest({
