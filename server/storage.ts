@@ -434,6 +434,37 @@ export interface IStorage {
   getMentorshipFeedbackByMentorshipId(mentorshipId: number): Promise<MentorshipFeedback[]>;
   createMentorshipFeedback(feedback: InsertMentorshipFeedback): Promise<MentorshipFeedback>;
   canRequestMentorship(menteeId: number): Promise<boolean>;
+  
+  // Career Capsule operations
+  getCareerCapsulesByUserId(userId: number): Promise<CareerCapsule[]>;
+  getCareerCapsuleById(id: number): Promise<CareerCapsule | undefined>;
+  createCareerCapsule(capsule: InsertCareerCapsule): Promise<CareerCapsule>;
+  updateCareerCapsule(id: number, capsule: Partial<CareerCapsule>): Promise<CareerCapsule | undefined>;
+  deleteCareerCapsule(id: number): Promise<boolean>;
+  updateCapsuleProgress(id: number): Promise<CareerCapsule | undefined>;
+  
+  // Capsule Year operations
+  getCapsuleYearsByCapsuleId(capsuleId: number): Promise<CapsuleYear[]>;
+  getCapsuleYearById(id: number): Promise<CapsuleYear | undefined>;
+  createCapsuleYear(year: InsertCapsuleYear): Promise<CapsuleYear>;
+  updateCapsuleYear(id: number, year: Partial<CapsuleYear>): Promise<CapsuleYear | undefined>;
+  deleteCapsuleYear(id: number): Promise<boolean>;
+  updateCapsuleYearProgress(id: number): Promise<CapsuleYear | undefined>;
+  
+  // Capsule Task operations
+  getCapsuleTasksByYearId(yearId: number): Promise<CapsuleTask[]>;
+  getCapsuleTaskById(id: number): Promise<CapsuleTask | undefined>;
+  createCapsuleTask(task: InsertCapsuleTask): Promise<CapsuleTask>;
+  updateCapsuleTask(id: number, task: Partial<CapsuleTask>): Promise<CapsuleTask | undefined>;
+  deleteCapsuleTask(id: number): Promise<boolean>;
+  toggleCapsuleTaskCompletion(id: number): Promise<CapsuleTask | undefined>;
+  
+  // Capsule Journal operations
+  getCapsuleJournalsByCapsuleId(capsuleId: number): Promise<CapsuleJournal[]>;
+  getCapsuleJournalById(id: number): Promise<CapsuleJournal | undefined>;
+  createCapsuleJournal(journal: InsertCapsuleJournal): Promise<CapsuleJournal>;
+  updateCapsuleJournal(id: number, journal: Partial<CapsuleJournal>): Promise<CapsuleJournal | undefined>;
+  deleteCapsuleJournal(id: number): Promise<boolean>;
 }
 
 // In-memory implementation of the storage
@@ -496,6 +527,12 @@ export class MemStorage implements IStorage {
   private mentorshipRequests: Map<number, MentorshipRequest>;
   private mentorshipFeedback: Map<number, MentorshipFeedback>;
   
+  // Career Capsule models
+  private careerCapsules: Map<number, CareerCapsule>;
+  private capsuleYears: Map<number, CapsuleYear>;
+  private capsuleTasks: Map<number, CapsuleTask>;
+  private capsuleJournals: Map<number, CapsuleJournal>;
+  
   private currentUserId: number;
   private currentResumeId: number;
   private currentWorkExperienceId: number;
@@ -553,6 +590,12 @@ export class MemStorage implements IStorage {
   // Mentorship Connect IDs
   private currentMentorshipRequestId: number;
   private currentMentorshipFeedbackId: number;
+  
+  // Career Capsule IDs
+  private currentCareerCapsuleId: number;
+  private currentCapsuleYearId: number;
+  private currentCapsuleTaskId: number;
+  private currentCapsuleJournalId: number;
 
   constructor() {
     this.users = new Map();
@@ -603,6 +646,12 @@ export class MemStorage implements IStorage {
     // Initialize Mentorship Connect maps
     this.mentorshipRequests = new Map();
     this.mentorshipFeedback = new Map();
+    
+    // Initialize Career Capsule maps
+    this.careerCapsules = new Map();
+    this.capsuleYears = new Map();
+    this.capsuleTasks = new Map();
+    this.capsuleJournals = new Map();
     
     // Initialize Musk suggestion maps
     this.muskSuggestions = new Map();
@@ -673,6 +722,12 @@ export class MemStorage implements IStorage {
     // Initialize Mentorship Connect IDs
     this.currentMentorshipRequestId = 1;
     this.currentMentorshipFeedbackId = 1;
+    
+    // Initialize Career Capsule IDs
+    this.currentCareerCapsuleId = 1;
+    this.currentCapsuleYearId = 1;
+    this.currentCapsuleTaskId = 1;
+    this.currentCapsuleJournalId = 1;
     
     // Initialize with a default user for development/demo
     this.initializeDemoData();
@@ -801,6 +856,12 @@ export class MemStorage implements IStorage {
     // Reset Mentorship Connect IDs
     this.currentMentorshipRequestId = 1;
     this.currentMentorshipFeedbackId = 1;
+    
+    // Reset Career Capsule IDs
+    this.currentCareerCapsuleId = 1;
+    this.currentCapsuleYearId = 1;
+    this.currentCapsuleTaskId = 1;
+    this.currentCapsuleJournalId = 1;
     
     // No pre-created skills
     
@@ -980,6 +1041,12 @@ export class MemStorage implements IStorage {
     // Clear all Mentorship Connect data
     this.mentorshipRequests.clear();
     this.mentorshipFeedback.clear();
+    
+    // Clear all Career Capsule data
+    this.careerCapsules.clear();
+    this.capsuleYears.clear();
+    this.capsuleTasks.clear();
+    this.capsuleJournals.clear();
   }
   
   /**
