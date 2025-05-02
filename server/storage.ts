@@ -920,17 +920,17 @@ export class MemStorage implements IStorage {
     this.currentMentorshipRequestId = 1;
     this.currentMentorshipFeedbackId = 1;
     
-    // Reset Career Capsule IDs - removed
-    // this.currentCareerCapsuleId = 1;
-    // this.currentCapsuleYearId = 1;
-    // this.currentCapsuleTaskId = 1;
-    // this.currentCapsuleJournalId = 1;
-    
     // Reset Career Roadmap IDs
     this.currentCareerGoalId = 1;
     this.currentGoalMilestoneId = 1;
     this.currentGoalSkillId = 1;
     this.currentGoalProgressLogId = 1;
+    
+    // Reset Career Capsule IDs - removed
+    // this.currentCareerCapsuleId = 1;
+    // this.currentCapsuleYearId = 1;
+    // this.currentCapsuleTaskId = 1;
+    // this.currentCapsuleJournalId = 1;
     
     // No pre-created skills
     
@@ -1009,7 +1009,135 @@ export class MemStorage implements IStorage {
     this.services.set(service3.id, service3);
     this.currentServiceId = 4;
     
-    console.log("Demo data reinitialized with minimal values, skill, portfolio, and services");
+    // Create sample Career Roadmap data for the demo user
+    const careerGoal: CareerGoal = {
+      id: 1,
+      userId: 1,
+      title: "Become a Senior Software Engineer",
+      description: "Advance to a senior-level position with increased technical leadership responsibilities",
+      targetDate: new Date(new Date().setFullYear(new Date().getFullYear() + 3)), // 3 years from now
+      goalType: "position",
+      status: "in-progress",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      progress: 25,
+      industryFocus: "Technology"
+    };
+    this.careerGoals.set(careerGoal.id, careerGoal);
+    this.currentCareerGoalId++;
+    
+    // Create milestone 1
+    const milestone1: GoalMilestone = {
+      id: 1,
+      goalId: 1,
+      title: "Master Advanced React Patterns",
+      description: "Learn and implement advanced React patterns in production applications",
+      targetDate: new Date(new Date().setMonth(new Date().getMonth() + 6)), // 6 months from now
+      status: "in-progress",
+      order: 1,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      completedAt: null
+    };
+    this.goalMilestones.set(milestone1.id, milestone1);
+    this.currentGoalMilestoneId++;
+    
+    // Create milestone 2
+    const milestone2: GoalMilestone = {
+      id: 2,
+      goalId: 1,
+      title: "Lead a Major Project",
+      description: "Take ownership of a significant project from start to finish",
+      targetDate: new Date(new Date().setFullYear(new Date().getFullYear() + 1)), // 1 year from now
+      status: "not-started",
+      order: 2,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      completedAt: null
+    };
+    this.goalMilestones.set(milestone2.id, milestone2);
+    this.currentGoalMilestoneId++;
+    
+    // Create milestone 3
+    const milestone3: GoalMilestone = {
+      id: 3,
+      goalId: 1,
+      title: "Mentor Junior Developers",
+      description: "Regularly mentor 2-3 junior developers to demonstrate leadership",
+      targetDate: new Date(new Date().setFullYear(new Date().getFullYear() + 2)), // 2 years from now
+      status: "not-started",
+      order: 3,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      completedAt: null
+    };
+    this.goalMilestones.set(milestone3.id, milestone3);
+    this.currentGoalMilestoneId++;
+    
+    // Create skills needed for the career goal
+    const skill1: GoalSkill = {
+      id: 1,
+      goalId: 1,
+      skillName: "React Advanced Patterns",
+      description: "Proficiency with React Context, Hooks, HOCs, and performance optimization",
+      priority: "high",
+      status: "in-progress",
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    this.goalSkills.set(skill1.id, skill1);
+    this.currentGoalSkillId++;
+    
+    const skill2: GoalSkill = {
+      id: 2,
+      goalId: 1,
+      skillName: "System Architecture",
+      description: "Ability to design complex systems and make high-level technical decisions",
+      priority: "medium",
+      status: "not-started",
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    this.goalSkills.set(skill2.id, skill2);
+    this.currentGoalSkillId++;
+    
+    const skill3: GoalSkill = {
+      id: 3,
+      goalId: 1,
+      skillName: "Team Leadership",
+      description: "Skills in mentoring, code review, technical direction, and team coordination",
+      priority: "high",
+      status: "not-started",
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    this.goalSkills.set(skill3.id, skill3);
+    this.currentGoalSkillId++;
+    
+    // Create progress log entries
+    const progressLog1: GoalProgressLog = {
+      id: 1,
+      goalId: 1,
+      milestone: 1,
+      entry: "Completed advanced React patterns course on Frontend Masters",
+      createdAt: new Date(new Date().setDate(new Date().getDate() - 30)), // 30 days ago
+      entryType: "accomplishment"
+    };
+    this.goalProgressLogs.set(progressLog1.id, progressLog1);
+    this.currentGoalProgressLogId++;
+    
+    const progressLog2: GoalProgressLog = {
+      id: 2,
+      goalId: 1,
+      milestone: 1,
+      entry: "Implemented Context API and custom hooks in current project",
+      createdAt: new Date(new Date().setDate(new Date().getDate() - 15)), // 15 days ago
+      entryType: "accomplishment"
+    };
+    this.goalProgressLogs.set(progressLog2.id, progressLog2);
+    this.currentGoalProgressLogId++;
+    
+    console.log("Demo data reinitialized with minimal values, skill, portfolio, services, and career roadmap data");
   }
   
   /**
@@ -1122,12 +1250,6 @@ export class MemStorage implements IStorage {
     // this.capsuleYears.clear();
     // this.capsuleTasks.clear();
     // this.capsuleJournals.clear();
-    
-    // Clear all Career Roadmap data
-    this.careerGoals.clear();
-    this.goalMilestones.clear();
-    this.goalSkills.clear();
-    this.goalProgressLogs.clear();
   }
   
   /**
