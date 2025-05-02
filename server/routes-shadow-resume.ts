@@ -422,7 +422,7 @@ Sample skills relevant to the ${user.industry || 'industry'} would be listed her
     }
   });
 
-  // Download resume as Word document
+  // Download resume as text file (renamed from Word document)
   apiRouter.get("/shadow-resume/:resumeId/download-word", async (req: Request, res: Response) => {
     try {
       const resumeId = parseInt(req.params.resumeId);
@@ -561,12 +561,52 @@ Sample skills relevant to the ${user.industry || 'industry'} would be listed her
 </body>
 </html>`;
       
-      // Set headers for a Word document download
-      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
-      res.setHeader('Content-Disposition', `attachment; filename="${personalInfo?.fullName || 'Resume'}.docx"`);
+      // For simplicity, we'll send a properly formatted plain text document instead of trying 
+      // to create a Word document directly, as that would require additional libraries
+      res.setHeader('Content-Type', 'text/plain');
+      res.setHeader('Content-Disposition', `attachment; filename="${personalInfo?.fullName || 'Resume'}.txt"`);
       
-      // Send the HTML content to be interpreted as a Word document
-      return res.send(resumeHTML);
+      // Convert HTML to plain text format
+      const plainText = `
+${personalInfo?.fullName || 'Full Name'}
+${personalInfo?.title || 'Title'} | ${personalInfo?.email || 'Email'} | ${personalInfo?.phone || 'Phone'}
+${personalInfo?.location || 'Location'}
+
+PROFESSIONAL SUMMARY
+${personalInfo?.summary || 'Professional summary not available.'}
+
+${experiences?.experiences && experiences.experiences.length > 0 ? `
+WORK EXPERIENCE
+${experiences.experiences.map((exp: any) => 
+  `${exp.position || 'Position'} at ${exp.company || 'Company'}
+${exp.startDate || 'Start Date'} - ${exp.endDate || 'Present'} | ${exp.location || 'Location'}
+${exp.description || 'Description not available.'}\n`
+).join('\n')}` : ''}
+
+${education?.educations && education.educations.length > 0 ? `
+EDUCATION
+${education.educations.map((edu: any) =>
+  `${edu.degree || 'Degree'} - ${edu.institution || 'Institution'}
+${edu.startDate || 'Start Date'} - ${edu.endDate || 'End Date'} | ${edu.location || 'Location'}
+${edu.description || ''}\n`
+).join('\n')}` : ''}
+
+${skills?.skills && skills.skills.length > 0 ? `
+SKILLS
+${skills.skills.map((skill: any) => 
+  `- ${typeof skill === 'string' ? skill : skill.name}`
+).join('\n')}` : ''}
+
+${projects?.projects && projects.projects.length > 0 ? `
+PROJECTS
+${projects.projects.map((project: any) =>
+  `${project.title || 'Project Title'}
+${project.startDate || ''} - ${project.endDate || ''}
+${project.description || 'Description not available.'}\n`
+).join('\n')}` : ''}
+`;
+      
+      return res.send(plainText);
       
     } catch (error) {
       console.error(`[GET /shadow-resume/:resumeId/download-word] Error:`, error);

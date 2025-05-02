@@ -757,17 +757,17 @@ export default function ShadowResumeSection({ user, resume, isCurrentUser, isOwn
                     return;
                   }
                   
-                  // Generate and download the resume as Word document
+                  // Generate and download the resume as text file
                   window.open(`/api/shadow-resume/${resume.id}/download-word`, '_blank');
                   
                   toast({
                     title: "Resume Downloaded",
-                    description: "Your resume has been downloaded as a Word document.",
+                    description: "Your resume has been downloaded as a text file.",
                   });
                 }}
               >
                 <Download className="h-4 w-4 mr-1" />
-                Download Resume
+                Download Resume as Text
               </Button>
             </>
           )}
