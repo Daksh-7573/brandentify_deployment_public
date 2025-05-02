@@ -791,11 +791,11 @@ export default function CareerCapsulePage() {
                 name="yearNumber"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Year Number</FormLabel>
+                    <FormLabel>Goal Years</FormLabel>
                     <FormControl>
                       <Input type="number" min="1" max="5" placeholder="1-5" {...field} />
                     </FormControl>
-                    <FormDescription>Enter a number between 1 and 5 (Year 1-5 of your plan)</FormDescription>
+                    <FormDescription>Enter a number between 1 and 5 to indicate which year of your 5-year plan</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
