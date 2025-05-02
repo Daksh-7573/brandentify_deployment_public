@@ -5433,7 +5433,7 @@ ${extractedText.substring(0, 5000)}
   addProjectUpdateRoutes(apiRouter);
   console.log("Project Update routes loaded");
 
-  // Career Roadmap routes
+  // Career Capsule routes
   
   // Get all career goals for a user
   apiRouter.get("/users/:userId/career-goals", async (req: Request, res: Response) => {
@@ -5848,7 +5848,7 @@ ${extractedText.substring(0, 5000)}
     }
   }
   
-  console.log("Career Roadmap routes loaded");
+  console.log("Career Capsule routes loaded");
 
   app.use("/api", apiRouter);
 

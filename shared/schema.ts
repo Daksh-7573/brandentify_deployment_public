@@ -1208,7 +1208,7 @@ export const goalProgressLogs = pgTable("goal_progress_logs", {
   isPrivate: boolean("is_private").default(true)
 });
 
-// Insert schemas for Career Roadmap
+// Insert schemas for Career Capsule
 export const insertCareerGoalSchema = createInsertSchema(careerGoals).omit({
   id: true,
   progress: true,
@@ -1235,7 +1235,7 @@ export const insertGoalProgressLogSchema = createInsertSchema(goalProgressLogs).
   logDate: true
 });
 
-// Export types for Career Roadmap
+// Export types for Career Capsule
 export type CareerGoal = typeof careerGoals.$inferSelect;
 export type InsertCareerGoal = z.infer<typeof insertCareerGoalSchema>;
 

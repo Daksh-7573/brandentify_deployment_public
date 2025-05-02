@@ -572,7 +572,7 @@ export class MemStorage implements IStorage {
   // private capsuleTasks: Map<number, CapsuleTask>;
   // private capsuleJournals: Map<number, CapsuleJournal>;
   
-  // Career Roadmap models
+  // Career Capsule models
   private careerGoals: Map<number, CareerGoal>;
   private goalMilestones: Map<number, GoalMilestone>;
   private goalSkills: Map<number, GoalSkill>;
@@ -704,7 +704,7 @@ export class MemStorage implements IStorage {
     // this.capsuleTasks = new Map();
     // this.capsuleJournals = new Map();
     
-    // Initialize Career Roadmap maps
+    // Initialize Career Capsule maps
     this.careerGoals = new Map();
     this.goalMilestones = new Map();
     this.goalSkills = new Map();
@@ -786,7 +786,7 @@ export class MemStorage implements IStorage {
     // this.currentCapsuleTaskId = 1;
     // this.currentCapsuleJournalId = 1;
     
-    // Initialize Career Roadmap IDs
+    // Initialize Career Capsule IDs
     this.currentCareerGoalId = 1;
     this.currentGoalMilestoneId = 1;
     this.currentGoalSkillId = 1;
