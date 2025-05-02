@@ -596,11 +596,11 @@ export class MemStorage implements IStorage {
   private currentMentorshipRequestId: number;
   private currentMentorshipFeedbackId: number;
   
-  // Career Capsule IDs
-  private currentCareerCapsuleId: number;
-  private currentCapsuleYearId: number;
-  private currentCapsuleTaskId: number;
-  private currentCapsuleJournalId: number;
+  // Career Capsule IDs - removed
+  // private currentCareerCapsuleId: number;
+  // private currentCapsuleYearId: number;
+  // private currentCapsuleTaskId: number;
+  // private currentCapsuleJournalId: number;
 
   constructor() {
     this.users = new Map();
@@ -728,11 +728,11 @@ export class MemStorage implements IStorage {
     this.currentMentorshipRequestId = 1;
     this.currentMentorshipFeedbackId = 1;
     
-    // Initialize Career Capsule IDs
-    this.currentCareerCapsuleId = 1;
-    this.currentCapsuleYearId = 1;
-    this.currentCapsuleTaskId = 1;
-    this.currentCapsuleJournalId = 1;
+    // Initialize Career Capsule IDs - removed
+    // this.currentCareerCapsuleId = 1;
+    // this.currentCapsuleYearId = 1;
+    // this.currentCapsuleTaskId = 1;
+    // this.currentCapsuleJournalId = 1;
     
     // Initialize with a default user for development/demo
     this.initializeDemoData();
@@ -862,11 +862,11 @@ export class MemStorage implements IStorage {
     this.currentMentorshipRequestId = 1;
     this.currentMentorshipFeedbackId = 1;
     
-    // Reset Career Capsule IDs
-    this.currentCareerCapsuleId = 1;
-    this.currentCapsuleYearId = 1;
-    this.currentCapsuleTaskId = 1;
-    this.currentCapsuleJournalId = 1;
+    // Reset Career Capsule IDs - removed
+    // this.currentCareerCapsuleId = 1;
+    // this.currentCapsuleYearId = 1;
+    // this.currentCapsuleTaskId = 1;
+    // this.currentCapsuleJournalId = 1;
     
     // No pre-created skills
     
@@ -1047,11 +1047,11 @@ export class MemStorage implements IStorage {
     this.mentorshipRequests.clear();
     this.mentorshipFeedback.clear();
     
-    // Clear all Career Capsule data
-    this.careerCapsules.clear();
-    this.capsuleYears.clear();
-    this.capsuleTasks.clear();
-    this.capsuleJournals.clear();
+    // Clear all Career Capsule data - removed
+    // this.careerCapsules.clear();
+    // this.capsuleYears.clear();
+    // this.capsuleTasks.clear();
+    // this.capsuleJournals.clear();
   }
   
   /**
