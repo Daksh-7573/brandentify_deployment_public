@@ -29,6 +29,7 @@ import ResumeEditor from "@/pages/resume-editor";
 import UnifiedProfilePage from "@/pages/unified-profile";
 import FeedTestPage from "@/pages/feed-test";
 import CareerQuestsPage from "@/pages/career-quests";
+import CareerCapsulePage from "@/pages/career-capsule";
 import OnboardingPage from "@/pages/onboarding";
 import EditProfilePage from "@/pages/edit-profile";
 import MuskTestingPage from "@/pages/musk-testing";
@@ -142,6 +143,9 @@ function Router() {
       </Route>
       <Route path="/career-quests">
         <ProtectedRoute path="/career-quests" component={CareerQuestsPage} />
+      </Route>
+      <Route path="/career-capsule">
+        <ProtectedRoute path="/career-capsule" component={CareerCapsulePage} />
       </Route>
       <Route path="/onboarding">
         <ProtectedRoute path="/onboarding" component={OnboardingPage} />
