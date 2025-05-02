@@ -440,6 +440,36 @@ export interface IStorage {
   createMentorshipFeedback(feedback: InsertMentorshipFeedback): Promise<MentorshipFeedback>;
   canRequestMentorship(menteeId: number): Promise<boolean>;
   
+  // Career Roadmap operations
+  // Career Goal operations
+  getCareerGoalsByUserId(userId: number): Promise<CareerGoal[]>;
+  getCareerGoalById(id: number): Promise<CareerGoal | undefined>;
+  createCareerGoal(goal: InsertCareerGoal): Promise<CareerGoal>;
+  updateCareerGoal(id: number, goal: Partial<CareerGoal>): Promise<CareerGoal | undefined>;
+  deleteCareerGoal(id: number): Promise<boolean>;
+  
+  // Goal Milestone operations
+  getMilestonesByGoalId(goalId: number): Promise<GoalMilestone[]>;
+  getMilestoneById(id: number): Promise<GoalMilestone | undefined>;
+  createGoalMilestone(milestone: InsertGoalMilestone): Promise<GoalMilestone>;
+  updateGoalMilestone(id: number, milestone: Partial<GoalMilestone>): Promise<GoalMilestone | undefined>;
+  deleteGoalMilestone(id: number): Promise<boolean>;
+  
+  // Goal Skill operations
+  getSkillsByGoalId(goalId: number): Promise<GoalSkill[]>;
+  getSkillById(id: number): Promise<GoalSkill | undefined>;
+  createGoalSkill(skill: InsertGoalSkill): Promise<GoalSkill>;
+  updateGoalSkill(id: number, skill: Partial<GoalSkill>): Promise<GoalSkill | undefined>;
+  deleteGoalSkill(id: number): Promise<boolean>;
+  
+  // Goal Progress Log operations
+  getProgressLogsByGoalId(goalId: number): Promise<GoalProgressLog[]>;
+  getProgressLogsByMilestoneId(milestoneId: number): Promise<GoalProgressLog[]>;
+  getProgressLogById(id: number): Promise<GoalProgressLog | undefined>;
+  createGoalProgressLog(log: InsertGoalProgressLog): Promise<GoalProgressLog>;
+  updateGoalProgressLog(id: number, log: Partial<GoalProgressLog>): Promise<GoalProgressLog | undefined>;
+  deleteGoalProgressLog(id: number): Promise<boolean>;
+  
   // Career Capsule operations - removed
   // These methods have been disabled as the Career Capsule feature has been removed
   /*
