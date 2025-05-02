@@ -55,7 +55,9 @@ export const useUserCareerCapsule = (userId: number) => {
     queryKey: ['/api/users', userId, 'career-capsule'],
     queryFn: async () => {
       try {
-        const response = await apiRequest(`/api/users/${userId}/career-capsule`);
+        const response = await apiRequest(`/api/users/${userId}/career-capsule`, {
+          method: 'GET'
+        });
         return response as CareerCapsule;
       } catch (error) {
         // If 404, it means the user doesn't have a career capsule yet
@@ -141,7 +143,9 @@ export const useCapsuleYears = (capsuleId: number | null) => {
     queryKey: ['/api/career-capsules', capsuleId, 'years'],
     queryFn: async () => {
       if (!capsuleId) return [];
-      const response = await apiRequest(`/api/career-capsules/${capsuleId}/years`);
+      const response = await apiRequest(`/api/career-capsules/${capsuleId}/years`, {
+        method: 'GET'
+      });
       return response as CapsuleYear[];
     },
     enabled: !!capsuleId,
@@ -249,7 +253,9 @@ export const useCapsuleTasks = (yearId: number | null) => {
     queryKey: ['/api/capsule-years', yearId, 'tasks'],
     queryFn: async () => {
       if (!yearId) return [];
-      const response = await apiRequest(`/api/capsule-years/${yearId}/tasks`);
+      const response = await apiRequest(`/api/capsule-years/${yearId}/tasks`, {
+        method: 'GET'
+      });
       return response as CapsuleTask[];
     },
     enabled: !!yearId,
@@ -386,7 +392,9 @@ export const useCapsuleJournals = (yearId: number | null) => {
     queryKey: ['/api/capsule-years', yearId, 'journals'],
     queryFn: async () => {
       if (!yearId) return [];
-      const response = await apiRequest(`/api/capsule-years/${yearId}/journals`);
+      const response = await apiRequest(`/api/capsule-years/${yearId}/journals`, {
+        method: 'GET'
+      });
       return response as CapsuleJournal[];
     },
     enabled: !!yearId,
