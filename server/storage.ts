@@ -18,6 +18,10 @@ import {
   pulseComments, PulseComment, InsertPulseComment,
   pollVotes, PollVote, InsertPollVote,
   hashtags, Hashtag, InsertHashtag,
+  careerGoals, CareerGoal, InsertCareerGoal,
+  goalMilestones, GoalMilestone, InsertGoalMilestone,
+  goalSkills, GoalSkill, InsertGoalSkill,
+  goalProgressLogs, GoalProgressLog, InsertGoalProgressLog,
   pulseHashtags, PulseHashtag, InsertPulseHashtag,
   userHashtagFollows, UserHashtagFollow, InsertUserHashtagFollow,
   nowboardItems, NowboardItem, InsertNowboardItem,
@@ -538,6 +542,12 @@ export class MemStorage implements IStorage {
   // private capsuleTasks: Map<number, CapsuleTask>;
   // private capsuleJournals: Map<number, CapsuleJournal>;
   
+  // Career Roadmap models
+  private careerGoals: Map<number, CareerGoal>;
+  private goalMilestones: Map<number, GoalMilestone>;
+  private goalSkills: Map<number, GoalSkill>;
+  private goalProgressLogs: Map<number, GoalProgressLog>;
+  
   private currentUserId: number;
   private currentResumeId: number;
   private currentWorkExperienceId: number;
@@ -601,6 +611,12 @@ export class MemStorage implements IStorage {
   // private currentCapsuleYearId: number;
   // private currentCapsuleTaskId: number;
   // private currentCapsuleJournalId: number;
+  
+  // Career Roadmap IDs
+  private currentCareerGoalId: number;
+  private currentGoalMilestoneId: number;
+  private currentGoalSkillId: number;
+  private currentGoalProgressLogId: number;
 
   constructor() {
     this.users = new Map();
@@ -657,6 +673,12 @@ export class MemStorage implements IStorage {
     // this.capsuleYears = new Map();
     // this.capsuleTasks = new Map();
     // this.capsuleJournals = new Map();
+    
+    // Initialize Career Roadmap maps
+    this.careerGoals = new Map();
+    this.goalMilestones = new Map();
+    this.goalSkills = new Map();
+    this.goalProgressLogs = new Map();
     
     // Initialize Musk suggestion maps
     this.muskSuggestions = new Map();
@@ -733,6 +755,12 @@ export class MemStorage implements IStorage {
     // this.currentCapsuleYearId = 1;
     // this.currentCapsuleTaskId = 1;
     // this.currentCapsuleJournalId = 1;
+    
+    // Initialize Career Roadmap IDs
+    this.currentCareerGoalId = 1;
+    this.currentGoalMilestoneId = 1;
+    this.currentGoalSkillId = 1;
+    this.currentGoalProgressLogId = 1;
     
     // Initialize with a default user for development/demo
     this.initializeDemoData();
@@ -867,6 +895,12 @@ export class MemStorage implements IStorage {
     // this.currentCapsuleYearId = 1;
     // this.currentCapsuleTaskId = 1;
     // this.currentCapsuleJournalId = 1;
+    
+    // Reset Career Roadmap IDs
+    this.currentCareerGoalId = 1;
+    this.currentGoalMilestoneId = 1;
+    this.currentGoalSkillId = 1;
+    this.currentGoalProgressLogId = 1;
     
     // No pre-created skills
     
@@ -1052,6 +1086,12 @@ export class MemStorage implements IStorage {
     // this.capsuleYears.clear();
     // this.capsuleTasks.clear();
     // this.capsuleJournals.clear();
+    
+    // Clear all Career Roadmap data
+    this.careerGoals.clear();
+    this.goalMilestones.clear();
+    this.goalSkills.clear();
+    this.goalProgressLogs.clear();
   }
   
   /**
