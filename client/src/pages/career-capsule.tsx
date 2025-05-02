@@ -191,7 +191,7 @@ export default function CareerCapsulePage() {
           yearNumber: data.yearNumber,
           title: data.title,
           description: data.description || null,
-          progress: 0
+          milestone: null // Setting the milestone field required by the schema
         }
       });
       setCreateYearOpen(false);
@@ -265,10 +265,10 @@ export default function CareerCapsulePage() {
         capsuleId: capsule.id,
         options: {
           goalType: capsule.goalType,
-          customGoal: capsule.customGoal,
+          customGoal: capsule.customGoal === null ? undefined : capsule.customGoal,
           timeframe: capsule.timeframe,
-          industry: capsule.industry,
-          description: capsule.description,
+          industry: capsule.industry === null ? undefined : capsule.industry,
+          description: capsule.description === null ? undefined : capsule.description,
           useModel: aiModel
         }
       });

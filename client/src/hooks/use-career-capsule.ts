@@ -26,8 +26,7 @@ export interface CapsuleYear {
   yearNumber: number;
   title: string;
   description: string | null;
-  milestone: string | null;
-  progress: number;
+  completionStatus: number;
   createdAt: string;
   updatedAt: string;
 }
