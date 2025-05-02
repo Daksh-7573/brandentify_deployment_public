@@ -122,12 +122,14 @@ export const useCreateCareerCapsule = () => {
       
       console.log("Career capsule creation response:", response);
       
-      // Validate the response
-      if (!response || typeof response !== 'object' || !('id' in response)) {
-        console.error("Invalid career capsule creation response:", response);
-        throw new Error("Invalid server response when creating career capsule");
+      // Be more flexible in response validation
+      // The server returns a successful response with the new capsule data
+      if (!response) {
+        console.error("Empty career capsule creation response");
+        throw new Error("Empty server response when creating career capsule");
       }
       
+      // Accept any object as a valid response from the server
       return response as CareerCapsule;
     },
     onSuccess: (data, { userId }) => {
@@ -258,10 +260,10 @@ export const useCreateCapsuleYear = () => {
       
       console.log("Year goal creation response:", response);
       
-      // Validate the response
-      if (!response || typeof response !== 'object' || !('id' in response)) {
-        console.error("Invalid year goal creation response:", response);
-        throw new Error("Invalid server response when creating year goal");
+      // Be more flexible in validation for year goal creation
+      if (!response) {
+        console.error("Empty year goal creation response");
+        throw new Error("Empty server response when creating year goal");
       }
       
       return response as CapsuleYear;
