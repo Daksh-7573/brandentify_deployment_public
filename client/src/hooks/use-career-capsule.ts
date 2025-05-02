@@ -23,7 +23,7 @@ export interface CareerCapsule {
 export interface CapsuleYear {
   id: number;
   capsuleId: number;
-  year: number;
+  yearNumber: number;
   title: string;
   description: string | null;
   milestone: string | null;

@@ -524,7 +524,7 @@ export default function CareerCapsulePage() {
                   <CardContent className="p-4">
                     <div className="flex justify-between items-center">
                       <div>
-                        <h3 className="font-medium">{year.year}</h3>
+                        <h3 className="font-medium">Year {year.yearNumber}</h3>
                         <p className="text-sm text-muted-foreground">{year.title}</p>
                       </div>
                       <div className="flex items-center space-x-2">
@@ -546,11 +546,11 @@ export default function CareerCapsulePage() {
                 <CardHeader className="border-b">
                   <div className="flex justify-between items-center">
                     <div>
-                      <CardTitle>{activeYear.title} ({activeYear.year})</CardTitle>
+                      <CardTitle>{activeYear.title} (Year {activeYear.yearNumber})</CardTitle>
                       <CardDescription>{activeYear.description}</CardDescription>
                     </div>
                     <div className="bg-primary/10 px-3 py-1 rounded-full text-xs font-medium">
-                      {activeYear.goalType.replace('_', ' ')}
+                      {activeYear.milestone}
                     </div>
                   </div>
                 </CardHeader>
