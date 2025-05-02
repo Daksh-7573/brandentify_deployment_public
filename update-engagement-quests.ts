@@ -42,11 +42,11 @@ async function updateEngagementQuests() {
     // Available quest types: profile_update, pulse_creation, networking, learning, portfolio, resume, visibility
     const engagementQuests = [
       {
-        title: "Trending Topic Pulse",
-        description: "Create a pulse post about a trending topic in your industry",
+        title: "Pulse Creator",
+        description: "Create your first pulse post to share insights with your network",
         type: "pulse_creation",
         target_count: 1,
-        target_action: "create_trending_pulse",
+        target_action: "create_pulse",
         xp_reward: 75,
         badge_reward: "thought_leader",
         required_profile_completion: 30,
@@ -66,9 +66,9 @@ async function updateEngagementQuests() {
         is_active: true
       },
       {
-        title: "Meaningful Comment",
-        description: "Leave a thoughtful comment on a high-engagement pulse",
-        type: "networking", // Changed from pulse_engagement to valid type
+        title: "Meaningful Commenter",
+        description: "Leave a thoughtful comment on a pulse post",
+        type: "networking",
         target_count: 2,
         target_action: "comment_on_pulse",
         xp_reward: 50,
@@ -78,9 +78,9 @@ async function updateEngagementQuests() {
         is_active: true
       },
       {
-        title: "React and Connect",
-        description: "React to 5 pulses from professionals in your target industry",
-        type: "networking", // Changed from pulse_engagement to valid type
+        title: "Reaction Giver",
+        description: "Mark pulses as 'Insightful' to show appreciation for valuable content",
+        type: "networking",
         target_count: 5,
         target_action: "react_to_pulse",
         xp_reward: 40,
@@ -90,9 +90,9 @@ async function updateEngagementQuests() {
         is_active: true
       },
       {
-        title: "Content Amplifier",
-        description: "Share a valuable pulse with your network",
-        type: "networking", // Changed from pulse_engagement to valid type
+        title: "Content Sharer",
+        description: "Share pulses with others in your network",
+        type: "networking",
         target_count: 3,
         target_action: "share_pulse",
         xp_reward: 65,
@@ -102,11 +102,11 @@ async function updateEngagementQuests() {
         is_active: true
       },
       {
-        title: "Multimedia Creator",
-        description: "Create a pulse with an image or document attachment",
+        title: "Media Maven",
+        description: "Create a pulse with a media attachment (image, document, etc.)",
         type: "pulse_creation",
         target_count: 1,
-        target_action: "create_multimedia_pulse",
+        target_action: "create_pulse_with_media",
         xp_reward: 70,
         badge_reward: null,
         required_profile_completion: 50,
@@ -114,27 +114,27 @@ async function updateEngagementQuests() {
         is_active: true
       },
       {
-        title: "Industry Conversation Starter",
-        description: "Start a conversation by posting a question-based pulse about your industry",
+        title: "Weekly Contributor",
+        description: "Create at least one pulse post each week",
         type: "pulse_creation",
         target_count: 1,
-        target_action: "create_question_pulse",
+        target_action: "create_weekly_pulse",
         xp_reward: 80,
         badge_reward: "musk_learner",
         required_profile_completion: 60,
-        musk_tip: "Question-based posts receive 2x more comments than statement posts. Engage your network by asking for their professional opinion.",
+        musk_tip: "Regular content creation keeps you top-of-mind with your network and demonstrates your ongoing expertise in your field.",
         is_active: true
       },
       {
-        title: "Daily Engagement Streak",
-        description: "Interact with at least one pulse every day for 5 consecutive days",
-        type: "networking", // Changed from pulse_engagement to valid type
+        title: "Active Networker",
+        description: "Interact with the platform at least 5 times in a week (comments, reactions, or shares)",
+        type: "networking",
         target_count: 5,
-        target_action: "daily_pulse_interaction",
+        target_action: "weekly_interactions",
         xp_reward: 100,
         badge_reward: "weekly_hustler",
         required_profile_completion: 30,
-        musk_tip: "Consistent daily engagement increases your visibility in the feed algorithm. Even 5 minutes a day can significantly boost your professional presence.",
+        musk_tip: "Consistent engagement increases your visibility in the feed algorithm. Even 5 minutes a day can significantly boost your professional presence.",
         is_active: true
       }
     ];
