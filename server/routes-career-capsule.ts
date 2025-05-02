@@ -33,10 +33,15 @@ router.post('/users/:userId/career-capsule', async (req, res) => {
       title: req.body.title,
       description: req.body.description || null,
       overallProgress: 0,
-      startDate: req.body.startDate,
-      endDate: req.body.endDate,
+      goalType: req.body.goalType || 'position_change', // Ensures goalType is never null
+      customGoal: req.body.customGoal || null,
+      timeframe: req.body.timeframe || 5,
+      industry: req.body.industry || null,
+      isPrivate: req.body.isPrivate || false,
+      isMuskGenerated: req.body.isMuskGenerated || false,
     };
 
+    console.log('Creating career capsule with data:', JSON.stringify(capsuleData));
     const capsule = await storage.createCareerCapsule(capsuleData);
     return res.status(201).json(capsule);
   } catch (error) {
