@@ -467,178 +467,201 @@ Sample skills relevant to the ${user.industry || 'industry'} would be listed her
       // Extract the form data for the resume
       const { personalInfo, experiences, education, skills, projects } = formData;
       
-      // Create a new document
-      const doc = new Document({
-        sections: [{
-          properties: {},
-          children: [
-            // Name as heading
-            new Paragraph({
-              text: personalInfo?.fullName || 'Full Name',
-              heading: HeadingLevel.HEADING_1,
-              alignment: AlignmentType.CENTER,
-            }),
-            
-            // Contact Details
-            new Paragraph({
-              text: `${personalInfo?.title || 'Title'} | ${personalInfo?.email || 'Email'} | ${personalInfo?.phone || 'Phone'}`,
-              alignment: AlignmentType.CENTER,
-            }),
-            new Paragraph({
-              text: personalInfo?.location || 'Location',
-              alignment: AlignmentType.CENTER,
-              spacing: {
-                after: 400,
-              },
-            }),
-            
-            // Professional Summary
-            new Paragraph({
-              text: 'PROFESSIONAL SUMMARY',
-              heading: HeadingLevel.HEADING_2,
-            }),
-            new Paragraph({
-              text: personalInfo?.summary || 'Professional summary not available.',
-              spacing: {
-                after: 400,
-              },
-            }),
-          ]
-        }]
-      });
+      // Create a new document with all sections in a single array of children
+      const children = [];
       
-      // Add Work Experience section
+      // Add name as heading
+      children.push(
+        new Paragraph({
+          text: personalInfo?.fullName || 'Full Name',
+          heading: HeadingLevel.HEADING_1,
+          alignment: AlignmentType.CENTER,
+        })
+      );
+      
+      // Add contact details
+      children.push(
+        new Paragraph({
+          text: `${personalInfo?.title || 'Title'} | ${personalInfo?.email || 'Email'} | ${personalInfo?.phone || 'Phone'}`,
+          alignment: AlignmentType.CENTER,
+        })
+      );
+      
+      children.push(
+        new Paragraph({
+          text: personalInfo?.location || 'Location',
+          alignment: AlignmentType.CENTER,
+          spacing: {
+            after: 400,
+          },
+        })
+      );
+      
+      // Add professional summary
+      children.push(
+        new Paragraph({
+          text: 'PROFESSIONAL SUMMARY',
+          heading: HeadingLevel.HEADING_2,
+        })
+      );
+      
+      children.push(
+        new Paragraph({
+          text: personalInfo?.summary || 'Professional summary not available.',
+          spacing: {
+            after: 400,
+          },
+        })
+      );
+      
+      // Add work experience section
       if (experiences?.experiences && experiences.experiences.length > 0) {
-        // Add section heading
-        doc.addSection({
-          children: [
-            new Paragraph({
-              text: 'WORK EXPERIENCE',
-              heading: HeadingLevel.HEADING_2,
-            }),
-          ]
-        });
+        children.push(
+          new Paragraph({
+            text: 'WORK EXPERIENCE',
+            heading: HeadingLevel.HEADING_2,
+          })
+        );
         
         // Add each work experience
         for (const exp of experiences.experiences) {
-          doc.addParagraph(new Paragraph({
-            text: `${exp.position || 'Position'} at ${exp.company || 'Company'}`,
-            heading: HeadingLevel.HEADING_3,
-          }));
-          
-          doc.addParagraph(new Paragraph({
-            text: `${exp.startDate || 'Start Date'} - ${exp.endDate || 'Present'} | ${exp.location || 'Location'}`,
-            spacing: {
-              before: 100,
-            },
-          }));
-          
-          doc.addParagraph(new Paragraph({
-            text: exp.description || 'Description not available.',
-            spacing: {
-              after: 200,
-            },
-          }));
-        }
-      }
-      
-      // Add Education section
-      if (education?.educations && education.educations.length > 0) {
-        // Add section heading
-        doc.addSection({
-          children: [
+          children.push(
             new Paragraph({
-              text: 'EDUCATION',
-              heading: HeadingLevel.HEADING_2,
-            }),
-          ]
-        });
-        
-        // Add each education entry
-        for (const edu of education.educations) {
-          doc.addParagraph(new Paragraph({
-            text: `${edu.degree || 'Degree'} - ${edu.institution || 'Institution'}`,
-            heading: HeadingLevel.HEADING_3,
-          }));
+              text: `${exp.position || 'Position'} at ${exp.company || 'Company'}`,
+              heading: HeadingLevel.HEADING_3,
+            })
+          );
           
-          doc.addParagraph(new Paragraph({
-            text: `${edu.startDate || 'Start Date'} - ${edu.endDate || 'End Date'} | ${edu.location || 'Location'}`,
-            spacing: {
-              before: 100,
-            },
-          }));
+          children.push(
+            new Paragraph({
+              text: `${exp.startDate || 'Start Date'} - ${exp.endDate || 'Present'} | ${exp.location || 'Location'}`,
+              spacing: {
+                before: 100,
+              },
+            })
+          );
           
-          if (edu.description) {
-            doc.addParagraph(new Paragraph({
-              text: edu.description,
+          children.push(
+            new Paragraph({
+              text: exp.description || 'Description not available.',
               spacing: {
                 after: 200,
               },
-            }));
+            })
+          );
+        }
+      }
+      
+      // Add education section
+      if (education?.educations && education.educations.length > 0) {
+        children.push(
+          new Paragraph({
+            text: 'EDUCATION',
+            heading: HeadingLevel.HEADING_2,
+          })
+        );
+        
+        // Add each education entry
+        for (const edu of education.educations) {
+          children.push(
+            new Paragraph({
+              text: `${edu.degree || 'Degree'} - ${edu.institution || 'Institution'}`,
+              heading: HeadingLevel.HEADING_3,
+            })
+          );
+          
+          children.push(
+            new Paragraph({
+              text: `${edu.startDate || 'Start Date'} - ${edu.endDate || 'End Date'} | ${edu.location || 'Location'}`,
+              spacing: {
+                before: 100,
+              },
+            })
+          );
+          
+          if (edu.description) {
+            children.push(
+              new Paragraph({
+                text: edu.description,
+                spacing: {
+                  after: 200,
+                },
+              })
+            );
           }
         }
       }
       
-      // Add Skills section
+      // Add skills section
       if (skills?.skills && skills.skills.length > 0) {
-        // Add section heading
-        doc.addSection({
-          children: [
-            new Paragraph({
-              text: 'SKILLS',
-              heading: HeadingLevel.HEADING_2,
-            }),
-          ]
-        });
+        children.push(
+          new Paragraph({
+            text: 'SKILLS',
+            heading: HeadingLevel.HEADING_2,
+          })
+        );
         
         // Add skills list
         for (const skill of skills.skills) {
           const skillName = typeof skill === 'string' ? skill : skill.name;
-          doc.addParagraph(new Paragraph({
-            text: `• ${skillName}`,
-            spacing: {
-              before: 60,
-            },
-          }));
+          children.push(
+            new Paragraph({
+              text: `• ${skillName}`,
+              spacing: {
+                before: 60,
+              },
+            })
+          );
         }
       }
       
-      // Add Projects section
+      // Add projects section
       if (projects?.projects && projects.projects.length > 0) {
-        // Add section heading
-        doc.addSection({
-          children: [
-            new Paragraph({
-              text: 'PROJECTS',
-              heading: HeadingLevel.HEADING_2,
-            }),
-          ]
-        });
+        children.push(
+          new Paragraph({
+            text: 'PROJECTS',
+            heading: HeadingLevel.HEADING_2,
+          })
+        );
         
         // Add each project
         for (const project of projects.projects) {
-          doc.addParagraph(new Paragraph({
-            text: project.title || 'Project Title',
-            heading: HeadingLevel.HEADING_3,
-          }));
+          children.push(
+            new Paragraph({
+              text: project.title || 'Project Title',
+              heading: HeadingLevel.HEADING_3,
+            })
+          );
           
           if (project.startDate || project.endDate) {
-            doc.addParagraph(new Paragraph({
-              text: `${project.startDate || ''} - ${project.endDate || ''}`,
-              spacing: {
-                before: 100,
-              },
-            }));
+            children.push(
+              new Paragraph({
+                text: `${project.startDate || ''} - ${project.endDate || ''}`,
+                spacing: {
+                  before: 100,
+                },
+              })
+            );
           }
           
-          doc.addParagraph(new Paragraph({
-            text: project.description || 'Description not available.',
-            spacing: {
-              after: 200,
-            },
-          }));
+          children.push(
+            new Paragraph({
+              text: project.description || 'Description not available.',
+              spacing: {
+                after: 200,
+              },
+            })
+          );
         }
       }
+      
+      // Create the document with all the children
+      const doc = new Document({
+        sections: [{
+          properties: {},
+          children: children
+        }]
+      });
       
       // Generate the .docx file
       const buffer = await Packer.toBuffer(doc);
