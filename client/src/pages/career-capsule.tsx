@@ -815,8 +815,8 @@ export default function CareerCapsulePage() {
 
       {/* Add Year Goal Dialog */}
       <Dialog open={createYearOpen} onOpenChange={setCreateYearOpen}>
-        <DialogContent className="sm:max-w-[525px] max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
+        <DialogContent className="sm:max-w-[525px] h-auto max-h-[85vh] overflow-y-auto my-4">
+          <DialogHeader className="py-4">
             <DialogTitle>Add Year Goal to Career Capsule</DialogTitle>
             <DialogDescription>
               Define a specific goal for a year of your career journey. First describe the goal, then select which year (1-5) it represents.
@@ -888,8 +888,8 @@ export default function CareerCapsulePage() {
 
       {/* Create Task Dialog */}
       <Dialog open={createTaskOpen} onOpenChange={setCreateTaskOpen}>
-        <DialogContent className="sm:max-w-[525px] max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
+        <DialogContent className="sm:max-w-[525px] h-auto max-h-[85vh] overflow-y-auto my-4">
+          <DialogHeader className="py-4">
             <DialogTitle>Add a Milestone Task</DialogTitle>
             <DialogDescription>
               Create a specific milestone task to help achieve your goal for Year {activeYear?.yearNumber}.
@@ -959,8 +959,8 @@ export default function CareerCapsulePage() {
 
       {/* Create Journal Dialog */}
       <Dialog open={createJournalOpen} onOpenChange={setCreateJournalOpen}>
-        <DialogContent className="sm:max-w-[525px] max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
+        <DialogContent className="sm:max-w-[525px] h-auto max-h-[85vh] overflow-y-auto my-4">
+          <DialogHeader className="py-4">
             <DialogTitle>Add Journal Entry</DialogTitle>
             <DialogDescription>
               Record your thoughts, progress, and reflections for Year {activeYear?.yearNumber}.
@@ -1030,8 +1030,8 @@ export default function CareerCapsulePage() {
 
       {/* Generate Milestones with Musk AI Dialog */}
       <Dialog open={generateMilestonesOpen} onOpenChange={setGenerateMilestonesOpen}>
-        <DialogContent className="sm:max-w-[525px] max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
+        <DialogContent className="sm:max-w-[525px] h-auto max-h-[85vh] overflow-y-auto my-4">
+          <DialogHeader className="py-4">
             <DialogTitle>Generate Career Milestones with Musk AI</DialogTitle>
             <DialogDescription>
               Musk will analyze your Goal, Goal Years, profile data, and current market trends to suggest personalized milestone tasks to help you achieve your objectives.
