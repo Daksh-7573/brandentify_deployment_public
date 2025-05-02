@@ -170,7 +170,7 @@ export default function CareerCapsulePage() {
           industry: data.industry || null,
           isPrivate: data.isPrivate,
           isMuskGenerated: false,
-          overallProgress: 0
+          // overallProgress is handled by the backend
         }
       });
       setCreateCapsuleOpen(false);
@@ -769,13 +769,13 @@ export default function CareerCapsulePage() {
         </div>
       </div>
 
-      {/* Create Capsule Dialog */}
+      {/* Add Year Goal Dialog */}
       <Dialog open={createYearOpen} onOpenChange={setCreateYearOpen}>
         <DialogContent className="sm:max-w-[525px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Create a Career Capsule</DialogTitle>
+            <DialogTitle>Add Year Goal to Career Capsule</DialogTitle>
             <DialogDescription>
-              First define your career goal and details, then specify which year of your 5-year plan this represents.
+              Define a specific goal for a year of your career journey. First describe the goal, then select which year (1-5) it represents.
             </DialogDescription>
           </DialogHeader>
           <Form {...yearForm}>
@@ -819,7 +819,7 @@ export default function CareerCapsulePage() {
                     <FormControl>
                       <Input type="number" min="1" max="5" placeholder="1-5" {...field} />
                     </FormControl>
-                    <FormDescription>Enter a number between 1 and 5 to indicate which year of your 5-year plan</FormDescription>
+                    <FormDescription>Enter a number between 1 and 5 to indicate which year of your career journey this goal is for</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -830,10 +830,10 @@ export default function CareerCapsulePage() {
                   {createYear.isPending ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Creating...
+                      Adding Year Goal...
                     </>
                   ) : (
-                    "Create Capsule"
+                    "Add Year Goal"
                   )}
                 </Button>
               </DialogFooter>
