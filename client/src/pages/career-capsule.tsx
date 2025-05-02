@@ -55,9 +55,8 @@ const createCapsuleSchema = z.object({
 // Create year form schema
 const createYearSchema = z.object({
   yearNumber: z.coerce.number().min(1, "Year number must be between 1 and 5").max(5, "Year number must be between 1 and 5"),
-  title: z.string().min(3, "Title must be at least 3 characters").max(100, "Title cannot exceed 100 characters"),
-  description: z.string().max(500, "Description cannot exceed 500 characters").optional(),
-  milestone: z.string().max(200, "Milestone cannot exceed 200 characters").optional()
+  title: z.string().min(3, "Goal title must be at least 3 characters").max(100, "Goal title cannot exceed 100 characters"),
+  description: z.string().max(500, "Goal description cannot exceed 500 characters").optional()
 });
 
 // Create task form schema
@@ -119,8 +118,7 @@ export default function CareerCapsulePage() {
     defaultValues: {
       yearNumber: 1, // Default to first year (1-5)
       title: "",
-      description: "",
-      milestone: ""
+      description: ""
     }
   });
 
@@ -193,7 +191,6 @@ export default function CareerCapsulePage() {
           yearNumber: data.yearNumber,
           title: data.title,
           description: data.description || null,
-          milestone: data.milestone || null,
           progress: 0
         }
       });
@@ -805,7 +802,7 @@ export default function CareerCapsulePage() {
                 name="title"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Title</FormLabel>
+                    <FormLabel>Goal Title</FormLabel>
                     <FormControl>
                       <Input placeholder="e.g., Senior Developer Transition" {...field} />
                     </FormControl>
@@ -818,7 +815,7 @@ export default function CareerCapsulePage() {
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Description</FormLabel>
+                    <FormLabel>Goal</FormLabel>
                     <FormControl>
                       <Textarea 
                         placeholder="Describe your goals for this year..."
@@ -830,26 +827,7 @@ export default function CareerCapsulePage() {
                   </FormItem>
                 )}
               />
-              <FormField
-                control={yearForm.control}
-                name="milestone"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Key Milestone</FormLabel>
-                    <FormControl>
-                      <Textarea 
-                        placeholder="Describe the key milestone for this year..."
-                        className="min-h-[80px]"
-                        {...field} 
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      What specific achievement do you aim to reach by the end of this year?
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+
               <DialogFooter>
                 <Button type="submit" disabled={createYear.isPending}>
                   {createYear.isPending ? (
