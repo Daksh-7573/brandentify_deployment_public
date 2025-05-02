@@ -376,8 +376,8 @@ export default function CareerCapsulePage() {
 
         {/* Create Career Capsule Dialog */}
         <Dialog open={createCapsuleOpen} onOpenChange={setCreateCapsuleOpen}>
-          <DialogContent className="sm:max-w-[525px]">
-            <DialogHeader>
+          <DialogContent className="sm:max-w-[525px] h-auto max-h-[85vh] overflow-y-auto my-4">
+            <DialogHeader className="py-4">
               <DialogTitle>Create Your Career Capsule</DialogTitle>
               <DialogDescription>
                 Define your 5-year career plan with milestones and goals to track your progress.
