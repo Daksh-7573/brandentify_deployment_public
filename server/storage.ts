@@ -1077,6 +1077,12 @@ export class MemStorage implements IStorage {
     // Clear all news sources
     this.newsSources.clear();
     
+    // Clear all Career Roadmap data
+    this.careerGoals.clear();
+    this.goalMilestones.clear();
+    this.goalSkills.clear();
+    this.goalProgressLogs.clear();
+    
     // Clear all news articles
     this.newsArticles.clear();
     
@@ -3753,6 +3759,281 @@ export class MemStorage implements IStorage {
     
     // User can request mentorship if they have fewer than 5 total mentorships (active + pending)
     return (activeCount + pendingCount) < 5;
+  }
+
+  // Career Roadmap operations
+  // Career Goal operations
+  async getCareerGoalsByUserId(userId: number): Promise<CareerGoal[]> {
+    return Array.from(this.careerGoals.values())
+      .filter(goal => goal.userId === userId)
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  }
+
+  async getCareerGoalById(id: number): Promise<CareerGoal | undefined> {
+    return this.careerGoals.get(id);
+  }
+
+  async createCareerGoal(goal: InsertCareerGoal): Promise<CareerGoal> {
+    const id = this.currentCareerGoalId++;
+    const now = new Date();
+    
+    const newGoal: CareerGoal = {
+      ...goal,
+      id,
+      createdAt: now,
+      updatedAt: now,
+      completedAt: null,
+      progress: 0,
+      status: goal.status || 'active',
+      targetCompletionDate: goal.targetCompletionDate || null,
+      aiSuggestions: goal.aiSuggestions || null
+    };
+    
+    this.careerGoals.set(id, newGoal);
+    return newGoal;
+  }
+
+  async updateCareerGoal(id: number, goalData: Partial<CareerGoal>): Promise<CareerGoal | undefined> {
+    const goal = this.careerGoals.get(id);
+    if (!goal) return undefined;
+    
+    const updatedGoal: CareerGoal = {
+      ...goal,
+      ...goalData,
+      updatedAt: new Date()
+    };
+    
+    // If status is being updated to 'completed', set completedAt timestamp
+    if (goalData.status === 'completed' && goal.status !== 'completed') {
+      updatedGoal.completedAt = new Date();
+    }
+    
+    this.careerGoals.set(id, updatedGoal);
+    return updatedGoal;
+  }
+
+  async deleteCareerGoal(id: number): Promise<boolean> {
+    // Delete associated milestones, skills, and progress logs first
+    const milestones = await this.getMilestonesByGoalId(id);
+    for (const milestone of milestones) {
+      await this.deleteGoalMilestone(milestone.id);
+    }
+    
+    const skills = await this.getSkillsByGoalId(id);
+    for (const skill of skills) {
+      await this.deleteGoalSkill(skill.id);
+    }
+    
+    const progressLogs = await this.getProgressLogsByGoalId(id);
+    for (const log of progressLogs) {
+      await this.deleteGoalProgressLog(log.id);
+    }
+    
+    // Then delete the goal itself
+    return this.careerGoals.delete(id);
+  }
+  
+  // Goal Milestone operations
+  async getMilestonesByGoalId(goalId: number): Promise<GoalMilestone[]> {
+    return Array.from(this.goalMilestones.values())
+      .filter(milestone => milestone.goalId === goalId)
+      .sort((a, b) => a.order - b.order);
+  }
+  
+  async getMilestoneById(id: number): Promise<GoalMilestone | undefined> {
+    return this.goalMilestones.get(id);
+  }
+  
+  async createGoalMilestone(milestone: InsertGoalMilestone): Promise<GoalMilestone> {
+    const id = this.currentGoalMilestoneId++;
+    const now = new Date();
+    
+    // Get existing milestones for this goal to determine the order
+    const existingMilestones = await this.getMilestonesByGoalId(milestone.goalId);
+    const order = milestone.order || (existingMilestones.length > 0 ? Math.max(...existingMilestones.map(m => m.order)) + 1 : 0);
+    
+    const newMilestone: GoalMilestone = {
+      ...milestone,
+      id,
+      createdAt: now,
+      updatedAt: now,
+      completedAt: null,
+      order,
+      status: milestone.status || 'pending'
+    };
+    
+    this.goalMilestones.set(id, newMilestone);
+    
+    // Update the goal progress when a milestone is added
+    await this.updateGoalProgress(milestone.goalId);
+    
+    return newMilestone;
+  }
+  
+  async updateGoalMilestone(id: number, milestoneData: Partial<GoalMilestone>): Promise<GoalMilestone | undefined> {
+    const milestone = this.goalMilestones.get(id);
+    if (!milestone) return undefined;
+    
+    const updatedMilestone: GoalMilestone = {
+      ...milestone,
+      ...milestoneData,
+      updatedAt: new Date()
+    };
+    
+    // If status is being updated to 'completed', set completedAt timestamp
+    if (milestoneData.status === 'completed' && milestone.status !== 'completed') {
+      updatedMilestone.completedAt = new Date();
+      
+      // Create a progress log entry automatically when a milestone is completed
+      await this.createGoalProgressLog({
+        goalId: milestone.goalId,
+        milestoneId: milestone.id,
+        notes: `Milestone completed: ${milestone.title}`,
+        type: 'milestone_completed'
+      });
+    }
+    
+    this.goalMilestones.set(id, updatedMilestone);
+    
+    // Update the goal progress when a milestone is updated
+    await this.updateGoalProgress(milestone.goalId);
+    
+    return updatedMilestone;
+  }
+  
+  async deleteGoalMilestone(id: number): Promise<boolean> {
+    const milestone = this.goalMilestones.get(id);
+    if (!milestone) return false;
+    
+    // Delete associated progress logs first
+    const progressLogs = await this.getProgressLogsByMilestoneId(id);
+    for (const log of progressLogs) {
+      await this.deleteGoalProgressLog(log.id);
+    }
+    
+    // Delete the milestone
+    const result = this.goalMilestones.delete(id);
+    
+    // Update the goal progress when a milestone is deleted
+    if (result) {
+      await this.updateGoalProgress(milestone.goalId);
+    }
+    
+    return result;
+  }
+  
+  // Helper method to update a goal's progress based on completed milestones
+  private async updateGoalProgress(goalId: number): Promise<void> {
+    const goal = await this.getCareerGoalById(goalId);
+    if (!goal) return;
+    
+    const milestones = await this.getMilestonesByGoalId(goalId);
+    
+    if (milestones.length === 0) {
+      // If there are no milestones, set progress to 0
+      await this.updateCareerGoal(goalId, { progress: 0 });
+      return;
+    }
+    
+    const completedMilestones = milestones.filter(m => m.status === 'completed');
+    const progress = Math.floor((completedMilestones.length / milestones.length) * 100);
+    
+    await this.updateCareerGoal(goalId, { progress });
+  }
+  
+  // Goal Skill operations
+  async getSkillsByGoalId(goalId: number): Promise<GoalSkill[]> {
+    return Array.from(this.goalSkills.values())
+      .filter(skill => skill.goalId === goalId)
+      .sort((a, b) => (a.priority || 0) - (b.priority || 0));
+  }
+  
+  async getSkillById(id: number): Promise<GoalSkill | undefined> {
+    return this.goalSkills.get(id);
+  }
+  
+  async createGoalSkill(skill: InsertGoalSkill): Promise<GoalSkill> {
+    const id = this.currentGoalSkillId++;
+    const now = new Date();
+    
+    const newSkill: GoalSkill = {
+      ...skill,
+      id,
+      createdAt: now,
+      currentLevel: skill.currentLevel || 0,
+      targetLevel: skill.targetLevel || 5,
+      priority: skill.priority || 0,
+      resources: skill.resources || []
+    };
+    
+    this.goalSkills.set(id, newSkill);
+    return newSkill;
+  }
+  
+  async updateGoalSkill(id: number, skillData: Partial<GoalSkill>): Promise<GoalSkill | undefined> {
+    const skill = this.goalSkills.get(id);
+    if (!skill) return undefined;
+    
+    const updatedSkill: GoalSkill = {
+      ...skill,
+      ...skillData
+    };
+    
+    this.goalSkills.set(id, updatedSkill);
+    return updatedSkill;
+  }
+  
+  async deleteGoalSkill(id: number): Promise<boolean> {
+    return this.goalSkills.delete(id);
+  }
+  
+  // Goal Progress Log operations
+  async getProgressLogsByGoalId(goalId: number): Promise<GoalProgressLog[]> {
+    return Array.from(this.goalProgressLogs.values())
+      .filter(log => log.goalId === goalId)
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  }
+  
+  async getProgressLogsByMilestoneId(milestoneId: number): Promise<GoalProgressLog[]> {
+    return Array.from(this.goalProgressLogs.values())
+      .filter(log => log.milestoneId === milestoneId)
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  }
+  
+  async getProgressLogById(id: number): Promise<GoalProgressLog | undefined> {
+    return this.goalProgressLogs.get(id);
+  }
+  
+  async createGoalProgressLog(log: InsertGoalProgressLog): Promise<GoalProgressLog> {
+    const id = this.currentGoalProgressLogId++;
+    const now = new Date();
+    
+    const newLog: GoalProgressLog = {
+      ...log,
+      id,
+      createdAt: now,
+      milestoneId: log.milestoneId || null
+    };
+    
+    this.goalProgressLogs.set(id, newLog);
+    return newLog;
+  }
+  
+  async updateGoalProgressLog(id: number, logData: Partial<GoalProgressLog>): Promise<GoalProgressLog | undefined> {
+    const log = this.goalProgressLogs.get(id);
+    if (!log) return undefined;
+    
+    const updatedLog: GoalProgressLog = {
+      ...log,
+      ...logData
+    };
+    
+    this.goalProgressLogs.set(id, updatedLog);
+    return updatedLog;
+  }
+  
+  async deleteGoalProgressLog(id: number): Promise<boolean> {
+    return this.goalProgressLogs.delete(id);
   }
 
   // Career Capsule operations
