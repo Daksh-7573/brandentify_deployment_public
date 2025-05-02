@@ -3,6 +3,7 @@ import { useLocation } from "wouter";
 import { AuthContext } from "@/context/auth-context";
 import { PageLayout } from "@/components/layout/page-layout";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -567,8 +568,18 @@ export default function CareerCapsulePage() {
               </div>
             ) : years.length === 0 ? (
               <Card>
-                <CardContent className="p-6 text-center">
-                  <p className="text-sm text-muted-foreground">No years added yet. Add your first year to get started.</p>
+                <CardContent className="p-6 space-y-3">
+                  <div className="flex flex-col items-center">
+                    <BrainCircuit className="h-8 w-8 text-primary mb-2" />
+                    <p className="text-sm text-center font-medium">Ready for next steps!</p>
+                  </div>
+                  <div className="bg-accent/50 rounded p-3">
+                    <p className="text-sm text-muted-foreground mb-2">You have two options to get started:</p>
+                    <ol className="list-decimal ml-4 text-sm text-muted-foreground space-y-1">
+                      <li><span className="font-medium">Use Musk AI</span> - Click "Generate with Musk AI" to automatically create milestones</li>
+                      <li><span className="font-medium">Add manually</span> - Click "Add Year" to create your own yearly milestones</li>
+                    </ol>
+                  </div>
                 </CardContent>
               </Card>
             ) : (
@@ -598,7 +609,42 @@ export default function CareerCapsulePage() {
           </div>
 
           <div className="md:col-span-9">
-            {activeYear ? (
+            {years.length === 0 ? (
+              <Card>
+                <CardContent className="p-6 space-y-4 text-center">
+                  <div className="flex flex-col items-center">
+                    <div className="rounded-full bg-primary/10 p-4 mb-2">
+                      <BrainCircuit className="h-10 w-10 text-primary" />
+                    </div>
+                    <h3 className="text-lg font-medium">Generate Your 5-Year Plan</h3>
+                    <p className="text-sm text-muted-foreground max-w-md mt-1 mb-4">
+                      Let Musk AI analyze your profile and goals to create a personalized career roadmap with milestones for each year.
+                    </p>
+                    <Button
+                      size="lg"
+                      className="mt-2"
+                      onClick={() => setGenerateMilestonesOpen(true)}
+                      disabled={generateMilestones.isPending}
+                    >
+                      {generateMilestones.isPending ? (
+                        <>
+                          <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                          Generating...
+                        </>
+                      ) : (
+                        <>
+                          <BrainCircuit className="mr-2 h-5 w-5" />
+                          Generate Career Milestones with AI
+                        </>
+                      )}
+                    </Button>
+                    <p className="text-xs text-muted-foreground mt-4">
+                      Or add years manually by clicking the "Add Year" button above
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : activeYear ? (
               <Card>
                 <CardHeader className="border-b">
                   <div className="flex justify-between items-center">
