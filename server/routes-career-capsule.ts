@@ -82,7 +82,7 @@ router.get('/career-capsules/:capsuleId/years', async (req, res) => {
       return res.status(400).json({ message: 'Invalid capsule ID' });
     }
 
-    const years = await storage.getCapsuleYears(capsuleId);
+    const years = await storage.getCapsuleYearsByCapsuleId(capsuleId);
     return res.json(years);
   } catch (error) {
     console.error('Error fetching capsule years:', error);
@@ -100,7 +100,7 @@ router.post('/career-capsules/:capsuleId/years', async (req, res) => {
 
     const yearData = {
       capsuleId,
-      year: req.body.year,
+      yearNumber: req.body.yearNumber, // Changed from 'year' to 'yearNumber' to match client expectation
       title: req.body.title,
       description: req.body.description || null,
       goalType: req.body.goalType,
@@ -128,7 +128,7 @@ router.put('/capsule-years/:yearId', async (req, res) => {
       description: req.body.description,
       goalType: req.body.goalType,
       progress: req.body.progress,
-      year: req.body.year,
+      yearNumber: req.body.yearNumber, // Changed from 'year' to 'yearNumber' to match client expectation
     };
 
     const year = await storage.updateCapsuleYear(yearId, updatedData);
@@ -163,7 +163,7 @@ router.get('/capsule-years/:yearId/tasks', async (req, res) => {
       return res.status(400).json({ message: 'Invalid year ID' });
     }
 
-    const tasks = await storage.getCapsuleTasks(yearId);
+    const tasks = await storage.getCapsuleTasksByYearId(yearId);
     return res.json(tasks);
   } catch (error) {
     console.error('Error fetching capsule tasks:', error);
@@ -258,7 +258,7 @@ router.get('/capsule-years/:yearId/journals', async (req, res) => {
       return res.status(400).json({ message: 'Invalid year ID' });
     }
 
-    const journals = await storage.getCapsuleJournals(yearId);
+    const journals = await storage.getCapsuleJournalsByYearId(yearId);
     return res.json(journals);
   } catch (error) {
     console.error('Error fetching capsule journals:', error);
@@ -367,7 +367,7 @@ router.post('/career-capsules/:capsuleId/generate-milestones', async (req, res) 
     }
     
     // Return the generated years
-    const years = await storage.getCapsuleYears(capsuleId);
+    const years = await storage.getCapsuleYearsByCapsuleId(capsuleId);
     return res.json({
       success: true,
       message: 'Successfully generated and saved milestones',
