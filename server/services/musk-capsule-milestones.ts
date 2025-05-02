@@ -72,17 +72,26 @@ export async function generateCapsuleMilestones(options: MilestoneGenerationRequ
 
     // Format the prompt for the AI
     const aiContext = `
-You are Musk, a career development AI assistant specialized in creating detailed career progression plans.
-Your task is to generate a ${options.timeframe}-year career plan for a user based on their goal and profile.
+You are Musk, a sophisticated career development AI assistant specialized in creating detailed career progression plans.
+Your task is to analyze the user's specific career goals, timeline, profile data, and current market trends to generate a ${options.timeframe}-year career plan with personalized milestone tasks.
 
-USER CAREER GOAL:
+USER CAREER GOAL: 
 ${options.goalType === 'custom' ? options.customGoal : options.goalType.replace('_', ' ')}
 
 GOAL DETAILS:
 ${options.description || 'No additional details provided'}
 
+GOAL TIMELINE:
+${options.timeframe} years
+
 TARGET INDUSTRY:
 ${options.industry || 'Not specified'}
+
+CURRENT MARKET TRENDS TO ANALYZE:
+- Rising skill demands in ${options.industry || 'the specified'} industry
+- Emerging technologies and tools relevant to the user's career path
+- Changing job market requirements and expectations
+- Industry-specific certification or qualification trends
 
 USER PROFILE:
 - Name: ${user.name}
@@ -116,12 +125,16 @@ ${education.length > 0 ?
   'No education data available'}
 
 TASK:
-Create a detailed ${options.timeframe}-year career development plan with specific milestones and tasks for each year.
+Create a detailed ${options.timeframe}-year career development plan with personalized milestone tasks aligned with the user's goals and market demands.
 For each year (1 through ${options.timeframe}), provide:
 1. A title for the year
-2. A description of what should be accomplished during that year
-3. A specific milestone/achievement for the year
-4. 3-5 specific tasks with descriptions and suggested due dates (in YYYY-MM-DD format)
+2. A detailed description of what should be accomplished during that year
+3. A specific strategic milestone/achievement that reflects progress toward the user's goals
+4. 3-5 specific milestone tasks with clear descriptions and suggested due dates (in YYYY-MM-DD format) that:
+   - Reflect analysis of the user's profile, skills, and experiences
+   - Consider current market trends and industry demands
+   - Build strategically toward the user's stated career goals
+   - Include skill development, networking, certifications, or other relevant activities
 
 Format your response as a JSON array with the following structure:
 [
@@ -163,7 +176,7 @@ Please ensure that:
         model: "claude-3-7-sonnet-20250219",
         max_tokens: 4000,
         messages: [{ role: 'user', content: aiContext }],
-        system: "You are a helpful career planning assistant that generates career milestones in JSON format. Return only valid JSON with no additional text or explanation."
+        system: "You are Musk, a sophisticated career planning assistant that generates personalized milestone tasks by analyzing goals, profile data, and market trends. Return only valid JSON with no additional text or explanation."
       });
       
       aiResponse = response.content[0].text;
@@ -174,7 +187,7 @@ Please ensure that:
         messages: [
           { 
             role: "system", 
-            content: "You are a helpful career planning assistant that generates career milestones in JSON format. Return only valid JSON with no additional text or explanation." 
+            content: "You are Musk, a sophisticated career planning assistant that generates personalized milestone tasks by analyzing goals, profile data, and market trends. Return only valid JSON with no additional text or explanation." 
           },
           { 
             role: "user", 

@@ -613,9 +613,9 @@ export default function CareerCapsulePage() {
                     <div className="rounded-full bg-primary/10 p-4 mb-2">
                       <BrainCircuit className="h-10 w-10 text-primary" />
                     </div>
-                    <h3 className="text-lg font-medium">Generate Your 5-Year Plan</h3>
+                    <h3 className="text-lg font-medium">Generate Your 5-Year Career Plan</h3>
                     <p className="text-sm text-muted-foreground max-w-md mt-1 mb-4">
-                      Let Musk AI analyze your profile and goals to create a personalized career roadmap with milestones for each year.
+                      Let Musk AI analyze your goals, timeline, profile data, and current market trends to suggest personalized milestone tasks for achieving your career objectives.
                     </p>
                     <Button
                       size="lg"
@@ -656,7 +656,7 @@ export default function CareerCapsulePage() {
                     <TabsList className="w-full border-b rounded-none">
                       <TabsTrigger value="timeline" className="flex-1">
                         <Target className="h-4 w-4 mr-2" />
-                        Goals
+                        Milestone Tasks
                       </TabsTrigger>
                       <TabsTrigger value="journal" className="flex-1">
                         <FileText className="h-4 w-4 mr-2" />
