@@ -467,6 +467,29 @@ Sample skills relevant to the ${user.industry || 'industry'} would be listed her
       // Extract the form data for the resume
       const { personalInfo, experiences, education, skills, projects } = formData;
       
+      // Function to format dates nicely
+      const formatDate = (dateString?: string | null): string => {
+        if (!dateString) return 'Present';
+        
+        try {
+          const date = new Date(dateString);
+          
+          // Check if the date is valid
+          if (isNaN(date.getTime())) {
+            return dateString; // Return original if can't parse
+          }
+          
+          // Format as "Month Year" (e.g., "January 2023")
+          return date.toLocaleDateString('en-US', {
+            month: 'long',
+            year: 'numeric'
+          });
+        } catch (error) {
+          console.log(`[formatDate] Error formatting date: ${dateString}`, error);
+          return dateString; // Return original on error
+        }
+      };
+      
       // Create a new document with all sections in a single array of children
       const children = [];
       
@@ -534,7 +557,7 @@ Sample skills relevant to the ${user.industry || 'industry'} would be listed her
           
           children.push(
             new Paragraph({
-              text: `${exp.startDate || 'Start Date'} - ${exp.endDate || 'Present'} | ${exp.location || 'Location'}`,
+              text: `${formatDate(exp.startDate)} - ${formatDate(exp.endDate)} | ${exp.location || 'Location'}`,
               spacing: {
                 before: 100,
               },
@@ -572,7 +595,7 @@ Sample skills relevant to the ${user.industry || 'industry'} would be listed her
           
           children.push(
             new Paragraph({
-              text: `${edu.startDate || 'Start Date'} - ${edu.endDate || 'End Date'} | ${edu.location || 'Location'}`,
+              text: `${formatDate(edu.startDate)} - ${formatDate(edu.endDate)} | ${edu.location || 'Location'}`,
               spacing: {
                 before: 100,
               },
@@ -636,7 +659,7 @@ Sample skills relevant to the ${user.industry || 'industry'} would be listed her
           if (project.startDate || project.endDate) {
             children.push(
               new Paragraph({
-                text: `${project.startDate || ''} - ${project.endDate || ''}`,
+                text: `${formatDate(project.startDate)} - ${formatDate(project.endDate)}`,
                 spacing: {
                   before: 100,
                 },
