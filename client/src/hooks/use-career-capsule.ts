@@ -1,271 +1,388 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { toast } from "@/hooks/use-toast";
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { apiRequest } from '@/lib/queryClient';
+import { toast } from '@/hooks/use-toast';
 
-// Career Capsule functionality has been removed
-// This is a stub implementation that provides type definitions for backward compatibility
-// and empty implementations that return null values
+export type GoalType = 'custom' | 'certification' | 'education' | 'position_change' | 'skill_acquisition' | 'promotion' | 'industry_switch' | 'entrepreneurship' | 'relocation';
+export type GoalStatus = 'completed' | 'not_started' | 'in_progress' | 'abandoned' | null;
+export type SkillPriority = 'high' | 'medium' | 'low';
+export type SkillStatus = 'completed' | 'in_progress' | 'not_started';
+export type LogEntryType = 'accomplishment' | 'challenge' | 'learning' | 'reflection';
 
-// Type definitions for Career Capsule data (for compatibility only)
-export interface CareerCapsule {
+export interface CareerGoal {
   id: number;
   userId: number;
   title: string;
-  goalType: "position_change" | "skill_acquisition" | "promotion" | "industry_switch" | "entrepreneurship" | "relocation" | "education" | "certification" | "custom";
-  customGoal: string | null;
-  timeframe: number;
-  description: string | null;
-  industry: string | null;
-  isPrivate: boolean;
-  overallProgress: number;
-  isMuskGenerated: boolean;
-  createdAt: string;
-  updatedAt: string;
+  description: string;
+  targetDate: Date;
+  goalType: GoalType;
+  status: GoalStatus;
+  createdAt: Date;
+  updatedAt: Date;
+  progress: number;
+  industryFocus: string;
 }
 
-export interface CapsuleYear {
+export interface GoalMilestone {
   id: number;
-  capsuleId: number;
-  yearNumber: number;
+  goalId: number;
   title: string;
-  description: string | null;
-  completionStatus: number;
-  createdAt: string;
-  updatedAt: string;
+  description: string;
+  targetDate: Date;
+  status: GoalStatus;
+  order: number;
+  createdAt: Date;
+  updatedAt: Date;
+  completedAt: Date | null;
 }
 
-export interface CapsuleTask {
+export interface GoalSkill {
   id: number;
-  yearId: number;
-  title: string;
-  description: string | null;
-  isCompleted: boolean;
-  dueDate: string | null;
-  category?: string;
-  priority?: number;
-  difficulty?: number;
-  createdAt: string;
-  updatedAt: string;
+  goalId: number;
+  skillName: string;
+  description: string;
+  priority: SkillPriority;
+  status: SkillStatus;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-export interface CapsuleJournal {
+export interface GoalProgressLog {
   id: number;
-  yearId: number;
-  title: string;
-  content: string;
-  mood?: string;
-  entryDate: string;
-  isPrivate?: boolean;
+  goalId: number;
+  milestoneId: number | null;
+  entry: string;
+  createdAt: Date;
+  entryType: LogEntryType;
 }
 
-export interface MilestoneGenerationResponse {
-  success: boolean;
-  message: string;
-  milestones?: any[];
+export interface CareerGoalWithDetails {
+  goal: CareerGoal;
+  milestones: GoalMilestone[];
+  skills: GoalSkill[];
+  progressLogs: GoalProgressLog[];
 }
 
-// Hook for fetching user's career capsule - returns null (feature disabled)
-export const useUserCareerCapsule = (userId: number) => {
-  return useQuery({
-    queryKey: ['/api/users', userId, 'career-capsule'],
-    queryFn: async () => {
-      console.log('Career Capsule functionality has been removed');
-      return null;
-    },
-    enabled: false, // Disable this query entirely
-  });
-};
-
-// Hook for creating a career capsule - no-op implementation
-export const useCreateCareerCapsule = () => {
+// Hook for Career Capsule
+export const useCareerCapsule = (userId: number | string) => {
   const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: async ({ userId, data }: { userId: number, data: any }) => {
-      console.log('Career Capsule functionality has been removed');
-      toast({
-        title: "Feature Unavailable",
-        description: "The Career Capsule feature has been removed.",
-        variant: "destructive",
-      });
-      throw new Error('Career Capsule functionality has been removed');
-    },
-    onError: () => {
-      // Silent error handling as this feature is intentionally disabled
-    }
-  });
-};
 
-// Hook for updating a career capsule - no-op implementation
-export const useUpdateCareerCapsule = () => {
-  return useMutation({
-    mutationFn: async ({ capsuleId, data }: { capsuleId: number, data: any }) => {
-      console.log('Career Capsule functionality has been removed');
-      toast({
-        title: "Feature Unavailable",
-        description: "The Career Capsule feature has been removed.",
-        variant: "destructive",
-      });
-      throw new Error('Career Capsule functionality has been removed');
-    },
-    onError: () => {
-      // Silent error handling as this feature is intentionally disabled
-    }
-  });
-};
+  // Helper to invalidate goal-related queries
+  const invalidateGoalQueries = () => {
+    queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/career-goals`] });
+  };
 
-// Hook for fetching capsule years - returns empty array
-export const useCapsuleYears = (capsuleId: number | null) => {
-  return useQuery({
-    queryKey: ['/api/career-capsules', capsuleId, 'years'],
-    queryFn: async () => {
-      console.log('Career Capsule functionality has been removed');
-      return [] as CapsuleYear[];
-    },
-    enabled: false, // Disable this query entirely
-  });
-};
+  // Get all career goals for a user
+  const useGoals = () => {
+    return useQuery({
+      queryKey: [`/api/users/${userId}/career-goals`],
+      enabled: !!userId,
+    });
+  };
 
-// Empty implementations for all other Career Capsule related hooks
-export const useCreateCapsuleYear = () => {
-  return useMutation({
-    mutationFn: async ({ capsuleId, data }: { capsuleId: number, data: any }) => {
-      console.log('Career Capsule functionality has been removed');
-      toast({
-        title: "Feature Unavailable",
-        description: "The Career Capsule feature has been removed.",
-        variant: "destructive",
-      });
-      throw new Error('Career Capsule functionality has been removed');
-    },
-    onError: () => {
-      // Silent error handling
-    }
-  });
-};
+  // Get a specific career goal with all related data
+  const useGoalDetails = (goalId: number) => {
+    return useQuery({
+      queryKey: [`/api/career-goals/${goalId}`],
+      enabled: !!goalId,
+    });
+  };
 
-export const useUpdateCapsuleYear = () => {
-  return useMutation({
-    mutationFn: async ({ yearId, data }: { yearId: number, data: any }) => {
-      console.log('Career Capsule functionality has been removed');
-      throw new Error('Career Capsule functionality has been removed');
-    },
-    onError: () => {}
-  });
-};
+  // Create a new career goal
+  const useCreateGoal = () => {
+    return useMutation({
+      mutationFn: (goalData: Omit<CareerGoal, 'id' | 'userId' | 'createdAt' | 'updatedAt' | 'progress'>) => {
+        return apiRequest(`/api/users/${userId}/career-goals`, {
+          method: 'POST',
+          body: JSON.stringify(goalData),
+        });
+      },
+      onSuccess: () => {
+        toast({
+          title: 'Career goal created',
+          description: 'Your career goal has been successfully created.',
+        });
+        invalidateGoalQueries();
+      },
+      onError: (error: any) => {
+        toast({
+          title: 'Failed to create career goal',
+          description: error.message || 'An error occurred while creating the career goal.',
+          variant: 'destructive',
+        });
+      },
+    });
+  };
 
-export const useDeleteCapsuleYear = () => {
-  return useMutation({
-    mutationFn: async (yearId: number) => {
-      console.log('Career Capsule functionality has been removed');
-      throw new Error('Career Capsule functionality has been removed');
-    },
-    onError: () => {}
-  });
-};
+  // Update a career goal
+  const useUpdateGoal = (goalId: number) => {
+    return useMutation({
+      mutationFn: (goalData: Partial<CareerGoal>) => {
+        return apiRequest(`/api/career-goals/${goalId}`, {
+          method: 'PATCH',
+          body: JSON.stringify(goalData),
+        });
+      },
+      onSuccess: () => {
+        toast({
+          title: 'Career goal updated',
+          description: 'Your career goal has been successfully updated.',
+        });
+        queryClient.invalidateQueries({ queryKey: [`/api/career-goals/${goalId}`] });
+        invalidateGoalQueries();
+      },
+      onError: (error: any) => {
+        toast({
+          title: 'Failed to update career goal',
+          description: error.message || 'An error occurred while updating the career goal.',
+          variant: 'destructive',
+        });
+      },
+    });
+  };
 
-export const useCapsuleTasks = (yearId: number | null) => {
-  return useQuery({
-    queryKey: ['/api/capsule-years', yearId, 'tasks'],
-    queryFn: async () => {
-      console.log('Career Capsule functionality has been removed');
-      return [] as CapsuleTask[];
-    },
-    enabled: false,
-  });
-};
+  // Delete a career goal
+  const useDeleteGoal = () => {
+    return useMutation({
+      mutationFn: (goalId: number) => {
+        return apiRequest(`/api/career-goals/${goalId}`, {
+          method: 'DELETE',
+        });
+      },
+      onSuccess: () => {
+        toast({
+          title: 'Career goal deleted',
+          description: 'Your career goal has been successfully deleted.',
+        });
+        invalidateGoalQueries();
+      },
+      onError: (error: any) => {
+        toast({
+          title: 'Failed to delete career goal',
+          description: error.message || 'An error occurred while deleting the career goal.',
+          variant: 'destructive',
+        });
+      },
+    });
+  };
 
-export const useCreateCapsuleTask = () => {
-  return useMutation({
-    mutationFn: async ({ yearId, data }: { yearId: number, data: any }) => {
-      console.log('Career Capsule functionality has been removed');
-      throw new Error('Career Capsule functionality has been removed');
-    },
-    onError: () => {}
-  });
-};
+  // Create a milestone for a career goal
+  const useCreateMilestone = (goalId: number) => {
+    return useMutation({
+      mutationFn: (milestoneData: Omit<GoalMilestone, 'id' | 'goalId' | 'order' | 'createdAt' | 'updatedAt' | 'completedAt'>) => {
+        return apiRequest(`/api/career-goals/${goalId}/milestones`, {
+          method: 'POST',
+          body: JSON.stringify(milestoneData),
+        });
+      },
+      onSuccess: () => {
+        toast({
+          title: 'Milestone created',
+          description: 'Your milestone has been successfully created.',
+        });
+        queryClient.invalidateQueries({ queryKey: [`/api/career-goals/${goalId}`] });
+      },
+      onError: (error: any) => {
+        toast({
+          title: 'Failed to create milestone',
+          description: error.message || 'An error occurred while creating the milestone.',
+          variant: 'destructive',
+        });
+      },
+    });
+  };
 
-export const useUpdateCapsuleTask = () => {
-  return useMutation({
-    mutationFn: async ({ taskId, data }: { taskId: number, data: any }) => {
-      console.log('Career Capsule functionality has been removed');
-      throw new Error('Career Capsule functionality has been removed');
-    },
-    onError: () => {}
-  });
-};
+  // Update a milestone
+  const useUpdateMilestone = (milestoneId: number, goalId: number) => {
+    return useMutation({
+      mutationFn: (milestoneData: Partial<GoalMilestone>) => {
+        return apiRequest(`/api/goal-milestones/${milestoneId}`, {
+          method: 'PATCH',
+          body: JSON.stringify(milestoneData),
+        });
+      },
+      onSuccess: () => {
+        toast({
+          title: 'Milestone updated',
+          description: 'Your milestone has been successfully updated.',
+        });
+        queryClient.invalidateQueries({ queryKey: [`/api/career-goals/${goalId}`] });
+      },
+      onError: (error: any) => {
+        toast({
+          title: 'Failed to update milestone',
+          description: error.message || 'An error occurred while updating the milestone.',
+          variant: 'destructive',
+        });
+      },
+    });
+  };
 
-export const useToggleCapsuleTaskCompletion = () => {
-  return useMutation({
-    mutationFn: async (taskId: number) => {
-      console.log('Career Capsule functionality has been removed');
-      throw new Error('Career Capsule functionality has been removed');
-    },
-    onError: () => {}
-  });
-};
+  // Delete a milestone
+  const useDeleteMilestone = (goalId: number) => {
+    return useMutation({
+      mutationFn: (milestoneId: number) => {
+        return apiRequest(`/api/goal-milestones/${milestoneId}`, {
+          method: 'DELETE',
+        });
+      },
+      onSuccess: () => {
+        toast({
+          title: 'Milestone deleted',
+          description: 'Your milestone has been successfully deleted.',
+        });
+        queryClient.invalidateQueries({ queryKey: [`/api/career-goals/${goalId}`] });
+      },
+      onError: (error: any) => {
+        toast({
+          title: 'Failed to delete milestone',
+          description: error.message || 'An error occurred while deleting the milestone.',
+          variant: 'destructive',
+        });
+      },
+    });
+  };
 
-export const useDeleteCapsuleTask = () => {
-  return useMutation({
-    mutationFn: async (taskId: number) => {
-      console.log('Career Capsule functionality has been removed');
-      throw new Error('Career Capsule functionality has been removed');
-    },
-    onError: () => {}
-  });
-};
+  // Create a skill for a career goal
+  const useCreateSkill = (goalId: number) => {
+    return useMutation({
+      mutationFn: (skillData: Omit<GoalSkill, 'id' | 'goalId' | 'createdAt' | 'updatedAt'>) => {
+        return apiRequest(`/api/career-goals/${goalId}/skills`, {
+          method: 'POST',
+          body: JSON.stringify(skillData),
+        });
+      },
+      onSuccess: () => {
+        toast({
+          title: 'Skill added',
+          description: 'Your skill has been successfully added to the career goal.',
+        });
+        queryClient.invalidateQueries({ queryKey: [`/api/career-goals/${goalId}`] });
+      },
+      onError: (error: any) => {
+        toast({
+          title: 'Failed to add skill',
+          description: error.message || 'An error occurred while adding the skill.',
+          variant: 'destructive',
+        });
+      },
+    });
+  };
 
-export const useCapsuleJournals = (yearId: number | null) => {
-  return useQuery({
-    queryKey: ['/api/capsule-years', yearId, 'journals'],
-    queryFn: async () => {
-      console.log('Career Capsule functionality has been removed');
-      return [] as CapsuleJournal[];
-    },
-    enabled: false,
-  });
-};
+  // Update a skill
+  const useUpdateSkill = (skillId: number, goalId: number) => {
+    return useMutation({
+      mutationFn: (skillData: Partial<GoalSkill>) => {
+        return apiRequest(`/api/goal-skills/${skillId}`, {
+          method: 'PATCH',
+          body: JSON.stringify(skillData),
+        });
+      },
+      onSuccess: () => {
+        toast({
+          title: 'Skill updated',
+          description: 'Your skill has been successfully updated.',
+        });
+        queryClient.invalidateQueries({ queryKey: [`/api/career-goals/${goalId}`] });
+      },
+      onError: (error: any) => {
+        toast({
+          title: 'Failed to update skill',
+          description: error.message || 'An error occurred while updating the skill.',
+          variant: 'destructive',
+        });
+      },
+    });
+  };
 
-export const useCreateCapsuleJournal = () => {
-  return useMutation({
-    mutationFn: async ({ yearId, data }: { yearId: number, data: any }) => {
-      console.log('Career Capsule functionality has been removed');
-      throw new Error('Career Capsule functionality has been removed');
-    },
-    onError: () => {}
-  });
-};
+  // Delete a skill
+  const useDeleteSkill = (goalId: number) => {
+    return useMutation({
+      mutationFn: (skillId: number) => {
+        return apiRequest(`/api/goal-skills/${skillId}`, {
+          method: 'DELETE',
+        });
+      },
+      onSuccess: () => {
+        toast({
+          title: 'Skill deleted',
+          description: 'Your skill has been successfully deleted from the career goal.',
+        });
+        queryClient.invalidateQueries({ queryKey: [`/api/career-goals/${goalId}`] });
+      },
+      onError: (error: any) => {
+        toast({
+          title: 'Failed to delete skill',
+          description: error.message || 'An error occurred while deleting the skill.',
+          variant: 'destructive',
+        });
+      },
+    });
+  };
 
-export const useUpdateCapsuleJournal = () => {
-  return useMutation({
-    mutationFn: async ({ journalId, data }: { journalId: number, data: any }) => {
-      console.log('Career Capsule functionality has been removed');
-      throw new Error('Career Capsule functionality has been removed');
-    },
-    onError: () => {}
-  });
-};
+  // Add a progress log entry
+  const useCreateProgressLog = (goalId: number) => {
+    return useMutation({
+      mutationFn: (logData: Omit<GoalProgressLog, 'id' | 'goalId' | 'createdAt'>) => {
+        return apiRequest(`/api/career-goals/${goalId}/progress-logs`, {
+          method: 'POST',
+          body: JSON.stringify(logData),
+        });
+      },
+      onSuccess: () => {
+        toast({
+          title: 'Progress logged',
+          description: 'Your progress has been successfully logged.',
+        });
+        queryClient.invalidateQueries({ queryKey: [`/api/career-goals/${goalId}`] });
+      },
+      onError: (error: any) => {
+        toast({
+          title: 'Failed to log progress',
+          description: error.message || 'An error occurred while logging your progress.',
+          variant: 'destructive',
+        });
+      },
+    });
+  };
 
-export const useDeleteCapsuleJournal = () => {
-  return useMutation({
-    mutationFn: async (journalId: number) => {
-      console.log('Career Capsule functionality has been removed');
-      throw new Error('Career Capsule functionality has been removed');
-    },
-    onError: () => {}
-  });
-};
+  // Delete a progress log entry
+  const useDeleteProgressLog = (goalId: number) => {
+    return useMutation({
+      mutationFn: (logId: number) => {
+        return apiRequest(`/api/goal-progress-logs/${logId}`, {
+          method: 'DELETE',
+        });
+      },
+      onSuccess: () => {
+        toast({
+          title: 'Progress log deleted',
+          description: 'Your progress log has been successfully deleted.',
+        });
+        queryClient.invalidateQueries({ queryKey: [`/api/career-goals/${goalId}`] });
+      },
+      onError: (error: any) => {
+        toast({
+          title: 'Failed to delete progress log',
+          description: error.message || 'An error occurred while deleting the progress log.',
+          variant: 'destructive',
+        });
+      },
+    });
+  };
 
-export const useGenerateCapsuleMilestones = () => {
-  return useMutation({
-    mutationFn: async ({ capsuleId, yearStart, yearEnd, userData }: { 
-      capsuleId: number, 
-      yearStart: number, 
-      yearEnd: number, 
-      userData: any
-    }) => {
-      console.log('Career Capsule functionality has been removed');
-      return { success: false, message: 'Career Capsule functionality has been removed' } as MilestoneGenerationResponse;
-    },
-    onError: () => {}
-  });
+  return {
+    useGoals,
+    useGoalDetails,
+    useCreateGoal,
+    useUpdateGoal,
+    useDeleteGoal,
+    useCreateMilestone,
+    useUpdateMilestone,
+    useDeleteMilestone,
+    useCreateSkill,
+    useUpdateSkill,
+    useDeleteSkill,
+    useCreateProgressLog,
+    useDeleteProgressLog,
+  };
 };
