@@ -777,7 +777,7 @@ export default function CareerCapsulePage() {
 
       {/* Create Capsule Dialog */}
       <Dialog open={createYearOpen} onOpenChange={setCreateYearOpen}>
-        <DialogContent className="sm:max-w-[525px]">
+        <DialogContent className="sm:max-w-[525px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Create a Career Capsule</DialogTitle>
             <DialogDescription>
@@ -869,7 +869,7 @@ export default function CareerCapsulePage() {
 
       {/* Create Task Dialog */}
       <Dialog open={createTaskOpen} onOpenChange={setCreateTaskOpen}>
-        <DialogContent className="sm:max-w-[525px]">
+        <DialogContent className="sm:max-w-[525px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Add a Task</DialogTitle>
             <DialogDescription>
@@ -940,7 +940,7 @@ export default function CareerCapsulePage() {
 
       {/* Create Journal Dialog */}
       <Dialog open={createJournalOpen} onOpenChange={setCreateJournalOpen}>
-        <DialogContent className="sm:max-w-[525px]">
+        <DialogContent className="sm:max-w-[525px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Add Journal Entry</DialogTitle>
             <DialogDescription>
@@ -1011,7 +1011,7 @@ export default function CareerCapsulePage() {
 
       {/* Generate Milestones with Musk AI Dialog */}
       <Dialog open={generateMilestonesOpen} onOpenChange={setGenerateMilestonesOpen}>
-        <DialogContent className="sm:max-w-[525px]">
+        <DialogContent className="sm:max-w-[525px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Generate Career Milestones with Musk AI</DialogTitle>
             <DialogDescription>
