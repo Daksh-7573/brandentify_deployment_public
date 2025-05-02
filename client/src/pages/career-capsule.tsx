@@ -313,11 +313,20 @@ export default function CareerCapsulePage() {
               <div className="rounded-full bg-primary/10 p-6">
                 <BrainCircuit className="h-12 w-12 text-primary" />
               </div>
-              <div className="space-y-2">
+              <div className="space-y-4">
                 <h3 className="text-xl font-bold">Create Your Career Capsule</h3>
                 <p className="text-muted-foreground max-w-md">
                   Set strategic career goals, track your progress, and receive AI-powered guidance from Musk to help you stay on track.
                 </p>
+                <div className="bg-accent/40 p-4 rounded-lg text-left">
+                  <h4 className="font-medium mb-2">How It Works:</h4>
+                  <ol className="list-decimal pl-5 space-y-2 text-sm text-muted-foreground">
+                    <li><span className="font-medium">Create your capsule</span> - Set your timeframe (1-5 years) and main career goal</li>
+                    <li><span className="font-medium">Generate milestones</span> - Use Musk AI to analyze your profile and create personalized yearly milestones</li>
+                    <li><span className="font-medium">Add specific tasks</span> - Break down each milestone into actionable tasks</li>
+                    <li><span className="font-medium">Track your progress</span> - Mark tasks complete as you achieve them</li>
+                  </ol>
+                </div>
               </div>
               <Button onClick={() => setCreateCapsuleOpen(true)} className="mt-4">
                 <Plus className="mr-2 h-4 w-4" />
