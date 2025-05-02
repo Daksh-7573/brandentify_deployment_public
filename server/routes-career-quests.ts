@@ -302,13 +302,48 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
         console.log(`[GET /users/${userId}/quests-with-definitions] Found ${questDefinitions.length} quest definitions`);
         
         // Combine user quests with their definitions
-        const questsWithDefinitions = userQuests.map(userQuest => {
-          const definition = questDefinitions.find(def => def.id === userQuest.questDefinitionId);
+        // Even if a quest definition is no longer active, fetch it directly from the database
+        const questsWithDefinitions = await Promise.all(userQuests.map(async userQuest => {
+          // First check active definitions
+          let definition = questDefinitions.find(def => def.id === userQuest.questDefinitionId);
+          
+          // If definition not found in active quests, try to fetch it directly
+          if (!definition && userQuest.questDefinitionId) {
+            try {
+              const defResult = await pool.query(`
+                SELECT 
+                  id,
+                  title,
+                  description,
+                  type,
+                  target_count as "targetCount",
+                  target_action as "targetAction",
+                  xp_reward as "xpReward",
+                  badge_reward as "badgeReward",
+                  required_profile_completion as "requiredProfileCompletion",
+                  required_career_stage as "requiredCareerStage",
+                  required_industry as "requiredIndustry",
+                  musk_tip as "muskTip",
+                  is_active as "isActive",
+                  created_at as "createdAt",
+                  updated_at as "updatedAt"
+                FROM quest_definitions
+                WHERE id = $1
+              `, [userQuest.questDefinitionId]);
+              
+              if (defResult.rows.length > 0) {
+                definition = defResult.rows[0];
+              }
+            } catch (err) {
+              console.error(`Error fetching quest definition ${userQuest.questDefinitionId}:`, err);
+            }
+          }
+          
           return {
             ...userQuest,
             definition: definition || null
           };
-        });
+        }));
         
         res.json(questsWithDefinitions);
       } catch (dbError) {
