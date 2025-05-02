@@ -43,11 +43,12 @@ import {
   // Mentorship Connect models
   mentorshipRequests, MentorshipRequest, InsertMentorshipRequest,
   mentorshipFeedback, MentorshipFeedback, InsertMentorshipFeedback,
-  // Career Capsule models
-  careerCapsules, CareerCapsule, InsertCareerCapsule,
-  capsuleYears, CapsuleYear, InsertCapsuleYear,
-  capsuleTasks, CapsuleTask, InsertCapsuleTask,
-  capsuleJournals, CapsuleJournal, InsertCapsuleJournal
+  // Career Capsule models - removed
+  // These models have been commented out in the schema
+  // careerCapsules, CareerCapsule, InsertCareerCapsule,
+  // capsuleYears, CapsuleYear, InsertCapsuleYear,
+  // capsuleTasks, CapsuleTask, InsertCapsuleTask,
+  // capsuleJournals, CapsuleJournal, InsertCapsuleJournal
 } from "@shared/schema";
 
 // Import Musk suggestion models
@@ -435,7 +436,9 @@ export interface IStorage {
   createMentorshipFeedback(feedback: InsertMentorshipFeedback): Promise<MentorshipFeedback>;
   canRequestMentorship(menteeId: number): Promise<boolean>;
   
-  // Career Capsule operations
+  // Career Capsule operations - removed
+  // These methods have been disabled as the Career Capsule feature has been removed
+  /*
   getUserCareerCapsule(userId: number): Promise<CareerCapsule | null>;
   getCareerCapsulesByUserId(userId: number): Promise<CareerCapsule[]>;
   getCareerCapsuleById(id: number): Promise<CareerCapsule | undefined>;
@@ -466,6 +469,7 @@ export interface IStorage {
   createCapsuleJournal(journal: InsertCapsuleJournal): Promise<CapsuleJournal>;
   updateCapsuleJournal(id: number, journal: Partial<CapsuleJournal>): Promise<CapsuleJournal | undefined>;
   deleteCapsuleJournal(id: number): Promise<boolean>;
+  */
 }
 
 // In-memory implementation of the storage
@@ -528,11 +532,11 @@ export class MemStorage implements IStorage {
   private mentorshipRequests: Map<number, MentorshipRequest>;
   private mentorshipFeedback: Map<number, MentorshipFeedback>;
   
-  // Career Capsule models
-  private careerCapsules: Map<number, CareerCapsule>;
-  private capsuleYears: Map<number, CapsuleYear>;
-  private capsuleTasks: Map<number, CapsuleTask>;
-  private capsuleJournals: Map<number, CapsuleJournal>;
+  // Career Capsule models - removed
+  // private careerCapsules: Map<number, CareerCapsule>;
+  // private capsuleYears: Map<number, CapsuleYear>;
+  // private capsuleTasks: Map<number, CapsuleTask>;
+  // private capsuleJournals: Map<number, CapsuleJournal>;
   
   private currentUserId: number;
   private currentResumeId: number;
@@ -648,11 +652,11 @@ export class MemStorage implements IStorage {
     this.mentorshipRequests = new Map();
     this.mentorshipFeedback = new Map();
     
-    // Initialize Career Capsule maps
-    this.careerCapsules = new Map();
-    this.capsuleYears = new Map();
-    this.capsuleTasks = new Map();
-    this.capsuleJournals = new Map();
+    // Initialize Career Capsule maps - removed
+    // this.careerCapsules = new Map();
+    // this.capsuleYears = new Map();
+    // this.capsuleTasks = new Map();
+    // this.capsuleJournals = new Map();
     
     // Initialize Musk suggestion maps
     this.muskSuggestions = new Map();
