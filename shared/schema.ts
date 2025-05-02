@@ -1118,6 +1118,16 @@ export const insertMentorshipFeedbackSchema = createInsertSchema(mentorshipFeedb
 export type MentorshipRequest = typeof mentorshipRequests.$inferSelect;
 export type InsertMentorshipRequest = z.infer<typeof insertMentorshipRequestSchema>;
 
+// Career Capsule functionality removed
+// Code removed as per requested change to completely remove Career Capsule functionality
+
+// The following models and their associated types/schemas have been commented out:
+// - careerCapsules
+// - capsuleYears
+// - capsuleTasks
+// - capsuleJournals
+
+/*
 // Career Capsule enums
 export const capsuleGoalTypeEnum = pgEnum("capsule_goal_type", [
   "position_change", // e.g., "Become a Product Manager"
@@ -1225,6 +1235,7 @@ export type InsertCapsuleTask = z.infer<typeof insertCapsuleTaskSchema>;
 
 export type CapsuleJournal = typeof capsuleJournals.$inferSelect;
 export type InsertCapsuleJournal = z.infer<typeof insertCapsuleJournalSchema>;
+*/
 
 export type MentorshipFeedback = typeof mentorshipFeedback.$inferSelect;
 export type InsertMentorshipFeedback = z.infer<typeof insertMentorshipFeedbackSchema>;
