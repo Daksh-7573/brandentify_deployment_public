@@ -2,6 +2,19 @@ import { Request, Response } from 'express';
 import { z } from 'zod';
 import { IStorage } from './storage';
 import { insertResumeSchema } from '@shared/schema';
+import { 
+  Document, 
+  Paragraph, 
+  TextRun, 
+  HeadingLevel, 
+  AlignmentType, 
+  Packer,
+  Table,
+  TableRow,
+  TableCell,
+  BorderStyle,
+  WidthType
+} from 'docx';
 
 export function setupShadowResumeRoutes(apiRouter: any, storage: IStorage) {
   // NO LONGER updates the Profile from Shadow Resume (removes profile update functionality)
@@ -422,7 +435,7 @@ Sample skills relevant to the ${user.industry || 'industry'} would be listed her
     }
   });
 
-  // Download resume as text file (renamed from Word document)
+  // Download resume as Word document
   apiRouter.get("/shadow-resume/:resumeId/download-word", async (req: Request, res: Response) => {
     try {
       const resumeId = parseInt(req.params.resumeId);
@@ -449,56 +462,194 @@ Sample skills relevant to the ${user.industry || 'industry'} would be listed her
         return res.status(400).json({ message: 'No resume data available for download' });
       }
       
-      console.log(`[GET /shadow-resume/:resumeId/download-word] Generating plain text file for download`);
+      console.log(`[GET /shadow-resume/:resumeId/download-word] Generating Word document for download`);
       
-      // Extract the form data for the plain text resume
+      // Extract the form data for the resume
       const { personalInfo, experiences, education, skills, projects } = formData;
       
-      // Send a properly formatted plain text document with appropriate headers
-      res.setHeader('Content-Type', 'text/plain');
-      res.setHeader('Content-Disposition', `attachment; filename="${personalInfo?.fullName || 'Resume'}.txt"`);
+      // Create a new document
+      const doc = new Document({
+        sections: [{
+          properties: {},
+          children: [
+            // Name as heading
+            new Paragraph({
+              text: personalInfo?.fullName || 'Full Name',
+              heading: HeadingLevel.HEADING_1,
+              alignment: AlignmentType.CENTER,
+            }),
+            
+            // Contact Details
+            new Paragraph({
+              text: `${personalInfo?.title || 'Title'} | ${personalInfo?.email || 'Email'} | ${personalInfo?.phone || 'Phone'}`,
+              alignment: AlignmentType.CENTER,
+            }),
+            new Paragraph({
+              text: personalInfo?.location || 'Location',
+              alignment: AlignmentType.CENTER,
+              spacing: {
+                after: 400,
+              },
+            }),
+            
+            // Professional Summary
+            new Paragraph({
+              text: 'PROFESSIONAL SUMMARY',
+              heading: HeadingLevel.HEADING_2,
+            }),
+            new Paragraph({
+              text: personalInfo?.summary || 'Professional summary not available.',
+              spacing: {
+                after: 400,
+              },
+            }),
+          ]
+        }]
+      });
       
-      // Create a plain text format resume
-      const plainText = `
-${personalInfo?.fullName || 'Full Name'}
-${personalInfo?.title || 'Title'} | ${personalInfo?.email || 'Email'} | ${personalInfo?.phone || 'Phone'}
-${personalInfo?.location || 'Location'}
-
-PROFESSIONAL SUMMARY
-${personalInfo?.summary || 'Professional summary not available.'}
-
-${experiences?.experiences && experiences.experiences.length > 0 ? `
-WORK EXPERIENCE
-${experiences.experiences.map((exp: any) => 
-  `${exp.position || 'Position'} at ${exp.company || 'Company'}
-${exp.startDate || 'Start Date'} - ${exp.endDate || 'Present'} | ${exp.location || 'Location'}
-${exp.description || 'Description not available.'}\n`
-).join('\n')}` : ''}
-
-${education?.educations && education.educations.length > 0 ? `
-EDUCATION
-${education.educations.map((edu: any) =>
-  `${edu.degree || 'Degree'} - ${edu.institution || 'Institution'}
-${edu.startDate || 'Start Date'} - ${edu.endDate || 'End Date'} | ${edu.location || 'Location'}
-${edu.description || ''}\n`
-).join('\n')}` : ''}
-
-${skills?.skills && skills.skills.length > 0 ? `
-SKILLS
-${skills.skills.map((skill: any) => 
-  `- ${typeof skill === 'string' ? skill : skill.name}`
-).join('\n')}` : ''}
-
-${projects?.projects && projects.projects.length > 0 ? `
-PROJECTS
-${projects.projects.map((project: any) =>
-  `${project.title || 'Project Title'}
-${project.startDate || ''} - ${project.endDate || ''}
-${project.description || 'Description not available.'}\n`
-).join('\n')}` : ''}
-`;
+      // Add Work Experience section
+      if (experiences?.experiences && experiences.experiences.length > 0) {
+        // Add section heading
+        doc.addSection({
+          children: [
+            new Paragraph({
+              text: 'WORK EXPERIENCE',
+              heading: HeadingLevel.HEADING_2,
+            }),
+          ]
+        });
+        
+        // Add each work experience
+        for (const exp of experiences.experiences) {
+          doc.addParagraph(new Paragraph({
+            text: `${exp.position || 'Position'} at ${exp.company || 'Company'}`,
+            heading: HeadingLevel.HEADING_3,
+          }));
+          
+          doc.addParagraph(new Paragraph({
+            text: `${exp.startDate || 'Start Date'} - ${exp.endDate || 'Present'} | ${exp.location || 'Location'}`,
+            spacing: {
+              before: 100,
+            },
+          }));
+          
+          doc.addParagraph(new Paragraph({
+            text: exp.description || 'Description not available.',
+            spacing: {
+              after: 200,
+            },
+          }));
+        }
+      }
       
-      return res.send(plainText);
+      // Add Education section
+      if (education?.educations && education.educations.length > 0) {
+        // Add section heading
+        doc.addSection({
+          children: [
+            new Paragraph({
+              text: 'EDUCATION',
+              heading: HeadingLevel.HEADING_2,
+            }),
+          ]
+        });
+        
+        // Add each education entry
+        for (const edu of education.educations) {
+          doc.addParagraph(new Paragraph({
+            text: `${edu.degree || 'Degree'} - ${edu.institution || 'Institution'}`,
+            heading: HeadingLevel.HEADING_3,
+          }));
+          
+          doc.addParagraph(new Paragraph({
+            text: `${edu.startDate || 'Start Date'} - ${edu.endDate || 'End Date'} | ${edu.location || 'Location'}`,
+            spacing: {
+              before: 100,
+            },
+          }));
+          
+          if (edu.description) {
+            doc.addParagraph(new Paragraph({
+              text: edu.description,
+              spacing: {
+                after: 200,
+              },
+            }));
+          }
+        }
+      }
+      
+      // Add Skills section
+      if (skills?.skills && skills.skills.length > 0) {
+        // Add section heading
+        doc.addSection({
+          children: [
+            new Paragraph({
+              text: 'SKILLS',
+              heading: HeadingLevel.HEADING_2,
+            }),
+          ]
+        });
+        
+        // Add skills list
+        for (const skill of skills.skills) {
+          const skillName = typeof skill === 'string' ? skill : skill.name;
+          doc.addParagraph(new Paragraph({
+            text: `• ${skillName}`,
+            spacing: {
+              before: 60,
+            },
+          }));
+        }
+      }
+      
+      // Add Projects section
+      if (projects?.projects && projects.projects.length > 0) {
+        // Add section heading
+        doc.addSection({
+          children: [
+            new Paragraph({
+              text: 'PROJECTS',
+              heading: HeadingLevel.HEADING_2,
+            }),
+          ]
+        });
+        
+        // Add each project
+        for (const project of projects.projects) {
+          doc.addParagraph(new Paragraph({
+            text: project.title || 'Project Title',
+            heading: HeadingLevel.HEADING_3,
+          }));
+          
+          if (project.startDate || project.endDate) {
+            doc.addParagraph(new Paragraph({
+              text: `${project.startDate || ''} - ${project.endDate || ''}`,
+              spacing: {
+                before: 100,
+              },
+            }));
+          }
+          
+          doc.addParagraph(new Paragraph({
+            text: project.description || 'Description not available.',
+            spacing: {
+              after: 200,
+            },
+          }));
+        }
+      }
+      
+      // Generate the .docx file
+      const buffer = await Packer.toBuffer(doc);
+      
+      // Set headers for Word document download
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+      res.setHeader('Content-Disposition', `attachment; filename="${personalInfo?.fullName || 'Resume'}.docx"`);
+      res.setHeader('Content-Length', buffer.length);
+      
+      // Send the document to the user
+      return res.send(buffer);
       
     } catch (error) {
       console.error(`[GET /shadow-resume/:resumeId/download-word] Error:`, error);
