@@ -30,6 +30,7 @@ import UnifiedProfilePage from "@/pages/unified-profile";
 import FeedTestPage from "@/pages/feed-test";
 import CareerQuestsPage from "@/pages/career-quests";
 import CareerCapsulePage from "@/pages/career-capsule"; // Import restored for routing
+import CareerRoadmapPage from "@/pages/career-roadmap"; // New Career Roadmap feature
 import OnboardingPage from "@/pages/onboarding";
 import EditProfilePage from "@/pages/edit-profile";
 import MuskTestingPage from "@/pages/musk-testing";
@@ -146,6 +147,9 @@ function Router() {
       </Route>
       <Route path="/career-capsule">
         <ProtectedRoute path="/career-capsule" component={CareerCapsulePage} />
+      </Route>
+      <Route path="/career-roadmap">
+        <ProtectedRoute path="/career-roadmap" component={CareerRoadmapPage} />
       </Route>
       <Route path="/onboarding">
         <ProtectedRoute path="/onboarding" component={OnboardingPage} />

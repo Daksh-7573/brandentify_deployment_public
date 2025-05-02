@@ -5433,6 +5433,423 @@ ${extractedText.substring(0, 5000)}
   addProjectUpdateRoutes(apiRouter);
   console.log("Project Update routes loaded");
 
+  // Career Roadmap routes
+  
+  // Get all career goals for a user
+  apiRouter.get("/users/:userId/career-goals", async (req: Request, res: Response) => {
+    try {
+      const userIdParam = req.params.userId;
+      let userId: number;
+      
+      const isFirebaseUid = userIdParam.length > 20 && /[^0-9]/.test(userIdParam);
+      
+      if (isFirebaseUid) {
+        const user = await storage.getUserByUsername(userIdParam);
+        if (!user) {
+          return res.status(404).json({ error: "User not found" });
+        }
+        userId = user.id;
+      } else {
+        userId = parseInt(userIdParam);
+        if (isNaN(userId)) {
+          return res.status(400).json({ error: "Invalid user ID format" });
+        }
+      }
+      
+      const goals = await storage.getCareerGoalsByUserId(userId);
+      return res.json(goals);
+    } catch (error) {
+      console.error("Error fetching career goals:", error);
+      return res.status(500).json({ error: "Failed to fetch career goals" });
+    }
+  });
+  
+  // Get a specific career goal with all related data (milestones, skills, progress logs)
+  apiRouter.get("/career-goals/:goalId", async (req: Request, res: Response) => {
+    try {
+      const goalId = parseInt(req.params.goalId);
+      if (isNaN(goalId)) {
+        return res.status(400).json({ error: "Invalid goal ID format" });
+      }
+      
+      const goal = await storage.getCareerGoalById(goalId);
+      if (!goal) {
+        return res.status(404).json({ error: "Career goal not found" });
+      }
+      
+      const milestones = await storage.getGoalMilestonesByGoalId(goalId);
+      const skills = await storage.getGoalSkillsByGoalId(goalId);
+      const progressLogs = await storage.getGoalProgressLogsByGoalId(goalId);
+      
+      // Calculate overall progress based on milestones and progress logs
+      let completedMilestones = 0;
+      milestones.forEach(milestone => {
+        if (milestone.status === "completed") {
+          completedMilestones++;
+        }
+      });
+      
+      const totalMilestones = milestones.length;
+      const overallProgress = totalMilestones > 0 ? Math.floor((completedMilestones / totalMilestones) * 100) : 0;
+      
+      return res.json({
+        goal: {
+          ...goal,
+          progress: overallProgress
+        },
+        milestones,
+        skills,
+        progressLogs
+      });
+    } catch (error) {
+      console.error(`Error fetching career goal details:`, error);
+      return res.status(500).json({ error: "Failed to fetch career goal details" });
+    }
+  });
+  
+  // Create a new career goal
+  apiRouter.post("/users/:userId/career-goals", async (req: Request, res: Response) => {
+    try {
+      const userIdParam = req.params.userId;
+      let userId: number;
+      
+      const isFirebaseUid = userIdParam.length > 20 && /[^0-9]/.test(userIdParam);
+      
+      if (isFirebaseUid) {
+        const user = await storage.getUserByUsername(userIdParam);
+        if (!user) {
+          return res.status(404).json({ error: "User not found" });
+        }
+        userId = user.id;
+      } else {
+        userId = parseInt(userIdParam);
+        if (isNaN(userId)) {
+          return res.status(400).json({ error: "Invalid user ID format" });
+        }
+      }
+      
+      const goalData: InsertCareerGoal = {
+        ...req.body,
+        userId,
+        progress: 0,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+      
+      const goal = await storage.createCareerGoal(goalData);
+      return res.status(201).json(goal);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: error.errors });
+      }
+      console.error("Error creating career goal:", error);
+      return res.status(500).json({ error: "Failed to create career goal" });
+    }
+  });
+  
+  // Update a career goal
+  apiRouter.patch("/career-goals/:goalId", async (req: Request, res: Response) => {
+    try {
+      const goalId = parseInt(req.params.goalId);
+      if (isNaN(goalId)) {
+        return res.status(400).json({ error: "Invalid goal ID format" });
+      }
+      
+      const goal = await storage.getCareerGoalById(goalId);
+      if (!goal) {
+        return res.status(404).json({ error: "Career goal not found" });
+      }
+      
+      const updatedGoalData = {
+        ...req.body,
+        updatedAt: new Date()
+      };
+      
+      const updatedGoal = await storage.updateCareerGoal(goalId, updatedGoalData);
+      return res.json(updatedGoal);
+    } catch (error) {
+      console.error(`Error updating career goal:`, error);
+      return res.status(500).json({ error: "Failed to update career goal" });
+    }
+  });
+  
+  // Delete a career goal
+  apiRouter.delete("/career-goals/:goalId", async (req: Request, res: Response) => {
+    try {
+      const goalId = parseInt(req.params.goalId);
+      if (isNaN(goalId)) {
+        return res.status(400).json({ error: "Invalid goal ID format" });
+      }
+      
+      const success = await storage.deleteCareerGoal(goalId);
+      if (!success) {
+        return res.status(404).json({ error: "Career goal not found" });
+      }
+      
+      return res.json({ success: true });
+    } catch (error) {
+      console.error(`Error deleting career goal:`, error);
+      return res.status(500).json({ error: "Failed to delete career goal" });
+    }
+  });
+  
+  // Create a milestone for a career goal
+  apiRouter.post("/career-goals/:goalId/milestones", async (req: Request, res: Response) => {
+    try {
+      const goalId = parseInt(req.params.goalId);
+      if (isNaN(goalId)) {
+        return res.status(400).json({ error: "Invalid goal ID format" });
+      }
+      
+      const goal = await storage.getCareerGoalById(goalId);
+      if (!goal) {
+        return res.status(404).json({ error: "Career goal not found" });
+      }
+      
+      // Get the current highest order to place this at the end
+      const milestones = await storage.getGoalMilestonesByGoalId(goalId);
+      const highestOrder = milestones.reduce((max, milestone) => Math.max(max, milestone.order), 0);
+      
+      const milestoneData: InsertGoalMilestone = {
+        ...req.body,
+        goalId,
+        order: highestOrder + 1,
+        status: req.body.status || "not-started",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        completedAt: null
+      };
+      
+      const milestone = await storage.createGoalMilestone(milestoneData);
+      
+      // Update the goal's progress
+      await updateGoalProgress(goalId);
+      
+      return res.status(201).json(milestone);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: error.errors });
+      }
+      console.error("Error creating goal milestone:", error);
+      return res.status(500).json({ error: "Failed to create goal milestone" });
+    }
+  });
+  
+  // Update a milestone
+  apiRouter.patch("/goal-milestones/:milestoneId", async (req: Request, res: Response) => {
+    try {
+      const milestoneId = parseInt(req.params.milestoneId);
+      if (isNaN(milestoneId)) {
+        return res.status(400).json({ error: "Invalid milestone ID format" });
+      }
+      
+      const milestone = await storage.getGoalMilestoneById(milestoneId);
+      if (!milestone) {
+        return res.status(404).json({ error: "Milestone not found" });
+      }
+      
+      const updateData: Partial<GoalMilestone> = {
+        ...req.body,
+        updatedAt: new Date()
+      };
+      
+      // If status is changing to completed, set completedAt
+      if (req.body.status === "completed" && milestone.status !== "completed") {
+        updateData.completedAt = new Date();
+      }
+      // If status is changing from completed, clear completedAt
+      else if (req.body.status && req.body.status !== "completed" && milestone.status === "completed") {
+        updateData.completedAt = null;
+      }
+      
+      const updatedMilestone = await storage.updateGoalMilestone(milestoneId, updateData);
+      
+      // Update the goal's progress
+      await updateGoalProgress(milestone.goalId);
+      
+      return res.json(updatedMilestone);
+    } catch (error) {
+      console.error(`Error updating milestone:`, error);
+      return res.status(500).json({ error: "Failed to update milestone" });
+    }
+  });
+  
+  // Delete a milestone
+  apiRouter.delete("/goal-milestones/:milestoneId", async (req: Request, res: Response) => {
+    try {
+      const milestoneId = parseInt(req.params.milestoneId);
+      if (isNaN(milestoneId)) {
+        return res.status(400).json({ error: "Invalid milestone ID format" });
+      }
+      
+      const milestone = await storage.getGoalMilestoneById(milestoneId);
+      if (!milestone) {
+        return res.status(404).json({ error: "Milestone not found" });
+      }
+      
+      const goalId = milestone.goalId;
+      const success = await storage.deleteGoalMilestone(milestoneId);
+      
+      if (!success) {
+        return res.status(500).json({ error: "Failed to delete milestone" });
+      }
+      
+      // Update the goal's progress
+      await updateGoalProgress(goalId);
+      
+      return res.json({ success: true });
+    } catch (error) {
+      console.error(`Error deleting milestone:`, error);
+      return res.status(500).json({ error: "Failed to delete milestone" });
+    }
+  });
+  
+  // Add a skill to a career goal
+  apiRouter.post("/career-goals/:goalId/skills", async (req: Request, res: Response) => {
+    try {
+      const goalId = parseInt(req.params.goalId);
+      if (isNaN(goalId)) {
+        return res.status(400).json({ error: "Invalid goal ID format" });
+      }
+      
+      const goal = await storage.getCareerGoalById(goalId);
+      if (!goal) {
+        return res.status(404).json({ error: "Career goal not found" });
+      }
+      
+      const skillData: InsertGoalSkill = {
+        ...req.body,
+        goalId,
+        status: req.body.status || "not-started",
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+      
+      const skill = await storage.createGoalSkill(skillData);
+      return res.status(201).json(skill);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: error.errors });
+      }
+      console.error("Error creating goal skill:", error);
+      return res.status(500).json({ error: "Failed to create goal skill" });
+    }
+  });
+  
+  // Update a skill
+  apiRouter.patch("/goal-skills/:skillId", async (req: Request, res: Response) => {
+    try {
+      const skillId = parseInt(req.params.skillId);
+      if (isNaN(skillId)) {
+        return res.status(400).json({ error: "Invalid skill ID format" });
+      }
+      
+      const skill = await storage.getGoalSkillById(skillId);
+      if (!skill) {
+        return res.status(404).json({ error: "Skill not found" });
+      }
+      
+      const updatedSkill = await storage.updateGoalSkill(skillId, {
+        ...req.body,
+        updatedAt: new Date()
+      });
+      
+      return res.json(updatedSkill);
+    } catch (error) {
+      console.error(`Error updating skill:`, error);
+      return res.status(500).json({ error: "Failed to update skill" });
+    }
+  });
+  
+  // Delete a skill
+  apiRouter.delete("/goal-skills/:skillId", async (req: Request, res: Response) => {
+    try {
+      const skillId = parseInt(req.params.skillId);
+      if (isNaN(skillId)) {
+        return res.status(400).json({ error: "Invalid skill ID format" });
+      }
+      
+      const success = await storage.deleteGoalSkill(skillId);
+      if (!success) {
+        return res.status(404).json({ error: "Skill not found" });
+      }
+      
+      return res.json({ success: true });
+    } catch (error) {
+      console.error(`Error deleting skill:`, error);
+      return res.status(500).json({ error: "Failed to delete skill" });
+    }
+  });
+  
+  // Add a progress log entry
+  apiRouter.post("/career-goals/:goalId/progress-logs", async (req: Request, res: Response) => {
+    try {
+      const goalId = parseInt(req.params.goalId);
+      if (isNaN(goalId)) {
+        return res.status(400).json({ error: "Invalid goal ID format" });
+      }
+      
+      const goal = await storage.getCareerGoalById(goalId);
+      if (!goal) {
+        return res.status(404).json({ error: "Career goal not found" });
+      }
+      
+      const logData: InsertGoalProgressLog = {
+        ...req.body,
+        goalId,
+        createdAt: new Date()
+      };
+      
+      const log = await storage.createGoalProgressLog(logData);
+      return res.status(201).json(log);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: error.errors });
+      }
+      console.error("Error creating progress log:", error);
+      return res.status(500).json({ error: "Failed to create progress log" });
+    }
+  });
+  
+  // Delete a progress log entry
+  apiRouter.delete("/goal-progress-logs/:logId", async (req: Request, res: Response) => {
+    try {
+      const logId = parseInt(req.params.logId);
+      if (isNaN(logId)) {
+        return res.status(400).json({ error: "Invalid log ID format" });
+      }
+      
+      const success = await storage.deleteGoalProgressLog(logId);
+      if (!success) {
+        return res.status(404).json({ error: "Progress log not found" });
+      }
+      
+      return res.json({ success: true });
+    } catch (error) {
+      console.error(`Error deleting progress log:`, error);
+      return res.status(500).json({ error: "Failed to delete progress log" });
+    }
+  });
+  
+  // Helper function to update a goal's progress based on milestone completion
+  async function updateGoalProgress(goalId: number): Promise<void> {
+    try {
+      const milestones = await storage.getGoalMilestonesByGoalId(goalId);
+      if (milestones.length === 0) {
+        return;
+      }
+      
+      const completedMilestones = milestones.filter(m => m.status === "completed").length;
+      const progress = Math.floor((completedMilestones / milestones.length) * 100);
+      
+      await storage.updateCareerGoal(goalId, { progress, updatedAt: new Date() });
+    } catch (error) {
+      console.error(`Error updating goal progress for goal ${goalId}:`, error);
+    }
+  }
+  
+  console.log("Career Roadmap routes loaded");
+
   app.use("/api", apiRouter);
 
   const httpServer = createServer(app);
