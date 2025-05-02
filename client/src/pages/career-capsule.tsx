@@ -42,9 +42,12 @@ import {
 // Create career capsule form schema
 const createCapsuleSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters").max(100, "Title cannot exceed 100 characters"),
+  goalType: z.enum(["position_change", "skill_acquisition", "promotion", "industry_switch", "entrepreneurship", "relocation", "education", "certification", "custom"]),
+  customGoal: z.string().max(100, "Custom goal cannot exceed 100 characters").optional(),
+  timeframe: z.coerce.number().min(1, "Timeframe must be at least 1 year").max(10, "Timeframe cannot exceed 10 years"),
   description: z.string().max(500, "Description cannot exceed 500 characters").optional(),
-  startDate: z.string(),
-  endDate: z.string()
+  industry: z.string().max(100, "Industry cannot exceed 100 characters").optional(),
+  isPrivate: z.boolean().default(false)
 });
 
 // Create year form schema
@@ -52,7 +55,7 @@ const createYearSchema = z.object({
   year: z.coerce.number().min(2020, "Year must be 2020 or later").max(2050, "Year must be 2050 or earlier"),
   title: z.string().min(3, "Title must be at least 3 characters").max(100, "Title cannot exceed 100 characters"),
   description: z.string().max(500, "Description cannot exceed 500 characters").optional(),
-  goalType: z.enum(["career_growth", "skill_development", "financial", "entrepreneurship", "well_being", "other"])
+  milestone: z.string().max(200, "Milestone cannot exceed 200 characters").optional()
 });
 
 // Create task form schema
@@ -97,9 +100,12 @@ export default function CareerCapsulePage() {
     resolver: zodResolver(createCapsuleSchema),
     defaultValues: {
       title: "",
+      goalType: "position_change",
+      customGoal: "",
+      timeframe: 5,
       description: "",
-      startDate: format(new Date(), "yyyy-MM-dd"),
-      endDate: format(addYears(new Date(), 5), "yyyy-MM-dd")
+      industry: "",
+      isPrivate: false
     }
   });
 
@@ -109,7 +115,7 @@ export default function CareerCapsulePage() {
       year: new Date().getFullYear(),
       title: "",
       description: "",
-      goalType: "career_growth"
+      milestone: ""
     }
   });
 
@@ -154,9 +160,14 @@ export default function CareerCapsulePage() {
         userId: user.id,
         data: {
           title: data.title,
+          goalType: data.goalType,
+          customGoal: data.customGoal || null,
+          timeframe: data.timeframe,
           description: data.description || null,
-          startDate: data.startDate,
-          endDate: data.endDate
+          industry: data.industry || null,
+          isPrivate: data.isPrivate,
+          isMuskGenerated: false,
+          overallProgress: 0
         }
       });
       setCreateCapsuleOpen(false);
@@ -177,7 +188,8 @@ export default function CareerCapsulePage() {
           year: data.year,
           title: data.title,
           description: data.description || null,
-          goalType: data.goalType
+          milestone: data.milestone || null,
+          progress: 0
         }
       });
       setCreateYearOpen(false);

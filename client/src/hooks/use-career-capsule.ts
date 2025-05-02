@@ -8,12 +8,16 @@ export interface CareerCapsule {
   id: number;
   userId: number;
   title: string;
+  goalType: "position_change" | "skill_acquisition" | "promotion" | "industry_switch" | "entrepreneurship" | "relocation" | "education" | "certification" | "custom";
+  customGoal: string | null;
+  timeframe: number;
   description: string | null;
+  industry: string | null;
+  isPrivate: boolean;
   overallProgress: number;
-  startDate: string;
-  endDate: string;
-  createdAt: Date;
-  updatedAt: Date;
+  isMuskGenerated: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface CapsuleYear {
@@ -22,10 +26,10 @@ export interface CapsuleYear {
   year: number;
   title: string;
   description: string | null;
-  goalType: "career_growth" | "skill_development" | "financial" | "entrepreneurship" | "well_being" | "other";
+  milestone: string | null;
   progress: number;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface CapsuleTask {
@@ -35,8 +39,8 @@ export interface CapsuleTask {
   description: string | null;
   isCompleted: boolean;
   dueDate: string | null;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface CapsuleJournal {
@@ -45,8 +49,8 @@ export interface CapsuleJournal {
   title: string;
   content: string;
   entryDate: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 }
 
 // Hook for fetching user's career capsule
