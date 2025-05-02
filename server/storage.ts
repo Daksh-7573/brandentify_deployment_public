@@ -642,7 +642,7 @@ export class MemStorage implements IStorage {
   // private currentCapsuleTaskId: number;
   // private currentCapsuleJournalId: number;
   
-  // Career Roadmap IDs
+  // Career Capsule IDs
   private currentCareerGoalId: number;
   private currentGoalMilestoneId: number;
   private currentGoalSkillId: number;

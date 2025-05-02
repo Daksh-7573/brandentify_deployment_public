@@ -62,8 +62,8 @@ export interface CareerGoalWithDetails {
   progressLogs: GoalProgressLog[];
 }
 
-// Hook for Career Roadmap
-export const useCareerRoadmap = (userId: number | string) => {
+// Hook for Career Capsule
+export const useCareerCapsule = (userId: number | string) => {
   const queryClient = useQueryClient();
 
   // Helper to invalidate goal-related queries
