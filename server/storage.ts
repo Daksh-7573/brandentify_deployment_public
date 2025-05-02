@@ -436,6 +436,7 @@ export interface IStorage {
   canRequestMentorship(menteeId: number): Promise<boolean>;
   
   // Career Capsule operations
+  getUserCareerCapsule(userId: number): Promise<CareerCapsule | null>;
   getCareerCapsulesByUserId(userId: number): Promise<CareerCapsule[]>;
   getCareerCapsuleById(id: number): Promise<CareerCapsule | undefined>;
   createCareerCapsule(capsule: InsertCareerCapsule): Promise<CareerCapsule>;
@@ -3681,6 +3682,15 @@ export class MemStorage implements IStorage {
   }
 
   // Career Capsule operations
+  async getUserCareerCapsule(userId: number): Promise<CareerCapsule | null> {
+    // Find the most recently created capsule for the user
+    const userCapsules = Array.from(this.careerCapsules.values())
+      .filter(capsule => capsule.userId === userId)
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+    
+    return userCapsules.length > 0 ? userCapsules[0] : null;
+  }
+  
   async getCareerCapsulesByUserId(userId: number): Promise<CareerCapsule[]> {
     return Array.from(this.careerCapsules.values())
       .filter(capsule => capsule.userId === userId);
