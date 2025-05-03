@@ -20,6 +20,37 @@ router.get('/users/:userId/career-capsule', async (req, res) => {
   }
 });
 
+// Get career goal by ID
+router.get('/career-goals/:goalId', async (req, res) => {
+  try {
+    const goalId = parseInt(req.params.goalId);
+    if (isNaN(goalId)) {
+      return res.status(400).json({ message: 'Invalid goal ID' });
+    }
+
+    const goal = await storage.getCareerCapsuleById(goalId);
+    if (!goal) {
+      return res.status(404).json({ error: 'Career goal not found' });
+    }
+
+    // Get associated milestones, skills, and progress logs
+    const milestones = await storage.getCapsuleYearsByCapsuleId(goalId) || [];
+    
+    // Construct the complete goal details
+    const goalDetails = {
+      goal,
+      milestones,
+      skills: [], // Skills will be added later if needed
+      progressLogs: [] // Progress logs will be added later if needed
+    };
+
+    return res.json(goalDetails);
+  } catch (error) {
+    console.error('Error fetching career goal details:', error);
+    return res.status(500).json({ error: 'Failed to fetch career goal details' });
+  }
+});
+
 // Create career capsule
 router.post('/users/:userId/career-capsule', async (req, res) => {
   try {
