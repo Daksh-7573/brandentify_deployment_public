@@ -1,4 +1,4 @@
-import { useState, FormEvent } from "react";
+import { useState, FormEvent, useEffect } from "react";
 import { PageLayout } from "@/components/layout/page-layout";
 import { useAuth } from "@/hooks/use-auth";
 import { useCareerCapsule, CareerGoal, GoalType } from "@/hooks/use-career-capsule";
@@ -8,6 +8,8 @@ import { toast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
+import { Loader2 } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 // Utility function to format dates
 const formatDate = (dateString: string) => {
@@ -54,6 +56,7 @@ export default function CareerCapsulePage() {
     useGoals, 
     useGoalDetails,
     useCreateGoal,
+    useGenerateMilestones
   } = useCareerCapsule(userId);
   
   const { data: goals, isLoading, refetch: refetchGoals, error } = useGoals();
@@ -75,6 +78,10 @@ export default function CareerCapsulePage() {
   const [selectedGoalId, setSelectedGoalId] = useState<number | null>(null);
   const { data: goalDetails, isLoading: isLoadingDetails } = useGoalDetails(selectedGoalId || 0);
   const [showDetailsDialog, setShowDetailsDialog] = useState(false);
+  
+  // Milestone generation
+  const generateMilestones = useGenerateMilestones(selectedGoalId || 0);
+  const [showMilestoneGenerationDialog, setShowMilestoneGenerationDialog] = useState(false);
 
   // Handle form submission
   const handleSubmit = async (e: FormEvent) => {
@@ -324,7 +331,47 @@ export default function CareerCapsulePage() {
               </div>
               
               <div className="space-y-2">
-                <h3 className="text-lg font-medium">Milestones</h3>
+                <div className="flex justify-between items-center mb-3">
+                  <h3 className="text-lg font-medium">Milestones</h3>
+                  {goalDetails.milestones && goalDetails.milestones.length === 0 && (
+                    <Button 
+                      size="sm" 
+                      onClick={() => {
+                        if (selectedGoalId) {
+                          generateMilestones.mutate({
+                            goalType: goalDetails.goal.goalType,
+                            description: goalDetails.goal.description,
+                            timeframe: goalDetails.goal.timeframe,
+                            useModel: 'openai', // Default to OpenAI
+                          });
+                        }
+                      }}
+                      disabled={generateMilestones.isPending}
+                    >
+                      {generateMilestones.isPending ? (
+                        <span className="flex items-center">
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Generating...
+                        </span>
+                      ) : (
+                        "Generate AI Milestones"
+                      )}
+                    </Button>
+                  )}
+                </div>
+                
+                {generateMilestones.isPending && (
+                  <Alert className="mb-3 bg-muted/30">
+                    <AlertTitle className="flex items-center">
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Musk AI is generating your career milestones
+                    </AlertTitle>
+                    <AlertDescription>
+                      This may take a moment as Musk analyzes your goal, profile, and current market trends to create personalized milestones.
+                    </AlertDescription>
+                  </Alert>
+                )}
+                
                 {goalDetails.milestones && goalDetails.milestones.length > 0 ? (
                   <div className="space-y-4">
                     {goalDetails.milestones.map((milestone) => (
@@ -349,7 +396,11 @@ export default function CareerCapsulePage() {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-sm text-muted-foreground">No milestones yet. They will be automatically generated after creating the goal.</p>
+                  <p className="text-sm text-muted-foreground">
+                    {generateMilestones.isPending 
+                      ? "Generating milestones..." 
+                      : "No milestones yet. Click the button above to have Musk AI generate personalized milestones for your career goal."}
+                  </p>
                 )}
               </div>
               

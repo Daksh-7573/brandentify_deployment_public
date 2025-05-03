@@ -353,6 +353,36 @@ export const useCareerCapsule = (userId: number | string) => {
     });
   };
 
+  // Generate AI milestones for a career capsule
+  const useGenerateMilestones = (capsuleId: number) => {
+    return useMutation({
+      mutationFn: (options?: { 
+        goalType?: string; 
+        customGoal?: string; 
+        timeframe?: number; 
+        industry?: string; 
+        description?: string;
+        useModel?: 'openai' | 'anthropic';
+      }) => {
+        return apiRequest('POST', `/api/career-capsules/${capsuleId}/generate-milestones`, options || {});
+      },
+      onSuccess: () => {
+        toast({
+          title: 'Milestones generated',
+          description: 'Musk AI has successfully generated milestones for your career goal.',
+        });
+        queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/career-capsule`] });
+      },
+      onError: (error: any) => {
+        toast({
+          title: 'Failed to generate milestones',
+          description: error.message || 'An error occurred while generating milestones with Musk AI.',
+          variant: 'destructive',
+        });
+      },
+    });
+  };
+
   return {
     useGoals,
     useGoalDetails,
@@ -367,5 +397,6 @@ export const useCareerCapsule = (userId: number | string) => {
     useDeleteSkill,
     useCreateProgressLog,
     useDeleteProgressLog,
+    useGenerateMilestones,
   };
 };
