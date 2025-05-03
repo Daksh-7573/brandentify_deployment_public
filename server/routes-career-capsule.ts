@@ -48,9 +48,9 @@ router.get('/career-goals/:goalId', async (req, res) => {
         goalId: year.capsuleId,
         title: year.title,
         description: year.description || '',
-        targetDate: new Date(new Date().setFullYear(new Date().getFullYear() + year.yearNumber)),
+        targetDate: new Date(new Date().setFullYear(new Date().getFullYear() + year.year)),
         status: year.progress === 100 ? 'completed' : 'in_progress',
-        order: year.yearNumber,
+        order: year.year,
         createdAt: year.createdAt,
         updatedAt: year.updatedAt || year.createdAt,
         completedAt: year.progress === 100 ? new Date() : null,
@@ -169,12 +169,12 @@ router.post('/users/:userId/career-capsule', async (req, res) => {
       // Create a year
       const year = await storage.createCapsuleYear({
         capsuleId: capsule.id,
-        yearNumber: yearNum,
+        year: yearNum,
         title: `Year ${yearNum}${yearNum === 1 ? " - Foundation" : yearNum === timeframe ? " - Achievement" : " - Development"}`,
         description: `Focus on ${yearNum === 1 ? "building foundational skills and knowledge" : 
                        yearNum === timeframe ? "reaching your target goal and establishing yourself" : 
                        "developing advanced expertise and expanding your network"}`,
-        goalType: capsuleData.goalType,
+        milestone: `${yearNum === 1 ? "Foundation Building" : yearNum === timeframe ? "Goal Achievement" : "Skills Development"} - Year ${yearNum}`,
         progress: 0
       });
       
@@ -290,10 +290,10 @@ router.post('/career-capsules/:capsuleId/years', async (req, res) => {
 
     const yearData = {
       capsuleId,
-      yearNumber: req.body.yearNumber, // Changed from 'year' to 'yearNumber' to match client expectation
-      title: req.body.title,
+      year: req.body.yearNumber || req.body.year || 1, // Accept either year or yearNumber from client
+      title: req.body.title || `Year ${req.body.yearNumber || req.body.year || 1}`,
       description: req.body.description || null,
-      goalType: req.body.goalType,
+      milestone: req.body.milestone || null,
       progress: 0,
     };
 
@@ -316,9 +316,9 @@ router.put('/capsule-years/:yearId', async (req, res) => {
     const updatedData = {
       title: req.body.title,
       description: req.body.description,
-      goalType: req.body.goalType,
+      year: req.body.yearNumber || req.body.year, // Support both client properties
+      milestone: req.body.milestone,
       progress: req.body.progress,
-      yearNumber: req.body.yearNumber, // Changed from 'year' to 'yearNumber' to match client expectation
     };
 
     const year = await storage.updateCapsuleYear(yearId, updatedData);
