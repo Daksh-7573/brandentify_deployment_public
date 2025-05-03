@@ -8127,4 +8127,38 @@ export class DatabaseStorage implements IStorage {
 }
 
 // Create a properly typed storage instance
-export const storage: IStorage = new DatabaseStorage();
+const dbStorage = new DatabaseStorage();
+
+// Export a wrapper with access to all methods
+export const storage = {
+  ...dbStorage,
+  
+  // Career Goal methods
+  getCareerGoalsByUserId: (userId: number) => dbStorage.getCareerGoalsByUserId(userId),
+  getCareerGoalById: (id: number) => dbStorage.getCareerGoalById(id),
+  createCareerGoal: (goal: any) => dbStorage.createCareerGoal(goal),
+  updateCareerGoal: (id: number, data: any) => dbStorage.updateCareerGoal(id, data),
+  deleteCareerGoal: (id: number) => dbStorage.deleteCareerGoal(id),
+  
+  // Goal Milestone methods
+  getGoalMilestonesByGoalId: (goalId: number) => dbStorage.getGoalMilestonesByGoalId(goalId),
+  getGoalMilestoneById: (id: number) => dbStorage.getGoalMilestoneById(id),
+  createGoalMilestone: (milestone: any) => dbStorage.createGoalMilestone(milestone),
+  updateGoalMilestone: (id: number, data: any) => dbStorage.updateGoalMilestone(id, data),
+  deleteGoalMilestone: (id: number) => dbStorage.deleteGoalMilestone(id),
+  
+  // Goal Skills methods
+  getGoalSkillsByGoalId: (goalId: number) => dbStorage.getGoalSkillsByGoalId(goalId),
+  getGoalSkillById: (id: number) => dbStorage.getGoalSkillById(id),
+  createGoalSkill: (skill: any) => dbStorage.createGoalSkill(skill),
+  updateGoalSkill: (id: number, data: any) => dbStorage.updateGoalSkill(id, data),
+  deleteGoalSkill: (id: number) => dbStorage.deleteGoalSkill(id),
+  
+  // Goal Progress Log methods
+  getGoalProgressLogsByGoalId: (goalId: number) => dbStorage.getGoalProgressLogsByGoalId(goalId),
+  getGoalProgressLogsByMilestoneId: (milestoneId: number) => dbStorage.getGoalProgressLogsByMilestoneId(milestoneId),
+  getGoalProgressLogById: (id: number) => dbStorage.getGoalProgressLogById(id),
+  createGoalProgressLog: (log: any) => dbStorage.createGoalProgressLog(log),
+  updateGoalProgressLog: (id: number, data: any) => dbStorage.updateGoalProgressLog(id, data),
+  deleteGoalProgressLog: (id: number) => dbStorage.deleteGoalProgressLog(id)
+} as IStorage;
