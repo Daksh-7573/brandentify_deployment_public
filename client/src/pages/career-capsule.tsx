@@ -8,7 +8,7 @@ import { toast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { Loader2 } from "lucide-react";
+import { Loader2, CheckCircle, CheckCircle2 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 // Utility function to format dates
@@ -83,6 +83,53 @@ export default function CareerCapsulePage() {
   const generateMilestones = useGenerateMilestones(selectedGoalId || 0);
   const [showMilestoneGenerationDialog, setShowMilestoneGenerationDialog] = useState(false);
 
+  // State for tracking milestone generation
+  const [createdGoalId, setCreatedGoalId] = useState<number | null>(null);
+  const [milestoneGenerating, setMilestoneGenerating] = useState(false);
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
+  
+  // Automatic milestone generation function
+  const generateMilestonesAfterCreation = useGenerateMilestones(createdGoalId || 0);
+  
+  // Effect to trigger milestone generation after goal creation
+  useEffect(() => {
+    const triggerMilestoneGeneration = async () => {
+      if (createdGoalId && !milestoneGenerating) {
+        setMilestoneGenerating(true);
+        try {
+          // Generate milestones for the newly created goal
+          await generateMilestonesAfterCreation.mutateAsync({
+            goalType,
+            customGoal: goalType === 'custom' ? goalTitle : undefined,
+            timeframe: parseInt(timeframe),
+            description,
+            useModel: 'openai', // Default to OpenAI
+          });
+          
+          // Show success dialog
+          setShowSuccessDialog(true);
+          
+          toast({
+            title: "Milestones created",
+            description: "Musk AI has generated personalized milestones for your career goal.",
+          });
+        } catch (error) {
+          console.error("Error generating milestones:", error);
+          toast({
+            title: "Milestone generation failed",
+            description: "Failed to generate milestones. You can try again from the goal details page.",
+            variant: "destructive",
+          });
+        } finally {
+          setMilestoneGenerating(false);
+          setCreatedGoalId(null);
+        }
+      }
+    };
+    
+    triggerMilestoneGeneration();
+  }, [createdGoalId, goalType, timeframe, description, goalTitle, generateMilestonesAfterCreation, milestoneGenerating]);
+
   // Handle form submission
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -104,7 +151,8 @@ export default function CareerCapsulePage() {
     setIsSubmitting(true);
     
     try {
-      await createGoalMutation.mutateAsync({
+      // Create the goal
+      const response = await createGoalMutation.mutateAsync({
         title: goalTitle,
         description: description,
         goalType: goalType,
@@ -112,6 +160,16 @@ export default function CareerCapsulePage() {
         targetDate: calculatedTargetDate,
         status: "not_started",
       });
+      
+      // Store the created goal ID to trigger milestone generation
+      if (response && response.id) {
+        setCreatedGoalId(response.id);
+        
+        toast({
+          title: "Goal created",
+          description: "Your career goal has been created. Musk AI is now generating personalized milestones...",
+        });
+      }
       
       // Reset form
       setGoalTitle("");
@@ -296,6 +354,55 @@ export default function CareerCapsulePage() {
               </Button>
             </DialogFooter>
           </form>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Success Dialog after goal and milestone creation */}
+      <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center text-primary">
+              <CheckCircle className="mr-2 h-6 w-6" />
+              Career Goal Created Successfully
+            </DialogTitle>
+            <DialogDescription>
+              Musk AI has crafted a personalized roadmap for your career goal.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="py-6">
+            <div className="bg-muted/30 p-4 rounded-md mb-4">
+              <h3 className="font-medium mb-2">What happens next?</h3>
+              <ul className="space-y-2 text-sm">
+                <li className="flex items-start">
+                  <CheckCircle2 className="mr-2 h-4 w-4 text-primary mt-0.5" />
+                  <span>Your goal has been added to your Career Capsule</span>
+                </li>
+                <li className="flex items-start">
+                  <CheckCircle2 className="mr-2 h-4 w-4 text-primary mt-0.5" />
+                  <span>AI-generated milestones have been created to guide your journey</span>
+                </li>
+                <li className="flex items-start">
+                  <CheckCircle2 className="mr-2 h-4 w-4 text-primary mt-0.5" />
+                  <span>You can track your progress and update milestones as you complete them</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button 
+              onClick={() => {
+                setShowSuccessDialog(false);
+                if (createdGoalId) {
+                  setSelectedGoalId(createdGoalId);
+                  setShowDetailsDialog(true);
+                }
+              }}
+            >
+              View Goal Details
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
       
