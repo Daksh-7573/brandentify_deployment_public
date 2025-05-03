@@ -30,6 +30,7 @@ interface MilestoneGenerationRequest {
 
 interface YearMilestone {
   year: number;
+  yearNumber?: number; // For backward compatibility with AI responses
   title: string;
   description: string;
   milestone: string;
@@ -217,22 +218,23 @@ ${education.length > 0 ?
   'No education data available'}
 
 TASK:
-Create a hyper-personalized, action-oriented ${options.timeframe}-year career development plan with specific milestone tasks that directly address the user's goals and incorporate current industry realities.
+Create a hyper-personalized, action-oriented ${options.timeframe}-year career development plan with ultra-specific milestone tasks that directly address the user's goals and incorporate current industry realities.
 
 For each year (1 through ${options.timeframe}), provide:
 1. An inspiring, specific title that captures the focus for that year
 2. A detailed description with specific outcomes expected that year, including:
-   - Skills to be mastered
-   - Knowledge to be acquired
-   - Professional relationships to be built
-   - Tangible achievements to be accomplished
+   - Explicit technical/hard skills to be mastered (name actual technologies, tools, platforms)
+   - Specific knowledge domains to develop (name actual subjects, methodologies, frameworks)
+   - Named professional relationships and communities to connect with (actual groups, organizations)
+   - Concrete, measurable achievements that demonstrate progress
 3. A significant milestone achievement that represents major progress
 4. 3-5 highly specific tasks with actionable descriptions and strategically timed due dates that:
-   - Connect directly to the user's current skills and experience level
-   - Address specific gaps between their current state and goal state
-   - Include specific companies, technologies, certifications by name when relevant
-   - Incorporate specific networking events, courses, or resources when possible
-   - Provide clear next actions rather than vague directions
+   - Name exact skills, certifications, or qualifications (not vague "foundational skills")
+   - Specify actual courses, books, platforms or learning resources by name
+   - Include specific companies, technologies, certifications by name
+   - Reference actual networking events, conferences, communities by name when possible
+   - Detail concrete deliverables/outputs for each task (portfolio pieces, certifications, etc.)
+   - Provide implementation-ready action steps
 
 Format your response as a JSON array with the following structure:
 [
@@ -255,15 +257,18 @@ Format your response as a JSON array with the following structure:
 ]
 
 IMPORTANT GUIDELINES:
-1. Be extremely specific and detailed in every element
-2. Use a confident, motivational tone appropriate for career coaching
-3. Include highly specific skills, technologies, and certifications relevant to the goal/industry
-4. Suggest actual resources (books, courses, events) where appropriate
-5. Create milestones that feel significant but achievable 
-6. Tasks should be specific enough that the user knows exactly what to do next
-7. Due dates should consider logical sequencing and realistic timeframes
-8. Priority is a number from 1-3 (1=high priority, 2=medium, 3=low)
-9. Your response must be ONLY the requested JSON format (no other text)
+1. NEVER use vague phrases like "foundational skills" or "industry knowledge" - always specify exactly which skills (e.g., "Python OOP programming," "Figma prototyping," "Sprint planning," etc.)
+2. ALWAYS replace generic guidance with ultra-specific recommendations:
+   - Instead of: "Learn programming fundamentals"
+   - Use: "Complete Harvard's CS50x on edX to master C programming fundamentals including pointers, memory management, and data structures"
+3. Name actual technologies, certifications, platforms, and resources by their specific proper names
+4. Include URLs, course numbers, book titles, and specific learning resources whenever possible
+5. Specify which specific communities, forums, events, or networks the user should join
+6. Use a confident, motivational tone appropriate for career coaching
+7. Create milestones that include measurable deliverables and concrete outputs
+8. Due dates should consider logical sequencing and realistic timeframes
+9. Priority is a number from 1-3 (1=high priority, 2=medium, 3=low)
+10. Your response must be ONLY the requested JSON format (no other text)
 
 Remember, your mission is to create a career roadmap so personalized and actionable that the user feels it was custom-created just for them.
 `;
@@ -277,7 +282,7 @@ Remember, your mission is to create a career roadmap so personalized and actiona
         model: "claude-3-7-sonnet-20250219",
         max_tokens: 4000,
         messages: [{ role: 'user', content: aiContext }],
-        system: "You are Musk, a sophisticated career planning assistant that generates personalized milestone tasks by analyzing goals, profile data, and market trends. Return only valid JSON with no additional text or explanation."
+        system: "You are Musk, an elite career development AI coach that generates ultra-specific, actionable milestone tasks. Focus on extreme specificity - name actual technologies, platforms, certifications, companies, skills, events, books, and courses. Avoid generic advice like 'learn foundational skills'; instead specify exactly which skills and how to acquire them. Return only valid JSON with no additional text."
       });
       
       aiResponse = response.content[0].text;
@@ -288,7 +293,7 @@ Remember, your mission is to create a career roadmap so personalized and actiona
         messages: [
           { 
             role: "system", 
-            content: "You are Musk, a sophisticated career planning assistant that generates personalized milestone tasks by analyzing goals, profile data, and market trends. Return only valid JSON with no additional text or explanation." 
+            content: "You are Musk, an elite career development AI coach that generates ultra-specific, actionable milestone tasks. Focus on extreme specificity - name actual technologies, platforms, certifications, companies, skills, events, books, and courses. Avoid generic advice like 'learn foundational skills'; instead specify exactly which skills and how to acquire them. Return only valid JSON with no additional text." 
           },
           { 
             role: "user", 
