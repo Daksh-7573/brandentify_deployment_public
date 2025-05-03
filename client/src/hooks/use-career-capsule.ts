@@ -164,14 +164,16 @@ export const useCareerCapsule = (userId: number | string) => {
   const useDeleteCapsule = () => {
     return useMutation({
       mutationFn: (capsuleId: number) => {
-        return apiRequest('DELETE', `/api/career-capsules/${capsuleId}`);
+        return apiRequest('DELETE', `/api/career-goals/${capsuleId}`);
       },
       onSuccess: () => {
         toast({
           title: 'Career capsule deleted',
           description: 'Your career capsule has been successfully deleted.',
         });
+        // Invalidate both paths to ensure UI updates properly
         invalidateGoalQueries();
+        queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/career-goals`] });
       },
       onError: (error: any) => {
         toast({

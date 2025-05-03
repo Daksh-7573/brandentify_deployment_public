@@ -226,7 +226,11 @@ export default function CareerCapsulePage() {
         setSelectedGoalId(null);
       }
       
-      refetchGoals();
+      // Force a manual refresh after small delay to ensure the backend has processed the deletion
+      setTimeout(() => {
+        refetchGoals();
+      }, 300);
+      
     } catch (error) {
       console.error("Error deleting capsule:", error);
       toast({
