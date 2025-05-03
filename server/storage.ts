@@ -8327,30 +8327,51 @@ export const storage = {
   updateCareerCapsule: (id: number, data: Partial<CareerCapsule>) => dbStorage.updateCareerCapsule(id, data),
   deleteCareerCapsule: (id: number) => dbStorage.deleteCareerCapsule(id),
   updateCapsuleProgress: (id: number) => dbStorage.updateCapsuleProgress(id),
-  getCapsuleYearsByCapsuleId: (capsuleId: number) => {
+  getCapsuleYearsByCapsuleId: async (capsuleId: number) => {
     console.log(`[storage.getCapsuleYearsByCapsuleId] Getting years for capsule ${capsuleId}`);
     try {
-      return Promise.resolve([]);
+      const result = await pool.query(`
+        SELECT id, capsule_id AS "capsuleId", year, title, description, milestone, 
+               progress, created_at AS "createdAt", updated_at AS "updatedAt"
+        FROM capsule_years
+        WHERE capsule_id = $1
+        ORDER BY year ASC
+      `, [capsuleId]);
+      
+      console.log(`[storage.getCapsuleYearsByCapsuleId] Found ${result.rows.length} years for capsule ${capsuleId}`);
+      return result.rows;
     } catch (error) {
       console.error(`[storage.getCapsuleYearsByCapsuleId] Error:`, error);
-      return Promise.resolve([]);
+      return [];
     }
   },
-  createCapsuleYear: (year: InsertCapsuleYear) => {
-    console.log(`[storage.createCapsuleYear] Creating year for capsule ${year.capsuleId}`);
+  createCapsuleYear: async (year: InsertCapsuleYear) => {
+    console.log(`[storage.createCapsuleYear] Creating year for capsule ${year.capsuleId} with year number ${year.year}`);
     try {
-      const newYear: CapsuleYear = {
-        id: Math.floor(Math.random() * 1000) + 1,
-        capsuleId: year.capsuleId,
-        yearNumber: year.yearNumber || 1, 
-        title: year.title || `Year ${year.yearNumber || 1}`,
-        description: year.description || null,
-        goalType: year.goalType || null,
-        progress: year.progress || 0,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      };
-      return Promise.resolve(newYear);
+      // Check if we have the required parameters
+      if (!year.capsuleId || !year.year) {
+        throw new Error('Missing required parameters: capsuleId and year are required');
+      }
+      
+      const result = await pool.query(`
+        INSERT INTO capsule_years (
+          capsule_id, year, title, description, milestone, progress
+        ) VALUES (
+          $1, $2, $3, $4, $5, $6
+        ) RETURNING 
+          id, capsule_id AS "capsuleId", year, title, description, milestone,
+          progress, created_at AS "createdAt", updated_at AS "updatedAt"
+      `, [
+        year.capsuleId,
+        year.year,
+        year.title || `Year ${year.year}`,
+        year.description || null,
+        year.milestone || null,
+        year.progress || 0
+      ]);
+      
+      console.log(`[storage.createCapsuleYear] Created year with ID ${result.rows[0].id} for capsule ${year.capsuleId}`);
+      return result.rows[0];
     } catch (error) {
       console.error(`[storage.createCapsuleYear] Error:`, error);
       throw error;
@@ -8364,29 +8385,50 @@ export const storage = {
     // Simple implementation for now
     return Promise.resolve(true);
   },
-  getCapsuleTasksByYearId: (yearId: number) => {
+  getCapsuleTasksByYearId: async (yearId: number) => {
     console.log(`[storage.getCapsuleTasksByYearId] Getting tasks for year ${yearId}`);
     try {
-      return Promise.resolve([]);
+      const result = await pool.query(`
+        SELECT id, year_id AS "yearId", title, description, is_completed AS "isCompleted",
+               due_date AS "dueDate", created_at AS "createdAt", updated_at AS "updatedAt"
+        FROM capsule_tasks
+        WHERE year_id = $1
+        ORDER BY id ASC
+      `, [yearId]);
+      
+      console.log(`[storage.getCapsuleTasksByYearId] Found ${result.rows.length} tasks for year ${yearId}`);
+      return result.rows;
     } catch (error) {
       console.error(`[storage.getCapsuleTasksByYearId] Error:`, error);
-      return Promise.resolve([]);
+      return [];
     }
   },
-  createCapsuleTask: (task: InsertCapsuleTask) => {
+  createCapsuleTask: async (task: InsertCapsuleTask) => {
     console.log(`[storage.createCapsuleTask] Creating task for year ${task.yearId}`);
     try {
-      const newTask: CapsuleTask = {
-        id: Math.floor(Math.random() * 1000) + 1,
-        yearId: task.yearId,
-        title: task.title,
-        description: task.description || null,
-        isCompleted: task.isCompleted || false,
-        dueDate: task.dueDate || null,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      };
-      return Promise.resolve(newTask);
+      // Check if we have the required parameters
+      if (!task.yearId || !task.title) {
+        throw new Error('Missing required parameters: yearId and title are required');
+      }
+      
+      const result = await pool.query(`
+        INSERT INTO capsule_tasks (
+          year_id, title, description, is_completed, due_date
+        ) VALUES (
+          $1, $2, $3, $4, $5
+        ) RETURNING 
+          id, year_id AS "yearId", title, description, is_completed AS "isCompleted",
+          due_date AS "dueDate", created_at AS "createdAt", updated_at AS "updatedAt"
+      `, [
+        task.yearId,
+        task.title,
+        task.description || null,
+        task.isCompleted || false,
+        task.dueDate || null
+      ]);
+      
+      console.log(`[storage.createCapsuleTask] Created task with ID ${result.rows[0].id} for year ${task.yearId}`);
+      return result.rows[0];
     } catch (error) {
       console.error(`[storage.createCapsuleTask] Error:`, error);
       throw error;
