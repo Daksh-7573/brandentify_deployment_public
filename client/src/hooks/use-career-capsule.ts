@@ -413,6 +413,30 @@ export const useCareerCapsule = (userId: number | string) => {
     });
   };
 
+  // Regenerate milestones for an existing career capsule
+  const useRegenerateMilestones = (goalId: number) => {
+    return useMutation({
+      mutationFn: () => {
+        return apiRequest('POST', `/api/career-goals/${goalId}/regenerate-milestones`, {});
+      },
+      onSuccess: () => {
+        toast({
+          title: 'Milestones regenerated',
+          description: 'Musk AI has successfully regenerated milestones for your career goal with the latest improvements.',
+        });
+        queryClient.invalidateQueries({ queryKey: [`/api/career-goals/${goalId}`] });
+        queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/career-capsule`] });
+      },
+      onError: (error: any) => {
+        toast({
+          title: 'Failed to regenerate milestones',
+          description: error.message || 'An error occurred while regenerating milestones with Musk AI.',
+          variant: 'destructive',
+        });
+      },
+    });
+  };
+
   return {
     useGoals,
     useGoalDetails,
@@ -429,5 +453,6 @@ export const useCareerCapsule = (userId: number | string) => {
     useCreateProgressLog,
     useDeleteProgressLog,
     useGenerateMilestones,
+    useRegenerateMilestones,
   };
 };
