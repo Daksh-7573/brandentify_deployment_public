@@ -535,7 +535,8 @@ export async function saveCapsuleMilestones(capsuleId: number, years: YearMilest
             description: taskData.description + 
                          (taskData.dueDate ? `\n\nDue Date: ${taskData.dueDate}` : '') + 
                          (taskData.priority ? `\n\nPriority: ${taskData.priority === 1 ? 'Low' : taskData.priority === 2 ? 'Medium' : 'High'}` : '') +
-                         (isCEOCareerPath ? `\n\nCEO SKILL AREA: This task develops critical executive capabilities aligned with industry best practices.` : "") +
+                         (capsule.goalType === 'position_change' && capsule.customGoal?.toLowerCase().includes('ceo') ? 
+                           `\n\nCEO SKILL AREA: This task develops critical executive capabilities aligned with industry best practices.` : "") +
                          "\n\nTask includes specific resources and action steps to ensure clear direction and accountability.",
             isCompleted: false
           });
