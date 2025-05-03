@@ -8195,16 +8195,56 @@ export class DatabaseStorage implements IStorage {
     
     return executeWithRetry(async () => {
       try {
+        // Start a transaction to ensure all related records are deleted consistently
+        await pool.query('BEGIN');
+        
+        // 1. First get all years for this capsule
+        const yearsResult = await pool.query(`
+          SELECT id FROM capsule_years WHERE capsule_id = $1
+        `, [id]);
+        
+        const yearIds = yearsResult.rows.map(row => row.id);
+        console.log(`[db.deleteCareerCapsule] Found ${yearIds.length} years to delete for capsule ${id}`);
+        
+        // 2. Delete all tasks for these years
+        if (yearIds.length > 0) {
+          await pool.query(`
+            DELETE FROM capsule_tasks 
+            WHERE year_id = ANY($1::int[])
+          `, [yearIds]);
+          console.log(`[db.deleteCareerCapsule] Deleted tasks for years ${yearIds.join(', ')}`);
+          
+          // 3. Delete all journals for these years
+          await pool.query(`
+            DELETE FROM capsule_journals
+            WHERE year_id = ANY($1::int[])
+          `, [yearIds]);
+          console.log(`[db.deleteCareerCapsule] Deleted journals for years ${yearIds.join(', ')}`);
+          
+          // 4. Delete all years for this capsule
+          await pool.query(`
+            DELETE FROM capsule_years
+            WHERE capsule_id = $1
+          `, [id]);
+          console.log(`[db.deleteCareerCapsule] Deleted all years for capsule ${id}`);
+        }
+        
+        // 5. Finally, delete the capsule itself
         const result = await pool.query(`
           DELETE FROM career_capsules
           WHERE id = $1
           RETURNING id
         `, [id]);
         
+        // Commit the transaction
+        await pool.query('COMMIT');
+        
         const deleted = result.rows.length > 0;
         console.log(`[db.deleteCareerCapsule] Deleted career capsule with ID ${id}: ${deleted}`);
         return deleted;
       } catch (error) {
+        // Rollback in case of any error
+        await pool.query('ROLLBACK');
         console.error(`[db.deleteCareerCapsule] Error deleting career capsule with ID ${id}:`, error);
         throw error;
       }
