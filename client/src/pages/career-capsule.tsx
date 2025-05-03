@@ -56,7 +56,8 @@ export default function CareerCapsulePage() {
     useGoals, 
     useGoalDetails,
     useCreateGoal,
-    useGenerateMilestones
+    useGenerateMilestones,
+    useDeleteCapsule
   } = useCareerCapsule(userId);
   
   const { data: goals, isLoading, refetch: refetchGoals, error } = useGoals();
@@ -64,6 +65,7 @@ export default function CareerCapsulePage() {
   // Debug logging
   console.log("Career Goals API Response:", { goals, isLoading, error });
   const createGoalMutation = useCreateGoal();
+  const deleteCapsuleMutation = useDeleteCapsule();
   
   // Form state
   const [showCreateDialog, setShowCreateDialog] = useState(false);
@@ -78,6 +80,11 @@ export default function CareerCapsulePage() {
   const [selectedGoalId, setSelectedGoalId] = useState<number | null>(null);
   const { data: goalDetails, isLoading: isLoadingDetails } = useGoalDetails(selectedGoalId || 0);
   const [showDetailsDialog, setShowDetailsDialog] = useState(false);
+  
+  // Delete confirmation dialog
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [capsuleToDelete, setCapsuleToDelete] = useState<number | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   
   // Milestone generation
   const generateMilestones = useGenerateMilestones(selectedGoalId || 0);
@@ -197,6 +204,39 @@ export default function CareerCapsulePage() {
   const handleViewDetails = (goalId: number) => {
     setSelectedGoalId(goalId);
     setShowDetailsDialog(true);
+  };
+  
+  const handleOpenDeleteDialog = (capsuleId: number) => {
+    setCapsuleToDelete(capsuleId);
+    setShowDeleteDialog(true);
+  };
+  
+  const handleDeleteCapsule = async () => {
+    if (!capsuleToDelete) return;
+    
+    setIsDeleting(true);
+    try {
+      await deleteCapsuleMutation.mutateAsync(capsuleToDelete);
+      setShowDeleteDialog(false);
+      setCapsuleToDelete(null);
+      
+      // If we're deleting the currently viewed goal, close the details dialog
+      if (selectedGoalId === capsuleToDelete) {
+        setShowDetailsDialog(false);
+        setSelectedGoalId(null);
+      }
+      
+      refetchGoals();
+    } catch (error) {
+      console.error("Error deleting capsule:", error);
+      toast({
+        title: "Error",
+        description: "Failed to delete the career capsule. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   return (

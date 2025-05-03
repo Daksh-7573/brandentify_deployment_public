@@ -159,6 +159,29 @@ export const useCareerCapsule = (userId: number | string) => {
       },
     });
   };
+  
+  // Delete a career capsule
+  const useDeleteCapsule = () => {
+    return useMutation({
+      mutationFn: (capsuleId: number) => {
+        return apiRequest('DELETE', `/api/career-capsules/${capsuleId}`);
+      },
+      onSuccess: () => {
+        toast({
+          title: 'Career capsule deleted',
+          description: 'Your career capsule has been successfully deleted.',
+        });
+        invalidateGoalQueries();
+      },
+      onError: (error: any) => {
+        toast({
+          title: 'Failed to delete career capsule',
+          description: error.message || 'An error occurred while deleting the career capsule.',
+          variant: 'destructive',
+        });
+      },
+    });
+  };
 
   // Create a milestone for a career goal
   const useCreateMilestone = (goalId: number) => {
@@ -389,6 +412,7 @@ export const useCareerCapsule = (userId: number | string) => {
     useCreateGoal,
     useUpdateGoal,
     useDeleteGoal,
+    useDeleteCapsule,
     useCreateMilestone,
     useUpdateMilestone,
     useDeleteMilestone,
