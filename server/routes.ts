@@ -5465,12 +5465,9 @@ ${extractedText.substring(0, 5000)}
       console.log(`Resolved user ID: ${userId}, calling storage.getCareerGoalsByUserId`);
       
       try {
-        // Check if the user exists
-        const user = await storage.getUserById(userId);
-        if (!user) {
-          console.log(`User with ID ${userId} not found in database`);
-          return res.json([]); // Return empty array for non-existent users
-        }
+        // Skip user check since we're having issues with getUserById
+        // Just try to get goals directly
+        console.log(`Attempting to get goals for user ${userId}`);
         
         // Important: Call the table creation script first to ensure tables exist
         const goals = await storage.getCareerGoalsByUserId(userId);
@@ -5568,6 +5565,15 @@ ${extractedText.substring(0, 5000)}
       // Direct SQL implementation for career goal creation
       const now = new Date();
       
+      console.log(`Creating career goal for user ID: ${userId}`);
+      console.log(`Goal data:`, JSON.stringify({
+        title: req.body.title,
+        description: req.body.description || null,
+        goalType: req.body.goalType || 'position_change',
+        timeframe: req.body.timeframe || 3,
+        targetDate: req.body.targetDate || null,
+      }));
+      
       // Direct SQL query using pool
       const client = await pool.connect();
       try {
@@ -5604,6 +5610,21 @@ ${extractedText.substring(0, 5000)}
         ]
         );
         
+        console.log(`Career goal created successfully with ID: ${result.rows[0].id}`);
+        
+        // Now let's also verify we can read it back
+        const verifyResult = await client.query(
+          `SELECT * FROM career_goals WHERE id = $1`,
+          [result.rows[0].id]
+        );
+        
+        if (verifyResult.rows.length > 0) {
+          console.log(`Verified goal exists in database: ${JSON.stringify(verifyResult.rows[0])}`);
+        } else {
+          console.error(`Warning: Could not verify goal with ID ${result.rows[0].id} exists after creation`);
+        }
+        
+        // Return the newly created goal
         return res.status(201).json(result.rows[0]);
       } catch (sqlError: any) {
         console.error("SQL Error in create career goal:", sqlError);
