@@ -833,13 +833,29 @@ export default function CareerCapsulePage() {
             <p className="text-center py-4">Failed to load goal details.</p>
           )}
           
-          <DialogFooter className="flex justify-between">
-            <Button 
-              variant="destructive" 
-              onClick={() => handleOpenDeleteDialog(selectedGoalId || 0)}
-            >
-              Delete Career Capsule
-            </Button>
+          <DialogFooter className="flex justify-between items-center">
+            <div className="flex gap-2">
+              <Button 
+                variant="destructive" 
+                onClick={() => handleOpenDeleteDialog(selectedGoalId || 0)}
+              >
+                Delete Career Capsule
+              </Button>
+              <Button 
+                variant="outline"
+                onClick={handleRegenerateMilestones}
+                disabled={isRegeneratingMilestones}
+              >
+                {isRegeneratingMilestones ? (
+                  <>
+                    <span className="animate-spin mr-2">⟳</span>
+                    Regenerating...
+                  </>
+                ) : (
+                  "Regenerate Milestones"
+                )}
+              </Button>
+            </div>
             <Button onClick={() => setShowDetailsDialog(false)}>Close</Button>
           </DialogFooter>
         </DialogContent>
