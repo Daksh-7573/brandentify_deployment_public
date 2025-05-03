@@ -91,9 +91,9 @@ export const useCareerCapsule = (userId: number | string) => {
   const useCreateGoal = () => {
     return useMutation({
       mutationFn: (goalData: Omit<CareerGoal, 'id' | 'userId' | 'createdAt' | 'updatedAt' | 'progress'>) => {
-        return apiRequest(`/api/users/${userId}/career-goals`, {
-          method: 'POST',
-          body: JSON.stringify(goalData),
+        return apiRequest('POST', `/api/users/${userId}/career-goals`, {
+          ...goalData, 
+          userId
         });
       },
       onSuccess: () => {
@@ -117,10 +117,7 @@ export const useCareerCapsule = (userId: number | string) => {
   const useUpdateGoal = (goalId: number) => {
     return useMutation({
       mutationFn: (goalData: Partial<CareerGoal>) => {
-        return apiRequest(`/api/career-goals/${goalId}`, {
-          method: 'PATCH',
-          body: JSON.stringify(goalData),
-        });
+        return apiRequest('PATCH', `/api/career-goals/${goalId}`, goalData);
       },
       onSuccess: () => {
         toast({
@@ -144,9 +141,7 @@ export const useCareerCapsule = (userId: number | string) => {
   const useDeleteGoal = () => {
     return useMutation({
       mutationFn: (goalId: number) => {
-        return apiRequest(`/api/career-goals/${goalId}`, {
-          method: 'DELETE',
-        });
+        return apiRequest('DELETE', `/api/career-goals/${goalId}`);
       },
       onSuccess: () => {
         toast({
@@ -169,9 +164,9 @@ export const useCareerCapsule = (userId: number | string) => {
   const useCreateMilestone = (goalId: number) => {
     return useMutation({
       mutationFn: (milestoneData: Omit<GoalMilestone, 'id' | 'goalId' | 'order' | 'createdAt' | 'updatedAt' | 'completedAt'>) => {
-        return apiRequest(`/api/career-goals/${goalId}/milestones`, {
-          method: 'POST',
-          body: JSON.stringify(milestoneData),
+        return apiRequest('POST', `/api/career-goals/${goalId}/milestones`, {
+          ...milestoneData,
+          goalId
         });
       },
       onSuccess: () => {
