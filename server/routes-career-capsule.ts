@@ -33,14 +33,39 @@ router.get('/career-goals/:goalId', async (req, res) => {
       return res.status(404).json({ error: 'Career goal not found' });
     }
 
-    // Get associated milestones - for now we can provide an empty array
-    // since we don't have the actual function for capsule years
-    const milestones = []; // Empty array for now
+    // Get years for the capsule
+    const years = await storage.getCapsuleYearsByCapsuleId(goalId);
+    console.log(`Found ${years.length} years for career capsule ${goalId}`);
     
+    // Get tasks for each year
+    const milestonesWithTasks = await Promise.all(years.map(async (year) => {
+      const tasks = await storage.getCapsuleTasksByYearId(year.id);
+      console.log(`Found ${tasks.length} tasks for year ${year.id}`);
+      
+      // Format milestone based on the client's expected structure
+      return {
+        id: year.id,
+        goalId: year.capsuleId,
+        title: year.title,
+        description: year.description || '',
+        targetDate: new Date(new Date().setFullYear(new Date().getFullYear() + year.yearNumber)),
+        status: year.progress === 100 ? 'completed' : 'in_progress',
+        order: year.yearNumber,
+        createdAt: year.createdAt,
+        updatedAt: year.updatedAt || year.createdAt,
+        completedAt: year.progress === 100 ? new Date() : null,
+        tasks: tasks
+      };
+    }));
+
     // Construct the complete goal details
     const goalDetails = {
-      goal,
-      milestones,
+      goal: {
+        ...goal,
+        status: goal.overallProgress === 100 ? 'completed' : 'in_progress',
+        targetDate: goal.endDate || new Date(new Date().setFullYear(new Date().getFullYear() + (goal.timeframe || 1))),
+      },
+      milestones: milestonesWithTasks,
       skills: [], // Skills will be added later if needed
       progressLogs: [] // Progress logs will be added later if needed
     };
