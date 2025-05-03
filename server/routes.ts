@@ -5539,19 +5539,54 @@ ${extractedText.substring(0, 5000)}
           return res.status(400).json({ error: "Invalid user ID format" });
         }
       }
-      
-      const goalData: InsertCareerGoal = {
-        ...req.body,
-        userId,
-        progress: 0,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      };
-      
-      // Explicitly cast storage to any to avoid TypeScript errors
-// This is a temporary fix until proper type definitions are added
-const goal = await (storage as any).createCareerGoal(goalData);
-      return res.status(201).json(goal);
+
+      // Direct SQL implementation for career goal creation
+      try {
+        const now = new Date();
+        
+        const result = await executeQuery(
+          `INSERT INTO career_goals (
+            user_id, title, description, goal_type, timeframe, 
+            target_industry, target_role, is_private, is_musk_generated,
+            status, progress, target_date, start_date, last_updated, created_at
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) 
+          RETURNING 
+            id, user_id as "userId", title, description, 
+            goal_type as "goalType", status, timeframe,
+            target_industry as "targetIndustry", target_role as "targetRole",
+            current_skills as "currentSkills", required_skills as "requiredSkills",
+            progress, is_private as "isPrivate", is_musk_generated as "isMuskGenerated",
+            start_date as "startDate", target_date as "targetDate",
+            last_updated as "lastUpdated", created_at as "createdAt"`,
+          [
+            userId,
+            req.body.title,
+            req.body.description || null,
+            req.body.goalType || 'position_change',
+            req.body.timeframe || 3,
+            req.body.targetIndustry || null,
+            req.body.targetRole || null,
+            req.body.isPrivate !== undefined ? req.body.isPrivate : true,
+            req.body.isMuskGenerated !== undefined ? req.body.isMuskGenerated : true,
+            'not_started', // Initial status
+            0, // Initial progress
+            req.body.targetDate || null,
+            now, // startDate
+            now, // lastUpdated
+            now  // createdAt
+          ]
+        );
+        
+        return res.status(201).json(result.rows[0]);
+      } catch (sqlError) {
+        console.error("SQL Error in create career goal:", sqlError);
+        // Return more detailed error message for debugging
+        return res.status(500).json({ 
+          error: "Database error creating career goal", 
+          details: sqlError.message, 
+          code: sqlError.code 
+        });
+      }
     } catch (error) {
       if (error instanceof z.ZodError) {
         return res.status(400).json({ error: error.errors });
