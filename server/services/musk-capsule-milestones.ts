@@ -84,9 +84,9 @@ export async function generateCapsuleMilestones(options: MilestoneGenerationRequ
 
     // Get user's work experiences, skills, education, etc.
     console.log(`[Musk AI] Fetching user career data...`);
-    const experiences = await storage.getUserExperiences(options.userId);
-    const skills = await storage.getUserSkills(options.userId);
-    const education = await storage.getUserEducation(options.userId);
+    const experiences = await storage.getWorkExperiencesByUserId(options.userId);
+    const skills = await storage.getSkillsByUserId(options.userId);
+    const education = await storage.getEducationsByUserId(options.userId);
     console.log(`[Musk AI] Career data retrieved: ${experiences.length} experiences, ${skills.length} skills, ${education.length} education entries`);
 
     // Format the prompt for the AI
