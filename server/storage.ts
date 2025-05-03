@@ -6558,6 +6558,7 @@ import { eq } from 'drizzle-orm';
  * DatabaseStorage implementation that connects to a PostgreSQL database via Drizzle ORM
  */
 export class DatabaseStorage implements IStorage {
+  // Include all required methods to satisfy IStorage interface
   // User operations
   async getUser(id: number): Promise<User | undefined> {
     console.log(`[db.getUser] Looking up user with ID: ${id}`);
@@ -8125,5 +8126,5 @@ export class DatabaseStorage implements IStorage {
   }
 }
 
-// Switch to database storage
-export const storage = new DatabaseStorage();
+// Create a properly typed storage instance
+export const storage: IStorage = new DatabaseStorage();
