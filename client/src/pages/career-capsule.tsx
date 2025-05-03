@@ -655,8 +655,60 @@ export default function CareerCapsulePage() {
             <p className="text-center py-4">Failed to load goal details.</p>
           )}
           
-          <DialogFooter>
+          <DialogFooter className="flex justify-between">
+            <Button 
+              variant="destructive" 
+              onClick={() => handleOpenDeleteDialog(selectedGoalId || 0)}
+            >
+              Delete Career Capsule
+            </Button>
             <Button onClick={() => setShowDetailsDialog(false)}>Close</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Delete Career Capsule</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this career capsule? This action cannot be undone, and all associated milestones, skills, and progress logs will be permanently removed.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <Alert variant="destructive">
+              <AlertTitle>Warning</AlertTitle>
+              <AlertDescription>
+                Deleting this career capsule will remove all your progress tracking for this goal.
+              </AlertDescription>
+            </Alert>
+          </div>
+          <DialogFooter className="flex gap-2 justify-end">
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setShowDeleteDialog(false);
+                setCapsuleToDelete(null);
+              }}
+              disabled={isDeleting}
+            >
+              Cancel
+            </Button>
+            <Button 
+              variant="destructive" 
+              onClick={handleDeleteCapsule}
+              disabled={isDeleting}
+            >
+              {isDeleting ? (
+                <span className="flex items-center">
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Deleting...
+                </span>
+              ) : (
+                "Delete"
+              )}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
