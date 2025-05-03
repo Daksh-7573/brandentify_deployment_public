@@ -47,7 +47,9 @@ export interface CapsuleYear {
 export interface InsertCapsuleYear {
   capsuleId: number;
   year: number;
+  title: string;
   description?: string | null;
+  milestone: string;
   progress?: number;
 }
 

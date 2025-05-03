@@ -282,10 +282,17 @@ Remember, your mission is to create a career roadmap so personalized and actiona
         model: "claude-3-7-sonnet-20250219",
         max_tokens: 4000,
         messages: [{ role: 'user', content: aiContext }],
-        system: "You are Musk, an elite career development AI coach that generates ultra-specific, actionable milestone tasks. Focus on extreme specificity - name actual technologies, platforms, certifications, companies, skills, events, books, and courses. Avoid generic advice like 'learn foundational skills'; instead specify exactly which skills and how to acquire them. Return only valid JSON with no additional text."
+        system: "You are Musk, an elite career development AI coach. Generate specific, actionable career milestones with extreme detail. Include actual technologies, platforms, certifications, companies, events, books, and courses. For each year milestone, specify 3-5 concrete tasks with clear deliverables. Avoid vague terms like 'learn basics' or 'networking' - be extremely specific. Return only valid JSON."
       });
       
-      aiResponse = response.content[0].text;
+      // Handle different content block types from Anthropic's API
+      const contentBlock = response.content[0];
+      if ('text' in contentBlock) {
+        aiResponse = contentBlock.text;
+      } else {
+        // If it's not a text block, convert the content to a string
+        aiResponse = JSON.stringify(contentBlock);
+      }
     } else {
       // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
       const completion = await openai.chat.completions.create({
@@ -293,7 +300,7 @@ Remember, your mission is to create a career roadmap so personalized and actiona
         messages: [
           { 
             role: "system", 
-            content: "You are Musk, an elite career development AI coach that generates ultra-specific, actionable milestone tasks. Focus on extreme specificity - name actual technologies, platforms, certifications, companies, skills, events, books, and courses. Avoid generic advice like 'learn foundational skills'; instead specify exactly which skills and how to acquire them. Return only valid JSON with no additional text." 
+            content: "You are Musk, an elite career development AI coach. Generate specific, actionable career milestones with extreme detail. Include actual technologies, platforms, certifications, companies, events, books, and courses. For each year milestone, specify 3-5 concrete tasks with clear deliverables. Avoid vague terms like 'learn basics' or 'networking' - be extremely specific. Return only valid JSON." 
           },
           { 
             role: "user", 
@@ -430,8 +437,10 @@ export async function saveCapsuleMilestones(capsuleId: number, years: YearMilest
           await storage.createCapsuleTask({
             yearId: yearRecord.id,
             title: taskData.title,
-            description: taskData.description + (taskData.dueDate ? `\nDue: ${taskData.dueDate}` : '') + 
-                         (taskData.priority ? `\nPriority: ${taskData.priority}` : ''), // Add due date and priority to description
+            description: taskData.description + 
+                         (taskData.dueDate ? `\n\nDue Date: ${taskData.dueDate}` : '') + 
+                         (taskData.priority ? `\n\nPriority: ${taskData.priority === 1 ? 'Low' : taskData.priority === 2 ? 'Medium' : 'High'}` : '') +
+                         "\n\nTask includes specific resources and action steps to ensure clear direction and accountability.",
             isCompleted: false
           });
         }
