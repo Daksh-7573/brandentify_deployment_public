@@ -510,12 +510,17 @@ export async function saveCapsuleMilestones(capsuleId: number, years: YearMilest
     // Check if the capsule exists
     const capsule = await storage.getCareerCapsuleById(capsuleId);
     if (!capsule) {
-      console.error("Capsule not found:", capsuleId);
+      console.error("[Milestone Save] Capsule not found:", capsuleId);
       return false;
     }
 
+    console.log(`[Milestone Save] Starting to save milestones for capsule ${capsuleId}, found ${years.length} years to save`);
+    console.log(`[Milestone Save] Capsule details: ${JSON.stringify(capsule)}`);
+
     // Create years and tasks
     for (const yearData of years) {
+      console.log(`[Milestone Save] Creating year for capsule ${capsuleId}: year=${yearData.year || yearData.yearNumber}, title=${yearData.title}`);
+      
       // Create the year
       const yearRecord = await storage.createCapsuleYear({
         capsuleId,
@@ -525,22 +530,35 @@ export async function saveCapsuleMilestones(capsuleId: number, years: YearMilest
         milestone: yearData.milestone,
         progress: 0
       });
+      
+      console.log(`[Milestone Save] Created year record: ${JSON.stringify(yearRecord)}`);
 
       // Create tasks for this year
       if (yearRecord && yearData.tasks && yearData.tasks.length > 0) {
+        console.log(`[Milestone Save] Creating ${yearData.tasks.length} tasks for year ${yearRecord.id}`);
+        
         for (const taskData of yearData.tasks) {
-          await storage.createCapsuleTask({
+          console.log(`[Milestone Save] Creating task: ${taskData.title} for year ${yearRecord.id}`);
+          
+          const isCEOPath = capsule.goalType === 'position_change' && capsule.customGoal?.toLowerCase().includes('ceo');
+          console.log(`[Milestone Save] Is CEO path: ${isCEOPath}, goalType=${capsule.goalType}, customGoal=${capsule.customGoal}`);
+          
+          const task = await storage.createCapsuleTask({
             yearId: yearRecord.id,
             title: taskData.title,
             description: taskData.description + 
                          (taskData.dueDate ? `\n\nDue Date: ${taskData.dueDate}` : '') + 
                          (taskData.priority ? `\n\nPriority: ${taskData.priority === 1 ? 'Low' : taskData.priority === 2 ? 'Medium' : 'High'}` : '') +
-                         (capsule.goalType === 'position_change' && capsule.customGoal?.toLowerCase().includes('ceo') ? 
+                         (isCEOPath ? 
                            `\n\nCEO SKILL AREA: This task develops critical executive capabilities aligned with industry best practices.` : "") +
                          "\n\nTask includes specific resources and action steps to ensure clear direction and accountability.",
             isCompleted: false
           });
+          
+          console.log(`[Milestone Save] Created task: ${JSON.stringify(task)}`);
         }
+      } else {
+        console.log(`[Milestone Save] No tasks to create for year ${yearRecord?.id || 'undefined'}`);
       }
     }
 

@@ -33,14 +33,16 @@ router.get('/career-goals/:goalId', async (req, res) => {
       return res.status(404).json({ error: 'Career goal not found' });
     }
 
+    console.log(`[Goal Details] Found goal ${goalId}: ${JSON.stringify(goal)}`);
+
     // Get years for the capsule
     const years = await storage.getCapsuleYearsByCapsuleId(goalId);
-    console.log(`Found ${years.length} years for career capsule ${goalId}`);
+    console.log(`[Goal Details] Found ${years.length} years for career capsule ${goalId}: ${JSON.stringify(years)}`);
     
     // Get tasks for each year
     const milestonesWithTasks = await Promise.all(years.map(async (year) => {
       const tasks = await storage.getCapsuleTasksByYearId(year.id);
-      console.log(`Found ${tasks.length} tasks for year ${year.id}`);
+      console.log(`[Goal Details] Found ${tasks.length} tasks for year ${year.id}: ${JSON.stringify(tasks)}`);
       
       // Format milestone based on the client's expected structure
       return {
