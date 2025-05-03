@@ -330,7 +330,9 @@ export async function saveCapsuleMilestones(capsuleId: number, years: YearMilest
       const yearRecord = await storage.createCapsuleYear({
         capsuleId,
         year: yearData.yearNumber, // Corrected field name: yearNumber -> year
-        description: `${yearData.title}: ${yearData.description}\nMilestone: ${yearData.milestone}`, // Combine title and milestone into description
+        title: yearData.title,
+        description: yearData.description,
+        milestone: yearData.milestone,
         progress: 0
       });
 
