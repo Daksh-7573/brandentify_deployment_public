@@ -85,24 +85,100 @@ export default function CareerCapsulePage() {
         )}
       </div>
 
-      {/* Dialog for Create Goal - Just a placeholder for now */}
+      {/* Dialog for Create Goal with form fields */}
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
             <DialogTitle>Create New Career Goal</DialogTitle>
             <DialogDescription>
-              This feature is being redeveloped and will be available soon. 
-              You'll be able to set career goals with a 1-5 year timeframe and get AI-generated milestones.
+              Set your career goals with a 1-5 year timeframe and get AI-generated milestones.
             </DialogDescription>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <p className="text-sm text-muted-foreground">
-              Career Capsule helps you plan your career growth with clear milestones and skills to develop.
-              Check back soon for the full functionality!
-            </p>
-          </div>
-          <DialogFooter>
-            <Button onClick={() => setShowCreateDialog(false)}>Close</Button>
+          <form className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label htmlFor="goal-title" className="text-right text-sm font-medium">
+                Goal Title
+              </label>
+              <input
+                id="goal-title"
+                placeholder="e.g. Become a Product Manager"
+                className="col-span-3 flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label htmlFor="goal-type" className="text-right text-sm font-medium">
+                Goal Type
+              </label>
+              <select
+                id="goal-type"
+                className="col-span-3 flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <option value="position_change">Position Change</option>
+                <option value="skill_acquisition">Skill Acquisition</option>
+                <option value="promotion">Promotion</option>
+                <option value="industry_switch">Industry Switch</option>
+                <option value="entrepreneurship">Entrepreneurship</option>
+                <option value="relocation">Relocation</option>
+                <option value="education">Education</option>
+                <option value="certification">Certification</option>
+                <option value="custom">Custom</option>
+              </select>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label htmlFor="timeframe" className="text-right text-sm font-medium">
+                Timeframe (years)
+              </label>
+              <select
+                id="timeframe"
+                className="col-span-3 flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <option value="1">1 year</option>
+                <option value="2">2 years</option>
+                <option value="3">3 years</option>
+                <option value="4">4 years</option>
+                <option value="5">5 years</option>
+              </select>
+            </div>
+            <div className="grid grid-cols-4 items-start gap-4">
+              <label htmlFor="description" className="text-right text-sm font-medium pt-2">
+                Description
+              </label>
+              <textarea
+                id="description"
+                placeholder="Describe your career goal in detail..."
+                className="col-span-3 flex min-h-[80px] rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label htmlFor="industry" className="text-right text-sm font-medium">
+                Industry Focus
+              </label>
+              <input
+                id="industry"
+                placeholder="e.g. Technology, Healthcare, Finance"
+                className="col-span-3 flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              />
+            </div>
+            <div className="col-span-4 flex items-center gap-2 mt-2">
+              <input
+                type="checkbox"
+                id="use-ai"
+                className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+              />
+              <label htmlFor="use-ai" className="text-sm font-medium">
+                Generate AI milestones for this goal
+              </label>
+            </div>
+          </form>
+          <DialogFooter className="flex space-x-2 justify-end">
+            <Button variant="outline" onClick={() => setShowCreateDialog(false)}>Cancel</Button>
+            <Button onClick={() => {
+              toast({
+                title: "Feature in development",
+                description: "This form is just a preview. The full functionality will be available soon.",
+              });
+              setShowCreateDialog(false);
+            }}>Create Goal</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
