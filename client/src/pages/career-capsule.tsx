@@ -216,27 +216,42 @@ export default function CareerCapsulePage() {
   const handleDeleteCapsule = async () => {
     if (!capsuleToDelete) return;
     
+    console.log(`Starting deletion of capsule with ID ${capsuleToDelete}...`);
     setIsDeleting(true);
     try {
-      await deleteCapsuleMutation.mutateAsync(capsuleToDelete);
+      // Log before sending the API request
+      console.log(`Calling API to delete capsule ID ${capsuleToDelete}...`);
+      
+      // Call the API to delete the capsule
+      const response = await deleteCapsuleMutation.mutateAsync(capsuleToDelete);
+      console.log(`Delete API response:`, response);
+      
+      // Update UI state
       setShowDeleteDialog(false);
       setCapsuleToDelete(null);
       
       // If we're deleting the currently viewed goal, close the details dialog
       if (selectedGoalId === capsuleToDelete) {
+        console.log(`Closing detail dialog for deleted capsule ${capsuleToDelete}`);
         setShowDetailsDialog(false);
         setSelectedGoalId(null);
       }
       
       // Force a strong refresh by invalidating all goal-related queries
+      console.log(`Invalidating queries for user ${userId}...`);
       queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/career-capsule`] });
       queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/career-goals`] });
+      
+      toast({
+        title: "Career capsule deleted",
+        description: "The career capsule has been successfully deleted."
+      });
       
       // Force a manual refresh after a small delay to ensure the backend has processed the deletion
       setTimeout(() => {
         console.log("Performing refetch after deletion...");
         refetchGoals();
-      }, 500);
+      }, 1000);
       
     } catch (error) {
       console.error("Error deleting capsule:", error);
@@ -247,6 +262,11 @@ export default function CareerCapsulePage() {
       });
     } finally {
       setIsDeleting(false);
+      // Final refresh to make sure UI reflects current state
+      setTimeout(() => {
+        console.log("Final data refresh after deletion process...");
+        refetchGoals();
+      }, 2000);
     }
   };
 
@@ -545,7 +565,36 @@ export default function CareerCapsulePage() {
       {/* Details Dialog */}
       <Dialog open={showDetailsDialog} onOpenChange={setShowDetailsDialog}>
         <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
+          <DialogHeader className="relative">
+            <div className="absolute right-0 top-0">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 w-8 p-0 text-destructive"
+                onClick={() => {
+                  if (selectedGoalId) {
+                    handleOpenDeleteDialog(selectedGoalId);
+                  }
+                }}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M3 6h18"></path>
+                  <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                  <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                </svg>
+                <span className="sr-only">Delete</span>
+              </Button>
+            </div>
             <DialogTitle>
               {goalDetails && typeof goalDetails === 'object' ? 
                 (goalDetails.goal?.title || goalDetails.title || "Goal Details") : 

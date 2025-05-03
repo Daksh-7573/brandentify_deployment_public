@@ -518,32 +518,43 @@ router.post('/career-capsules/:capsuleId/generate-milestones', async (req, res) 
 router.delete('/career-capsules/:capsuleId', async (req, res) => {
   try {
     const capsuleId = parseInt(req.params.capsuleId);
+    console.log(`[DELETE] Career capsule delete request received for ID: ${capsuleId}`);
+    
     if (isNaN(capsuleId)) {
+      console.error(`[DELETE] Invalid capsule ID: ${req.params.capsuleId}`);
       return res.status(400).json({ message: 'Invalid capsule ID' });
     }
     
     // Check if the capsule exists
+    console.log(`[DELETE] Checking if capsule exists with ID: ${capsuleId}`);
     const capsule = await storage.getCareerCapsuleById(capsuleId);
+    
     if (!capsule) {
+      console.error(`[DELETE] Career capsule not found with ID: ${capsuleId}`);
       return res.status(404).json({ message: 'Career capsule not found' });
     }
     
+    console.log(`[DELETE] Found capsule to delete:`, JSON.stringify(capsule));
+    
     // Delete the capsule
+    console.log(`[DELETE] Attempting to delete capsule with ID: ${capsuleId}`);
     const deleted = await storage.deleteCareerCapsule(capsuleId);
     
     if (deleted) {
+      console.log(`[DELETE] Successfully deleted capsule with ID: ${capsuleId}`);
       return res.status(200).json({ 
         success: true, 
         message: 'Career capsule deleted successfully' 
       });
     } else {
+      console.error(`[DELETE] Failed to delete capsule with ID: ${capsuleId}`);
       return res.status(500).json({ 
         success: false, 
         message: 'Failed to delete career capsule' 
       });
     }
   } catch (error) {
-    console.error('Error deleting career capsule:', error);
+    console.error(`[DELETE] Error deleting career capsule with ID: ${req.params.capsuleId}:`, error);
     return res.status(500).json({ 
       success: false,
       message: 'Error deleting career capsule',
