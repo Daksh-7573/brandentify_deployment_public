@@ -8297,6 +8297,12 @@ const dbStorage = new DatabaseStorage();
 export const storage = {
   ...dbStorage,
   
+  // User methods
+  getUser: (id: number) => dbStorage.getUser(id),
+  getUserByEmail: (email: string) => dbStorage.getUserByEmail(email),
+  getUserByUsername: (username: string) => dbStorage.getUserByUsername(username),
+  getUserByPhoneNumber: (phoneNumber: string) => dbStorage.getUserByPhoneNumber(phoneNumber),
+  
   // Career Goal methods
   getCareerGoalsByUserId: (userId: number) => dbStorage.getCareerGoalsByUserId(userId),
   getCareerGoalById: (id: number) => dbStorage.getCareerGoalById(id),
