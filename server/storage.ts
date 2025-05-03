@@ -628,6 +628,9 @@ export interface IStorage {
   deleteCapsuleTask(id: number): Promise<boolean>;
   toggleCapsuleTaskCompletion(id: number): Promise<CapsuleTask | undefined>;
   
+  // Delete all years and tasks for a capsule (for regeneration)
+  deleteAllCapsuleMilestones(capsuleId: number): Promise<boolean>;
+  
   // Capsule Journal operations
   getCapsuleJournalsByCapsuleId(capsuleId: number): Promise<CapsuleJournal[]>;
   getCapsuleJournalById(id: number): Promise<CapsuleJournal | undefined>;
