@@ -94,24 +94,25 @@ export default function CareerCapsulePage() {
               Set your career goals with a 1-5 year timeframe and get AI-generated milestones.
             </DialogDescription>
           </DialogHeader>
-          <form className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <label htmlFor="goal-title" className="text-right text-sm font-medium">
+          <form className="flex flex-col gap-4 py-4">
+            <div className="space-y-2">
+              <label htmlFor="goal-title" className="text-sm font-medium">
                 Goal Title
               </label>
               <input
                 id="goal-title"
                 placeholder="e.g. Become a Product Manager"
-                className="col-span-3 flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <label htmlFor="goal-type" className="text-right text-sm font-medium">
+            
+            <div className="space-y-2">
+              <label htmlFor="goal-type" className="text-sm font-medium">
                 Goal Type
               </label>
               <select
                 id="goal-type"
-                className="col-span-3 flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <option value="position_change">Position Change</option>
                 <option value="skill_acquisition">Skill Acquisition</option>
@@ -124,13 +125,14 @@ export default function CareerCapsulePage() {
                 <option value="custom">Custom</option>
               </select>
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <label htmlFor="timeframe" className="text-right text-sm font-medium">
+            
+            <div className="space-y-2">
+              <label htmlFor="timeframe" className="text-sm font-medium">
                 Timeframe (years)
               </label>
               <select
                 id="timeframe"
-                className="col-span-3 flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <option value="1">1 year</option>
                 <option value="2">2 years</option>
@@ -139,17 +141,19 @@ export default function CareerCapsulePage() {
                 <option value="5">5 years</option>
               </select>
             </div>
-            <div className="grid grid-cols-4 items-start gap-4">
-              <label htmlFor="description" className="text-right text-sm font-medium pt-2">
+            
+            <div className="space-y-2">
+              <label htmlFor="description" className="text-sm font-medium">
                 Description
               </label>
               <textarea
                 id="description"
                 placeholder="Describe your career goal in detail..."
-                className="col-span-3 flex min-h-[80px] rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                className="w-full min-h-[100px] rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               />
             </div>
-            <div className="col-span-4 flex items-center mt-2">
+            
+            <div className="mt-2 bg-muted/20 p-3 rounded-md">
               <p className="text-sm text-muted-foreground">
                 <span className="font-medium text-primary">Note:</span> AI milestones will be automatically generated for your goal based on its type and timeframe.
               </p>
