@@ -3886,33 +3886,60 @@ export class MemStorage implements IStorage {
   // Career Roadmap operations
   // Career Goal operations
   async getCareerGoalsByUserId(userId: number): Promise<CareerGoal[]> {
-    return Array.from(this.careerGoals.values())
-      .filter(goal => goal.userId === userId)
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    try {
+      const results = await executeQuery(
+        `SELECT * FROM career_goals WHERE user_id = $1 ORDER BY created_at DESC`,
+        [userId]
+      );
+      return results.rows;
+    } catch (error) {
+      console.error("Error in getCareerGoalsByUserId:", error);
+      return [];
+    }
   }
 
   async getCareerGoalById(id: number): Promise<CareerGoal | undefined> {
-    return this.careerGoals.get(id);
+    try {
+      const results = await executeQuery(
+        `SELECT * FROM career_goals WHERE id = $1`,
+        [id]
+      );
+      return results.rows[0];
+    } catch (error) {
+      console.error("Error in getCareerGoalById:", error);
+      return undefined;
+    }
   }
 
   async createCareerGoal(goal: InsertCareerGoal): Promise<CareerGoal> {
-    const id = this.currentCareerGoalId++;
-    const now = new Date();
-    
-    const newGoal: CareerGoal = {
-      ...goal,
-      id,
-      createdAt: now,
-      updatedAt: now,
-      completedAt: null,
-      progress: 0,
-      status: goal.status || 'active',
-      targetCompletionDate: goal.targetCompletionDate || null,
-      aiSuggestions: goal.aiSuggestions || null
-    };
-    
-    this.careerGoals.set(id, newGoal);
-    return newGoal;
+    try {
+      const now = new Date();
+      
+      const result = await executeQuery(
+        `INSERT INTO career_goals (
+          user_id, title, description, goal_type, timeframe, 
+          status, progress, target_date, created_at, updated_at
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) 
+        RETURNING *`,
+        [
+          goal.userId,
+          goal.title,
+          goal.description || null,
+          goal.goalType || 'position_change',
+          goal.timeframe || 1,
+          goal.status || 'not_started',
+          0, // Initial progress
+          goal.targetDate || null,
+          now,
+          now
+        ]
+      );
+      
+      return result.rows[0];
+    } catch (error) {
+      console.error("Error in createCareerGoal:", error);
+      throw error;
+    }
   }
 
   async updateCareerGoal(id: number, goalData: Partial<CareerGoal>): Promise<CareerGoal | undefined> {
