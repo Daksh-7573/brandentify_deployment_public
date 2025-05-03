@@ -61,12 +61,21 @@ router.get('/career-goals/:goalId', async (req, res) => {
       }
       
       // Format milestone based on the client's expected structure
+      // Get the capsule to calculate target date properly
+      const capsule = await storage.getCareerCapsuleById(year.capsuleId);
+      const capsuleCreationDate = capsule ? new Date(capsule.createdAt) : new Date();
+      
+      // Calculate target date by adding the milestone year to the capsule creation date
+      const targetYear = capsuleCreationDate.getFullYear() + year.year;
+      const targetDate = new Date(capsuleCreationDate);
+      targetDate.setFullYear(targetYear);
+      
       const milestone = {
         id: year.id,
         goalId: year.capsuleId,
         title: year.title,
         description: year.description || '',
-        targetDate: new Date(new Date().setFullYear(new Date().getFullYear() + year.year)),
+        targetDate: targetDate,
         status: year.progress === 100 ? 'completed' : 'in_progress',
         order: year.year,
         createdAt: year.createdAt,
@@ -80,12 +89,18 @@ router.get('/career-goals/:goalId', async (req, res) => {
       return milestone;
     }));
 
+    // Calculate goal target date based on creation date and timeframe
+    const goalCreationDate = new Date(goal.createdAt);
+    const targetYear = goalCreationDate.getFullYear() + (goal.timeframe || 1);
+    const goalTargetDate = new Date(goalCreationDate);
+    goalTargetDate.setFullYear(targetYear);
+    
     // Construct the complete goal details
     const goalDetails = {
       goal: {
         ...goal,
         status: goal.overallProgress === 100 ? 'completed' : 'in_progress',
-        targetDate: goal.endDate || new Date(new Date().setFullYear(new Date().getFullYear() + (goal.timeframe || 1))),
+        targetDate: goal.endDate || goalTargetDate,
       },
       milestones: milestonesWithTasks,
       skills: [], // Skills will be added later if needed
