@@ -56,7 +56,10 @@ export default function CareerCapsulePage() {
     useCreateGoal,
   } = useCareerCapsule(userId);
   
-  const { data: goals, isLoading, refetch: refetchGoals } = useGoals();
+  const { data: goals, isLoading, refetch: refetchGoals, error } = useGoals();
+  
+  // Debug logging
+  console.log("Career Goals API Response:", { goals, isLoading, error });
   const createGoalMutation = useCreateGoal();
   
   // Form state
