@@ -595,16 +595,33 @@ export async function saveCapsuleMilestones(capsuleId: number, years: YearMilest
           const isCEOPath = capsule.goalType === 'position_change' && capsule.customGoal?.toLowerCase().includes('ceo');
           console.log(`[Milestone Save] Is CEO path: ${isCEOPath}, goalType=${capsule.goalType}, customGoal=${capsule.customGoal}`);
           
+          // Calculate proper due date - either use the provided date but update year, or create new date
+          let dueDate = null;
+          if (taskData.dueDate) {
+            // Parse the original due date
+            const originalDate = new Date(taskData.dueDate);
+            
+            // Calculate appropriate year based on current year and year number
+            const currentYear = new Date().getFullYear();
+            const targetYear = currentYear + (yearData.year || yearData.yearNumber || 1);
+            
+            // Create new date with corrected year
+            const updatedDate = new Date(originalDate);
+            updatedDate.setFullYear(targetYear);
+            dueDate = updatedDate.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+          }
+          
           const task = await storage.createCapsuleTask({
             yearId: yearRecord.id,
             title: taskData.title,
             description: taskData.description + 
-                         (taskData.dueDate ? `\n\nDue Date: ${taskData.dueDate}` : '') + 
-                         (taskData.priority ? `\n\nPriority: ${taskData.priority === 1 ? 'Low' : taskData.priority === 2 ? 'Medium' : 'High'}` : '') +
+                         (dueDate ? `\n\nDue Date: ${dueDate}` : '') + 
+                         `\n\nPriority: High` +
                          (isCEOPath ? 
                            `\n\nCEO SKILL AREA: This task develops critical executive capabilities aligned with industry best practices.` : "") +
                          "\n\nTask includes specific resources and action steps to ensure clear direction and accountability.",
-            isCompleted: false
+            isCompleted: false,
+            dueDate: dueDate
           });
           
           console.log(`[Milestone Save] Created task: ${JSON.stringify(task)}`);
