@@ -90,30 +90,51 @@ router.post('/users/:userId/career-capsule', async (req, res) => {
       useModel: 'openai', // Default to OpenAI
     };
     
-    // Generate milestones in the background
-    generateCapsuleMilestones(options)
-      .then(result => {
-        if (result.success && result.years) {
-          console.log(`Successfully generated ${result.years.length} milestone years for capsule ${capsule.id}`);
-          return saveCapsuleMilestones(capsule.id, result.years);
-        } else {
-          console.error('Failed to generate milestones:', result.message);
-          return false;
-        }
-      })
-      .then(saved => {
+    try {
+      // Wait for milestone generation to complete before responding
+      const result = await generateCapsuleMilestones(options);
+      
+      if (result.success && result.years) {
+        console.log(`Successfully generated ${result.years.length} milestone years for capsule ${capsule.id}`);
+        const saved = await saveCapsuleMilestones(capsule.id, result.years);
+        
         if (saved) {
           console.log(`Successfully saved milestones for capsule ${capsule.id}`);
+          
+          // Update the capsule to indicate milestones were generated
+          await storage.updateCareerCapsule(capsule.id, {
+            isMuskGenerated: true
+          });
+          
+          // Return the capsule with success message
+          return res.status(201).json({
+            ...capsule,
+            milestonesGenerated: true,
+            message: 'Career capsule created with AI-generated milestones'
+          });
         } else {
           console.error(`Failed to save milestones for capsule ${capsule.id}`);
         }
-      })
-      .catch(error => {
-        console.error('Error in background milestone generation:', error);
+      } else {
+        console.error('Failed to generate milestones:', result.message);
+      }
+      
+      // If we reached here, milestone generation was attempted but had issues
+      return res.status(201).json({
+        ...capsule,
+        milestonesGenerated: false,
+        message: 'Career capsule created but milestone generation failed. You can generate them later.'
       });
-    
-    // Return the created capsule immediately, don't wait for milestone generation
-    return res.status(201).json(capsule);
+    } catch (milestoneError) {
+      console.error('Error generating milestones:', milestoneError);
+      
+      // Still return the capsule even if milestone generation failed
+      return res.status(201).json({
+        ...capsule,
+        milestonesGenerated: false,
+        message: 'Career capsule created but milestone generation failed. You can generate them later.'
+      });
+    }
   } catch (error) {
     console.error('Error creating career capsule:', error);
     return res.status(500).json({ message: 'Error creating career capsule' });
