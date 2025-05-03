@@ -817,20 +817,7 @@ export default function CareerCapsulePage() {
                 )}
               </div>
               
-              <div className="space-y-2">
-                <h3 className="text-lg font-medium">Required Skills</h3>
-                {goalDetails && goalDetails.skills && goalDetails.skills.length > 0 ? (
-                  <div className="flex flex-wrap gap-2">
-                    {goalDetails.skills.map((skill) => (
-                      <Badge key={skill.id} variant="outline" className="py-1 px-2">
-                        {skill.skillName}
-                      </Badge>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-sm text-muted-foreground">No skills defined for this goal yet.</p>
-                )}
-              </div>
+
               
               <div className="space-y-2">
                 <h3 className="text-lg font-medium">Progress Log</h3>
@@ -867,20 +854,7 @@ export default function CareerCapsulePage() {
               >
                 Delete Career Capsule
               </Button>
-              <Button 
-                variant="outline"
-                onClick={handleRegenerateMilestones}
-                disabled={isRegeneratingMilestones}
-              >
-                {isRegeneratingMilestones ? (
-                  <>
-                    <span className="animate-spin mr-2">⟳</span>
-                    Regenerating...
-                  </>
-                ) : (
-                  "Regenerate Milestones"
-                )}
-              </Button>
+
             </div>
             <Button onClick={() => setShowDetailsDialog(false)}>Close</Button>
           </DialogFooter>
