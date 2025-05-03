@@ -4005,14 +4005,15 @@ export class MemStorage implements IStorage {
 
   async createCareerGoal(goal: InsertCareerGoal): Promise<CareerGoal> {
     try {
+      console.log('Creating career goal:', JSON.stringify(goal));
       const now = new Date();
       
       const result = await executeQuery(
         `INSERT INTO career_goals (
           user_id, title, description, goal_type, timeframe, 
           target_industry, target_role, is_private, is_musk_generated,
-          status, progress, target_date, start_date, last_updated
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) 
+          status, progress, target_date, start_date, last_updated, created_at
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) 
         RETURNING 
           id, user_id as "userId", title, description, 
           goal_type as "goalType", status, timeframe,
@@ -4035,13 +4036,35 @@ export class MemStorage implements IStorage {
           0, // Initial progress
           goal.targetDate || null,
           now,
-          now
+          now,
+          now  // Added created_at parameter
         ]
       );
+      
+      console.log(`Career goal created successfully`, JSON.stringify(result.rows[0]));
+      
+      // Verify we can immediately fetch it back
+      try {
+        const verifyResult = await executeQuery(
+          `SELECT * FROM career_goals WHERE id = $1`,
+          [result.rows[0].id]
+        );
+        if (verifyResult.rows.length > 0) {
+          console.log(`Verified goal exists in database with ID: ${result.rows[0].id}`);
+        } else {
+          console.warn(`Warning: Could not verify goal with ID ${result.rows[0].id} exists after creation`);
+        }
+      } catch (verifyError) {
+        console.error(`Error verifying goal after creation:`, verifyError);
+      }
       
       return result.rows[0];
     } catch (error) {
       console.error("Error in createCareerGoal:", error);
+      if (error instanceof Error) {
+        console.error(`Error details: ${error.message}`);
+        console.error(`Error stack: ${error.stack}`);
+      }
       throw error;
     }
   }
