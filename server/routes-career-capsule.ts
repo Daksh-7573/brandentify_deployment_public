@@ -35,17 +35,33 @@ router.get('/career-goals/:goalId', async (req, res) => {
 
     console.log(`[Goal Details] Found goal ${goalId}: ${JSON.stringify(goal)}`);
 
-    // Get years for the capsule
+    // Get years for the capsule with extensive logging
+    console.log(`[Goal Details] Fetching years for career capsule ${goalId}`);
     const years = await storage.getCapsuleYearsByCapsuleId(goalId);
-    console.log(`[Goal Details] Found ${years.length} years for career capsule ${goalId}: ${JSON.stringify(years)}`);
+    console.log(`[Goal Details] Found ${years.length} years for career capsule ${goalId}`);
     
-    // Get tasks for each year
+    // Log each year for debugging
+    years.forEach((year, index) => {
+      console.log(`[Goal Details] Year ${index + 1}: id=${year.id}, title=${year.title}, year=${year.year}, progress=${year.progress}`);
+    });
+
+    // Get tasks for each year with detailed logging
+    console.log(`[Goal Details] Starting to fetch tasks for ${years.length} years`);
+    
     const milestonesWithTasks = await Promise.all(years.map(async (year) => {
+      console.log(`[Goal Details] Fetching tasks for year ${year.id}`);
       const tasks = await storage.getCapsuleTasksByYearId(year.id);
-      console.log(`[Goal Details] Found ${tasks.length} tasks for year ${year.id}: ${JSON.stringify(tasks)}`);
+      console.log(`[Goal Details] Found ${tasks.length} tasks for year ${year.id}`);
+      
+      // Log first task details for debugging if available
+      if (tasks.length > 0) {
+        console.log(`[Goal Details] First task for year ${year.id}: ${JSON.stringify(tasks[0])}`);
+      } else {
+        console.log(`[Goal Details] WARNING: No tasks found for year ${year.id}`);
+      }
       
       // Format milestone based on the client's expected structure
-      return {
+      const milestone = {
         id: year.id,
         goalId: year.capsuleId,
         title: year.title,
@@ -58,6 +74,10 @@ router.get('/career-goals/:goalId', async (req, res) => {
         completedAt: year.progress === 100 ? new Date() : null,
         tasks: tasks
       };
+      
+      console.log(`[Goal Details] Created milestone structure for year ${year.id}: ${JSON.stringify(milestone).substring(0, 200)}...`);
+      
+      return milestone;
     }));
 
     // Construct the complete goal details

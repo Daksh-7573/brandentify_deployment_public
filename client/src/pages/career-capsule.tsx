@@ -734,53 +734,79 @@ export default function CareerCapsulePage() {
                   </Alert>
                 )}
                 
+                {/* Debug info about milestones data */}
+                {console.log('Milestone debug info:', { 
+                  hasGoalDetails: !!goalDetails,
+                  hasMilestonesProperty: goalDetails && 'milestones' in goalDetails,
+                  milestonesType: goalDetails && goalDetails.milestones ? typeof goalDetails.milestones : 'undefined',
+                  milestonesIsArray: goalDetails && goalDetails.milestones && Array.isArray(goalDetails.milestones),
+                  milestonesLength: goalDetails && goalDetails.milestones && Array.isArray(goalDetails.milestones) ? goalDetails.milestones.length : 0,
+                  firstMilestone: goalDetails && goalDetails.milestones && Array.isArray(goalDetails.milestones) && goalDetails.milestones.length > 0 ? 
+                    { 
+                      ...goalDetails.milestones[0], 
+                      hasTasks: !!goalDetails.milestones[0].tasks, 
+                      tasksLength: goalDetails.milestones[0].tasks ? goalDetails.milestones[0].tasks.length : 0 
+                    } : 'none'
+                })}
+                
                 {goalDetails && goalDetails.milestones && goalDetails.milestones.length > 0 ? (
                   <div className="space-y-4">
-                    {goalDetails.milestones.map((milestone) => (
-                      <div key={milestone.id} className="border rounded-md p-3">
-                        <div className="flex justify-between items-start">
-                          <h4 className="font-medium">{milestone.title}</h4>
-                          <Badge 
-                            className={getStatusColor(milestone.status)}
-                          >
-                            {milestone.status === "in_progress" ? "In Progress" : 
-                             milestone.status === "completed" ? "Completed" : 
-                             milestone.status === "abandoned" ? "Abandoned" : "Not Started"}
-                          </Badge>
-                        </div>
-                        <p className="text-sm mt-1">{milestone.description}</p>
-                        {milestone.targetDate && (
-                          <p className="text-xs text-muted-foreground mt-2">
-                            Due: {formatDate(milestone.targetDate as string)}
-                          </p>
-                        )}
-                        
-                        {/* Display tasks for this milestone */}
-                        {milestone.tasks && milestone.tasks.length > 0 && (
-                          <div className="mt-3">
-                            <h5 className="text-sm font-medium mb-2">Tasks:</h5>
-                            <div className="space-y-2">
-                              {milestone.tasks.map((task) => (
-                                <div key={task.id} className="bg-muted/30 p-2 rounded-sm">
-                                  <div className="flex items-center justify-between">
-                                    <span className="font-medium text-sm">{task.title}</span>
-                                    <Badge 
-                                      variant="outline"
-                                      className={task.isCompleted ? "bg-green-100 text-green-800" : ""}
-                                    >
-                                      {task.isCompleted ? "Completed" : "Pending"}
-                                    </Badge>
-                                  </div>
-                                  <div className="text-xs mt-1 whitespace-pre-line">
-                                    {task.description}
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
+                    {goalDetails.milestones.map((milestone, index) => {
+                      console.log(`Rendering milestone ${index}: id=${milestone.id}, title=${milestone.title}`);
+                      console.log(`Milestone ${index} has ${milestone.tasks ? milestone.tasks.length : 0} tasks`);
+                      
+                      return (
+                        <div key={milestone.id} className="border rounded-md p-3">
+                          <div className="flex justify-between items-start">
+                            <h4 className="font-medium">{milestone.title}</h4>
+                            <Badge 
+                              className={getStatusColor(milestone.status)}
+                            >
+                              {milestone.status === "in_progress" ? "In Progress" : 
+                               milestone.status === "completed" ? "Completed" : 
+                               milestone.status === "abandoned" ? "Abandoned" : "Not Started"}
+                            </Badge>
                           </div>
-                        )}
-                      </div>
-                    ))}
+                          <p className="text-sm mt-1">{milestone.description}</p>
+                          {milestone.targetDate && (
+                            <p className="text-xs text-muted-foreground mt-2">
+                              Due: {formatDate(milestone.targetDate as string)}
+                            </p>
+                          )}
+                          
+                          {/* Display tasks for this milestone */}
+                          {milestone.tasks && milestone.tasks.length > 0 ? (
+                            <div className="mt-3">
+                              <h5 className="text-sm font-medium mb-2">Tasks ({milestone.tasks.length}):</h5>
+                              <div className="space-y-2">
+                                {milestone.tasks.map((task, taskIndex) => {
+                                  console.log(`Rendering task ${taskIndex} for milestone ${index}: id=${task.id}, title=${task.title}`);
+                                  
+                                  return (
+                                    <div key={task.id} className="bg-muted/30 p-2 rounded-sm">
+                                      <div className="flex items-center justify-between">
+                                        <span className="font-medium text-sm">{task.title}</span>
+                                        <Badge 
+                                          variant="outline"
+                                          className={task.isCompleted ? "bg-green-100 text-green-800" : ""}
+                                        >
+                                          {task.isCompleted ? "Completed" : "Pending"}
+                                        </Badge>
+                                      </div>
+                                      <div className="text-xs mt-1 whitespace-pre-line">
+                                        {task.description}
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          ) : (
+                            <p className="text-xs italic mt-2">No tasks defined for this milestone</p>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
                 ) : (
                   <p className="text-sm text-muted-foreground">
