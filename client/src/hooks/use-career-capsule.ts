@@ -68,13 +68,13 @@ export const useCareerCapsule = (userId: number | string) => {
 
   // Helper to invalidate goal-related queries
   const invalidateGoalQueries = () => {
-    queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/career-goals`] });
+    queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/career-capsule`] });
   };
 
   // Get all career goals for a user
   const useGoals = () => {
     return useQuery({
-      queryKey: [`/api/users/${userId}/career-goals`],
+      queryKey: [`/api/users/${userId}/career-capsule`],
       enabled: !!userId,
     });
   };
@@ -91,7 +91,7 @@ export const useCareerCapsule = (userId: number | string) => {
   const useCreateGoal = () => {
     return useMutation({
       mutationFn: (goalData: Omit<CareerGoal, 'id' | 'userId' | 'createdAt' | 'updatedAt' | 'progress'>) => {
-        return apiRequest('POST', `/api/users/${userId}/career-goals`, {
+        return apiRequest('POST', `/api/users/${userId}/career-capsule`, {
           ...goalData, 
           userId
         });
