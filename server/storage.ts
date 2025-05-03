@@ -85,6 +85,35 @@ import {
 
 // Interface for all storage operations
 export interface IStorage {
+  // Career Goal operations
+  getCareerGoalsByUserId(userId: number): Promise<CareerGoal[]>;
+  getCareerGoalById(id: number): Promise<CareerGoal | undefined>;
+  createCareerGoal(goal: InsertCareerGoal): Promise<CareerGoal>;
+  updateCareerGoal(id: number, goalData: Partial<CareerGoal>): Promise<CareerGoal | undefined>;
+  deleteCareerGoal(id: number): Promise<boolean>;
+  
+  // Goal Milestone operations
+  getGoalMilestonesByGoalId(goalId: number): Promise<GoalMilestone[]>;
+  getGoalMilestoneById(id: number): Promise<GoalMilestone | undefined>;
+  createGoalMilestone(milestone: InsertGoalMilestone): Promise<GoalMilestone>;
+  updateGoalMilestone(id: number, milestoneData: Partial<GoalMilestone>): Promise<GoalMilestone | undefined>;
+  deleteGoalMilestone(id: number): Promise<boolean>;
+  
+  // Goal Skill operations
+  getGoalSkillsByGoalId(goalId: number): Promise<GoalSkill[]>;
+  getGoalSkillById(id: number): Promise<GoalSkill | undefined>;
+  createGoalSkill(skill: InsertGoalSkill): Promise<GoalSkill>;
+  updateGoalSkill(id: number, skillData: Partial<GoalSkill>): Promise<GoalSkill | undefined>;
+  deleteGoalSkill(id: number): Promise<boolean>;
+  
+  // Goal Progress Log operations
+  getGoalProgressLogsByGoalId(goalId: number): Promise<GoalProgressLog[]>;
+  getGoalProgressLogsByMilestoneId(milestoneId: number): Promise<GoalProgressLog[]>;
+  getGoalProgressLogById(id: number): Promise<GoalProgressLog | undefined>;
+  createGoalProgressLog(log: InsertGoalProgressLog): Promise<GoalProgressLog>;
+  updateGoalProgressLog(id: number, logData: Partial<GoalProgressLog>): Promise<GoalProgressLog | undefined>;
+  deleteGoalProgressLog(id: number): Promise<boolean>;
+  
   // Nowboard Item operations
   getNowboardItems(): Promise<NowboardItem[]>;
   getNowboardItemsByUserId(userId: number): Promise<NowboardItem[]>;
@@ -3904,6 +3933,22 @@ export class MemStorage implements IStorage {
   async getCareerGoalsByUserId(userId: number): Promise<CareerGoal[]> {
     try {
       console.log(`Fetching career goals for user ID: ${userId}`);
+      
+      // First check if the table exists
+      const tableCheck = await executeQuery(
+        `SELECT EXISTS (
+           SELECT FROM information_schema.tables 
+           WHERE table_name = 'career_goals'
+         );`
+      );
+      
+      console.log(`Table career_goals exists: ${tableCheck.rows[0].exists}`);
+      
+      if (!tableCheck.rows[0].exists) {
+        console.error('Career goals table does not exist!');
+        return [];
+      }
+      
       const results = await executeQuery(
         `SELECT * FROM career_goals WHERE user_id = $1 ORDER BY created_at DESC`,
         [userId]
