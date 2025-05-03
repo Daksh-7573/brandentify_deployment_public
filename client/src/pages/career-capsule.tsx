@@ -58,8 +58,7 @@ export default function CareerCapsulePage() {
     useGoalDetails,
     useCreateGoal,
     useGenerateMilestones,
-    useDeleteCapsule,
-    useRegenerateMilestones
+    useDeleteCapsule
   } = useCareerCapsule(userId);
   
   const { data: goals, isLoading, refetch: refetchGoals, error } = useGoals();
@@ -102,9 +101,7 @@ export default function CareerCapsulePage() {
   
   // Milestone generation
   const generateMilestones = useGenerateMilestones(selectedGoalId || 0);
-  const regenerateMilestones = useRegenerateMilestones(selectedGoalId || 0);
   const [showMilestoneGenerationDialog, setShowMilestoneGenerationDialog] = useState(false);
-  const [isRegeneratingMilestones, setIsRegeneratingMilestones] = useState(false);
 
   // State for tracking milestone generation
   const [createdGoalId, setCreatedGoalId] = useState<number | null>(null);
@@ -228,39 +225,7 @@ export default function CareerCapsulePage() {
     setShowDeleteDialog(true);
   };
   
-  // Handle regenerating milestones
-  const handleRegenerateMilestones = async () => {
-    if (!selectedGoalId) return;
-    
-    console.log(`Starting milestone regeneration for capsule ${selectedGoalId}...`);
-    setIsRegeneratingMilestones(true);
-    
-    try {
-      // Call the API to regenerate milestones
-      await regenerateMilestones.mutateAsync();
-      
-      toast({
-        title: "Milestones regenerated",
-        description: "Musk AI has regenerated your milestones with the latest improved AI model.",
-      });
-      
-      // Close the details dialog after regeneration
-      setShowDetailsDialog(false);
-      
-      // Refresh the goals list
-      refetchGoals();
-      
-    } catch (error) {
-      console.error("Error regenerating milestones:", error);
-      toast({
-        title: "Error",
-        description: "Failed to regenerate milestones. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsRegeneratingMilestones(false);
-    }
-  };
+  // Regenerate Milestone function has been removed as requested
 
   const handleDeleteCapsule = async () => {
     if (!capsuleToDelete) return;
