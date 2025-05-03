@@ -33,8 +33,9 @@ router.get('/career-goals/:goalId', async (req, res) => {
       return res.status(404).json({ error: 'Career goal not found' });
     }
 
-    // Get associated milestones, skills, and progress logs
-    const milestones = await storage.getCapsuleYearsByCapsuleId(goalId) || [];
+    // Get associated milestones - for now we can provide an empty array
+    // since we don't have the actual function for capsule years
+    const milestones = []; // Empty array for now
     
     // Construct the complete goal details
     const goalDetails = {
