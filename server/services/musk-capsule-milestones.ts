@@ -273,16 +273,107 @@ IMPORTANT GUIDELINES:
 Remember, your mission is to create a career roadmap so personalized and actionable that the user feels it was custom-created just for them.
 `;
 
+    // Helper function to check if a goal relates to CEO career path
+    function isCEORelatedGoal(goalType: string, customGoal?: string, description?: string, industry?: string): boolean {
+      // First check for CEO in the custom goal if present
+      if (customGoal) {
+        const customGoalLower = customGoal.toLowerCase();
+        if (
+          customGoalLower.includes('ceo') || 
+          customGoalLower.includes('chief executive') || 
+          customGoalLower.includes('executive officer') ||
+          customGoalLower.includes('c-suite')
+        ) {
+          return true;
+        }
+      }
+      
+      // Check for CEO in the description if present
+      if (description) {
+        const descriptionLower = description.toLowerCase();
+        if (
+          descriptionLower.includes('ceo') || 
+          descriptionLower.includes('chief executive') || 
+          descriptionLower.includes('executive officer') ||
+          descriptionLower.includes('c-suite')
+        ) {
+          return true;
+        }
+      }
+      
+      // Check for specific goal types that might indicate executive path
+      if (goalType === 'position_change' || goalType === 'promotion') {
+        // If industry is provided and customGoal is not explicitly about CEO,
+        // combine with position_change/promotion goal type to suggest executive path
+        if (industry && 
+            (industry.toLowerCase().includes('executive') || 
+             industry.toLowerCase().includes('leadership') ||
+             industry.toLowerCase().includes('management'))) {
+          return true;
+        }
+      }
+      
+      return false;
+    }
+
+    // Check if this is a CEO career path goal
+    let enhancedContext = aiContext;
+    const isCEOCareerPath = isCEORelatedGoal(
+      options.goalType, 
+      options.customGoal, 
+      options.description,
+      options.industry
+    );
+    
+    if (isCEOCareerPath) {
+      console.log(`[Musk AI] Detected CEO career path goal`);
+      // Additional logging for diagnostic purposes
+      console.log(`[Musk AI] Goal Details - Type: ${options.goalType}, Custom: ${options.customGoal || 'N/A'}, Industry: ${options.industry || 'N/A'}`);
+      
+      
+      // Create enhanced AI context with CEO-specific guidance
+      enhancedContext = aiContext + `
+SPECIFIC CEO SKILLS DEVELOPMENT FOCUS:
+I need you to create a personalized roadmap focusing on these five key CEO skill areas:
+
+1. Strategic Business Leadership
+   - Strategic Planning & Vision Setting skills with courses like Harvard's "Strategy Execution"
+   - Financial Acumen development through resources like Wharton's "Financial Accounting"
+
+2. Organizational Leadership
+   - Team Building & Management using frameworks from books like "Team of Teams" by General Stanley McChrystal
+   - Change Management methodologies from resources like John Kotter's "Leading Change"
+
+3. Advanced Decision-Making
+   - Data-Driven Leadership approaches from courses like Columbia's "Data Science for Business"
+   - Risk Assessment frameworks similar to COSO's Enterprise Risk Management
+
+4. Communication & Influence
+   - Executive Communication tactics from programs like "Executive Presence" by Bates Communications
+   - Stakeholder Management using principles from "Influence" by Robert Cialdini
+
+5. Industry-Specific Knowledge
+   - Market & Technology Trends from sources like McKinsey Global Institute
+   - Regulatory Knowledge from resources like Harvard Law School's "Corporate Governance" program
+
+For each year's milestones, include specific courses, books, and development activities from these categories.
+`;
+    }
+
     // Get AI response based on selected model
     let aiResponse;
     
     if (options.useModel === 'anthropic') {
       // the newest Anthropic model is "claude-3-7-sonnet-20250219" which was released February 24, 2025
+      const systemPrompt = isCEOCareerPath ?
+        "You are Musk, an elite career development AI coach specialized in CEO career paths. Generate specific, actionable CEO career milestones with extreme detail. Include actual executive training programs, business schools, leadership books, networking events, and certifications. For each year, specify 3-5 concrete tasks focusing on the five key CEO skill areas (Strategic Business Leadership, Organizational Leadership, Advanced Decision-Making, Communication & Influence, and Industry-Specific Knowledge). Each task should include specific resources (actual course names, book titles, certification programs). Avoid vague terms - be extremely specific. Return only valid JSON." :
+        "You are Musk, an elite career development AI coach. Generate specific, actionable career milestones with extreme detail. Include actual technologies, platforms, certifications, companies, events, books, and courses. For each year milestone, specify 3-5 concrete tasks with clear deliverables. Avoid vague terms like 'learn basics' or 'networking' - be extremely specific. Return only valid JSON.";
+        
       const response = await anthropic.messages.create({
         model: "claude-3-7-sonnet-20250219",
         max_tokens: 4000,
-        messages: [{ role: 'user', content: aiContext }],
-        system: "You are Musk, an elite career development AI coach. Generate specific, actionable career milestones with extreme detail. Include actual technologies, platforms, certifications, companies, events, books, and courses. For each year milestone, specify 3-5 concrete tasks with clear deliverables. Avoid vague terms like 'learn basics' or 'networking' - be extremely specific. Return only valid JSON."
+        messages: [{ role: 'user', content: enhancedContext }],
+        system: systemPrompt
       });
       
       // Handle different content block types from Anthropic's API
@@ -295,16 +386,20 @@ Remember, your mission is to create a career roadmap so personalized and actiona
       }
     } else {
       // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+      const systemPrompt = isCEOCareerPath ? 
+        "You are Musk, an elite career development AI coach specialized in CEO career paths. Generate specific, actionable CEO career milestones with extreme detail. Include actual executive training programs, business schools, leadership books, networking events, and certifications. For each year, specify 3-5 concrete tasks focusing on the five key CEO skill areas (Strategic Business Leadership, Organizational Leadership, Advanced Decision-Making, Communication & Influence, and Industry-Specific Knowledge). Each task should include specific resources (actual course names, book titles, certification programs). Avoid vague terms - be extremely specific. Return only valid JSON." :
+        "You are Musk, an elite career development AI coach. Generate specific, actionable career milestones with extreme detail. Include actual technologies, platforms, certifications, companies, events, books, and courses. For each year milestone, specify 3-5 concrete tasks with clear deliverables. Avoid vague terms like 'learn basics' or 'networking' - be extremely specific. Return only valid JSON.";
+      
       const completion = await openai.chat.completions.create({
         model: "gpt-4o",
         messages: [
           { 
             role: "system", 
-            content: "You are Musk, an elite career development AI coach. Generate specific, actionable career milestones with extreme detail. Include actual technologies, platforms, certifications, companies, events, books, and courses. For each year milestone, specify 3-5 concrete tasks with clear deliverables. Avoid vague terms like 'learn basics' or 'networking' - be extremely specific. Return only valid JSON." 
+            content: systemPrompt
           },
           { 
             role: "user", 
-            content: aiContext 
+            content: enhancedContext 
           }
         ],
         max_tokens: 4000,
@@ -440,6 +535,7 @@ export async function saveCapsuleMilestones(capsuleId: number, years: YearMilest
             description: taskData.description + 
                          (taskData.dueDate ? `\n\nDue Date: ${taskData.dueDate}` : '') + 
                          (taskData.priority ? `\n\nPriority: ${taskData.priority === 1 ? 'Low' : taskData.priority === 2 ? 'Medium' : 'High'}` : '') +
+                         (isCEOCareerPath ? `\n\nCEO SKILL AREA: This task develops critical executive capabilities aligned with industry best practices.` : "") +
                          "\n\nTask includes specific resources and action steps to ensure clear direction and accountability.",
             isCompleted: false
           });
