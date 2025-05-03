@@ -63,29 +63,6 @@ export default function CareerCapsulePage() {
   
   const { data: goals, isLoading, refetch: refetchGoals, error } = useGoals();
   
-  // Debug logging
-  console.log("Career Goals API Response:", { goals, isLoading, error });
-  
-  // Debug logging for milestones and tasks
-  useEffect(() => {
-    if (goalDetails && goalDetails.milestones) {
-      console.log("Career Goal Details loaded:", goalDetails);
-      console.log("Milestones count:", goalDetails.milestones.length);
-      
-      // Log info about tasks for each milestone
-      goalDetails.milestones.forEach((milestone, index) => {
-        console.log(`Milestone ${index + 1} (${milestone.title}):`, {
-          id: milestone.id,
-          description: milestone.description?.substring(0, 50) + "...",
-          hasTasks: milestone.tasks && milestone.tasks.length > 0,
-          taskCount: milestone.tasks ? milestone.tasks.length : 0
-        });
-      });
-    }
-  }, [goalDetails]);
-  const createGoalMutation = useCreateGoal();
-  const deleteCapsuleMutation = useDeleteCapsule();
-  
   // Form state
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [goalTitle, setGoalTitle] = useState("");
@@ -97,8 +74,25 @@ export default function CareerCapsulePage() {
   
   // Selected goal for details view
   const [selectedGoalId, setSelectedGoalId] = useState<number | null>(null);
-  const { data: goalDetails, isLoading: isLoadingDetails } = useGoalDetails(selectedGoalId || 0);
   const [showDetailsDialog, setShowDetailsDialog] = useState(false);
+  const { data: goalDetails, isLoading: isLoadingDetails } = useGoalDetails(selectedGoalId || 0);
+  const createGoalMutation = useCreateGoal();
+  const deleteCapsuleMutation = useDeleteCapsule();
+  
+  // Debug logging
+  console.log("Career Goals API Response:", { goals, isLoading, error });
+  
+  // Debug goal details when they change
+  useEffect(() => {
+    if (selectedGoalId) {
+      console.log("Goal Details API Response:", { 
+        goalDetails, 
+        isLoadingDetails,
+        hasMilestones: goalDetails && goalDetails.milestones && goalDetails.milestones.length > 0,
+        selectedGoalId
+      });
+    }
+  }, [goalDetails, isLoadingDetails, selectedGoalId]);
   
   // Delete confirmation dialog
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -661,12 +655,14 @@ export default function CareerCapsulePage() {
               <div className="space-y-2">
                 <div className="flex justify-between items-center mb-3">
                   <h3 className="text-lg font-medium">Milestones</h3>
-                  {((goalDetails.milestones && goalDetails.milestones.length === 0) || 
-                   !goalDetails.milestones) && (
+                  {(!goalDetails || !goalDetails.milestones || 
+                    (goalDetails.milestones && goalDetails.milestones.length === 0)) && (
                     <Button 
                       size="sm" 
                       onClick={() => {
-                        if (selectedGoalId) {
+                        if (selectedGoalId && goalDetails) {
+                          console.log("Generating milestones for goal:", selectedGoalId);
+                          console.log("Goal details:", goalDetails);
                           generateMilestones.mutate({
                             goalType: goalDetails.goal?.goalType || goalDetails.goalType,
                             description: goalDetails.goal?.description || goalDetails.description,
@@ -701,7 +697,7 @@ export default function CareerCapsulePage() {
                   </Alert>
                 )}
                 
-                {goalDetails.milestones && goalDetails.milestones.length > 0 ? (
+                {goalDetails && goalDetails.milestones && goalDetails.milestones.length > 0 ? (
                   <div className="space-y-4">
                     {goalDetails.milestones.map((milestone) => (
                       <div key={milestone.id} className="border rounded-md p-3">
@@ -760,7 +756,7 @@ export default function CareerCapsulePage() {
               
               <div className="space-y-2">
                 <h3 className="text-lg font-medium">Required Skills</h3>
-                {goalDetails.skills && goalDetails.skills.length > 0 ? (
+                {goalDetails && goalDetails.skills && goalDetails.skills.length > 0 ? (
                   <div className="flex flex-wrap gap-2">
                     {goalDetails.skills.map((skill) => (
                       <Badge key={skill.id} variant="outline" className="py-1 px-2">
@@ -775,7 +771,7 @@ export default function CareerCapsulePage() {
               
               <div className="space-y-2">
                 <h3 className="text-lg font-medium">Progress Log</h3>
-                {goalDetails.progressLogs && goalDetails.progressLogs.length > 0 ? (
+                {goalDetails && goalDetails.progressLogs && goalDetails.progressLogs.length > 0 ? (
                   <div className="space-y-3">
                     {goalDetails.progressLogs.map((log) => (
                       <div key={log.id} className="bg-muted/20 p-3 rounded-md">
