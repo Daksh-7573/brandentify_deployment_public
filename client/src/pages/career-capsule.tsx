@@ -65,6 +65,24 @@ export default function CareerCapsulePage() {
   
   // Debug logging
   console.log("Career Goals API Response:", { goals, isLoading, error });
+  
+  // Debug logging for milestones and tasks
+  useEffect(() => {
+    if (goalDetails && goalDetails.milestones) {
+      console.log("Career Goal Details loaded:", goalDetails);
+      console.log("Milestones count:", goalDetails.milestones.length);
+      
+      // Log info about tasks for each milestone
+      goalDetails.milestones.forEach((milestone, index) => {
+        console.log(`Milestone ${index + 1} (${milestone.title}):`, {
+          id: milestone.id,
+          description: milestone.description?.substring(0, 50) + "...",
+          hasTasks: milestone.tasks && milestone.tasks.length > 0,
+          taskCount: milestone.tasks ? milestone.tasks.length : 0
+        });
+      });
+    }
+  }, [goalDetails]);
   const createGoalMutation = useCreateGoal();
   const deleteCapsuleMutation = useDeleteCapsule();
   
@@ -702,6 +720,31 @@ export default function CareerCapsulePage() {
                           <p className="text-xs text-muted-foreground mt-2">
                             Due: {formatDate(milestone.targetDate as string)}
                           </p>
+                        )}
+                        
+                        {/* Display tasks for this milestone */}
+                        {milestone.tasks && milestone.tasks.length > 0 && (
+                          <div className="mt-3">
+                            <h5 className="text-sm font-medium mb-2">Tasks:</h5>
+                            <div className="space-y-2">
+                              {milestone.tasks.map((task) => (
+                                <div key={task.id} className="bg-muted/30 p-2 rounded-sm">
+                                  <div className="flex items-center justify-between">
+                                    <span className="font-medium text-sm">{task.title}</span>
+                                    <Badge 
+                                      variant="outline"
+                                      className={task.isCompleted ? "bg-green-100 text-green-800" : ""}
+                                    >
+                                      {task.isCompleted ? "Completed" : "Pending"}
+                                    </Badge>
+                                  </div>
+                                  <div className="text-xs mt-1 whitespace-pre-line">
+                                    {task.description}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
                         )}
                       </div>
                     ))}
