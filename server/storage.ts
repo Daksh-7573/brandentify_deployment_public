@@ -3950,7 +3950,17 @@ export class MemStorage implements IStorage {
       }
       
       const results = await executeQuery(
-        `SELECT * FROM career_goals WHERE user_id = $1 ORDER BY created_at DESC`,
+        `SELECT 
+          id, user_id as "userId", title, description, 
+          goal_type as "goalType", status, timeframe,
+          target_industry as "targetIndustry", target_role as "targetRole",
+          current_skills as "currentSkills", required_skills as "requiredSkills",
+          progress, is_private as "isPrivate", is_musk_generated as "isMuskGenerated",
+          start_date as "startDate", target_date as "targetDate",
+          last_updated as "lastUpdated", created_at as "createdAt"
+        FROM career_goals 
+        WHERE user_id = $1 
+        ORDER BY created_at DESC`,
         [userId]
       );
       console.log(`Retrieved ${results.rows.length} career goals`);
@@ -3969,9 +3979,23 @@ export class MemStorage implements IStorage {
   async getCareerGoalById(id: number): Promise<CareerGoal | undefined> {
     try {
       const results = await executeQuery(
-        `SELECT * FROM career_goals WHERE id = $1`,
+        `SELECT 
+          id, user_id as "userId", title, description, 
+          goal_type as "goalType", status, timeframe,
+          target_industry as "targetIndustry", target_role as "targetRole",
+          current_skills as "currentSkills", required_skills as "requiredSkills",
+          progress, is_private as "isPrivate", is_musk_generated as "isMuskGenerated",
+          start_date as "startDate", target_date as "targetDate",
+          last_updated as "lastUpdated", created_at as "createdAt"
+        FROM career_goals 
+        WHERE id = $1`,
         [id]
       );
+      
+      if (results.rows.length === 0) {
+        return undefined;
+      }
+      
       return results.rows[0];
     } catch (error) {
       console.error("Error in getCareerGoalById:", error);
@@ -3989,7 +4013,14 @@ export class MemStorage implements IStorage {
           target_industry, target_role, is_private, is_musk_generated,
           status, progress, target_date, start_date, last_updated
         ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) 
-        RETURNING *`,
+        RETURNING 
+          id, user_id as "userId", title, description, 
+          goal_type as "goalType", status, timeframe,
+          target_industry as "targetIndustry", target_role as "targetRole",
+          current_skills as "currentSkills", required_skills as "requiredSkills",
+          progress, is_private as "isPrivate", is_musk_generated as "isMuskGenerated",
+          start_date as "startDate", target_date as "targetDate",
+          last_updated as "lastUpdated", created_at as "createdAt"`,
         [
           goal.userId,
           goal.title,
@@ -4044,7 +4075,18 @@ export class MemStorage implements IStorage {
       values.push(id);
       
       // Construct and execute the query
-      const query = `UPDATE career_goals SET ${updates.join(', ')} WHERE id = $${paramIndex} RETURNING *`;
+      const query = `UPDATE career_goals 
+        SET ${updates.join(', ')} 
+        WHERE id = $${paramIndex} 
+        RETURNING 
+          id, user_id as "userId", title, description, 
+          goal_type as "goalType", status, timeframe,
+          target_industry as "targetIndustry", target_role as "targetRole",
+          current_skills as "currentSkills", required_skills as "requiredSkills",
+          progress, is_private as "isPrivate", is_musk_generated as "isMuskGenerated",
+          start_date as "startDate", target_date as "targetDate",
+          last_updated as "lastUpdated", created_at as "createdAt"`;
+      
       const result = await executeQuery(query, values);
       
       // Return the updated goal
@@ -4075,206 +4117,498 @@ export class MemStorage implements IStorage {
   }
   
   // Goal Milestone operations
-  async getMilestonesByGoalId(goalId: number): Promise<GoalMilestone[]> {
-    return Array.from(this.goalMilestones.values())
-      .filter(milestone => milestone.goalId === goalId)
-      .sort((a, b) => a.order - b.order);
+  async getGoalMilestonesByGoalId(goalId: number): Promise<GoalMilestone[]> {
+    try {
+      const results = await executeQuery(
+        `SELECT 
+          id, goal_id as "goalId", title, description, 
+          target_date as "targetDate", status, "order",
+          completed_at as "completedAt", created_at as "createdAt", 
+          updated_at as "updatedAt"
+        FROM goal_milestones 
+        WHERE goal_id = $1 
+        ORDER BY "order" ASC`,
+        [goalId]
+      );
+      
+      return results.rows;
+    } catch (error) {
+      console.error(`Error in getGoalMilestonesByGoalId for goalId ${goalId}:`, error);
+      return [];
+    }
   }
   
-  async getMilestoneById(id: number): Promise<GoalMilestone | undefined> {
-    return this.goalMilestones.get(id);
+  async getGoalMilestoneById(id: number): Promise<GoalMilestone | undefined> {
+    try {
+      const results = await executeQuery(
+        `SELECT 
+          id, goal_id as "goalId", title, description, 
+          target_date as "targetDate", status, "order",
+          completed_at as "completedAt", created_at as "createdAt", 
+          updated_at as "updatedAt"
+        FROM goal_milestones 
+        WHERE id = $1`,
+        [id]
+      );
+      
+      if (results.rows.length === 0) {
+        return undefined;
+      }
+      
+      return results.rows[0];
+    } catch (error) {
+      console.error(`Error in getGoalMilestoneById for id ${id}:`, error);
+      return undefined;
+    }
   }
   
   async createGoalMilestone(milestone: InsertGoalMilestone): Promise<GoalMilestone> {
-    const id = this.currentGoalMilestoneId++;
-    const now = new Date();
-    
-    // Get existing milestones for this goal to determine the order
-    const existingMilestones = await this.getMilestonesByGoalId(milestone.goalId);
-    const order = milestone.order || (existingMilestones.length > 0 ? Math.max(...existingMilestones.map(m => m.order)) + 1 : 0);
-    
-    const newMilestone: GoalMilestone = {
-      ...milestone,
-      id,
-      createdAt: now,
-      updatedAt: now,
-      completedAt: null,
-      order,
-      status: milestone.status || 'pending'
-    };
-    
-    this.goalMilestones.set(id, newMilestone);
-    
-    // Update the goal progress when a milestone is added
-    await this.updateGoalProgress(milestone.goalId);
-    
-    return newMilestone;
+    try {
+      // Get existing milestones to determine the order
+      const existingMilestones = await this.getGoalMilestonesByGoalId(milestone.goalId);
+      let order = milestone.order || 0;
+      
+      if (!milestone.order && existingMilestones.length > 0) {
+        order = Math.max(...existingMilestones.map(m => m.order || 0)) + 1;
+      }
+      
+      const result = await executeQuery(
+        `INSERT INTO goal_milestones (
+          goal_id, title, description, target_date, 
+          status, "order", completed_at
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7)
+        RETURNING 
+          id, goal_id as "goalId", title, description, 
+          target_date as "targetDate", status, "order",
+          completed_at as "completedAt", created_at as "createdAt", 
+          updated_at as "updatedAt"`,
+        [
+          milestone.goalId,
+          milestone.title,
+          milestone.description || null,
+          milestone.targetDate || null,
+          milestone.status || 'not_started',
+          order,
+          null // completedAt is initially null
+        ]
+      );
+      
+      const newMilestone = result.rows[0];
+      
+      // Update the goal progress when a milestone is added
+      await this.updateGoalProgress(milestone.goalId);
+      
+      return newMilestone;
+    } catch (error) {
+      console.error("Error in createGoalMilestone:", error);
+      throw error;
+    }
   }
   
   async updateGoalMilestone(id: number, milestoneData: Partial<GoalMilestone>): Promise<GoalMilestone | undefined> {
-    const milestone = this.goalMilestones.get(id);
-    if (!milestone) return undefined;
-    
-    const updatedMilestone: GoalMilestone = {
-      ...milestone,
-      ...milestoneData,
-      updatedAt: new Date()
-    };
-    
-    // If status is being updated to 'completed', set completedAt timestamp
-    if (milestoneData.status === 'completed' && milestone.status !== 'completed') {
-      updatedMilestone.completedAt = new Date();
+    try {
+      const milestone = await this.getGoalMilestoneById(id);
+      if (!milestone) return undefined;
       
-      // Create a progress log entry automatically when a milestone is completed
-      await this.createGoalProgressLog({
-        goalId: milestone.goalId,
-        milestoneId: milestone.id,
-        notes: `Milestone completed: ${milestone.title}`,
-        type: 'milestone_completed'
-      });
+      const updates: string[] = [];
+      const values: any[] = [];
+      let paramIndex = 1;
+      
+      // Handle status change - if setting to completed and wasn't completed before, set completedAt
+      let completedAt = milestone.completedAt;
+      if (milestoneData.status === 'completed' && milestone.status !== 'completed') {
+        completedAt = new Date();
+        
+        // Create a progress log when milestone completed
+        await this.createGoalProgressLog({
+          goalId: milestone.goalId,
+          milestoneId: id,
+          entry: `Milestone completed: ${milestone.title}`,
+          entryType: 'accomplishment'
+        });
+      } 
+      // If status changes from completed to something else, clear completedAt
+      else if (milestoneData.status && milestoneData.status !== 'completed' && milestone.status === 'completed') {
+        completedAt = null;
+      }
+      
+      // Process all fields except completedAt (handled separately)
+      for (const [key, value] of Object.entries(milestoneData)) {
+        if (key !== 'completedAt') {
+          // Convert camelCase keys to snake_case
+          const snakeKey = key === 'order' ? '"order"' : key.replace(/([A-Z])/g, "_$1").toLowerCase();
+          updates.push(`${snakeKey} = $${paramIndex}`);
+          values.push(value);
+          paramIndex++;
+        }
+      }
+      
+      // Add completedAt update
+      updates.push(`completed_at = $${paramIndex}`);
+      values.push(completedAt);
+      paramIndex++;
+      
+      // Always update updated_at
+      updates.push(`updated_at = NOW()`);
+      
+      // Add the ID parameter
+      values.push(id);
+      
+      const query = `UPDATE goal_milestones 
+        SET ${updates.join(', ')} 
+        WHERE id = $${paramIndex}
+        RETURNING 
+          id, goal_id as "goalId", title, description, 
+          target_date as "targetDate", status, "order",
+          completed_at as "completedAt", created_at as "createdAt", 
+          updated_at as "updatedAt"`;
+      
+      const result = await executeQuery(query, values);
+      
+      if (result.rows.length === 0) {
+        return undefined;
+      }
+      
+      // Update the goal progress when a milestone is updated
+      await this.updateGoalProgress(milestone.goalId);
+      
+      return result.rows[0];
+    } catch (error) {
+      console.error(`Error in updateGoalMilestone for id ${id}:`, error);
+      return undefined;
     }
-    
-    this.goalMilestones.set(id, updatedMilestone);
-    
-    // Update the goal progress when a milestone is updated
-    await this.updateGoalProgress(milestone.goalId);
-    
-    return updatedMilestone;
   }
   
   async deleteGoalMilestone(id: number): Promise<boolean> {
-    const milestone = this.goalMilestones.get(id);
-    if (!milestone) return false;
-    
-    // Delete associated progress logs first
-    const progressLogs = await this.getProgressLogsByMilestoneId(id);
-    for (const log of progressLogs) {
-      await this.deleteGoalProgressLog(log.id);
+    try {
+      const milestone = await this.getGoalMilestoneById(id);
+      if (!milestone) return false;
+      
+      // Delete associated progress logs first
+      await executeQuery(
+        `DELETE FROM goal_progress_logs WHERE milestone_id = $1`,
+        [id]
+      );
+      
+      // Delete the milestone
+      const result = await executeQuery(
+        `DELETE FROM goal_milestones WHERE id = $1 RETURNING id`,
+        [id]
+      );
+      
+      const success = result.rowCount > 0;
+      
+      // Update the goal progress when a milestone is deleted
+      if (success) {
+        await this.updateGoalProgress(milestone.goalId);
+      }
+      
+      return success;
+    } catch (error) {
+      console.error(`Error in deleteGoalMilestone for id ${id}:`, error);
+      return false;
     }
-    
-    // Delete the milestone
-    const result = this.goalMilestones.delete(id);
-    
-    // Update the goal progress when a milestone is deleted
-    if (result) {
-      await this.updateGoalProgress(milestone.goalId);
-    }
-    
-    return result;
   }
   
   // Helper method to update a goal's progress based on completed milestones
   private async updateGoalProgress(goalId: number): Promise<void> {
-    const goal = await this.getCareerGoalById(goalId);
-    if (!goal) return;
-    
-    const milestones = await this.getMilestonesByGoalId(goalId);
-    
-    if (milestones.length === 0) {
-      // If there are no milestones, set progress to 0
-      await this.updateCareerGoal(goalId, { progress: 0 });
-      return;
+    try {
+      const goal = await this.getCareerGoalById(goalId);
+      if (!goal) return;
+      
+      const milestones = await this.getGoalMilestonesByGoalId(goalId);
+      
+      if (milestones.length === 0) {
+        // If there are no milestones, set progress to 0
+        await this.updateCareerGoal(goalId, { progress: 0 });
+        return;
+      }
+      
+      const completedMilestones = milestones.filter(m => m.status === 'completed');
+      const progress = Math.floor((completedMilestones.length / milestones.length) * 100);
+      
+      await executeQuery(
+        `UPDATE career_goals SET progress = $1, last_updated = NOW() WHERE id = $2`,
+        [progress, goalId]
+      );
+    } catch (error) {
+      console.error(`Error in updateGoalProgress for goalId ${goalId}:`, error);
     }
-    
-    const completedMilestones = milestones.filter(m => m.status === 'completed');
-    const progress = Math.floor((completedMilestones.length / milestones.length) * 100);
-    
-    await this.updateCareerGoal(goalId, { progress });
   }
   
   // Goal Skill operations
-  async getSkillsByGoalId(goalId: number): Promise<GoalSkill[]> {
-    return Array.from(this.goalSkills.values())
-      .filter(skill => skill.goalId === goalId)
-      .sort((a, b) => (a.priority || 0) - (b.priority || 0));
+  async getGoalSkillsByGoalId(goalId: number): Promise<GoalSkill[]> {
+    try {
+      const results = await executeQuery(
+        `SELECT 
+          id, goal_id as "goalId", skill_name as "skillName", 
+          description, priority, status, 
+          created_at as "createdAt", updated_at as "updatedAt"
+        FROM goal_skills 
+        WHERE goal_id = $1 
+        ORDER BY 
+          CASE priority 
+            WHEN 'high' THEN 1 
+            WHEN 'medium' THEN 2 
+            WHEN 'low' THEN 3 
+            ELSE 4 
+          END, 
+          skill_name ASC`,
+        [goalId]
+      );
+      
+      return results.rows;
+    } catch (error) {
+      console.error(`Error in getGoalSkillsByGoalId for goalId ${goalId}:`, error);
+      return [];
+    }
   }
   
-  async getSkillById(id: number): Promise<GoalSkill | undefined> {
-    return this.goalSkills.get(id);
+  async getGoalSkillById(id: number): Promise<GoalSkill | undefined> {
+    try {
+      const results = await executeQuery(
+        `SELECT 
+          id, goal_id as "goalId", skill_name as "skillName", 
+          description, priority, status, 
+          created_at as "createdAt", updated_at as "updatedAt"
+        FROM goal_skills 
+        WHERE id = $1`,
+        [id]
+      );
+      
+      if (results.rows.length === 0) {
+        return undefined;
+      }
+      
+      return results.rows[0];
+    } catch (error) {
+      console.error(`Error in getGoalSkillById for id ${id}:`, error);
+      return undefined;
+    }
   }
   
   async createGoalSkill(skill: InsertGoalSkill): Promise<GoalSkill> {
-    const id = this.currentGoalSkillId++;
-    const now = new Date();
-    
-    const newSkill: GoalSkill = {
-      ...skill,
-      id,
-      createdAt: now,
-      currentLevel: skill.currentLevel || 0,
-      targetLevel: skill.targetLevel || 5,
-      priority: skill.priority || 0,
-      resources: skill.resources || []
-    };
-    
-    this.goalSkills.set(id, newSkill);
-    return newSkill;
+    try {
+      const result = await executeQuery(
+        `INSERT INTO goal_skills (
+          goal_id, skill_name, description, priority, status
+        ) VALUES ($1, $2, $3, $4, $5)
+        RETURNING 
+          id, goal_id as "goalId", skill_name as "skillName", 
+          description, priority, status, 
+          created_at as "createdAt", updated_at as "updatedAt"`,
+        [
+          skill.goalId,
+          skill.skillName,
+          skill.description || null,
+          skill.priority || 'medium',
+          skill.status || 'not_started'
+        ]
+      );
+      
+      return result.rows[0];
+    } catch (error) {
+      console.error("Error in createGoalSkill:", error);
+      throw error;
+    }
   }
   
   async updateGoalSkill(id: number, skillData: Partial<GoalSkill>): Promise<GoalSkill | undefined> {
-    const skill = this.goalSkills.get(id);
-    if (!skill) return undefined;
-    
-    const updatedSkill: GoalSkill = {
-      ...skill,
-      ...skillData
-    };
-    
-    this.goalSkills.set(id, updatedSkill);
-    return updatedSkill;
+    try {
+      const skill = await this.getGoalSkillById(id);
+      if (!skill) return undefined;
+      
+      const updates: string[] = [];
+      const values: any[] = [];
+      let paramIndex = 1;
+      
+      for (const [key, value] of Object.entries(skillData)) {
+        // Convert camelCase keys to snake_case
+        const snakeKey = key === 'skillName' ? 'skill_name' : key.replace(/([A-Z])/g, "_$1").toLowerCase();
+        updates.push(`${snakeKey} = $${paramIndex}`);
+        values.push(value);
+        paramIndex++;
+      }
+      
+      // Always update updated_at
+      updates.push(`updated_at = NOW()`);
+      
+      // Add the ID parameter
+      values.push(id);
+      
+      const query = `UPDATE goal_skills 
+        SET ${updates.join(', ')} 
+        WHERE id = $${paramIndex}
+        RETURNING 
+          id, goal_id as "goalId", skill_name as "skillName", 
+          description, priority, status, 
+          created_at as "createdAt", updated_at as "updatedAt"`;
+      
+      const result = await executeQuery(query, values);
+      
+      if (result.rows.length === 0) {
+        return undefined;
+      }
+      
+      return result.rows[0];
+    } catch (error) {
+      console.error(`Error in updateGoalSkill for id ${id}:`, error);
+      return undefined;
+    }
   }
   
   async deleteGoalSkill(id: number): Promise<boolean> {
-    return this.goalSkills.delete(id);
+    try {
+      const result = await executeQuery(
+        `DELETE FROM goal_skills WHERE id = $1 RETURNING id`,
+        [id]
+      );
+      
+      return result.rowCount > 0;
+    } catch (error) {
+      console.error(`Error in deleteGoalSkill for id ${id}:`, error);
+      return false;
+    }
   }
   
   // Goal Progress Log operations
-  async getProgressLogsByGoalId(goalId: number): Promise<GoalProgressLog[]> {
-    return Array.from(this.goalProgressLogs.values())
-      .filter(log => log.goalId === goalId)
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  async getGoalProgressLogsByGoalId(goalId: number): Promise<GoalProgressLog[]> {
+    try {
+      const results = await executeQuery(
+        `SELECT 
+          id, goal_id as "goalId", milestone_id as "milestoneId", 
+          entry, entry_type as "entryType", created_at as "createdAt"
+        FROM goal_progress_logs 
+        WHERE goal_id = $1 
+        ORDER BY created_at DESC`,
+        [goalId]
+      );
+      
+      return results.rows;
+    } catch (error) {
+      console.error(`Error in getGoalProgressLogsByGoalId for goalId ${goalId}:`, error);
+      return [];
+    }
   }
   
-  async getProgressLogsByMilestoneId(milestoneId: number): Promise<GoalProgressLog[]> {
-    return Array.from(this.goalProgressLogs.values())
-      .filter(log => log.milestoneId === milestoneId)
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  async getGoalProgressLogsByMilestoneId(milestoneId: number): Promise<GoalProgressLog[]> {
+    try {
+      const results = await executeQuery(
+        `SELECT 
+          id, goal_id as "goalId", milestone_id as "milestoneId", 
+          entry, entry_type as "entryType", created_at as "createdAt"
+        FROM goal_progress_logs 
+        WHERE milestone_id = $1 
+        ORDER BY created_at DESC`,
+        [milestoneId]
+      );
+      
+      return results.rows;
+    } catch (error) {
+      console.error(`Error in getGoalProgressLogsByMilestoneId for milestoneId ${milestoneId}:`, error);
+      return [];
+    }
   }
   
-  async getProgressLogById(id: number): Promise<GoalProgressLog | undefined> {
-    return this.goalProgressLogs.get(id);
+  async getGoalProgressLogById(id: number): Promise<GoalProgressLog | undefined> {
+    try {
+      const results = await executeQuery(
+        `SELECT 
+          id, goal_id as "goalId", milestone_id as "milestoneId", 
+          entry, entry_type as "entryType", created_at as "createdAt"
+        FROM goal_progress_logs 
+        WHERE id = $1`,
+        [id]
+      );
+      
+      if (results.rows.length === 0) {
+        return undefined;
+      }
+      
+      return results.rows[0];
+    } catch (error) {
+      console.error(`Error in getGoalProgressLogById for id ${id}:`, error);
+      return undefined;
+    }
   }
   
   async createGoalProgressLog(log: InsertGoalProgressLog): Promise<GoalProgressLog> {
-    const id = this.currentGoalProgressLogId++;
-    const now = new Date();
-    
-    const newLog: GoalProgressLog = {
-      ...log,
-      id,
-      createdAt: now,
-      milestoneId: log.milestoneId || null
-    };
-    
-    this.goalProgressLogs.set(id, newLog);
-    return newLog;
+    try {
+      const result = await executeQuery(
+        `INSERT INTO goal_progress_logs (
+          goal_id, milestone_id, entry, entry_type
+        ) VALUES ($1, $2, $3, $4)
+        RETURNING 
+          id, goal_id as "goalId", milestone_id as "milestoneId", 
+          entry, entry_type as "entryType", created_at as "createdAt"`,
+        [
+          log.goalId,
+          log.milestoneId || null,
+          log.entry,
+          log.entryType || 'accomplishment'
+        ]
+      );
+      
+      return result.rows[0];
+    } catch (error) {
+      console.error("Error in createGoalProgressLog:", error);
+      throw error;
+    }
   }
   
   async updateGoalProgressLog(id: number, logData: Partial<GoalProgressLog>): Promise<GoalProgressLog | undefined> {
-    const log = this.goalProgressLogs.get(id);
-    if (!log) return undefined;
-    
-    const updatedLog: GoalProgressLog = {
-      ...log,
-      ...logData
-    };
-    
-    this.goalProgressLogs.set(id, updatedLog);
-    return updatedLog;
+    try {
+      const log = await this.getGoalProgressLogById(id);
+      if (!log) return undefined;
+      
+      const updates: string[] = [];
+      const values: any[] = [];
+      let paramIndex = 1;
+      
+      for (const [key, value] of Object.entries(logData)) {
+        const snakeKey = key === 'milestoneId' ? 'milestone_id' : 
+                          key === 'entryType' ? 'entry_type' : 
+                          key.replace(/([A-Z])/g, "_$1").toLowerCase();
+        updates.push(`${snakeKey} = $${paramIndex}`);
+        values.push(value);
+        paramIndex++;
+      }
+      
+      // Add the ID parameter
+      values.push(id);
+      
+      const query = `UPDATE goal_progress_logs 
+        SET ${updates.join(', ')} 
+        WHERE id = $${paramIndex}
+        RETURNING 
+          id, goal_id as "goalId", milestone_id as "milestoneId", 
+          entry, entry_type as "entryType", created_at as "createdAt"`;
+      
+      const result = await executeQuery(query, values);
+      
+      if (result.rows.length === 0) {
+        return undefined;
+      }
+      
+      return result.rows[0];
+    } catch (error) {
+      console.error(`Error in updateGoalProgressLog for id ${id}:`, error);
+      return undefined;
+    }
   }
   
   async deleteGoalProgressLog(id: number): Promise<boolean> {
-    return this.goalProgressLogs.delete(id);
+    try {
+      const result = await executeQuery(
+        `DELETE FROM goal_progress_logs WHERE id = $1 RETURNING id`,
+        [id]
+      );
+      
+      return result.rowCount > 0;
+    } catch (error) {
+      console.error(`Error in deleteGoalProgressLog for id ${id}:`, error);
+      return false;
+    }
   }
 
   // Career Capsule operations
