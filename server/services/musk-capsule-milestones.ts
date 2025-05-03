@@ -8,7 +8,6 @@
 import { OpenAI } from "openai";
 import Anthropic from '@anthropic-ai/sdk';
 import { storage } from '../storage';
-import { CareerCapsule, CapsuleYear, CapsuleTask } from '@shared/schema';
 
 // Initialize OpenAI client
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -223,27 +222,70 @@ Please ensure that:
     // Parse the response as JSON
     let milestones;
     try {
+      // Log the raw AI response for debugging
+      console.log(`[Musk AI] Raw AI response (truncated): ${aiResponse?.substring(0, 200)}...`);
+      
       // For OpenAI, the response is already formatted as JSON
       if (options.useModel === 'openai') {
         const parsedResponse = JSON.parse(aiResponse || "{}");
-        milestones = parsedResponse.years || parsedResponse;
+        console.log(`[Musk AI] Parsed OpenAI response structure: ${JSON.stringify(Object.keys(parsedResponse))}`);
+        
+        // Handle different response formats from OpenAI
+        if (Array.isArray(parsedResponse)) {
+          milestones = parsedResponse;
+        } else if (parsedResponse.years && Array.isArray(parsedResponse.years)) {
+          milestones = parsedResponse.years;
+        } else if (parsedResponse.yearNumber && parsedResponse.title && parsedResponse.tasks) {
+          // The AI returned a single year object instead of an array
+          console.log('[Musk AI] Detected single year object, converting to array');
+          milestones = [parsedResponse];
+        } else {
+          milestones = parsedResponse;
+        }
+        
+        console.log(`[Musk AI] Extracted milestones type: ${Array.isArray(milestones) ? 'Array' : typeof milestones}`);
       } else {
         // For Anthropic, extract the JSON part from the text response
         const jsonMatch = aiResponse?.match(/\[[\s\S]*\]/);
         if (jsonMatch) {
           milestones = JSON.parse(jsonMatch[0]);
         } else {
-          throw new Error("Could not extract JSON from Anthropic response");
+          // Try to extract a single object if array not found
+          const jsonObject = aiResponse?.match(/\{[\s\S]*\}/);
+          if (jsonObject) {
+            const parsedObject = JSON.parse(jsonObject[0]);
+            if (parsedObject.yearNumber && parsedObject.title && parsedObject.tasks) {
+              milestones = [parsedObject];
+            } else {
+              throw new Error("Invalid JSON object format from Anthropic response");
+            }
+          } else {
+            throw new Error("Could not extract JSON from Anthropic response");
+          }
         }
       }
 
       // Validate the milestones structure
       if (!Array.isArray(milestones)) {
+        console.log(`[Musk AI] Milestone validation failed. Type: ${typeof milestones}, Value: ${JSON.stringify(milestones).substring(0, 200)}...`);
         return {
           success: false,
           message: "Invalid milestone format received from AI"
         };
       }
+      
+      // Additional validation for empty array
+      if (milestones.length === 0) {
+        console.log('[Musk AI] Milestone validation failed: Empty array');
+        return {
+          success: false,
+          message: "Empty milestone array received from AI"
+        };
+      }
+      
+      // Log the successful milestone structure
+      console.log(`[Musk AI] Successfully extracted ${milestones.length} milestones`);
+      
 
       return {
         success: true,
@@ -287,10 +329,8 @@ export async function saveCapsuleMilestones(capsuleId: number, years: YearMilest
       // Create the year
       const yearRecord = await storage.createCapsuleYear({
         capsuleId,
-        yearNumber: yearData.yearNumber,
-        title: yearData.title,
-        description: yearData.description,
-        milestone: yearData.milestone,
+        year: yearData.yearNumber, // Corrected field name: yearNumber -> year
+        description: `${yearData.title}: ${yearData.description}\nMilestone: ${yearData.milestone}`, // Combine title and milestone into description
         progress: 0
       });
 
@@ -300,11 +340,9 @@ export async function saveCapsuleMilestones(capsuleId: number, years: YearMilest
           await storage.createCapsuleTask({
             yearId: yearRecord.id,
             title: taskData.title,
-            description: taskData.description,
-            isCompleted: false,
-            dueDate: taskData.dueDate || null,
-            priority: taskData.priority || 1,
-            difficulty: 1 // Default difficulty
+            description: taskData.description + (taskData.dueDate ? `\nDue: ${taskData.dueDate}` : '') + 
+                         (taskData.priority ? `\nPriority: ${taskData.priority}` : ''), // Add due date and priority to description
+            isCompleted: false
           });
         }
       }
