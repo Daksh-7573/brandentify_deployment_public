@@ -48,6 +48,49 @@ interface MilestoneGenerationResult {
   years?: YearMilestone[];
 }
 
+// Helper function to check if a goal relates to CEO career path
+function isCEORelatedGoal(goalType: string, customGoal?: string, description?: string, industry?: string): boolean {
+  // First check for CEO in the custom goal if present
+  if (customGoal) {
+    const customGoalLower = customGoal.toLowerCase();
+    if (
+      customGoalLower.includes('ceo') || 
+      customGoalLower.includes('chief executive') || 
+      customGoalLower.includes('executive officer') ||
+      customGoalLower.includes('c-suite')
+    ) {
+      return true;
+    }
+  }
+  
+  // Check for CEO in the description if present
+  if (description) {
+    const descriptionLower = description.toLowerCase();
+    if (
+      descriptionLower.includes('ceo') || 
+      descriptionLower.includes('chief executive') || 
+      descriptionLower.includes('executive officer') ||
+      descriptionLower.includes('c-suite')
+    ) {
+      return true;
+    }
+  }
+  
+  // Check for specific goal types that might indicate executive path
+  if (goalType === 'position_change' || goalType === 'promotion') {
+    // If industry is provided and customGoal is not explicitly about CEO,
+    // combine with position_change/promotion goal type to suggest executive path
+    if (industry && 
+        (industry.toLowerCase().includes('executive') || 
+         industry.toLowerCase().includes('leadership') ||
+         industry.toLowerCase().includes('management'))) {
+      return true;
+    }
+  }
+  
+  return false;
+}
+
 /**
  * Generate milestone plans for a career capsule using AI
  * 
@@ -273,48 +316,7 @@ IMPORTANT GUIDELINES:
 Remember, your mission is to create a career roadmap so personalized and actionable that the user feels it was custom-created just for them.
 `;
 
-    // Helper function to check if a goal relates to CEO career path
-    function isCEORelatedGoal(goalType: string, customGoal?: string, description?: string, industry?: string): boolean {
-      // First check for CEO in the custom goal if present
-      if (customGoal) {
-        const customGoalLower = customGoal.toLowerCase();
-        if (
-          customGoalLower.includes('ceo') || 
-          customGoalLower.includes('chief executive') || 
-          customGoalLower.includes('executive officer') ||
-          customGoalLower.includes('c-suite')
-        ) {
-          return true;
-        }
-      }
-      
-      // Check for CEO in the description if present
-      if (description) {
-        const descriptionLower = description.toLowerCase();
-        if (
-          descriptionLower.includes('ceo') || 
-          descriptionLower.includes('chief executive') || 
-          descriptionLower.includes('executive officer') ||
-          descriptionLower.includes('c-suite')
-        ) {
-          return true;
-        }
-      }
-      
-      // Check for specific goal types that might indicate executive path
-      if (goalType === 'position_change' || goalType === 'promotion') {
-        // If industry is provided and customGoal is not explicitly about CEO,
-        // combine with position_change/promotion goal type to suggest executive path
-        if (industry && 
-            (industry.toLowerCase().includes('executive') || 
-             industry.toLowerCase().includes('leadership') ||
-             industry.toLowerCase().includes('management'))) {
-          return true;
-        }
-      }
-      
-      return false;
-    }
+    // Using the helper function that was moved outside of the generateCapsuleMilestones function to check if a goal relates to CEO career path
 
     // Check if this is a CEO career path goal
     let enhancedContext = aiContext;

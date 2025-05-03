@@ -663,15 +663,42 @@ router.post('/career-capsules/:capsuleId/generate-milestones', async (req, res) 
       return res.status(500).json({ message: result.message });
     }
     
-    // Save the generated milestones
+    // Save the generated milestones with detailed logging
+    console.log(`[Milestone API] Attempting to save ${result.years?.length || 0} generated years for capsule ${capsuleId}`);
+    
+    // Extra validation for years
+    if (!result.years || result.years.length === 0) {
+      console.error(`[Milestone API] No years were generated for capsule ${capsuleId}`);
+      return res.status(500).json({ message: 'No milestone years were generated' });
+    }
+    
+    // Log the first year structure for debugging
+    console.log(`[Milestone API] First year structure: ${JSON.stringify(result.years[0])}`);
+    
     const saved = await saveCapsuleMilestones(capsuleId, result.years);
     
     if (!saved) {
+      console.error(`[Milestone API] Failed to save milestones for capsule ${capsuleId}`);
       return res.status(500).json({ message: 'Failed to save generated milestones' });
     }
     
-    // Return the generated years
+    // Return the generated years with detailed logging
+    console.log(`[Milestone API] Successfully saved milestones, retrieving years for capsule ${capsuleId}`);
     const years = await storage.getCapsuleYearsByCapsuleId(capsuleId);
+    console.log(`[Milestone API] Retrieved ${years.length} years from database for capsule ${capsuleId}`);
+    
+    // Log the first returned year for debugging
+    if (years.length > 0) {
+      console.log(`[Milestone API] First year from database: ${JSON.stringify(years[0])}`);
+      
+      // Fetch tasks for the first year to verify the full data chain
+      const tasks = await storage.getCapsuleTasksByYearId(years[0].id);
+      console.log(`[Milestone API] First year has ${tasks.length} tasks`);
+      if (tasks.length > 0) {
+        console.log(`[Milestone API] First task from database: ${JSON.stringify(tasks[0])}`);
+      }
+    }
+    
     return res.json({
       success: true,
       message: 'Successfully generated and saved milestones',
