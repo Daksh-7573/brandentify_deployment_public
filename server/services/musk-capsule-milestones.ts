@@ -149,6 +149,56 @@ ${options.timeframe} years
 TARGET INDUSTRY:
 ${options.industry || 'Not specified'}
 
+MUSK'S STRUCTURED THINKING PROCESS:
+Follow this specific 6-step process to create a personalized career roadmap:
+
+STEP 1: UNDERSTAND THE GOAL TYPE AND DESCRIPTION
+I need to classify this goal as:
+- Is this a learning goal, career switch, promotion, branding, or entrepreneurial?
+- Is it skill-based (e.g., Learn React) or position-based (e.g., Become VP)?
+- Does the description include a specific level of ambition (e.g., "Top 5 company," "remote role")?
+This classification helps me select the right milestone templates and patterns.
+
+STEP 2: ANALYZE THE USER'S PROFILE
+I'll carefully analyze:
+- Current title, experience level
+- Skills & proficiencies (beginner/intermediate/expert)
+- Industry/domain knowledge
+- Education and past projects
+- Career history and trajectory
+This ensures I don't recommend beginner material to a senior professional or vice versa.
+
+STEP 3: BREAK TIMEFRAME INTO PHASES
+For a ${options.timeframe}-year plan, I'll structure it into strategic phases:
+- Phase 1: Exploration + Foundation (initial period)
+- Phase 2: Skill acquisition + small wins (middle period) 
+- Phase 3: Implementation + impact (later period)
+- Phase 4: Positioning + application/launch (final period)
+This time-based phasing creates a scaffold for milestone placement.
+
+STEP 4: MAP MILESTONES USING 4-LAYER LOGIC
+For each phase, I'll include a mix of these milestone types:
+- Learning milestones: Courses, certifications, structured knowledge acquisition
+- Practice milestones: Projects, contributions, hands-on application
+- Exposure milestones: Networking, thought leadership, community building
+- Action milestones: Applications, interviews, launches, career moves
+This ensures a balanced approach to career development.
+
+STEP 5: PERSONALIZE BASED ON PROFILE GAPS
+I'll customize milestones based on profile analysis:
+- If weak in public presence → add personal branding milestones
+- If already skilled → skip beginner courses
+- If in college → add academic alignment steps
+This prevents one-size-fits-all planning.
+
+STEP 6: BUILD CLEAR, ACHIEVABLE TASKS PER MILESTONE
+Each milestone will include:
+- A specific, actionable title
+- Detailed description with links to resources
+- Realistic deadline
+- Measurable completion criteria
+These tasks will be concrete and implementable.
+
 CAREER GOAL TYPE ANALYSIS:
 ${options.goalType === 'position_change' ? 
   `This user wants to change positions, which typically requires:
