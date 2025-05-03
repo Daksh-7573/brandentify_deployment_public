@@ -70,71 +70,87 @@ router.post('/users/:userId/career-capsule', async (req, res) => {
       timeframe: req.body.timeframe || 5,
       industry: req.body.industry || null,
       isPrivate: req.body.isPrivate || false,
-      isMuskGenerated: false, // Will be set to true after milestones are generated
+      isMuskGenerated: true, // Setting this to true since we'll create default milestones
     };
 
     console.log('Creating career capsule with data:', JSON.stringify(capsuleData));
     const capsule = await storage.createCareerCapsule(capsuleData);
     
-    // Automatically generate milestones for the new capsule
-    console.log('Automatically generating milestones for new capsule:', capsule.id);
+    // Create default milestones based on timeframe
+    console.log('Creating default milestones for new capsule:', capsule.id);
     
-    const options = {
-      userId: capsule.userId,
-      capsuleId: capsule.id,
-      goalType: capsule.goalType,
-      customGoal: capsule.customGoal,
-      timeframe: capsule.timeframe,
-      industry: capsule.industry,
-      description: capsule.description,
-      useModel: 'openai', // Default to OpenAI
-    };
+    const timeframe = parseInt(capsuleData.timeframe.toString()) || 3; // Default to 3 years if parsing fails
+    const years = [];
     
-    try {
-      // Wait for milestone generation to complete before responding
-      const result = await generateCapsuleMilestones(options);
+    for (let yearNum = 1; yearNum <= timeframe; yearNum++) {
+      // Create a year
+      const year = await storage.createCapsuleYear({
+        capsuleId: capsule.id,
+        yearNumber: yearNum,
+        title: `Year ${yearNum}${yearNum === 1 ? " - Foundation" : yearNum === timeframe ? " - Achievement" : " - Development"}`,
+        description: `Focus on ${yearNum === 1 ? "building foundational skills and knowledge" : 
+                       yearNum === timeframe ? "reaching your target goal and establishing yourself" : 
+                       "developing advanced expertise and expanding your network"}`,
+        goalType: capsuleData.goalType,
+        progress: 0
+      });
       
-      if (result.success && result.years) {
-        console.log(`Successfully generated ${result.years.length} milestone years for capsule ${capsule.id}`);
-        const saved = await saveCapsuleMilestones(capsule.id, result.years);
-        
-        if (saved) {
-          console.log(`Successfully saved milestones for capsule ${capsule.id}`);
-          
-          // Update the capsule to indicate milestones were generated
-          await storage.updateCareerCapsule(capsule.id, {
-            isMuskGenerated: true
-          });
-          
-          // Return the capsule with success message
-          return res.status(201).json({
-            ...capsule,
-            milestonesGenerated: true,
-            message: 'Career capsule created with AI-generated milestones'
-          });
-        } else {
-          console.error(`Failed to save milestones for capsule ${capsule.id}`);
+      years.push(year);
+      
+      // Create tasks for each year
+      const tasks = [
+        {
+          title: `${yearNum === 1 ? "Research" : yearNum === timeframe ? "Achieve" : "Advance"} in ${capsuleData.title}`,
+          description: `${yearNum === 1 ? 
+            "Conduct thorough research on requirements and pathways" : 
+            yearNum === timeframe ? 
+            "Accomplish your primary goal and celebrate your achievement" : 
+            "Continue building on previous progress and expanding your expertise"}`,
+          isCompleted: false,
+          dueDate: new Date(new Date().setFullYear(new Date().getFullYear() + yearNum, 5, 30)).toISOString().split('T')[0] // Mid-year due date
+        },
+        {
+          title: `${yearNum === 1 ? "Learn" : yearNum === timeframe ? "Lead" : "Master"} Key Skills`,
+          description: `${yearNum === 1 ? 
+            "Identify and begin learning essential skills for your goal" : 
+            yearNum === timeframe ? 
+            "Demonstrate leadership and mentor others in your field" : 
+            "Deepen your expertise in specialized areas relevant to your goal"}`,
+          isCompleted: false,
+          dueDate: new Date(new Date().setFullYear(new Date().getFullYear() + yearNum, 2, 15)).toISOString().split('T')[0] // Early in year
+        },
+        {
+          title: `Build ${yearNum === 1 ? "Initial" : yearNum === timeframe ? "Expert" : "Strong"} Network`,
+          description: `${yearNum === 1 ? 
+            "Connect with professionals in your target field and join relevant communities" : 
+            yearNum === timeframe ? 
+            "Establish yourself as a known expert in your specific area" : 
+            "Expand your professional connections to include senior professionals"}`,
+          isCompleted: false,
+          dueDate: new Date(new Date().setFullYear(new Date().getFullYear() + yearNum, 8, 15)).toISOString().split('T')[0] // Later in year
         }
-      } else {
-        console.error('Failed to generate milestones:', result.message);
+      ];
+      
+      // Save each task
+      for (const taskData of tasks) {
+        await storage.createCapsuleTask({
+          ...taskData,
+          yearId: year.id
+        });
       }
-      
-      // If we reached here, milestone generation was attempted but had issues
-      return res.status(201).json({
-        ...capsule,
-        milestonesGenerated: false,
-        message: 'Career capsule created but milestone generation failed. You can generate them later.'
-      });
-    } catch (milestoneError) {
-      console.error('Error generating milestones:', milestoneError);
-      
-      // Still return the capsule even if milestone generation failed
-      return res.status(201).json({
-        ...capsule,
-        milestonesGenerated: false,
-        message: 'Career capsule created but milestone generation failed. You can generate them later.'
-      });
     }
+    
+    // Update the capsule to indicate milestones were generated
+    await storage.updateCareerCapsule(capsule.id, {
+      isMuskGenerated: true
+    });
+    
+    // Return the created capsule with success message
+    return res.status(201).json({
+      ...capsule,
+      milestonesGenerated: true,
+      message: 'Career capsule created with default milestones'
+    });
   } catch (error) {
     console.error('Error creating career capsule:', error);
     return res.status(500).json({ message: 'Error creating career capsule' });
