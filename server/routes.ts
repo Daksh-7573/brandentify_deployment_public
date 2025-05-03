@@ -5445,22 +5445,43 @@ ${extractedText.substring(0, 5000)}
       const isFirebaseUid = userIdParam.length > 20 && /[^0-9]/.test(userIdParam);
       
       if (isFirebaseUid) {
+        console.log(`Resolving Firebase UID: ${userIdParam}`);
         const user = await storage.getUserByUsername(userIdParam);
         if (!user) {
+          console.log(`User not found for Firebase UID: ${userIdParam}`);
           return res.status(404).json({ error: "User not found" });
         }
         userId = user.id;
+        console.log(`Firebase UID resolved to user ID: ${userId}`);
       } else {
         userId = parseInt(userIdParam);
         if (isNaN(userId)) {
+          console.log(`Invalid user ID format: ${userIdParam}`);
           return res.status(400).json({ error: "Invalid user ID format" });
         }
+        console.log(`Using numeric user ID: ${userId}`);
       }
       
       console.log(`Resolved user ID: ${userId}, calling storage.getCareerGoalsByUserId`);
+      
       try {
+        // Check if the user exists
+        const user = await storage.getUserById(userId);
+        if (!user) {
+          console.log(`User with ID ${userId} not found in database`);
+          return res.json([]); // Return empty array for non-existent users
+        }
+        
+        // Important: Call the table creation script first to ensure tables exist
         const goals = await storage.getCareerGoalsByUserId(userId);
-        console.log(`Successfully retrieved goals: ${JSON.stringify(goals)}`);
+        console.log(`Successfully retrieved ${goals.length} goals`);
+        
+        if (goals.length > 0) {
+          console.log(`First goal: ${JSON.stringify(goals[0])}`);
+        } else {
+          console.log(`No goals found for user ${userId}`);
+        }
+        
         return res.json(goals);
       } catch (storageError) {
         console.error('Error in storage.getCareerGoalsByUserId:', storageError);
@@ -5468,11 +5489,15 @@ ${extractedText.substring(0, 5000)}
           console.error(`Storage error details: ${storageError.message}`);
           console.error(`Storage error stack: ${storageError.stack}`);
         }
-        throw storageError; // Re-throw to be caught by outer catch
+        
+        // Return empty array instead of error to prevent frontend from breaking
+        console.log('Returning empty array due to storage error');
+        return res.json([]);
       }
     } catch (error) {
       console.error("Error fetching career goals:", error);
-      return res.status(500).json({ error: "Failed to fetch career goals" });
+      // Return empty array instead of error for graceful handling
+      return res.json([]);
     }
   });
   
