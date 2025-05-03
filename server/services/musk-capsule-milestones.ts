@@ -29,7 +29,7 @@ interface MilestoneGenerationRequest {
 }
 
 interface YearMilestone {
-  yearNumber: number;
+  year: number;
   title: string;
   description: string;
   milestone: string;
@@ -90,8 +90,8 @@ export async function generateCapsuleMilestones(options: MilestoneGenerationRequ
 
     // Format the prompt for the AI
     const aiContext = `
-You are Musk, a sophisticated career development AI assistant specialized in creating detailed career progression plans.
-Your task is to analyze the user's specific career goals, timeline, profile data, and current market trends to generate a ${options.timeframe}-year career plan with personalized milestone tasks.
+You are Musk, an elite career development AI coach specialized in creating hyper-personalized, industry-specific career progression plans.
+Your task is to create a detailed, actionable ${options.timeframe}-year career roadmap with specific milestones and tasks that feels custom-crafted for this unique professional.
 
 USER CAREER GOAL: 
 ${options.goalType === 'custom' ? options.customGoal : options.goalType.replace('_', ' ')}
@@ -105,11 +105,85 @@ ${options.timeframe} years
 TARGET INDUSTRY:
 ${options.industry || 'Not specified'}
 
-CURRENT MARKET TRENDS TO ANALYZE:
-- Rising skill demands in ${options.industry || 'the specified'} industry
-- Emerging technologies and tools relevant to the user's career path
-- Changing job market requirements and expectations
-- Industry-specific certification or qualification trends
+CAREER GOAL TYPE ANALYSIS:
+${options.goalType === 'position_change' ? 
+  `This user wants to change positions, which typically requires:
+   - Identifying transferable skills and experience gaps
+   - Building networks in the target position's community
+   - Gaining relevant certifications and qualifications
+   - Creating tangible work examples for the new position
+   - Developing a compelling narrative around the transition` 
+  : options.goalType === 'skill_acquisition' ?
+  `This user wants to acquire new skills, which typically requires:
+   - Identifying the most valuable skills within their industry/domain
+   - Finding optimal learning resources and pathways
+   - Building practical application opportunities for new skills
+   - Getting mentorship from practitioners with those skills
+   - Creating demonstration projects to showcase new abilities`
+  : options.goalType === 'promotion' ?
+  `This user is seeking a promotion, which typically requires:
+   - Understanding the competencies needed at the next level
+   - Demonstrating leadership and strategic thinking
+   - Building visibility with decision makers
+   - Taking on projects that demonstrate readiness for more responsibility
+   - Quantifying their impact and value to the organization`
+  : options.goalType === 'industry_switch' ?
+  `This user wants to switch industries, which typically requires:
+   - Research and networking in the target industry
+   - Identifying transferable skills and addressing gaps
+   - Understanding the target industry's culture and expectations
+   - Building experience through side projects, volunteering, or part-time work
+   - Developing industry-specific knowledge and vocabulary`
+  : options.goalType === 'entrepreneurship' ?
+  `This user is pursuing entrepreneurship, which typically requires:
+   - Market research and business planning
+   - Building MVP (minimum viable product) and iterating
+   - Networking with potential investors/partners
+   - Developing sales, marketing, and operational skills
+   - Creating legal and financial frameworks`
+  : options.goalType === 'relocation' ?
+  `This user is planning career relocation, which typically requires:
+   - Understanding job market differences in the target location
+   - Building a remote network in the new location
+   - Adapting skills to regional requirements
+   - Understanding visa/work permit requirements (if international)
+   - Planning the logistics of job searching while relocating`
+  : options.goalType === 'education' ?
+  `This user is pursuing further education, which typically requires:
+   - Researching programs aligned with career goals
+   - Preparing applications and securing recommendations
+   - Planning financial resources and time management
+   - Balancing current work with educational commitments
+   - Leveraging new knowledge in career advancement`
+  : options.goalType === 'certification' ?
+  `This user is pursuing professional certification, which typically requires:
+   - Selecting the most valuable certificates for their goals
+   - Structured study and preparation
+   - Practical application of certification material
+   - Test preparation strategies
+   - Leveraging the certification for career advancement`
+  : `This user has a custom career goal that will require personalized milestones and tasks.`
+}
+
+INDUSTRY-SPECIFIC ANALYSIS:
+${options.industry ? 
+  `For the ${options.industry} industry, important considerations include:
+   - Current technology trends: AI/ML adoption, automation, digital transformation
+   - Regulatory changes impacting roles and responsibilities
+   - Emerging job titles and roles in this sector
+   - Industry-specific certifications gaining recognition
+   - Skills gaps reported by industry leaders
+   - Networking opportunities specific to this field`
+  : 'Industry not specified - provide general career progression advice.'
+}
+
+CURRENT MARKET TRENDS TO INCORPORATE:
+- Leadership skills emphasizing emotional intelligence and remote/hybrid team management
+- Rising demand for data literacy and analytical decision-making across all roles
+- Increasing importance of cross-functional collaboration and communication
+- Growth of project-based work requiring adaptability and self-management
+- Emphasis on continuous learning and skill development as core competency
+${options.industry ? `- Specific ${options.industry} industry trends including emerging technologies and shifting job requirements` : ''}
 
 USER PROFILE:
 - Name: ${user.name}
@@ -143,21 +217,27 @@ ${education.length > 0 ?
   'No education data available'}
 
 TASK:
-Create a detailed ${options.timeframe}-year career development plan with personalized milestone tasks aligned with the user's goals and market demands.
+Create a hyper-personalized, action-oriented ${options.timeframe}-year career development plan with specific milestone tasks that directly address the user's goals and incorporate current industry realities.
+
 For each year (1 through ${options.timeframe}), provide:
-1. A title for the year
-2. A detailed description of what should be accomplished during that year
-3. A specific strategic milestone/achievement that reflects progress toward the user's goals
-4. 3-5 specific milestone tasks with clear descriptions and suggested due dates (in YYYY-MM-DD format) that:
-   - Reflect analysis of the user's profile, skills, and experiences
-   - Consider current market trends and industry demands
-   - Build strategically toward the user's stated career goals
-   - Include skill development, networking, certifications, or other relevant activities
+1. An inspiring, specific title that captures the focus for that year
+2. A detailed description with specific outcomes expected that year, including:
+   - Skills to be mastered
+   - Knowledge to be acquired
+   - Professional relationships to be built
+   - Tangible achievements to be accomplished
+3. A significant milestone achievement that represents major progress
+4. 3-5 highly specific tasks with actionable descriptions and strategically timed due dates that:
+   - Connect directly to the user's current skills and experience level
+   - Address specific gaps between their current state and goal state
+   - Include specific companies, technologies, certifications by name when relevant
+   - Incorporate specific networking events, courses, or resources when possible
+   - Provide clear next actions rather than vague directions
 
 Format your response as a JSON array with the following structure:
 [
   {
-    "yearNumber": 1,
+    "year": 1,
     "title": "Year 1 Title",
     "description": "Description of Year 1",
     "milestone": "Key milestone for Year 1",
@@ -174,15 +254,18 @@ Format your response as a JSON array with the following structure:
   ...more years
 ]
 
-Please ensure that:
-1. The plan is achievable and realistic
-2. Milestones follow a logical progression
-3. Each year builds upon previous accomplishments
-4. Tasks have specific, actionable steps
-5. The entire plan leads effectively to the user's stated career goal
-6. Due dates are reasonable and properly formatted (YYYY-MM-DD)
-7. Priority is a number from 1-3 (1=low, 2=medium, 3=high)
-8. Your response is ONLY the requested JSON format (no other text)
+IMPORTANT GUIDELINES:
+1. Be extremely specific and detailed in every element
+2. Use a confident, motivational tone appropriate for career coaching
+3. Include highly specific skills, technologies, and certifications relevant to the goal/industry
+4. Suggest actual resources (books, courses, events) where appropriate
+5. Create milestones that feel significant but achievable 
+6. Tasks should be specific enough that the user knows exactly what to do next
+7. Due dates should consider logical sequencing and realistic timeframes
+8. Priority is a number from 1-3 (1=high priority, 2=medium, 3=low)
+9. Your response must be ONLY the requested JSON format (no other text)
+
+Remember, your mission is to create a career roadmap so personalized and actionable that the user feels it was custom-created just for them.
 `;
 
     // Get AI response based on selected model
@@ -235,7 +318,7 @@ Please ensure that:
           milestones = parsedResponse;
         } else if (parsedResponse.years && Array.isArray(parsedResponse.years)) {
           milestones = parsedResponse.years;
-        } else if (parsedResponse.yearNumber && parsedResponse.title && parsedResponse.tasks) {
+        } else if ((parsedResponse.year || parsedResponse.yearNumber) && parsedResponse.title && parsedResponse.tasks) {
           // The AI returned a single year object instead of an array
           console.log('[Musk AI] Detected single year object, converting to array');
           milestones = [parsedResponse];
@@ -254,7 +337,7 @@ Please ensure that:
           const jsonObject = aiResponse?.match(/\{[\s\S]*\}/);
           if (jsonObject) {
             const parsedObject = JSON.parse(jsonObject[0]);
-            if (parsedObject.yearNumber && parsedObject.title && parsedObject.tasks) {
+            if ((parsedObject.year || parsedObject.yearNumber) && parsedObject.title && parsedObject.tasks) {
               milestones = [parsedObject];
             } else {
               throw new Error("Invalid JSON object format from Anthropic response");
@@ -329,7 +412,7 @@ export async function saveCapsuleMilestones(capsuleId: number, years: YearMilest
       // Create the year
       const yearRecord = await storage.createCapsuleYear({
         capsuleId,
-        year: yearData.yearNumber, // Corrected field name: yearNumber -> year
+        year: yearData.year || yearData.yearNumber || 1, // Support both field names
         title: yearData.title,
         description: yearData.description,
         milestone: yearData.milestone,
