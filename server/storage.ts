@@ -8246,6 +8246,15 @@ export const storage = {
   updateCareerGoal: (id: number, data: any) => dbStorage.updateCareerGoal(id, data),
   deleteCareerGoal: (id: number) => dbStorage.deleteCareerGoal(id),
   
+  // Career Capsule methods
+  getUserCareerCapsule: (userId: number) => dbStorage.getUserCareerCapsule(userId),
+  getCareerCapsulesByUserId: (userId: number) => dbStorage.getCareerCapsulesByUserId(userId),
+  getCareerCapsuleById: (id: number) => dbStorage.getCareerCapsuleById(id),
+  createCareerCapsule: (capsule: InsertCareerCapsule) => dbStorage.createCareerCapsule(capsule),
+  updateCareerCapsule: (id: number, data: Partial<CareerCapsule>) => dbStorage.updateCareerCapsule(id, data),
+  deleteCareerCapsule: (id: number) => dbStorage.deleteCareerCapsule(id),
+  updateCapsuleProgress: (id: number) => dbStorage.updateCapsuleProgress(id),
+  
   // Goal Milestone methods
   getGoalMilestonesByGoalId: (goalId: number) => dbStorage.getGoalMilestonesByGoalId(goalId),
   getGoalMilestoneById: (id: number) => dbStorage.getGoalMilestoneById(id),
