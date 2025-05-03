@@ -190,10 +190,7 @@ export const useCareerCapsule = (userId: number | string) => {
   const useUpdateMilestone = (milestoneId: number, goalId: number) => {
     return useMutation({
       mutationFn: (milestoneData: Partial<GoalMilestone>) => {
-        return apiRequest(`/api/goal-milestones/${milestoneId}`, {
-          method: 'PATCH',
-          body: JSON.stringify(milestoneData),
-        });
+        return apiRequest('PATCH', `/api/goal-milestones/${milestoneId}`, milestoneData);
       },
       onSuccess: () => {
         toast({
@@ -216,9 +213,7 @@ export const useCareerCapsule = (userId: number | string) => {
   const useDeleteMilestone = (goalId: number) => {
     return useMutation({
       mutationFn: (milestoneId: number) => {
-        return apiRequest(`/api/goal-milestones/${milestoneId}`, {
-          method: 'DELETE',
-        });
+        return apiRequest('DELETE', `/api/goal-milestones/${milestoneId}`);
       },
       onSuccess: () => {
         toast({
@@ -241,9 +236,9 @@ export const useCareerCapsule = (userId: number | string) => {
   const useCreateSkill = (goalId: number) => {
     return useMutation({
       mutationFn: (skillData: Omit<GoalSkill, 'id' | 'goalId' | 'createdAt' | 'updatedAt'>) => {
-        return apiRequest(`/api/career-goals/${goalId}/skills`, {
-          method: 'POST',
-          body: JSON.stringify(skillData),
+        return apiRequest('POST', `/api/career-goals/${goalId}/skills`, {
+          ...skillData,
+          goalId
         });
       },
       onSuccess: () => {
@@ -267,10 +262,7 @@ export const useCareerCapsule = (userId: number | string) => {
   const useUpdateSkill = (skillId: number, goalId: number) => {
     return useMutation({
       mutationFn: (skillData: Partial<GoalSkill>) => {
-        return apiRequest(`/api/goal-skills/${skillId}`, {
-          method: 'PATCH',
-          body: JSON.stringify(skillData),
-        });
+        return apiRequest('PATCH', `/api/goal-skills/${skillId}`, skillData);
       },
       onSuccess: () => {
         toast({
@@ -293,9 +285,7 @@ export const useCareerCapsule = (userId: number | string) => {
   const useDeleteSkill = (goalId: number) => {
     return useMutation({
       mutationFn: (skillId: number) => {
-        return apiRequest(`/api/goal-skills/${skillId}`, {
-          method: 'DELETE',
-        });
+        return apiRequest('DELETE', `/api/goal-skills/${skillId}`);
       },
       onSuccess: () => {
         toast({
@@ -318,9 +308,9 @@ export const useCareerCapsule = (userId: number | string) => {
   const useCreateProgressLog = (goalId: number) => {
     return useMutation({
       mutationFn: (logData: Omit<GoalProgressLog, 'id' | 'goalId' | 'createdAt'>) => {
-        return apiRequest(`/api/career-goals/${goalId}/progress-logs`, {
-          method: 'POST',
-          body: JSON.stringify(logData),
+        return apiRequest('POST', `/api/career-goals/${goalId}/progress-logs`, {
+          ...logData,
+          goalId
         });
       },
       onSuccess: () => {
@@ -344,9 +334,7 @@ export const useCareerCapsule = (userId: number | string) => {
   const useDeleteProgressLog = (goalId: number) => {
     return useMutation({
       mutationFn: (logId: number) => {
-        return apiRequest(`/api/goal-progress-logs/${logId}`, {
-          method: 'DELETE',
-        });
+        return apiRequest('DELETE', `/api/goal-progress-logs/${logId}`);
       },
       onSuccess: () => {
         toast({
