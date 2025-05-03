@@ -70,11 +70,49 @@ router.post('/users/:userId/career-capsule', async (req, res) => {
       timeframe: req.body.timeframe || 5,
       industry: req.body.industry || null,
       isPrivate: req.body.isPrivate || false,
-      isMuskGenerated: req.body.isMuskGenerated || false,
+      isMuskGenerated: false, // Will be set to true after milestones are generated
     };
 
     console.log('Creating career capsule with data:', JSON.stringify(capsuleData));
     const capsule = await storage.createCareerCapsule(capsuleData);
+    
+    // Automatically generate milestones for the new capsule
+    console.log('Automatically generating milestones for new capsule:', capsule.id);
+    
+    const options = {
+      userId: capsule.userId,
+      capsuleId: capsule.id,
+      goalType: capsule.goalType,
+      customGoal: capsule.customGoal,
+      timeframe: capsule.timeframe,
+      industry: capsule.industry,
+      description: capsule.description,
+      useModel: 'openai', // Default to OpenAI
+    };
+    
+    // Generate milestones in the background
+    generateCapsuleMilestones(options)
+      .then(result => {
+        if (result.success && result.years) {
+          console.log(`Successfully generated ${result.years.length} milestone years for capsule ${capsule.id}`);
+          return saveCapsuleMilestones(capsule.id, result.years);
+        } else {
+          console.error('Failed to generate milestones:', result.message);
+          return false;
+        }
+      })
+      .then(saved => {
+        if (saved) {
+          console.log(`Successfully saved milestones for capsule ${capsule.id}`);
+        } else {
+          console.error(`Failed to save milestones for capsule ${capsule.id}`);
+        }
+      })
+      .catch(error => {
+        console.error('Error in background milestone generation:', error);
+      });
+    
+    // Return the created capsule immediately, don't wait for milestone generation
     return res.status(201).json(capsule);
   } catch (error) {
     console.error('Error creating career capsule:', error);
