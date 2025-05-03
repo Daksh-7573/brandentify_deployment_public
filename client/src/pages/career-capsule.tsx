@@ -87,14 +87,14 @@ export default function CareerCapsulePage() {
 
       {/* Dialog for Create Goal with form fields */}
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-        <DialogContent className="sm:max-w-[500px]">
+        <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Create New Career Goal</DialogTitle>
             <DialogDescription>
               Set your career goals with a 1-5 year timeframe and get AI-generated milestones.
             </DialogDescription>
           </DialogHeader>
-          <form className="flex flex-col gap-4 py-4">
+          <form className="flex flex-col gap-5 py-4">
             <div className="space-y-2">
               <label htmlFor="goal-title" className="text-sm font-medium">
                 Goal Title
@@ -149,7 +149,7 @@ export default function CareerCapsulePage() {
               <textarea
                 id="description"
                 placeholder="Describe your career goal in detail..."
-                className="w-full min-h-[100px] rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                className="w-full min-h-[80px] rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               />
             </div>
             
