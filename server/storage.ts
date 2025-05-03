@@ -1,5 +1,21 @@
 import { pool } from './db';
 import { sql } from 'drizzle-orm';
+
+// Helper function for executing database queries
+async function executeQuery(queryText: string, params: any[] = []) {
+  try {
+    const client = await pool.connect();
+    try {
+      const result = await client.query(queryText, params);
+      return result;
+    } finally {
+      client.release();
+    }
+  } catch (error) {
+    console.error('Error executing query:', error);
+    throw error;
+  }
+}
 import { 
   users, User, InsertUser, 
   resumes, Resume, InsertResume,
@@ -3918,8 +3934,9 @@ export class MemStorage implements IStorage {
       const result = await executeQuery(
         `INSERT INTO career_goals (
           user_id, title, description, goal_type, timeframe, 
-          status, progress, target_date, created_at, updated_at
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) 
+          target_industry, target_role, is_private, is_musk_generated,
+          status, progress, target_date, start_date, last_updated
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) 
         RETURNING *`,
         [
           goal.userId,
@@ -3927,6 +3944,10 @@ export class MemStorage implements IStorage {
           goal.description || null,
           goal.goalType || 'position_change',
           goal.timeframe || 1,
+          goal.targetIndustry || null,
+          goal.targetRole || null,
+          goal.isPrivate !== undefined ? goal.isPrivate : true,
+          goal.isMuskGenerated !== undefined ? goal.isMuskGenerated : true,
           goal.status || 'not_started',
           0, // Initial progress
           goal.targetDate || null,
@@ -3943,43 +3964,62 @@ export class MemStorage implements IStorage {
   }
 
   async updateCareerGoal(id: number, goalData: Partial<CareerGoal>): Promise<CareerGoal | undefined> {
-    const goal = this.careerGoals.get(id);
-    if (!goal) return undefined;
-    
-    const updatedGoal: CareerGoal = {
-      ...goal,
-      ...goalData,
-      updatedAt: new Date()
-    };
-    
-    // If status is being updated to 'completed', set completedAt timestamp
-    if (goalData.status === 'completed' && goal.status !== 'completed') {
-      updatedGoal.completedAt = new Date();
+    try {
+      // First, check if the goal exists
+      const existingGoal = await this.getCareerGoalById(id);
+      if (!existingGoal) return undefined;
+      
+      // Convert updates to SQL SET statements
+      const updates: string[] = [];
+      const values: any[] = [];
+      let paramIndex = 1;
+      
+      // Process each field to be updated
+      for (const [key, value] of Object.entries(goalData)) {
+        // Convert camelCase keys to snake_case
+        const snakeKey = key.replace(/([A-Z])/g, "_$1").toLowerCase();
+        updates.push(`${snakeKey} = $${paramIndex}`);
+        values.push(value);
+        paramIndex++;
+      }
+      
+      // Always update last_updated timestamp
+      updates.push(`last_updated = $${paramIndex}`);
+      values.push(new Date());
+      paramIndex++;
+      
+      // Add the ID as the last parameter for the WHERE clause
+      values.push(id);
+      
+      // Construct and execute the query
+      const query = `UPDATE career_goals SET ${updates.join(', ')} WHERE id = $${paramIndex} RETURNING *`;
+      const result = await executeQuery(query, values);
+      
+      // Return the updated goal
+      return result.rows[0];
+    } catch (error) {
+      console.error("Error in updateCareerGoal:", error);
+      return undefined;
     }
-    
-    this.careerGoals.set(id, updatedGoal);
-    return updatedGoal;
   }
 
   async deleteCareerGoal(id: number): Promise<boolean> {
-    // Delete associated milestones, skills, and progress logs first
-    const milestones = await this.getMilestonesByGoalId(id);
-    for (const milestone of milestones) {
-      await this.deleteGoalMilestone(milestone.id);
+    try {
+      // First check if the goal exists
+      const goal = await this.getCareerGoalById(id);
+      if (!goal) return false;
+      
+      // Delete the goal (the database will handle cascade deletes for related entities)
+      const result = await executeQuery(
+        `DELETE FROM career_goals WHERE id = $1 RETURNING id`,
+        [id]
+      );
+      
+      return result.rowCount > 0;
+    } catch (error) {
+      console.error("Error in deleteCareerGoal:", error);
+      return false;
     }
-    
-    const skills = await this.getSkillsByGoalId(id);
-    for (const skill of skills) {
-      await this.deleteGoalSkill(skill.id);
-    }
-    
-    const progressLogs = await this.getProgressLogsByGoalId(id);
-    for (const log of progressLogs) {
-      await this.deleteGoalProgressLog(log.id);
-    }
-    
-    // Then delete the goal itself
-    return this.careerGoals.delete(id);
   }
   
   // Goal Milestone operations
