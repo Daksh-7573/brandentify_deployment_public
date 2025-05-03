@@ -5438,6 +5438,7 @@ ${extractedText.substring(0, 5000)}
   // Get all career goals for a user
   apiRouter.get("/users/:userId/career-goals", async (req: Request, res: Response) => {
     try {
+      console.log('Handling GET /users/:userId/career-goals request');
       const userIdParam = req.params.userId;
       let userId: number;
       
@@ -5456,8 +5457,19 @@ ${extractedText.substring(0, 5000)}
         }
       }
       
-      const goals = await storage.getCareerGoalsByUserId(userId);
-      return res.json(goals);
+      console.log(`Resolved user ID: ${userId}, calling storage.getCareerGoalsByUserId`);
+      try {
+        const goals = await storage.getCareerGoalsByUserId(userId);
+        console.log(`Successfully retrieved goals: ${JSON.stringify(goals)}`);
+        return res.json(goals);
+      } catch (storageError) {
+        console.error('Error in storage.getCareerGoalsByUserId:', storageError);
+        if (storageError instanceof Error) {
+          console.error(`Storage error details: ${storageError.message}`);
+          console.error(`Storage error stack: ${storageError.stack}`);
+        }
+        throw storageError; // Re-throw to be caught by outer catch
+      }
     } catch (error) {
       console.error("Error fetching career goals:", error);
       return res.status(500).json({ error: "Failed to fetch career goals" });

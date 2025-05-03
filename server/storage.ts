@@ -3903,13 +3903,20 @@ export class MemStorage implements IStorage {
   // Career Goal operations
   async getCareerGoalsByUserId(userId: number): Promise<CareerGoal[]> {
     try {
+      console.log(`Fetching career goals for user ID: ${userId}`);
       const results = await executeQuery(
         `SELECT * FROM career_goals WHERE user_id = $1 ORDER BY created_at DESC`,
         [userId]
       );
+      console.log(`Retrieved ${results.rows.length} career goals`);
       return results.rows;
     } catch (error) {
       console.error("Error in getCareerGoalsByUserId:", error);
+      // Log detailed error information
+      if (error instanceof Error) {
+        console.error(`Error details: ${error.message}`);
+        console.error(`Error stack: ${error.stack}`);
+      }
       return [];
     }
   }
