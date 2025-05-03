@@ -8303,6 +8303,15 @@ export const storage = {
   getUserByUsername: (username: string) => dbStorage.getUserByUsername(username),
   getUserByPhoneNumber: (phoneNumber: string) => dbStorage.getUserByPhoneNumber(phoneNumber),
   
+  // Work Experience methods
+  getWorkExperiencesByUserId: (userId: number) => dbStorage.getWorkExperiencesByUserId(userId),
+  
+  // Skills methods
+  getSkillsByUserId: (userId: number) => dbStorage.getSkillsByUserId(userId),
+  
+  // Education methods
+  getEducationsByUserId: (userId: number) => dbStorage.getEducationsByUserId(userId),
+  
   // Career Goal methods
   getCareerGoalsByUserId: (userId: number) => dbStorage.getCareerGoalsByUserId(userId),
   getCareerGoalById: (id: number) => dbStorage.getCareerGoalById(id),
