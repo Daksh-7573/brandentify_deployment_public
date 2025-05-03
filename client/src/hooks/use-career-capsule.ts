@@ -164,7 +164,7 @@ export const useCareerCapsule = (userId: number | string) => {
   const useDeleteCapsule = () => {
     return useMutation({
       mutationFn: (capsuleId: number) => {
-        return apiRequest('DELETE', `/api/career-goals/${capsuleId}`);
+        return apiRequest('DELETE', `/api/career-capsules/${capsuleId}`);
       },
       onSuccess: () => {
         toast({
@@ -174,6 +174,7 @@ export const useCareerCapsule = (userId: number | string) => {
         // Invalidate both paths to ensure UI updates properly
         invalidateGoalQueries();
         queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/career-goals`] });
+        queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/career-capsule`] });
       },
       onError: (error: any) => {
         toast({
