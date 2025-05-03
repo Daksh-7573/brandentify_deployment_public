@@ -10,6 +10,7 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, CheckCircle, CheckCircle2 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { queryClient } from "@/lib/queryClient";
 
 // Utility function to format dates
 const formatDate = (dateString: string) => {
@@ -207,6 +208,7 @@ export default function CareerCapsulePage() {
   };
   
   const handleOpenDeleteDialog = (capsuleId: number) => {
+    console.log("Opening delete dialog for capsule ID:", capsuleId);
     setCapsuleToDelete(capsuleId);
     setShowDeleteDialog(true);
   };
@@ -226,10 +228,15 @@ export default function CareerCapsulePage() {
         setSelectedGoalId(null);
       }
       
-      // Force a manual refresh after small delay to ensure the backend has processed the deletion
+      // Force a strong refresh by invalidating all goal-related queries
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/career-capsule`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/career-goals`] });
+      
+      // Force a manual refresh after a small delay to ensure the backend has processed the deletion
       setTimeout(() => {
+        console.log("Performing refetch after deletion...");
         refetchGoals();
-      }, 300);
+      }, 500);
       
     } catch (error) {
       console.error("Error deleting capsule:", error);

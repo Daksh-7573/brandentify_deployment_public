@@ -76,6 +76,10 @@ export const useCareerCapsule = (userId: number | string) => {
     return useQuery({
       queryKey: [`/api/users/${userId}/career-capsule`],
       enabled: !!userId,
+      refetchOnWindowFocus: true,
+      staleTime: 1000, // Consider data stale after 1 second
+      retry: 2,
+      retryDelay: 1000,
     });
   };
 
