@@ -453,9 +453,17 @@ export default function CareerCapsulePage() {
       <Dialog open={showDetailsDialog} onOpenChange={setShowDetailsDialog}>
         <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{goalDetails?.goal.title || "Goal Details"}</DialogTitle>
+            <DialogTitle>
+              {goalDetails && typeof goalDetails === 'object' ? 
+                (goalDetails.goal?.title || goalDetails.title || "Goal Details") : 
+                "Goal Details"
+              }
+            </DialogTitle>
             <DialogDescription>
-              {goalDetails?.goal.description || "Loading goal details..."}
+              {goalDetails && typeof goalDetails === 'object' ? 
+                (goalDetails.goal?.description || goalDetails.description || "Loading goal details...") : 
+                "Loading goal details..."
+              }
             </DialogDescription>
           </DialogHeader>
           
@@ -468,30 +476,41 @@ export default function CareerCapsulePage() {
               <div className="flex justify-between">
                 <div>
                   <p className="text-sm font-medium">Goal Type</p>
-                  <p className="text-sm">{getGoalTypeText(goalDetails.goal.goalType as GoalType)}</p>
+                  <p className="text-sm">
+                    {getGoalTypeText(
+                      (goalDetails.goal?.goalType || goalDetails.goalType) as GoalType
+                    )}
+                  </p>
                 </div>
                 <div>
                   <p className="text-sm font-medium">Target Date</p>
-                  <p className="text-sm">{formatDate(goalDetails.goal.targetDate as string)}</p>
+                  <p className="text-sm">
+                    {formatDate(
+                      (goalDetails.goal?.targetDate || goalDetails.targetDate) as string
+                    )}
+                  </p>
                 </div>
                 <div>
                   <p className="text-sm font-medium">Progress</p>
-                  <p className="text-sm">{goalDetails.goal.progress}%</p>
+                  <p className="text-sm">
+                    {(goalDetails.goal?.progress || goalDetails.progress || 0)}%
+                  </p>
                 </div>
               </div>
               
               <div className="space-y-2">
                 <div className="flex justify-between items-center mb-3">
                   <h3 className="text-lg font-medium">Milestones</h3>
-                  {goalDetails.milestones && goalDetails.milestones.length === 0 && (
+                  {((goalDetails.milestones && goalDetails.milestones.length === 0) || 
+                   !goalDetails.milestones) && (
                     <Button 
                       size="sm" 
                       onClick={() => {
                         if (selectedGoalId) {
                           generateMilestones.mutate({
-                            goalType: goalDetails.goal.goalType,
-                            description: goalDetails.goal.description,
-                            timeframe: goalDetails.goal.timeframe,
+                            goalType: goalDetails.goal?.goalType || goalDetails.goalType,
+                            description: goalDetails.goal?.description || goalDetails.description,
+                            timeframe: goalDetails.goal?.timeframe || goalDetails.timeframe,
                             useModel: 'openai', // Default to OpenAI
                           });
                         }
