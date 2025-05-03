@@ -39,7 +39,7 @@ import { setupMuskTestingRoutes } from "./routes-musk-testing";
 import muskFeedbackRoutes from "./routes-musk-feedback";
 import { setupServicesRoutes } from "./routes-services";
 import addProjectUpdateRoutes from "./routes-project-update";
-// Career Capsule routes removed
+import careerCapsuleRoutes from "./routes-career-capsule";
 import { 
   handleSmartConnect, 
   handleCareerRecommendations, 
@@ -5434,6 +5434,8 @@ ${extractedText.substring(0, 5000)}
   console.log("Project Update routes loaded");
 
   // Career Capsule routes
+  apiRouter.use(careerCapsuleRoutes);
+  console.log("Career Capsule routes registered");
   
   // Get all career goals for a user
   apiRouter.get("/users/:userId/career-goals", async (req: Request, res: Response) => {
