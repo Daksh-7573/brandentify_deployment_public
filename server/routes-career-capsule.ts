@@ -98,10 +98,68 @@ router.post('/users/:userId/career-capsule', async (req, res) => {
       isMuskGenerated: true, // Setting this to true since we'll create default milestones
     };
 
-    console.log('Creating career capsule with data:', JSON.stringify(capsuleData));
+    console.log('[Career Capsule] Creating career capsule with data:', JSON.stringify(capsuleData));
     const capsule = await storage.createCareerCapsule(capsuleData);
+    console.log(`[Career Capsule] Created capsule with ID: ${capsule.id}`);
     
-    // Create default milestones based on timeframe
+    // Check available API keys
+    const openaiKey = process.env.OPENAI_API_KEY;
+    const anthropicKey = process.env.ANTHROPIC_API_KEY;
+    console.log(`[Career Capsule] API Keys available: OpenAI: ${openaiKey ? 'YES' : 'NO'}, Anthropic: ${anthropicKey ? 'YES' : 'NO'}`);
+    
+    // Use Anthropic if OpenAI key is not available but Anthropic is
+    const aiModel = openaiKey ? 'openai' : (anthropicKey ? 'anthropic' : 'openai');
+    console.log(`[Career Capsule] Selected AI model: ${aiModel}`);
+    
+    // Set up the options for AI-generated milestones
+    const options = {
+      userId: userId,
+      capsuleId: capsule.id,
+      goalType: capsuleData.goalType,
+      customGoal: capsuleData.customGoal,
+      timeframe: parseInt(capsuleData.timeframe.toString()) || 3,
+      industry: capsuleData.industry,
+      description: capsuleData.description,
+      useModel: aiModel as 'openai' | 'anthropic', // Force type to be correct
+    };
+    
+    console.log('Generating AI milestones for new capsule:', capsule.id);
+    
+    try {
+      // Generate milestones using Musk AI
+      const result = await generateCapsuleMilestones(options);
+      
+      if (result.success && result.years) {
+        console.log(`Successfully generated ${result.years.length} years of milestones with Musk AI`);
+        
+        // Save the AI-generated milestones
+        const saved = await saveCapsuleMilestones(capsule.id, result.years);
+        
+        if (saved) {
+          // Update the capsule to indicate AI milestones were generated
+          await storage.updateCareerCapsule(capsule.id, {
+            isMuskGenerated: true
+          });
+          
+          // Return the created capsule with success message
+          return res.status(201).json({
+            ...capsule,
+            milestonesGenerated: true,
+            message: 'Career capsule created with AI-generated milestones'
+          });
+        } else {
+          console.error('Failed to save AI-generated milestones. Falling back to default milestones.');
+        }
+      } else {
+        console.error('Failed to generate AI milestones:', result.message);
+        console.log('Falling back to default milestones');
+      }
+    } catch (error) {
+      console.error('Error during AI milestone generation:', error);
+      console.log('Falling back to default milestones');
+    }
+    
+    // FALLBACK: Create default milestones if AI generation fails
     console.log('Creating default milestones for new capsule:', capsule.id);
     
     const timeframe = parseInt(capsuleData.timeframe.toString()) || 3; // Default to 3 years if parsing fails
@@ -165,16 +223,16 @@ router.post('/users/:userId/career-capsule', async (req, res) => {
       }
     }
     
-    // Update the capsule to indicate milestones were generated
+    // Update the capsule to indicate milestones were generated (fallback)
     await storage.updateCareerCapsule(capsule.id, {
       isMuskGenerated: true
     });
     
-    // Return the created capsule with success message
+    // Return the created capsule with success message for fallback
     return res.status(201).json({
       ...capsule,
       milestonesGenerated: true,
-      message: 'Career capsule created with default milestones'
+      message: 'Career capsule created with default milestones (AI generation failed)'
     });
   } catch (error) {
     console.error('Error creating career capsule:', error);

@@ -55,20 +55,39 @@ interface MilestoneGenerationResult {
  * @returns Generated milestones for each year in the timeframe
  */
 export async function generateCapsuleMilestones(options: MilestoneGenerationRequest): Promise<MilestoneGenerationResult> {
+  console.log(`[Musk AI] Starting milestone generation for career capsule ${options.capsuleId}`);
+  console.log(`[Musk AI] Options:`, JSON.stringify(options));
+  console.log(`[Musk AI] Using model: ${options.useModel || 'openai'}`);
+  
   try {
+    // Check that API keys are configured
+    const apiKey = options.useModel === 'anthropic' ? process.env.ANTHROPIC_API_KEY : process.env.OPENAI_API_KEY;
+    if (!apiKey) {
+      console.error(`[Musk AI] Missing API key for ${options.useModel || 'openai'}`);
+      return {
+        success: false,
+        message: `Missing API key for ${options.useModel || 'openai'}`
+      };
+    }
+    
     // Get user profile data
+    console.log(`[Musk AI] Fetching user profile for ID: ${options.userId}`);
     const user = await storage.getUser(options.userId);
     if (!user) {
+      console.error(`[Musk AI] User not found with ID: ${options.userId}`);
       return {
         success: false,
         message: "User not found"
       };
     }
+    console.log(`[Musk AI] Found user: ${user.name || user.username}`);
 
     // Get user's work experiences, skills, education, etc.
+    console.log(`[Musk AI] Fetching user career data...`);
     const experiences = await storage.getUserExperiences(options.userId);
     const skills = await storage.getUserSkills(options.userId);
     const education = await storage.getUserEducation(options.userId);
+    console.log(`[Musk AI] Career data retrieved: ${experiences.length} experiences, ${skills.length} skills, ${education.length} education entries`);
 
     // Format the prompt for the AI
     const aiContext = `
