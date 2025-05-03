@@ -1,6 +1,92 @@
 import { pool } from './db';
 import { sql } from 'drizzle-orm';
 
+// Career Capsule interface
+export interface CareerCapsule {
+  id: number;
+  userId: number;
+  title: string;
+  goalType: string;
+  customGoal?: string | null;
+  timeframe: number;
+  description?: string | null;
+  industry?: string | null;
+  isPrivate: boolean;
+  overallProgress: number;
+  isMuskGenerated: boolean;
+  createdAt: Date | string;
+  updatedAt: Date | string;
+}
+
+// Insert CareerCapsule interface
+export interface InsertCareerCapsule {
+  userId: number;
+  title: string;
+  goalType: string;
+  customGoal?: string | null;
+  timeframe: number;
+  description?: string | null;
+  industry?: string | null;
+  isPrivate?: boolean;
+  overallProgress?: number;
+  isMuskGenerated?: boolean;
+}
+
+// CapsuleYear interface
+export interface CapsuleYear {
+  id: number;
+  capsuleId: number;
+  year: number;
+  description?: string | null;
+  progress: number;
+  createdAt: Date | string;
+  updatedAt: Date | string;
+}
+
+// Insert CapsuleYear interface
+export interface InsertCapsuleYear {
+  capsuleId: number;
+  year: number;
+  description?: string | null;
+  progress?: number;
+}
+
+// CapsuleTask interface
+export interface CapsuleTask {
+  id: number;
+  yearId: number;
+  title: string;
+  description?: string | null;
+  isCompleted: boolean;
+  createdAt: Date | string;
+  updatedAt: Date | string;
+}
+
+// Insert CapsuleTask interface
+export interface InsertCapsuleTask {
+  yearId: number;
+  title: string;
+  description?: string | null;
+  isCompleted?: boolean;
+}
+
+// CapsuleJournal interface
+export interface CapsuleJournal {
+  id: number;
+  capsuleId: number;
+  title: string;
+  content: string;
+  createdAt: Date | string;
+  updatedAt: Date | string;
+}
+
+// Insert CapsuleJournal interface
+export interface InsertCapsuleJournal {
+  capsuleId: number;
+  title: string;
+  content: string;
+}
+
 // Helper function for executing database queries
 async function executeQuery(queryText: string, params: any[] = []) {
   try {
@@ -515,9 +601,7 @@ export interface IStorage {
   updateGoalProgressLog(id: number, log: Partial<GoalProgressLog>): Promise<GoalProgressLog | undefined>;
   deleteGoalProgressLog(id: number): Promise<boolean>;
   
-  // Career Capsule operations - removed
-  // These methods have been disabled as the Career Capsule feature has been removed
-  /*
+  // Career Capsule operations
   getUserCareerCapsule(userId: number): Promise<CareerCapsule | null>;
   getCareerCapsulesByUserId(userId: number): Promise<CareerCapsule[]>;
   getCareerCapsuleById(id: number): Promise<CareerCapsule | undefined>;
@@ -548,7 +632,6 @@ export interface IStorage {
   createCapsuleJournal(journal: InsertCapsuleJournal): Promise<CapsuleJournal>;
   updateCapsuleJournal(id: number, journal: Partial<CapsuleJournal>): Promise<CapsuleJournal | undefined>;
   deleteCapsuleJournal(id: number): Promise<boolean>;
-  */
 }
 
 // In-memory implementation of the storage
