@@ -452,4 +452,42 @@ router.post('/career-capsules/:capsuleId/generate-milestones', async (req, res) 
   }
 });
 
+// Delete career capsule
+router.delete('/career-capsules/:capsuleId', async (req, res) => {
+  try {
+    const capsuleId = parseInt(req.params.capsuleId);
+    if (isNaN(capsuleId)) {
+      return res.status(400).json({ message: 'Invalid capsule ID' });
+    }
+    
+    // Check if the capsule exists
+    const capsule = await storage.getCareerCapsuleById(capsuleId);
+    if (!capsule) {
+      return res.status(404).json({ message: 'Career capsule not found' });
+    }
+    
+    // Delete the capsule
+    const deleted = await storage.deleteCareerCapsule(capsuleId);
+    
+    if (deleted) {
+      return res.status(200).json({ 
+        success: true, 
+        message: 'Career capsule deleted successfully' 
+      });
+    } else {
+      return res.status(500).json({ 
+        success: false, 
+        message: 'Failed to delete career capsule' 
+      });
+    }
+  } catch (error) {
+    console.error('Error deleting career capsule:', error);
+    return res.status(500).json({ 
+      success: false,
+      message: 'Error deleting career capsule',
+      error: error.message 
+    });
+  }
+});
+
 export default router;
