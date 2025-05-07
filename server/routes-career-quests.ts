@@ -189,6 +189,10 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
         
         console.log(`[GET /users/${userId}/quests/current-week] Fetching quests for week ${weekNumber}, year ${year}`);
         
+        // Also check for the previous week's quests in case they're relevant
+        const prevWeek = weekNumber > 1 ? weekNumber - 1 : 52;
+        const prevYear = prevWeek === 52 ? year - 1 : year;
+        
         // Using direct DB query instead of the storage method
         const userQuestsResult = await pool.query(`
           SELECT 
@@ -206,12 +210,14 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
             week_number as "weekNumber",
             year
           FROM user_quests
-          WHERE user_id = $1 AND week_number = $2 AND year = $3
+          WHERE user_id = $1 AND 
+                ((week_number = $2 AND year = $3) OR 
+                 (week_number = $4 AND year = $5))
           ORDER BY assigned_at DESC
-        `, [userId, weekNumber, year]);
+        `, [userId, weekNumber, year, prevWeek, prevYear]);
         
         const weeklyQuests = userQuestsResult.rows;
-        console.log(`[GET /users/${userId}/quests/current-week] Found ${weeklyQuests.length} quests for week ${weekNumber}`);
+        console.log(`[GET /users/${userId}/quests/current-week] Found ${weeklyQuests.length} quests for weeks ${prevWeek}-${weekNumber}`);
         
         res.json(weeklyQuests);
       } catch (dbError) {
