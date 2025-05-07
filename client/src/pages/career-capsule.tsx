@@ -776,7 +776,15 @@ export default function CareerCapsulePage() {
             <p className="text-center py-4">Failed to load goal details.</p>
           )}
           
-          <DialogFooter className="flex justify-end items-center">
+          <DialogFooter className="flex justify-between items-center">
+            <div className="flex gap-2">
+              <Button 
+                variant="destructive" 
+                onClick={() => handleOpenDeleteDialog(selectedGoalId || 0)}
+              >
+                Delete Career Capsule
+              </Button>
+            </div>
             <Button onClick={() => setShowDetailsDialog(false)}>Close</Button>
           </DialogFooter>
         </DialogContent>
