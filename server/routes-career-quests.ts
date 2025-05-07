@@ -196,24 +196,33 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
         // Using direct DB query instead of the storage method
         const userQuestsResult = await pool.query(`
           SELECT 
-            id,
-            user_id as "userId",
-            quest_definition_id as "questDefinitionId",
-            status,
-            progress,
-            assigned_at as "assignedAt",
-            completed_at as "completedAt",
-            dismissed_reason as "dismissedReason",
-            xp_earned as "xpEarned",
-            badge_earned as "badgeEarned",
-            musk_response as "muskResponse",
-            week_number as "weekNumber",
-            year
-          FROM user_quests
-          WHERE user_id = $1 AND 
-                ((week_number = $2 AND year = $3) OR 
-                 (week_number = $4 AND year = $5))
-          ORDER BY assigned_at DESC
+            uq.id,
+            uq.user_id as "userId",
+            uq.quest_definition_id as "questDefinitionId",
+            uq.status,
+            uq.progress,
+            uq.assigned_at as "assignedAt",
+            uq.completed_at as "completedAt",
+            uq.dismissed_reason as "dismissedReason",
+            uq.xp_earned as "xpEarned",
+            uq.badge_earned as "badgeEarned",
+            uq.musk_response as "muskResponse",
+            uq.week_number as "weekNumber",
+            qd.title as "questTitle",
+            qd.description as "questDescription",
+            qd.type as "questType",
+            qd.target_count as "targetCount",
+            qd.target_action as "targetAction",
+            qd.xp_reward as "xpReward",
+            qd.badge_reward as "badgeReward",
+            qd.musk_tip as "muskTip",
+            uq.year
+          FROM user_quests uq
+          LEFT JOIN quest_definitions qd ON uq.quest_definition_id = qd.id 
+          WHERE uq.user_id = $1 AND 
+                ((uq.week_number = $2 AND uq.year = $3) OR 
+                 (uq.week_number = $4 AND uq.year = $5))
+          ORDER BY uq.assigned_at DESC
         `, [userId, weekNumber, year, prevWeek, prevYear]);
         
         const weeklyQuests = userQuestsResult.rows;
