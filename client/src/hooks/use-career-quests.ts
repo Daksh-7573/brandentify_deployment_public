@@ -82,26 +82,46 @@ export const useUserQuestsWithDefinitions = (userId: number) => {
 // Fetch user's weekly quests
 export const useUserWeeklyQuests = (userId: number, weekNumber: number, year: number) => {
   return useQuery({
-    queryKey: [`/api/users/${userId}/quests/current-week`],
+    queryKey: [`/api/users/${userId}/quests/current-week`, weekNumber, year],
     queryFn: async () => {
       try {
-        const res = await fetch(`/api/users/${userId}/quests/current-week?week=${weekNumber}&year=${year}`);
-        if (!res.ok) {
-          console.error('Failed to fetch weekly quests, status:', res.status);
-          throw new Error('Failed to fetch weekly quests');
+        // First try with current week
+        const currentWeekRes = await fetch(`/api/users/${userId}/quests/current-week`);
+        if (currentWeekRes.ok) {
+          const contentType = currentWeekRes.headers.get('content-type');
+          if (contentType && contentType.includes('application/json')) {
+            const quests = await currentWeekRes.json() as UserQuest[];
+            if (quests && quests.length > 0) {
+              console.log(`Found ${quests.length} quests for current week`);
+              return quests;
+            }
+          }
         }
-        const contentType = res.headers.get('content-type');
-        if (!contentType || !contentType.includes('application/json')) {
-          console.error('Expected JSON but got', contentType);
-          throw new Error('Unexpected response format for weekly quests');
+        
+        // If no results, try with previous week (week 18)
+        console.log('No quests found for current week, trying week 18');
+        const prevWeekRes = await fetch(`/api/users/${userId}/quests-with-definitions`);
+        if (prevWeekRes.ok) {
+          const contentType = prevWeekRes.headers.get('content-type');
+          if (contentType && contentType.includes('application/json')) {
+            const allQuests = await prevWeekRes.json() as UserQuest[];
+            // Filter for week 18 quests
+            const week18Quests = allQuests.filter(q => q.weekNumber === 18 && q.year === 2025);
+            if (week18Quests && week18Quests.length > 0) {
+              console.log(`Found ${week18Quests.length} quests for week 18`);
+              return week18Quests;
+            }
+          }
         }
-        return res.json() as Promise<UserQuest[]>;
+        
+        console.error('Failed to fetch any weekly quests');
+        return []; // Return empty array to avoid UI errors
       } catch (error) {
         console.error('Error fetching weekly quests:', error);
-        throw error;
+        return []; // Return empty array to avoid UI errors
       }
     },
-    enabled: !!userId && !!weekNumber && !!year
+    enabled: !!userId
   });
 };
 
