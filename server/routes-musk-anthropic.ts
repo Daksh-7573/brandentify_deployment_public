@@ -1,5 +1,5 @@
 import express from 'express';
-import { generateCareerAdvice, analyzeResume, generateNetworkingRecommendations } from './services/anthropic-service';
+import { generateCareerAdvice, analyzeResume, generateNetworkingRecommendations } from './services/openai-service';
 
 export const registerMuskAnthropicRoutes = (app: express.Express) => {
   // Career advice endpoint
@@ -246,5 +246,5 @@ Open Source Contribution | 2019-Present
     }
   });
 
-  console.log('Musk AI Career Assistant routes (Anthropic) loaded');
+  console.log('Musk AI Career Assistant routes loaded');
 };
