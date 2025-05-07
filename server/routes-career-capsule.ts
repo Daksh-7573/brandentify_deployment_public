@@ -461,9 +461,7 @@ router.post('/capsule-tasks/:taskId/toggle', async (req, res) => {
       return res.status(400).json({ message: 'Invalid task ID' });
     }
 
-    // Use direct SQL to toggle the task completion status
-    const { pool } = require('./db');
-    
+    // Use the already imported pool to execute the SQL update
     console.log(`[SQL Toggle] Executing SQL update for task ${taskId}`);
     
     const result = await pool.query(`
