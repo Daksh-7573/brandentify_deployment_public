@@ -566,17 +566,69 @@ export async function saveCapsuleMilestones(capsuleId: number, years: YearMilest
       return false;
     }
 
-    console.log(`[Milestone Save] Starting to save milestones for capsule ${capsuleId}, found ${years.length} years to save`);
+    const timeframe = capsule.timeframe || 3; // Default to 3 years if not specified
+    console.log(`[Milestone Save] Starting to save milestones for capsule ${capsuleId}, found ${years.length} years from AI, timeframe=${timeframe}`);
     console.log(`[Milestone Save] Capsule details: ${JSON.stringify(capsule)}`);
 
+    // Ensure we have the correct number of years based on the timeframe
+    // If AI generated too few, we'll fill in the rest with defaults
+    // If AI generated too many, we'll only use the first 'timeframe' number of years
+    const yearsToProcess = years.slice(0, timeframe);
+    
+    // If AI didn't generate enough years, create placeholders for the remaining years
+    if (yearsToProcess.length < timeframe) {
+      console.log(`[Milestone Save] AI generated only ${yearsToProcess.length} years, but timeframe is ${timeframe}. Creating placeholders for the remaining years.`);
+      
+      for (let i = yearsToProcess.length + 1; i <= timeframe; i++) {
+        yearsToProcess.push({
+          year: i,
+          title: `Year ${i}${i === 1 ? " - Foundation" : i === timeframe ? " - Achievement" : " - Development"}`,
+          description: `Focus on ${i === 1 ? "building foundational skills and knowledge" : 
+                    i === timeframe ? "reaching your target goal and establishing yourself" : 
+                    "developing advanced expertise and expanding your network"}`,
+          milestone: `${i === 1 ? "Foundation Building" : i === timeframe ? "Goal Achievement" : "Skills Development"} - Year ${i}`,
+          tasks: [
+            {
+              title: `${i === 1 ? "Research" : i === timeframe ? "Achieve" : "Advance"} in ${capsule.title || 'Your Career Path'}`,
+              description: `${i === 1 ? 
+                "Conduct thorough research on requirements and pathways" : 
+                i === timeframe ? 
+                "Accomplish your primary goal and celebrate your achievement" : 
+                "Continue building on previous progress and expanding your expertise"}`,
+              priority: 1,
+              dueDate: new Date(new Date().setFullYear(new Date().getFullYear() + i, 5, 30)).toISOString().split('T')[0]
+            },
+            {
+              title: `${i === 1 ? "Learn" : i === timeframe ? "Lead" : "Master"} Key Skills`,
+              description: `${i === 1 ? 
+                "Identify and begin learning essential skills for your goal" : 
+                i === timeframe ? 
+                "Demonstrate leadership and mentor others in your field" : 
+                "Deepen your expertise in specialized areas relevant to your goal"}`,
+              priority: 1,
+              dueDate: new Date(new Date().setFullYear(new Date().getFullYear() + i, 2, 15)).toISOString().split('T')[0]
+            }
+          ]
+        });
+      }
+    }
+    
+    // Now ensure years are properly numbered from 1 to timeframe in sequential order
+    yearsToProcess.forEach((yearData, index) => {
+      // Set the correct year number based on index (1-based)
+      yearData.year = index + 1;
+    });
+    
+    console.log(`[Milestone Save] Final milestone distribution: ${timeframe} milestones to be created`);
+
     // Create years and tasks
-    for (const yearData of years) {
-      console.log(`[Milestone Save] Creating year for capsule ${capsuleId}: year=${yearData.year || yearData.yearNumber}, title=${yearData.title}`);
+    for (const yearData of yearsToProcess) {
+      console.log(`[Milestone Save] Creating year for capsule ${capsuleId}: year=${yearData.year}, title=${yearData.title}`);
       
       // Create the year
       const yearRecord = await storage.createCapsuleYear({
         capsuleId,
-        year: yearData.year || yearData.yearNumber || 1, // Support both field names
+        year: yearData.year, // Now using the corrected year number
         title: yearData.title,
         description: yearData.description,
         milestone: yearData.milestone,
@@ -603,7 +655,7 @@ export async function saveCapsuleMilestones(capsuleId: number, years: YearMilest
             
             // Calculate appropriate year based on current year and year number
             const currentYear = new Date().getFullYear();
-            const targetYear = currentYear + (yearData.year || yearData.yearNumber || 1);
+            const targetYear = currentYear + yearData.year;
             
             // Create new date with corrected year
             const updatedDate = new Date(originalDate);
