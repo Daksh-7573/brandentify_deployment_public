@@ -6,13 +6,11 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { 
   useUserQuestsWithDefinitions, 
-  useUserXp, 
   useUserWeeklyQuests, 
   getCurrentWeekNumber, 
   getCurrentYear
 } from '@/hooks/use-career-quests';
 import { QuestCard } from './quest-card';
-import { XpProgressBar } from './xp-progress-bar';
 import { cn } from '@/lib/utils';
 import { Link } from 'wouter';
 import { BadgeCheck, Lightbulb, GraduationCap } from 'lucide-react';
@@ -42,11 +40,7 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
     refetch: refetchAll
   } = useUserQuestsWithDefinitions(userId);
   
-  const {
-    data: userXp,
-    isLoading: isLoadingXp,
-    error: xpError
-  } = useUserXp(userId);
+  // Removed XP progress functionality since it's now in the parent component
 
   useEffect(() => {
     const refetchInterval = setInterval(() => {
@@ -73,15 +67,7 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
         variant: 'destructive',
       });
     }
-    
-    if (xpError) {
-      toast({
-        title: 'Error fetching XP',
-        description: (xpError as Error).message,
-        variant: 'destructive',
-      });
-    }
-  }, [weeklyError, allError, xpError, toast]);
+  }, [weeklyError, allError, toast]);
   
   const activeQuests = allQuests?.filter(quest => quest.status === 'active') || [];
   const completedQuests = allQuests?.filter(quest => quest.status === 'completed') || [];
@@ -144,20 +130,6 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
         </div>
       </CardHeader>
       <CardContent>
-        {/* XP Progress Bar */}
-        {isLoadingXp ? (
-          <Skeleton className="w-full h-[40px] mb-4" />
-        ) : (
-          userXp && (
-            <XpProgressBar 
-              balance={userXp.balance} 
-              monthlyEarned={userXp.currentMonthEarned}
-              lifetimeEarned={userXp.lifetimeEarned}
-              className="mb-4"
-            />
-          )
-        )}
-        
         {/* Skill Quests Highlight Card */}
         {!isLoadingAll && skillQuests.length > 0 && (
           <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 p-4 rounded-md border border-blue-100 dark:border-blue-900 mb-6 flex items-center justify-between">
