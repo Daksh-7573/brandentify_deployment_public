@@ -78,7 +78,6 @@ export default function CareerCapsulePage() {
   const { data: goalDetails, isLoading: isLoadingDetails } = useGoalDetails(selectedGoalId || 0);
   const createGoalMutation = useCreateGoal();
   const deleteCapsuleMutation = useDeleteCapsule();
-  const generateMilestones = useGenerateMilestones();
   
   // Debug logging
   console.log("Career Goals API Response:", { goals, isLoading, error });
@@ -100,54 +99,114 @@ export default function CareerCapsulePage() {
   const [capsuleToDelete, setCapsuleToDelete] = useState<number | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   
-  // Form submission handler
+  // Milestone generation
+  const generateMilestones = useGenerateMilestones(selectedGoalId || 0);
+  const [showMilestoneGenerationDialog, setShowMilestoneGenerationDialog] = useState(false);
+
+  // State for tracking milestone generation
+  const [createdGoalId, setCreatedGoalId] = useState<number | null>(null);
+  const [milestoneGenerating, setMilestoneGenerating] = useState(false);
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
+  
+  // Automatic milestone generation function
+  const generateMilestonesAfterCreation = useGenerateMilestones(createdGoalId || 0);
+  
+  // Effect to trigger milestone generation after goal creation
+  useEffect(() => {
+    const triggerMilestoneGeneration = async () => {
+      if (createdGoalId && !milestoneGenerating) {
+        setMilestoneGenerating(true);
+        try {
+          // Generate milestones for the newly created goal
+          await generateMilestonesAfterCreation.mutateAsync({
+            goalType,
+            customGoal: goalType === 'custom' ? goalTitle : undefined,
+            timeframe: parseInt(timeframe),
+            description,
+            useModel: 'openai', // Default to OpenAI
+          });
+          
+          // Show success dialog
+          setShowSuccessDialog(true);
+          
+          toast({
+            title: "Milestones created",
+            description: "Musk AI has generated personalized milestones for your career goal.",
+          });
+        } catch (error) {
+          console.error("Error generating milestones:", error);
+          toast({
+            title: "Milestone generation failed",
+            description: "Failed to generate milestones. You can try again from the goal details page.",
+            variant: "destructive",
+          });
+        } finally {
+          setMilestoneGenerating(false);
+          setCreatedGoalId(null);
+        }
+      }
+    };
+    
+    triggerMilestoneGeneration();
+  }, [createdGoalId, goalType, timeframe, description, goalTitle, generateMilestonesAfterCreation, milestoneGenerating]);
+
+  // Handle form submission
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     
-    // Validate inputs
-    if (!goalTitle || !goalType || !description || !timeframe) {
+    if (!goalTitle) {
       toast({
-        title: "Missing Fields",
-        description: "Please fill out all required fields",
+        title: "Missing information",
+        description: "Please provide a title for your career goal.",
         variant: "destructive",
       });
       return;
     }
     
+    // Calculate target date based on timeframe if not provided
+    const calculatedTargetDate = targetDate || new Date(
+      new Date().setFullYear(new Date().getFullYear() + parseInt(timeframe))
+    ).toISOString();
+    
     setIsSubmitting(true);
     
     try {
+      // Create the goal
       const response = await createGoalMutation.mutateAsync({
         title: goalTitle,
-        goalType,
-        description,
-        timeframe: parseInt(timeframe, 10),
+        description: description,
+        goalType: goalType,
+        timeframe: parseInt(timeframe),
+        targetDate: calculatedTargetDate,
+        status: "not_started",
       });
       
-      console.log("Goal created:", response);
+      // Store the created goal ID to trigger milestone generation
+      if (response && response.id) {
+        setCreatedGoalId(response.id);
+        
+        toast({
+          title: "Goal created",
+          description: "Your career goal has been created. Musk AI is now generating personalized milestones...",
+        });
+      }
       
-      // Reset form state
+      // Reset form
       setGoalTitle("");
       setGoalType("position_change");
       setTimeframe("3");
       setDescription("");
       setTargetDate("");
+      
+      // Close dialog and refresh goals
       setShowCreateDialog(false);
-      
-      // Refetch goals
-      await refetchGoals();
-      
-      // Show success message
-      toast({
-        title: "Career Capsule Created",
-        description: "Your new career goal has been added to your capsules",
-      });
+      refetchGoals();
       
     } catch (error) {
       console.error("Error creating goal:", error);
       toast({
-        title: "Failed to Create Capsule",
-        description: "There was a problem creating your career capsule",
+        title: "Error",
+        description: "Failed to create the career goal. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -155,297 +214,387 @@ export default function CareerCapsulePage() {
     }
   };
   
-  // Open goal details dialog
   const handleViewDetails = (goalId: number) => {
     setSelectedGoalId(goalId);
     setShowDetailsDialog(true);
   };
   
-  // Handle opening delete dialog
-  const handleOpenDeleteDialog = (goalId: number) => {
-    setCapsuleToDelete(goalId);
-    setShowDetailsDialog(false);
+  const handleOpenDeleteDialog = (capsuleId: number) => {
+    console.log("Opening delete dialog for capsule ID:", capsuleId);
+    setCapsuleToDelete(capsuleId);
     setShowDeleteDialog(true);
   };
   
-  // Handle delete capsule
+  // Regenerate Milestone function has been removed as requested
+
   const handleDeleteCapsule = async () => {
     if (!capsuleToDelete) return;
     
+    console.log(`Starting deletion of capsule with ID ${capsuleToDelete}...`);
     setIsDeleting(true);
-    
     try {
-      await deleteCapsuleMutation.mutateAsync(capsuleToDelete);
+      // Log before sending the API request
+      console.log(`Calling API to delete capsule ID ${capsuleToDelete}...`);
+      
+      // Call the API to delete the capsule
+      const response = await deleteCapsuleMutation.mutateAsync(capsuleToDelete);
+      console.log(`Delete API response:`, response);
+      
+      // Update UI state
       setShowDeleteDialog(false);
+      setCapsuleToDelete(null);
       
-      // Refetch goals
-      await refetchGoals();
+      // If we're deleting the currently viewed goal, close the details dialog
+      if (selectedGoalId === capsuleToDelete) {
+        console.log(`Closing detail dialog for deleted capsule ${capsuleToDelete}`);
+        setShowDetailsDialog(false);
+        setSelectedGoalId(null);
+      }
       
-      // Show success message
+      // Force a strong refresh by invalidating all goal-related queries
+      console.log(`Invalidating queries for user ${userId}...`);
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/career-capsule`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/career-goals`] });
+      
       toast({
-        title: "Career Capsule Deleted",
-        description: "Your career capsule has been deleted",
+        title: "Career capsule deleted",
+        description: "The career capsule has been successfully deleted."
       });
+      
+      // Force a manual refresh after a small delay to ensure the backend has processed the deletion
+      setTimeout(() => {
+        console.log("Performing refetch after deletion...");
+        refetchGoals();
+      }, 1000);
+      
     } catch (error) {
       console.error("Error deleting capsule:", error);
       toast({
-        title: "Failed to Delete Capsule",
-        description: "There was a problem deleting your career capsule",
+        title: "Error",
+        description: "Failed to delete the career capsule. Please try again.",
         variant: "destructive",
       });
     } finally {
       setIsDeleting(false);
-      setCapsuleToDelete(null);
+      // Final refresh to make sure UI reflects current state
+      setTimeout(() => {
+        console.log("Final data refresh after deletion process...");
+        refetchGoals();
+      }, 2000);
     }
   };
-  
+
   return (
-    <PageLayout>
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-2xl font-bold">Career Capsule</h1>
-          <p className="text-muted-foreground">
-            Plan and track your career goals with AI-generated milestones
-          </p>
+    <PageLayout title="Career Capsule">
+      <div className="container py-8">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-3xl font-bold">Career Capsule</h1>
+          <Button onClick={() => setShowCreateDialog(true)}>Create New Goal</Button>
         </div>
-        <Button onClick={() => setShowCreateDialog(true)}>
-          Add New Goal
-        </Button>
+        
+        {isLoading ? (
+          <div className="flex items-center justify-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+          </div>
+        ) : goals ? (
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {/* Case 1: goals is an array */}
+            {Array.isArray(goals) && goals.map((goal: CareerGoal) => (
+              <Card key={goal.id} className="shadow-md hover:shadow-lg transition-shadow">
+                <CardHeader className="pb-2">
+                  <div className="flex justify-between items-start">
+                    <CardTitle className="text-xl">{goal.title}</CardTitle>
+                    <Badge 
+                      className={getStatusColor(goal.status)}
+                    >
+                      {goal.status === "in_progress" ? "In Progress" : 
+                       goal.status === "completed" ? "Completed" : 
+                       goal.status === "abandoned" ? "Abandoned" : "Not Started"}
+                    </Badge>
+                  </div>
+                  <CardDescription>
+                    <div className="flex flex-col gap-1 mt-1">
+                      <span className="text-sm">{getGoalTypeText(goal.goalType as GoalType)}</span>
+                      <span className="text-sm">Target: {formatDate(goal.targetDate as string)}</span>
+                    </div>
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="pb-2">
+                  <div className="mb-3">
+                    <Progress value={goal.progress || 0} className="h-2" />
+                    <span className="text-xs text-muted-foreground mt-1 block">
+                      {goal.progress || 0}% complete
+                    </span>
+                  </div>
+                  <p className="line-clamp-2 text-sm">{goal.description}</p>
+                </CardContent>
+                <CardFooter>
+                  <Button 
+                    variant="outline" 
+                    className="w-full" 
+                    onClick={() => handleViewDetails(goal.id)}
+                  >
+                    View Details
+                  </Button>
+                </CardFooter>
+              </Card>
+            ))}
+
+            {/* Case 2: goals contains a goals property that is an array */}
+            {!Array.isArray(goals) && goals.goals && Array.isArray(goals.goals) && goals.goals.map((goal: CareerGoal) => (
+              <Card key={goal.id} className="shadow-md hover:shadow-lg transition-shadow">
+                <CardHeader className="pb-2">
+                  <div className="flex justify-between items-start">
+                    <CardTitle className="text-xl">{goal.title}</CardTitle>
+                    <Badge 
+                      className={getStatusColor(goal.status)}
+                    >
+                      {goal.status === "in_progress" ? "In Progress" : 
+                       goal.status === "completed" ? "Completed" : 
+                       goal.status === "abandoned" ? "Abandoned" : "Not Started"}
+                    </Badge>
+                  </div>
+                  <CardDescription>
+                    <div className="flex flex-col gap-1 mt-1">
+                      <span className="text-sm">{getGoalTypeText(goal.goalType as GoalType)}</span>
+                      <span className="text-sm">Target: {formatDate(goal.targetDate as string)}</span>
+                    </div>
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="pb-2">
+                  <div className="mb-3">
+                    <Progress value={goal.progress || 0} className="h-2" />
+                    <span className="text-xs text-muted-foreground mt-1 block">
+                      {goal.progress || 0}% complete
+                    </span>
+                  </div>
+                  <p className="line-clamp-2 text-sm">{goal.description}</p>
+                </CardContent>
+                <CardFooter>
+                  <Button 
+                    variant="outline" 
+                    className="w-full" 
+                    onClick={() => handleViewDetails(goal.id)}
+                  >
+                    View Details
+                  </Button>
+                </CardFooter>
+              </Card>
+            ))}
+
+            {/* Case 3: goals is a single object (not an array) and has no goals property */}
+            {!Array.isArray(goals) && (!goals.goals || !Array.isArray(goals.goals)) && goals.id && (
+              <Card className="shadow-md hover:shadow-lg transition-shadow">
+                <CardHeader className="pb-2">
+                  <div className="flex justify-between items-start">
+                    <CardTitle className="text-xl">{goals.title}</CardTitle>
+                    <Badge 
+                      className={getStatusColor(goals.status)}
+                    >
+                      {goals.status === "in_progress" ? "In Progress" : 
+                       goals.status === "completed" ? "Completed" : 
+                       goals.status === "abandoned" ? "Abandoned" : "Not Started"}
+                    </Badge>
+                  </div>
+                  <CardDescription>
+                    <div className="flex flex-col gap-1 mt-1">
+                      <span className="text-sm">{getGoalTypeText(goals.goalType as GoalType)}</span>
+                      <span className="text-sm">Target: {formatDate(goals.targetDate as string)}</span>
+                    </div>
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="pb-2">
+                  <div className="mb-3">
+                    <Progress value={goals.progress || 0} className="h-2" />
+                    <span className="text-xs text-muted-foreground mt-1 block">
+                      {goals.progress || 0}% complete
+                    </span>
+                  </div>
+                  <p className="line-clamp-2 text-sm">{goals.description}</p>
+                </CardContent>
+                <CardFooter>
+                  <Button 
+                    variant="outline" 
+                    className="w-full" 
+                    onClick={() => handleViewDetails(goals.id)}
+                  >
+                    View Details
+                  </Button>
+                </CardFooter>
+              </Card>
+            )}
+          </div>
+        ) : (
+          <div className="text-center space-y-4 py-16 bg-muted/20 rounded-lg">
+            <h2 className="text-xl font-semibold text-gray-700">No career goals yet</h2>
+            <p className="text-muted-foreground max-w-md mx-auto">
+              Set 1-5 year career goals and get AI-generated milestones to help you achieve them.
+              Track your progress and stay focused on your career development journey.
+            </p>
+            <Button className="mt-4" onClick={() => setShowCreateDialog(true)}>Get Started</Button>
+          </div>
+        )}
       </div>
-      
-      {isLoading ? (
-        <div className="flex items-center justify-center h-40">
-          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
-        </div>
-      ) : error ? (
-        <Alert variant="destructive">
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>
-            Failed to load career capsules. Please try again later.
-          </AlertDescription>
-        </Alert>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {Array.isArray(goals) && goals.map((goal: CareerGoal) => (
-            <Card key={goal.id} className="overflow-hidden">
-              <CardHeader className="pb-2">
-                <div className="flex justify-between items-start">
-                  <CardTitle>{goal.title}</CardTitle>
-                  <Badge className={getStatusColor(goal.status)}>
-                    {goal.status === "in_progress" ? "In Progress" : 
-                     goal.status === "completed" ? "Completed" : 
-                     goal.status === "abandoned" ? "Abandoned" : "Not Started"}
-                  </Badge>
-                </div>
-                <CardDescription>
-                  <span className="inline-block mb-1">{getGoalTypeText(goal.goalType as GoalType)}</span>
-                  <span className="block">{formatDate(goal.targetDate as string)}</span>
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="pb-2">
-                <p className="line-clamp-3 text-sm">{goal.description}</p>
-                <div className="mt-3">
-                  <div className="flex justify-between text-xs mb-1">
-                    <span>Progress</span>
-                    <span>{goal.progress || 0}%</span>
-                  </div>
-                  <Progress value={goal.progress || 0} className="h-2" />
-                </div>
-              </CardContent>
-              <CardFooter className="pt-2">
-                <Button 
-                  variant="outline" 
-                  className="w-full"
-                  onClick={() => handleViewDetails(goal.id)}
-                >
-                  View Details
-                </Button>
-              </CardFooter>
-            </Card>
-          ))}
-          
-          {/* Handle non-array format for backwards compatibility */}
-          {!Array.isArray(goals) && goals && goals.goals && Array.isArray(goals.goals) && goals.goals.map((goal: CareerGoal) => (
-            <Card key={goal.id} className="overflow-hidden">
-              <CardHeader className="pb-2">
-                <div className="flex justify-between items-start">
-                  <CardTitle>{goal.title}</CardTitle>
-                  <Badge className={getStatusColor(goal.status)}>
-                    {goal.status === "in_progress" ? "In Progress" : 
-                     goal.status === "completed" ? "Completed" : 
-                     goal.status === "abandoned" ? "Abandoned" : "Not Started"}
-                  </Badge>
-                </div>
-                <CardDescription>
-                  <span className="inline-block mb-1">{getGoalTypeText(goal.goalType as GoalType)}</span>
-                  <span className="block">{formatDate(goal.targetDate as string)}</span>
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="pb-2">
-                <p className="line-clamp-3 text-sm">{goal.description}</p>
-                <div className="mt-3">
-                  <div className="flex justify-between text-xs mb-1">
-                    <span>Progress</span>
-                    <span>{goal.progress || 0}%</span>
-                  </div>
-                  <Progress value={goal.progress || 0} className="h-2" />
-                </div>
-              </CardContent>
-              <CardFooter className="pt-2">
-                <Button 
-                  variant="outline" 
-                  className="w-full"
-                  onClick={() => handleViewDetails(goal.id)}
-                >
-                  View Details
-                </Button>
-              </CardFooter>
-            </Card>
-          ))}
-          
-          {(!goals || 
-            (Array.isArray(goals) && goals.length === 0) ||
-            (goals && goals.goals && goals.goals.length === 0)) && (
-            <Card className="col-span-full">
-              <CardHeader>
-                <CardTitle>No Career Capsules</CardTitle>
-                <CardDescription>
-                  You haven't set any career goals yet
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p>
-                  Create your first career capsule to get started. Musk AI will help you break down your goal into actionable milestones.
-                </p>
-              </CardContent>
-              <CardFooter>
-                <Button onClick={() => setShowCreateDialog(true)}>
-                  Add Your First Goal
-                </Button>
-              </CardFooter>
-            </Card>
-          )}
-        </div>
-      )}
-      
-      {/* Create Goal Dialog */}
+
+      {/* Dialog for Create Goal */}
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-        <DialogContent className="sm:max-w-[600px]">
+        <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Create New Career Capsule</DialogTitle>
+            <DialogTitle>Create New Career Goal</DialogTitle>
             <DialogDescription>
-              Define your career goal and Musk AI will help you break it down into milestones
+              Set your career goals with a 1-5 year timeframe and get AI-generated milestones.
             </DialogDescription>
           </DialogHeader>
-          <form onSubmit={handleSubmit}>
-            <div className="space-y-4 py-4">
-              <div className="space-y-2">
-                <label htmlFor="goal-title" className="block text-sm font-medium">
-                  Goal Title
-                </label>
-                <input
-                  id="goal-title"
-                  type="text"
-                  className="w-full p-2 border rounded-md"
-                  placeholder="E.g., Become CTO, Master React, Switch to Product Management"
-                  value={goalTitle}
-                  onChange={(e) => setGoalTitle(e.target.value)}
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <label htmlFor="goal-type" className="block text-sm font-medium">
-                  Goal Type
-                </label>
-                <select
-                  id="goal-type"
-                  className="w-full p-2 border rounded-md"
-                  value={goalType}
-                  onChange={(e) => setGoalType(e.target.value as GoalType)}
-                >
-                  <option value="position_change">Position Change</option>
-                  <option value="skill_acquisition">Skill Acquisition</option>
-                  <option value="promotion">Promotion</option>
-                  <option value="industry_switch">Industry Switch</option>
-                  <option value="entrepreneurship">Entrepreneurship</option>
-                  <option value="relocation">Relocation</option>
-                  <option value="education">Education</option>
-                  <option value="certification">Certification</option>
-                  <option value="custom">Custom</option>
-                </select>
-              </div>
-              
-              <div className="space-y-2">
-                <label htmlFor="timeframe" className="block text-sm font-medium">
-                  Timeframe (years)
-                </label>
-                <select
-                  id="timeframe"
-                  className="w-full p-2 border rounded-md"
-                  value={timeframe}
-                  onChange={(e) => setTimeframe(e.target.value)}
-                >
-                  <option value="1">1 Year</option>
-                  <option value="2">2 Years</option>
-                  <option value="3">3 Years</option>
-                  <option value="5">5 Years</option>
-                </select>
-              </div>
-              
-              <div className="space-y-2">
-                <label htmlFor="description" className="block text-sm font-medium">
-                  Description
-                </label>
-                <textarea
-                  id="description"
-                  className="w-full p-2 border rounded-md min-h-[100px]"
-                  placeholder="Describe your career goal in detail. Include your current position, skills, and what you want to achieve."
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                />
-              </div>
+          <form className="flex flex-col gap-5 py-4" onSubmit={handleSubmit}>
+            <div className="space-y-2">
+              <label htmlFor="goal-title" className="text-sm font-medium">
+                Goal Title
+              </label>
+              <input
+                id="goal-title"
+                value={goalTitle}
+                onChange={(e) => setGoalTitle(e.target.value)}
+                placeholder="e.g. Become a Product Manager"
+                className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              />
             </div>
-            <DialogFooter>
-              <Button 
-                type="button" 
-                variant="outline" 
-                onClick={() => setShowCreateDialog(false)}
-                disabled={isSubmitting}
+            
+            <div className="space-y-2">
+              <label htmlFor="goal-type" className="text-sm font-medium">
+                Goal Type
+              </label>
+              <select
+                id="goal-type"
+                value={goalType}
+                onChange={(e) => setGoalType(e.target.value as GoalType)}
+                className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                Cancel
-              </Button>
+                <option value="position_change">Position Change</option>
+                <option value="skill_acquisition">Skill Acquisition</option>
+                <option value="promotion">Promotion</option>
+                <option value="industry_switch">Industry Switch</option>
+                <option value="entrepreneurship">Entrepreneurship</option>
+                <option value="certification">Certification</option>
+                <option value="education">Education</option>
+                <option value="custom">Custom</option>
+              </select>
+            </div>
+            
+            <div className="space-y-2">
+              <label htmlFor="timeframe" className="text-sm font-medium">
+                Timeframe (years)
+              </label>
+              <select
+                id="timeframe"
+                value={timeframe}
+                onChange={(e) => setTimeframe(e.target.value)}
+                className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <option value="1">1 year</option>
+                <option value="2">2 years</option>
+                <option value="3">3 years</option>
+                <option value="4">4 years</option>
+                <option value="5">5 years</option>
+              </select>
+            </div>
+            
+            <div className="space-y-2">
+              <label htmlFor="description" className="text-sm font-medium">
+                Description
+              </label>
+              <textarea
+                id="description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Describe your career goal in detail..."
+                className="w-full min-h-[80px] rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              />
+            </div>
+            
+            <div className="mt-2 bg-muted/20 p-3 rounded-md">
+              <p className="text-sm text-muted-foreground">
+                <span className="font-medium text-primary">Note:</span> AI milestones will be automatically generated for your goal based on its type and timeframe.
+              </p>
+            </div>
+            
+            <DialogFooter className="flex space-x-2 justify-end pt-4">
+              <Button type="button" variant="outline" onClick={() => setShowCreateDialog(false)}>Cancel</Button>
               <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? (
-                  <span className="flex items-center">
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Creating...
-                  </span>
-                ) : (
-                  "Create Capsule"
-                )}
+                {isSubmitting ? "Creating..." : "Create Goal"}
               </Button>
             </DialogFooter>
           </form>
         </DialogContent>
       </Dialog>
       
-      {/* Goal Details Dialog */}
+      {/* Success Dialog after goal and milestone creation */}
+      <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center text-primary">
+              <CheckCircle className="mr-2 h-6 w-6" />
+              Career Goal Created Successfully
+            </DialogTitle>
+            <DialogDescription>
+              Musk AI has crafted a personalized roadmap for your career goal.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="py-6">
+            <div className="bg-muted/30 p-4 rounded-md mb-4">
+              <h3 className="font-medium mb-2">What happens next?</h3>
+              <ul className="space-y-2 text-sm">
+                <li className="flex items-start">
+                  <CheckCircle2 className="mr-2 h-4 w-4 text-primary mt-0.5" />
+                  <span>Your goal has been added to your Career Capsule</span>
+                </li>
+                <li className="flex items-start">
+                  <CheckCircle2 className="mr-2 h-4 w-4 text-primary mt-0.5" />
+                  <span>AI-generated milestones have been created to guide your journey</span>
+                </li>
+                <li className="flex items-start">
+                  <CheckCircle2 className="mr-2 h-4 w-4 text-primary mt-0.5" />
+                  <span>You can track your progress and update milestones as you complete them</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button 
+              onClick={() => {
+                setShowSuccessDialog(false);
+                if (createdGoalId) {
+                  setSelectedGoalId(createdGoalId);
+                  setShowDetailsDialog(true);
+                }
+              }}
+            >
+              View Goal Details
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Details Dialog */}
       <Dialog open={showDetailsDialog} onOpenChange={setShowDetailsDialog}>
-        <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
-          <DialogHeader className="mb-4">
-            <div className="flex justify-end">
-              <Button 
-                type="button" 
-                variant="ghost" 
+        <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+          <DialogHeader className="relative">
+            <div className="absolute right-0 top-0">
+              <Button
+                variant="ghost"
                 size="sm"
-                className="text-red-500 hover:text-red-700 hover:bg-red-50 h-8 w-8 p-0"
-                onClick={() => handleOpenDeleteDialog(selectedGoalId || 0)}
-                aria-label="Delete"
+                className="h-8 w-8 p-0 text-destructive"
+                onClick={() => {
+                  if (selectedGoalId) {
+                    handleOpenDeleteDialog(selectedGoalId);
+                  }
+                }}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
+                  width="18"
+                  height="18"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -550,176 +699,76 @@ export default function CareerCapsulePage() {
                   </Alert>
                 )}
                 
+                {/* Debug info about milestones data */}
+                {console.log('Milestone debug info:', { 
+                  hasGoalDetails: !!goalDetails,
+                  hasMilestonesProperty: goalDetails && 'milestones' in goalDetails,
+                  milestonesType: goalDetails && goalDetails.milestones ? typeof goalDetails.milestones : 'undefined',
+                  milestonesIsArray: goalDetails && goalDetails.milestones && Array.isArray(goalDetails.milestones),
+                  milestonesLength: goalDetails && goalDetails.milestones && Array.isArray(goalDetails.milestones) ? goalDetails.milestones.length : 0,
+                  firstMilestone: goalDetails && goalDetails.milestones && Array.isArray(goalDetails.milestones) && goalDetails.milestones.length > 0 ? 
+                    { 
+                      ...goalDetails.milestones[0], 
+                      hasTasks: !!goalDetails.milestones[0].tasks, 
+                      tasksLength: goalDetails.milestones[0].tasks ? goalDetails.milestones[0].tasks.length : 0 
+                    } : 'none'
+                })}
+                
                 {goalDetails && goalDetails.milestones && goalDetails.milestones.length > 0 ? (
                   <div className="space-y-4">
-                    {goalDetails.milestones.map((milestone: any, index: number) => {
+                    {goalDetails.milestones.map((milestone, index) => {
                       console.log(`Rendering milestone ${index}: id=${milestone.id}, title=${milestone.title}`);
                       console.log(`Milestone ${index} has ${milestone.tasks ? milestone.tasks.length : 0} tasks`);
                       
-                      // Calculate completion percentage
-                      const totalTasks = milestone.tasks ? milestone.tasks.length : 0;
-                      const completedTasks = milestone.tasks ? milestone.tasks.filter((task: any) => task.isCompleted).length : 0;
-                      const completionPercentage = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
-                      
-                      // Get year number from milestone title or default to index + 1
-                      const yearMatch = milestone.title.match(/Year (\d+)/i);
-                      const yearNumber = yearMatch ? parseInt(yearMatch[1]) : index + 1;
-                      
-                      // Determine status color and icon
-                      const statusInfo: any = {
-                        "in_progress": { color: "text-amber-600", bgColor: "bg-amber-50", borderColor: "border-amber-200" },
-                        "completed": { color: "text-green-600", bgColor: "bg-green-50", borderColor: "border-green-200" },
-                        "abandoned": { color: "text-red-600", bgColor: "bg-red-50", borderColor: "border-red-200" },
-                        "not_started": { color: "text-gray-600", bgColor: "bg-gray-50", borderColor: "border-gray-200" }
-                      };
-                      
-                      const status = milestone.status || "not_started";
-                      const { color, bgColor, borderColor } = statusInfo[status] || statusInfo.not_started;
-                      
                       return (
-                        <div key={milestone.id} className={`border rounded-lg overflow-hidden ${borderColor} shadow-sm`}>
-                          <div className={`${bgColor} border-b ${borderColor} px-4 py-3`}>
-                            <div className="flex justify-between items-center">
-                              <div className="flex items-center space-x-2">
-                                <div className={`w-8 h-8 rounded-full ${color} bg-white border ${borderColor} flex items-center justify-center font-bold text-sm`}>
-                                  {yearNumber}
-                                </div>
-                                <h4 className="font-medium text-gray-900">{milestone.title}</h4>
-                              </div>
-                              <Badge 
-                                className={getStatusColor(milestone.status)}
-                              >
-                                {milestone.status === "in_progress" ? "In Progress" : 
-                                 milestone.status === "completed" ? "Completed" : 
-                                 milestone.status === "abandoned" ? "Abandoned" : "Not Started"}
-                              </Badge>
-                            </div>
+                        <div key={milestone.id} className="border rounded-md p-3">
+                          <div className="flex justify-between items-start">
+                            <h4 className="font-medium">{milestone.title}</h4>
+                            <Badge 
+                              className={getStatusColor(milestone.status)}
+                            >
+                              {milestone.status === "in_progress" ? "In Progress" : 
+                               milestone.status === "completed" ? "Completed" : 
+                               milestone.status === "abandoned" ? "Abandoned" : "Not Started"}
+                            </Badge>
                           </div>
+                          <p className="text-sm mt-1">{milestone.description}</p>
+                          {milestone.targetDate && (
+                            <p className="text-xs text-muted-foreground mt-2">
+                              Due: {formatDate(milestone.targetDate as string)}
+                            </p>
+                          )}
                           
-                          <div className="p-4">
-                            <p className="text-sm text-gray-700">{milestone.description}</p>
-                            
-                            {/* Task progress bar */}
-                            {totalTasks > 0 && (
-                              <div className="mt-3">
-                                <div className="flex justify-between text-xs mb-1">
-                                  <span>{completedTasks} of {totalTasks} tasks completed</span>
-                                  <span>{completionPercentage}%</span>
-                                </div>
-                                <div className="w-full bg-gray-200 rounded-full h-2">
-                                  <div 
-                                    className={`h-2 rounded-full ${milestone.status === "completed" ? "bg-green-500" : "bg-primary"}`}
-                                    style={{ width: `${completionPercentage}%` }}
-                                  ></div>
-                                </div>
-                              </div>
-                            )}
-                            
-                            {milestone.targetDate && (
-                              <div className="flex items-center mt-3 text-xs text-gray-500">
-                                <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                </svg>
-                                <span>Target completion: {formatDate(milestone.targetDate as string)}</span>
-                              </div>
-                            )}
-                            
-                            {/* Display tasks for this milestone */}
-                            {milestone.tasks && milestone.tasks.length > 0 ? (
-                              <div className="mt-4">
-                                <h5 className="text-sm font-medium mb-3 flex items-center">
-                                  <span className="mr-2">Tasks ({milestone.tasks.length})</span>
-                                  <div className="h-px bg-gray-200 flex-grow"></div>
-                                </h5>
-                                <div className="space-y-4">
-                                  {milestone.tasks.map((task: any, taskIndex: number) => {
-                                    console.log(`Rendering task ${taskIndex} for milestone ${index}: id=${task.id}, title=${task.title}`);
-                                    
-                                    // Parse task description to extract priority and due date
-                                    const hasPriority = task.description.includes("Priority:");
-                                    const hasDueDate = task.description.includes("Due Date:");
-                                    
-                                    // Extract the main description without the metadata
-                                    let mainDescription = task.description;
-                                    if (hasPriority || hasDueDate) {
-                                      mainDescription = task.description.split("\n\n")[0];
-                                    }
-                                    
-                                    // Extract priority
-                                    let priority = "High";
-                                    if (hasPriority) {
-                                      const priorityMatch = task.description.match(/Priority:\s*(High|Medium|Low)/);
-                                      if (priorityMatch && priorityMatch[1]) {
-                                        priority = priorityMatch[1];
-                                      }
-                                    }
-                                    
-                                    // Extract due date
-                                    let dueDate = null;
-                                    if (hasDueDate) {
-                                      const dueDateMatch = task.description.match(/Due Date:\s*(\d{4}-\d{2}-\d{2})/);
-                                      if (dueDateMatch && dueDateMatch[1]) {
-                                        dueDate = dueDateMatch[1];
-                                      }
-                                    }
-                                    
-                                    // Determine priority color
-                                    const priorityColor = priority === "High" 
-                                      ? "bg-red-100 text-red-800 border-red-200" 
-                                      : priority === "Medium" 
-                                        ? "bg-amber-100 text-amber-800 border-amber-200"
-                                        : "bg-blue-100 text-blue-800 border-blue-200";
-                                    
-                                    return (
-                                      <div key={task.id} className="border border-gray-200 rounded-md overflow-hidden">
-                                        <div className="bg-gray-50 p-3 border-b border-gray-200">
-                                          <div className="flex items-center justify-between">
-                                            <span className="font-semibold text-sm">{task.title}</span>
-                                            <div className="flex items-center space-x-2">
-                                              {priority && (
-                                                <Badge 
-                                                  variant="outline"
-                                                  className={priorityColor}
-                                                >
-                                                  {priority} Priority
-                                                </Badge>
-                                              )}
-                                              <Badge 
-                                                variant="outline"
-                                                className={task.isCompleted 
-                                                  ? "bg-green-100 text-green-800 border-green-200" 
-                                                  : "bg-gray-100 text-gray-800 border-gray-200"}
-                                              >
-                                                {task.isCompleted ? "Completed" : "Pending"}
-                                              </Badge>
-                                            </div>
-                                          </div>
-                                          {dueDate && (
-                                            <div className="flex items-center mt-1 text-xs text-gray-500">
-                                              <span className="inline-block">Due: {formatDate(dueDate)}</span>
-                                            </div>
-                                          )}
-                                        </div>
-                                        <div className="p-3 text-sm leading-relaxed">
-                                          {mainDescription}
-                                          
-                                          {/* Display other important info from the task description */}
-                                          {task.description.includes("CEO SKILL AREA:") && (
-                                            <div className="mt-3 p-2 bg-blue-50 border border-blue-100 rounded text-xs">
-                                              <p className="font-medium text-blue-800">CEO Skill Area:</p>
-                                              <p className="text-blue-700">This task develops critical executive capabilities aligned with industry best practices.</p>
-                                            </div>
-                                          )}
-                                        </div>
+                          {/* Display tasks for this milestone */}
+                          {milestone.tasks && milestone.tasks.length > 0 ? (
+                            <div className="mt-3">
+                              <h5 className="text-sm font-medium mb-2">Tasks ({milestone.tasks.length}):</h5>
+                              <div className="space-y-2">
+                                {milestone.tasks.map((task, taskIndex) => {
+                                  console.log(`Rendering task ${taskIndex} for milestone ${index}: id=${task.id}, title=${task.title}`);
+                                  
+                                  return (
+                                    <div key={task.id} className="bg-muted/30 p-2 rounded-sm">
+                                      <div className="flex items-center justify-between">
+                                        <span className="font-medium text-sm">{task.title}</span>
+                                        <Badge 
+                                          variant="outline"
+                                          className={task.isCompleted ? "bg-green-100 text-green-800" : ""}
+                                        >
+                                          {task.isCompleted ? "Completed" : "Pending"}
+                                        </Badge>
                                       </div>
-                                    );
-                                  })}
-                                </div>
+                                      <div className="text-xs mt-1 whitespace-pre-line">
+                                        {task.description}
+                                      </div>
+                                    </div>
+                                  );
+                                })}
                               </div>
-                            ) : (
-                              <p className="text-xs italic mt-2">No tasks defined for this milestone</p>
-                            )}
-                          </div>
+                            </div>
+                          ) : (
+                            <p className="text-xs italic mt-2">No tasks defined for this milestone</p>
+                          )}
                         </div>
                       );
                     })}
@@ -733,11 +782,13 @@ export default function CareerCapsulePage() {
                 )}
               </div>
               
+
+              
               <div className="space-y-2">
                 <h3 className="text-lg font-medium">Progress Log</h3>
                 {goalDetails && goalDetails.progressLogs && goalDetails.progressLogs.length > 0 ? (
                   <div className="space-y-3">
-                    {goalDetails.progressLogs.map((log: any) => (
+                    {goalDetails.progressLogs.map((log) => (
                       <div key={log.id} className="bg-muted/20 p-3 rounded-md">
                         <div className="flex justify-between items-start">
                           <span className="text-xs font-medium uppercase">
@@ -768,6 +819,7 @@ export default function CareerCapsulePage() {
               >
                 Delete Career Capsule
               </Button>
+
             </div>
             <Button onClick={() => setShowDetailsDialog(false)}>Close</Button>
           </DialogFooter>
