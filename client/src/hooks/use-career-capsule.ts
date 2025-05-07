@@ -428,9 +428,22 @@ export const useCareerCapsule = (userId: number | string) => {
           title: 'Task status updated',
           description: 'Your task status has been successfully updated.',
         });
-        // Invalidate both the goal details and goals list
+        
+        // More comprehensive query invalidation to ensure UI updates correctly
+        // Invalidate the specific goal details
         queryClient.invalidateQueries({ queryKey: [`/api/career-goals/${goalId}`] });
+        
+        // Invalidate the goal list and all capsule data
         queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/career-capsule`] });
+        
+        // Invalidate any specific task queries if they exist
+        queryClient.invalidateQueries({ queryKey: [`/api/capsule-tasks/${variables}`] });
+        
+        // Invalidate year data if it exists
+        queryClient.invalidateQueries({ queryKey: ['/api/capsule-years'] });
+        
+        // Force a refetch of goal details to update the progress bars
+        queryClient.refetchQueries({ queryKey: [`/api/career-goals/${goalId}`] });
       },
       onError: (error: any, variables) => {
         console.error(`Error toggling task ${variables}:`, error);
@@ -456,9 +469,22 @@ export const useCareerCapsule = (userId: number | string) => {
           title: 'Task updated',
           description: 'Your task has been successfully updated.',
         });
-        // Invalidate both the goal details and goals list
+        
+        // More comprehensive query invalidation like in toggleTaskCompletion
+        // Invalidate the specific goal details
         queryClient.invalidateQueries({ queryKey: [`/api/career-goals/${goalId}`] });
+        
+        // Invalidate the goal list and all capsule data
         queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/career-capsule`] });
+        
+        // Invalidate any specific task queries if they exist
+        queryClient.invalidateQueries({ queryKey: [`/api/capsule-tasks/${variables.taskId}`] });
+        
+        // Invalidate year data if it exists
+        queryClient.invalidateQueries({ queryKey: ['/api/capsule-years'] });
+        
+        // Force a refetch of goal details to update the progress bars
+        queryClient.refetchQueries({ queryKey: [`/api/career-goals/${goalId}`] });
       },
       onError: (error: any, variables) => {
         console.error(`Error updating task ${variables.taskId}:`, error);

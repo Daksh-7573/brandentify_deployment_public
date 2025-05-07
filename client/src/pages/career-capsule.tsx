@@ -564,8 +564,8 @@ export default function CareerCapsulePage() {
             </div>
           ) : goalDetails ? (
             <div className="space-y-6 py-4">
-              <div className="flex justify-between">
-                <div>
+              <div className="flex flex-col md:flex-row md:justify-between gap-4">
+                <div className="space-y-1">
                   <p className="text-sm font-medium">Goal Type</p>
                   <p className="text-sm">
                     {getGoalTypeText(
@@ -573,7 +573,7 @@ export default function CareerCapsulePage() {
                     )}
                   </p>
                 </div>
-                <div>
+                <div className="space-y-1">
                   <p className="text-sm font-medium">Target Date</p>
                   <p className="text-sm">
                     {formatDate(
@@ -581,11 +581,19 @@ export default function CareerCapsulePage() {
                     )}
                   </p>
                 </div>
-                <div>
+                <div className="space-y-1">
                   <p className="text-sm font-medium">Progress</p>
-                  <p className="text-sm">
-                    {(goalDetails.goal?.progress || goalDetails.progress || 0)}%
-                  </p>
+                  <div className="flex items-center gap-2">
+                    <div className="w-32 bg-muted h-2 rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-primary transition-all duration-500 ease-in-out" 
+                        style={{ width: `${(goalDetails.goal?.progress || goalDetails.progress || 0)}%` }}
+                      />
+                    </div>
+                    <span className="text-sm font-medium">
+                      {(goalDetails.goal?.progress || goalDetails.progress || 0)}%
+                    </span>
+                  </div>
                 </div>
               </div>
               
@@ -656,9 +664,16 @@ export default function CareerCapsulePage() {
                       console.log(`Milestone ${index} has ${milestone.tasks ? milestone.tasks.length : 0} tasks`);
                       
                       return (
-                        <div key={milestone.id} className="border rounded-md p-3">
+                        <div key={milestone.id} className={`border rounded-md p-3 ${
+                          milestone.status === "completed" ? 'border-l-4 border-green-500' : ''
+                        }`}>
                           <div className="flex justify-between items-start">
-                            <h4 className="font-medium">{milestone.title}</h4>
+                            <div className="flex items-center gap-2">
+                              <h4 className="font-medium">{milestone.title}</h4>
+                              {milestone.status === "completed" && (
+                                <CheckCircle2 className="h-4 w-4 text-green-500" />
+                              )}
+                            </div>
                             <Badge 
                               className={getStatusColor(milestone.status)}
                             >
@@ -674,10 +689,39 @@ export default function CareerCapsulePage() {
                             </p>
                           )}
                           
+                          {/* Task progress calculation */}
+                          {milestone.tasks && milestone.tasks.length > 0 && (
+                            <>
+                              <div className="mt-3">
+                                {/* Calculate milestone progress */}
+                                {(() => {
+                                  const totalTasks = milestone.tasks.length;
+                                  const completedTasks = milestone.tasks.filter(t => t.isCompleted).length;
+                                  const progressPercentage = Math.round((completedTasks / totalTasks) * 100);
+                                  
+                                  return (
+                                    <>
+                                      <div className="flex justify-between text-xs mb-1">
+                                        <span>{completedTasks} of {totalTasks} tasks completed</span>
+                                        <span className="font-medium">{progressPercentage}%</span>
+                                      </div>
+                                      <div className="w-full bg-muted h-2 rounded-full overflow-hidden mb-3">
+                                        <div 
+                                          className="h-full bg-primary transition-all duration-500 ease-in-out" 
+                                          style={{ width: `${progressPercentage}%` }}
+                                        />
+                                      </div>
+                                    </>
+                                  );
+                                })()}
+                              </div>
+                            </>
+                          )}
+                          
                           {/* Display tasks for this milestone */}
                           {milestone.tasks && milestone.tasks.length > 0 ? (
                             <div className="mt-3">
-                              <h5 className="text-sm font-medium mb-2">Tasks ({milestone.tasks.length}):</h5>
+                              <h5 className="text-sm font-medium mb-2">Tasks:</h5>
                               <div className="space-y-2">
                                 {milestone.tasks.map((task, taskIndex) => {
                                   console.log(`Rendering task ${taskIndex} for milestone ${index}: id=${task.id}, title=${task.title}`);
@@ -693,18 +737,31 @@ export default function CareerCapsulePage() {
                                     toggleTaskCompletion.mutate(task.id);
                                   };
                                   
+                                  const isBeingToggled = toggleTaskCompletion.isPending && toggleTaskCompletion.variables === task.id;
+                                  
                                   return (
-                                    <div key={task.id} className="bg-muted/30 p-2 rounded-sm">
+                                    <div 
+                                      key={task.id} 
+                                      className={`bg-muted/30 p-2 rounded-sm transition-all duration-300 ${
+                                        isBeingToggled ? 'scale-[1.02] shadow-md' : ''
+                                      } ${
+                                        task.isCompleted ? 'border-l-4 border-green-500' : ''
+                                      }`}
+                                    >
                                       <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-2">
                                           <Button 
                                             size="icon" 
                                             variant="ghost" 
-                                            className={`h-6 w-6 rounded-full ${task.isCompleted ? 'text-green-600' : 'text-gray-400'}`}
+                                            className={`h-6 w-6 rounded-full transition-colors ${
+                                              task.isCompleted ? 'text-green-600' : 'text-gray-400'
+                                            } ${
+                                              isBeingToggled ? 'bg-muted/50' : ''
+                                            }`}
                                             onClick={handleToggleTask}
                                             disabled={toggleTaskCompletion.isPending}
                                           >
-                                            {toggleTaskCompletion.isPending && toggleTaskCompletion.variables === task.id ? (
+                                            {isBeingToggled ? (
                                               <Loader2 className="h-4 w-4 animate-spin" />
                                             ) : task.isCompleted ? (
                                               <CheckCircle2 className="h-5 w-5" />
@@ -712,16 +769,24 @@ export default function CareerCapsulePage() {
                                               <div className="h-5 w-5 rounded-full border-2 border-current" />
                                             )}
                                           </Button>
-                                          <span className={`font-medium text-sm ${task.isCompleted ? 'line-through text-muted-foreground' : ''}`}>{task.title}</span>
+                                          <span className={`font-medium text-sm transition-all ${
+                                            task.isCompleted ? 'line-through text-muted-foreground' : ''
+                                          }`}>
+                                            {task.title}
+                                          </span>
                                         </div>
                                         <Badge 
                                           variant="outline"
-                                          className={task.isCompleted ? "bg-green-100 text-green-800" : ""}
+                                          className={`transition-colors ${
+                                            task.isCompleted ? "bg-green-100 text-green-800" : ""
+                                          }`}
                                         >
                                           {task.isCompleted ? "Completed" : "Pending"}
                                         </Badge>
                                       </div>
-                                      <div className={`text-xs mt-1 ml-8 whitespace-pre-line ${task.isCompleted ? 'text-muted-foreground' : ''}`}>
+                                      <div className={`text-xs mt-1 ml-8 whitespace-pre-line transition-colors ${
+                                        task.isCompleted ? 'text-muted-foreground' : ''
+                                      }`}>
                                         {task.description}
                                       </div>
                                     </div>
