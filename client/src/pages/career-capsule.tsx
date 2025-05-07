@@ -297,131 +297,137 @@ export default function CareerCapsulePage() {
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
           </div>
         ) : goals ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Handle array of goals */}
+          <div className="flex flex-wrap gap-6">
+            {/* Case 1: goals is an array */}
             {Array.isArray(goals) && goals.length > 0 && goals.map((goal: CareerGoal) => (
-              <Card key={goal.id} className="shadow-md hover:shadow-lg transition-shadow">
-                <CardHeader className="pb-2">
-                  <div className="flex justify-between items-start">
-                    <CardTitle className="text-xl">{goal.title}</CardTitle>
-                    <Badge 
-                      className={getStatusColor(goal.status)}
-                    >
-                      {goal.status === "in_progress" ? "In Progress" : 
-                       goal.status === "completed" ? "Completed" : 
-                       goal.status === "abandoned" ? "Abandoned" : "Not Started"}
-                    </Badge>
-                  </div>
-                  <CardDescription>
-                    <div className="flex flex-col gap-1 mt-1">
-                      <span className="text-sm">{getGoalTypeText(goal.goalType as GoalType)}</span>
-                      <span className="text-sm">Target: {formatDate(goal.targetDate as string)}</span>
+              <div key={goal.id} className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
+                <Card className="h-full shadow-md hover:shadow-lg transition-shadow">
+                  <CardHeader className="pb-2">
+                    <div className="flex justify-between items-start">
+                      <CardTitle className="text-xl">{goal.title}</CardTitle>
+                      <Badge 
+                        className={getStatusColor(goal.status)}
+                      >
+                        {goal.status === "in_progress" ? "In Progress" : 
+                         goal.status === "completed" ? "Completed" : 
+                         goal.status === "abandoned" ? "Abandoned" : "Not Started"}
+                      </Badge>
                     </div>
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="pb-2">
-                  <div className="mb-3">
-                    <Progress value={goal.progress || 0} className="h-2" />
-                    <span className="text-xs text-muted-foreground mt-1 block">
-                      {goal.progress || 0}% complete
-                    </span>
-                  </div>
-                  <p className="line-clamp-2 text-sm">{goal.description}</p>
-                </CardContent>
-                <CardFooter>
-                  <Button 
-                    variant="outline" 
-                    className="w-full" 
-                    onClick={() => handleViewDetails(goal.id)}
-                  >
-                    View Details
-                  </Button>
-                </CardFooter>
-              </Card>
+                    <CardDescription>
+                      <div className="flex flex-col gap-1 mt-1">
+                        <span className="text-sm">{getGoalTypeText(goal.goalType as GoalType)}</span>
+                        <span className="text-sm">Target: {formatDate(goal.targetDate as string)}</span>
+                      </div>
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="pb-2">
+                    <div className="mb-3">
+                      <Progress value={goal.progress || 0} className="h-2" />
+                      <span className="text-xs text-muted-foreground mt-1 block">
+                        {goal.progress || 0}% complete
+                      </span>
+                    </div>
+                    <p className="line-clamp-2 text-sm">{goal.description}</p>
+                  </CardContent>
+                  <CardFooter>
+                    <Button 
+                      variant="outline" 
+                      className="w-full" 
+                      onClick={() => handleViewDetails(goal.id)}
+                    >
+                      View Details
+                    </Button>
+                  </CardFooter>
+                </Card>
+              </div>
             ))}
 
-            {/* Handle object with goals property */}
+            {/* Case 2: goals contains a goals property that is an array */}
             {!Array.isArray(goals) && goals.goals && Array.isArray(goals.goals) && goals.goals.length > 0 && goals.goals.map((goal: CareerGoal) => (
-              <Card key={goal.id} className="shadow-md hover:shadow-lg transition-shadow">
-                <CardHeader className="pb-2">
-                  <div className="flex justify-between items-start">
-                    <CardTitle className="text-xl">{goal.title}</CardTitle>
-                    <Badge 
-                      className={getStatusColor(goal.status)}
-                    >
-                      {goal.status === "in_progress" ? "In Progress" : 
-                       goal.status === "completed" ? "Completed" : 
-                       goal.status === "abandoned" ? "Abandoned" : "Not Started"}
-                    </Badge>
-                  </div>
-                  <CardDescription>
-                    <div className="flex flex-col gap-1 mt-1">
-                      <span className="text-sm">{getGoalTypeText(goal.goalType as GoalType)}</span>
-                      <span className="text-sm">Target: {formatDate(goal.targetDate as string)}</span>
+              <div key={goal.id} className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
+                <Card className="h-full shadow-md hover:shadow-lg transition-shadow">
+                  <CardHeader className="pb-2">
+                    <div className="flex justify-between items-start">
+                      <CardTitle className="text-xl">{goal.title}</CardTitle>
+                      <Badge 
+                        className={getStatusColor(goal.status)}
+                      >
+                        {goal.status === "in_progress" ? "In Progress" : 
+                         goal.status === "completed" ? "Completed" : 
+                         goal.status === "abandoned" ? "Abandoned" : "Not Started"}
+                      </Badge>
                     </div>
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="pb-2">
-                  <div className="mb-3">
-                    <Progress value={goal.progress || 0} className="h-2" />
-                    <span className="text-xs text-muted-foreground mt-1 block">
-                      {goal.progress || 0}% complete
-                    </span>
-                  </div>
-                  <p className="line-clamp-2 text-sm">{goal.description}</p>
-                </CardContent>
-                <CardFooter>
-                  <Button 
-                    variant="outline" 
-                    className="w-full" 
-                    onClick={() => handleViewDetails(goal.id)}
-                  >
-                    View Details
-                  </Button>
-                </CardFooter>
-              </Card>
+                    <CardDescription>
+                      <div className="flex flex-col gap-1 mt-1">
+                        <span className="text-sm">{getGoalTypeText(goal.goalType as GoalType)}</span>
+                        <span className="text-sm">Target: {formatDate(goal.targetDate as string)}</span>
+                      </div>
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="pb-2">
+                    <div className="mb-3">
+                      <Progress value={goal.progress || 0} className="h-2" />
+                      <span className="text-xs text-muted-foreground mt-1 block">
+                        {goal.progress || 0}% complete
+                      </span>
+                    </div>
+                    <p className="line-clamp-2 text-sm">{goal.description}</p>
+                  </CardContent>
+                  <CardFooter>
+                    <Button 
+                      variant="outline" 
+                      className="w-full" 
+                      onClick={() => handleViewDetails(goal.id)}
+                    >
+                      View Details
+                    </Button>
+                  </CardFooter>
+                </Card>
+              </div>
             ))}
 
-            {/* Handle single goal object */}
+            {/* Case 3: goals is a single object (not an array) and has no goals property */}
             {!Array.isArray(goals) && (!goals.goals || !Array.isArray(goals.goals)) && goals.id && (
-              <Card className="shadow-md hover:shadow-lg transition-shadow">
-                <CardHeader className="pb-2">
-                  <div className="flex justify-between items-start">
-                    <CardTitle className="text-xl">{goals.title}</CardTitle>
-                    <Badge 
-                      className={getStatusColor(goals.status)}
-                    >
-                      {goals.status === "in_progress" ? "In Progress" : 
-                       goals.status === "completed" ? "Completed" : 
-                       goals.status === "abandoned" ? "Abandoned" : "Not Started"}
-                    </Badge>
-                  </div>
-                  <CardDescription>
-                    <div className="flex flex-col gap-1 mt-1">
-                      <span className="text-sm">{getGoalTypeText(goals.goalType as GoalType)}</span>
-                      <span className="text-sm">Target: {formatDate(goals.targetDate as string)}</span>
+              <div className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
+                <Card className="h-full shadow-md hover:shadow-lg transition-shadow">
+                  <CardHeader className="pb-2">
+                    <div className="flex justify-between items-start">
+                      <CardTitle className="text-xl">{goals.title}</CardTitle>
+                      <Badge 
+                        className={getStatusColor(goals.status)}
+                      >
+                        {goals.status === "in_progress" ? "In Progress" : 
+                         goals.status === "completed" ? "Completed" : 
+                         goals.status === "abandoned" ? "Abandoned" : "Not Started"}
+                      </Badge>
                     </div>
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="pb-2">
-                  <div className="mb-3">
-                    <Progress value={goals.progress || 0} className="h-2" />
-                    <span className="text-xs text-muted-foreground mt-1 block">
-                      {goals.progress || 0}% complete
-                    </span>
-                  </div>
-                  <p className="line-clamp-2 text-sm">{goals.description}</p>
-                </CardContent>
-                <CardFooter>
-                  <Button 
-                    variant="outline" 
-                    className="w-full" 
-                    onClick={() => handleViewDetails(goals.id)}
-                  >
-                    View Details
-                  </Button>
-                </CardFooter>
-              </Card>
+                    <CardDescription>
+                      <div className="flex flex-col gap-1 mt-1">
+                        <span className="text-sm">{getGoalTypeText(goals.goalType as GoalType)}</span>
+                        <span className="text-sm">Target: {formatDate(goals.targetDate as string)}</span>
+                      </div>
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="pb-2">
+                    <div className="mb-3">
+                      <Progress value={goals.progress || 0} className="h-2" />
+                      <span className="text-xs text-muted-foreground mt-1 block">
+                        {goals.progress || 0}% complete
+                      </span>
+                    </div>
+                    <p className="line-clamp-2 text-sm">{goals.description}</p>
+                  </CardContent>
+                  <CardFooter>
+                    <Button 
+                      variant="outline" 
+                      className="w-full" 
+                      onClick={() => handleViewDetails(goals.id)}
+                    >
+                      View Details
+                    </Button>
+                  </CardFooter>
+                </Card>
+              </div>
             )}
           </div>
         ) : (
