@@ -417,18 +417,23 @@ export const useCareerCapsule = (userId: number | string) => {
 
   // Toggle task completion status
   const useToggleTaskCompletion = (goalId: number) => {
-    return useMutation({
+    return useMutation<any, any, number>({
       mutationFn: (taskId: number) => {
-        return apiRequest('POST', `/capsule-tasks/${taskId}/toggle`);
+        console.log(`Toggling task completion for task ${taskId}`);
+        return apiRequest('POST', `/api/capsule-tasks/${taskId}/toggle`); // Added /api prefix
       },
-      onSuccess: () => {
+      onSuccess: (data, variables) => {
+        console.log(`Successfully toggled task ${variables}:`, data);
         toast({
           title: 'Task status updated',
           description: 'Your task status has been successfully updated.',
         });
+        // Invalidate both the goal details and goals list
         queryClient.invalidateQueries({ queryKey: [`/api/career-goals/${goalId}`] });
+        queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/career-capsule`] });
       },
-      onError: (error: any) => {
+      onError: (error: any, variables) => {
+        console.error(`Error toggling task ${variables}:`, error);
         toast({
           title: 'Failed to update task status',
           description: error.message || 'An error occurred while updating the task status.',
@@ -440,18 +445,23 @@ export const useCareerCapsule = (userId: number | string) => {
 
   // Update task details
   const useUpdateTask = (goalId: number) => {
-    return useMutation({
+    return useMutation<any, any, { taskId: number, taskData: any }>({
       mutationFn: ({ taskId, taskData }: { taskId: number, taskData: { title?: string; description?: string; isCompleted?: boolean; dueDate?: string } }) => {
-        return apiRequest('PUT', `/capsule-tasks/${taskId}`, taskData);
+        console.log(`Updating task ${taskId} with data:`, taskData);
+        return apiRequest('PUT', `/api/capsule-tasks/${taskId}`, taskData); // Added /api prefix
       },
-      onSuccess: () => {
+      onSuccess: (data, variables) => {
+        console.log(`Successfully updated task ${variables.taskId}:`, data);
         toast({
           title: 'Task updated',
           description: 'Your task has been successfully updated.',
         });
+        // Invalidate both the goal details and goals list
         queryClient.invalidateQueries({ queryKey: [`/api/career-goals/${goalId}`] });
+        queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/career-capsule`] });
       },
-      onError: (error: any) => {
+      onError: (error: any, variables) => {
+        console.error(`Error updating task ${variables.taskId}:`, error);
         toast({
           title: 'Failed to update task',
           description: error.message || 'An error occurred while updating the task.',
