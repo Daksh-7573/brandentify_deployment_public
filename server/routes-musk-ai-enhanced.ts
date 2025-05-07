@@ -8,26 +8,19 @@
 import { Express, Request, Response } from "express";
 import fetch from 'node-fetch';
 import { OpenAI } from "openai";
-import Anthropic from '@anthropic-ai/sdk';
 import * as muskCareerInsightsService from "./services/musk-career-insights";
 
 // Initialize OpenAI client
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-
-// Initialize Anthropic client
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-});
 
 /**
  * Generate enhanced career guidance using Musk AI with trend graph data
  * 
  * @param userId The user ID to generate guidance for
  * @param query The user's specific career question or concern
- * @param useModel Which AI model to use ('openai' or 'anthropic')
  * @returns AI-generated guidance enhanced with trend data
  */
-async function generateEnhancedCareerGuidance(userId: number, query: string, useModel = 'openai') {
+async function generateEnhancedCareerGuidance(userId: number, query: string) {
   try {
     // Get career insights from trend graph and user profile
     const careerInsights = await muskCareerInsightsService.generateUserCareerInsights(userId);
@@ -102,28 +95,17 @@ Remember to draw upon your specialized knowledge of career patterns across indus
 not just generic advice.
 `;
 
-    // Get AI response based on selected model
+    // Get AI response using OpenAI
     let aiResponse;
     
-    if (useModel === 'anthropic') {
-      // the newest Anthropic model is "claude-3-7-sonnet-20250219" which was released February 24, 2025
-      const response = await anthropic.messages.create({
-        model: "claude-3-7-sonnet-20250219",
-        max_tokens: 1500,
-        messages: [{ role: 'user', content: aiContext }]
-      });
-      
-      aiResponse = response.content[0].text;
-    } else {
-      // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-      const completion = await openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: [{ role: "user", content: aiContext }],
-        max_tokens: 1500
-      });
-      
-      aiResponse = completion.choices[0].message.content;
-    }
+    // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o",
+      messages: [{ role: "user", content: aiContext }],
+      max_tokens: 1500
+    });
+    
+    aiResponse = completion.choices[0].message.content;
     
     return {
       success: true,
@@ -157,7 +139,7 @@ export function registerMuskAIEnhancedRoutes(app: Express): void {
    */
   apiRouter.post("/api/musk-enhanced/career-guidance", async (req: Request, res: Response) => {
     try {
-      const { userId, query, model } = req.body;
+      const { userId, query } = req.body;
       
       if (!userId || !query) {
         return res.status(400).json({
@@ -177,8 +159,7 @@ export function registerMuskAIEnhancedRoutes(app: Express): void {
       
       const guidance = await generateEnhancedCareerGuidance(
         userIdNum,
-        query,
-        model || 'openai'
+        query
       );
       
       return res.status(200).json({
