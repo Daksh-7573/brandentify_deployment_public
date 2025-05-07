@@ -25,7 +25,6 @@ interface MilestoneGenerationRequest {
   timeframe: number;
   industry?: string;
   description?: string;
-  useModel?: 'openai' | 'anthropic';
 }
 
 interface YearMilestone {
@@ -100,16 +99,15 @@ function isCEORelatedGoal(goalType: string, customGoal?: string, description?: s
 export async function generateCapsuleMilestones(options: MilestoneGenerationRequest): Promise<MilestoneGenerationResult> {
   console.log(`[Musk AI] Starting milestone generation for career capsule ${options.capsuleId}`);
   console.log(`[Musk AI] Options:`, JSON.stringify(options));
-  console.log(`[Musk AI] Using model: ${options.useModel || 'openai'}`);
   
   try {
-    // Check that API keys are configured
-    const apiKey = options.useModel === 'anthropic' ? process.env.ANTHROPIC_API_KEY : process.env.OPENAI_API_KEY;
+    // Check that OpenAI API key is configured
+    const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) {
-      console.error(`[Musk AI] Missing API key for ${options.useModel || 'openai'}`);
+      console.error(`[Musk AI] Missing OpenAI API key`);
       return {
         success: false,
-        message: `Missing API key for ${options.useModel || 'openai'}`
+        message: `Missing OpenAI API key`
       };
     }
     

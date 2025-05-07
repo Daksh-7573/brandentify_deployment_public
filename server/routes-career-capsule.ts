@@ -144,15 +144,6 @@ router.post('/users/:userId/career-capsule', async (req, res) => {
     const capsule = await storage.createCareerCapsule(capsuleData);
     console.log(`[Career Capsule] Created capsule with ID: ${capsule.id}`);
     
-    // Check available API keys
-    const openaiKey = process.env.OPENAI_API_KEY;
-    const anthropicKey = process.env.ANTHROPIC_API_KEY;
-    console.log(`[Career Capsule] API Keys available: OpenAI: ${openaiKey ? 'YES' : 'NO'}, Anthropic: ${anthropicKey ? 'YES' : 'NO'}`);
-    
-    // Use Anthropic if OpenAI key is not available but Anthropic is
-    const aiModel = openaiKey ? 'openai' : (anthropicKey ? 'anthropic' : 'openai');
-    console.log(`[Career Capsule] Selected AI model: ${aiModel}`);
-    
     // Set up the options for AI-generated milestones
     const options = {
       userId: userId,
@@ -162,7 +153,6 @@ router.post('/users/:userId/career-capsule', async (req, res) => {
       timeframe: parseInt(capsuleData.timeframe.toString()) || 3,
       industry: capsuleData.industry,
       description: capsuleData.description,
-      useModel: aiModel as 'openai' | 'anthropic', // Force type to be correct
     };
     
     console.log('Generating AI milestones for new capsule:', capsule.id);
@@ -680,7 +670,6 @@ router.post('/career-capsules/:capsuleId/generate-milestones', async (req, res) 
       timeframe: req.body.timeframe || capsule.timeframe,
       industry: req.body.industry || capsule.industry,
       description: req.body.description || capsule.description,
-      useModel: req.body.useModel || 'openai',
     };
     
     // Generate the milestones
