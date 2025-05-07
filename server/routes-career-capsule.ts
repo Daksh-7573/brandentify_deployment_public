@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { storage } from './storage';
 import { generateCapsuleMilestones, saveCapsuleMilestones } from './services/musk-capsule-milestones';
+import { pool } from './db';
 
 const router = Router();
 
