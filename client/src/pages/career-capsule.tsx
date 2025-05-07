@@ -812,28 +812,7 @@ export default function CareerCapsulePage() {
               
 
               
-              <div className="space-y-2">
-                <h3 className="text-lg font-medium">Progress Log</h3>
-                {goalDetails && goalDetails.progressLogs && goalDetails.progressLogs.length > 0 ? (
-                  <div className="space-y-3">
-                    {goalDetails.progressLogs.map((log) => (
-                      <div key={log.id} className="bg-muted/20 p-3 rounded-md">
-                        <div className="flex justify-between items-start">
-                          <span className="text-xs font-medium uppercase">
-                            {log.entryType}
-                          </span>
-                          <span className="text-xs text-muted-foreground">
-                            {formatDate(log.createdAt as string)}
-                          </span>
-                        </div>
-                        <p className="text-sm mt-1">{log.entry}</p>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-sm text-muted-foreground">No progress entries yet.</p>
-                )}
-              </div>
+              {/* Progress Log section removed as requested */}
             </div>
           ) : (
             <p className="text-center py-4">Failed to load goal details.</p>
@@ -860,7 +839,7 @@ export default function CareerCapsulePage() {
           <DialogHeader>
             <DialogTitle>Delete Career Capsule</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete this career capsule? This action cannot be undone, and all associated milestones, skills, and progress logs will be permanently removed.
+              Are you sure you want to delete this career capsule? This action cannot be undone, and all associated milestones and skills will be permanently removed.
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
