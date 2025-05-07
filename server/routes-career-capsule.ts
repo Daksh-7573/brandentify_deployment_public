@@ -12,8 +12,12 @@ router.get('/users/:userId/career-capsule', async (req, res) => {
       return res.status(400).json({ message: 'Invalid user ID' });
     }
 
-    const capsule = await storage.getUserCareerCapsule(userId);
-    return res.json(capsule);
+    const capsules = await storage.getUserCareerCapsule(userId);
+    console.log(`[Career Capsule] Found ${capsules ? capsules.length : 0} capsules for user ${userId}`);
+    
+    // Return the array of capsules directly. The client will handle the array structure.
+    // This matches the expected behavior when the frontend uses Array.isArray(goals)
+    return res.json(capsules);
   } catch (error) {
     console.error('Error fetching career capsule:', error);
     return res.status(500).json({ message: 'Error fetching career capsule' });
