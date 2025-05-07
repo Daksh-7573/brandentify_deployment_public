@@ -30,7 +30,7 @@ import { resumeTestRoutes } from "./routes-resume-test";
 import { routesMigrateWorkExperiences } from "./routes-migrate-work-experiences";
 import resumeRoutes from "./routes-resume";
 import userProfileRoutes from "./routes-user-profile";
-import { registerMuskAnthropicRoutes } from "./routes-musk-anthropic";
+import { registerMuskAIRoutes } from "./routes-musk-ai";
 import { registerMuskMemoryRoutes } from "./routes-musk-memory";
 import { registerTrendGraphRoutes } from "./routes-trend-graph";
 import { registerMuskCareerInsightsRoutes } from "./routes-musk-career-insights";
@@ -5403,8 +5403,8 @@ ${extractedText.substring(0, 5000)}
   // Migration routes for database schema updates
   app.use("/api", routesMigrateWorkExperiences);
   
-  // Register Anthropic-powered Musk AI Career Assistant routes
-  registerMuskAnthropicRoutes(app);
+  // Register OpenAI-powered Musk AI Career Assistant routes
+  registerMuskAIRoutes(app);
   
   // Register Musk Memory & Emotional Intelligence routes
   registerMuskMemoryRoutes(app);
