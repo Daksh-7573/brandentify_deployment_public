@@ -295,13 +295,13 @@ export const useDismissQuest = () => {
   });
 };
 
-// Helper to calculate current week number
+// Helper to calculate current week number (ISO week number calculation - matches backend)
 export const getCurrentWeekNumber = (): number => {
   const now = new Date();
-  const start = new Date(now.getFullYear(), 0, 1);
-  const diff = (now.getTime() - start.getTime()) + ((start.getTimezoneOffset() - now.getTimezoneOffset()) * 60 * 1000);
-  const oneWeek = 1000 * 60 * 60 * 24 * 7;
-  return Math.floor(diff / oneWeek) + 1;
+  const d = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
+  d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  return Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
 };
 
 // Helper to get current year
