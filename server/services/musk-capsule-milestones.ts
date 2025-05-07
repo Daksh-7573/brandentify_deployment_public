@@ -2,20 +2,14 @@
  * Musk Career Capsule Milestones Service
  * 
  * This service provides AI-powered milestone generation for Career Capsules
- * leveraging either OpenAI or Anthropic's capabilities.
+ * leveraging OpenAI's capabilities.
  */
 
 import { OpenAI } from "openai";
-import Anthropic from '@anthropic-ai/sdk';
 import { storage } from '../storage';
 
 // Initialize OpenAI client
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-
-// Initialize Anthropic client
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-});
 
 interface MilestoneGenerationRequest {
   userId: number;
@@ -410,54 +404,31 @@ For each year's milestones, include specific courses, books, and development act
 `;
     }
 
-    // Get AI response based on selected model
+    // Get AI response
     let aiResponse;
     
-    if (options.useModel === 'anthropic') {
-      // the newest Anthropic model is "claude-3-7-sonnet-20250219" which was released February 24, 2025
-      const systemPrompt = isCEOCareerPath ?
-        "You are Musk, an elite career development AI coach specialized in CEO career paths. Generate specific, actionable CEO career milestones with extreme detail. Include actual executive training programs, business schools, leadership books, networking events, and certifications. For each year, specify 3-5 concrete tasks focusing on the five key CEO skill areas (Strategic Business Leadership, Organizational Leadership, Advanced Decision-Making, Communication & Influence, and Industry-Specific Knowledge). Each task should include specific resources (actual course names, book titles, certification programs). Avoid vague terms - be extremely specific. Return only valid JSON." :
-        "You are Musk, an elite career development AI coach. Generate specific, actionable career milestones with extreme detail. Include actual technologies, platforms, certifications, companies, events, books, and courses. For each year milestone, specify 3-5 concrete tasks with clear deliverables. Avoid vague terms like 'learn basics' or 'networking' - be extremely specific. Return only valid JSON.";
-        
-      const response = await anthropic.messages.create({
-        model: "claude-3-7-sonnet-20250219",
-        max_tokens: 4000,
-        messages: [{ role: 'user', content: enhancedContext }],
-        system: systemPrompt
-      });
-      
-      // Handle different content block types from Anthropic's API
-      const contentBlock = response.content[0];
-      if ('text' in contentBlock) {
-        aiResponse = contentBlock.text;
-      } else {
-        // If it's not a text block, convert the content to a string
-        aiResponse = JSON.stringify(contentBlock);
-      }
-    } else {
-      // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-      const systemPrompt = isCEOCareerPath ? 
-        "You are Musk, an elite career development AI coach specialized in CEO career paths. Generate specific, actionable CEO career milestones with extreme detail. Include actual executive training programs, business schools, leadership books, networking events, and certifications. For each year, specify 3-5 concrete tasks focusing on the five key CEO skill areas (Strategic Business Leadership, Organizational Leadership, Advanced Decision-Making, Communication & Influence, and Industry-Specific Knowledge). Each task should include specific resources (actual course names, book titles, certification programs). Avoid vague terms - be extremely specific. Return only valid JSON." :
-        "You are Musk, an elite career development AI coach. Generate specific, actionable career milestones with extreme detail. Include actual technologies, platforms, certifications, companies, events, books, and courses. For each year milestone, specify 3-5 concrete tasks with clear deliverables. Avoid vague terms like 'learn basics' or 'networking' - be extremely specific. Return only valid JSON.";
-      
-      const completion = await openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: [
-          { 
-            role: "system", 
-            content: systemPrompt
-          },
-          { 
-            role: "user", 
-            content: enhancedContext 
-          }
-        ],
-        max_tokens: 4000,
-        response_format: { type: "json_object" }
-      });
-      
-      aiResponse = completion.choices[0].message.content;
-    }
+    // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+    const systemPrompt = isCEOCareerPath ? 
+      "You are Musk, an elite career development AI coach specialized in CEO career paths. Generate specific, actionable CEO career milestones with extreme detail. Include actual executive training programs, business schools, leadership books, networking events, and certifications. For each year, specify 3-5 concrete tasks focusing on the five key CEO skill areas (Strategic Business Leadership, Organizational Leadership, Advanced Decision-Making, Communication & Influence, and Industry-Specific Knowledge). Each task should include specific resources (actual course names, book titles, certification programs). Avoid vague terms - be extremely specific. Return only valid JSON." :
+      "You are Musk, an elite career development AI coach. Generate specific, actionable career milestones with extreme detail. Include actual technologies, platforms, certifications, companies, events, books, and courses. For each year milestone, specify 3-5 concrete tasks with clear deliverables. Avoid vague terms like 'learn basics' or 'networking' - be extremely specific. Return only valid JSON.";
+    
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o",
+      messages: [
+        { 
+          role: "system", 
+          content: systemPrompt
+        },
+        { 
+          role: "user", 
+          content: enhancedContext 
+        }
+      ],
+      max_tokens: 4000,
+      response_format: { type: "json_object" }
+    });
+    
+    aiResponse = completion.choices[0].message.content;
 
     // Parse the response as JSON
     let milestones;
@@ -465,45 +436,23 @@ For each year's milestones, include specific courses, books, and development act
       // Log the raw AI response for debugging
       console.log(`[Musk AI] Raw AI response (truncated): ${aiResponse?.substring(0, 200)}...`);
       
-      // For OpenAI, the response is already formatted as JSON
-      if (options.useModel === 'openai') {
-        const parsedResponse = JSON.parse(aiResponse || "{}");
-        console.log(`[Musk AI] Parsed OpenAI response structure: ${JSON.stringify(Object.keys(parsedResponse))}`);
-        
-        // Handle different response formats from OpenAI
-        if (Array.isArray(parsedResponse)) {
-          milestones = parsedResponse;
-        } else if (parsedResponse.years && Array.isArray(parsedResponse.years)) {
-          milestones = parsedResponse.years;
-        } else if ((parsedResponse.year || parsedResponse.yearNumber) && parsedResponse.title && parsedResponse.tasks) {
-          // The AI returned a single year object instead of an array
-          console.log('[Musk AI] Detected single year object, converting to array');
-          milestones = [parsedResponse];
-        } else {
-          milestones = parsedResponse;
-        }
-        
-        console.log(`[Musk AI] Extracted milestones type: ${Array.isArray(milestones) ? 'Array' : typeof milestones}`);
+      const parsedResponse = JSON.parse(aiResponse || "{}");
+      console.log(`[Musk AI] Parsed OpenAI response structure: ${JSON.stringify(Object.keys(parsedResponse))}`);
+      
+      // Handle different response formats
+      if (Array.isArray(parsedResponse)) {
+        milestones = parsedResponse;
+      } else if (parsedResponse.years && Array.isArray(parsedResponse.years)) {
+        milestones = parsedResponse.years;
+      } else if ((parsedResponse.year || parsedResponse.yearNumber) && parsedResponse.title && parsedResponse.tasks) {
+        // The AI returned a single year object instead of an array
+        console.log('[Musk AI] Detected single year object, converting to array');
+        milestones = [parsedResponse];
       } else {
-        // For Anthropic, extract the JSON part from the text response
-        const jsonMatch = aiResponse?.match(/\[[\s\S]*\]/);
-        if (jsonMatch) {
-          milestones = JSON.parse(jsonMatch[0]);
-        } else {
-          // Try to extract a single object if array not found
-          const jsonObject = aiResponse?.match(/\{[\s\S]*\}/);
-          if (jsonObject) {
-            const parsedObject = JSON.parse(jsonObject[0]);
-            if ((parsedObject.year || parsedObject.yearNumber) && parsedObject.title && parsedObject.tasks) {
-              milestones = [parsedObject];
-            } else {
-              throw new Error("Invalid JSON object format from Anthropic response");
-            }
-          } else {
-            throw new Error("Could not extract JSON from Anthropic response");
-          }
-        }
+        milestones = parsedResponse;
       }
+      
+      console.log(`[Musk AI] Extracted milestones type: ${Array.isArray(milestones) ? 'Array' : typeof milestones}`);
 
       // Validate the milestones structure
       if (!Array.isArray(milestones)) {
