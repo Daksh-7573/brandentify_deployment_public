@@ -570,7 +570,6 @@ export default function CareerCapsulePage() {
                             goalType: goalDetails.goal?.goalType || goalDetails.goalType,
                             description: goalDetails.goal?.description || goalDetails.description,
                             timeframe: goalDetails.goal?.timeframe || goalDetails.timeframe,
-                            useModel: 'openai', // Default to OpenAI
                           });
                         }
                       }}
