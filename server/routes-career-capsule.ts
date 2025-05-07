@@ -468,11 +468,7 @@ router.post('/capsule-tasks/:taskId/toggle', async (req, res) => {
       UPDATE capsule_tasks 
       SET 
         is_completed = NOT is_completed, 
-        updated_at = NOW(),
-        completed_at = CASE 
-          WHEN NOT is_completed THEN NOW() 
-          ELSE NULL 
-        END
+        updated_at = NOW()
       WHERE id = $1 
       RETURNING 
         id, 
@@ -480,7 +476,6 @@ router.post('/capsule-tasks/:taskId/toggle', async (req, res) => {
         title, 
         description, 
         is_completed AS "isCompleted", 
-        completed_at AS "completedAt", 
         due_date AS "dueDate",
         created_at AS "createdAt", 
         updated_at AS "updatedAt"
