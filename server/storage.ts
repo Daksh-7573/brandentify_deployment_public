@@ -4949,36 +4949,66 @@ export class MemStorage implements IStorage {
     const task = this.capsuleTasks.get(id);
     if (!task) return undefined;
     
-    // Check if the task is being marked as completed
+    console.log(`Toggling task ${id} with data:`, data);
+    
+    // Check if the task completion state is changing (either completing or uncompleting)
     const isCompletingTask = !task.isCompleted && data.isCompleted === true;
+    const isUncompletingTask = task.isCompleted && data.isCompleted === false;
     
     const updatedTask = {
       ...task,
       ...data,
       updatedAt: new Date(),
-      completedAt: isCompletingTask ? new Date() : task.completedAt
+      completedAt: data.isCompleted ? new Date() : null
     };
     
     this.capsuleTasks.set(id, updatedTask);
     
-    // If the task is being marked as completed, update the year and capsule completed tasks count
-    if (isCompletingTask) {
+    // Update the year and capsule when task completion status changes
+    if (isCompletingTask || isUncompletingTask) {
       const year = this.capsuleYears.get(task.yearId);
       if (year) {
+        console.log(`Updating year ${year.id} for task completion change`);
+        
+        // Update completed tasks count
+        const completedTasksDelta = isCompletingTask ? 1 : -1;
         const updatedYear = {
           ...year,
-          completedTasks: year.completedTasks + 1
+          completedTasks: Math.max(0, year.completedTasks + completedTasksDelta)
         };
+        
+        // Calculate progress percentage
+        const totalTasks = await this.getCapsuleTasksByYearId(year.id);
+        if (totalTasks && totalTasks.length > 0) {
+          const completedCount = totalTasks.filter(t => t.isCompleted || (t.id === task.id && isCompletingTask)).length;
+          updatedYear.progress = Math.round((completedCount / totalTasks.length) * 100);
+          console.log(`Year ${year.id} progress updated to ${updatedYear.progress}% (${completedCount}/${totalTasks.length} tasks)`);
+        }
+        
         this.capsuleYears.set(year.id, updatedYear);
         
-        // Update the career capsule completed tasks count
+        // Update the career capsule
         const capsule = this.careerCapsules.get(year.capsuleId);
         if (capsule) {
+          console.log(`Updating capsule ${capsule.id} for task completion change`);
+          
+          // Update completed tasks count
           const updatedCapsule = {
             ...capsule,
-            completedTasks: capsule.completedTasks + 1,
-            xpEarned: capsule.xpEarned + this.getXpForTaskDifficulty(task.difficulty)
+            completedTasks: Math.max(0, capsule.completedTasks + completedTasksDelta),
+            xpEarned: isCompletingTask 
+              ? capsule.xpEarned + this.getXpForTaskDifficulty(task.difficulty)
+              : Math.max(0, capsule.xpEarned - this.getXpForTaskDifficulty(task.difficulty))
           };
+          
+          // Calculate overall progress
+          const years = await this.getCapsuleYearsByCapsuleId(capsule.id);
+          if (years && years.length > 0) {
+            const avgProgress = years.reduce((sum, y) => sum + y.progress, 0) / years.length;
+            updatedCapsule.overallProgress = Math.round(avgProgress);
+            console.log(`Capsule ${capsule.id} overall progress updated to ${updatedCapsule.overallProgress}%`);
+          }
+          
           this.careerCapsules.set(capsule.id, updatedCapsule);
         }
       }

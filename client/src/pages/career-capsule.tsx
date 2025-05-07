@@ -684,8 +684,12 @@ export default function CareerCapsulePage() {
                                   
                                   // Handler for toggling task completion
                                   const handleToggleTask = () => {
-                                    if (toggleTaskCompletion.isPending) return;
+                                    if (toggleTaskCompletion.isPending) {
+                                      console.log('Task toggle mutation is already pending');
+                                      return;
+                                    }
                                     
+                                    console.log(`Toggling task completion for task ${task.id}, current status: ${task.isCompleted ? 'Completed' : 'Not Completed'}`);
                                     toggleTaskCompletion.mutate(task.id);
                                   };
                                   
