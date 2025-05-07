@@ -306,130 +306,52 @@ export default function CareerCapsulePage() {
             gap: '24px',
             width: '100%'
           }}>
-            {/* Case 1: goals is an array */}
-            {Array.isArray(goals) && goals.length > 0 && goals.map((goal: CareerGoal) => (
-              <Card key={goal.id} className="shadow-md hover:shadow-lg transition-shadow">
-                <CardHeader className="pb-2">
-                  <div className="flex justify-between items-start">
-                    <CardTitle className="text-xl">{goal.title}</CardTitle>
-                    <Badge 
-                      className={getStatusColor(goal.status)}
-                    >
-                      {goal.status === "in_progress" ? "In Progress" : 
-                       goal.status === "completed" ? "Completed" : 
-                       goal.status === "abandoned" ? "Abandoned" : "Not Started"}
-                    </Badge>
-                  </div>
-                  <CardDescription>
-                    <div className="flex flex-col gap-1 mt-1">
-                      <span className="text-sm">{getGoalTypeText(goal.goalType as GoalType)}</span>
-                      <span className="text-sm">Target: {formatDate(goal.targetDate as string)}</span>
-                    </div>
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="pb-2">
-                  <div className="mb-3">
-                    <Progress value={goal.progress || 0} className="h-2" />
-                    <span className="text-xs text-muted-foreground mt-1 block">
-                      {goal.progress || 0}% complete
-                    </span>
-                  </div>
-                  <p className="line-clamp-2 text-sm">{goal.description}</p>
-                </CardContent>
-                <CardFooter>
-                  <Button 
-                    variant="outline" 
-                    className="w-full" 
-                    onClick={() => handleViewDetails(goal.id)}
-                  >
-                    View Details
-                  </Button>
-                </CardFooter>
-              </Card>
-            ))}
-
-            {/* Case 2: goals contains a goals property that is an array */}
-            {!Array.isArray(goals) && goals.goals && Array.isArray(goals.goals) && goals.goals.length > 0 && goals.goals.map((goal: CareerGoal) => (
-              <Card key={goal.id} className="shadow-md hover:shadow-lg transition-shadow">
-                <CardHeader className="pb-2">
-                  <div className="flex justify-between items-start">
-                    <CardTitle className="text-xl">{goal.title}</CardTitle>
-                    <Badge 
-                      className={getStatusColor(goal.status)}
-                    >
-                      {goal.status === "in_progress" ? "In Progress" : 
-                       goal.status === "completed" ? "Completed" : 
-                       goal.status === "abandoned" ? "Abandoned" : "Not Started"}
-                    </Badge>
-                  </div>
-                  <CardDescription>
-                    <div className="flex flex-col gap-1 mt-1">
-                      <span className="text-sm">{getGoalTypeText(goal.goalType as GoalType)}</span>
-                      <span className="text-sm">Target: {formatDate(goal.targetDate as string)}</span>
-                    </div>
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="pb-2">
-                  <div className="mb-3">
-                    <Progress value={goal.progress || 0} className="h-2" />
-                    <span className="text-xs text-muted-foreground mt-1 block">
-                      {goal.progress || 0}% complete
-                    </span>
-                  </div>
-                  <p className="line-clamp-2 text-sm">{goal.description}</p>
-                </CardContent>
-                <CardFooter>
-                  <Button 
-                    variant="outline" 
-                    className="w-full" 
-                    onClick={() => handleViewDetails(goal.id)}
-                  >
-                    View Details
-                  </Button>
-                </CardFooter>
-              </Card>
-            ))}
-
-            {/* Case 3: goals is a single object (not an array) and has no goals property */}
-            {!Array.isArray(goals) && (!goals.goals || !Array.isArray(goals.goals)) && goals.id && (
-                <Card className="shadow-md hover:shadow-lg transition-shadow">
+            {/* Display all goals as an array - our backend now always returns an array */}
+            {Array.isArray(goals) && goals.length > 0 ? (
+              goals.map((goal: CareerGoal) => (
+                <Card key={goal.id} className="shadow-md hover:shadow-lg transition-shadow">
                   <CardHeader className="pb-2">
                     <div className="flex justify-between items-start">
-                      <CardTitle className="text-xl">{goals.title}</CardTitle>
+                      <CardTitle className="text-xl">{goal.title}</CardTitle>
                       <Badge 
-                        className={getStatusColor(goals.status)}
+                        className={getStatusColor(goal.status || "not_started")}
                       >
-                        {goals.status === "in_progress" ? "In Progress" : 
-                         goals.status === "completed" ? "Completed" : 
-                         goals.status === "abandoned" ? "Abandoned" : "Not Started"}
+                        {goal.status === "in_progress" ? "In Progress" : 
+                         goal.status === "completed" ? "Completed" : 
+                         goal.status === "abandoned" ? "Abandoned" : "Not Started"}
                       </Badge>
                     </div>
                     <CardDescription>
                       <div className="flex flex-col gap-1 mt-1">
-                        <span className="text-sm">{getGoalTypeText(goals.goalType as GoalType)}</span>
-                        <span className="text-sm">Target: {formatDate(goals.targetDate as string)}</span>
+                        <span className="text-sm">{getGoalTypeText(goal.goalType as GoalType)}</span>
+                        <span className="text-sm">Target: {formatDate(String(goal.targetDate || ""))}</span>
                       </div>
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="pb-2">
                     <div className="mb-3">
-                      <Progress value={goals.progress || 0} className="h-2" />
+                      <Progress value={goal.progress || 0} className="h-2" />
                       <span className="text-xs text-muted-foreground mt-1 block">
-                        {goals.progress || 0}% complete
+                        {goal.progress || 0}% complete
                       </span>
                     </div>
-                    <p className="line-clamp-2 text-sm">{goals.description}</p>
+                    <p className="line-clamp-2 text-sm">{goal.description || "No description provided"}</p>
                   </CardContent>
                   <CardFooter>
                     <Button 
                       variant="outline" 
                       className="w-full" 
-                      onClick={() => handleViewDetails(goals.id)}
+                      onClick={() => handleViewDetails(goal.id)}
                     >
                       View Details
                     </Button>
                   </CardFooter>
                 </Card>
+              ))
+            ) : (
+              <div className="col-span-full text-center py-8">
+                <p className="text-muted-foreground">No career goals found. Create your first career goal to get started.</p>
+              </div>
             )}
           </div>
         ) : (
