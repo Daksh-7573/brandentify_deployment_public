@@ -449,19 +449,56 @@ router.put('/capsule-tasks/:taskId', async (req, res) => {
   }
 });
 
-// Toggle task completion
+// Simplified task completion toggle
 router.post('/capsule-tasks/:taskId/toggle', async (req, res) => {
   try {
     const taskId = parseInt(req.params.taskId);
+    console.log(`[Basic Toggle] Received request to toggle task ${taskId}`);
+    
     if (isNaN(taskId)) {
+      console.log(`[Basic Toggle] Invalid task ID: ${req.params.taskId}`);
       return res.status(400).json({ message: 'Invalid task ID' });
     }
 
-    const task = await storage.toggleCapsuleTaskCompletion(taskId);
-    return res.json(task);
+    // Check if task exists
+    const task = await storage.getCapsuleTaskById(taskId);
+    if (!task) {
+      console.log(`[Basic Toggle] Task ${taskId} not found`);
+      return res.status(404).json({ message: 'Task not found' });
+    }
+    
+    console.log(`[Basic Toggle] Found task ${taskId}:`, JSON.stringify(task));
+    
+    // Just toggle the isCompleted status only - minimal update
+    const newStatus = !task.isCompleted;
+    console.log(`[Basic Toggle] Updating from ${task.isCompleted} to ${newStatus}`);
+    
+    // Create a minimal update object
+    const updateData = {
+      isCompleted: newStatus
+    };
+    
+    // Simple update
+    const updated = await storage.updateCapsuleTask(taskId, updateData);
+    
+    if (!updated) {
+      console.log(`[Basic Toggle] Update returned no task`);
+      return res.status(500).json({ message: 'Failed to update task status' });
+    }
+    
+    console.log(`[Basic Toggle] Update successful:`, JSON.stringify(updated));
+    
+    // Return success response
+    return res.json({
+      success: true,
+      task: updated
+    });
   } catch (error) {
-    console.error('Error toggling task completion:', error);
-    return res.status(500).json({ message: 'Error toggling task completion' });
+    console.error('[Basic Toggle] Error in simplified toggle:', error);
+    return res.status(500).json({ 
+      message: 'Error toggling task completion',
+      error: error.toString()
+    });
   }
 });
 
