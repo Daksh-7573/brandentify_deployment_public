@@ -415,6 +415,52 @@ export const useCareerCapsule = (userId: number | string) => {
 
   // Regenerate milestones function has been removed as requested
 
+  // Toggle task completion status
+  const useToggleTaskCompletion = (goalId: number) => {
+    return useMutation({
+      mutationFn: (taskId: number) => {
+        return apiRequest('POST', `/capsule-tasks/${taskId}/toggle`);
+      },
+      onSuccess: () => {
+        toast({
+          title: 'Task status updated',
+          description: 'Your task status has been successfully updated.',
+        });
+        queryClient.invalidateQueries({ queryKey: [`/api/career-goals/${goalId}`] });
+      },
+      onError: (error: any) => {
+        toast({
+          title: 'Failed to update task status',
+          description: error.message || 'An error occurred while updating the task status.',
+          variant: 'destructive',
+        });
+      },
+    });
+  };
+
+  // Update task details
+  const useUpdateTask = (goalId: number) => {
+    return useMutation({
+      mutationFn: ({ taskId, taskData }: { taskId: number, taskData: { title?: string; description?: string; isCompleted?: boolean; dueDate?: string } }) => {
+        return apiRequest('PUT', `/capsule-tasks/${taskId}`, taskData);
+      },
+      onSuccess: () => {
+        toast({
+          title: 'Task updated',
+          description: 'Your task has been successfully updated.',
+        });
+        queryClient.invalidateQueries({ queryKey: [`/api/career-goals/${goalId}`] });
+      },
+      onError: (error: any) => {
+        toast({
+          title: 'Failed to update task',
+          description: error.message || 'An error occurred while updating the task.',
+          variant: 'destructive',
+        });
+      },
+    });
+  };
+
   return {
     useGoals,
     useGoalDetails,
@@ -431,5 +477,7 @@ export const useCareerCapsule = (userId: number | string) => {
     useCreateProgressLog,
     useDeleteProgressLog,
     useGenerateMilestones,
+    useToggleTaskCompletion,
+    useUpdateTask,
   };
 };
