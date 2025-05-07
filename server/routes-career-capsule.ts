@@ -449,52 +449,118 @@ router.put('/capsule-tasks/:taskId', async (req, res) => {
   }
 });
 
-// Simplified task completion toggle
+// Direct SQL implementation of task completion toggle
 router.post('/capsule-tasks/:taskId/toggle', async (req, res) => {
   try {
     const taskId = parseInt(req.params.taskId);
-    console.log(`[Basic Toggle] Received request to toggle task ${taskId}`);
+    console.log(`[SQL Toggle] Received request to toggle task ${taskId}`);
     
     if (isNaN(taskId)) {
-      console.log(`[Basic Toggle] Invalid task ID: ${req.params.taskId}`);
+      console.log(`[SQL Toggle] Invalid task ID: ${req.params.taskId}`);
       return res.status(400).json({ message: 'Invalid task ID' });
     }
 
-    // Check if task exists
-    const task = await storage.getCapsuleTaskById(taskId);
-    if (!task) {
-      console.log(`[Basic Toggle] Task ${taskId} not found`);
+    // Use direct SQL to toggle the task completion status
+    const { pool } = require('./db');
+    
+    console.log(`[SQL Toggle] Executing SQL update for task ${taskId}`);
+    
+    const result = await pool.query(`
+      UPDATE capsule_tasks 
+      SET 
+        is_completed = NOT is_completed, 
+        updated_at = NOW(),
+        completed_at = CASE 
+          WHEN NOT is_completed THEN NOW() 
+          ELSE NULL 
+        END
+      WHERE id = $1 
+      RETURNING 
+        id, 
+        year_id AS "yearId", 
+        title, 
+        description, 
+        is_completed AS "isCompleted", 
+        completed_at AS "completedAt", 
+        due_date AS "dueDate",
+        created_at AS "createdAt", 
+        updated_at AS "updatedAt"
+    `, [taskId]);
+    
+    if (result.rows.length === 0) {
+      console.log(`[SQL Toggle] Task ${taskId} not found in database`);
       return res.status(404).json({ message: 'Task not found' });
     }
     
-    console.log(`[Basic Toggle] Found task ${taskId}:`, JSON.stringify(task));
+    const updatedTask = result.rows[0];
+    console.log(`[SQL Toggle] Task ${taskId} toggled successfully to ${updatedTask.isCompleted}`);
     
-    // Just toggle the isCompleted status only - minimal update
-    const newStatus = !task.isCompleted;
-    console.log(`[Basic Toggle] Updating from ${task.isCompleted} to ${newStatus}`);
-    
-    // Create a minimal update object
-    const updateData = {
-      isCompleted: newStatus
-    };
-    
-    // Simple update
-    const updated = await storage.updateCapsuleTask(taskId, updateData);
-    
-    if (!updated) {
-      console.log(`[Basic Toggle] Update returned no task`);
-      return res.status(500).json({ message: 'Failed to update task status' });
+    // Now update the year progress
+    if (updatedTask.yearId) {
+      try {
+        // Get all tasks for this year to calculate progress
+        const tasksResult = await pool.query(`
+          SELECT COUNT(*) AS total, 
+                 SUM(CASE WHEN is_completed THEN 1 ELSE 0 END) AS completed
+          FROM capsule_tasks
+          WHERE year_id = $1
+        `, [updatedTask.yearId]);
+        
+        if (tasksResult.rows.length > 0) {
+          const { total, completed } = tasksResult.rows[0];
+          const progress = Math.round((completed / total) * 100);
+          
+          console.log(`[SQL Toggle] Updating year ${updatedTask.yearId} progress to ${progress}% (${completed}/${total})`);
+          
+          // Update the year progress
+          await pool.query(`
+            UPDATE capsule_years
+            SET progress = $1, updated_at = NOW()
+            WHERE id = $2
+          `, [progress, updatedTask.yearId]);
+          
+          // Get the capsule ID from the year
+          const yearResult = await pool.query(`
+            SELECT capsule_id AS "capsuleId" FROM capsule_years WHERE id = $1
+          `, [updatedTask.yearId]);
+          
+          if (yearResult.rows.length > 0) {
+            const capsuleId = yearResult.rows[0].capsuleId;
+            
+            // Calculate average progress across all years for this capsule
+            const capsuleProgressResult = await pool.query(`
+              SELECT AVG(progress) AS avg_progress
+              FROM capsule_years
+              WHERE capsule_id = $1
+            `, [capsuleId]);
+            
+            if (capsuleProgressResult.rows.length > 0) {
+              const avgProgress = Math.round(capsuleProgressResult.rows[0].avg_progress);
+              
+              console.log(`[SQL Toggle] Updating capsule ${capsuleId} progress to ${avgProgress}%`);
+              
+              // Update the capsule overall progress
+              await pool.query(`
+                UPDATE career_capsules
+                SET overall_progress = $1, updated_at = NOW()
+                WHERE id = $2
+              `, [avgProgress, capsuleId]);
+            }
+          }
+        }
+      } catch (progressError) {
+        // Log but don't fail the request due to progress calculation errors
+        console.error('[SQL Toggle] Error updating progress metrics:', progressError);
+      }
     }
     
-    console.log(`[Basic Toggle] Update successful:`, JSON.stringify(updated));
-    
-    // Return success response
+    // Return the updated task
     return res.json({
       success: true,
-      task: updated
+      task: updatedTask
     });
   } catch (error) {
-    console.error('[Basic Toggle] Error in simplified toggle:', error);
+    console.error('[SQL Toggle] Error in SQL toggle task implementation:', error);
     return res.status(500).json({ 
       message: 'Error toggling task completion',
       error: error.toString()
