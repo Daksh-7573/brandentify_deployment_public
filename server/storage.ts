@@ -604,7 +604,7 @@ export interface IStorage {
   deleteGoalProgressLog(id: number): Promise<boolean>;
   
   // Career Capsule operations
-  getUserCareerCapsule(userId: number): Promise<CareerCapsule | null>;
+  getUserCareerCapsule(userId: number): Promise<CareerCapsule[] | null>;
   getCareerCapsulesByUserId(userId: number): Promise<CareerCapsule[]>;
   getCareerCapsuleById(id: number): Promise<CareerCapsule | undefined>;
   createCareerCapsule(capsule: InsertCareerCapsule): Promise<CareerCapsule>;
@@ -7980,8 +7980,8 @@ export class DatabaseStorage implements IStorage {
     }
   }
   // Career Capsule operations
-  async getUserCareerCapsule(userId: number): Promise<CareerCapsule | null> {
-    console.log(`[db.getUserCareerCapsule] Looking for career capsule for user ${userId}`);
+  async getUserCareerCapsule(userId: number): Promise<CareerCapsule[] | null> {
+    console.log(`[db.getUserCareerCapsule] Looking for career capsules for user ${userId}`);
     
     return executeWithRetry(async () => {
       try {
@@ -7994,18 +7994,17 @@ export class DatabaseStorage implements IStorage {
           FROM career_capsules
           WHERE user_id = $1
           ORDER BY created_at DESC
-          LIMIT 1
         `, [userId]);
         
         if (result.rows.length === 0) {
-          console.log(`[db.getUserCareerCapsule] No career capsule found for user ${userId}`);
+          console.log(`[db.getUserCareerCapsule] No career capsules found for user ${userId}`);
           return null;
         }
         
-        console.log(`[db.getUserCareerCapsule] Found career capsule for user ${userId}`);
-        return result.rows[0];
+        console.log(`[db.getUserCareerCapsule] Found ${result.rows.length} career capsules for user ${userId}`);
+        return result.rows;
       } catch (error) {
-        console.error(`[db.getUserCareerCapsule] Error fetching career capsule for user ${userId}:`, error);
+        console.error(`[db.getUserCareerCapsule] Error fetching career capsules for user ${userId}:`, error);
         throw error;
       }
     }, 3, 800);
