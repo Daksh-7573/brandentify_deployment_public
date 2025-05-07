@@ -36,7 +36,7 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
     targetAction: '',
     xpReward: 0,
     badgeReward: undefined,
-    muskTip: quest.muskResponse,
+    muskTip: quest.muskTip || quest.muskResponse || '',  // Fix for weekly quests
     isActive: true,
     createdAt: '',
     updatedAt: ''
