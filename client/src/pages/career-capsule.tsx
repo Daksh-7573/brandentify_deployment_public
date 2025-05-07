@@ -300,9 +300,9 @@ export default function CareerCapsulePage() {
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
           </div>
         ) : goals ? (
-          <div style={{ 
+          <div className="grid-test-wrapper" style={{ 
             display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', 
+            gridTemplateColumns: 'repeat(3, 1fr)', 
             gap: '24px',
             width: '100%'
           }}>
@@ -392,44 +392,117 @@ export default function CareerCapsulePage() {
 
             {/* Case 3: goals is a single object (not an array) and has no goals property */}
             {!Array.isArray(goals) && (!goals.goals || !Array.isArray(goals.goals)) && goals.id && (
-              <Card className="shadow-md hover:shadow-lg transition-shadow">
-                <CardHeader className="pb-2">
-                  <div className="flex justify-between items-start">
-                    <CardTitle className="text-xl">{goals.title}</CardTitle>
-                    <Badge 
-                      className={getStatusColor(goals.status)}
-                    >
-                      {goals.status === "in_progress" ? "In Progress" : 
-                       goals.status === "completed" ? "Completed" : 
-                       goals.status === "abandoned" ? "Abandoned" : "Not Started"}
-                    </Badge>
-                  </div>
-                  <CardDescription>
-                    <div className="flex flex-col gap-1 mt-1">
-                      <span className="text-sm">{getGoalTypeText(goals.goalType as GoalType)}</span>
-                      <span className="text-sm">Target: {formatDate(goals.targetDate as string)}</span>
+              <>
+                {/* Original Card */}
+                <Card className="shadow-md hover:shadow-lg transition-shadow">
+                  <CardHeader className="pb-2">
+                    <div className="flex justify-between items-start">
+                      <CardTitle className="text-xl">{goals.title}</CardTitle>
+                      <Badge 
+                        className={getStatusColor(goals.status)}
+                      >
+                        {goals.status === "in_progress" ? "In Progress" : 
+                         goals.status === "completed" ? "Completed" : 
+                         goals.status === "abandoned" ? "Abandoned" : "Not Started"}
+                      </Badge>
                     </div>
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="pb-2">
-                  <div className="mb-3">
-                    <Progress value={goals.progress || 0} className="h-2" />
-                    <span className="text-xs text-muted-foreground mt-1 block">
-                      {goals.progress || 0}% complete
-                    </span>
-                  </div>
-                  <p className="line-clamp-2 text-sm">{goals.description}</p>
-                </CardContent>
-                <CardFooter>
-                  <Button 
-                    variant="outline" 
-                    className="w-full" 
-                    onClick={() => handleViewDetails(goals.id)}
-                  >
-                    View Details
-                  </Button>
-                </CardFooter>
-              </Card>
+                    <CardDescription>
+                      <div className="flex flex-col gap-1 mt-1">
+                        <span className="text-sm">{getGoalTypeText(goals.goalType as GoalType)}</span>
+                        <span className="text-sm">Target: {formatDate(goals.targetDate as string)}</span>
+                      </div>
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="pb-2">
+                    <div className="mb-3">
+                      <Progress value={goals.progress || 0} className="h-2" />
+                      <span className="text-xs text-muted-foreground mt-1 block">
+                        {goals.progress || 0}% complete
+                      </span>
+                    </div>
+                    <p className="line-clamp-2 text-sm">{goals.description}</p>
+                  </CardContent>
+                  <CardFooter>
+                    <Button 
+                      variant="outline" 
+                      className="w-full" 
+                      onClick={() => handleViewDetails(goals.id)}
+                    >
+                      View Details
+                    </Button>
+                  </CardFooter>
+                </Card>
+                
+                {/* Test Card 1 */}
+                <Card className="shadow-md hover:shadow-lg transition-shadow">
+                  <CardHeader className="pb-2">
+                    <div className="flex justify-between items-start">
+                      <CardTitle className="text-xl">Test Card 1</CardTitle>
+                      <Badge className="bg-amber-100 text-amber-800">
+                        In Progress
+                      </Badge>
+                    </div>
+                    <CardDescription>
+                      <div className="flex flex-col gap-1 mt-1">
+                        <span className="text-sm">Skill Acquisition</span>
+                        <span className="text-sm">Target: May 5, 2026</span>
+                      </div>
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="pb-2">
+                    <div className="mb-3">
+                      <Progress value={25} className="h-2" />
+                      <span className="text-xs text-muted-foreground mt-1 block">
+                        25% complete
+                      </span>
+                    </div>
+                    <p className="line-clamp-2 text-sm">This is a test card to verify the grid layout</p>
+                  </CardContent>
+                  <CardFooter>
+                    <Button 
+                      variant="outline" 
+                      className="w-full" 
+                    >
+                      View Details
+                    </Button>
+                  </CardFooter>
+                </Card>
+                
+                {/* Test Card 2 */}
+                <Card className="shadow-md hover:shadow-lg transition-shadow">
+                  <CardHeader className="pb-2">
+                    <div className="flex justify-between items-start">
+                      <CardTitle className="text-xl">Test Card 2</CardTitle>
+                      <Badge className="bg-green-100 text-green-800">
+                        Completed
+                      </Badge>
+                    </div>
+                    <CardDescription>
+                      <div className="flex flex-col gap-1 mt-1">
+                        <span className="text-sm">Industry Switch</span>
+                        <span className="text-sm">Target: Dec 31, 2025</span>
+                      </div>
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="pb-2">
+                    <div className="mb-3">
+                      <Progress value={100} className="h-2" />
+                      <span className="text-xs text-muted-foreground mt-1 block">
+                        100% complete
+                      </span>
+                    </div>
+                    <p className="line-clamp-2 text-sm">This is another test card to verify the grid layout is working correctly</p>
+                  </CardContent>
+                  <CardFooter>
+                    <Button 
+                      variant="outline" 
+                      className="w-full" 
+                    >
+                      View Details
+                    </Button>
+                  </CardFooter>
+                </Card>
+              </>
             )}
           </div>
         ) : (
