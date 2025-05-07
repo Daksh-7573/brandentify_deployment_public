@@ -58,7 +58,9 @@ export default function CareerCapsulePage() {
     useGoalDetails,
     useCreateGoal,
     useGenerateMilestones,
-    useDeleteCapsule
+    useDeleteCapsule,
+    useToggleTaskCompletion,
+    useUpdateTask
   } = useCareerCapsule(userId);
   
   const { data: goals, isLoading, refetch: refetchGoals, error } = useGoals();
@@ -105,6 +107,9 @@ export default function CareerCapsulePage() {
   // Milestone generation
   const generateMilestones = useGenerateMilestones(selectedGoalId || 0);
   const [showMilestoneGenerationDialog, setShowMilestoneGenerationDialog] = useState(false);
+  
+  // Task completion toggling
+  const toggleTaskCompletion = useToggleTaskCompletion(selectedGoalId || 0);
 
   // State for tracking milestone generation
   const [createdGoalId, setCreatedGoalId] = useState<number | null>(null);
@@ -677,10 +682,34 @@ export default function CareerCapsulePage() {
                                 {milestone.tasks.map((task, taskIndex) => {
                                   console.log(`Rendering task ${taskIndex} for milestone ${index}: id=${task.id}, title=${task.title}`);
                                   
+                                  // Handler for toggling task completion
+                                  const handleToggleTask = () => {
+                                    if (toggleTaskCompletion.isPending) return;
+                                    
+                                    toggleTaskCompletion.mutate(task.id);
+                                  };
+                                  
                                   return (
                                     <div key={task.id} className="bg-muted/30 p-2 rounded-sm">
                                       <div className="flex items-center justify-between">
-                                        <span className="font-medium text-sm">{task.title}</span>
+                                        <div className="flex items-center gap-2">
+                                          <Button 
+                                            size="icon" 
+                                            variant="ghost" 
+                                            className={`h-6 w-6 rounded-full ${task.isCompleted ? 'text-green-600' : 'text-gray-400'}`}
+                                            onClick={handleToggleTask}
+                                            disabled={toggleTaskCompletion.isPending}
+                                          >
+                                            {toggleTaskCompletion.isPending && toggleTaskCompletion.variables === task.id ? (
+                                              <Loader2 className="h-4 w-4 animate-spin" />
+                                            ) : task.isCompleted ? (
+                                              <CheckCircle2 className="h-5 w-5" />
+                                            ) : (
+                                              <div className="h-5 w-5 rounded-full border-2 border-current" />
+                                            )}
+                                          </Button>
+                                          <span className={`font-medium text-sm ${task.isCompleted ? 'line-through text-muted-foreground' : ''}`}>{task.title}</span>
+                                        </div>
                                         <Badge 
                                           variant="outline"
                                           className={task.isCompleted ? "bg-green-100 text-green-800" : ""}
@@ -688,7 +717,7 @@ export default function CareerCapsulePage() {
                                           {task.isCompleted ? "Completed" : "Pending"}
                                         </Badge>
                                       </div>
-                                      <div className="text-xs mt-1 whitespace-pre-line">
+                                      <div className={`text-xs mt-1 ml-8 whitespace-pre-line ${task.isCompleted ? 'text-muted-foreground' : ''}`}>
                                         {task.description}
                                       </div>
                                     </div>
