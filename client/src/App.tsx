@@ -168,6 +168,10 @@ function Router() {
       <Route path="/musk-testing">
         <ProtectedRoute path="/musk-testing" component={MuskTestingPage} />
       </Route>
+      {/* Test route for nowboard integration */}
+      <Route path="/test-nowboard">
+        <ProtectedRoute path="/test-nowboard" component={TestNowboardPage} />
+      </Route>
       {/* Unified Profile Page with comprehensive data fetching */}
       <Route path="/unified-profile">
         <ProtectedRoute path="/unified-profile" component={UnifiedProfilePage} />
