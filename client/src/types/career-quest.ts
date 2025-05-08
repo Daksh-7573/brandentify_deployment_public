@@ -32,8 +32,11 @@ export interface QuestDefinition {
   targetAction: string;
   xpReward: number;
   badgeReward?: BadgeType;
+  // Profile completion requirements removed as they're not used in engagement quests
   requiredProfileCompletion?: number;
+  // Career stage requirements removed as they're not used in engagement quests
   requiredCareerStage?: string;
+  // Industry requirements removed as they're not used in engagement quests
   requiredIndustry?: string;
   muskTip?: string;
   isActive: boolean;
@@ -51,6 +54,7 @@ export interface UserQuest {
   completedAt?: string;
   weekNumber: number;
   year: number;
+  // Quest dismissal functionality removed; this field is kept for database compatibility
   dismissedReason?: string;
   xpEarned?: number;
   badgeEarned?: BadgeType;

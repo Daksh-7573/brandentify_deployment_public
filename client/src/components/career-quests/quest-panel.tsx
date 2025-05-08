@@ -72,14 +72,12 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
   const activeQuests = allQuests?.filter(quest => quest.status === 'active') || [];
   const completedQuests = allQuests?.filter(quest => quest.status === 'completed') || [];
   
-  // Count skill-related quests
-  const skillQuests = allQuests?.filter(quest => {
+  // Count engagement-related quests
+  const engagementQuests = allQuests?.filter(quest => {
     const action = quest.definition?.targetAction;
-    return action === 'add_skill' || 
-           action === 'add_skill_category' ||
-           action === 'add_industry_skill' ||
-           action === 'update_resume_skills' ||
-           action === 'add_project_technologies';
+    return action === 'comment_on_pulse' || 
+           action === 'react_to_pulse' ||
+           action === 'add_media_to_pulse';
   }) || [];
   
   const renderQuestsList = (quests: typeof weeklyQuests, loading: boolean) => {
@@ -119,9 +117,9 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
         <CardTitle className="text-2xl">Career Quests</CardTitle>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" asChild>
-            <Link href="/skill-quests">
+            <Link href="/career-quests">
               <GraduationCap className="h-4 w-4 mr-2" />
-              Skill Quests
+              Engagement Quests
             </Link>
           </Button>
           <Button variant="ghost" size="sm" asChild>
@@ -130,18 +128,18 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
         </div>
       </CardHeader>
       <CardContent>
-        {/* Skill Quests Highlight Card */}
-        {!isLoadingAll && skillQuests.length > 0 && (
+        {/* Engagement Quests Highlight Card */}
+        {!isLoadingAll && engagementQuests.length > 0 && (
           <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 p-4 rounded-md border border-blue-100 dark:border-blue-900 mb-6 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Lightbulb className="h-8 w-8 text-blue-500" />
               <div>
-                <h3 className="font-medium">New Skill Quests Available!</h3>
-                <p className="text-sm text-muted-foreground">Complete specific skill quests to boost your profile</p>
+                <h3 className="font-medium">Engagement Quests Available!</h3>
+                <p className="text-sm text-muted-foreground">Comment, react, and share media to complete these quests</p>
               </div>
             </div>
             <Button size="sm" asChild>
-              <Link href="/skill-quests">View Skill Quests</Link>
+              <Link href="/career-quests">View All Quests</Link>
             </Button>
           </div>
         )}
