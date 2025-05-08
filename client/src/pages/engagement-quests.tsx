@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { PageLayout } from '@/components/layout/page-layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,18 +8,18 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   useUserQuestsWithDefinitions,
   useUserXp,
-  useMarkQuestCompleted
+  useCompleteQuest
 } from '@/hooks/use-career-quests';
-import { SkillQuestTracker } from '@/components/career-quests/skill-quest-tracker';
 import { UserQuest } from '@/types/career-quest';
 import { Link } from 'wouter';
 import { XpProgressBar } from '@/components/career-quests/xp-progress-bar';
 import { Skeleton } from '@/components/ui/skeleton';
+import { MessageSquare, ThumbsUp, FileImage } from 'lucide-react';
 
-export default function SkillQuestsPage() {
-  const { userData } = useUserProfile();
-  const userId = userData?.id || 0;
-  const [activeTab, setActiveTab] = useState<string>('skill-tracker');
+export default function EngagementQuestsPage() {
+  const { data } = useUserProfile();
+  const userId = data?.id || 0;
+  const [activeTab, setActiveTab] = useState<string>('daily');
   
   // Get all user quests
   const {
@@ -34,9 +34,9 @@ export default function SkillQuestsPage() {
     isLoading: isLoadingXp,
   } = useUserXp(userId);
   
-  const markCompleted = useMarkQuestCompleted();
+  const completeQuest = useCompleteQuest();
   
-  // Find the skill-related quests
+  // Find the engagement-related quests
   const findQuestByAction = (action: string): UserQuest | undefined => {
     if (!allQuests) return undefined;
     
@@ -46,17 +46,15 @@ export default function SkillQuestsPage() {
     );
   };
   
-  // Get specific skill quests
-  const profileQuest = findQuestByAction('add_skill');
-  const categoryQuest = findQuestByAction('add_skill_category');
-  const industryQuest = findQuestByAction('add_industry_skill');
-  const resumeSkillQuest = findQuestByAction('update_resume_skills');
-  const projectSkillQuest = findQuestByAction('add_project_technologies');
+  // Get specific engagement quests
+  const commentQuest = findQuestByAction('comment_on_pulse');
+  const reactionQuest = findQuestByAction('react_to_pulse');
+  const mediaQuest = findQuestByAction('add_media_to_pulse');
   
   const handleCompleteQuest = (quest: UserQuest) => {
     if (!quest) return;
     
-    markCompleted.mutate({
+    completeQuest.mutate({
       questId: quest.id,
       userId: quest.userId
     }, {
@@ -67,205 +65,218 @@ export default function SkillQuestsPage() {
         });
         refetchQuests();
       },
-      onError: (error) => {
+      onError: (error: Error) => {
         toast({
           title: 'Error completing quest',
-          description: (error as Error).message,
+          description: error.message,
           variant: 'destructive',
         });
       }
     });
   };
   
-  return (
-    <PageLayout title="Engagement Quests" subtitle="Complete engagement activities like commenting, reacting, and sharing media to boost your profile">
-      <div className="container max-w-5xl mx-auto py-8">
-        <div className="flex flex-col md:flex-row gap-4 md:gap-8">
-          <div className="w-full md:w-2/3">
-            <Card className="w-full">
-              <CardHeader>
-                <CardTitle>Skill Quests Dashboard</CardTitle>
-                <CardDescription>
-                  Track and complete skill-specific quests to improve your profile's effectiveness
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {/* XP Progress Bar */}
-                {isLoadingXp ? (
-                  <Skeleton className="w-full h-[40px] mb-6" />
-                ) : (
-                  userXp && (
-                    <XpProgressBar 
-                      balance={userXp.balance} 
-                      lifetimeEarned={userXp.lifetimeEarned}
-                      className="mb-6"
-                    />
-                  )
-                )}
-              
-                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                  <TabsList className="grid w-full grid-cols-3">
-                    <TabsTrigger value="skill-tracker">Skill Tracker</TabsTrigger>
-                    <TabsTrigger value="resume-skills">Resume Skills</TabsTrigger>
-                    <TabsTrigger value="project-skills">Project Skills</TabsTrigger>
-                  </TabsList>
-                  
-                  <TabsContent value="skill-tracker" className="space-y-6 mt-6">
-                    {isLoadingQuests ? (
-                      <Skeleton className="w-full h-[400px]" />
-                    ) : (
-                      <SkillQuestTracker 
-                        profileQuest={profileQuest}
-                        categoryQuest={categoryQuest}
-                        industryQuest={industryQuest}
-                        onCompleteQuest={handleCompleteQuest}
-                      />
-                    )}
-                  </TabsContent>
-                  
-                  <TabsContent value="resume-skills" className="space-y-6 mt-6">
-                    <Card>
-                      <CardHeader>
-                        <CardTitle>{resumeSkillQuest?.definition?.title || "Resume Skills Alignment"}</CardTitle>
-                        <CardDescription>
-                          {resumeSkillQuest?.definition?.description || 
-                            "Ensure your resume skills section includes at least 5 skills from your profile"}
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent className="space-y-4">
-                        <div className="bg-muted/30 p-4 rounded-md border">
-                          <p className="text-sm">
-                            Your resume should include skills relevant to the jobs you're targeting. Using skills from your profile ensures consistency across your professional identity.
-                          </p>
-                          <div className="mt-4 flex items-center justify-between">
-                            <Button size="sm" asChild>
-                              <Link href="/resume-editor">Go to Resume Editor</Link>
-                            </Button>
-                            {resumeSkillQuest && (
-                              <Button 
-                                size="sm" 
-                                onClick={() => handleCompleteQuest(resumeSkillQuest)}
-                                disabled={markCompleted.isPending}
-                              >
-                                Mark as Completed
-                              </Button>
-                            )}
-                          </div>
-                        </div>
-                        
-                        <div className="bg-muted/20 p-3 rounded-md border mt-4">
-                          <h4 className="text-sm font-medium mb-2">Musk's Tip:</h4>
-                          <p className="text-sm text-muted-foreground">
-                            {resumeSkillQuest?.definition?.muskTip || 
-                              "Your resume skills should align with your profile but be tailored to specific job targets. Include keywords from job descriptions in your industry."}
-                          </p>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </TabsContent>
-                  
-                  <TabsContent value="project-skills" className="space-y-6 mt-6">
-                    <Card>
-                      <CardHeader>
-                        <CardTitle>{projectSkillQuest?.definition?.title || "Project Skills Showcase"}</CardTitle>
-                        <CardDescription>
-                          {projectSkillQuest?.definition?.description || 
-                            "Add technologies/skills used in at least one of your portfolio projects"}
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent className="space-y-4">
-                        <div className="bg-muted/30 p-4 rounded-md border">
-                          <p className="text-sm">
-                            When you add specific technologies to your projects, it helps validate your skill claims and makes your portfolio more credible to recruiters and potential clients.
-                          </p>
-                          <div className="mt-4 flex items-center justify-between">
-                            <Button size="sm" asChild>
-                              <Link href="/projects">Go to Projects</Link>
-                            </Button>
-                            {projectSkillQuest && (
-                              <Button 
-                                size="sm" 
-                                onClick={() => handleCompleteQuest(projectSkillQuest)}
-                                disabled={markCompleted.isPending}
-                              >
-                                Mark as Completed
-                              </Button>
-                            )}
-                          </div>
-                        </div>
-                        
-                        <div className="bg-muted/20 p-3 rounded-md border mt-4">
-                          <h4 className="text-sm font-medium mb-2">Musk's Tip:</h4>
-                          <p className="text-sm text-muted-foreground">
-                            {projectSkillQuest?.definition?.muskTip || 
-                              "Listing specific technologies used in projects validates your skill claims and helps recruiters find you through skill-based searches."}
-                          </p>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </TabsContent>
-                </Tabs>
-              </CardContent>
-            </Card>
+  const renderQuestCard = (quest: UserQuest | undefined, icon: React.ReactNode, fallbackTitle: string, fallbackDesc: string) => {
+    if (!quest && isLoadingQuests) {
+      return <Skeleton className="w-full h-[200px] mb-4" />;
+    }
+    
+    return (
+      <Card className="mb-4">
+        <CardHeader className="pb-2">
+          <div className="flex items-center gap-2">
+            {icon}
+            <div>
+              <CardTitle className="text-base">{quest?.definition?.title || fallbackTitle}</CardTitle>
+              <CardDescription className="text-sm">
+                {quest?.definition?.description || fallbackDesc}
+              </CardDescription>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-between mb-3">
+            <div className="text-sm text-muted-foreground">
+              {quest?.currentProgress || 0} / {quest?.definition?.targetCount || 5} completed
+            </div>
+            <div className="text-sm font-medium">
+              {quest?.definition?.xpReward || 50} XP
+            </div>
           </div>
           
-          <div className="w-full md:w-1/3">
-            <Card>
-              <CardHeader>
-                <CardTitle>Quest Benefits</CardTitle>
-                <CardDescription>Why completing skill quests matters</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-3">
-                  <div className="flex items-start gap-2">
-                    <span className="text-lg font-semibold">✓</span>
-                    <div>
-                      <h4 className="text-sm font-medium">Enhanced Visibility</h4>
-                      <p className="text-xs text-muted-foreground">
-                        Profiles with categorized skills receive 4x more views from recruiters.
-                      </p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-start gap-2">
-                    <span className="text-lg font-semibold">✓</span>
-                    <div>
-                      <h4 className="text-sm font-medium">Better Matching</h4>
-                      <p className="text-xs text-muted-foreground">
-                        Industry-specific skills improve your match rate with relevant job opportunities.
-                      </p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-start gap-2">
-                    <span className="text-lg font-semibold">✓</span>
-                    <div>
-                      <h4 className="text-sm font-medium">Professional Credibility</h4>
-                      <p className="text-xs text-muted-foreground">
-                        Skills tied to projects provide proof of your capabilities beyond simple claims.
-                      </p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-start gap-2">
-                    <span className="text-lg font-semibold">✓</span>
-                    <div>
-                      <h4 className="text-sm font-medium">Resume Optimization</h4>
-                      <p className="text-xs text-muted-foreground">
-                        Align your profile and resume skills to create a consistent professional story.
-                      </p>
-                    </div>
-                  </div>
-                </div>
+          <div className="w-full bg-gray-100 h-2 rounded-full mb-4">
+            <div 
+              className="bg-primary h-2 rounded-full" 
+              style={{ 
+                width: `${quest ? (quest.currentProgress / quest.definition.targetCount) * 100 : 0}%`
+              }}
+            ></div>
+          </div>
+          
+          <div className="flex justify-between items-center">
+            <Button size="sm" variant="outline" asChild>
+              <Link href="/industry-pulse">Go to Pulse Feed</Link>
+            </Button>
+            
+            {quest && (
+              <Button 
+                size="sm" 
+                onClick={() => handleCompleteQuest(quest)}
+                disabled={completeQuest.isPending}
+              >
+                Mark Complete
+              </Button>
+            )}
+          </div>
+          
+          {quest?.definition?.muskTip && (
+            <div className="bg-muted/20 p-3 rounded-md border mt-4">
+              <h4 className="text-sm font-medium mb-1">Musk's Tip:</h4>
+              <p className="text-sm text-muted-foreground">
+                {quest.definition.muskTip}
+              </p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    );
+  };
+  
+  return (
+    <PageLayout>
+      <div className="container max-w-5xl mx-auto px-4 py-8">
+        <div className="flex flex-col gap-6">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Engagement Quests</h1>
+            <p className="text-muted-foreground mt-1">
+              Complete engagement activities like commenting, reacting, and sharing media to boost your profile
+            </p>
+          </div>
+          
+          <div className="flex flex-col md:flex-row gap-6">
+            <div className="w-full md:w-2/3">
+              <Card className="w-full">
+                <CardHeader>
+                  <CardTitle>Engagement Quests Dashboard</CardTitle>
+                  <CardDescription>
+                    Track and complete engagement-specific quests to improve your network and visibility
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {/* XP Progress Bar */}
+                  {isLoadingXp ? (
+                    <Skeleton className="w-full h-[40px] mb-6" />
+                  ) : (
+                    userXp && (
+                      <XpProgressBar 
+                        balance={userXp.balance} 
+                        lifetimeEarned={userXp.lifetimeEarned}
+                        className="mb-6"
+                      />
+                    )
+                  )}
                 
-                <div className="pt-4 border-t mt-4">
-                  <h4 className="text-sm font-medium mb-2">Ready to level up?</h4>
-                  <Button className="w-full" asChild>
-                    <Link href="/profile/edit/skills">Edit Your Skills</Link>
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+                  <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                    <TabsList className="grid w-full grid-cols-3">
+                      <TabsTrigger value="daily">Daily Quests</TabsTrigger>
+                      <TabsTrigger value="weekly">Weekly Quests</TabsTrigger>
+                      <TabsTrigger value="monthly">Monthly Challenges</TabsTrigger>
+                    </TabsList>
+                    
+                    <TabsContent value="daily" className="space-y-4 mt-6">
+                      <div className="space-y-4">
+                        {renderQuestCard(
+                          commentQuest, 
+                          <MessageSquare className="h-5 w-5 text-blue-500" />, 
+                          "Meaningful Commenter", 
+                          "Leave thoughtful comments on industry pulses to engage with the community"
+                        )}
+                      </div>
+                    </TabsContent>
+                    
+                    <TabsContent value="weekly" className="space-y-4 mt-6">
+                      <div className="space-y-4">
+                        {renderQuestCard(
+                          reactionQuest, 
+                          <ThumbsUp className="h-5 w-5 text-green-500" />, 
+                          "Reaction Giver", 
+                          "React to posts that resonate with you or provide valuable insights"
+                        )}
+                      </div>
+                    </TabsContent>
+                    
+                    <TabsContent value="monthly" className="space-y-4 mt-6">
+                      <div className="space-y-4">
+                        {renderQuestCard(
+                          mediaQuest, 
+                          <FileImage className="h-5 w-5 text-purple-500" />, 
+                          "Media Maven", 
+                          "Share engaging media content with your network to boost visibility"
+                        )}
+                      </div>
+                    </TabsContent>
+                  </Tabs>
+                </CardContent>
+              </Card>
+            </div>
+            
+            <div className="w-full md:w-1/3">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Quest Benefits</CardTitle>
+                  <CardDescription>Why completing engagement quests matters</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-3">
+                    <div className="flex items-start gap-2">
+                      <span className="text-lg font-semibold">✓</span>
+                      <div>
+                        <h4 className="text-sm font-medium">Increased Visibility</h4>
+                        <p className="text-xs text-muted-foreground">
+                          Active users receive 5x more profile views and connection requests
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start gap-2">
+                      <span className="text-lg font-semibold">✓</span>
+                      <div>
+                        <h4 className="text-sm font-medium">Industry Recognition</h4>
+                        <p className="text-xs text-muted-foreground">
+                          Thoughtful engagement helps position you as a thought leader
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start gap-2">
+                      <span className="text-lg font-semibold">✓</span>
+                      <div>
+                        <h4 className="text-sm font-medium">Network Growth</h4>
+                        <p className="text-xs text-muted-foreground">
+                          Regular commenting leads to 3x more meaningful professional connections
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start gap-2">
+                      <span className="text-lg font-semibold">✓</span>
+                      <div>
+                        <h4 className="text-sm font-medium">Career Opportunities</h4>
+                        <p className="text-xs text-muted-foreground">
+                          90% of users who engage regularly report more job and collaboration offers
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="pt-4 border-t mt-4">
+                    <h4 className="text-sm font-medium mb-2">Ready to engage?</h4>
+                    <Button className="w-full" asChild>
+                      <Link href="/industry-pulse">Go to Pulse Feed</Link>
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </div>
