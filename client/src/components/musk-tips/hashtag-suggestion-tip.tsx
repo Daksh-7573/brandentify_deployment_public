@@ -1,63 +1,44 @@
 import React, { useState, useEffect } from 'react';
-import { Info, Hash, Copy, Check } from 'lucide-react';
+import { Tooltip } from '@/components/ui/tooltip';
+import { TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { apiRequest } from '@/lib/queryClient';
-import { useToast } from '@/hooks/use-toast';
+import { Lightbulb, Copy, Check, RefreshCw } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
-interface HashtagSuggestionTipProps {
+export interface HashtagSuggestionTipProps {
   industry?: string;
   domain?: string;
   contentContext?: string;
   previouslyUsedHashtags?: string[];
-  count?: number;
-  onSelectHashtag?: (hashtag: string) => void;
+  onSelect?: (hashtag: string) => void;
+  className?: string;
+  tipText?: string;
+  maxVisibleHashtags?: number;
 }
 
-/**
- * Musk's Hashtag Suggestion Tip
- * 
- * A component that suggests relevant hashtags based on the user's context
- * Can be embedded in post creation forms, content editors, etc.
- */
 export function HashtagSuggestionTip({
   industry,
   domain,
-  contentContext,
+  contentContext = '',
   previouslyUsedHashtags = [],
-  count = 5,
-  onSelectHashtag
+  onSelect,
+  className,
+  tipText = "Musk's hashtag suggestions:",
+  maxVisibleHashtags = 5
 }: HashtagSuggestionTipProps) {
   const [hashtags, setHashtags] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [copiedHashtag, setCopiedHashtag] = useState<string | null>(null);
-  const { toast } = useToast();
+  const [tooltipOpen, setTooltipOpen] = useState(false);
+  const [copied, setCopied] = useState<Record<string, boolean>>({});
 
-  // Reset copied state after 2 seconds
-  useEffect(() => {
-    if (copiedHashtag) {
-      const timeout = setTimeout(() => {
-        setCopiedHashtag(null);
-      }, 2000);
-      
-      return () => clearTimeout(timeout);
-    }
-  }, [copiedHashtag]);
-
-  // Only fetch hashtags if we have enough context
+  // Fetch hashtag suggestions
   const fetchHashtags = async () => {
-    if (!industry && !domain && !contentContext) {
-      setError("Not enough context to suggest hashtags");
-      return;
-    }
-
+    if (!industry && !domain && !contentContext) return;
+    
+    setIsLoading(true);
     try {
-      setIsLoading(true);
-      setError(null);
-      
       const response = await apiRequest('/api/musk-ai/suggest-hashtags', {
         method: 'POST',
         body: JSON.stringify({
@@ -65,117 +46,123 @@ export function HashtagSuggestionTip({
           domain,
           previouslyUsedHashtags,
           contentContext,
-          count
-        })
+          count: 10 // Request more than we'll show to have variety
+        }),
       });
       
       if (response.hashtags && Array.isArray(response.hashtags)) {
         setHashtags(response.hashtags);
-      } else {
-        setHashtags([]);
       }
-    } catch (err) {
-      console.error('Error fetching hashtag suggestions:', err);
-      setError('Unable to get hashtag suggestions');
+    } catch (error) {
+      console.error('Error fetching hashtag suggestions:', error);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleCopyHashtag = (hashtag: string) => {
-    navigator.clipboard.writeText(hashtag);
-    setCopiedHashtag(hashtag);
-    toast({
-      title: "Hashtag copied!",
-      description: `${hashtag} has been copied to your clipboard.`,
-      duration: 2000
-    });
-    
-    if (onSelectHashtag) {
-      onSelectHashtag(hashtag);
+  // Initial fetch
+  useEffect(() => {
+    if (tooltipOpen) {
+      fetchHashtags();
+    }
+  }, [tooltipOpen]);
+
+  // Handle hashtag selection
+  const handleSelectHashtag = (hashtag: string) => {
+    if (onSelect) {
+      onSelect(hashtag);
+    } else {
+      // Default behavior: copy to clipboard
+      navigator.clipboard.writeText(hashtag);
+      setCopied({...copied, [hashtag]: true});
+      
+      // Reset copied state after 2 seconds
+      setTimeout(() => {
+        setCopied(prev => ({...prev, [hashtag]: false}));
+      }, 2000);
     }
   };
 
+  // Visible hashtags limited by maxVisibleHashtags
+  const visibleHashtags = hashtags.slice(0, maxVisibleHashtags);
+
   return (
-    <Card className="shadow-sm border-blue-100 bg-blue-50/30">
-      <CardHeader className="pb-2">
-        <div className="flex items-center space-x-2">
-          <Info className="h-4 w-4 text-blue-500" />
-          <CardTitle className="text-sm font-medium text-blue-700">Musk's Tip</CardTitle>
-        </div>
-        <CardDescription className="text-blue-600">
-          Add relevant hashtags to increase visibility
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="pt-0">
-        {!hashtags.length && !isLoading && !error ? (
-          <div className="flex justify-center my-2">
+    <TooltipProvider>
+      <Tooltip 
+        open={tooltipOpen} 
+        onOpenChange={setTooltipOpen}
+      >
+        <TooltipTrigger asChild>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className={cn(
+              "gap-2 text-amber-600 border-amber-200 hover:bg-amber-50", 
+              className
+            )}
+          >
+            <Lightbulb 
+              className="h-4 w-4 text-amber-500" 
+              aria-hidden="true" 
+            />
+            <span className="hidden sm:inline">Hashtag Ideas</span>
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent 
+          side="bottom" 
+          align="start" 
+          className="p-4 w-80 space-y-3"
+        >
+          <div className="flex justify-between items-center">
+            <h4 className="text-sm font-medium">{tipText}</h4>
             <Button 
-              variant="outline" 
+              variant="ghost" 
               size="sm" 
-              onClick={fetchHashtags}
-              className="text-blue-600 border-blue-200 hover:bg-blue-100"
+              onClick={fetchHashtags} 
+              disabled={isLoading}
+              className="h-7 w-7 p-0"
             >
-              <Hash className="mr-1 h-4 w-4" />
-              Get hashtag suggestions
+              <RefreshCw className={cn(
+                "h-4 w-4", 
+                isLoading && "animate-spin"
+              )} />
+              <span className="sr-only">Refresh</span>
             </Button>
           </div>
-        ) : isLoading ? (
-          <div className="py-3 text-center text-sm text-blue-600">
-            <span className="inline-block animate-pulse">Getting relevant hashtags...</span>
+          
+          {isLoading ? (
+            <div className="py-2 flex justify-center">
+              <RefreshCw className="animate-spin h-5 w-5 text-muted-foreground" />
+            </div>
+          ) : hashtags.length === 0 ? (
+            <div className="text-sm text-muted-foreground py-2">
+              No suggestions available for the current context.
+            </div>
+          ) : (
+            <div className="flex flex-wrap gap-2">
+              {visibleHashtags.map((hashtag, index) => (
+                <Badge 
+                  key={`${hashtag}-${index}`}
+                  variant="outline"
+                  className="pl-2 pr-1 py-1 cursor-pointer hover:bg-accent flex items-center gap-1 group"
+                  onClick={() => handleSelectHashtag(hashtag)}
+                >
+                  <span>{hashtag}</span>
+                  {copied[hashtag] ? (
+                    <Check className="h-3 w-3 text-green-500 ml-1" />
+                  ) : (
+                    <Copy className="h-3 w-3 opacity-0 group-hover:opacity-70 ml-1" />
+                  )}
+                </Badge>
+              ))}
+            </div>
+          )}
+          
+          <div className="text-xs text-muted-foreground">
+            Click on a hashtag to {onSelect ? "insert" : "copy"} it
           </div>
-        ) : error ? (
-          <div className="py-3 text-center text-sm text-red-600">
-            {error}
-          </div>
-        ) : (
-          <div className="flex flex-wrap gap-2 py-2">
-            {hashtags.map((hashtag) => (
-              <TooltipProvider key={hashtag}>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Badge 
-                      variant="outline" 
-                      className="cursor-pointer hover:bg-blue-100 transition-colors px-2 py-1 border-blue-200"
-                      onClick={() => handleCopyHashtag(hashtag)}
-                    >
-                      <span className="mr-1">{hashtag}</span>
-                      {copiedHashtag === hashtag ? (
-                        <Check className="h-3 w-3 text-green-600" />
-                      ) : (
-                        <Copy className="h-3 w-3 text-blue-600" />
-                      )}
-                    </Badge>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Click to copy</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            ))}
-          </div>
-        )}
-      </CardContent>
-      {hashtags.length > 0 && (
-        <CardFooter className="pt-0 flex justify-between">
-          <Button 
-            variant="link" 
-            size="sm" 
-            className="text-xs text-blue-600 p-0"
-            onClick={fetchHashtags}
-          >
-            Refresh suggestions
-          </Button>
-          <Button 
-            variant="link" 
-            size="sm" 
-            className="text-xs text-blue-600 p-0"
-            onClick={() => setHashtags([])}
-          >
-            Hide suggestions
-          </Button>
-        </CardFooter>
-      )}
-    </Card>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 }

@@ -161,6 +161,10 @@ function Router() {
       <Route path="/musk-testing">
         <ProtectedRoute path="/musk-testing" component={MuskTestingPage} />
       </Route>
+      {/* Hashtag suggestions demo page */}
+      <Route path="/hashtag-suggestions">
+        <ProtectedRoute path="/hashtag-suggestions" component={HashtagSuggestionsPage} />
+      </Route>
       {/* Unified Profile Page with comprehensive data fetching */}
       <Route path="/unified-profile">
         <ProtectedRoute path="/unified-profile" component={UnifiedProfilePage} />
