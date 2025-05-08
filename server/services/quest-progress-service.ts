@@ -3,6 +3,11 @@
  * 
  * This service handles updating quest progress and manages
  * the logic for determining when quests are completed.
+ * 
+ * OPTIMIZED VERSION:
+ * - Combined database queries where possible
+ * - Simplified XP tracking logic
+ * - Improved error handling and logging
  */
 
 import { pool } from '../db';
@@ -15,50 +20,45 @@ export async function updateQuestProgress(questId: number, userId: number, progr
   try {
     console.log(`[updateQuestProgress] Updating progress for quest ${questId}, user ${userId} to ${progress}`);
     
-    // Check if user quest exists
-    const result = await pool.query(`
-      SELECT * FROM user_quests WHERE id = $1 AND user_id = $2
+    // Get the quest and definition in a single query to reduce database calls
+    const combinedResult = await pool.query(`
+      SELECT 
+        uq.*,
+        qd.title as quest_title,
+        qd.target_count,
+        qd.xp_reward,
+        qd.badge_reward
+      FROM user_quests uq
+      JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
+      WHERE uq.id = $1 AND uq.user_id = $2
     `, [questId, userId]);
     
-    if (result.rows.length === 0) {
+    if (combinedResult.rows.length === 0) {
       console.log(`[updateQuestProgress] Quest ${questId} not found for user ${userId}`);
       return null;
     }
     
-    const userQuest = result.rows[0];
-    const questDefinitionId = userQuest.quest_definition_id;
-    
-    // Get quest definition for target count
-    const defResult = await pool.query(`
-      SELECT * FROM quest_definitions WHERE id = $1
-    `, [questDefinitionId]);
-    
-    if (defResult.rows.length === 0) {
-      console.log(`[updateQuestProgress] Quest definition ${questDefinitionId} not found`);
-      return null;
-    }
-    
-    const questDefinition = defResult.rows[0];
-    const targetCount = questDefinition.target_count;
+    const questData = combinedResult.rows[0];
+    const targetCount = questData.target_count;
     
     // Calculate new status and completed_at
-    let newStatus = userQuest.status;
-    let completedAt = userQuest.completed_at;
-    let xpEarned = userQuest.xp_earned || 0;
-    let badgeEarned = userQuest.badge_earned;
+    let newStatus = questData.status;
+    let completedAt = questData.completed_at;
+    let xpEarned = questData.xp_earned || 0;
+    let badgeEarned = questData.badge_earned;
     
     // If progress meets or exceeds target count, mark as completed
-    if (progress >= targetCount && userQuest.status === 'active') {
+    if (progress >= targetCount && questData.status === 'active') {
       console.log(`[updateQuestProgress] Quest ${questId} completed by user ${userId}`);
       newStatus = 'completed';
       completedAt = new Date();
-      xpEarned = questDefinition.xp_reward || 0;
-      badgeEarned = questDefinition.badge_reward;
+      xpEarned = questData.xp_reward || 0;
+      badgeEarned = questData.badge_reward;
       
       // If quest has XP reward, update user XP balance
       if (xpEarned > 0) {
         try {
-          await updateUserXp(userId, xpEarned, questDefinition.title || 'Quest completion');
+          await updateUserXp(userId, xpEarned, questData.quest_title || 'Quest completion');
           console.log(`[updateQuestProgress] Awarded ${xpEarned} XP to user ${userId}`);
         } catch (xpError) {
           console.error('[updateQuestProgress] Error awarding XP:', xpError);
@@ -112,78 +112,45 @@ export async function updateQuestProgress(questId: number, userId: number, progr
 
 /**
  * Update user XP balance when a quest is completed
+ * Simplified to focus on essential functionality
  */
 async function updateUserXp(userId: number, xpAmount: number, source: string): Promise<void> {
   try {
     console.log(`[updateUserXp] Updating XP for user ${userId}, amount: ${xpAmount}, source: ${source}`);
-    
-    // First check if user has an XP record
-    const checkResult = await pool.query(`
-      SELECT * FROM user_xp WHERE user_id = $1
-    `, [userId]);
-    
     const now = new Date();
-    const currentMonth = now.getMonth();
-    const currentYear = now.getFullYear();
     
-    if (checkResult.rows.length === 0) {
-      // Create a new XP record
-      console.log(`[updateUserXp] Creating new XP record for user ${userId}`);
-      
-      try {
-        await pool.query(`
-          INSERT INTO user_xp (
-            user_id, 
-            balance, 
-            lifetime_earned,
-            updated_at
-          ) VALUES ($1, $2, $3, $4)
-        `, [userId, xpAmount, xpAmount, now]);
-      } catch (insertError) {
-        console.error('[updateUserXp] Error creating XP record:', insertError);
-        throw insertError;
-      }
-    } else {
-      // Update existing XP record
-      console.log(`[updateUserXp] Updating existing XP record for user ${userId}`);
-      
-      const userXp = checkResult.rows[0];
-      let monthlyXp = userXp.current_month_earned || 0;
-      
-      // Simplify XP tracking - just update the balance and lifetime earned
-      // The monthly tracking is optional and can be added later if table structure supports it
-      try {
-        await pool.query(`
-          UPDATE user_xp
-          SET 
-            balance = balance + $1,
-            lifetime_earned = lifetime_earned + $2,
-            updated_at = $3
-          WHERE user_id = $4
-        `, [xpAmount, xpAmount, now, userId]);
-      } catch (updateError) {
-        console.error('[updateUserXp] Error updating XP balance:', updateError);
-        throw updateError;
-      }
-    }
+    // Use a transaction to ensure data consistency
+    const client = await pool.connect();
     
-    // Record XP transaction
     try {
-      await pool.query(`
-        INSERT INTO xp_transactions (
-          user_id,
-          amount,
-          source,
-          created_at
-        ) VALUES ($1, $2, $3, $4)
+      await client.query('BEGIN');
+      
+      // Get or create user XP record with a single query
+      await client.query(`
+        INSERT INTO user_xp (user_id, balance, lifetime_earned, updated_at)
+        VALUES ($1, $2, $3, $4)
+        ON CONFLICT (user_id) DO UPDATE
+        SET 
+          balance = user_xp.balance + $2,
+          lifetime_earned = user_xp.lifetime_earned + $3,
+          updated_at = $4
+      `, [userId, xpAmount, xpAmount, now]);
+      
+      // Record XP transaction
+      await client.query(`
+        INSERT INTO xp_transactions (user_id, amount, source, created_at)
+        VALUES ($1, $2, $3, $4)
       `, [userId, xpAmount, source, now]);
       
-      console.log(`[updateUserXp] Recorded XP transaction for user ${userId}`);
-    } catch (transactionError) {
-      console.error('[updateUserXp] Error recording XP transaction:', transactionError);
-      // Don't throw here, as we've already updated the XP balance
+      await client.query('COMMIT');
+      console.log(`[updateUserXp] Successfully updated XP and recorded transaction for user ${userId}`);
+    } catch (txError) {
+      await client.query('ROLLBACK');
+      console.error('[updateUserXp] Transaction error:', txError);
+      throw txError;
+    } finally {
+      client.release();
     }
-    
   } catch (error) {
     console.error('[updateUserXp] Error in XP update process:', error);
     throw error;

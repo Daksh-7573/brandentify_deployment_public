@@ -93,8 +93,8 @@ app.use((req, res, next) => {
   next();
 });
 
-// Apply the quest progress tracking middleware
-console.log("Setting up Quest Progress Tracking Middleware");
+// Apply the optimized quest progress tracking middleware
+console.log("Setting up Optimized Quest Progress Tracking Middleware");
 app.use(questProgressMiddleware);
 
 (async () => {

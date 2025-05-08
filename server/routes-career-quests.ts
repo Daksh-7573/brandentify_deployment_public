@@ -10,82 +10,8 @@ function getWeekNumber(date: Date): number {
   return Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
 }
 
-// A dedicated route for updating quest progress
-async function updateQuestProgress(questId: number, userId: number, progress: number) {
-  try {
-    // Check if user quest exists
-    const result = await pool.query(`
-      SELECT * FROM user_quests WHERE id = $1 AND user_id = $2
-    `, [questId, userId]);
-    
-    if (result.rows.length === 0) {
-      return null;
-    }
-    
-    const userQuest = result.rows[0];
-    const questDefinitionId = userQuest.quest_definition_id;
-    
-    // Get quest definition for target count
-    const defResult = await pool.query(`
-      SELECT * FROM quest_definitions WHERE id = $1
-    `, [questDefinitionId]);
-    
-    if (defResult.rows.length === 0) {
-      return null;
-    }
-    
-    const questDefinition = defResult.rows[0];
-    const targetCount = questDefinition.target_count;
-    
-    // Calculate new status and completed_at
-    let newStatus = userQuest.status;
-    let completedAt = userQuest.completed_at;
-    let xpEarned = userQuest.xp_earned;
-    let badgeEarned = userQuest.badge_earned;
-    
-    // If progress meets or exceeds target count, mark as completed
-    if (progress >= targetCount && userQuest.status === 'active') {
-      newStatus = 'completed';
-      completedAt = new Date();
-      xpEarned = questDefinition.xp_reward;
-      badgeEarned = questDefinition.badge_reward;
-    }
-    
-    // Update the quest with new progress
-    const updateResult = await pool.query(`
-      UPDATE user_quests
-      SET progress = $1, 
-          status = $2,
-          completed_at = $3,
-          xp_earned = $4,
-          badge_earned = $5
-      WHERE id = $6 AND user_id = $7
-      RETURNING 
-        id,
-        user_id as "userId",
-        quest_definition_id as "questDefinitionId",
-        status,
-        progress,
-        assigned_at as "assignedAt",
-        completed_at as "completedAt",
-        dismissed_reason as "dismissedReason",
-        xp_earned as "xpEarned",
-        badge_earned as "badgeEarned",
-        musk_response as "muskResponse",
-        week_number as "weekNumber",
-        year
-    `, [progress, newStatus, completedAt, xpEarned, badgeEarned, questId, userId]);
-    
-    if (updateResult.rows.length === 0) {
-      return null;
-    }
-    
-    return updateResult.rows[0];
-  } catch (error) {
-    console.error('Error updating quest progress:', error);
-    throw error;
-  }
-}
+// Import the service function instead of duplicating code
+import { updateQuestProgress as serviceUpdateQuestProgress } from './services/quest-progress-service';
 
 export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
   // Quest Definition routes
@@ -254,7 +180,7 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
       
       console.log(`[PATCH /users/${userId}/quests/${questId}/progress] Updating progress to ${progress}`);
       
-      const updatedQuest = await updateQuestProgress(questId, userId, progress);
+      const updatedQuest = await serviceUpdateQuestProgress(questId, userId, progress);
       
       if (!updatedQuest) {
         return res.status(404).json({ message: 'Quest not found' });
@@ -271,6 +197,7 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
     try {
       const userId = parseInt(req.params.userId);
       if (isNaN(userId)) {
+        console.log(`[GET /users/current-week] Invalid user ID: ${req.params.userId}`);
         return res.status(400).json({ message: 'Invalid user ID' });
       }
       
@@ -300,42 +227,54 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
         const prevWeek = weekNumber > 1 ? weekNumber - 1 : 52;
         const prevYear = prevWeek === 52 ? year - 1 : year;
         
-        // Using direct DB query instead of the storage method
-        const userQuestsResult = await pool.query(`
-          SELECT 
-            uq.id,
-            uq.user_id as "userId",
-            uq.quest_definition_id as "questDefinitionId",
-            uq.status,
-            uq.progress,
-            uq.assigned_at as "assignedAt",
-            uq.completed_at as "completedAt",
-            uq.dismissed_reason as "dismissedReason",
-            uq.xp_earned as "xpEarned",
-            uq.badge_earned as "badgeEarned",
-            uq.musk_response as "muskResponse",
-            uq.week_number as "weekNumber",
-            qd.title as "questTitle",
-            qd.description as "questDescription",
-            qd.type as "questType",
-            qd.target_count as "targetCount",
-            qd.target_action as "targetAction",
-            qd.xp_reward as "xpReward",
-            qd.badge_reward as "badgeReward",
-            qd.musk_tip as "muskTip",
-            uq.year
-          FROM user_quests uq
-          LEFT JOIN quest_definitions qd ON uq.quest_definition_id = qd.id 
-          WHERE uq.user_id = $1 AND 
-                ((uq.week_number = $2 AND uq.year = $3) OR 
-                 (uq.week_number = $4 AND uq.year = $5))
-          ORDER BY uq.assigned_at DESC
-        `, [userId, weekNumber, year, prevWeek, prevYear]);
-        
-        const weeklyQuests = userQuestsResult.rows;
-        console.log(`[GET /users/${userId}/quests/current-week] Found ${weeklyQuests.length} quests for weeks ${prevWeek}-${weekNumber}`);
-        
-        res.json(weeklyQuests);
+        // Using direct DB query with proper error handling
+        try {
+          const userQuestsResult = await pool.query(`
+            SELECT 
+              uq.id,
+              uq.user_id as "userId",
+              uq.quest_definition_id as "questDefinitionId",
+              uq.status,
+              uq.progress,
+              uq.assigned_at as "assignedAt",
+              uq.completed_at as "completedAt",
+              uq.dismissed_reason as "dismissedReason",
+              uq.xp_earned as "xpEarned",
+              uq.badge_earned as "badgeEarned",
+              uq.musk_response as "muskResponse",
+              uq.week_number as "weekNumber",
+              qd.title as "questTitle",
+              qd.description as "questDescription",
+              qd.type as "questType",
+              qd.target_count as "targetCount",
+              qd.target_action as "targetAction",
+              qd.xp_reward as "xpReward",
+              qd.badge_reward as "badgeReward",
+              qd.musk_tip as "muskTip",
+              uq.year
+            FROM user_quests uq
+            JOIN quest_definitions qd ON uq.quest_definition_id = qd.id 
+            WHERE uq.user_id = $1 AND 
+                  ((uq.week_number = $2 AND uq.year = $3) OR 
+                   (uq.week_number = $4 AND uq.year = $5))
+            ORDER BY uq.assigned_at DESC
+          `, [userId, weekNumber, year, prevWeek, prevYear]);
+          
+          const weeklyQuests = userQuestsResult.rows;
+          console.log(`[GET /users/${userId}/quests/current-week] Found ${weeklyQuests.length} quests for weeks ${prevWeek}-${weekNumber}`);
+          
+          // Filter out any quests with missing definition data
+          const validQuests = weeklyQuests.filter(quest => quest.questTitle && quest.targetCount);
+          
+          if (validQuests.length < weeklyQuests.length) {
+            console.log(`[GET /users/${userId}/quests/current-week] Filtered out ${weeklyQuests.length - validQuests.length} quests with missing definition data`);
+          }
+          
+          res.json(validQuests);
+        } catch (queryError) {
+          console.error(`[GET /users/${userId}/quests/current-week] Query error:`, queryError);
+          res.json([]);
+        }
       } catch (dbError) {
         console.error(`[GET /users/${req.params.userId}/quests/current-week] Database error:`, dbError);
         // Return empty array instead of error to prevent UI crashes
@@ -353,6 +292,7 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
     try {
       const userId = parseInt(req.params.userId);
       if (isNaN(userId)) {
+        console.log(`[GET /users/quests-with-definitions] Invalid user ID: ${req.params.userId}`);
         return res.status(400).json({ message: 'Invalid user ID' });
       }
       
@@ -371,103 +311,96 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
           return res.json([]);
         }
         
-        // Using direct db query instead of storage method since it's not implemented yet
-        console.log(`[GET /users/${userId}/quests-with-definitions] Fetching user quests directly from DB`);
+        // Using direct db query but with a JOIN to get all data in one query
+        // This is much more efficient than separate queries and Promise.all
+        console.log(`[GET /users/${userId}/quests-with-definitions] Fetching quests with JOIN`);
         
-        // Get user quests
-        const userQuestsResult = await pool.query(`
-          SELECT 
-            id,
-            user_id as "userId",
-            quest_definition_id as "questDefinitionId",
-            status,
-            progress,
-            assigned_at as "assignedAt",
-            completed_at as "completedAt",
-            dismissed_reason as "dismissedReason",
-            xp_earned as "xpEarned",
-            badge_earned as "badgeEarned",
-            musk_response as "muskResponse",
-            week_number as "weekNumber",
-            year
-          FROM user_quests
-          WHERE user_id = $1
-          ORDER BY assigned_at DESC
-        `, [userId]);
-        
-        const userQuests = userQuestsResult.rows;
-        console.log(`[GET /users/${userId}/quests-with-definitions] Found ${userQuests.length} quests`);
-        
-        // Get all quest definitions
-        const questDefinitionsResult = await pool.query(`
-          SELECT 
-            id,
-            title,
-            description,
-            type,
-            target_count as "targetCount",
-            target_action as "targetAction",
-            xp_reward as "xpReward",
-            badge_reward as "badgeReward",
-            required_profile_completion as "requiredProfileCompletion",
-            required_career_stage as "requiredCareerStage",
-            required_industry as "requiredIndustry",
-            musk_tip as "muskTip",
-            is_active as "isActive",
-            created_at as "createdAt",
-            updated_at as "updatedAt"
-          FROM quest_definitions
-          WHERE is_active = true
-        `);
-        
-        const questDefinitions = questDefinitionsResult.rows;
-        console.log(`[GET /users/${userId}/quests-with-definitions] Found ${questDefinitions.length} quest definitions`);
-        
-        // Combine user quests with their definitions
-        // Even if a quest definition is no longer active, fetch it directly from the database
-        const questsWithDefinitions = await Promise.all(userQuests.map(async userQuest => {
-          // First check active definitions
-          let definition = questDefinitions.find(def => def.id === userQuest.questDefinitionId);
+        try {
+          const combinedResult = await pool.query(`
+            SELECT 
+              uq.id,
+              uq.user_id as "userId",
+              uq.quest_definition_id as "questDefinitionId",
+              uq.status,
+              uq.progress,
+              uq.assigned_at as "assignedAt",
+              uq.completed_at as "completedAt",
+              uq.dismissed_reason as "dismissedReason",
+              uq.xp_earned as "xpEarned",
+              uq.badge_earned as "badgeEarned",
+              uq.musk_response as "muskResponse",
+              uq.week_number as "weekNumber",
+              uq.year,
+              qd.id as "defId",
+              qd.title,
+              qd.description,
+              qd.type,
+              qd.target_count as "targetCount",
+              qd.target_action as "targetAction",
+              qd.xp_reward as "xpReward",
+              qd.badge_reward as "badgeReward",
+              qd.required_profile_completion as "requiredProfileCompletion",
+              qd.required_career_stage as "requiredCareerStage",
+              qd.required_industry as "requiredIndustry",
+              qd.musk_tip as "muskTip",
+              qd.is_active as "isActive",
+              qd.created_at as "createdAt",
+              qd.updated_at as "updatedAt"
+            FROM user_quests uq
+            LEFT JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
+            WHERE uq.user_id = $1
+            ORDER BY uq.assigned_at DESC
+          `, [userId]);
           
-          // If definition not found in active quests, try to fetch it directly
-          if (!definition && userQuest.questDefinitionId) {
-            try {
-              const defResult = await pool.query(`
-                SELECT 
-                  id,
-                  title,
-                  description,
-                  type,
-                  target_count as "targetCount",
-                  target_action as "targetAction",
-                  xp_reward as "xpReward",
-                  badge_reward as "badgeReward",
-                  required_profile_completion as "requiredProfileCompletion",
-                  required_career_stage as "requiredCareerStage",
-                  required_industry as "requiredIndustry",
-                  musk_tip as "muskTip",
-                  is_active as "isActive",
-                  created_at as "createdAt",
-                  updated_at as "updatedAt"
-                FROM quest_definitions
-                WHERE id = $1
-              `, [userQuest.questDefinitionId]);
-              
-              if (defResult.rows.length > 0) {
-                definition = defResult.rows[0];
-              }
-            } catch (err) {
-              console.error(`Error fetching quest definition ${userQuest.questDefinitionId}:`, err);
+          // Process the results
+          const questsWithDefinitions = combinedResult.rows.map(row => {
+            // If we have definition data, structure it
+            let definition = null;
+            if (row.defId) {
+              definition = {
+                id: row.defId,
+                title: row.title,
+                description: row.description,
+                type: row.type,
+                targetCount: row.targetCount,
+                targetAction: row.targetAction,
+                xpReward: row.xpReward,
+                badgeReward: row.badgeReward,
+                requiredProfileCompletion: row.requiredProfileCompletion,
+                requiredCareerStage: row.requiredCareerStage,
+                requiredIndustry: row.requiredIndustry,
+                muskTip: row.muskTip,
+                isActive: row.isActive,
+                createdAt: row.createdAt,
+                updatedAt: row.updatedAt
+              };
             }
-          }
+            
+            // Return the quest with its definition
+            return {
+              id: row.id,
+              userId: row.userId,
+              questDefinitionId: row.questDefinitionId,
+              status: row.status,
+              progress: row.progress,
+              assignedAt: row.assignedAt,
+              completedAt: row.completedAt,
+              dismissedReason: row.dismissedReason,
+              xpEarned: row.xpEarned,
+              badgeEarned: row.badgeEarned,
+              muskResponse: row.muskResponse,
+              weekNumber: row.weekNumber,
+              year: row.year,
+              definition: definition
+            };
+          });
           
-          return {
-            ...userQuest,
-            definition: definition || null
-          };
-        }));
-        
-        res.json(questsWithDefinitions);
+          console.log(`[GET /users/${userId}/quests-with-definitions] Found ${questsWithDefinitions.length} quests with definitions`);
+          res.json(questsWithDefinitions);
+        } catch (queryError) {
+          console.error(`[GET /users/${userId}/quests-with-definitions] Query error:`, queryError);
+          res.json([]);
+        }
       } catch (dbError) {
         console.error(`[GET /users/${req.params.userId}/quests-with-definitions] Database error:`, dbError);
         // Return empty array instead of error to prevent UI crashes
