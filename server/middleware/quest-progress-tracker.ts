@@ -32,7 +32,7 @@ interface QuestTracker {
 const questTrackers: QuestTracker[] = [
   // Comment creation tracker
   {
-    targetAction: 'create_comment',
+    targetAction: 'comment_on_pulse',
     routePattern: /^\/api\/comments$/,
     method: 'POST',
     progressExtractor: async (req: Request) => 1 // Increment by 1 for each comment
@@ -40,7 +40,7 @@ const questTrackers: QuestTracker[] = [
   
   // Reaction tracker
   {
-    targetAction: 'give_reaction',
+    targetAction: 'react_to_pulse',
     routePattern: /^\/api\/reactions$/,
     method: 'POST',
     progressExtractor: async (req: Request) => 1 // Increment by 1 for each reaction
@@ -48,7 +48,7 @@ const questTrackers: QuestTracker[] = [
   
   // Media upload tracker
   {
-    targetAction: 'upload_media',
+    targetAction: 'add_media_to_pulse',
     routePattern: /^\/api\/media$/,
     method: 'POST',
     progressExtractor: async (req: Request) => 1 // Increment by 1 for each media upload
