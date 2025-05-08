@@ -37,30 +37,19 @@ export function useCurrentUser(): UseCurrentUserResult {
     
     try {
       // Try to get the user from the enhanced user endpoint
-      const userResponse = await apiRequest({ url: '/api/users/me', method: 'GET' });
+      const userResponse = await apiRequest('/api/users/me', { method: 'GET' });
       
-      if (!userResponse.ok) {
-        console.log('User endpoint response not OK:', userResponse.status);
+      if (userResponse && userResponse.id) {
+        setUser(userResponse);
       } else {
-        const userData = await userResponse.json();
-        if (userData && userData.id) {
-          setUser(userData);
-          return;
-        }
-      }
-      
-      // If not found, try to get a demo user
-      const demoResponse = await apiRequest({ url: '/api/demo-profile', method: 'GET' });
-      
-      if (demoResponse.ok) {
-        const demoData = await demoResponse.json();
-        if (demoData && demoData.id) {
-          setUser(demoData);
+        // If not found, try to get a demo user
+        const demoResponse = await apiRequest('/api/demo-profile', { method: 'GET' });
+        
+        if (demoResponse && demoResponse.id) {
+          setUser(demoResponse);
         } else {
           setUser(null);
         }
-      } else {
-        setUser(null);
       }
     } catch (err) {
       console.error('Error fetching current user:', err);

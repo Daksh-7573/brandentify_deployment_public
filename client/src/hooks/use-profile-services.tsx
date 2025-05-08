@@ -124,11 +124,7 @@ export function useProfileServices() {
       if (!userId) throw new Error('User ID is required');
       
       console.log('useProfileServices hook - updating whatIOffer:', whatIOffer);
-      const response = await apiRequest({ 
-        method: 'POST', 
-        url: `/api/users/${userId}/sync-profile-services`, 
-        data: { whatIOffer } 
-      });
+      const response = await apiRequest('POST', `/api/users/${userId}/sync-profile-services`, { whatIOffer });
       
       if (!response.ok) {
         throw new Error('Failed to update "What I Offer" field');
@@ -204,11 +200,7 @@ export function useProfileServices() {
 
       console.log('useProfileServices hook - final service data:', service);
       
-      const response = await apiRequest({
-        method: 'POST',
-        url: '/api/profile-services',
-        data: service
-      });
+      const response = await apiRequest('POST', '/api/profile-services', service);
       
       if (!response.ok) {
         const errorText = await response.text();
@@ -266,11 +258,7 @@ export function useProfileServices() {
   const updateServiceMutation = useMutation({
     mutationFn: async ({ id, data }: { id: number, data: Partial<Service> }) => {
       console.log('useProfileServices hook - updating service:', id, data);
-      const response = await apiRequest({
-        method: 'PUT',
-        url: `/api/profile-services/${id}`,
-        data: data
-      });
+      const response = await apiRequest('PUT', `/api/profile-services/${id}`, data);
       return response.json();
     },
     onSuccess: (data) => {
@@ -321,10 +309,7 @@ export function useProfileServices() {
   const deleteServiceMutation = useMutation({
     mutationFn: async (id: number) => {
       console.log('useProfileServices hook - deleting service:', id);
-      const response = await apiRequest({
-        method: 'DELETE',
-        url: `/api/profile-services/${id}?userId=${userId}`
-      });
+      const response = await apiRequest('DELETE', `/api/profile-services/${id}?userId=${userId}`);
       return response.json();
     },
     onSuccess: (data) => {

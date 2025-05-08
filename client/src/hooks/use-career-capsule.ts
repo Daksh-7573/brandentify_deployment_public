@@ -95,13 +95,9 @@ export const useCareerCapsule = (userId: number | string) => {
   const useCreateGoal = () => {
     return useMutation({
       mutationFn: (goalData: Omit<CareerGoal, 'id' | 'userId' | 'createdAt' | 'updatedAt' | 'progress'>) => {
-        return apiRequest({
-          method: 'POST', 
-          url: `/api/users/${userId}/career-capsule`, 
-          data: {
-            ...goalData, 
-            userId
-          }
+        return apiRequest('POST', `/api/users/${userId}/career-capsule`, {
+          ...goalData, 
+          userId
         });
       },
       onSuccess: () => {
@@ -125,11 +121,7 @@ export const useCareerCapsule = (userId: number | string) => {
   const useUpdateGoal = (goalId: number) => {
     return useMutation({
       mutationFn: (goalData: Partial<CareerGoal>) => {
-        return apiRequest({
-          method: 'PATCH', 
-          url: `/api/career-goals/${goalId}`, 
-          data: goalData
-        });
+        return apiRequest('PATCH', `/api/career-goals/${goalId}`, goalData);
       },
       onSuccess: () => {
         toast({
@@ -402,11 +394,7 @@ export const useCareerCapsule = (userId: number | string) => {
         description?: string;
         useModel?: 'openai' | 'anthropic';
       }) => {
-        return apiRequest({
-          method: 'POST',
-          url: `/api/career-capsules/${capsuleId}/generate-milestones`,
-          data: options || {}
-        });
+        return apiRequest('POST', `/api/career-capsules/${capsuleId}/generate-milestones`, options || {});
       },
       onSuccess: () => {
         toast({
@@ -432,10 +420,7 @@ export const useCareerCapsule = (userId: number | string) => {
     return useMutation<any, any, number>({
       mutationFn: (taskId: number) => {
         console.log(`Toggling task completion for task ${taskId}`);
-        return apiRequest({
-          method: 'POST',
-          url: `/api/capsule-tasks/${taskId}/toggle`
-        });
+        return apiRequest('POST', `/api/capsule-tasks/${taskId}/toggle`); // Added /api prefix
       },
       onSuccess: (data, variables) => {
         console.log(`Successfully toggled task ${variables}:`, data);
@@ -476,11 +461,7 @@ export const useCareerCapsule = (userId: number | string) => {
     return useMutation<any, any, { taskId: number, taskData: any }>({
       mutationFn: ({ taskId, taskData }: { taskId: number, taskData: { title?: string; description?: string; isCompleted?: boolean; dueDate?: string } }) => {
         console.log(`Updating task ${taskId} with data:`, taskData);
-        return apiRequest({
-          method: 'PUT',
-          url: `/api/capsule-tasks/${taskId}`,
-          data: taskData
-        });
+        return apiRequest('PUT', `/api/capsule-tasks/${taskId}`, taskData); // Added /api prefix
       },
       onSuccess: (data, variables) => {
         console.log(`Successfully updated task ${variables.taskId}:`, data);
