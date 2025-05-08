@@ -40,6 +40,7 @@ import TestNowboardPage from "@/pages/test-nowboard";
 import SpatialTestPage from "@/pages/spatial-test";
 import SpatialIndustryPulsePage from "@/pages/spatial-industry-pulse";
 import SpatialCareerCapsulePage from "@/pages/spatial-career-capsule";
+import SpatialBrandQuestsPage from "@/pages/spatial-brand-quests";
 // Lazy load the SharedCardPage to improve performance and show loader immediately
 import { lazy, Suspense } from "react";
 const SharedCardPage = lazy(() => import("@/pages/shared-card"));
@@ -183,6 +184,9 @@ function Router() {
       </Route>
       <Route path="/spatial-career-capsule">
         <ProtectedRoute path="/spatial-career-capsule" component={SpatialCareerCapsulePage} />
+      </Route>
+      <Route path="/spatial-brand-quests">
+        <ProtectedRoute path="/spatial-brand-quests" component={SpatialBrandQuestsPage} />
       </Route>
       {/* Unified Profile Page with comprehensive data fetching */}
       <Route path="/unified-profile">
