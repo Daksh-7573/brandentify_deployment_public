@@ -117,13 +117,13 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
         <CardTitle className="text-2xl">Career Quests</CardTitle>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" asChild>
-            <Link href="/career-quests">
+            <Link href="/engagement-quests">
               <GraduationCap className="h-4 w-4 mr-2" />
               Engagement Quests
             </Link>
           </Button>
           <Button variant="ghost" size="sm" asChild>
-            <Link href="/career-quests">View All</Link>
+            <Link href="/engagement-quests">View All</Link>
           </Button>
         </div>
       </CardHeader>
@@ -139,7 +139,7 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
               </div>
             </div>
             <Button size="sm" asChild>
-              <Link href="/career-quests">View All Quests</Link>
+              <Link href="/engagement-quests">View All Quests</Link>
             </Button>
           </div>
         )}
