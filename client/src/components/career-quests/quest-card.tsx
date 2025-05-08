@@ -110,11 +110,16 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
     });
   };
   
-  // Get the Musk tip content from any available source
-  const muskTipContent = quest.muskTip || 
-                         questDefinition.muskTip || 
-                         quest.muskResponse || 
-                         (typeof quest.definition === 'object' && quest.definition?.muskTip);
+  // Get the Musk tip content from any available source in priority order
+  const muskTipContent = 
+    // First check definition properties
+    (typeof quest.definition === 'object' && quest.definition?.muskTip) ||
+    // Then check questDefinition
+    (typeof quest.questDefinition === 'object' && quest.questDefinition?.muskTip) ||
+    // Then check direct properties
+    quest.muskTip || 
+    questDefinition.muskTip || 
+    quest.muskResponse;
   
   return (
     <Card className="w-full shadow-md transition-all hover:shadow-lg">
