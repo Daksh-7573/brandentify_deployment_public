@@ -8,6 +8,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { useToast } from '@/hooks/use-toast';
 import { UserQuest, QuestDefinition, QuestType, QuestStatus, getQuestTypeIcon, getQuestStatusLabel, getBadgeLabel } from '@/types/career-quest';
 import { useCompleteQuest, useUpdateQuestProgress } from '@/hooks/use-career-quests';
+import { HashtagSuggestions } from './hashtag-suggestions';
 
 interface QuestCardProps {
   quest: UserQuest;

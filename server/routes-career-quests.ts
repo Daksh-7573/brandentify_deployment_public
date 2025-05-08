@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { IStorage } from "./storage";
 import { pool } from "./db";
+import { suggestHashtags } from './services/openai-service';
 
 // Helper function to get week number from date
 function getWeekNumber(date: Date): number {
@@ -1117,6 +1118,45 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
       console.error(`[GET /quests/current-week] Error:`, error);
       // Return empty array instead of error to prevent UI crashes
       res.json([]);
+    }
+  });
+
+  // Hashtag suggestions for quests endpoint
+  apiRouter.get("/quests/suggest-hashtags", async (req, res) => {
+    try {
+      const { industry, domain, targetAction, questTitle } = req.query;
+      
+      if (!industry && !domain && !questTitle) {
+        return res.status(400).json({ 
+          error: 'Please provide at least one of: industry, domain, or questTitle for context' 
+        });
+      }
+      
+      // Create content context from quest information
+      let contentContext = "Suggesting hashtags for completing a career-building activity: ";
+      
+      if (questTitle) {
+        contentContext += `${questTitle}. `;
+      }
+      
+      if (targetAction) {
+        contentContext += `This involves ${targetAction.toString().replace(/_/g, ' ')}. `;
+      }
+      
+      const result = await suggestHashtags({
+        industry: industry as string,
+        domain: domain as string,
+        contentContext,
+        count: 5 // Limit to 5 hashtags for UI display
+      });
+      
+      res.json(result);
+    } catch (error) {
+      console.error('[GET /quests/suggest-hashtags] Error generating hashtag suggestions:', error);
+      res.status(500).json({ 
+        error: 'Failed to generate hashtag suggestions',
+        message: error instanceof Error ? error.message : 'Unknown error'
+      });
     }
   });
 
