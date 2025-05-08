@@ -108,9 +108,10 @@ export const questProgressMiddleware = async (req: Request, res: Response, next:
   // Store the original end method so we can hook into it
   const originalEnd = res.end;
   
-  // Override the end method to check for successful requests
-  // We need to completely redefine the signature to avoid TypeScript errors
-  const endProxy = function(chunk: any, encoding?: any, callback?: any): any {
+  // A simpler approach: just override the end method with a simpler function
+  // that calls the original end after doing our tracking work
+  // @ts-ignore - TypeScript doesn't understand this pattern, so we ignore the error
+  res.end = function() {
     // Only track successful requests (2xx status codes)
     if (res.statusCode >= 200 && res.statusCode < 300) {
       // If user is authenticated and we have their ID
@@ -154,18 +155,10 @@ export const questProgressMiddleware = async (req: Request, res: Response, next:
       }
     }
     
-    // Call the original end method with appropriate arguments
-    if (callback && typeof callback === 'function') {
-      return originalEnd.call(res, chunk, encoding, callback);
-    } else if (encoding && typeof encoding === 'function') {
-      return originalEnd.call(res, chunk, encoding);
-    } else {
-      return originalEnd.call(res, chunk);
-    }
+    // Call the original end function with all original arguments
+    // @ts-ignore - TypeScript doesn't like this, but it works
+    return originalEnd.apply(res, arguments);
   };
-  
-  // @ts-ignore - Override the res.end method
-  res.end = endProxy;
   
   next();
 };

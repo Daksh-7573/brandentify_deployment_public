@@ -3,6 +3,7 @@ import path from "path";
 import fileUpload from "express-fileupload";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { questProgressMiddleware } from "./middleware/quest-progress-tracker";
 
 const app = express();
 // Increase body size limit to handle file uploads (10MB)
@@ -91,6 +92,10 @@ app.use((req, res, next) => {
 
   next();
 });
+
+// Apply the quest progress tracking middleware
+console.log("Setting up Quest Progress Tracking Middleware");
+app.use(questProgressMiddleware);
 
 (async () => {
   const server = await registerRoutes(app);
