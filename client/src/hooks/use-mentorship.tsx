@@ -40,12 +40,13 @@ export function useMentorship(userId: number, mentorId: number) {
     mutationFn: async () => {
       setIsSubmitting(true);
       try {
-        const response = await apiRequest('/api/mentorship/request', {
-          method: 'POST',
-          body: JSON.stringify({
+        const response = await apiRequest({
+          url: '/api/mentorship/request',
+          method: 'POST', 
+          data: {
             menteeId: userId,
             mentorId: mentorId
-          })
+          }
         });
         return response;
       } finally {
@@ -76,12 +77,13 @@ export function useMentorship(userId: number, mentorId: number) {
     mutationFn: async () => {
       setIsSubmitting(true);
       try {
-        const response = await apiRequest('/api/mentorship/accept', {
-          method: 'POST',
-          body: JSON.stringify({
+        const response = await apiRequest({
+          url: '/api/mentorship/accept',
+          method: 'POST', 
+          data: {
             menteeId: userId,
             mentorId: mentorId
-          })
+          }
         });
         return response;
       } finally {

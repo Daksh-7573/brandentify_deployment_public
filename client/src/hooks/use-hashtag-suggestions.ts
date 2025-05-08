@@ -57,7 +57,10 @@ export function useHashtagSuggestions(options: HashtagSuggestionsOptions): Hasht
     try {
       // If the questType is "static" or there's no user context (industry/domain), use static suggestions
       if (questType === 'static' || (!industry && !domain && !demo)) {
-        const staticResponse = await apiRequest('GET', `/api/personalized-hashtags/static/${questType}?count=${count}`);
+        const staticResponse = await apiRequest({ 
+          method: 'GET', 
+          url: `/api/personalized-hashtags/static/${questType}?count=${count}`
+        });
         
         // Parse the response data
         if (isHashtagResponse(staticResponse)) {
@@ -71,13 +74,17 @@ export function useHashtagSuggestions(options: HashtagSuggestionsOptions): Hasht
         // Use the personalized or demo endpoint based on the demo flag
         const endpoint = demo ? '/api/personalized-hashtags/demo' : '/api/personalized-hashtags';
         
-        const response = await apiRequest('POST', endpoint, {
-          industry,
-          domain,
-          questType,
-          targetAction,
-          contentContext,
-          count
+        const response = await apiRequest({
+          method: 'POST', 
+          url: endpoint, 
+          data: {
+            industry,
+            domain,
+            questType,
+            targetAction,
+            contentContext,
+            count
+          }
         });
         
         // Parse the response data
@@ -95,7 +102,10 @@ export function useHashtagSuggestions(options: HashtagSuggestionsOptions): Hasht
       
       // Try to use static suggestions as a fallback
       try {
-        const staticResponse = await apiRequest('GET', `/api/personalized-hashtags/static/${questType}?count=${count}`);
+        const staticResponse = await apiRequest({ 
+          method: 'GET', 
+          url: `/api/personalized-hashtags/static/${questType}?count=${count}` 
+        });
         
         // Parse the response data
         if (isHashtagResponse(staticResponse)) {
