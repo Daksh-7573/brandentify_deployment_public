@@ -6736,6 +6736,507 @@ import { eq } from 'drizzle-orm';
  */
 export class DatabaseStorage implements IStorage {
   // Include all required methods to satisfy IStorage interface
+  
+  // User XP operations for the PostgreSQL database implementation
+  async getUserXp(userId: number): Promise<UserXp | undefined> {
+    try {
+      console.log(`[db.getUserXp] Looking up XP record for user: ${userId}`);
+      
+      const result = await pool.query(`
+        SELECT 
+          id, user_id as "userId", balance, lifetime_earned as "lifetimeEarned",
+          last_earned_at as "lastEarnedAt", created_at as "createdAt", 
+          updated_at as "updatedAt"
+        FROM user_xp
+        WHERE user_id = $1
+      `, [userId]);
+      
+      if (result.rows.length === 0) {
+        console.log(`[db.getUserXp] No XP record found for user ${userId}`);
+        return undefined;
+      }
+      
+      console.log(`[db.getUserXp] Found XP record for user ${userId}`);
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.getUserXp] Error fetching XP for user ${userId}:`, error);
+      return undefined;
+    }
+  }
+
+  async createUserXp(userXp: InsertUserXp): Promise<UserXp> {
+    try {
+      console.log(`[db.createUserXp] Creating XP record for user ${userXp.userId}`);
+      
+      // Simplified schema without monthly tracking fields
+      const result = await pool.query(`
+        INSERT INTO user_xp (
+          user_id, balance, lifetime_earned, last_earned_at
+        ) VALUES (
+          $1, $2, $3, $4
+        ) RETURNING 
+          id, user_id as "userId", balance, lifetime_earned as "lifetimeEarned",
+          last_earned_at as "lastEarnedAt", created_at as "createdAt", 
+          updated_at as "updatedAt"
+      `, [
+        userXp.userId,
+        userXp.balance ?? 0,
+        userXp.lifetimeEarned ?? 0,
+        userXp.lastEarnedAt ?? new Date()
+      ]);
+      
+      console.log(`[db.createUserXp] Created XP record with ID ${result.rows[0].id}`);
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.createUserXp] Error creating XP record:`, error);
+      throw error;
+    }
+  }
+
+  async updateUserXp(id: number, userXp: Partial<UserXp>): Promise<UserXp | undefined> {
+    try {
+      console.log(`[db.updateUserXp] Updating XP record with ID ${id}`);
+      
+      // Build the SET clause dynamically based on provided fields
+      let setClause = "";
+      const params: any[] = [];
+      let paramIndex = 1;
+      
+      if (userXp.balance !== undefined) {
+        setClause += `${setClause ? ", " : ""}balance = $${paramIndex++}`;
+        params.push(userXp.balance);
+      }
+      
+      if (userXp.lifetimeEarned !== undefined) {
+        setClause += `${setClause ? ", " : ""}lifetime_earned = $${paramIndex++}`;
+        params.push(userXp.lifetimeEarned);
+      }
+      
+      if (userXp.lastEarnedAt !== undefined) {
+        setClause += `${setClause ? ", " : ""}last_earned_at = $${paramIndex++}`;
+        params.push(userXp.lastEarnedAt);
+      }
+      
+      // Always update the updated_at timestamp
+      setClause += `${setClause ? ", " : ""}updated_at = $${paramIndex++}`;
+      params.push(new Date());
+      
+      // Add the ID as the last parameter
+      params.push(id);
+      
+      const result = await pool.query(`
+        UPDATE user_xp
+        SET ${setClause}
+        WHERE id = $${paramIndex}
+        RETURNING 
+          id, user_id as "userId", balance, lifetime_earned as "lifetimeEarned",
+          last_earned_at as "lastEarnedAt", created_at as "createdAt", 
+          updated_at as "updatedAt"
+      `, params);
+      
+      if (result.rows.length === 0) {
+        console.log(`[db.updateUserXp] No XP record found with ID ${id}`);
+        return undefined;
+      }
+      
+      console.log(`[db.updateUserXp] Updated XP record with ID ${id}`);
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.updateUserXp] Error updating XP record:`, error);
+      return undefined;
+    }
+  }
+
+  async createXpTransaction(transaction: InsertXpTransaction): Promise<XpTransaction> {
+    try {
+      console.log(`[db.createXpTransaction] Creating XP transaction for user ${transaction.userId}`);
+      
+      const result = await pool.query(`
+        INSERT INTO xp_transactions (
+          user_id, amount, source, source_id, description
+        ) VALUES (
+          $1, $2, $3, $4, $5
+        ) RETURNING 
+          id, user_id as "userId", amount, source, source_id as "sourceId",
+          description, created_at as "createdAt"
+      `, [
+        transaction.userId,
+        transaction.amount,
+        transaction.source,
+        transaction.sourceId ?? null,
+        transaction.description
+      ]);
+      
+      console.log(`[db.createXpTransaction] Created XP transaction with ID ${result.rows[0].id}`);
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.createXpTransaction] Error creating XP transaction:`, error);
+      throw error;
+    }
+  }
+  
+  // Helper function to generate transaction descriptions
+  private getXpTransactionDescription(source: string, amount: number, sourceId?: number): string {
+    switch (source) {
+      case "quest_completion":
+        return `Earned ${amount} XP for completing a quest`;
+      case "daily_login":
+        return `Earned ${amount} XP for daily login`;
+      case "pulse_reaction":
+        return `Earned ${amount} XP for reacting to a pulse`;
+      case "pulse_share":
+        return `Earned ${amount} XP for sharing a pulse`;
+      case "project_upload":
+        return `Earned ${amount} XP for uploading a project`;
+      case "musk_suggestion":
+        return `Earned ${amount} XP for accepting a Musk suggestion`;
+      case "weekly_quest_completion":
+        return `Earned ${amount} XP for completing all weekly quests`;
+      default:
+        return `Earned ${amount} XP`;
+    }
+  }
+
+  async getXpTransactions(userId: number): Promise<XpTransaction[]> {
+    try {
+      console.log(`[db.getXpTransactions] Fetching XP transactions for user: ${userId}`);
+      console.log(`[GET /users/${userId}/xp-transactions] Fetching XP transactions directly from DB`);
+      
+      const result = await pool.query(`
+        SELECT 
+          id, user_id as "userId", amount, source, source_id as "sourceId", 
+          description, created_at as "createdAt"
+        FROM xp_transactions
+        WHERE user_id = $1
+        ORDER BY created_at DESC
+      `, [userId]);
+      
+      console.log(`[GET /users/${userId}/xp-transactions] Found ${result.rows.length} transactions`);
+      return result.rows;
+    } catch (error) {
+      console.error(`[db.getXpTransactions] Error fetching transactions for user ${userId}:`, error);
+      return [];
+    }
+  }
+
+  async getXpTransactionById(id: number): Promise<XpTransaction | undefined> {
+    try {
+      console.log(`[db.getXpTransactionById] Looking up transaction with ID: ${id}`);
+      
+      const result = await pool.query(`
+        SELECT 
+          id, user_id as "userId", amount, source, source_id as "sourceId", 
+          description, created_at as "createdAt"
+        FROM xp_transactions
+        WHERE id = $1
+      `, [id]);
+      
+      if (result.rows.length === 0) {
+        console.log(`[db.getXpTransactionById] No transaction found with ID ${id}`);
+        return undefined;
+      }
+      
+      console.log(`[db.getXpTransactionById] Found transaction with ID ${id}`);
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.getXpTransactionById] Error fetching transaction with ID ${id}:`, error);
+      return undefined;
+    }
+  }
+
+  async getXpTransactionsBySource(userId: number, source: string): Promise<XpTransaction[]> {
+    try {
+      console.log(`[db.getXpTransactionsBySource] Fetching transactions for user ${userId} with source: ${source}`);
+      
+      const result = await pool.query(`
+        SELECT 
+          id, user_id as "userId", amount, source, source_id as "sourceId", 
+          description, created_at as "createdAt"
+        FROM xp_transactions
+        WHERE user_id = $1 AND source = $2
+        ORDER BY created_at DESC
+      `, [userId, source]);
+      
+      console.log(`[db.getXpTransactionsBySource] Found ${result.rows.length} transactions for source ${source}`);
+      return result.rows;
+    } catch (error) {
+      console.error(`[db.getXpTransactionsBySource] Error fetching transactions for user ${userId} and source ${source}:`, error);
+      return [];
+    }
+  }
+  
+  // User Badge operations
+  async getUserBadges(userId: number): Promise<UserBadge[]> {
+    try {
+      console.log(`[db.getUserBadges] Fetching badges for user: ${userId}`);
+      console.log(`[GET /users/${userId}/badges] Fetching user badges directly from DB`);
+      
+      const result = await pool.query(`
+        SELECT 
+          id, user_id as "userId", badge_type as "badgeType", name, description,
+          image_url as "imageURL", earned_at as "earnedAt", 
+          display_on_profile as "displayOnProfile", display_on_resume as "displayOnResume"
+        FROM user_badges
+        WHERE user_id = $1
+        ORDER BY earned_at DESC
+      `, [userId]);
+      
+      console.log(`[GET /users/${userId}/badges] Found ${result.rows.length} badges`);
+      return result.rows;
+    } catch (error) {
+      console.error(`[db.getUserBadges] Error fetching badges for user ${userId}:`, error);
+      return [];
+    }
+  }
+
+  async getUserBadgeById(id: number): Promise<UserBadge | undefined> {
+    try {
+      console.log(`[db.getUserBadgeById] Looking up badge with ID: ${id}`);
+      
+      const result = await pool.query(`
+        SELECT 
+          id, user_id as "userId", badge_type as "badgeType", name, description,
+          image_url as "imageURL", earned_at as "earnedAt", 
+          display_on_profile as "displayOnProfile", display_on_resume as "displayOnResume"
+        FROM user_badges
+        WHERE id = $1
+      `, [id]);
+      
+      if (result.rows.length === 0) {
+        console.log(`[db.getUserBadgeById] No badge found with ID ${id}`);
+        return undefined;
+      }
+      
+      console.log(`[db.getUserBadgeById] Found badge with ID ${id}`);
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.getUserBadgeById] Error fetching badge with ID ${id}:`, error);
+      return undefined;
+    }
+  }
+
+  async getUserBadgesByType(userId: number, badgeType: string): Promise<UserBadge[]> {
+    try {
+      console.log(`[db.getUserBadgesByType] Fetching badges for user ${userId} with type: ${badgeType}`);
+      
+      const result = await pool.query(`
+        SELECT 
+          id, user_id as "userId", badge_type as "badgeType", name, description,
+          image_url as "imageURL", earned_at as "earnedAt", 
+          display_on_profile as "displayOnProfile", display_on_resume as "displayOnResume"
+        FROM user_badges
+        WHERE user_id = $1 AND badge_type = $2
+        ORDER BY earned_at DESC
+      `, [userId, badgeType]);
+      
+      console.log(`[db.getUserBadgesByType] Found ${result.rows.length} badges for type ${badgeType}`);
+      return result.rows;
+    } catch (error) {
+      console.error(`[db.getUserBadgesByType] Error fetching badges for user ${userId} and type ${badgeType}:`, error);
+      return [];
+    }
+  }
+
+  async createUserBadge(badge: InsertUserBadge): Promise<UserBadge> {
+    try {
+      console.log(`[db.createUserBadge] Creating badge for user ${badge.userId}`);
+      
+      const result = await pool.query(`
+        INSERT INTO user_badges (
+          user_id, badge_type, name, description, image_url,
+          display_on_profile, display_on_resume
+        ) VALUES (
+          $1, $2, $3, $4, $5, $6, $7
+        ) RETURNING 
+          id, user_id as "userId", badge_type as "badgeType", name, description,
+          image_url as "imageURL", earned_at as "earnedAt", 
+          display_on_profile as "displayOnProfile", display_on_resume as "displayOnResume"
+      `, [
+        badge.userId,
+        badge.badgeType,
+        badge.name,
+        badge.description,
+        badge.imageURL,
+        badge.displayOnProfile ?? true,
+        badge.displayOnResume ?? false
+      ]);
+      
+      console.log(`[db.createUserBadge] Created badge with ID ${result.rows[0].id}`);
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.createUserBadge] Error creating badge:`, error);
+      throw error;
+    }
+  }
+
+  async updateUserBadge(id: number, badge: Partial<UserBadge>): Promise<UserBadge | undefined> {
+    try {
+      console.log(`[db.updateUserBadge] Updating badge with ID ${id}`);
+      
+      // Build the SET clause dynamically based on provided fields
+      let setClause = "";
+      const params: any[] = [];
+      let paramIndex = 1;
+      
+      if (badge.badgeType !== undefined) {
+        setClause += `${setClause ? ", " : ""}badge_type = $${paramIndex++}`;
+        params.push(badge.badgeType);
+      }
+      
+      if (badge.name !== undefined) {
+        setClause += `${setClause ? ", " : ""}name = $${paramIndex++}`;
+        params.push(badge.name);
+      }
+      
+      if (badge.description !== undefined) {
+        setClause += `${setClause ? ", " : ""}description = $${paramIndex++}`;
+        params.push(badge.description);
+      }
+      
+      if (badge.imageURL !== undefined) {
+        setClause += `${setClause ? ", " : ""}image_url = $${paramIndex++}`;
+        params.push(badge.imageURL);
+      }
+      
+      if (badge.displayOnProfile !== undefined) {
+        setClause += `${setClause ? ", " : ""}display_on_profile = $${paramIndex++}`;
+        params.push(badge.displayOnProfile);
+      }
+      
+      if (badge.displayOnResume !== undefined) {
+        setClause += `${setClause ? ", " : ""}display_on_resume = $${paramIndex++}`;
+        params.push(badge.displayOnResume);
+      }
+      
+      // Add the ID as the last parameter
+      params.push(id);
+      
+      const result = await pool.query(`
+        UPDATE user_badges
+        SET ${setClause}
+        WHERE id = $${paramIndex}
+        RETURNING 
+          id, user_id as "userId", badge_type as "badgeType", name, description,
+          image_url as "imageURL", earned_at as "earnedAt", 
+          display_on_profile as "displayOnProfile", display_on_resume as "displayOnResume"
+      `, params);
+      
+      if (result.rows.length === 0) {
+        console.log(`[db.updateUserBadge] No badge found with ID ${id}`);
+        return undefined;
+      }
+      
+      console.log(`[db.updateUserBadge] Updated badge with ID ${id}`);
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.updateUserBadge] Error updating badge:`, error);
+      return undefined;
+    }
+  }
+
+  async toggleBadgeDisplay(id: number, displayOnProfile: boolean, displayOnResume: boolean): Promise<UserBadge | undefined> {
+    return this.updateUserBadge(id, { displayOnProfile, displayOnResume });
+  }
+
+  async incrementUserXp(userId: number, amount: number, source: string, sourceId?: number): Promise<{ 
+    userXp: UserXp, 
+    transaction: XpTransaction 
+  }> {
+    try {
+      console.log(`[db.incrementUserXp] Incrementing XP for user ${userId} by ${amount}`);
+      
+      // Start a transaction to ensure atomicity
+      const client = await pool.connect();
+      
+      try {
+        await client.query('BEGIN');
+        
+        // Get or create user XP record
+        let userXp: UserXp | undefined;
+        
+        // Try to get existing XP record
+        const xpResult = await client.query(`
+          SELECT 
+            id, user_id as "userId", balance, lifetime_earned as "lifetimeEarned",
+            last_earned_at as "lastEarnedAt", created_at as "createdAt", 
+            updated_at as "updatedAt"
+          FROM user_xp
+          WHERE user_id = $1
+        `, [userId]);
+        
+        const now = new Date();
+        
+        if (xpResult.rows.length > 0) {
+          // Update existing record (simplified)
+          userXp = xpResult.rows[0];
+          
+          const updateResult = await client.query(`
+            UPDATE user_xp
+            SET 
+              balance = balance + $1,
+              lifetime_earned = lifetime_earned + $2,
+              last_earned_at = $3,
+              updated_at = $4
+            WHERE id = $5
+            RETURNING 
+              id, user_id as "userId", balance, lifetime_earned as "lifetimeEarned",
+              last_earned_at as "lastEarnedAt", created_at as "createdAt", 
+              updated_at as "updatedAt"
+          `, [amount, amount, now, now, userXp.id]);
+          
+          userXp = updateResult.rows[0];
+        } else {
+          // Create new record (simplified)
+          const insertResult = await client.query(`
+            INSERT INTO user_xp (
+              user_id, balance, lifetime_earned, last_earned_at
+            ) VALUES (
+              $1, $2, $3, $4
+            ) RETURNING 
+              id, user_id as "userId", balance, lifetime_earned as "lifetimeEarned",
+              last_earned_at as "lastEarnedAt", created_at as "createdAt", 
+              updated_at as "updatedAt"
+          `, [userId, amount, amount, now]);
+          
+          userXp = insertResult.rows[0];
+        }
+        
+        // Create transaction record
+        const description = this.getXpTransactionDescription(source, amount, sourceId);
+        
+        const transactionResult = await client.query(`
+          INSERT INTO xp_transactions (
+            user_id, amount, source, source_id, description
+          ) VALUES (
+            $1, $2, $3, $4, $5
+          ) RETURNING 
+            id, user_id as "userId", amount, source, source_id as "sourceId",
+            description, created_at as "createdAt"
+        `, [userId, amount, source, sourceId ?? null, description]);
+        
+        // Commit the transaction
+        await client.query('COMMIT');
+        
+        console.log(`[db.incrementUserXp] Successfully incremented XP for user ${userId}`);
+        return { 
+          userXp, 
+          transaction: transactionResult.rows[0] 
+        };
+      } catch (error) {
+        // Rollback in case of error
+        await client.query('ROLLBACK');
+        console.error(`[db.incrementUserXp] Error incrementing XP:`, error);
+        throw error;
+      } finally {
+        // Release the client
+        client.release();
+      }
+    } catch (error) {
+      console.error(`[db.incrementUserXp] Transaction error:`, error);
+      throw error;
+    }
+  }
+  
   // User operations
   async getUser(id: number): Promise<User | undefined> {
     console.log(`[db.getUser] Looking up user with ID: ${id}`);
