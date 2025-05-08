@@ -1,14 +1,11 @@
-import React, { useEffect } from "react";
 import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "./context/auth-context";
 import { useAuth } from "./hooks/use-auth";
+import { useEffect } from "react";
 import GlobalMuskButton from "@/components/musk/global-musk-button";
-import { SpatialMainLayout } from "@/components/spatial/SpatialMainLayout";
-import { EnhancedBackground } from "./components/ui/enhanced-background";
-import { lazy, Suspense } from "react";
 
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
@@ -39,11 +36,8 @@ import EditProfilePage from "@/pages/edit-profile";
 import MuskTestingPage from "@/pages/musk-testing";
 import ManageServicesPage from "@/pages/manage-services";
 import TestNowboardPage from "@/pages/test-nowboard";
-import SpatialTestPage from "@/pages/spatial-test";
-import SpatialTestNew from "@/pages/spatial-test-new";
-import SpatialIndustryPulsePage from "@/pages/spatial-industry-pulse";
-import SpatialCareerCapsulePage from "@/pages/spatial-career-capsule";
-import SpatialBrandQuestsPage from "@/pages/spatial-brand-quests";
+// Lazy load the SharedCardPage to improve performance and show loader immediately
+import { lazy, Suspense } from "react";
 const SharedCardPage = lazy(() => import("@/pages/shared-card"));
 // Brand of the Day is now integrated into Nowboard
 
@@ -115,8 +109,7 @@ function Router() {
         <ProtectedRoute path="/create-pulse" component={CreatePulsePage} />
       </Route>
       <Route path="/industry-pulse">
-        {/* Redirect to spatial version of Industry Pulse */}
-        <ProtectedRoute path="/industry-pulse" component={() => <Redirect to="/spatial-industry-pulse" />} />
+        <ProtectedRoute path="/industry-pulse" component={IndustryPulsePage} />
       </Route>
       <Route path="/search">
         <ProtectedRoute path="/search" component={SearchPage} />
@@ -152,14 +145,12 @@ function Router() {
       </Route>
       {/* Brand Quests (new name) */}
       <Route path="/brand-quests">
-        {/* Redirect to spatial version of Brand Quests */}
-        <ProtectedRoute path="/brand-quests" component={() => <Redirect to="/spatial-brand-quests" />} />
+        <ProtectedRoute path="/brand-quests" component={BrandQuestsPage} />
       </Route>
       
       {/* Legacy route - keeping for backward compatibility */}
       <Route path="/career-quests">
-        {/* Redirect to spatial version of Brand Quests */}
-        <ProtectedRoute path="/career-quests" component={() => <Redirect to="/spatial-brand-quests" />} />
+        <ProtectedRoute path="/career-quests" component={BrandQuestsPage} />
       </Route>
       <Route path="/career-capsule">
         <ProtectedRoute path="/career-capsule" component={CareerCapsulePage} />
@@ -180,18 +171,6 @@ function Router() {
       {/* Test route for nowboard integration */}
       <Route path="/test-nowboard">
         <ProtectedRoute path="/test-nowboard" component={TestNowboardPage} />
-      </Route>
-      {/* Spatial UI pages */}
-      <Route path="/spatial-test" component={SpatialTestPage} />
-      <Route path="/spatial-test-new" component={SpatialTestNew} />
-      <Route path="/spatial-industry-pulse">
-        <ProtectedRoute path="/spatial-industry-pulse" component={SpatialIndustryPulsePage} />
-      </Route>
-      <Route path="/spatial-career-capsule">
-        <ProtectedRoute path="/spatial-career-capsule" component={SpatialCareerCapsulePage} />
-      </Route>
-      <Route path="/spatial-brand-quests">
-        <ProtectedRoute path="/spatial-brand-quests" component={SpatialBrandQuestsPage} />
       </Route>
       {/* Unified Profile Page with comprehensive data fetching */}
       <Route path="/unified-profile">
@@ -246,25 +225,9 @@ function App() {
             </div>
           </div>
         }>
-          {/* Use regular layout with Vision Pro styling - no spatial UI */}
-          <div className="vision-enhanced-layout relative min-h-screen overflow-hidden">
-            {/* Add enhanced Vision Pro-inspired background with dramatic lighting effects */}
-            <EnhancedBackground variant="immersive" />
-            <div className="relative z-10">
-              <Router />
-              <GlobalMuskButton />
-              {/* Quick access to spatial test page for development */}
-              <div className="fixed bottom-4 right-4 z-50">
-                <a 
-                  href="/spatial-test-new"
-                  className="vision-button bg-black/40 backdrop-blur-md text-white/80 text-xs px-2 py-1 rounded-full border border-white/10 hover:bg-black/50 hover:text-white/90 transition-all"
-                >
-                  Test Vision Pro UI
-                </a>
-              </div>
-              <Toaster />
-            </div>
-          </div>
+          <Router />
+          <GlobalMuskButton />
+          <Toaster />
         </Suspense>
       </AuthProvider>
     </QueryClientProvider>

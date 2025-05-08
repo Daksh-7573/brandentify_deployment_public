@@ -1,10 +1,9 @@
 import { useState, FormEvent, useEffect } from "react";
-import { EnhancedPageLayout } from "@/components/layout/enhanced-page-layout";
+import { PageLayout } from "@/components/layout/page-layout";
 import { useAuth } from "@/hooks/use-auth";
 import { useCareerCapsule, CareerGoal, GoalType } from "@/hooks/use-career-capsule";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { EnhancedCard, EnhancedCardHeader, EnhancedCardContent, EnhancedCardFooter } from "@/components/ui/enhanced-card";
 import { toast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Progress } from "@/components/ui/progress";
@@ -12,7 +11,6 @@ import { Badge } from "@/components/ui/badge";
 import { Loader2, CheckCircle, CheckCircle2 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { queryClient } from "@/lib/queryClient";
-import { motion } from "framer-motion";
 
 // Utility function to format dates
 const formatDate = (dateString: string) => {
@@ -295,27 +293,11 @@ export default function CareerCapsulePage() {
   };
 
   return (
-    <EnhancedPageLayout 
-      title="Career Capsule" 
-      description="Plan your next career moves with AI-powered guidance"
-      actions={
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-        >
-          <Button 
-            onClick={() => setShowCreateDialog(true)}
-            className="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white shadow-lg hover:shadow-xl transition-all duration-300"
-          >
-            Create New Goal
-          </Button>
-        </motion.div>
-      }
-    >
+    <PageLayout title="Career Capsule">
       <div className="container py-8">
         <div className="flex justify-between items-center mb-6">
-          {/* Additional content can go here if needed */}
+          <h1 className="text-3xl font-bold">Career Capsule</h1>
+          <Button onClick={() => setShowCreateDialog(true)}>Create New Goal</Button>
         </div>
         
         {isLoading ? (
@@ -332,58 +314,44 @@ export default function CareerCapsulePage() {
             {/* Display all goals as an array - our backend now always returns an array */}
             {Array.isArray(goals) && goals.length > 0 ? (
               goals.map((goal: CareerGoal) => (
-                <motion.div 
-                  key={goal.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ 
-                    duration: 0.4,
-                    delay: Math.min(0.1 + (goal.id % 10) * 0.05, 0.5) 
-                  }}
-                >
-                  <EnhancedCard 
-                    variant="glassy" 
-                    isFocused={selectedGoalId === goal.id}
-                    onFocus={() => handleViewDetails(goal.id)}
-                  >
-                    <EnhancedCardHeader>
-                      <div className="flex justify-between items-start">
-                        <div className="text-xl font-semibold text-white">{goal.title}</div>
-                        <Badge 
-                          className={getStatusColor(goal.status || "not_started")}
-                        >
-                          {goal.status === "in_progress" ? "In Progress" : 
-                          goal.status === "completed" ? "Completed" : 
-                          goal.status === "abandoned" ? "Abandoned" : "Not Started"}
-                        </Badge>
-                      </div>
-                      <div className="flex flex-col gap-1 mt-1 text-gray-300">
+                <Card key={goal.id} className="shadow-md hover:shadow-lg transition-shadow">
+                  <CardHeader className="pb-2">
+                    <div className="flex justify-between items-start">
+                      <CardTitle className="text-xl">{goal.title}</CardTitle>
+                      <Badge 
+                        className={getStatusColor(goal.status || "not_started")}
+                      >
+                        {goal.status === "in_progress" ? "In Progress" : 
+                         goal.status === "completed" ? "Completed" : 
+                         goal.status === "abandoned" ? "Abandoned" : "Not Started"}
+                      </Badge>
+                    </div>
+                    <CardDescription>
+                      <div className="flex flex-col gap-1 mt-1">
                         <span className="text-sm">{getGoalTypeText(goal.goalType as GoalType)}</span>
                         <span className="text-sm">Target: {formatDate(String(goal.targetDate || ""))}</span>
                       </div>
-                    </EnhancedCardHeader>
-                    
-                    <EnhancedCardContent className="bg-black/20">
-                      <div className="mb-3">
-                        <Progress value={goal.progress || 0} className="h-2" />
-                        <span className="text-xs text-gray-300 mt-1 block">
-                          {goal.progress || 0}% complete
-                        </span>
-                      </div>
-                      <p className="line-clamp-2 text-sm text-gray-100">{goal.description || "No description provided"}</p>
-                    </EnhancedCardContent>
-                    
-                    <EnhancedCardFooter>
-                      <Button 
-                        variant="default" 
-                        className="w-full bg-white/10 hover:bg-white/20 text-white border-white/20"
-                        onClick={() => handleViewDetails(goal.id)}
-                      >
-                        View Details
-                      </Button>
-                    </EnhancedCardFooter>
-                  </EnhancedCard>
-                </motion.div>
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="pb-2">
+                    <div className="mb-3">
+                      <Progress value={goal.progress || 0} className="h-2" />
+                      <span className="text-xs text-muted-foreground mt-1 block">
+                        {goal.progress || 0}% complete
+                      </span>
+                    </div>
+                    <p className="line-clamp-2 text-sm">{goal.description || "No description provided"}</p>
+                  </CardContent>
+                  <CardFooter>
+                    <Button 
+                      variant="outline" 
+                      className="w-full" 
+                      onClick={() => handleViewDetails(goal.id)}
+                    >
+                      View Details
+                    </Button>
+                  </CardFooter>
+                </Card>
               ))
             ) : (
               <div className="col-span-full text-center py-8">
@@ -866,6 +834,6 @@ export default function CareerCapsulePage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </EnhancedPageLayout>
+    </PageLayout>
   );
 }
