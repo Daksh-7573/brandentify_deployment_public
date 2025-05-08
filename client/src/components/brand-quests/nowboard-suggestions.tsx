@@ -63,7 +63,10 @@ export function NowboardSuggestions({ userId, className, questType }: NowboardSu
           title: 'Create a Pulse about your recent project',
           description: 'Share your recent work to make progress on your "Content Creator" quest',
           actionText: 'Create Pulse',
-          xpValue: 25
+          xpValue: 25,
+          progress: 1,
+          targetCount: 3,
+          relatedQuestId: 101
         },
         {
           id: 2,
@@ -71,7 +74,10 @@ export function NowboardSuggestions({ userId, className, questType }: NowboardSu
           title: 'Comment on trending industry discussions',
           description: 'Professionals in Healthcare are discussing new research. Join the conversation!',
           actionText: 'View Conversations',
-          xpValue: 15
+          xpValue: 15,
+          progress: 2,
+          targetCount: 5,
+          relatedQuestId: 102
         },
         {
           id: 3,
@@ -79,7 +85,10 @@ export function NowboardSuggestions({ userId, className, questType }: NowboardSu
           title: 'React to content from your industry',
           description: 'Show appreciation for quality content to progress on your quest',
           actionText: 'Find Content',
-          xpValue: 10
+          xpValue: 10,
+          progress: 0,
+          targetCount: 3,
+          relatedQuestId: 103
         }
       ] as NowboardSuggestion[];
     }
@@ -104,6 +113,11 @@ export function NowboardSuggestions({ userId, className, questType }: NowboardSu
     if (!suggestion.relatedQuestId) return;
     
     try {
+      // Calculate the new progress
+      const currentProgress = suggestion.progress || 0;
+      const targetCount = suggestion.targetCount || 1;
+      const newProgress = Math.min(currentProgress + 1, targetCount);
+      
       const response = await fetch('/api/nowboard-recommendations/track-progress', {
         method: 'POST',
         headers: {
@@ -112,12 +126,24 @@ export function NowboardSuggestions({ userId, className, questType }: NowboardSu
         body: JSON.stringify({
           userId,
           questId: suggestion.relatedQuestId,
-          actionType: suggestion.type
+          actionType: suggestion.type,
+          progress: newProgress,
+          targetCount: targetCount,
+          completed: newProgress >= targetCount
         }),
       });
       
       if (!response.ok) {
         throw new Error('Failed to track progress');
+      }
+      
+      // Show completion toast if quest is completed
+      if (newProgress >= targetCount) {
+        toast({
+          title: 'Quest Completed!',
+          description: `You've earned ${suggestion.xpValue} XP for completing this quest.`,
+          variant: 'default',
+        });
       }
       
       // Refetch suggestions to update progress
@@ -261,8 +287,18 @@ export function NowboardSuggestions({ userId, className, questType }: NowboardSu
                       <span className="font-medium">{suggestion.progress}/{suggestion.targetCount}</span>
                     </div>
                     <Progress 
-                      value={(suggestion.progress / suggestion.targetCount) * 100} 
-                      className="h-1.5"
+                      value={(suggestion.progress / suggestion.targetCount) * 100}
+                      className={cn(
+                        "h-1.5", 
+                        suggestion.progress === 0 ? "bg-gray-100" : "",
+                        suggestion.progress > 0 && suggestion.progress < suggestion.targetCount ? "bg-amber-100" : "",
+                        suggestion.progress === suggestion.targetCount ? "bg-green-100" : ""
+                      )}
+                      indicatorClassName={cn(
+                        suggestion.progress === 0 ? "bg-gray-400" : "",
+                        suggestion.progress > 0 && suggestion.progress < suggestion.targetCount ? "bg-amber-500" : "",
+                        suggestion.progress === suggestion.targetCount ? "bg-green-500" : ""
+                      )}
                     />
                   </div>
                 )}
@@ -270,14 +306,25 @@ export function NowboardSuggestions({ userId, className, questType }: NowboardSu
                   +{suggestion.xpValue} XP potential
                 </div>
               </div>
-              <Button 
-                variant="outline" 
-                size="sm"
-                className="flex-shrink-0 text-xs group-hover:border-primary/50 group-hover:text-primary transition-colors"
-                onClick={() => handleAction(suggestion)}
-              >
-                {suggestion.actionText} <ArrowRight className="ml-1 h-3 w-3" />
-              </Button>
+              {suggestion.progress === suggestion.targetCount ? (
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  className="flex-shrink-0 text-xs text-green-600 cursor-default"
+                  disabled
+                >
+                  Completed <Zap className="ml-1 h-3 w-3" />
+                </Button>
+              ) : (
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  className="flex-shrink-0 text-xs group-hover:border-primary/50 group-hover:text-primary transition-colors"
+                  onClick={() => handleAction(suggestion)}
+                >
+                  {suggestion.actionText} <ArrowRight className="ml-1 h-3 w-3" />
+                </Button>
+              )}
             </div>
           ))}
         </div>

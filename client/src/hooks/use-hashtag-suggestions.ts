@@ -56,7 +56,7 @@ export function useHashtagSuggestions(options: HashtagSuggestionsOptions): Hasht
         
         // Parse the response data
         if (staticResponse && typeof staticResponse === 'object' && 'hashtags' in staticResponse) {
-          const typedResponse = staticResponse as HashtagResponse;
+          const typedResponse = staticResponse as unknown as HashtagResponse;
           setHashtags(typedResponse.hashtags);
           setSources(typedResponse.sources || ['Content trends']);
         } else {
