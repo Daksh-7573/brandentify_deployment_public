@@ -7,8 +7,8 @@ const router = express.Router();
 // Get personalized nowboard recommendations
 router.get('/api/nowboard-recommendations', async (req, res) => {
   try {
-    // Get user ID from session or query param for demo
-    const userId = req.session?.userId || parseInt(req.query.userId as string, 10) || 2; // Default demo user ID
+    // Get user ID from query param for demo
+    const userId = parseInt(req.query.userId as string, 10) || 2; // Default demo user ID
     const questType = req.query.questType as string | undefined;
 
     const recommendations = await NowboardRecommendationService.getPersonalizedRecommendations(userId, questType);

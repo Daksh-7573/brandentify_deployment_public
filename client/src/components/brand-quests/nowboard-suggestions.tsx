@@ -3,10 +3,11 @@ import { useLocation } from 'wouter';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ArrowRight, Zap, MessageSquare, ThumbsUp, Bot } from 'lucide-react';
+import { ArrowRight, Zap, MessageSquare, ThumbsUp, Bot, RefreshCw } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { useQuery } from '@tanstack/react-query';
 
 interface NowboardSuggestionsProps {
   userId: number;
@@ -25,61 +26,116 @@ interface NowboardSuggestion {
   actionText: string;
   relatedQuestId?: number;
   xpValue: number;
-  icon: React.ReactNode;
+  targetId?: number; // ID of pulse or content to interact with
 }
 
 export function NowboardSuggestions({ userId, className, questType }: NowboardSuggestionsProps) {
-  const [isLoading, setIsLoading] = useState(false);
+  const [loadingAction, setLoadingAction] = useState(false);
   const [, navigate] = useLocation();
   const { toast } = useToast();
-  
-  // In a real implementation, these would come from an API based on user context and active quests
-  // For now we'll use static suggestions that could help with quest completion
-  const suggestions: NowboardSuggestion[] = [
-    {
-      id: 1,
-      type: 'pulse',
-      title: 'Create a Pulse about your recent project',
-      description: 'Share your recent work to make progress on your "Content Creator" quest',
-      actionText: 'Create Pulse',
-      xpValue: 25,
-      icon: <Zap className="h-5 w-5 text-blue-500" />
+
+  // Fetch recommendations from API
+  const { 
+    data, 
+    isLoading, 
+    isError, 
+    refetch 
+  } = useQuery({
+    queryKey: ['nowboard-recommendations', userId, questType],
+    queryFn: async () => {
+      const endpoint = `/api/nowboard-recommendations?userId=${userId}${questType ? `&questType=${questType}` : ''}`;
+      const response = await fetch(endpoint);
+      if (!response.ok) {
+        throw new Error('Failed to fetch recommendations');
+      }
+      const data = await response.json();
+      return data.recommendations;
     },
-    {
-      id: 2,
-      type: 'comment',
-      title: 'Comment on trending industry discussions',
-      description: 'Professionals in Healthcare are discussing new research. Join the conversation to complete your "Meaningful Commenter" quest',
-      actionText: 'View Conversations',
-      xpValue: 15,
-      icon: <MessageSquare className="h-5 w-5 text-purple-500" />
-    },
-    {
-      id: 3,
-      type: 'reaction',
-      title: 'React to content from your industry',
-      description: 'Show appreciation for quality content to progress on your "Engagement" quest',
-      actionText: 'Find Content',
-      xpValue: 10,
-      icon: <ThumbsUp className="h-5 w-5 text-green-500" />
+    // Fallback to demo data if API fails in development
+    placeholderData: () => {
+      return [
+        {
+          id: 1,
+          type: 'pulse',
+          title: 'Create a Pulse about your recent project',
+          description: 'Share your recent work to make progress on your "Content Creator" quest',
+          actionText: 'Create Pulse',
+          xpValue: 25
+        },
+        {
+          id: 2,
+          type: 'comment',
+          title: 'Comment on trending industry discussions',
+          description: 'Professionals in Healthcare are discussing new research. Join the conversation!',
+          actionText: 'View Conversations',
+          xpValue: 15
+        },
+        {
+          id: 3,
+          type: 'reaction',
+          title: 'React to content from your industry',
+          description: 'Show appreciation for quality content to progress on your quest',
+          actionText: 'Find Content',
+          xpValue: 10
+        }
+      ] as NowboardSuggestion[];
     }
-  ];
+  });
   
-  // Filter suggestions based on questType if specified
-  const filteredSuggestions = questType 
-    ? suggestions.filter(s => {
-        if (questType === 'pulse_creation' && s.type === 'pulse') return true;
-        if (questType === 'engagement' && (s.type === 'comment' || s.type === 'reaction')) return true;
-        return false;
-      })
-    : suggestions;
+  // Get icon based on suggestion type
+  const getIconForType = (type: SuggestionType) => {
+    switch (type) {
+      case 'pulse':
+        return <Zap className="h-5 w-5 text-blue-500" />;
+      case 'comment':
+        return <MessageSquare className="h-5 w-5 text-purple-500" />;
+      case 'reaction':
+        return <ThumbsUp className="h-5 w-5 text-green-500" />;
+      default:
+        return <Zap className="h-5 w-5 text-blue-500" />;
+    }
+  };
     
+  // Track quest progress when taking an action
+  const trackProgress = async (suggestion: NowboardSuggestion) => {
+    if (!suggestion.relatedQuestId) return;
+    
+    try {
+      const response = await fetch('/api/nowboard-recommendations/track-progress', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId,
+          questId: suggestion.relatedQuestId,
+          actionType: suggestion.type
+        }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to track progress');
+      }
+      
+      // Refetch suggestions to update progress
+      refetch();
+      
+    } catch (error) {
+      console.error('Error tracking progress:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to track quest progress',
+        variant: 'destructive',
+      });
+    }
+  };
+  
   const handleAction = (suggestion: NowboardSuggestion) => {
-    setIsLoading(true);
+    setLoadingAction(true);
     
-    // Simulate loading for demo purposes
-    setTimeout(() => {
-      setIsLoading(false);
+    // Track progress for this action
+    trackProgress(suggestion).finally(() => {
+      setLoadingAction(false);
       
       // Navigate based on the suggestion type
       switch (suggestion.type) {
@@ -100,10 +156,10 @@ export function NowboardSuggestions({ userId, className, questType }: NowboardSu
         description: `You're on your way to earning ${suggestion.xpValue} XP!`,
         variant: 'default',
       });
-    }, 500);
+    });
   };
   
-  if (isLoading) {
+  if (isLoading || loadingAction) {
     return (
       <Card className={cn(className)}>
         <CardHeader className="pb-2">
@@ -135,7 +191,32 @@ export function NowboardSuggestions({ userId, className, questType }: NowboardSu
     );
   }
   
-  if (filteredSuggestions.length === 0) {
+  if (isError) {
+    return (
+      <Card className={cn(className)}>
+        <CardHeader className="pb-2">
+          <CardTitle className="flex items-center gap-2">
+            <Avatar className="h-8 w-8">
+              <AvatarFallback className="bg-primary/10">
+                <Bot className="h-4 w-4 text-primary" />
+              </AvatarFallback>
+            </Avatar>
+            <span>Nowboard Opportunities</span>
+          </CardTitle>
+          <CardDescription>
+            <div className="flex items-center justify-between">
+              <span>Failed to load recommendations</span>
+              <Button size="sm" variant="ghost" onClick={() => refetch()}>
+                <RefreshCw className="h-4 w-4 mr-2" /> Retry
+              </Button>
+            </div>
+          </CardDescription>
+        </CardHeader>
+      </Card>
+    );
+  }
+  
+  if (!data || data.length === 0) {
     return null;
   }
   
@@ -150,17 +231,22 @@ export function NowboardSuggestions({ userId, className, questType }: NowboardSu
           </Avatar>
           <span>Nowboard Opportunities</span>
         </CardTitle>
-        <CardDescription>Musk-recommended actions to complete your quests</CardDescription>
+        <CardDescription className="flex justify-between">
+          <span>Musk-recommended actions to complete your quests</span>
+          <Button size="sm" variant="ghost" className="h-6 p-1" onClick={() => refetch()}>
+            <RefreshCw className="h-3 w-3" />
+          </Button>
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
-          {filteredSuggestions.map(suggestion => (
+          {data.map(suggestion => (
             <div 
               key={suggestion.id} 
               className="flex items-start gap-3 p-3 rounded-lg border border-gray-100 hover:border-primary/20 hover:bg-accent/20 transition-colors group"
             >
               <div className="mt-1 h-8 w-8 rounded-full bg-primary/5 flex items-center justify-center flex-shrink-0">
-                {suggestion.icon}
+                {getIconForType(suggestion.type)}
               </div>
               <div className="space-y-1 flex-1">
                 <h4 className="font-medium text-sm">{suggestion.title}</h4>

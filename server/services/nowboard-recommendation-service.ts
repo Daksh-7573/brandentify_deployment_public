@@ -2,7 +2,6 @@ import { db } from '../db';
 import { sql } from 'drizzle-orm';
 import { questDefinitions, userQuests, users } from '@shared/schema';
 import { eq, and, gt, lt } from 'drizzle-orm';
-import { OpenAIService } from './openai-service';
 import { storage } from '../storage';
 
 export interface NowboardSuggestion {
@@ -190,13 +189,21 @@ export class NowboardRecommendationService {
       // Update the progress count
       const newProgress = (userQuestRecord.progress || 0) + 1;
       
+      // Get the quest definition to get the target count
+      const [questDef] = await db
+        .select()
+        .from(questDefinitions)
+        .where(eq(questDefinitions.id, userQuestRecord.questDefinitionId));
+        
+      const targetCount = questDef?.targetCount || 1;
+        
       // Update the quest progress
       await db
         .update(userQuests)
         .set({
           progress: newProgress,
           // If progress meets target, mark as completed
-          status: userQuestRecord.status === 'active' && newProgress >= userQuestRecord.targetCount ? 'completed' : userQuestRecord.status
+          status: userQuestRecord.status === 'active' && newProgress >= targetCount ? 'completed' : userQuestRecord.status
         })
         .where(
           and(
