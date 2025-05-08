@@ -13,7 +13,6 @@ export type QuestType =
 export type QuestStatus = 
   | 'active'
   | 'completed'
-  | 'dismissed'
   | 'expired';
 
 export type BadgeType = 
@@ -52,7 +51,6 @@ export interface UserQuest {
   completedAt?: string;
   weekNumber: number;
   year: number;
-  dismissedReason?: string;
   xpEarned?: number;
   badgeEarned?: BadgeType;
   muskResponse?: string;
@@ -65,6 +63,7 @@ export interface UserQuest {
   questTitle?: string;
   questDescription?: string;
   questType?: string;
+  questMuskTip?: string;  // Added for simplified weekly quests
   userName?: string;
   userPhotoURL?: string;
 }
@@ -134,7 +133,6 @@ export const getQuestStatusLabel = (status: QuestStatus): string => {
   const labels: Record<QuestStatus, string> = {
     active: 'In Progress',
     completed: 'Completed',
-    dismissed: 'Dismissed',
     expired: 'Expired'
   };
   return labels[status] || status;

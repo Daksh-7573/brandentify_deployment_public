@@ -104,9 +104,10 @@ export const questProgressMiddleware = async (req: Request, res: Response, next:
   // Store the original end method so we can hook into it
   const originalEnd = res.end;
   
-  // Override the end method
-  // @ts-ignore - TypeScript doesn't understand this pattern, but it works
-  res.end = function() {
+  // Override the end method with properly typed function
+  // Using any to bypass TypeScript's strict typing here
+  const endMethod: any = res.end;
+  res.end = function(chunk?: any, encoding?: any, callback?: () => void) {
     // Only process on successful responses
     if (res.statusCode >= 200 && res.statusCode < 300) {
       try {
@@ -118,7 +119,7 @@ export const questProgressMiddleware = async (req: Request, res: Response, next:
         
         if (!userId) {
           // Skip if no userId found - quietly exit without error
-          return originalEnd.apply(res, arguments);
+          return endMethod.call(res, chunk, encoding, callback);
         }
         
         const path = req.originalUrl || req.url || req.path;
@@ -169,9 +170,8 @@ export const questProgressMiddleware = async (req: Request, res: Response, next:
       }
     }
     
-    // Call the original end function with all original arguments
-    // @ts-ignore - TypeScript doesn't like this, but it works
-    return originalEnd.apply(res, arguments);
+    // Call the original end function with the provided arguments
+    return originalEnd.call(res, chunk, encoding, callback);
   };
   
   next();
