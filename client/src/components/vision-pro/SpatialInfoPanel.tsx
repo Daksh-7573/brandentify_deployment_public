@@ -1,156 +1,138 @@
 import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
+import { useVisionProCapabilities } from './VisionProDetector';
 
-export type SpatialPosition = 
-  | 'top-left' 
-  | 'top' 
-  | 'top-right' 
-  | 'center-left' 
-  | 'center' 
-  | 'center-right'
-  | 'bottom-left' 
-  | 'bottom' 
-  | 'bottom-right';
-
-export interface SpatialInfoPanelProps {
-  /**
-   * Panel title
-   */
+interface SpatialInfoPanelProps {
+  /** Panel title */
   title: string;
   
-  /**
-   * Panel content as an array of string items or React nodes
-   */
+  /** Array of items to display */
   items: React.ReactNode[];
   
-  /**
-   * Spatial position in the viewport
-   */
-  position?: SpatialPosition;
-  
-  /**
-   * Optional CSS class name
-   */
-  className?: string;
-  
-  /**
-   * Optional z-index depth (1-10, higher numbers appear closer)
-   */
-  zDepth?: number;
-  
-  /**
-   * Optional icon to display in the panel header
-   */
+  /** Optional icon to display with the title */
   icon?: React.ReactNode;
   
-  /**
-   * Whether to use glass morphism effect for Vision Pro
-   */
+  /** Position in 3D space */
+  position?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' | 'center-left' | 'center-right' | 'top' | 'bottom';
+  
+  /** Z-depth in 3D space (1-10 scale) */
+  zDepth?: number;
+  
+  /** Whether to use glass effect styling */
   glassEffect?: boolean;
+  
+  /** Custom CSS classes */
+  className?: string;
 }
 
 /**
- * SpatialInfoPanel - A component that anchors information to specific spatial positions
+ * SpatialInfoPanel Component
  * 
- * Designed for Vision Pro's spatial computing paradigm, this component creates
- * the illusion of information panels floating at different depths in 3D space.
+ * A component for anchoring information in specific spatial locations
+ * for Vision Pro displays. This component creates visually separated
+ * information panels with depth effects and position anchoring.
  */
 const SpatialInfoPanel: React.FC<SpatialInfoPanelProps> = ({
   title,
   items,
-  position = 'center',
-  className = '',
-  zDepth = 5,
   icon,
-  glassEffect = true,
+  position = 'top-right',
+  zDepth = 3,
+  glassEffect = false,
+  className,
 }) => {
+  const capabilities = useVisionProCapabilities();
   const [isHovered, setIsHovered] = useState(false);
   
-  // Position mapping for spatial anchoring
-  const positionClasses: Record<SpatialPosition, string> = {
-    'top-left': 'top-4 left-4',
-    'top': 'top-4 left-1/2 -translate-x-1/2',
-    'top-right': 'top-4 right-4',
-    'center-left': 'top-1/2 left-4 -translate-y-1/2',
-    'center': 'top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2',
-    'center-right': 'top-1/2 right-4 -translate-y-1/2',
-    'bottom-left': 'bottom-4 left-4',
-    'bottom': 'bottom-4 left-1/2 -translate-x-1/2',
-    'bottom-right': 'bottom-4 right-4',
+  // Position classes based on position prop
+  const positionClasses = {
+    'top-left': 'absolute top-4 left-4',
+    'top-right': 'absolute top-4 right-4',
+    'bottom-left': 'absolute bottom-4 left-4',
+    'bottom-right': 'absolute bottom-4 right-4',
+    'center-left': 'absolute top-1/2 -translate-y-1/2 left-4',
+    'center-right': 'absolute top-1/2 -translate-y-1/2 right-4',
+    'top': 'absolute top-4 left-1/2 -translate-x-1/2',
+    'bottom': 'absolute bottom-4 left-1/2 -translate-x-1/2',
   };
   
-  // Z-index calculation for visual depth (Vision Pro optimization)
-  const zIndexValue = 10 + zDepth;
+  // Normalize z-depth to a 0-1 range for transform scale
+  const normalizedZDepth = Math.min(Math.max(zDepth, 1), 10) / 10;
   
-  // Visual styles based on z-depth (closer elements appear more vibrant)
-  const depthStyles = {
-    backgroundColor: glassEffect 
-      ? `rgba(255, 255, 255, ${0.7 + (zDepth * 0.03)})`
-      : 'white',
-    boxShadow: `0 ${4 + zDepth}px ${10 + zDepth * 2}px rgba(0, 0, 0, ${0.05 + (zDepth * 0.01)})`,
-    transform: isHovered 
-      ? `scale(1.05) translateZ(${zDepth * 2}px)` 
-      : `translateZ(${zDepth * 2}px)`,
+  // Calculate z-translate value for 3D effect
+  const zTranslate = capabilities.hasVisionProFeatures
+    ? `${zDepth * 5}px`
+    : '0px';
+  
+  // Glass effect classes
+  const glassClasses = glassEffect
+    ? capabilities.hasVisionProFeatures
+      ? 'visionpro-glass backdrop-blur-md bg-white/40 dark:bg-gray-900/40'
+      : 'bg-white/90 dark:bg-gray-900/90'
+    : 'bg-white dark:bg-gray-900';
+    
+  // Handle hover effects
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+  };
+  
+  const handleMouseLeave = () => {
+    setIsHovered(false);
   };
   
   return (
     <div
       className={cn(
-        'absolute',
         positionClasses[position],
-        'z-10',
-        'rounded-2xl p-5',
-        'w-[300px]',
-        'transition-all duration-500',
-        glassEffect ? 'backdrop-blur-md backdrop-saturate-150 dark:bg-gray-800/80' : 'bg-white dark:bg-gray-800',
-        'border border-gray-200 dark:border-gray-700',
+        'rounded-xl shadow-lg border border-gray-200 dark:border-gray-700',
+        glassClasses,
+        'transition-all duration-300 ease-out',
+        'w-64 p-4',
         'visionpro-spatial-element',
+        isHovered && capabilities.hasVisionProFeatures && 'shadow-xl scale-105',
         className
       )}
       style={{
-        ...depthStyles,
-        zIndex: zIndexValue,
+        transform: `translateZ(${zTranslate}) scale(${isHovered && capabilities.hasVisionProFeatures ? 1.05 : 1})`,
+        zIndex: isHovered ? 10 : zDepth,
       }}
       data-position={position}
-      data-zdepth={zDepth}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
-      {/* Panel header with title and optional icon */}
-      <div className="flex items-center gap-2 mb-3">
-        {icon && <div className="text-primary">{icon}</div>}
-        <h3 className="text-xl font-bold text-primary">{title}</h3>
+      <div className="flex items-center mb-3 space-x-2">
+        {icon && (
+          <div className={cn(
+            "flex h-7 w-7 items-center justify-center rounded-full",
+            "bg-primary/10 text-primary",
+            isHovered && "bg-primary/20"
+          )}>
+            {icon}
+          </div>
+        )}
+        <h3 className={cn(
+          "font-semibold text-lg",
+          isHovered && capabilities.hasVisionProFeatures && "text-primary"
+        )}>
+          {title}
+        </h3>
       </div>
-      
-      {/* Panel content */}
+
       <div className="space-y-2">
         {items.map((item, index) => (
           <div 
-            key={index} 
+            key={index}
             className={cn(
-              "flex items-start gap-2 transition-all",
-              isHovered ? 'translate-x-1' : '',
-              typeof item === 'string' ? 'text-gray-800 dark:text-gray-200' : ''
+              "py-1.5 px-1",
+              "transition-all duration-200",
+              "border-b border-gray-100 dark:border-gray-800 last:border-b-0",
+              isHovered && capabilities.hasVisionProFeatures && "bg-primary/5"
             )}
-            style={{ 
-              transitionDelay: `${index * 50}ms`, 
-              transitionDuration: '300ms' 
-            }}
           >
-            <div className="mt-1.5 w-2 h-2 rounded-full bg-primary flex-shrink-0"></div>
-            <div>{item}</div>
+            {item}
           </div>
         ))}
       </div>
-      
-      {/* Depth indicator - purely visual for Vision Pro */}
-      <div 
-        className="absolute -z-10 inset-0 rounded-2xl opacity-0 bg-primary/10"
-        style={{ 
-          opacity: isHovered ? 0.2 : 0,
-          transition: 'opacity 500ms ease-in-out',
-        }}
-      />
     </div>
   );
 };

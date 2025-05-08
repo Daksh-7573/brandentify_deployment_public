@@ -1,97 +1,93 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { useVisionProCapabilities } from './VisionProDetector';
 
-export interface TrackableButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  /**
-   * Size of the button - larger sizes work better with eye tracking and gestures
-   */
+interface TrackableButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  /** The button text content */
+  children: React.ReactNode;
+  
+  /** Button variant style */
+  variant?: 'primary' | 'secondary' | 'outline' | 'destructive';
+  
+  /** Button size */
   size?: 'default' | 'large' | 'small';
   
-  /**
-   * Optional variant styles
-   */
-  variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
-  
-  /**
-   * Optional icon to display before the text
-   */
+  /** Optional icon to display in the button */
   icon?: React.ReactNode;
   
-  /**
-   * If true, applies extra visual cues for better tracking in Vision Pro
-   */
+  /** Whether to adjust size for Vision Pro optimization - defaults to auto-detect */
   optimizedForVisionPro?: boolean;
+  
+  /** Custom CSS classes */
+  className?: string;
 }
 
 /**
- * TrackableButton - A button component optimized for Vision Pro's eye tracking and gestures
+ * TrackableButton Component
  * 
- * Features larger hit areas, more pronounced visual feedback states,
- * and optionally enhances the button appearance for better eye tracking.
+ * Enhanced button component designed for Vision Pro's gesture and eye tracking capabilities,
+ * featuring larger touch targets, enhanced visual feedback, and special interaction states.
+ * Automatically adapts based on detected device capabilities.
  */
 const TrackableButton: React.FC<TrackableButtonProps> = ({
   children,
-  className = '',
-  size = 'default',
   variant = 'primary',
+  size = 'default',
   icon,
-  optimizedForVisionPro = true,
+  optimizedForVisionPro,
+  className,
   ...props
 }) => {
-  const [isGazed, setIsGazed] = useState(false);
+  // Detect Vision Pro capabilities
+  const capabilities = useVisionProCapabilities();
   
-  // Size mappings optimized for eye tracking and gestures
-  const sizeClasses = {
-    default: 'min-w-[120px] min-h-[48px] px-6 py-3 text-base',
-    large: 'min-w-[180px] min-h-[64px] px-8 py-4 text-lg',
-    small: 'min-w-[100px] min-h-[40px] px-4 py-2 text-sm',
+  // Use provided override or auto-detected capabilities
+  const shouldOptimize = optimizedForVisionPro !== undefined 
+    ? optimizedForVisionPro 
+    : capabilities.hasVisionProFeatures;
+  
+  // Map our simplified variants to shadcn variants
+  const variantMap = {
+    primary: 'default',
+    secondary: 'secondary',
+    outline: 'outline',
+    destructive: 'destructive',
   };
   
-  // Visual variant styles
-  const variantClasses = {
-    primary: 'bg-primary text-white shadow-md hover:bg-primary/90 active:bg-primary/80',
-    secondary: 'bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/90 active:bg-secondary/80',
-    outline: 'border-2 border-primary text-primary bg-transparent hover:bg-primary/10 active:bg-primary/20',
-    ghost: 'bg-transparent text-primary hover:bg-primary/10 active:bg-primary/20',
-  };
-  
-  // Vision Pro optimized styles 
-  const visionProClasses = optimizedForVisionPro
-    ? 'visionpro-trackable transition-all duration-300 transform hover:scale-105'
+  // Calculate size based on Vision Pro optimization
+  const sizeClass = shouldOptimize 
+    ? size === 'large' ? 'text-lg py-3 px-6' 
+    : size === 'small' ? 'text-sm py-1.5 px-3' 
+    : 'text-base py-2.5 px-5'
     : '';
-    
-  // Gaze effect classes - simulate Vision Pro gaze detection with mouse events
-  const gazeClasses = isGazed && optimizedForVisionPro
-    ? 'ring-4 ring-primary/30 scale-105'
+  
+  // Apply more padding and larger text for Vision Pro
+  const trackableClasses = shouldOptimize
+    ? 'visionpro-trackable visionpro-button visionpro-focus-ring transition-all duration-300'
     : '';
   
   return (
-    <button
+    <Button
+      variant={variantMap[variant] as any}
       className={cn(
-        'relative rounded-xl font-medium flex items-center justify-center gap-2',
-        'transition-all duration-200',
-        sizeClasses[size],
-        variantClasses[variant],
-        visionProClasses,
-        gazeClasses,
+        trackableClasses,
+        sizeClass,
+        shouldOptimize && 'min-h-[48px] min-w-[100px]',
         className
       )}
-      onMouseEnter={() => setIsGazed(true)}
-      onMouseLeave={() => setIsGazed(false)}
       {...props}
     >
-      {icon && <span className="mr-2">{icon}</span>}
-      {children}
-      
-      {/* Subtle glow effect that intensifies on hover/gaze */}
-      {optimizedForVisionPro && variant === 'primary' && (
-        <span 
-          className={`absolute inset-0 rounded-xl bg-primary/20 blur-md -z-10 opacity-0 transition-opacity duration-300 ${
-            isGazed ? 'opacity-100' : ''
-          }`}
-        />
+      {icon && (
+        <span className={cn(
+          'mr-2 flex items-center justify-center',
+          shouldOptimize && 'text-lg'
+        )}>
+          {icon}
+        </span>
       )}
-    </button>
+      {children}
+    </Button>
   );
 };
 
