@@ -9,6 +9,18 @@ import { Request, Response, NextFunction } from 'express';
 import { pool } from '../db';
 import { updateQuestProgress } from '../services/quest-progress-service';
 
+// Extend Request type to include user property
+declare global {
+  namespace Express {
+    interface Request {
+      user?: {
+        id: number;
+        [key: string]: any;
+      };
+    }
+  }
+}
+
 interface QuestTracker {
   targetAction: string;
   routePattern: RegExp;
@@ -97,7 +109,8 @@ export const questProgressMiddleware = async (req: Request, res: Response, next:
   const originalEnd = res.end;
   
   // Override the end method to check for successful requests
-  res.end = function(chunk?: any, encoding?: BufferEncoding, cb?: () => void): Response {
+  // @ts-ignore - Fix TypeScript compatibility issue with res.end method
+  res.end = function(...args: any[]): Response {
     // Only track successful requests (2xx status codes)
     if (res.statusCode >= 200 && res.statusCode < 300) {
       // If user is authenticated and we have their ID
@@ -142,7 +155,7 @@ export const questProgressMiddleware = async (req: Request, res: Response, next:
     }
     
     // Call the original end method
-    return originalEnd.apply(this, arguments as any);
+    return originalEnd.apply(this, args);
   };
   
   next();
