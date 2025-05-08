@@ -59,7 +59,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const fetchUserData = async (userId: string | number) => {
     try {
       console.log(`Fetching user data for user ID: ${userId}`);
-      const response = await apiRequest('GET', `/api/users/${userId}`);
+      const response = await apiRequest({ method: 'GET', url: `/api/users/${userId}` });
       
       if (response.status === 404) {
         console.log('User not found in backend');
@@ -257,11 +257,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const createOrUpdateUserInBackend = async (firebaseUser: FirebaseUser) => {
     try {
       // Check if user exists first
-      const response = await apiRequest('POST', '/api/users', {
-        username: firebaseUser.uid,
-        email: firebaseUser.email || `${firebaseUser.uid}@example.com`,
-        name: firebaseUser.displayName,
-        photoURL: firebaseUser.photoURL
+      const response = await apiRequest({
+        method: 'POST', 
+        url: '/api/users', 
+        data: {
+          username: firebaseUser.uid,
+          email: firebaseUser.email || `${firebaseUser.uid}@example.com`,
+          name: firebaseUser.displayName,
+          photoURL: firebaseUser.photoURL
+        }
       });
       
       return await response.json();
