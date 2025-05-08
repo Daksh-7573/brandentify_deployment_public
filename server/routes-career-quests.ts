@@ -227,7 +227,34 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
         const prevWeek = weekNumber > 1 ? weekNumber - 1 : 52;
         const prevYear = prevWeek === 52 ? year - 1 : year;
         
-        // Using direct DB query with proper error handling
+        // First, let's mark any expired active quests as uncompleted
+        // These would be quests from the previous week that weren't completed
+        try {
+          const markUncompletedResult = await pool.query(`
+            UPDATE user_quests 
+            SET status = 'uncompleted'
+            WHERE user_id = $1 
+            AND status = 'active'
+            AND week_number = $2 
+            AND year = $3
+            AND progress < (
+              SELECT target_count 
+              FROM quest_definitions 
+              WHERE id = user_quests.quest_definition_id
+            )
+            RETURNING id
+          `, [userId, prevWeek, prevYear]);
+          
+          const rowCount = markUncompletedResult.rowCount || 0;
+          if (rowCount > 0) {
+            console.log(`[GET /users/${userId}/quests/current-week] Marked ${rowCount} expired quests as uncompleted`);
+          }
+        } catch (markError) {
+          console.error(`[GET /users/${userId}/quests/current-week] Error marking expired quests:`, markError);
+          // Continue with the request even if this part fails
+        }
+        
+        // Now get the quests with their updated status
         try {
           const userQuestsResult = await pool.query(`
             SELECT 
@@ -308,6 +335,40 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
         if (!tableCheck.rows[0].exists) {
           console.log('[GET /quests-with-definitions] user_quests table does not exist, returning empty array');
           return res.json([]);
+        }
+        
+        // Get current week number and year
+        const now = new Date();
+        const weekNumber = getWeekNumber(now);
+        const year = now.getFullYear();
+        
+        // Previous week (to mark expired quests)
+        const prevWeek = weekNumber > 1 ? weekNumber - 1 : 52;
+        const prevYear = prevWeek === 52 ? year - 1 : year;
+        
+        // Mark any expired active quests from previous weeks as uncompleted
+        try {
+          const markUncompletedResult = await pool.query(`
+            UPDATE user_quests 
+            SET status = 'uncompleted'
+            WHERE user_id = $1 
+            AND status = 'active'
+            AND (week_number < $2 OR (week_number = $2 AND year < $3))
+            AND progress < (
+              SELECT target_count 
+              FROM quest_definitions 
+              WHERE id = user_quests.quest_definition_id
+            )
+            RETURNING id
+          `, [userId, weekNumber, year]);
+          
+          const rowCount = markUncompletedResult.rowCount || 0;
+          if (rowCount > 0) {
+            console.log(`[GET /users/${userId}/quests-with-definitions] Marked ${rowCount} expired quests as uncompleted`);
+          }
+        } catch (markError) {
+          console.error(`[GET /users/${userId}/quests-with-definitions] Error marking expired quests:`, markError);
+          // Continue with the request even if this part fails
         }
         
         // Using direct db query but with a JOIN to get all data in one query
