@@ -63,7 +63,71 @@ export default function EngagementQuestsPage() {
     );
   };
   
-  // Get specific engagement quests
+  // Categorize quests into daily, weekly, and monthly types
+  const categorizeQuests = () => {
+    if (!allQuests) return {
+      dailyQuests: [],
+      weeklyQuests: [],
+      monthlyQuests: []
+    };
+    
+    return allQuests.reduce((acc, quest) => {
+      // Skip completed quests
+      if (quest.status === 'completed') return acc;
+      
+      const targetCount = quest.definition?.targetCount || 0;
+      const xpReward = quest.definition?.xpReward || 0;
+      const questType = quest.definition?.type || '';
+      
+      // Daily Quests:
+      // - Low target count (1-2)
+      // - Lower XP rewards (10-15)
+      // - Usually simple engagement tasks
+      if (
+        (targetCount <= 2 && xpReward <= 15) || 
+        (questType === 'networking' && targetCount === 1)
+      ) {
+        acc.dailyQuests.push(quest);
+      }
+      // Weekly Quests:
+      // - Medium target count (3-5)
+      // - Medium XP rewards (20-30)
+      // - Regular engagement tasks
+      else if (
+        (targetCount >= 3 && targetCount <= 5 && xpReward <= 30) ||
+        (questType === 'networking' && targetCount >= 3)
+      ) {
+        acc.weeklyQuests.push(quest);
+      }
+      // Monthly Quests:
+      // - Higher target count (5+) or high effort tasks
+      // - High XP rewards (40+)
+      // - Content creation or substantial effort
+      else if (
+        targetCount > 5 || 
+        xpReward >= 40 || 
+        questType === 'pulse_creation' ||
+        quest.definition?.targetAction === 'add_media_to_pulse'
+      ) {
+        acc.monthlyQuests.push(quest);
+      }
+      // Default - if it doesn't match any specific category, put in weekly
+      else {
+        acc.weeklyQuests.push(quest);
+      }
+      
+      return acc;
+    }, {
+      dailyQuests: [] as UserQuest[],
+      weeklyQuests: [] as UserQuest[],
+      monthlyQuests: [] as UserQuest[]
+    });
+  };
+  
+  // Get categorized quests
+  const { dailyQuests, weeklyQuests, monthlyQuests } = categorizeQuests();
+  
+  // Get specific engagement quests (fallbacks for compatibility)
   const commentQuest = findQuestByAction('comment_on_pulse');
   const reactionQuest = findQuestByAction('react_to_pulse');
   const mediaQuest = findQuestByAction('add_media_to_pulse');
@@ -208,11 +272,43 @@ export default function EngagementQuestsPage() {
                     */}
                     <TabsContent value="daily" className="space-y-4 mt-6">
                       <div className="space-y-4">
-                        {renderQuestCard(
-                          commentQuest, 
-                          <MessageSquare className="h-5 w-5 text-blue-500" />, 
-                          "Meaningful Commenter", 
-                          "Leave thoughtful comments on industry pulses to engage with the community"
+                        {dailyQuests.length > 0 ? (
+                          dailyQuests.map((quest, index) => {
+                            // Select icon based on action type
+                            let icon;
+                            switch(quest.definition?.targetAction) {
+                              case 'comment_on_pulse':
+                                icon = <MessageSquare className="h-5 w-5 text-blue-500" />;
+                                break;
+                              case 'react_to_pulse':
+                                icon = <ThumbsUp className="h-5 w-5 text-green-500" />;
+                                break;
+                              case 'add_media_to_pulse':
+                                icon = <FileImage className="h-5 w-5 text-purple-500" />;
+                                break;
+                              default:
+                                icon = <MessageSquare className="h-5 w-5 text-blue-500" />;
+                            }
+                            
+                            return (
+                              <div key={`daily-quest-${quest.id || index}`}>
+                                {renderQuestCard(
+                                  quest,
+                                  icon,
+                                  quest.definition?.title || "Daily Quest",
+                                  quest.definition?.description || "Complete this quest daily to earn XP"
+                                )}
+                              </div>
+                            );
+                          })
+                        ) : (
+                          // Fallback to original quest if no categorized quests
+                          renderQuestCard(
+                            commentQuest, 
+                            <MessageSquare className="h-5 w-5 text-blue-500" />, 
+                            "Meaningful Commenter", 
+                            "Leave thoughtful comments on industry pulses to engage with the community"
+                          )
                         )}
                       </div>
                     </TabsContent>
@@ -226,11 +322,43 @@ export default function EngagementQuestsPage() {
                      */}
                     <TabsContent value="weekly" className="space-y-4 mt-6">
                       <div className="space-y-4">
-                        {renderQuestCard(
-                          reactionQuest, 
-                          <ThumbsUp className="h-5 w-5 text-green-500" />, 
-                          "Reaction Giver", 
-                          "React to posts that resonate with you or provide valuable insights"
+                        {weeklyQuests.length > 0 ? (
+                          weeklyQuests.map((quest, index) => {
+                            // Select icon based on action type
+                            let icon;
+                            switch(quest.definition?.targetAction) {
+                              case 'comment_on_pulse':
+                                icon = <MessageSquare className="h-5 w-5 text-blue-500" />;
+                                break;
+                              case 'react_to_pulse':
+                                icon = <ThumbsUp className="h-5 w-5 text-green-500" />;
+                                break;
+                              case 'add_media_to_pulse':
+                                icon = <FileImage className="h-5 w-5 text-purple-500" />;
+                                break;
+                              default:
+                                icon = <ThumbsUp className="h-5 w-5 text-green-500" />;
+                            }
+                            
+                            return (
+                              <div key={`weekly-quest-${quest.id || index}`}>
+                                {renderQuestCard(
+                                  quest,
+                                  icon,
+                                  quest.definition?.title || "Weekly Quest",
+                                  quest.definition?.description || "Complete this quest weekly to earn XP"
+                                )}
+                              </div>
+                            );
+                          })
+                        ) : (
+                          // Fallback to original quest if no categorized quests
+                          renderQuestCard(
+                            reactionQuest, 
+                            <ThumbsUp className="h-5 w-5 text-green-500" />, 
+                            "Reaction Giver", 
+                            "React to posts that resonate with you or provide valuable insights"
+                          )
                         )}
                       </div>
                     </TabsContent>
@@ -244,11 +372,43 @@ export default function EngagementQuestsPage() {
                      */}
                     <TabsContent value="monthly" className="space-y-4 mt-6">
                       <div className="space-y-4">
-                        {renderQuestCard(
-                          mediaQuest, 
-                          <FileImage className="h-5 w-5 text-purple-500" />, 
-                          "Media Maven", 
-                          "Share engaging media content with your network to boost visibility"
+                        {monthlyQuests.length > 0 ? (
+                          monthlyQuests.map((quest, index) => {
+                            // Select icon based on action type
+                            let icon;
+                            switch(quest.definition?.targetAction) {
+                              case 'comment_on_pulse':
+                                icon = <MessageSquare className="h-5 w-5 text-blue-500" />;
+                                break;
+                              case 'react_to_pulse':
+                                icon = <ThumbsUp className="h-5 w-5 text-green-500" />;
+                                break;
+                              case 'add_media_to_pulse':
+                                icon = <FileImage className="h-5 w-5 text-purple-500" />;
+                                break;
+                              default:
+                                icon = <FileImage className="h-5 w-5 text-purple-500" />;
+                            }
+                            
+                            return (
+                              <div key={`monthly-quest-${quest.id || index}`}>
+                                {renderQuestCard(
+                                  quest,
+                                  icon,
+                                  quest.definition?.title || "Monthly Challenge",
+                                  quest.definition?.description || "Complete this challenge to earn substantial XP"
+                                )}
+                              </div>
+                            );
+                          })
+                        ) : (
+                          // Fallback to original quest if no categorized quests
+                          renderQuestCard(
+                            mediaQuest, 
+                            <FileImage className="h-5 w-5 text-purple-500" />, 
+                            "Media Maven", 
+                            "Share engaging media content with your network to boost visibility"
+                          )
                         )}
                       </div>
                     </TabsContent>
