@@ -1,5 +1,5 @@
 import { useState, FormEvent, useEffect } from "react";
-import EnhancedPageLayout from "@/components/layout/enhanced-page-layout";
+import { EnhancedPageLayout } from "@/components/layout/enhanced-page-layout";
 import { useAuth } from "@/hooks/use-auth";
 import { useCareerCapsule, CareerGoal, GoalType } from "@/hooks/use-career-capsule";
 import { Button } from "@/components/ui/button";
@@ -297,23 +297,25 @@ export default function CareerCapsulePage() {
   return (
     <EnhancedPageLayout 
       title="Career Capsule" 
-      subtitle="Plan your next career moves with AI-powered guidance"
-      showGradientBackground={true}
+      description="Plan your next career moves with AI-powered guidance"
+      actions={
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
+          <Button 
+            onClick={() => setShowCreateDialog(true)}
+            className="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white shadow-lg hover:shadow-xl transition-all duration-300"
+          >
+            Create New Goal
+          </Button>
+        </motion.div>
+      }
     >
       <div className="container py-8">
         <div className="flex justify-between items-center mb-6">
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            <Button 
-              onClick={() => setShowCreateDialog(true)}
-              className="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white shadow-lg hover:shadow-xl transition-all duration-300"
-            >
-              Create New Goal
-            </Button>
-          </motion.div>
+          {/* Additional content can go here if needed */}
         </div>
         
         {isLoading ? (
