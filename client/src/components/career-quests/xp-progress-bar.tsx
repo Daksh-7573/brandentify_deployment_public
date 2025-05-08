@@ -82,10 +82,10 @@ export function XpProgressBar({ balance, monthlyEarned, lifetimeEarned, classNam
         </div>
       </div>
       
+      {/* Apply gradient via Tailwind classes targeting the indicator div */}
       <Progress 
         value={progressPercentage} 
-        className="h-3" 
-        indicatorClassName="bg-gradient-to-r from-yellow-500 to-yellow-300" 
+        className="h-3 [&>div]:bg-gradient-to-r [&>div]:from-yellow-500 [&>div]:to-yellow-300" 
       />
     </div>
   );

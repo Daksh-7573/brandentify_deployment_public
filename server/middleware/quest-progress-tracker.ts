@@ -101,78 +101,80 @@ async function findMatchingQuests(userId: number, targetAction: string): Promise
  * Focuses only on tracking the core engagement quests (comments, reactions, media)
  */
 export const questProgressMiddleware = async (req: Request, res: Response, next: NextFunction) => {
-  // Store the original end method so we can hook into it
-  const originalEnd = res.end;
+  // Get originalEnd before we modify anything
+  const originalResEnd = res.end;
   
-  // Override the end method with properly typed function
-  // Using any to bypass TypeScript's strict typing here
-  const endMethod: any = res.end;
-  res.end = function(chunk?: any, encoding?: any, callback?: () => void) {
-    // Only process on successful responses
+  // Replace res.end with our custom version
+  // @ts-ignore: Ignore TS checking on this method override
+  res.end = function() {
+    // Only track successful responses
     if (res.statusCode >= 200 && res.statusCode < 300) {
-      try {
-        // Extract userId using a more reliable approach
-        const userId = req.user?.id || // First try to get from authenticated user
-                      req.body?.userId || 
-                      parseInt(req.params?.userId as string, 10) || 
-                      parseInt(req.query?.userId as string, 10);
+      // Try to find a user ID from various sources
+      const userId = 
+        req.user?.id || 
+        req.body?.userId || 
+        (req.params?.userId ? parseInt(req.params.userId, 10) : null) || 
+        (req.query?.userId ? parseInt(req.query.userId as string, 10) : null);
+      
+      if (userId) {
+        const path = req.originalUrl || req.url || '';
+        const method = req.method || 'GET';
         
-        if (!userId) {
-          // Skip if no userId found - quietly exit without error
-          return endMethod.call(res, chunk, encoding, callback);
-        }
-        
-        const path = req.originalUrl || req.url || req.path;
-        const method = req.method;
-        
-        // Find matching tracker for this route and method
-        const matchingTracker = questTrackers.find(tracker => 
-          tracker.routePattern.test(path) && tracker.method === method
+        // Find a tracker that matches this request
+        const tracker = questTrackers.find(t => 
+          t.routePattern.test(path) && t.method === method
         );
         
-        if (matchingTracker) {
-          // Process in background to not block response
-          (async () => {
-            try {
-              console.log(`[Quest Tracker] Engagement activity detected: ${matchingTracker.targetAction} by user ${userId}`);
-              
-              // Find matching quests for this action
-              const matchingQuests = await findMatchingQuests(userId, matchingTracker.targetAction);
-              
-              if (matchingQuests.length === 0) {
-                // Skip further processing if no matching quests
-                return;
-              }
-              
-              // Extract progress increment - always 1 for engagement quests
-              const progressIncrement = await matchingTracker.progressExtractor(req);
-              
-              // Update progress for each matching quest
-              for (const quest of matchingQuests) {
-                const newProgress = quest.progress + progressIncrement;
-                console.log(`[Quest Tracker] Updating quest ${quest.id} progress: ${quest.progress} → ${newProgress} (target: ${quest.targetCount})`);
-                
-                try {
-                  await updateQuestProgress(quest.id, userId, newProgress);
-                } catch (updateError) {
-                  console.error(`[Quest Tracker] Error updating quest ${quest.id}:`, updateError);
-                  // Continue with other quests even if one fails
-                }
-              }
-            } catch (trackingError) {
-              console.error('[Quest Tracker] Error processing quest activity:', trackingError);
-            }
-          })();
+        if (tracker) {
+          // Use setTimeout to process asynchronously
+          setTimeout(() => {
+            // This runs after the response is sent
+            processQuestProgress(userId, tracker, req).catch(err => {
+              console.error('[Quest Tracker] Error:', err);
+            });
+          }, 10);
         }
-      } catch (error) {
-        console.error('[Quest Tracker] Error in quest tracking middleware:', error);
-        // Continue normal response flow even if tracking fails
       }
     }
     
-    // Call the original end function with the provided arguments
-    return originalEnd.call(res, chunk, encoding, callback);
+    // Call the original method with the original context and arguments
+    // @ts-ignore: Allow using arguments
+    return originalResEnd.apply(res, arguments);
   };
   
   next();
 };
+
+/**
+ * Helper function to process quest progress asynchronously
+ * Extracted to separate function to keep the middleware clean
+ */
+async function processQuestProgress(userId: number, tracker: QuestTracker, req: Request): Promise<void> {
+  try {
+    console.log(`[Quest Tracker] Activity detected: ${tracker.targetAction} by user ${userId}`);
+    
+    // Find matching quests
+    const matchingQuests = await findMatchingQuests(userId, tracker.targetAction);
+    
+    if (matchingQuests.length === 0) {
+      return; // No matching quests, nothing to do
+    }
+    
+    // Get progress increment
+    const progressIncrement = await tracker.progressExtractor(req);
+    
+    // Update each matching quest
+    for (const quest of matchingQuests) {
+      const newProgress = quest.progress + progressIncrement;
+      console.log(`[Quest Tracker] Updating quest ${quest.id}: ${quest.progress} → ${newProgress} (target: ${quest.targetCount})`);
+      
+      try {
+        await updateQuestProgress(quest.id, userId, newProgress);
+      } catch (error) {
+        console.error(`[Quest Tracker] Failed to update quest ${quest.id}:`, error);
+      }
+    }
+  } catch (error) {
+    console.error('[Quest Tracker] Error processing quest activity:', error);
+  }
+}
