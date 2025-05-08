@@ -244,17 +244,16 @@ function App() {
             </div>
           </div>
         }>
-          {/* Allow standard layouts with enhanced effects */}
-          <SpatialMainLayout enableSpatialUI={false}>
-            {/* Add Enhanced Background for Vision Pro effects on standard pages */}
-            <div className="enhanced-background-container relative min-h-screen overflow-hidden">
-              {/* Add enhanced Vision Pro-inspired background with dramatic lighting effects */}
-              <EnhancedBackground variant="immersive" />
+          {/* Use regular layout with Vision Pro styling - no spatial UI */}
+          <div className="vision-enhanced-layout relative min-h-screen overflow-hidden">
+            {/* Add enhanced Vision Pro-inspired background with dramatic lighting effects */}
+            <EnhancedBackground variant="immersive" />
+            <div className="relative z-10">
               <Router />
               <GlobalMuskButton />
               <Toaster />
             </div>
-          </SpatialMainLayout>
+          </div>
         </Suspense>
       </AuthProvider>
     </QueryClientProvider>
