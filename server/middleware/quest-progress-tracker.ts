@@ -26,6 +26,9 @@ interface QuestTracker {
   routePattern: RegExp;
   method: string;
   progressExtractor: (req: Request) => Promise<number>;
+  
+  // Added for debugging
+  routeName: string;
 }
 
 // List of trackers for different engagement activities
@@ -33,41 +36,46 @@ const questTrackers: QuestTracker[] = [
   // Comment creation tracker
   {
     targetAction: 'comment_on_pulse',
-    routePattern: /^\/api\/comments$/,
+    routePattern: /^\/api\/comments(?:\/.*)?$/,
     method: 'POST',
-    progressExtractor: async (req: Request) => 1 // Increment by 1 for each comment
+    progressExtractor: async (req: Request) => 1, // Increment by 1 for each comment
+    routeName: 'comments'
   },
   
   // Reaction tracker
   {
     targetAction: 'react_to_pulse',
-    routePattern: /^\/api\/reactions$/,
+    routePattern: /^\/api\/reactions(?:\/.*)?$/,
     method: 'POST',
-    progressExtractor: async (req: Request) => 1 // Increment by 1 for each reaction
+    progressExtractor: async (req: Request) => 1, // Increment by 1 for each reaction
+    routeName: 'reactions'
   },
   
   // Media upload tracker
   {
     targetAction: 'add_media_to_pulse',
-    routePattern: /^\/api\/media$/,
+    routePattern: /^\/api\/media(?:\/.*)?$/,
     method: 'POST',
-    progressExtractor: async (req: Request) => 1 // Increment by 1 for each media upload
+    progressExtractor: async (req: Request) => 1, // Increment by 1 for each media upload
+    routeName: 'media'
   },
   
   // Pulse creation tracker
   {
     targetAction: 'create_pulse',
-    routePattern: /^\/api\/pulses$/,
+    routePattern: /^\/api\/pulses(?:\/.*)?$/,
     method: 'POST',
-    progressExtractor: async (req: Request) => 1 // Increment by 1 for each post
+    progressExtractor: async (req: Request) => 1, // Increment by 1 for each post
+    routeName: 'pulses'
   },
   
   // Profile sharing tracker
   {
     targetAction: 'share_profile',
-    routePattern: /^\/api\/shares$/,
+    routePattern: /^\/api\/shares(?:\/.*)?$/,
     method: 'POST',
-    progressExtractor: async (req: Request) => 1 // Increment by 1 for each share
+    progressExtractor: async (req: Request) => 1, // Increment by 1 for each share
+    routeName: 'shares'
   }
 ];
 
