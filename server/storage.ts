@@ -6563,41 +6563,23 @@ export class MemStorage implements IStorage {
     // Get or create user XP record
     let userXp = await this.getUserXp(userId);
     
-    // Check if we need to reset month counters
+    // Simplified logic with no monthly reset functionality
     const now = new Date();
-    const currentMonth = now.getMonth();
-    const currentYear = now.getFullYear();
     
     if (userXp) {
-      // Check if we need to reset monthly XP (different month)
-      if (userXp.lastResetAt) {
-        const lastResetMonth = userXp.lastResetAt.getMonth();
-        const lastResetYear = userXp.lastResetAt.getFullYear();
-        
-        if (lastResetMonth !== currentMonth || lastResetYear !== currentYear) {
-          userXp = await this.updateUserXp(userXp.id, {
-            currentMonthEarned: 0,
-            lastResetAt: now
-          });
-        }
-      }
-      
-      // Update existing record
+      // Update existing record (simplified)
       userXp = await this.updateUserXp(userXp.id, {
         balance: userXp.balance + amount,
         lifetimeEarned: userXp.lifetimeEarned + amount,
-        currentMonthEarned: userXp.currentMonthEarned + amount,
         lastEarnedAt: now
       });
     } else {
-      // Create new record
+      // Create new record (simplified)
       userXp = await this.createUserXp({
         userId,
         balance: amount,
         lifetimeEarned: amount,
-        currentMonthEarned: amount,
-        lastEarnedAt: now,
-        lastResetAt: now
+        lastEarnedAt: now
       });
     }
     
@@ -6613,15 +6595,7 @@ export class MemStorage implements IStorage {
     return { userXp, transaction };
   }
 
-  async resetMonthlyXp(userId: number): Promise<UserXp | undefined> {
-    const userXp = await this.getUserXp(userId);
-    if (!userXp) return undefined;
-    
-    return this.updateUserXp(userXp.id, {
-      currentMonthEarned: 0,
-      lastResetAt: new Date()
-    });
-  }
+  // Monthly XP reset functionality has been removed per simplification requirements
 
   // Helper function to generate transaction descriptions
   private getXpTransactionDescription(source: string, amount: number, sourceId?: number): string {
