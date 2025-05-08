@@ -37,7 +37,6 @@ import MuskTestingPage from "@/pages/musk-testing";
 import ManageServicesPage from "@/pages/manage-services";
 import TestNowboardPage from "@/pages/test-nowboard";
 import ScreenTestingPage from "@/pages/screen-testing";
-import SpatialDemoPage from "@/pages/spatial-demo";
 // Lazy load the SharedCardPage to improve performance and show loader immediately
 import { lazy, Suspense } from "react";
 const SharedCardPage = lazy(() => import("@/pages/shared-card"));
@@ -177,10 +176,6 @@ function Router() {
       {/* Screen Testing Page */}
       <Route path="/screen-testing">
         <ProtectedRoute path="/screen-testing" component={ScreenTestingPage} />
-      </Route>
-      {/* Spatial UI Demo */}
-      <Route path="/spatial-demo">
-        <ProtectedRoute path="/spatial-demo" component={SpatialDemoPage} />
       </Route>
       {/* Unified Profile Page with comprehensive data fetching */}
       <Route path="/unified-profile">
