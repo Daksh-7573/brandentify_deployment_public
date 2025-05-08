@@ -4,6 +4,29 @@
  * This service handles updating quest progress and manages
  * the logic for determining when quests are completed.
  * 
+ * QUEST TYPE CATEGORIZATION:
+ * Musk differentiates quests into Daily, Weekly, and Monthly categories based on the following:
+ * 
+ * 1. Database Design: 
+ *    While there's no explicit "duration" field in the database schema, Musk uses
+ *    a combination of these fields to categorize quests:
+ *    - quest_definitions.type: Primary categorization field (networking, pulse_creation, etc.)
+ *    - quest_definitions.target_count: Effort required to complete
+ *    - quest_definitions.xp_reward: Reward size indicates quest importance
+ * 
+ * 2. Quest Type Patterns:
+ *    - Daily Quests: Usually have type 'networking' with low target_count (1-2)
+ *      Example: "Meaningful Commenter" - comment_on_pulse with target_count 1
+ *    - Weekly Quests: Often have type 'networking' with medium target_count (3-5)
+ *      Example: "Reaction Giver" - react_to_pulse with target_count 3
+ *    - Monthly Quests: Usually have type 'pulse_creation' with either high target_count
+ *      or require more effort like media creation
+ *      Example: "Media Maven" - add_media_to_pulse with target_count 1 (but high effort)
+ * 
+ * 3. Assignment Logic:
+ *    Weekly quests are specifically assigned by the rotation script in update-weekly-quests.ts
+ *    that selects 3 quests based on the current week number.
+ * 
  * OPTIMIZED VERSION:
  * - Combined database queries where possible
  * - Simplified XP tracking logic

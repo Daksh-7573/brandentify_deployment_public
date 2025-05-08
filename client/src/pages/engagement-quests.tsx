@@ -199,6 +199,13 @@ export default function EngagementQuestsPage() {
                       <TabsTrigger value="monthly">Monthly Challenges</TabsTrigger>
                     </TabsList>
                     
+                    {/* 
+                      Daily Quests: Simple, quick-to-complete tasks with smaller XP rewards
+                      Musk differentiates these based on:
+                      - Lower complexity and effort required
+                      - Usually targeting basic engagement like comments
+                      - Typically 10-15 XP rewards
+                    */}
                     <TabsContent value="daily" className="space-y-4 mt-6">
                       <div className="space-y-4">
                         {renderQuestCard(
@@ -210,6 +217,13 @@ export default function EngagementQuestsPage() {
                       </div>
                     </TabsContent>
                     
+                    {/* 
+                      Weekly Quests: Medium-effort tasks with moderate XP rewards
+                      Musk differentiates these based on:
+                      - Medium complexity requiring consistent engagement
+                      - Multiple interactions required (usually 3+)
+                      - Typically 20-30 XP rewards
+                     */}
                     <TabsContent value="weekly" className="space-y-4 mt-6">
                       <div className="space-y-4">
                         {renderQuestCard(
@@ -221,6 +235,13 @@ export default function EngagementQuestsPage() {
                       </div>
                     </TabsContent>
                     
+                    {/* 
+                      Monthly Challenges: High-effort tasks with substantial XP rewards
+                      Musk differentiates these based on:
+                      - Higher complexity, requires more effort or skill
+                      - Often includes media creation or original content
+                      - Typically 40-50 XP rewards and may include badges
+                     */}
                     <TabsContent value="monthly" className="space-y-4 mt-6">
                       <div className="space-y-4">
                         {renderQuestCard(

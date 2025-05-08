@@ -4,6 +4,24 @@
  * This middleware automatically tracks user progress for engagement quests
  * by intercepting relevant API calls and updating quest progress.
  * 
+ * QUEST CATEGORIZATION:
+ * Musk differentiates between Daily, Weekly, and Monthly quests using a combination of factors:
+ * 
+ * 1. Quest Type - Based on the "type" field in quest_definitions table
+ *    - Daily quests: Usually simple engagement actions (commenting)
+ *    - Weekly quests: Medium-effort engagement (multiple reactions)
+ *    - Monthly quests: Higher-effort content creation (media uploads, original posts)
+ * 
+ * 2. Target Count - Number of actions required to complete the quest
+ *    - Daily: Usually 1-2 actions (e.g., leave 1 comment)
+ *    - Weekly: Usually 3-5 actions (e.g., react to 3 posts)
+ *    - Monthly: Usually 5+ actions or significant effort (e.g., upload media)
+ * 
+ * 3. XP Reward - Amount of XP rewarded upon completion
+ *    - Daily: 10-15 XP
+ *    - Weekly: 20-30 XP
+ *    - Monthly: 40-50 XP
+ * 
  * OPTIMIZED VERSION:
  * - Reduced unnecessary debug logging
  * - Simplified quest tracking logic
