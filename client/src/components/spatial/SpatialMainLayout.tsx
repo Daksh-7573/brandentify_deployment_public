@@ -70,14 +70,26 @@ export const SpatialMainLayout: React.FC<SpatialMainLayoutProps> = ({
     '/spatial-brand-quests',
   ];
   
-  // Combined list of all routes to exclude
-  const excludedRoutes = [...nonSpatialRoutes, ...spatialSpecificRoutes];
-  
-  // Check if the current route should be excluded from any spatial effects
-  const shouldExclude = excludedRoutes.some(route => location.startsWith(route));
+  // Routes that should be excluded from any spatial effects
+  const excludedRoutes = [...nonSpatialRoutes];
   
   // Check if we're on a dedicated spatial route which implements its own UI
   const isDedicatedSpatialRoute = spatialSpecificRoutes.some(route => location.startsWith(route));
+  
+  // Check if we're specifically on a test page, which should always have spatial UI
+  const isTestPage = location.includes('/spatial-test') || location.includes('/test/spatial') || location.includes('/ui/test');
+  
+  // Check if the current route should be excluded from any spatial effects (excluding dedicated spatial routes)
+  const shouldExclude = excludedRoutes.some(route => location.startsWith(route));
+  
+  // If we're on a test page, always use spatial UI
+  if (isTestPage) {
+    return (
+      <SpatialPortalLayout title="Spatial UI Test">
+        {children}
+      </SpatialPortalLayout>
+    );
+  }
   
   // If we're on a dedicated spatial route, or enableSpatialUI is true and we're not on an excluded route
   if ((enableSpatialUI && !shouldExclude) || isDedicatedSpatialRoute) {
