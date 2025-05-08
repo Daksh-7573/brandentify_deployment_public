@@ -896,12 +896,12 @@ export const questTypeEnum = pgEnum("quest_type", [
   "visibility"
 ]);
 
-// Quest status enum
+// Quest status enum (simplified)
 export const questStatusEnum = pgEnum("quest_status", [
   "active",
   "completed",
-  "dismissed",
   "expired"
+  // Removed "dismissed" status (quest dismissal functionality removed)
 ]);
 
 // Mentorship request status enum
@@ -923,26 +923,27 @@ export const badgeTypeEnum = pgEnum("badge_type", [
   "visibility_boosted"
 ]);
 
-// Quests definition model - stores templates for quests
+// Quests definition model - stores templates for quests (simplified version)
 export const questDefinitions = pgTable("quest_definitions", {
   id: serial("id").primaryKey(),
   title: text("title").notNull(),
   description: text("description").notNull(),
   type: questTypeEnum("type").notNull(),
   targetCount: integer("target_count").notNull().default(1), // Number of actions needed to complete
-  targetAction: text("target_action").notNull(), // Specific action required
+  targetAction: text("target_action").notNull(), // Specific action required for engagement quests
   xpReward: integer("xp_reward").notNull().default(50),
   badgeReward: badgeTypeEnum("badge_reward"),
-  requiredProfileCompletion: integer("required_profile_completion").default(0), // Minimum profile completion % to get this quest
-  requiredCareerStage: text("required_career_stage"), // Only show for certain career stages
-  requiredIndustry: text("required_industry"), // Only show for specific industries
   muskTip: text("musk_tip"), // Tip from Musk about this quest
   isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow()
+  // Removed unused fields:
+  // - requiredProfileCompletion
+  // - requiredCareerStage
+  // - requiredIndustry
 });
 
-// User quests model - tracks active and completed quests for each user
+// User quests model - tracks active and completed quests for each user (simplified version)
 export const userQuests = pgTable("user_quests", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id).notNull(),
@@ -953,23 +954,25 @@ export const userQuests = pgTable("user_quests", {
   completedAt: timestamp("completed_at"), // When the quest was completed
   weekNumber: integer("week_number").notNull(), // Week of the year (1-52)
   year: integer("year").notNull(), // Year of the quest
-  dismissedReason: text("dismissed_reason"), // If dismissed, why
   xpEarned: integer("xp_earned"), // Actual XP earned upon completion
   badgeEarned: badgeTypeEnum("badge_earned"), // Badge earned upon completion
   muskResponse: text("musk_response"), // Custom response from Musk on completion
+  // Removed field:
+  // - dismissedReason (quest dismissal functionality removed)
 });
 
-// User XP model - tracks user XP balance and history
+// User XP model - tracks user XP balance and history (simplified version)
 export const userXp = pgTable("user_xp", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id).notNull(),
   balance: integer("balance").notNull().default(0), // Current XP balance
   lifetimeEarned: integer("lifetime_earned").notNull().default(0), // Total XP earned all-time
-  currentMonthEarned: integer("current_month_earned").notNull().default(0), // XP earned this month
   lastEarnedAt: timestamp("last_earned_at"), // Last time XP was earned
-  lastResetAt: timestamp("last_reset_at"), // Last time monthly XP was reset
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
+  // Removed unused fields:
+  // - currentMonthEarned (monthly XP tracking removed)
+  // - lastResetAt (monthly XP resets removed)
 });
 
 // User badges model - tracks badges earned by users
