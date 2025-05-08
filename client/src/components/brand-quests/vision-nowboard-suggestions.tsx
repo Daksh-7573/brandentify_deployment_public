@@ -105,13 +105,13 @@ export function VisionNowboardSuggestions({ userId, className, questType }: Visi
   const getIconForType = (type: SuggestionType) => {
     switch (type) {
       case 'pulse':
-        return <Zap className="h-5 w-5 text-blue-500" />;
+        return <Zap className="h-5 w-5 text-[#4F8CFF]" />;
       case 'comment':
-        return <MessageSquare className="h-5 w-5 text-purple-500" />;
+        return <MessageSquare className="h-5 w-5 text-[#3ED7C2]" />;
       case 'reaction':
-        return <ThumbsUp className="h-5 w-5 text-green-500" />;
+        return <ThumbsUp className="h-5 w-5 text-[#4ADE80]" />;
       default:
-        return <Zap className="h-5 w-5 text-blue-500" />;
+        return <Zap className="h-5 w-5 text-[#4F8CFF]" />;
     }
   };
     

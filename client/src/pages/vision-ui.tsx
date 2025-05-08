@@ -16,22 +16,23 @@ import { Progress } from '@/components/ui/progress';
 export default function VisionUIPage() {
   return (
     <div 
-      className="min-h-screen w-full bg-gradient-to-br from-gray-900 to-gray-950" 
+      className="min-h-screen w-full" 
       style={{ 
-        backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(50, 50, 70, 0.3) 0%, rgba(20, 20, 40, 0.1) 100%)'
+        backgroundColor: '#1C1C1E',
+        backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(60, 60, 80, 0.2) 0%, rgba(28, 28, 30, 0.05) 100%)'
       }}
     >
       {/* Vision Pro-style header */}
-      <header className="py-6 px-8 backdrop-blur-md bg-black/10 border-b border-white/10">
+      <header className="py-6 px-8 backdrop-blur-md bg-[#1C1C1E]/80 border-b border-[#3A3A3C]">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-semibold text-white">Vision UI Demo</h1>
+          <h1 className="text-2xl font-semibold text-[#E5E5E7]">Vision UI Demo</h1>
           <div className="flex items-center gap-4">
-            <Button variant="ghost" className="text-white/70 hover:text-white">
+            <Button variant="ghost" className="text-[#A1A1AA] hover:text-[#E5E5E7]">
               <BellRing className="h-5 w-5" />
             </Button>
-            <Avatar className="h-9 w-9 border border-white/20">
-              <AvatarFallback className="bg-primary/20">
-                <User className="h-5 w-5 text-primary" />
+            <Avatar className="h-9 w-9 border border-[#3A3A3C]">
+              <AvatarFallback className="bg-[#4F8CFF]/10">
+                <User className="h-5 w-5 text-[#4F8CFF]" />
               </AvatarFallback>
             </Avatar>
           </div>
@@ -44,24 +45,24 @@ export default function VisionUIPage() {
         <VisionCard className="mb-8" variant="dark" size="lg">
           <VisionCardContent className="flex flex-col md:flex-row gap-6 items-center">
             <div className="flex-1">
-              <h1 className="text-3xl md:text-4xl font-bold mb-4 text-white">Vision Pro Inspired UI</h1>
-              <p className="text-lg text-white/80 mb-6">
+              <h1 className="text-3xl md:text-4xl font-bold mb-4 text-[#E5E5E7]">Vision Pro Inspired UI</h1>
+              <p className="text-lg text-[#A1A1AA] mb-6">
                 Experience the future of design with our glassmorphic interface, 
                 inspired by Apple's Vision Pro aesthetic.
               </p>
               <div className="flex flex-wrap gap-3">
-                <Button className="bg-white/10 border border-white/20 text-white hover:bg-white/20">
+                <Button className="bg-[#4F8CFF]/10 border border-[#4F8CFF]/20 text-[#E5E5E7] hover:bg-[#4F8CFF]/20">
                   Explore Components
                 </Button>
-                <Button variant="outline" className="border-white/20 text-white/90 hover:bg-white/10">
+                <Button variant="outline" className="border-[#3A3A3C] text-[#A1A1AA] hover:bg-white/5 hover:text-[#E5E5E7] hover:border-[#3A3A3C]">
                   Learn More <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </div>
             </div>
-            <div className="flex-shrink-0 w-full md:w-1/3 aspect-video rounded-xl bg-black/40 border border-white/10 flex items-center justify-center">
+            <div className="flex-shrink-0 w-full md:w-1/3 aspect-video rounded-xl bg-white/5 border border-[#3A3A3C] flex items-center justify-center">
               <div className="text-center">
-                <Lightbulb className="h-12 w-12 mx-auto mb-2 text-primary/80" />
-                <p className="text-white/70">Preview Area</p>
+                <Lightbulb className="h-12 w-12 mx-auto mb-2 text-[#4F8CFF]/80" />
+                <p className="text-[#A1A1AA]">Preview Area</p>
               </div>
             </div>
           </VisionCardContent>
@@ -73,27 +74,27 @@ export default function VisionUIPage() {
           <VisionCard variant="dark" hover="subtle">
             <VisionCardHeader>
               <div className="flex items-center gap-3 mb-3">
-                <div className="h-10 w-10 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
-                  <FileText className="h-5 w-5 text-primary/80" />
+                <div className="h-10 w-10 rounded-full bg-[#4F8CFF]/10 border border-[#4F8CFF]/20 flex items-center justify-center">
+                  <FileText className="h-5 w-5 text-[#4F8CFF]" />
                 </div>
                 <VisionCardTitle>Documents</VisionCardTitle>
               </div>
-              <VisionCardDescription>
+              <VisionCardDescription className="text-[#A1A1AA]">
                 Manage and organize your professional documents
               </VisionCardDescription>
             </VisionCardHeader>
             <VisionCardContent>
               <div className="space-y-3">
                 {[1, 2, 3].map(i => (
-                  <div key={i} className="p-3 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 transition-all">
-                    <p className="text-sm text-white/90 font-medium">Document {i}</p>
-                    <p className="text-xs text-white/60">Last edited 2 days ago</p>
+                  <div key={i} className="p-3 rounded-lg border border-[#3A3A3C] bg-white/5 hover:bg-white/8 transition-all">
+                    <p className="text-sm text-[#E5E5E7] font-medium">Document {i}</p>
+                    <p className="text-xs text-[#A1A1AA]">Last edited 2 days ago</p>
                   </div>
                 ))}
               </div>
             </VisionCardContent>
             <VisionCardFooter>
-              <Button variant="outline" size="sm" className="bg-white/5 border-white/20 text-white/90 hover:bg-white/10">
+              <Button variant="outline" size="sm" className="bg-white/5 border-[#3A3A3C] text-[#E5E5E7] hover:bg-[#4F8CFF]/10 hover:border-[#4F8CFF]/20 hover:text-[#E5E5E7]">
                 View All <ArrowRight className="ml-1 h-3 w-3" />
               </Button>
             </VisionCardFooter>
@@ -103,12 +104,12 @@ export default function VisionUIPage() {
           <VisionCard variant="dark" hover="subtle">
             <VisionCardHeader>
               <div className="flex items-center gap-3 mb-3">
-                <div className="h-10 w-10 rounded-full bg-purple-900/30 border border-purple-500/20 flex items-center justify-center">
-                  <Award className="h-5 w-5 text-purple-400" />
+                <div className="h-10 w-10 rounded-full bg-[#3ED7C2]/10 border border-[#3ED7C2]/20 flex items-center justify-center">
+                  <Award className="h-5 w-5 text-[#3ED7C2]" />
                 </div>
                 <VisionCardTitle>Achievements</VisionCardTitle>
               </div>
-              <VisionCardDescription>
+              <VisionCardDescription className="text-[#A1A1AA]">
                 Track your progress and recent accomplishments
               </VisionCardDescription>
             </VisionCardHeader>
@@ -116,40 +117,40 @@ export default function VisionUIPage() {
               <div className="space-y-4">
                 <div className="space-y-1">
                   <div className="flex justify-between items-center text-xs">
-                    <span className="text-white/50">Weekly Progress</span>
-                    <span className="font-medium text-white/90">65%</span>
+                    <span className="text-[#A1A1AA]">Weekly Progress</span>
+                    <span className="font-medium text-[#E5E5E7]">65%</span>
                   </div>
                   <Progress 
                     value={65}
-                    className="h-1.5 bg-white/5 [&>div]:bg-purple-500/80"
+                    className="h-1.5 bg-white/5 [&>div]:bg-[#4F8CFF]"
                   />
                 </div>
                 
                 <div className="space-y-1">
                   <div className="flex justify-between items-center text-xs">
-                    <span className="text-white/50">Monthly Goals</span>
-                    <span className="font-medium text-white/90">42%</span>
+                    <span className="text-[#A1A1AA]">Monthly Goals</span>
+                    <span className="font-medium text-[#E5E5E7]">42%</span>
                   </div>
                   <Progress 
                     value={42}
-                    className="h-1.5 bg-white/5 [&>div]:bg-blue-500/80"
+                    className="h-1.5 bg-white/5 [&>div]:bg-[#3ED7C2]"
                   />
                 </div>
                 
                 <div className="space-y-1">
                   <div className="flex justify-between items-center text-xs">
-                    <span className="text-white/50">Annual Target</span>
-                    <span className="font-medium text-white/90">78%</span>
+                    <span className="text-[#A1A1AA]">Annual Target</span>
+                    <span className="font-medium text-[#E5E5E7]">78%</span>
                   </div>
                   <Progress 
                     value={78}
-                    className="h-1.5 bg-white/5 [&>div]:bg-green-500/80"
+                    className="h-1.5 bg-white/5 [&>div]:bg-[#4ADE80]"
                   />
                 </div>
               </div>
             </VisionCardContent>
             <VisionCardFooter>
-              <Button variant="outline" size="sm" className="bg-white/5 border-white/20 text-white/90 hover:bg-white/10">
+              <Button variant="outline" size="sm" className="bg-white/5 border-[#3A3A3C] text-[#E5E5E7] hover:bg-[#3ED7C2]/10 hover:border-[#3ED7C2]/20 hover:text-[#E5E5E7]">
                 View Details <ArrowRight className="ml-1 h-3 w-3" />
               </Button>
             </VisionCardFooter>
@@ -159,40 +160,40 @@ export default function VisionUIPage() {
           <VisionCard variant="dark" hover="subtle">
             <VisionCardHeader>
               <div className="flex items-center gap-3 mb-3">
-                <div className="h-10 w-10 rounded-full bg-blue-900/30 border border-blue-500/20 flex items-center justify-center">
-                  <ShieldCheck className="h-5 w-5 text-blue-400" />
+                <div className="h-10 w-10 rounded-full bg-[#4F8CFF]/10 border border-[#4F8CFF]/20 flex items-center justify-center">
+                  <ShieldCheck className="h-5 w-5 text-[#4F8CFF]" />
                 </div>
                 <VisionCardTitle>Security Status</VisionCardTitle>
               </div>
-              <VisionCardDescription>
+              <VisionCardDescription className="text-[#A1A1AA]">
                 Account security and verification status
               </VisionCardDescription>
             </VisionCardHeader>
             <VisionCardContent>
               <div className="space-y-3">
-                <div className="flex items-center gap-3 p-3 rounded-lg border border-white/10 bg-white/5">
-                  <div className="h-8 w-8 rounded-full bg-green-950/50 flex items-center justify-center border border-green-500/20">
-                    <ShieldCheck className="h-4 w-4 text-green-400" />
+                <div className="flex items-center gap-3 p-3 rounded-lg border border-[#3A3A3C] bg-white/5">
+                  <div className="h-8 w-8 rounded-full bg-[#4ADE80]/10 flex items-center justify-center border border-[#4ADE80]/20">
+                    <ShieldCheck className="h-4 w-4 text-[#4ADE80]" />
                   </div>
                   <div>
-                    <p className="text-sm text-white/90 font-medium">Account Secure</p>
-                    <p className="text-xs text-white/60">Last verified 3 days ago</p>
+                    <p className="text-sm text-[#E5E5E7] font-medium">Account Secure</p>
+                    <p className="text-xs text-[#A1A1AA]">Last verified 3 days ago</p>
                   </div>
                 </div>
                 
-                <div className="flex items-center gap-3 p-3 rounded-lg border border-white/10 bg-white/5">
-                  <div className="h-8 w-8 rounded-full bg-amber-950/50 flex items-center justify-center border border-amber-500/20">
-                    <BellRing className="h-4 w-4 text-amber-400" />
+                <div className="flex items-center gap-3 p-3 rounded-lg border border-[#3A3A3C] bg-white/5">
+                  <div className="h-8 w-8 rounded-full bg-[#FCD34D]/10 flex items-center justify-center border border-[#FCD34D]/20">
+                    <BellRing className="h-4 w-4 text-[#FCD34D]" />
                   </div>
                   <div>
-                    <p className="text-sm text-white/90 font-medium">Notifications Active</p>
-                    <p className="text-xs text-white/60">Security alerts enabled</p>
+                    <p className="text-sm text-[#E5E5E7] font-medium">Notifications Active</p>
+                    <p className="text-xs text-[#A1A1AA]">Security alerts enabled</p>
                   </div>
                 </div>
               </div>
             </VisionCardContent>
             <VisionCardFooter>
-              <Button variant="outline" size="sm" className="bg-white/5 border-white/20 text-white/90 hover:bg-white/10">
+              <Button variant="outline" size="sm" className="bg-white/5 border-[#3A3A3C] text-[#E5E5E7] hover:bg-[#4F8CFF]/10 hover:border-[#4F8CFF]/20 hover:text-[#E5E5E7]">
                 Security Settings <ArrowRight className="ml-1 h-3 w-3" />
               </Button>
             </VisionCardFooter>
@@ -205,13 +206,13 @@ export default function VisionUIPage() {
             <VisionCard variant="dark" size="lg" hover="subtle">
               <VisionCardHeader>
                 <VisionCardTitle>Activity Dashboard</VisionCardTitle>
-                <VisionCardDescription>
+                <VisionCardDescription className="text-[#A1A1AA]">
                   Your professional activity and engagement metrics
                 </VisionCardDescription>
               </VisionCardHeader>
               <VisionCardContent>
-                <div className="h-64 rounded-lg border border-white/10 bg-white/5 flex items-center justify-center">
-                  <p className="text-white/50">Activity Graph Placeholder</p>
+                <div className="h-64 rounded-lg border border-[#3A3A3C] bg-white/5 flex items-center justify-center">
+                  <p className="text-[#A1A1AA]">Activity Graph Placeholder</p>
                 </div>
               </VisionCardContent>
             </VisionCard>

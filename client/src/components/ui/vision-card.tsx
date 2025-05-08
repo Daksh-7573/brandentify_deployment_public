@@ -7,10 +7,13 @@ const visionCardVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-white/20 border-white/10",
-        dark: "bg-gray-900/30 border-gray-800/20 text-white",
-        light: "bg-white/30 border-white/20",
-        accent: "bg-primary/10 border-primary/20",
+        default: "bg-white/5 border-[#3A3A3C] text-[#E5E5E7]",
+        dark: "bg-[#1C1C1E]/90 border-[#3A3A3C] text-[#E5E5E7]",
+        glass: "bg-white/5 border-[#3A3A3C] text-[#E5E5E7]",
+        accent: "bg-[#4F8CFF]/10 border-[#4F8CFF]/20 text-[#E5E5E7]",
+        success: "bg-[#4ADE80]/10 border-[#4ADE80]/20 text-[#E5E5E7]",
+        warning: "bg-[#FCD34D]/10 border-[#FCD34D]/20 text-[#E5E5E7]",
+        error: "bg-[#EF4444]/10 border-[#EF4444]/20 text-[#E5E5E7]",
       },
       size: {
         default: "p-6",
@@ -18,8 +21,9 @@ const visionCardVariants = cva(
         lg: "p-8",
       },
       hover: {
-        default: "hover:shadow-md hover:bg-white/30 hover:border-white/20",
-        subtle: "hover:shadow-sm hover:bg-white/25 hover:border-white/15",
+        default: "hover:shadow-md hover:bg-white/8 hover:border-white/10",
+        subtle: "hover:shadow-sm hover:bg-white/8 hover:border-white/10",
+        accent: "hover:shadow-sm hover:bg-[#4F8CFF]/15 hover:border-[#4F8CFF]/30",
         none: "",
       }
     },
