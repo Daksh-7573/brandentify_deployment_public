@@ -114,12 +114,13 @@ export function useMentorship(userId: number, mentorId: number) {
     mutationFn: async () => {
       setIsSubmitting(true);
       try {
-        const response = await apiRequest('/api/mentorship/decline', {
-          method: 'POST',
-          body: JSON.stringify({
+        const response = await apiRequest({
+          url: '/api/mentorship/decline',
+          method: 'POST', 
+          data: {
             menteeId: userId,
             mentorId: mentorId
-          })
+          }
         });
         return response;
       } finally {
@@ -150,12 +151,13 @@ export function useMentorship(userId: number, mentorId: number) {
     mutationFn: async () => {
       setIsSubmitting(true);
       try {
-        const response = await apiRequest('/api/mentorship/cancel', {
-          method: 'POST',
-          body: JSON.stringify({
+        const response = await apiRequest({
+          url: '/api/mentorship/cancel',
+          method: 'POST', 
+          data: {
             menteeId: userId,
             mentorId: mentorId
-          })
+          }
         });
         return response;
       } finally {
@@ -186,12 +188,13 @@ export function useMentorship(userId: number, mentorId: number) {
     mutationFn: async () => {
       setIsSubmitting(true);
       try {
-        const response = await apiRequest('/api/mentorship/renew', {
-          method: 'POST',
-          body: JSON.stringify({
+        const response = await apiRequest({
+          url: '/api/mentorship/renew',
+          method: 'POST', 
+          data: {
             menteeId: userId,
             mentorId: mentorId
-          })
+          }
         });
         return response;
       } finally {
