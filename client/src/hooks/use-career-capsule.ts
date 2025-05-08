@@ -95,9 +95,13 @@ export const useCareerCapsule = (userId: number | string) => {
   const useCreateGoal = () => {
     return useMutation({
       mutationFn: (goalData: Omit<CareerGoal, 'id' | 'userId' | 'createdAt' | 'updatedAt' | 'progress'>) => {
-        return apiRequest('POST', `/api/users/${userId}/career-capsule`, {
-          ...goalData, 
-          userId
+        return apiRequest({
+          method: 'POST', 
+          url: `/api/users/${userId}/career-capsule`, 
+          data: {
+            ...goalData, 
+            userId
+          }
         });
       },
       onSuccess: () => {

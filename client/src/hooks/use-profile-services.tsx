@@ -204,7 +204,11 @@ export function useProfileServices() {
 
       console.log('useProfileServices hook - final service data:', service);
       
-      const response = await apiRequest('POST', '/api/profile-services', service);
+      const response = await apiRequest({
+        method: 'POST',
+        url: '/api/profile-services',
+        data: service
+      });
       
       if (!response.ok) {
         const errorText = await response.text();
@@ -262,7 +266,11 @@ export function useProfileServices() {
   const updateServiceMutation = useMutation({
     mutationFn: async ({ id, data }: { id: number, data: Partial<Service> }) => {
       console.log('useProfileServices hook - updating service:', id, data);
-      const response = await apiRequest('PUT', `/api/profile-services/${id}`, data);
+      const response = await apiRequest({
+        method: 'PUT',
+        url: `/api/profile-services/${id}`,
+        data: data
+      });
       return response.json();
     },
     onSuccess: (data) => {
@@ -313,7 +321,10 @@ export function useProfileServices() {
   const deleteServiceMutation = useMutation({
     mutationFn: async (id: number) => {
       console.log('useProfileServices hook - deleting service:', id);
-      const response = await apiRequest('DELETE', `/api/profile-services/${id}?userId=${userId}`);
+      const response = await apiRequest({
+        method: 'DELETE',
+        url: `/api/profile-services/${id}?userId=${userId}`
+      });
       return response.json();
     },
     onSuccess: (data) => {
