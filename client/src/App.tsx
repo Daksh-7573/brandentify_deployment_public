@@ -6,6 +6,7 @@ import { AuthProvider } from "./context/auth-context";
 import { useAuth } from "./hooks/use-auth";
 import { useEffect } from "react";
 import GlobalMuskButton from "@/components/musk/global-musk-button";
+import { SpatialMainLayout } from "@/components/spatial/SpatialMainLayout";
 
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
@@ -37,6 +38,8 @@ import MuskTestingPage from "@/pages/musk-testing";
 import ManageServicesPage from "@/pages/manage-services";
 import TestNowboardPage from "@/pages/test-nowboard";
 import SpatialTestPage from "@/pages/spatial-test";
+import SpatialIndustryPulsePage from "@/pages/spatial-industry-pulse";
+import SpatialCareerCapsulePage from "@/pages/spatial-career-capsule";
 // Lazy load the SharedCardPage to improve performance and show loader immediately
 import { lazy, Suspense } from "react";
 const SharedCardPage = lazy(() => import("@/pages/shared-card"));
@@ -173,8 +176,14 @@ function Router() {
       <Route path="/test-nowboard">
         <ProtectedRoute path="/test-nowboard" component={TestNowboardPage} />
       </Route>
-      {/* Test route for spatial layout - non-protected for easy access */}
+      {/* Spatial UI pages */}
       <Route path="/spatial-test" component={SpatialTestPage} />
+      <Route path="/spatial-industry-pulse">
+        <ProtectedRoute path="/spatial-industry-pulse" component={SpatialIndustryPulsePage} />
+      </Route>
+      <Route path="/spatial-career-capsule">
+        <ProtectedRoute path="/spatial-career-capsule" component={SpatialCareerCapsulePage} />
+      </Route>
       {/* Unified Profile Page with comprehensive data fetching */}
       <Route path="/unified-profile">
         <ProtectedRoute path="/unified-profile" component={UnifiedProfilePage} />
@@ -228,9 +237,11 @@ function App() {
             </div>
           </div>
         }>
-          <Router />
-          <GlobalMuskButton />
-          <Toaster />
+          <SpatialMainLayout>
+            <Router />
+            <GlobalMuskButton />
+            <Toaster />
+          </SpatialMainLayout>
         </Suspense>
       </AuthProvider>
     </QueryClientProvider>

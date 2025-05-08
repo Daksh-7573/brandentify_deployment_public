@@ -1,83 +1,13 @@
-import React, { useState, ReactNode } from 'react';
-import { motion } from 'framer-motion';
+import React, { ReactNode, useState, useRef, useEffect } from 'react';
+import { cn } from '@/lib/utils';
+import { X, ChevronUp, ChevronDown, Maximize2, Minimize2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { motion, useMotionValue } from 'framer-motion';
 
-interface FloatingWindowProps {
-  title: string;
-  children: ReactNode;
-  width?: string;
-  height?: string;
-  initialPosition?: { x: number; y: number; z: number };
-  initialScale?: number;
-  onClose?: () => void;
-}
-
-export const FloatingWindow: React.FC<FloatingWindowProps> = ({
-  title,
-  children,
-  width = '400px',
-  height = 'auto',
-  initialPosition = { x: 0, y: 0, z: 0 },
-  initialScale = 1,
-  onClose,
-}) => {
-  const [position, setPosition] = useState(initialPosition);
-  const [isDragging, setIsDragging] = useState(false);
-
-  return (
-    <motion.div
-      className="absolute"
-      drag
-      dragConstraints={{ left: -500, right: 500, top: -300, bottom: 300 }}
-      dragElastic={0.1}
-      dragMomentum={false}
-      onDragStart={() => setIsDragging(true)}
-      onDragEnd={() => setIsDragging(false)}
-      initial={{ 
-        x: initialPosition.x,
-        y: initialPosition.y,
-        scale: initialScale,
-      }}
-      animate={{ 
-        x: position.x,
-        y: position.y,
-        scale: initialScale,
-        z: position.z 
-      }}
-      whileHover={{ scale: initialScale * 1.02 }}
-      style={{ 
-        width,
-        height,
-        zIndex: isDragging ? 100 : 10,
-      }}
-    >
-      <div 
-        className="flex flex-col rounded-xl overflow-hidden"
-        style={{
-          backdropFilter: 'blur(12px)',
-          backgroundColor: 'rgba(255, 255, 255, 0.1)',
-          border: '1px solid rgba(255, 255, 255, 0.2)',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)'
-        }}
-      >
-        <div className="flex justify-between items-center p-3 bg-black/10 cursor-move">
-          <h3 className="text-white font-medium">{title}</h3>
-          {onClose && (
-            <button 
-              onClick={onClose}
-              className="w-6 h-6 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors"
-            >
-              <span className="text-white">×</span>
-            </button>
-          )}
-        </div>
-        <div className="p-4">
-          {children}
-        </div>
-      </div>
-    </motion.div>
-  );
-};
-
+/**
+ * SpatialLayout - The main container for the 3D spatial UI
+ * Creates a perspective environment for 3D positioning of content
+ */
 interface SpatialLayoutProps {
   children: ReactNode;
   backgroundImage?: string;
@@ -85,50 +15,188 @@ interface SpatialLayoutProps {
 
 export const SpatialLayout: React.FC<SpatialLayoutProps> = ({ 
   children,
-  backgroundImage = 'linear-gradient(to bottom right, #1e293b, #0f172a)'
+  backgroundImage = 'linear-gradient(to bottom, #0f172a, #1e293b)'
 }) => {
   return (
     <div 
-      className="relative w-full h-screen overflow-hidden"
-      style={{
-        perspective: '1000px',
+      className="min-h-screen overflow-hidden relative"
+      style={{ 
+        perspective: '1500px',
         background: backgroundImage
       }}
     >
-      <div className="absolute inset-0 pointer-events-none" 
-        style={{
-          backgroundImage: 'radial-gradient(circle at 50% 50%, rgba(255,255,255,0.04) 0%, transparent 80%)'
-        }}
-      />
-      {children}
+      <div className="w-full h-full min-h-screen relative">
+        {children}
+      </div>
     </div>
   );
 };
 
+/**
+ * FloatingWindow - A draggable, 3D positioned window component with glassmorphism
+ * Used for panels, cards and other UI elements in the spatial layout
+ */
+interface FloatingWindowProps {
+  children: ReactNode;
+  title: string;
+  onClose?: () => void;
+  initialPosition?: { x: number; y: number; z: number };
+  initialScale?: number;
+  width?: string;
+}
+
+export const FloatingWindow: React.FC<FloatingWindowProps> = ({
+  children,
+  title,
+  onClose,
+  initialPosition = { x: 0, y: 0, z: 0 },
+  initialScale = 1,
+  width = '600px',
+}) => {
+  const [position, setPosition] = useState(initialPosition);
+  const [scale, setScale] = useState(initialScale);
+  const [isDragging, setIsDragging] = useState(false);
+  const [isMinimized, setIsMinimized] = useState(false);
+  
+  // Motion values for dragging
+  const x = useMotionValue(initialPosition.x);
+  const y = useMotionValue(initialPosition.y);
+  
+  // Increase or decrease z-index (depth)
+  const moveForward = () => {
+    setPosition(prev => ({ ...prev, z: prev.z + 5 }));
+  };
+  
+  const moveBackward = () => {
+    setPosition(prev => ({ ...prev, z: prev.z - 5 }));
+  };
+  
+  // Increase or decrease scale
+  const scaleUp = () => {
+    setScale(prev => Math.min(prev + 0.05, 1.2));
+  };
+  
+  const scaleDown = () => {
+    setScale(prev => Math.max(prev - 0.05, 0.7));
+  };
+  
+  return (
+    <motion.div
+      drag
+      dragMomentum={false}
+      dragElastic={0}
+      dragConstraints={{ top: -300, left: -500, right: 500, bottom: 300 }}
+      whileDrag={{ cursor: 'grabbing' }}
+      onDragStart={() => setIsDragging(true)}
+      onDragEnd={() => setIsDragging(false)}
+      className={cn(
+        "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2",
+        "rounded-xl overflow-hidden shadow-xl backdrop-blur-md transition-all duration-300",
+        "border border-white/20 bg-black/40",
+        isDragging ? "cursor-grabbing" : "cursor-grab"
+      )}
+      style={{
+        width,
+        x,
+        y,
+        zIndex: 100 + position.z,
+        transformStyle: 'preserve-3d',
+        transform: `translateZ(${position.z}px) scale(${scale})`,
+      }}
+    >
+      {/* Window Header */}
+      <div className="bg-gradient-to-r from-gray-900/80 to-gray-800/80 backdrop-blur-md px-4 py-2 flex items-center justify-between">
+        <div className="text-white font-medium">{title}</div>
+        <div className="flex items-center gap-1">
+          {/* Z-index (depth) controls */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-6 w-6 text-white hover:bg-white/10 rounded-full"
+            onClick={moveForward}
+          >
+            <ChevronUp className="h-3 w-3" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-6 w-6 text-white hover:bg-white/10 rounded-full"
+            onClick={moveBackward}
+          >
+            <ChevronDown className="h-3 w-3" />
+          </Button>
+          
+          {/* Scale controls */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-6 w-6 text-white hover:bg-white/10 rounded-full"
+            onClick={scaleUp}
+          >
+            <Maximize2 className="h-3 w-3" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-6 w-6 text-white hover:bg-white/10 rounded-full"
+            onClick={scaleDown}
+          >
+            <Minimize2 className="h-3 w-3" />
+          </Button>
+          
+          {/* Minimize control */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-6 w-6 text-white hover:bg-white/10 rounded-full"
+            onClick={() => setIsMinimized(!isMinimized)}
+          >
+            {isMinimized ? (
+              <Maximize2 className="h-3 w-3" />
+            ) : (
+              <Minimize2 className="h-3 w-3" />
+            )}
+          </Button>
+          
+          {/* Close button */}
+          {onClose && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-6 w-6 text-white hover:bg-white/10 rounded-full"
+              onClick={onClose}
+            >
+              <X className="h-3 w-3" />
+            </Button>
+          )}
+        </div>
+      </div>
+      
+      {/* Window Content */}
+      <div className={cn(
+        "p-4 transition-all duration-300 ease-in-out overflow-auto",
+        isMinimized ? "max-h-0 p-0" : "max-h-[80vh]"
+      )}>
+        {children}
+      </div>
+    </motion.div>
+  );
+};
+
+/**
+ * ControlPanel - A fixed bottom control panel for navigation and global controls
+ */
 interface ControlPanelProps {
-  position?: { x: number; y: number; z: number };
   children: ReactNode;
 }
 
-export const ControlPanel: React.FC<ControlPanelProps> = ({ 
-  position = { x: 0, y: 0, z: 0 },
-  children 
-}) => {
+export const ControlPanel: React.FC<ControlPanelProps> = ({ children }) => {
   return (
-    <motion.div
-      className="fixed bottom-8 left-1/2 transform -translate-x-1/2 flex items-center justify-center p-4 rounded-full"
-      initial={{ y: 100, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ delay: 0.5, type: "spring", stiffness: 100 }}
-      style={{
-        backdropFilter: 'blur(12px)',
-        backgroundColor: 'rgba(0, 0, 0, 0.3)',
-        border: '1px solid rgba(255, 255, 255, 0.1)',
-        zIndex: 1000
-      }}
-    >
-      {children}
-    </motion.div>
+    <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50">
+      <div className="backdrop-blur-md bg-black/40 border border-white/20 rounded-full px-4 py-2 shadow-xl">
+        {children}
+      </div>
+    </div>
   );
 };
 
