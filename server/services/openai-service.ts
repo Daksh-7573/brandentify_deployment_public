@@ -4,6 +4,10 @@ import { OpenAI } from "openai";
 // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
+// Cache for hashtag suggestions to minimize API calls
+const hashtagSuggestionCache = new Map<string, { suggestions: string[], timestamp: number }>();
+const HASHTAG_CACHE_TTL = 1000 * 60 * 60; // 1 hour
+
 /**
  * Generate career advice based on user profile information and specific advice type
  * @param userProfile User profile data with career-related information
@@ -186,6 +190,95 @@ Always be constructive and actionable in your feedback. Focus on helping the per
  * @param purpose Optional purpose of networking (e.g., job search, mentorship)
  * @returns Tailored networking recommendations
  */
+/**
+ * Generate hashtag suggestions based on user's industry, followed hashtags, and usage history
+ * @param options User profile data and hashtag preferences
+ * @returns Array of relevant hashtag suggestions
+ */
+export async function suggestHashtags(options: {
+  industry?: string;
+  domain?: string;
+  followedHashtags?: string[];
+  previouslyUsedHashtags?: string[];
+  contentContext?: string;
+  count?: number;
+}) {
+  // Create a cache key based on the inputs
+  const cacheKey = JSON.stringify({
+    industry: options.industry || '',
+    domain: options.domain || '',
+    followedHashtags: options.followedHashtags || [],
+    contentContext: options.contentContext?.slice(0, 100) || '', // Use first 100 chars of context for cache key
+  });
+  
+  // Check cache to avoid unnecessary API calls
+  const cachedResult = hashtagSuggestionCache.get(cacheKey);
+  if (cachedResult && (Date.now() - cachedResult.timestamp < HASHTAG_CACHE_TTL)) {
+    return { hashtags: cachedResult.suggestions };
+  }
+  
+  const count = options.count || 10;
+  
+  // Prepare the information for the prompt
+  let contextInfo = '';
+  if (options.industry) contextInfo += `Industry: ${options.industry}\n`;
+  if (options.domain) contextInfo += `Domain: ${options.domain}\n`;
+  
+  if (options.followedHashtags && options.followedHashtags.length > 0) {
+    contextInfo += `Followed hashtags: ${options.followedHashtags.join(', ')}\n`;
+  }
+  
+  if (options.previouslyUsedHashtags && options.previouslyUsedHashtags.length > 0) {
+    contextInfo += `Previously used hashtags: ${options.previouslyUsedHashtags.join(', ')}\n`;
+  }
+  
+  if (options.contentContext) {
+    contextInfo += `Content context: ${options.contentContext}\n`;
+  }
+  
+  const systemPrompt = `You are Musk, an AI assistant that suggests relevant hashtags for professionals to use in their posts. 
+Suggest ${count} hashtags that are:
+1. Relevant to the user's industry and domain
+2. Consistent with hashtags they've used before or followed
+3. Professional and appropriate for career content
+4. A mix of popular and niche tags to maximize reach
+5. Format as a JSON array with ONLY hashtag strings (include the # symbol)`;
+
+  const userPrompt = `Based on the following information, suggest ${count} relevant professional hashtags:\n\n${contextInfo}`;
+
+  try {
+    const response = await openai.chat.completions.create({
+      model: 'gpt-4o',
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userPrompt }
+      ],
+      response_format: { type: "json_object" },
+      max_tokens: 500
+    });
+
+    const content = response.choices[0].message.content || '{"hashtags": []}';
+    const parsedResponse = JSON.parse(content);
+    
+    // Ensure we have an array of hashtags
+    const hashtags = Array.isArray(parsedResponse.hashtags) 
+      ? parsedResponse.hashtags 
+      : [];
+    
+    // Cache the results
+    hashtagSuggestionCache.set(cacheKey, {
+      suggestions: hashtags,
+      timestamp: Date.now()
+    });
+    
+    return { hashtags };
+  } catch (error: unknown) {
+    console.error('Error generating hashtag suggestions with OpenAI:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    throw new Error(`Failed to generate hashtag suggestions: ${errorMessage}`);
+  }
+}
+
 export async function generateNetworkingRecommendations(
   userProfile: {
     name: string;

@@ -1,5 +1,10 @@
 import express from 'express';
-import { generateCareerAdvice, analyzeResume, generateNetworkingRecommendations } from './services/openai-service';
+import { 
+  generateCareerAdvice, 
+  analyzeResume, 
+  generateNetworkingRecommendations,
+  suggestHashtags
+} from './services/openai-service';
 
 export const registerMuskAIRoutes = (app: express.Express) => {
   // Career advice endpoint
@@ -243,6 +248,75 @@ Open Source Contribution | 2019-Present
       console.error('Error in demo resume analysis endpoint:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       res.status(500).json({ error: errorMessage || 'Failed to generate demo resume analysis' });
+    }
+  });
+
+  // Hashtag suggestions endpoint
+  app.post('/api/musk-ai/suggest-hashtags', async (req, res) => {
+    try {
+      const {
+        industry,
+        domain,
+        followedHashtags,
+        previouslyUsedHashtags,
+        contentContext,
+        count
+      } = req.body;
+
+      // No strict validation needed as all fields are optional
+      // But we should have at least some context to work with
+      if (!industry && !domain && !contentContext) {
+        return res.status(400).json({ 
+          error: 'Provide at least one context field (industry, domain, or contentContext)' 
+        });
+      }
+
+      const result = await suggestHashtags({
+        industry,
+        domain,
+        followedHashtags,
+        previouslyUsedHashtags,
+        contentContext,
+        count
+      });
+
+      res.json(result);
+    } catch (error: unknown) {
+      console.error('Error in hashtag suggestions endpoint:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      res.status(500).json({ error: errorMessage || 'Failed to generate hashtag suggestions' });
+    }
+  });
+
+  // Example hashtag suggestions demo endpoint
+  app.get('/api/musk-ai/demo/suggest-hashtags/:industry', async (req, res) => {
+    try {
+      const industry = req.params.industry;
+      const domain = req.query.domain as string || undefined;
+      
+      // Sample previously used hashtags based on industry
+      const industryHashtagMap: Record<string, string[]> = {
+        'technology': ['#TechTrends', '#Innovation', '#Programming'],
+        'healthcare': ['#HealthTech', '#MedicalInnovation', '#PatientCare'],
+        'finance': ['#FinTech', '#Investment', '#Banking'],
+        'education': ['#EdTech', '#Learning', '#TeachingTips'],
+        'marketing': ['#DigitalMarketing', '#ContentStrategy', '#BrandBuilding']
+      };
+      
+      const previouslyUsedHashtags = industryHashtagMap[industry.toLowerCase()] || [];
+      
+      const result = await suggestHashtags({
+        industry,
+        domain,
+        previouslyUsedHashtags,
+        contentContext: `Professional discussing trends and innovations in the ${industry} industry${domain ? ` specifically in ${domain}` : ''}.`
+      });
+      
+      res.json(result);
+    } catch (error: unknown) {
+      console.error('Error in demo hashtag suggestions endpoint:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      res.status(500).json({ error: errorMessage || 'Failed to generate demo hashtag suggestions' });
     }
   });
 
