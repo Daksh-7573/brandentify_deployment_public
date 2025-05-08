@@ -118,7 +118,7 @@ Output the hashtags as a JSON array of strings ONLY, with no additional explanat
     });
 
     // Ensure we have unique hashtags
-    hashtags = [...new Set(hashtags)];
+    hashtags = Array.from(new Set(hashtags));
 
     // Limit to requested count
     hashtags = hashtags.slice(0, count);
