@@ -41,6 +41,7 @@ import muskFeedbackRoutes from "./routes-musk-feedback";
 import { setupServicesRoutes } from "./routes-services";
 import addProjectUpdateRoutes from "./routes-project-update";
 import careerCapsuleRoutes from "./routes-career-capsule";
+import { setupPersonalizedHashtagRoutes } from "./routes-personalized-hashtags";
 import { 
   handleSmartConnect, 
   handleCareerRecommendations, 
