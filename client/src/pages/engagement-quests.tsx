@@ -71,13 +71,12 @@ export default function EngagementQuestsPage() {
       monthlyQuests: []
     };
     
-    return allQuests.reduce((acc, quest) => {
-      // Skip completed quests
-      if (quest.status === 'completed') return acc;
-      
+    const result = allQuests.reduce((acc, quest) => {
+      // Include all quests, even completed ones to allow users to see their progress history
       const targetCount = quest.definition?.targetCount || 0;
       const xpReward = quest.definition?.xpReward || 0;
       const questType = quest.definition?.type || '';
+      const actionType = quest.definition?.targetAction || '';
       
       // Daily Quests:
       // - Low target count (1-2)
@@ -85,7 +84,8 @@ export default function EngagementQuestsPage() {
       // - Usually simple engagement tasks
       if (
         (targetCount <= 2 && xpReward <= 15) || 
-        (questType === 'networking' && targetCount === 1)
+        (questType === 'networking' && targetCount === 1) ||
+        actionType === 'comment_on_pulse' // Force comment quests to daily for testing
       ) {
         acc.dailyQuests.push(quest);
       }
@@ -95,7 +95,8 @@ export default function EngagementQuestsPage() {
       // - Regular engagement tasks
       else if (
         (targetCount >= 3 && targetCount <= 5 && xpReward <= 30) ||
-        (questType === 'networking' && targetCount >= 3)
+        (questType === 'networking' && targetCount >= 3) ||
+        actionType === 'react_to_pulse' // Force reaction quests to weekly for testing
       ) {
         acc.weeklyQuests.push(quest);
       }
@@ -107,7 +108,7 @@ export default function EngagementQuestsPage() {
         targetCount > 5 || 
         xpReward >= 40 || 
         questType === 'pulse_creation' ||
-        quest.definition?.targetAction === 'add_media_to_pulse'
+        actionType === 'add_media_to_pulse' // Force media quests to monthly for testing
       ) {
         acc.monthlyQuests.push(quest);
       }
@@ -122,6 +123,10 @@ export default function EngagementQuestsPage() {
       weeklyQuests: [] as UserQuest[],
       monthlyQuests: [] as UserQuest[]
     });
+    
+    // Remove debug logs for production
+    
+    return result;
   };
   
   // Get categorized quests
@@ -166,9 +171,26 @@ export default function EngagementQuestsPage() {
         <CardHeader className="pb-2">
           <div className="flex items-center gap-2">
             {icon}
-            <div>
-              <CardTitle className="text-base">{quest?.definition?.title || fallbackTitle}</CardTitle>
-              <CardDescription className="text-sm">
+            <div className="flex-1">
+              <div className="flex justify-between items-center">
+                <CardTitle className="text-base">{quest?.definition?.title || fallbackTitle}</CardTitle>
+                {quest && (
+                  <div className={`px-2 py-0.5 text-xs rounded-full ${
+                    quest.status === 'completed' 
+                      ? 'bg-green-100 text-green-800' 
+                      : quest.progress > 0 
+                        ? 'bg-blue-100 text-blue-800'
+                        : 'bg-gray-100 text-gray-800'
+                  }`}>
+                    {quest.status === 'completed' 
+                      ? 'Completed' 
+                      : quest.progress > 0 
+                        ? 'In Progress'
+                        : 'Not Started'}
+                  </div>
+                )}
+              </div>
+              <CardDescription className="text-sm mt-1">
                 {quest?.definition?.description || fallbackDesc}
               </CardDescription>
             </div>
@@ -199,13 +221,19 @@ export default function EngagementQuestsPage() {
             </Button>
             
             {quest && (
-              <Button 
-                size="sm" 
-                onClick={() => handleCompleteQuest(quest)}
-                disabled={completeQuest.isPending}
-              >
-                Mark Complete
-              </Button>
+              quest.status === 'completed' ? (
+                <div className="flex items-center gap-1 text-green-600 text-sm font-medium">
+                  <span>✓</span> Completed
+                </div>
+              ) : (
+                <Button 
+                  size="sm" 
+                  onClick={() => handleCompleteQuest(quest)}
+                  disabled={completeQuest.isPending}
+                >
+                  Mark Complete
+                </Button>
+              )
             )}
           </div>
           
