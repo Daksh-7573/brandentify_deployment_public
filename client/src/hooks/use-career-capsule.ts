@@ -96,8 +96,8 @@ export const useCareerCapsule = (userId: number | string) => {
     return useMutation({
       mutationFn: (goalData: Omit<CareerGoal, 'id' | 'userId' | 'createdAt' | 'updatedAt' | 'progress'>) => {
         return apiRequest({
-          method: 'POST', 
           url: `/api/users/${userId}/career-capsule`, 
+          method: 'POST',
           data: {
             ...goalData, 
             userId
@@ -179,10 +179,7 @@ export const useCareerCapsule = (userId: number | string) => {
   const useDeleteCapsule = () => {
     return useMutation({
       mutationFn: (capsuleId: number) => {
-        return apiRequest({
-          method: 'DELETE',
-          url: `/api/career-capsules/${capsuleId}`
-        });
+        return apiRequest('DELETE', `/api/career-capsules/${capsuleId}`);
       },
       onSuccess: () => {
         toast({
@@ -348,10 +345,7 @@ export const useCareerCapsule = (userId: number | string) => {
   const useDeleteSkill = (goalId: number) => {
     return useMutation({
       mutationFn: (skillId: number) => {
-        return apiRequest({
-          method: 'DELETE',
-          url: `/api/goal-skills/${skillId}`
-        });
+        return apiRequest('DELETE', `/api/goal-skills/${skillId}`);
       },
       onSuccess: () => {
         toast({
