@@ -6533,9 +6533,7 @@ export class MemStorage implements IStorage {
       updatedAt,
       balance: userXp.balance ?? 0,
       lifetimeEarned: userXp.lifetimeEarned ?? 0,
-      currentMonthEarned: userXp.currentMonthEarned ?? 0,
-      lastEarnedAt: userXp.lastEarnedAt ?? null,
-      lastResetAt: userXp.lastResetAt ?? null
+      lastEarnedAt: userXp.lastEarnedAt ?? null
     };
     
     this.userXp.set(id, newUserXp);
