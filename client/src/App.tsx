@@ -248,8 +248,8 @@ function App() {
           <SpatialMainLayout enableSpatialUI={false}>
             {/* Add Enhanced Background for Vision Pro effects on standard pages */}
             <div className="enhanced-background-container relative min-h-screen overflow-hidden">
-              {/* Add enhanced Vision Pro-inspired background */}
-              <EnhancedBackground variant="dramatic" />
+              {/* Add enhanced Vision Pro-inspired background with dramatic lighting effects */}
+              <EnhancedBackground variant="immersive" />
               <Router />
               <GlobalMuskButton />
               <Toaster />

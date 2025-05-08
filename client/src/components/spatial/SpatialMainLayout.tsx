@@ -6,6 +6,8 @@ import { useLocation } from 'wouter';
  * This component serves as the main layout wrapper for the application.
  * It decides whether to render the page with the spatial layout or
  * let it render normally based on a feature flag or user preference.
+ * 
+ * When Spatial UI is disabled, it still applies Vision Pro-inspired effects to regular layouts.
  */
 interface SpatialMainLayoutProps {
   children: ReactNode;
@@ -43,11 +45,11 @@ const pageTitles: Record<string, string> = {
 
 export const SpatialMainLayout: React.FC<SpatialMainLayoutProps> = ({ 
   children,
-  enableSpatialUI = true,
+  enableSpatialUI = false, // Default to non-spatial layout with Vision Pro effects
 }) => {
   const [location] = useLocation();
   
-  // Routes that should NEVER have the spatial layout
+  // Routes that should NEVER have any spatial effects
   // Landing page, auth, static pages, etc.
   const nonSpatialRoutes = [
     '/',
@@ -71,25 +73,38 @@ export const SpatialMainLayout: React.FC<SpatialMainLayoutProps> = ({
   // Combined list of all routes to exclude
   const excludedRoutes = [...nonSpatialRoutes, ...spatialSpecificRoutes];
   
-  // Check if the current route should be excluded from spatial layout
+  // Check if the current route should be excluded from any spatial effects
   const shouldExclude = excludedRoutes.some(route => location.startsWith(route));
   
-  // Use the enableSpatialUI prop to decide whether to force spatial UI
-  const forceSpatialUI = enableSpatialUI;
+  // Check if we're on a dedicated spatial route which implements its own UI
+  const isDedicatedSpatialRoute = spatialSpecificRoutes.some(route => location.startsWith(route));
   
-  // Only exclude for routes that should never have spatial UI or when spatial UI is disabled
-  if (!forceSpatialUI || shouldExclude) {
+  // If we're on a dedicated spatial route, or enableSpatialUI is true and we're not on an excluded route
+  if ((enableSpatialUI && !shouldExclude) || isDedicatedSpatialRoute) {
+    // Get the page title based on the current route, or use a default
+    const title = pageTitles[location] || 'Brandentifier';
+    
+    // Wrap the content in the full spatial layout
+    return (
+      <SpatialPortalLayout title={title}>
+        {children}
+      </SpatialPortalLayout>
+    );
+  }
+  
+  // If we're on a completely excluded route (landing, auth, etc.)
+  if (shouldExclude) {
     return <>{children}</>;
   }
   
-  // Get the page title based on the current route, or use a default
-  const title = pageTitles[location] || 'Brandentifier';
-  
-  // Otherwise, wrap the content in the spatial layout
+  // For regular routes with Vision Pro styling but not full spatial UI
   return (
-    <SpatialPortalLayout title={title}>
-      {children}
-    </SpatialPortalLayout>
+    <div className="vision-enhanced-layout relative">
+      {/* Apply Vision Pro-inspired styles to standard layout */}
+      <div className="vision-bg min-h-screen">
+        {children}
+      </div>
+    </div>
   );
 };
 

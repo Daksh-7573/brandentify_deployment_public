@@ -107,6 +107,8 @@ export const FloatingWindow: React.FC<FloatingWindowProps> = ({
   const [isDragging, setIsDragging] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const windowRef = useRef<HTMLDivElement>(null);
   
   // Motion values for dragging
   const x = useMotionValue(initialPosition.x);
@@ -119,6 +121,24 @@ export const FloatingWindow: React.FC<FloatingWindowProps> = ({
     z.set(position.z);
     scaleMotion.set(scale);
   }, [position.z, scale, z, scaleMotion]);
+  
+  // Track mouse movement to create dynamic lighting effects
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!windowRef.current || isDragging) return;
+      
+      const rect = windowRef.current.getBoundingClientRect();
+      
+      // Calculate mouse position relative to window center
+      const x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      const y = ((e.clientY - rect.top) / rect.height) * 2 - 1;
+      
+      setMousePosition({ x, y });
+    };
+    
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, [isDragging]);
   
   // Increase or decrease z-index (depth)
   const moveForward = () => {
@@ -146,8 +166,42 @@ export const FloatingWindow: React.FC<FloatingWindowProps> = ({
     setScale(prev => Math.max(prev - 0.05, 0.7));
   };
   
+  // Calculate dynamic lighting effect based on mouse position
+  const getGlowStyles = () => {
+    if (!isFocused) return {};
+    
+    const { x, y } = mousePosition;
+    const intensity = 0.15; // Adjust the intensity of the effect
+    
+    return {
+      backgroundImage: `
+        radial-gradient(
+          circle at ${50 + x * 50}% ${50 + y * 50}%, 
+          rgba(140, 180, 255, ${0.1 + Math.abs(x * y) * intensity}) 0%, 
+          rgba(30, 40, 80, 0.7) 60%, 
+          rgba(20, 25, 45, 0.8) 100%
+        )
+      `,
+    };
+  };
+  
+  // Calculate dynamic border lighting effect
+  const getBorderGlowStyles = () => {
+    if (!isFocused) return {};
+    
+    const { x, y } = mousePosition;
+    
+    return {
+      borderTopColor: `rgba(255, 255, 255, ${0.2 + (1 - y) * 0.3})`,
+      borderLeftColor: `rgba(255, 255, 255, ${0.2 + (1 - x) * 0.3})`,
+      borderRightColor: `rgba(255, 255, 255, ${0.1 + (1 + x) * 0.15})`,
+      borderBottomColor: `rgba(255, 255, 255, ${0.1 + (1 + y) * 0.1})`,
+    };
+  };
+  
   return (
     <motion.div
+      ref={windowRef}
       drag
       dragMomentum={false}
       dragElastic={0}
@@ -169,7 +223,6 @@ export const FloatingWindow: React.FC<FloatingWindowProps> = ({
         boxShadow: isFocused 
           ? '0 10px 30px rgba(0, 0, 0, 0.5), 0 0 25px rgba(130, 150, 255, 0.35)' 
           : '0 8px 25px rgba(0, 0, 0, 0.35), 0 0 10px rgba(100, 130, 255, 0.2)',
-        borderColor: isFocused ? 'rgba(255, 255, 255, 0.45)' : 'rgba(255, 255, 255, 0.2)',
       }}
       transition={{
         type: "spring",
@@ -181,7 +234,7 @@ export const FloatingWindow: React.FC<FloatingWindowProps> = ({
       className={cn(
         "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2",
         "rounded-xl overflow-hidden backdrop-blur-lg", 
-        "border bg-black/35",
+        "border bg-black/35 vision-card",
         isDragging ? "cursor-grabbing" : "cursor-grab"
       )}
       style={{
@@ -191,13 +244,74 @@ export const FloatingWindow: React.FC<FloatingWindowProps> = ({
         zIndex: 100 + position.z,
         transformStyle: 'preserve-3d',
         transform: `translateZ(${position.z}px) scale(${scale})`,
-        backgroundImage: 'linear-gradient(to bottom, rgba(35, 40, 65, 0.65), rgba(20, 25, 45, 0.7))',
+        ...getGlowStyles(),
+        ...getBorderGlowStyles(),
       }}
     >
+      {/* Dynamic lighting effects */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-xl">
+        {/* Top highlight - Vision Pro inspired rim lighting */}
+        <div 
+          className="absolute top-0 left-0 right-0 h-[1px] opacity-60"
+          style={{ 
+            background: `linear-gradient(to right, 
+              rgba(140, 180, 255, ${0.01 + Math.abs(mousePosition.y) * 0.3}), 
+              rgba(255, 255, 255, ${0.2 + Math.abs(mousePosition.x) * 0.3}), 
+              rgba(140, 180, 255, ${0.01 + Math.abs(mousePosition.y) * 0.3})
+            )`,
+            filter: 'blur(1px)',
+            transform: 'translateZ(0.5px)',
+          }}
+        />
+        
+        {/* Left highlight */}
+        <div 
+          className="absolute left-0 top-0 bottom-0 w-[1px] opacity-30"
+          style={{ 
+            background: `linear-gradient(to bottom, 
+              rgba(140, 180, 255, ${0.1 + Math.abs(mousePosition.x) * 0.2}), 
+              rgba(255, 255, 255, ${0.15 + Math.abs(mousePosition.y) * 0.2}), 
+              rgba(140, 180, 255, ${0.05})
+            )`,
+            filter: 'blur(1px)',
+            transform: 'translateZ(0.5px)',
+          }}
+        />
+        
+        {/* Subtle inner glow that follows mouse */}
+        <div 
+          className="absolute inset-0 opacity-30 rounded-xl"
+          style={{
+            background: `radial-gradient(
+              circle at ${50 + mousePosition.x * 30}% ${50 + mousePosition.y * 30}%, 
+              rgba(180, 210, 255, ${0.15 + Math.abs(mousePosition.x * mousePosition.y) * 0.1}) 0%, 
+              transparent 70%
+            )`,
+            filter: 'blur(20px)',
+            mixBlendMode: 'screen',
+          }}
+        />
+      </div>
+      
       {/* Window Header */}
-      <div className="bg-gradient-to-r from-gray-900/80 to-gray-800/80 backdrop-blur-md px-4 py-2 flex items-center justify-between">
-        <div className="text-white font-medium">{title}</div>
-        <div className="flex items-center gap-1">
+      <div className="bg-gradient-to-r from-gray-900/80 to-gray-800/80 backdrop-blur-md px-4 py-2 flex items-center justify-between relative overflow-hidden">
+        {/* Header lighting effects */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div 
+            className="absolute top-0 left-0 right-0 h-[1px] opacity-40"
+            style={{ 
+              background: `linear-gradient(to right, 
+                transparent,
+                rgba(255, 255, 255, ${0.3 + Math.abs(mousePosition.x) * 0.2}), 
+                transparent
+              )`,
+              filter: 'blur(0.5px)',
+            }}
+          />
+        </div>
+        
+        <div className="text-white font-medium vision-luminous-text relative">{title}</div>
+        <div className="flex items-center gap-1 relative">
           {/* Z-index (depth) controls */}
           <Button
             variant="ghost"
@@ -264,7 +378,7 @@ export const FloatingWindow: React.FC<FloatingWindowProps> = ({
       
       {/* Window Content */}
       <div className={cn(
-        "p-4 transition-all duration-300 ease-in-out overflow-auto",
+        "p-4 transition-all duration-300 ease-in-out overflow-auto vision-depth",
         isMinimized ? "max-h-0 p-0" : "max-h-[80vh]"
       )}>
         {children}
