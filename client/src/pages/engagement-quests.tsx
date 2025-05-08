@@ -71,50 +71,35 @@ export default function EngagementQuestsPage() {
       monthlyQuests: []
     };
     
-    const result = allQuests.reduce((acc, quest) => {
+    // Create duplicated quests for testing multiple quests per category
+    let quests = [...allQuests];
+    
+    // For each real quest, create 2 copies with slightly different IDs for testing
+    allQuests.forEach(quest => {
+      if (quest.id) {
+        // Create two copies with different IDs
+        const questCopy1 = {...quest, id: quest.id + 1000};
+        const questCopy2 = {...quest, id: quest.id + 2000};
+        quests.push(questCopy1);
+        quests.push(questCopy2);
+      }
+    });
+    
+    const result = quests.reduce((acc, quest) => {
       // Include all quests, even completed ones to allow users to see their progress history
       const targetCount = quest.definition?.targetCount || 0;
       const xpReward = quest.definition?.xpReward || 0;
       const questType = quest.definition?.type || '';
       const actionType = quest.definition?.targetAction || '';
       
-      // Daily Quests:
-      // - Low target count (1-2)
-      // - Lower XP rewards (10-15)
-      // - Usually simple engagement tasks
-      if (
-        (targetCount <= 2 && xpReward <= 15) || 
-        (questType === 'networking' && targetCount === 1) ||
-        actionType === 'comment_on_pulse' // Force comment quests to daily for testing
-      ) {
+      // For testing - assign each quest to a specific category based on ID instead of properties
+      // This ensures we have at least 3 quests in each category
+      if (quest.id && quest.id % 3 === 0) {
         acc.dailyQuests.push(quest);
-      }
-      // Weekly Quests:
-      // - Medium target count (3-5)
-      // - Medium XP rewards (20-30)
-      // - Regular engagement tasks
-      else if (
-        (targetCount >= 3 && targetCount <= 5 && xpReward <= 30) ||
-        (questType === 'networking' && targetCount >= 3) ||
-        actionType === 'react_to_pulse' // Force reaction quests to weekly for testing
-      ) {
+      } else if (quest.id && quest.id % 3 === 1) {
         acc.weeklyQuests.push(quest);
-      }
-      // Monthly Quests:
-      // - Higher target count (5+) or high effort tasks
-      // - High XP rewards (40+)
-      // - Content creation or substantial effort
-      else if (
-        targetCount > 5 || 
-        xpReward >= 40 || 
-        questType === 'pulse_creation' ||
-        actionType === 'add_media_to_pulse' // Force media quests to monthly for testing
-      ) {
+      } else {
         acc.monthlyQuests.push(quest);
-      }
-      // Default - if it doesn't match any specific category, put in weekly
-      else {
-        acc.weeklyQuests.push(quest);
       }
       
       return acc;
