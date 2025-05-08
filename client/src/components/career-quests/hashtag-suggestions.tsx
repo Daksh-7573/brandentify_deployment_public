@@ -26,7 +26,7 @@ export function HashtagSuggestions({ quest, maxToShow = 5 }: HashtagSuggestionsP
   const { data, isLoading, isError } = useHashtagSuggestions({
     industry: userIndustry || questDefinition.industry,
     domain: userDomain || questDefinition.domain,
-    targetAction: questDefinition.targetAction,
+    targetAction: typeof questDefinition.targetAction === 'string' ? questDefinition.targetAction : '',
     questTitle: questDefinition.title
   });
   
@@ -56,7 +56,7 @@ export function HashtagSuggestions({ quest, maxToShow = 5 }: HashtagSuggestionsP
           ))
         ) : (
           // Actual hashtags
-          hashtags.map((hashtag, index) => (
+          hashtags.map((hashtag: string, index: number) => (
             <Badge 
               key={`hashtag-${index}`} 
               variant="outline"

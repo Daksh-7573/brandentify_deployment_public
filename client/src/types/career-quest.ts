@@ -39,6 +39,10 @@ export interface QuestDefinition {
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
+  
+  // Additional fields for hashtag suggestions
+  industry?: string;  // Suggested industry context
+  domain?: string;    // Suggested domain context
 }
 
 export interface UserQuest {
@@ -66,6 +70,11 @@ export interface UserQuest {
   questMuskTip?: string;  // Added for simplified weekly quests
   userName?: string;
   userPhotoURL?: string;
+  
+  // Fields needed for hashtag suggestions
+  industry?: string;      // User's industry
+  domain?: string;        // User's domain/specialty
+  targetAction?: string;  // Action required to complete quest
 }
 
 export interface UserXp {

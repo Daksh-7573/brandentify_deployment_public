@@ -16,30 +16,44 @@ export interface HashtagSuggestionsParams {
 export function useHashtagSuggestions(params: HashtagSuggestionsParams) {
   const { industry, domain, targetAction, questTitle } = params;
   
+  // Remove any undefined or empty strings
+  const filteredParams: Record<string, string> = {};
+  if (industry) filteredParams.industry = industry;
+  if (domain) filteredParams.domain = domain;
+  if (targetAction) filteredParams.targetAction = targetAction;
+  if (questTitle) filteredParams.questTitle = questTitle;
+  
   // Create query string for API call
   const queryParams = new URLSearchParams();
-  if (industry) queryParams.append('industry', industry);
-  if (domain) queryParams.append('domain', domain);
-  if (targetAction) queryParams.append('targetAction', targetAction);
-  if (questTitle) queryParams.append('questTitle', questTitle);
+  Object.entries(filteredParams).forEach(([key, value]) => {
+    queryParams.append(key, value);
+  });
   
   const queryString = queryParams.toString();
+  const hasValidParams = Object.keys(filteredParams).length > 0;
   
   return useQuery({
     queryKey: ['/api/quests/suggest-hashtags', queryString],
     queryFn: async () => {
-      if (!industry && !domain && !questTitle) {
+      if (!hasValidParams) {
         // Skip API call if no context is provided
         return { hashtags: [] };
       }
       
-      const response = await fetch(`/api/quests/suggest-hashtags?${queryString}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch hashtag suggestions');
+      try {
+        const response = await fetch(`/api/quests/suggest-hashtags?${queryString}`);
+        if (!response.ok) {
+          console.error('Failed to fetch hashtag suggestions:', response.status, response.statusText);
+          return { hashtags: [] }; // Return empty set instead of failing
+        }
+        return response.json();
+      } catch (error) {
+        console.error('Error fetching hashtag suggestions:', error);
+        return { hashtags: [] }; // Return empty set on error
       }
-      return response.json();
     },
-    enabled: Boolean(industry || domain || questTitle),
+    enabled: hasValidParams,
     staleTime: 1000 * 60 * 60, // Cache for 1 hour
+    retry: 1, // Only retry once to avoid excessive API calls
   });
 }

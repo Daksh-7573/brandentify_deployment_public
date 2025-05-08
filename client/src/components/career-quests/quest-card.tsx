@@ -149,6 +149,11 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
                 <span>Musk's Tip</span>
               </div>
               <p className="text-sm text-muted-foreground">{muskTipContent}</p>
+              
+              {/* Only display hashtag suggestions for active quests related to pulse creation */}
+              {isActive && questDefinition.type === 'pulse_creation' && (
+                <HashtagSuggestions quest={quest} maxToShow={4} />
+              )}
             </div>
           )}
         </div>
