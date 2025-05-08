@@ -216,14 +216,22 @@ export const useUpdateQuestProgress = () => {
       userId: number
     }) => {
       const res = await fetch(`/api/users/${userId}/quests/${questId}/progress`, {
-        method: 'PUT',
+        method: 'PATCH',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ progress })
+        body: JSON.stringify({ progress, userId })
       });
       
-      if (!res.ok) throw new Error('Failed to update quest progress');
+      if (!res.ok) {
+        const text = await res.text();
+        try {
+          const errorJson = JSON.parse(text);
+          throw new Error(errorJson.message || 'Failed to update quest progress');
+        } catch (e) {
+          throw new Error(`Failed to update quest progress: ${text.slice(0, 100)}`);
+        }
+      }
       return res.json() as Promise<UserQuest>;
     },
     onSuccess: (data) => {

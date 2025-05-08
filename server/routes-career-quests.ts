@@ -10,6 +10,83 @@ function getWeekNumber(date: Date): number {
   return Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
 }
 
+// A dedicated route for updating quest progress
+async function updateQuestProgress(questId: number, userId: number, progress: number) {
+  try {
+    // Check if user quest exists
+    const result = await pool.query(`
+      SELECT * FROM user_quests WHERE id = $1 AND user_id = $2
+    `, [questId, userId]);
+    
+    if (result.rows.length === 0) {
+      return null;
+    }
+    
+    const userQuest = result.rows[0];
+    const questDefinitionId = userQuest.quest_definition_id;
+    
+    // Get quest definition for target count
+    const defResult = await pool.query(`
+      SELECT * FROM quest_definitions WHERE id = $1
+    `, [questDefinitionId]);
+    
+    if (defResult.rows.length === 0) {
+      return null;
+    }
+    
+    const questDefinition = defResult.rows[0];
+    const targetCount = questDefinition.target_count;
+    
+    // Calculate new status and completed_at
+    let newStatus = userQuest.status;
+    let completedAt = userQuest.completed_at;
+    let xpEarned = userQuest.xp_earned;
+    let badgeEarned = userQuest.badge_earned;
+    
+    // If progress meets or exceeds target count, mark as completed
+    if (progress >= targetCount && userQuest.status === 'active') {
+      newStatus = 'completed';
+      completedAt = new Date();
+      xpEarned = questDefinition.xp_reward;
+      badgeEarned = questDefinition.badge_reward;
+    }
+    
+    // Update the quest with new progress
+    const updateResult = await pool.query(`
+      UPDATE user_quests
+      SET progress = $1, 
+          status = $2,
+          completed_at = $3,
+          xp_earned = $4,
+          badge_earned = $5
+      WHERE id = $6 AND user_id = $7
+      RETURNING 
+        id,
+        user_id as "userId",
+        quest_definition_id as "questDefinitionId",
+        status,
+        progress,
+        assigned_at as "assignedAt",
+        completed_at as "completedAt",
+        dismissed_reason as "dismissedReason",
+        xp_earned as "xpEarned",
+        badge_earned as "badgeEarned",
+        musk_response as "muskResponse",
+        week_number as "weekNumber",
+        year
+    `, [progress, newStatus, completedAt, xpEarned, badgeEarned, questId, userId]);
+    
+    if (updateResult.rows.length === 0) {
+      return null;
+    }
+    
+    return updateResult.rows[0];
+  } catch (error) {
+    console.error('Error updating quest progress:', error);
+    throw error;
+  }
+}
+
 export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
   // Quest Definition routes
   apiRouter.get("/quest-definitions", async (req, res) => {
