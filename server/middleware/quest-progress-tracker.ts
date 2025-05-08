@@ -27,8 +27,8 @@ interface QuestTracker {
   method: string;
   progressExtractor: (req: Request) => Promise<number>;
   
-  // Added for debugging
-  routeName: string;
+  // Added for debugging (optional)
+  routeName?: string;
 }
 
 // List of trackers for different engagement activities
@@ -134,6 +134,32 @@ export const questProgressMiddleware = async (req: Request, res: Response, next:
           
           // Log all trackers for debugging
           console.log(`[Quest Tracker] Available trackers: ${questTrackers.map(t => t.targetAction).join(', ')}`);
+          
+          // Log the current path and method
+          console.log(`[Quest Tracker] Checking route: ${path} (${method})`);
+          
+          // Track debug info for troubleshooting
+          let routeMatchedAny = false;
+          let methodMatchedAny = false;
+          
+          // Check each tracker for debugging
+          for (const tracker of questTrackers) {
+            const routeMatches = tracker.routePattern.test(path);
+            const methodMatches = tracker.method === method;
+            
+            if (routeMatches) routeMatchedAny = true;
+            if (methodMatches) methodMatchedAny = true;
+            
+            console.log(`[Quest Tracker] Testing ${tracker.targetAction} (${tracker.routeName || 'unnamed'}) - path match: ${routeMatches}, method match: ${methodMatches}`);
+          }
+          
+          if (!routeMatchedAny) {
+            console.log(`[Quest Tracker] WARNING: No trackers matched route ${path}`);
+          }
+          
+          if (!methodMatchedAny) {
+            console.log(`[Quest Tracker] WARNING: No trackers matched method ${method}`);
+          }
           
           // Find matching tracker for this route and method
           const matchingTracker = questTrackers.find(tracker => 
