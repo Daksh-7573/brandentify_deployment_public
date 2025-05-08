@@ -3,6 +3,7 @@ import { useLocation } from 'wouter';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Progress } from '@/components/ui/progress';
 import { ArrowRight, Zap, MessageSquare, ThumbsUp, Bot, RefreshCw } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -27,6 +28,8 @@ interface NowboardSuggestion {
   relatedQuestId?: number;
   xpValue: number;
   targetId?: number; // ID of pulse or content to interact with
+  progress?: number; // Current progress count
+  targetCount?: number; // Target count to complete
 }
 
 export function NowboardSuggestions({ userId, className, questType }: NowboardSuggestionsProps) {

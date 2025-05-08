@@ -45,9 +45,7 @@ export function useHashtagSuggestions(options: HashtagSuggestionsOptions): Hasht
     try {
       // If the questType is "static" or there's no user context (industry/domain), use static suggestions
       if (questType === 'static' || (!industry && !domain && !demo)) {
-        const staticResponse = await apiRequest(`/api/personalized-hashtags/static/${questType}?count=${count}`, { 
-          method: 'GET' 
-        });
+        const staticResponse = await apiRequest('GET', `/api/personalized-hashtags/static/${questType}?count=${count}`);
         
         if (staticResponse && staticResponse.hashtags) {
           setHashtags(staticResponse.hashtags);
@@ -60,16 +58,13 @@ export function useHashtagSuggestions(options: HashtagSuggestionsOptions): Hasht
         // Use the personalized or demo endpoint based on the demo flag
         const endpoint = demo ? '/api/personalized-hashtags/demo' : '/api/personalized-hashtags';
         
-        const response = await apiRequest(endpoint, {
-          method: 'POST',
-          body: {
-            industry,
-            domain,
-            questType,
-            targetAction,
-            contentContext,
-            count
-          }
+        const response = await apiRequest('POST', endpoint, {
+          industry,
+          domain,
+          questType,
+          targetAction,
+          contentContext,
+          count
         });
         
         if (response && response.hashtags) {
@@ -86,9 +81,7 @@ export function useHashtagSuggestions(options: HashtagSuggestionsOptions): Hasht
       
       // Try to use static suggestions as a fallback
       try {
-        const staticResponse = await apiRequest(`/api/personalized-hashtags/static/${questType}?count=${count}`, { 
-          method: 'GET' 
-        });
+        const staticResponse = await apiRequest('GET', `/api/personalized-hashtags/static/${questType}?count=${count}`);
         
         if (staticResponse && staticResponse.hashtags) {
           setHashtags(staticResponse.hashtags);
