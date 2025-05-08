@@ -1,6 +1,7 @@
 import React, { ReactNode, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface EnhancedCardProps {
   children: ReactNode;
@@ -16,13 +17,13 @@ interface EnhancedCardProps {
  * This component adds dramatic lighting effects, glassmorphism, and subtle 
  * animations inspired by Vision Pro's spatial UI, but works within standard layouts.
  */
-export const EnhancedCard: React.FC<EnhancedCardProps> = ({
+export const EnhancedCard = ({
   children,
   className,
   isFocused = false,
   onFocus,
   variant = 'default',
-}) => {
+}: EnhancedCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
   
   // Determine blur amount based on card variant
@@ -38,10 +39,10 @@ export const EnhancedCard: React.FC<EnhancedCardProps> = ({
   // Determine background opacity based on card variant
   const getBackgroundOpacity = () => {
     switch (variant) {
-      case 'default': return '0.5';
-      case 'prominent': return '0.6';
-      case 'glassy': return '0.3';
-      default: return '0.5';
+      case 'default': return '0.4';
+      case 'prominent': return '0.5';
+      case 'glassy': return '0.25';
+      default: return '0.4';
     }
   };
   
@@ -56,14 +57,14 @@ export const EnhancedCard: React.FC<EnhancedCardProps> = ({
         className
       )}
       style={{
-        backgroundColor: `rgba(20, 20, 30, ${getBackgroundOpacity()})`,
+        backgroundColor: `rgba(0, 0, 30, ${getBackgroundOpacity()})`,
         backdropFilter: `blur(${getBlurAmount()})`,
-        borderTop: variant === 'glassy' ? '1px solid rgba(255, 255, 255, 0.1)' : undefined,
-        borderRight: variant === 'glassy' ? '1px solid rgba(255, 255, 255, 0.05)' : undefined,
+        borderTop: variant === 'glassy' ? '1px solid rgba(255, 255, 255, 0.15)' : undefined,
+        borderRight: variant === 'glassy' ? '1px solid rgba(255, 255, 255, 0.1)' : undefined,
         borderBottom: variant === 'glassy' ? '1px solid rgba(0, 0, 0, 0.1)' : undefined,
         borderLeft: variant === 'glassy' ? '1px solid rgba(0, 0, 0, 0.05)' : undefined,
         transformStyle: 'preserve-3d',
-        transform: isActive ? 'scale(1.01)' : 'scale(1)',
+        transform: isActive ? 'scale(1.02)' : 'scale(1)',
       }}
       animate={{
         y: isActive ? -5 : 0,
@@ -84,16 +85,14 @@ export const EnhancedCard: React.FC<EnhancedCardProps> = ({
         className="absolute inset-0 opacity-40 pointer-events-none transition-opacity duration-500 z-0"
         style={{
           background: isActive 
-            ? 'linear-gradient(to bottom, rgba(120, 150, 255, 0.15) 0%, transparent 50%)' 
-            : 'linear-gradient(to bottom, rgba(120, 150, 255, 0.1) 0%, transparent 50%)',
-          opacity: isActive ? 0.7 : 0.4,
+            ? 'linear-gradient(to bottom, rgba(120, 150, 255, 0.2) 0%, transparent 50%)' 
+            : 'linear-gradient(to bottom, rgba(120, 150, 255, 0.15) 0%, transparent 50%)',
+          opacity: isActive ? 0.8 : 0.5,
         }}
       />
       
       {/* Content container with glass effect */}
-      <div 
-        className="relative z-10"
-      >
+      <div className="relative z-10">
         {children}
       </div>
     </motion.div>
@@ -103,10 +102,13 @@ export const EnhancedCard: React.FC<EnhancedCardProps> = ({
 /**
  * EnhancedCardHeader - Header section for EnhancedCard
  */
-export const EnhancedCardHeader: React.FC<{
+export const EnhancedCardHeader = ({
+  children,
+  className,
+}: {
   children: ReactNode;
   className?: string;
-}> = ({ children, className }) => {
+}) => {
   return (
     <div className={cn('p-5 pb-3', className)}>
       {children}
@@ -117,10 +119,13 @@ export const EnhancedCardHeader: React.FC<{
 /**
  * EnhancedCardContent - Content section for EnhancedCard
  */
-export const EnhancedCardContent: React.FC<{
+export const EnhancedCardContent = ({
+  children,
+  className,
+}: {
   children: ReactNode;
   className?: string;
-}> = ({ children, className }) => {
+}) => {
   return (
     <div className={cn('p-5 pt-2', className)}>
       {children}
@@ -131,10 +136,13 @@ export const EnhancedCardContent: React.FC<{
 /**
  * EnhancedCardFooter - Footer section for EnhancedCard
  */
-export const EnhancedCardFooter: React.FC<{
+export const EnhancedCardFooter = ({
+  children,
+  className,
+}: {
   children: ReactNode;
   className?: string;
-}> = ({ children, className }) => {
+}) => {
   return (
     <div className={cn('p-5 pt-2 flex items-center justify-end gap-2', className)}>
       {children}

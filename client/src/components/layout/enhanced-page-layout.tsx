@@ -1,6 +1,6 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import { motion } from 'framer-motion';
+import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { PageLayout } from './page-layout';
 
 interface EnhancedPageLayoutProps {
@@ -12,6 +12,7 @@ interface EnhancedPageLayoutProps {
   subtitle?: string;
   showGradientBackground?: boolean;
   showDepthEffects?: boolean;
+  variant?: 'default' | 'dramatic' | 'subtle';
 }
 
 /**
@@ -20,7 +21,7 @@ interface EnhancedPageLayoutProps {
  * This layout adds dramatic lighting effects, glassmorphism, and depth-based visuals
  * inspired by Vision Pro's spatial UI but within the standard page structure.
  */
-const EnhancedPageLayout: React.FC<EnhancedPageLayoutProps> = ({
+const EnhancedPageLayout = ({
   children,
   title,
   description,
@@ -29,7 +30,48 @@ const EnhancedPageLayout: React.FC<EnhancedPageLayoutProps> = ({
   subtitle,
   showGradientBackground = true,
   showDepthEffects = true,
-}) => {
+  variant = 'default',
+}: EnhancedPageLayoutProps) => {
+  // Motion values for parallax effect
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  
+  // Smooth springs for more natural motion
+  const springConfig = { damping: 30, stiffness: 100 };
+  const springX = useSpring(mouseX, springConfig);
+  const springY = useSpring(mouseY, springConfig);
+  
+  // Transform mouse position to light position
+  const light1X = useTransform(springX, [-500, 500], ['-10%', '110%']);
+  const light1Y = useTransform(springY, [-500, 500], ['-10%', '110%']);
+  const light2X = useTransform(springX, [-500, 500], ['110%', '-10%']);
+  const light2Y = useTransform(springY, [-500, 500], ['110%', '-10%']);
+  
+  // Mouse movement handler
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      // Calculate mouse position relative to window center
+      const centerX = window.innerWidth / 2;
+      const centerY = window.innerHeight / 2;
+      mouseX.set(e.clientX - centerX);
+      mouseY.set(e.clientY - centerY);
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, [mouseX, mouseY]);
+  
+  // Determine light intensity based on variant
+  const getLightIntensity = () => {
+    switch (variant) {
+      case 'dramatic': return { primary: 0.5, secondary: 0.35 };
+      case 'subtle': return { primary: 0.2, secondary: 0.15 };
+      default: return { primary: 0.35, secondary: 0.25 };
+    }
+  };
+  
+  const intensity = getLightIntensity();
+  
   return (
     <PageLayout 
       title={title}
@@ -37,38 +79,57 @@ const EnhancedPageLayout: React.FC<EnhancedPageLayoutProps> = ({
       icon={icon}
       actions={actions}
     >
-      <div className="relative overflow-x-hidden min-h-[calc(100vh-64px)]">
+      <div className="relative overflow-hidden min-h-[calc(100vh-64px)]">
         {/* Background gradient effects */}
         {showGradientBackground && (
           <>
-            {/* Primary light source - top right */}
-            <div 
-              className="fixed top-0 right-0 w-[400px] h-[400px] rounded-full opacity-30 pointer-events-none"
+            {/* Primary light source - follows mouse movement */}
+            <motion.div 
+              className="fixed top-0 right-0 w-[600px] h-[600px] rounded-full pointer-events-none"
               style={{
-                background: 'radial-gradient(circle, rgba(120, 150, 255, 0.3) 0%, transparent 70%)',
+                background: `radial-gradient(circle, rgba(100, 140, 255, ${intensity.primary}) 0%, transparent 70%)`,
+                filter: 'blur(70px)',
+                zIndex: 0,
+                left: light1X,
+                top: light1Y,
+                opacity: 0.4,
+              }}
+            />
+            
+            {/* Secondary light source - inverse of primary movement */}
+            <motion.div 
+              className="fixed bottom-0 left-0 w-[500px] h-[500px] rounded-full pointer-events-none"
+              style={{
+                background: `radial-gradient(circle, rgba(130, 180, 255, ${intensity.secondary}) 0%, transparent 70%)`,
                 filter: 'blur(60px)',
                 zIndex: 0,
+                left: light2X,
+                top: light2Y,
+                opacity: 0.3,
               }}
             />
             
-            {/* Secondary light source - bottom left */}
-            <div 
-              className="fixed bottom-0 left-0 w-[300px] h-[300px] rounded-full opacity-20 pointer-events-none"
-              style={{
-                background: 'radial-gradient(circle, rgba(130, 180, 255, 0.25) 0%, transparent 70%)',
-                filter: 'blur(50px)',
-                zIndex: 0,
-              }}
-            />
-            
-            {/* Dark gradient overlay for depth */}
+            {/* Ambient glow */}
             <div 
               className="fixed inset-0 pointer-events-none"
               style={{
-                background: 'radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.3) 100%)',
+                background: 'radial-gradient(circle at center, rgba(10, 10, 40, 0) 0%, rgba(10, 10, 40, 0.3) 100%)',
                 zIndex: 0,
               }}
             />
+            
+            {/* Depth fog effect */}
+            {showDepthEffects && (
+              <div 
+                className="fixed inset-0 pointer-events-none"
+                style={{
+                  background: 'linear-gradient(180deg, rgba(10, 10, 40, 0.1) 0%, rgba(0, 0, 0, 0.2) 100%)',
+                  zIndex: 0,
+                  backdropFilter: 'blur(40px)',
+                  opacity: 0.2,
+                }}
+              />
+            )}
           </>
         )}
         
