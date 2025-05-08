@@ -236,6 +236,36 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
       res.status(500).json({ message: 'Failed to fetch completed user quests' });
     }
   });
+  
+  // Update quest progress
+  apiRouter.patch("/users/:userId/quests/:questId/progress", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const questId = parseInt(req.params.questId);
+      const { progress } = req.body;
+      
+      if (isNaN(userId) || isNaN(questId)) {
+        return res.status(400).json({ message: 'Invalid user ID or quest ID' });
+      }
+      
+      if (typeof progress !== 'number' || progress < 0) {
+        return res.status(400).json({ message: 'Invalid progress value' });
+      }
+      
+      console.log(`[PATCH /users/${userId}/quests/${questId}/progress] Updating progress to ${progress}`);
+      
+      const updatedQuest = await updateQuestProgress(questId, userId, progress);
+      
+      if (!updatedQuest) {
+        return res.status(404).json({ message: 'Quest not found' });
+      }
+      
+      res.json(updatedQuest);
+    } catch (error) {
+      console.error(`[PATCH /users/${req.params.userId}/quests/${req.params.questId}/progress] Error:`, error);
+      res.status(500).json({ message: 'Failed to update quest progress' });
+    }
+  });
 
   apiRouter.get("/users/:userId/quests/current-week", async (req, res) => {
     try {
