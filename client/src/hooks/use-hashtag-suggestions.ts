@@ -1,59 +1,104 @@
-import { useQuery } from '@tanstack/react-query';
+import { useState, useEffect } from 'react';
+import { useCurrentUser } from '@/hooks/use-current-user';
 
-export interface HashtagSuggestionsParams {
+interface UseHashtagSuggestionsOptions {
   industry?: string;
-  domain?: string;
+  questType?: string;
   targetAction?: string;
-  questTitle?: string;
+  contentContext?: string;
+  count?: number;
+  demo?: boolean;
+}
+
+interface HashtagSuggestionsResult {
+  hashtags: string[];
+  sources: string[];
+  isLoading: boolean;
+  error: string | null;
+  refreshHashtags: () => void;
 }
 
 /**
- * Hook to fetch hashtag suggestions for quests
- * 
- * @param params Parameters for hashtag suggestions
- * @returns Query result with hashtag suggestions
+ * Hook to fetch personalized hashtag suggestions
  */
-export function useHashtagSuggestions(params: HashtagSuggestionsParams) {
-  const { industry, domain, targetAction, questTitle } = params;
+export function useHashtagSuggestions({
+  industry,
+  questType = 'pulse_creation',
+  targetAction,
+  contentContext,
+  count = 5,
+  demo = false
+}: UseHashtagSuggestionsOptions = {}): HashtagSuggestionsResult {
+  const { user } = useCurrentUser();
+  const [hashtags, setHashtags] = useState<string[]>([]);
+  const [sources, setSources] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
   
-  // Remove any undefined or empty strings
-  const filteredParams: Record<string, string> = {};
-  if (industry) filteredParams.industry = industry;
-  if (domain) filteredParams.domain = domain;
-  if (targetAction) filteredParams.targetAction = targetAction;
-  if (questTitle) filteredParams.questTitle = questTitle;
-  
-  // Create query string for API call
-  const queryParams = new URLSearchParams();
-  Object.entries(filteredParams).forEach(([key, value]) => {
-    queryParams.append(key, value);
-  });
-  
-  const queryString = queryParams.toString();
-  const hasValidParams = Object.keys(filteredParams).length > 0;
-  
-  return useQuery({
-    queryKey: ['/api/quests/suggest-hashtags', queryString],
-    queryFn: async () => {
-      if (!hasValidParams) {
-        // Skip API call if no context is provided
-        return { hashtags: [] };
+  // Function to fetch hashtags from the API
+  const fetchHashtags = async () => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      // Use demo endpoint if specified
+      const endpoint = demo 
+        ? '/api/personalized-hashtags/demo' 
+        : '/api/personalized-hashtags';
+      
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          industry: industry || user?.industry,
+          domain: user?.domain,
+          questType,
+          targetAction,
+          contentContext,
+          count
+        })
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Failed to fetch hashtags: ${response.status}`);
       }
       
-      try {
-        const response = await fetch(`/api/quests/suggest-hashtags?${queryString}`);
-        if (!response.ok) {
-          console.error('Failed to fetch hashtag suggestions:', response.status, response.statusText);
-          return { hashtags: [] }; // Return empty set instead of failing
+      const data = await response.json();
+      
+      if (data.hashtags && Array.isArray(data.hashtags)) {
+        setHashtags(data.hashtags);
+        
+        if (data.sources && Array.isArray(data.sources)) {
+          setSources(data.sources);
+        } else {
+          setSources([]);
         }
-        return response.json();
-      } catch (error) {
-        console.error('Error fetching hashtag suggestions:', error);
-        return { hashtags: [] }; // Return empty set on error
+      } else {
+        setHashtags([]);
+        setSources([]);
       }
-    },
-    enabled: hasValidParams,
-    staleTime: 1000 * 60 * 60, // Cache for 1 hour
-    retry: 1, // Only retry once to avoid excessive API calls
-  });
+    } catch (err) {
+      console.error('Error fetching hashtags:', err);
+      setError('Failed to load hashtag suggestions.');
+      setHashtags([]);
+      setSources([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  // Fetch hashtags when dependencies change
+  useEffect(() => {
+    fetchHashtags();
+  }, [user, industry, questType, targetAction, contentContext, count, demo]);
+  
+  return {
+    hashtags,
+    sources,
+    isLoading,
+    error,
+    refreshHashtags: fetchHashtags
+  };
 }

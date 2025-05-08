@@ -4,6 +4,8 @@ import Header from '@/components/layout/header';
 import { QuestPanel } from '@/components/career-quests/quest-panel';
 import { BadgeDisplay } from '@/components/career-quests/badge-display';
 import { XpProgressBar } from '@/components/career-quests/xp-progress-bar';
+import { HashtagSuggestions } from '@/components/career-quests/hashtag-suggestions';
+import { useToast } from '@/hooks/use-toast';
 import { 
   useUserXp,
   useXpTransactions
@@ -79,6 +81,29 @@ export default function CareerQuestsPage() {
           <div className="space-y-6">
             {/* Badges */}
             <BadgeDisplay userId={userId} />
+            
+            {/* Personalized Hashtag Suggestions */}
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle>Recommended Hashtags</CardTitle>
+                <CardDescription>Personalized for better visibility</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <HashtagSuggestions 
+                  questType="pulse_creation"
+                  showTitle={false}
+                  showMuskTip={true}
+                  count={5}
+                  showSources={true}
+                  muskTipContent="Using industry-relevant hashtags can boost your content visibility by up to 42%. I've suggested tags based on your profile data and engagement."
+                  onHashtagClick={(hashtag) => {
+                    navigator.clipboard.writeText(hashtag);
+                    // Could show a toast notification here
+                  }}
+                  demo={true} // For testing/demo purposes
+                />
+              </CardContent>
+            </Card>
             
             {/* XP Transactions */}
             <Card>

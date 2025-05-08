@@ -58,6 +58,7 @@ export interface UserQuest {
   xpEarned?: number;
   badgeEarned?: BadgeType;
   muskResponse?: string;
+  muskTip?: string;       // Explicitly added to support direct muskTip property
   
   // Different quest definition formats based on API source
   questDefinition?: QuestDefinition;  // Original format

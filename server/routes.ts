@@ -5439,6 +5439,10 @@ ${extractedText.substring(0, 5000)}
   apiRouter.use(careerCapsuleRoutes);
   console.log("Career Capsule routes registered");
   
+  // Personalized Hashtag routes
+  setupPersonalizedHashtagRoutes(app);
+  console.log("Personalized Hashtag routes loaded");
+  
   // Get all career goals for a user
   apiRouter.get("/users/:userId/career-goals", async (req: Request, res: Response) => {
     try {
