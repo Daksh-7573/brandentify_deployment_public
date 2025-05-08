@@ -1,12 +1,14 @@
+import React, { useEffect } from "react";
 import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "./context/auth-context";
 import { useAuth } from "./hooks/use-auth";
-import { useEffect } from "react";
 import GlobalMuskButton from "@/components/musk/global-musk-button";
 import { SpatialMainLayout } from "@/components/spatial/SpatialMainLayout";
+import { EnhancedBackground } from "./components/ui/enhanced-background";
+import { lazy, Suspense } from "react";
 
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
@@ -41,8 +43,6 @@ import SpatialTestPage from "@/pages/spatial-test";
 import SpatialIndustryPulsePage from "@/pages/spatial-industry-pulse";
 import SpatialCareerCapsulePage from "@/pages/spatial-career-capsule";
 import SpatialBrandQuestsPage from "@/pages/spatial-brand-quests";
-// Lazy load the SharedCardPage to improve performance and show loader immediately
-import { lazy, Suspense } from "react";
 const SharedCardPage = lazy(() => import("@/pages/shared-card"));
 // Brand of the Day is now integrated into Nowboard
 
@@ -246,9 +246,14 @@ function App() {
         }>
           {/* Allow standard layouts with enhanced effects */}
           <SpatialMainLayout enableSpatialUI={false}>
-            <Router />
-            <GlobalMuskButton />
-            <Toaster />
+            {/* Add Enhanced Background for Vision Pro effects on standard pages */}
+            <div className="enhanced-background-container relative min-h-screen overflow-hidden">
+              {/* Add enhanced Vision Pro-inspired background */}
+              <EnhancedBackground variant="dramatic" />
+              <Router />
+              <GlobalMuskButton />
+              <Toaster />
+            </div>
           </SpatialMainLayout>
         </Suspense>
       </AuthProvider>
