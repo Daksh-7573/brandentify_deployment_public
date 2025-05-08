@@ -23,9 +23,22 @@ const pageTitles: Record<string, string> = {
   '/portfolio-builder': 'Portfolio Builder',
   '/profile': 'Your Profile',
   '/smart-connect': 'Smart Connect',
+  '/resume': 'Resume',
+  '/resume-editor': 'Resume Editor',
+  '/resume-cv': 'CV Builder',
+  '/services': 'Services',
+  '/personal-details': 'Personal Details',
+  '/edit-profile': 'Edit Profile',
+  '/unified-profile': 'Profile',
+  '/onboarding': 'Onboarding',
+  '/search': 'Search Results',
+  '/nowboard': 'Nowboard',
+  '/news-sources': 'News Sources',
+  '/musk-match': 'Musk Match',
   '/spatial-test': 'Spatial UI Test',
   '/spatial-industry-pulse': 'Industry Pulse',
   '/spatial-career-capsule': 'Career Capsule',
+  '/spatial-brand-quests': 'Brand Quests',
 };
 
 export const SpatialMainLayout: React.FC<SpatialMainLayoutProps> = ({ 
@@ -34,16 +47,28 @@ export const SpatialMainLayout: React.FC<SpatialMainLayoutProps> = ({
 }) => {
   const [location] = useLocation();
   
-  // These routes are already using the spatial layout internally
-  // or should not have the portal layout
-  const excludedRoutes = [
-    '/spatial-test', 
-    '/spatial-industry-pulse', 
-    '/spatial-career-capsule',
+  // Routes that should NOT have the spatial layout
+  // Landing page, auth, static pages, etc.
+  const nonSpatialRoutes = [
+    '/',
     '/auth',
     '/verify-email',
     '/shared-card',
+    '/login',
+    '/signup',
+    '/profile/card',
   ];
+  
+  // Routes that already have their own spatial UI implementation
+  const spatialSpecificRoutes = [
+    '/spatial-test', 
+    '/spatial-industry-pulse', 
+    '/spatial-career-capsule',
+    '/spatial-brand-quests',
+  ];
+  
+  // Combined list of all routes to exclude
+  const excludedRoutes = [...nonSpatialRoutes, ...spatialSpecificRoutes];
   
   // Check if the current route should be excluded from spatial layout
   const shouldExclude = excludedRoutes.some(route => location.startsWith(route));

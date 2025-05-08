@@ -1,7 +1,7 @@
 import React, { ReactNode, useState } from 'react';
 import { SpatialLayout, FloatingWindow, ControlPanel } from './SpatialLayout';
 import { Button } from '@/components/ui/button';
-import { Home, Menu, User, X, Briefcase, Brain, Compass, Settings, PanelLeft } from 'lucide-react';
+import { Home, Menu, User, X, Briefcase, Brain, Compass, Settings, PanelLeft, FileText, Users, Sparkles } from 'lucide-react';
 import { Link, useLocation } from 'wouter';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useCurrentUser } from '@/hooks/use-current-user';
@@ -60,7 +60,7 @@ export const SpatialPortalLayout: React.FC<SpatialPortalLayoutProps> = ({
   // Navigation items for the main menu
   const navItems = [
     { 
-      name: 'Dashboard', 
+      name: 'Industry Pulse', 
       icon: <Home className="h-5 w-5" />, 
       href: '/industry-pulse',
       active: location === '/industry-pulse' || location === '/dashboard'
@@ -69,7 +69,7 @@ export const SpatialPortalLayout: React.FC<SpatialPortalLayoutProps> = ({
       name: 'Career Capsule', 
       icon: <Compass className="h-5 w-5" />, 
       href: '/career-capsule',
-      active: location === '/career-capsule'
+      active: location === '/career-capsule' || location === '/career-roadmap'
     },
     { 
       name: 'Brand Quests', 
@@ -82,6 +82,24 @@ export const SpatialPortalLayout: React.FC<SpatialPortalLayoutProps> = ({
       icon: <Briefcase className="h-5 w-5" />, 
       href: '/portfolio-builder',
       active: location === '/portfolio-builder'
+    },
+    { 
+      name: 'Resume', 
+      icon: <FileText className="h-5 w-5" />, 
+      href: '/resume',
+      active: location.startsWith('/resume') || location.includes('resume-')
+    },
+    { 
+      name: 'Smart Connect', 
+      icon: <Users className="h-5 w-5" />, 
+      href: '/smart-connect',
+      active: location === '/smart-connect'
+    },
+    { 
+      name: 'Services', 
+      icon: <Sparkles className="h-5 w-5" />, 
+      href: '/services',
+      active: location === '/services'
     },
   ];
 
@@ -163,7 +181,8 @@ export const SpatialPortalLayout: React.FC<SpatialPortalLayoutProps> = ({
 
       {/* Control Panel */}
       <ControlPanel>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
+          {/* Menu Toggle */}
           <Button 
             variant="ghost" 
             size="icon" 
@@ -173,34 +192,60 @@ export const SpatialPortalLayout: React.FC<SpatialPortalLayoutProps> = ({
             {isSidebarOpen ? <PanelLeft className="h-5 w-5 text-white" /> : <Menu className="h-5 w-5 text-white" />}
           </Button>
           
-          <Link href="/industry-pulse">
-            <Button 
-              variant={location === '/industry-pulse' ? "default" : "ghost"}
-              size="icon" 
-              className="rounded-full bg-white/10 hover:bg-white/20"
-            >
-              <Home className="h-5 w-5 text-white" />
-            </Button>
-          </Link>
+          {/* Quick Links */}
+          <div className="flex items-center border-l border-r border-white/10 px-2 mx-1">
+            <Link href="/industry-pulse">
+              <Button 
+                variant={location === '/industry-pulse' ? "default" : "ghost"}
+                size="icon" 
+                className="rounded-full bg-white/10 hover:bg-white/20"
+              >
+                <Home className="h-5 w-5 text-white" />
+              </Button>
+            </Link>
+            
+            <Link href="/career-capsule">
+              <Button 
+                variant={location === '/career-capsule' ? "default" : "ghost"}
+                size="icon" 
+                className="rounded-full bg-white/10 hover:bg-white/20"
+              >
+                <Compass className="h-5 w-5 text-white" />
+              </Button>
+            </Link>
+            
+            <Link href="/brand-quests">
+              <Button 
+                variant={location === '/brand-quests' ? "default" : "ghost"}
+                size="icon" 
+                className="rounded-full bg-white/10 hover:bg-white/20"
+              >
+                <Brain className="h-5 w-5 text-white" />
+              </Button>
+            </Link>
+          </div>
           
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className="rounded-full bg-white/10 hover:bg-white/20"
-            onClick={() => setProfileOpen(!isProfileOpen)}
-          >
-            <User className="h-5 w-5 text-white" />
-          </Button>
-          
-          <Link href="/settings">
+          {/* User and Settings */}
+          <div className="flex items-center">
             <Button 
               variant="ghost" 
               size="icon" 
               className="rounded-full bg-white/10 hover:bg-white/20"
+              onClick={() => setProfileOpen(!isProfileOpen)}
             >
-              <Settings className="h-5 w-5 text-white" />
+              <User className="h-5 w-5 text-white" />
             </Button>
-          </Link>
+            
+            <Link href="/settings">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="rounded-full bg-white/10 hover:bg-white/20"
+              >
+                <Settings className="h-5 w-5 text-white" />
+              </Button>
+            </Link>
+          </div>
         </div>
       </ControlPanel>
     </SpatialLayout>
