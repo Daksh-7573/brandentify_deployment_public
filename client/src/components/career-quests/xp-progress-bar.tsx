@@ -5,7 +5,6 @@ import { cn } from '@/lib/utils';
 
 interface XpProgressBarProps {
   balance: number;
-  monthlyEarned: number;
   lifetimeEarned: number;
   className?: string;
 }
@@ -25,7 +24,7 @@ const LEVELS = [
   // Add more levels as needed
 ];
 
-export function XpProgressBar({ balance, monthlyEarned, lifetimeEarned, className }: XpProgressBarProps) {
+export function XpProgressBar({ balance, lifetimeEarned, className }: XpProgressBarProps) {
   // Find current level and next level
   const currentLevelInfo = LEVELS.find((l, i) => 
     balance >= l.xp && (i === LEVELS.length - 1 || balance < LEVELS[i + 1].xp)
@@ -72,7 +71,6 @@ export function XpProgressBar({ balance, monthlyEarned, lifetimeEarned, classNam
                 <span>{progressInCurrentLevel} / {xpRange} XP to Level {nextLevelInfo.level}</span>
               </TooltipTrigger>
               <TooltipContent className="space-y-2 w-56">
-                <p>Monthly XP: {monthlyEarned} XP</p>
                 <p>Lifetime earned: {lifetimeEarned} XP</p>
                 <p>Current balance: {balance} XP</p>
                 <p>Next level at: {nextLevelInfo.xp} XP</p>
