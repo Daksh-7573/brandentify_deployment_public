@@ -7,7 +7,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
 import { UserQuest, QuestDefinition, QuestType, getQuestTypeIcon, getQuestStatusLabel, getBadgeLabel } from '@/types/career-quest';
-import { useCompleteQuest, useDismissQuest, useUpdateQuestProgress } from '@/hooks/use-career-quests';
+import { useCompleteQuest, useUpdateQuestProgress } from '@/hooks/use-career-quests';
 
 interface QuestCardProps {
   quest: UserQuest;
@@ -17,10 +17,8 @@ interface QuestCardProps {
 export function QuestCard({ quest, onActionClick }: QuestCardProps) {
   const { toast } = useToast();
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const [dismissOpen, setDismissOpen] = useState(false);
   
   const completeQuestMutation = useCompleteQuest();
-  const dismissQuestMutation = useDismissQuest();
   const updateProgressMutation = useUpdateQuestProgress();
   
   // Handle all possible API data structures:
@@ -31,12 +29,13 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
     id: quest.questDefinitionId,
     title: quest.questTitle || '',
     description: quest.questDescription || '',
-    type: (quest.questType as QuestType) || 'profile_update',
+    type: (quest.questType as QuestType) || 'pulse_creation',
     targetCount: 1, // Default if not provided
     targetAction: '',
     xpReward: 0,
     badgeReward: undefined,
-    muskTip: quest.muskTip || quest.muskResponse || '',  // Fix for weekly quests
+    // For Musk tips, use any available field that might have it
+    muskTip: quest.questMuskTip || quest.muskResponse || '',
     isActive: true,
     createdAt: '',
     updatedAt: ''
@@ -46,7 +45,6 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
   const targetCount = questDefinition.targetCount || 1;
   const progressPercentage = Math.min(100, Math.floor((quest.progress / targetCount) * 100));
   const isComplete = quest.status === 'completed';
-  const isDismissed = quest.status === 'dismissed';
   const isExpired = quest.status === 'expired';
   const isActive = quest.status === 'active';
   
@@ -101,28 +99,10 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
     });
   };
   
-  const handleDismiss = () => {
-    dismissQuestMutation.mutate({
-      questId: quest.id,
-      reason: 'User dismissed',
-      userId: quest.userId
-    }, {
-      onSuccess: () => {
-        toast({
-          title: 'Quest dismissed',
-          description: `You've dismissed "${questDefinition.title}".`,
-        });
-        setDismissOpen(false);
-      },
-      onError: (error) => {
-        toast({
-          title: 'Error',
-          description: `Failed to dismiss quest: ${error.message}`,
-          variant: 'destructive',
-        });
-      }
-    });
-  };
+  // Get the Musk tip content from any available source
+  const muskTipContent = questDefinition.muskTip || 
+                         quest.muskResponse || 
+                         (typeof quest.definition === 'object' && quest.definition?.muskTip);
   
   return (
     <Card className="w-full shadow-md transition-all hover:shadow-lg">
@@ -142,7 +122,6 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
           <Badge 
             variant={
               isComplete ? "default" : 
-              isDismissed ? "destructive" : 
               isExpired ? "outline" : 
               "secondary"
             }
@@ -162,13 +141,13 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
           </div>
           <Progress value={progressPercentage} className="h-2" />
           
-          {questDefinition.muskTip && (
+          {muskTipContent && (
             <div className="mt-3 bg-muted/50 p-3 rounded-md border border-muted">
               <div className="flex items-center gap-2 text-sm font-medium mb-1">
                 <span>⚡</span>
                 <span>Musk's Tip</span>
               </div>
-              <p className="text-sm text-muted-foreground">{questDefinition.muskTip}</p>
+              <p className="text-sm text-muted-foreground">{muskTipContent}</p>
             </div>
           )}
         </div>
@@ -176,13 +155,7 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
       <CardFooter className="pt-1 flex justify-between">
         {isActive && (
           <>
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={() => setDismissOpen(true)}
-            >
-              Dismiss
-            </Button>
+            <div className="w-4"></div> {/* Spacer to maintain layout without dismiss button */}
             <Button 
               variant="default" 
               size="sm"
@@ -194,7 +167,7 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
           </>
         )}
         
-        {(isComplete || isDismissed || isExpired) && (
+        {(isComplete || isExpired) && (
           <div className="w-full flex justify-end">
             <TooltipProvider>
               <Tooltip>
@@ -209,7 +182,7 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
                       ? `Completed on ${new Date(quest.completedAt || '').toLocaleDateString()}`
                       : isExpired 
                         ? 'Quest expired'
-                        : 'Quest dismissed'}
+                        : 'Quest status'}
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
@@ -219,7 +192,7 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
                       ? 'Completed successfully'
                       : isExpired 
                         ? 'This quest has expired and is no longer available'
-                        : 'You dismissed this quest'}
+                        : 'Quest status'}
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -241,24 +214,6 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={handleComplete}>
               Complete Quest
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-      
-      {/* Confirmation Dialog for Dismissal */}
-      <AlertDialog open={dismissOpen} onOpenChange={setDismissOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Dismiss Quest</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to dismiss this quest? You won't earn any XP or badges for this quest.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDismiss} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-              Dismiss Quest
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

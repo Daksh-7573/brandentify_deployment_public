@@ -15,6 +15,7 @@ import { pool } from '../db';
 /**
  * Update quest progress for a specific quest and user
  * Returns the updated quest data if successful, null otherwise
+ * Simplified for engagement quests only - updated to removed dismissed quest functionality
  */
 export async function updateQuestProgress(questId: number, userId: number, progress: number): Promise<any | null> {
   try {
@@ -27,14 +28,15 @@ export async function updateQuestProgress(questId: number, userId: number, progr
         qd.title as quest_title,
         qd.target_count,
         qd.xp_reward,
-        qd.badge_reward
+        qd.badge_reward,
+        qd.musk_tip
       FROM user_quests uq
       JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
-      WHERE uq.id = $1 AND uq.user_id = $2
+      WHERE uq.id = $1 AND uq.user_id = $2 AND uq.status = 'active'
     `, [questId, userId]);
     
     if (combinedResult.rows.length === 0) {
-      console.log(`[updateQuestProgress] Quest ${questId} not found for user ${userId}`);
+      console.log(`[updateQuestProgress] Quest ${questId} not found or not active for user ${userId}`);
       return null;
     }
     
@@ -42,13 +44,13 @@ export async function updateQuestProgress(questId: number, userId: number, progr
     const targetCount = questData.target_count;
     
     // Calculate new status and completed_at
-    let newStatus = questData.status;
-    let completedAt = questData.completed_at;
-    let xpEarned = questData.xp_earned || 0;
-    let badgeEarned = questData.badge_earned;
+    let newStatus = 'active'; // Default to active
+    let completedAt = null;
+    let xpEarned = 0;
+    let badgeEarned = null;
     
     // If progress meets or exceeds target count, mark as completed
-    if (progress >= targetCount && questData.status === 'active') {
+    if (progress >= targetCount) {
       console.log(`[updateQuestProgress] Quest ${questId} completed by user ${userId}`);
       newStatus = 'completed';
       completedAt = new Date();
@@ -85,7 +87,6 @@ export async function updateQuestProgress(questId: number, userId: number, progr
           progress,
           assigned_at as "assignedAt",
           completed_at as "completedAt",
-          dismissed_reason as "dismissedReason",
           xp_earned as "xpEarned",
           badge_earned as "badgeEarned",
           musk_response as "muskResponse",
@@ -113,6 +114,7 @@ export async function updateQuestProgress(questId: number, userId: number, progr
 /**
  * Update user XP balance when a quest is completed
  * Simplified to focus on essential functionality
+ * Updated to use the simplified user_xp schema (no monthly tracking)
  */
 async function updateUserXp(userId: number, xpAmount: number, source: string): Promise<void> {
   try {
@@ -125,22 +127,23 @@ async function updateUserXp(userId: number, xpAmount: number, source: string): P
     try {
       await client.query('BEGIN');
       
-      // Get or create user XP record with a single query
+      // Get or create user XP record with a single query (simplified schema)
       await client.query(`
-        INSERT INTO user_xp (user_id, balance, lifetime_earned, updated_at)
-        VALUES ($1, $2, $3, $4)
+        INSERT INTO user_xp (user_id, balance, lifetime_earned, last_earned_at, updated_at)
+        VALUES ($1, $2, $3, $4, $4)
         ON CONFLICT (user_id) DO UPDATE
         SET 
           balance = user_xp.balance + $2,
           lifetime_earned = user_xp.lifetime_earned + $3,
+          last_earned_at = $4,
           updated_at = $4
       `, [userId, xpAmount, xpAmount, now]);
       
       // Record XP transaction
       await client.query(`
-        INSERT INTO xp_transactions (user_id, amount, source, created_at)
-        VALUES ($1, $2, $3, $4)
-      `, [userId, xpAmount, source, now]);
+        INSERT INTO xp_transactions (user_id, amount, source, description, created_at)
+        VALUES ($1, $2, $3, $4, $5)
+      `, [userId, xpAmount, 'quest_completion', source, now]);
       
       await client.query('COMMIT');
       console.log(`[updateUserXp] Successfully updated XP and recorded transaction for user ${userId}`);

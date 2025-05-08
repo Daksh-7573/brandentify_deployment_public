@@ -288,40 +288,7 @@ export const useCompleteQuest = () => {
   });
 };
 
-// Dismiss a quest
-export const useDismissQuest = () => {
-  return useMutation({
-    mutationFn: async ({ 
-      questId, 
-      reason,
-      userId
-    }: { 
-      questId: number; 
-      reason?: string;
-      userId: number
-    }) => {
-      const res = await fetch(`/api/users/${userId}/quests/${questId}/dismiss`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ reason })
-      });
-      
-      if (!res.ok) throw new Error('Failed to dismiss quest');
-      return res.json() as Promise<UserQuest>;
-    },
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${data.userId}/quests`] });
-      queryClient.invalidateQueries({ 
-        queryKey: [`/api/users/${data.userId}/quests/current-week`] 
-      });
-      queryClient.invalidateQueries({ 
-        queryKey: [`/api/users/${data.userId}/quests-with-definitions`] 
-      });
-    }
-  });
-};
+// Removed useDismissQuest as quest dismissal is no longer supported in the simplified schema
 
 // Helper to calculate current week number (ISO week number calculation - matches backend)
 export const getCurrentWeekNumber = (): number => {
