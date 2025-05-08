@@ -135,13 +135,10 @@ async function updateUserXp(userId: number, xpAmount: number, source: string): P
           INSERT INTO user_xp (
             user_id, 
             balance, 
-            lifetime_earned, 
-            current_month_earned, 
-            current_month, 
-            current_year,
+            lifetime_earned,
             updated_at
-          ) VALUES ($1, $2, $3, $4, $5, $6, $7)
-        `, [userId, xpAmount, xpAmount, xpAmount, currentMonth, currentYear, now]);
+          ) VALUES ($1, $2, $3, $4)
+        `, [userId, xpAmount, xpAmount, now]);
       } catch (insertError) {
         console.error('[updateUserXp] Error creating XP record:', insertError);
         throw insertError;
@@ -153,25 +150,17 @@ async function updateUserXp(userId: number, xpAmount: number, source: string): P
       const userXp = checkResult.rows[0];
       let monthlyXp = userXp.current_month_earned || 0;
       
-      // If month has changed, reset monthly XP
-      if (userXp.current_month !== currentMonth || userXp.current_year !== currentYear) {
-        monthlyXp = xpAmount;
-      } else {
-        monthlyXp += xpAmount;
-      }
-      
+      // Simplify XP tracking - just update the balance and lifetime earned
+      // The monthly tracking is optional and can be added later if table structure supports it
       try {
         await pool.query(`
           UPDATE user_xp
           SET 
             balance = balance + $1,
             lifetime_earned = lifetime_earned + $2,
-            current_month_earned = $3,
-            current_month = $4,
-            current_year = $5,
-            updated_at = $6
-          WHERE user_id = $7
-        `, [xpAmount, xpAmount, monthlyXp, currentMonth, currentYear, now, userId]);
+            updated_at = $3
+          WHERE user_id = $4
+        `, [xpAmount, xpAmount, now, userId]);
       } catch (updateError) {
         console.error('[updateUserXp] Error updating XP balance:', updateError);
         throw updateError;

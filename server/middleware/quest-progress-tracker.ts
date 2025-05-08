@@ -129,14 +129,16 @@ export const questProgressMiddleware = async (req: Request, res: Response, next:
         
         if (userId) {
           console.log(`[Quest Tracker] Processing request with userId: ${userId}`);
-          const path = req.path;
+          const originalPath = req.path;
+          const originalUrl = req.originalUrl || req.url || '';
+          const path = originalUrl.includes('/api/') ? originalUrl : req.path;
           const method = req.method;
           
           // Log all trackers for debugging
           console.log(`[Quest Tracker] Available trackers: ${questTrackers.map(t => t.targetAction).join(', ')}`);
           
           // Log the current path and method
-          console.log(`[Quest Tracker] Checking route: ${path} (${method})`);
+          console.log(`[Quest Tracker] Checking route: ${path} (${method}), originalPath: ${originalPath}, originalUrl: ${originalUrl}`);
           
           // Track debug info for troubleshooting
           let routeMatchedAny = false;
