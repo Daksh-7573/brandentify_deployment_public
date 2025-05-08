@@ -60,7 +60,6 @@ export default function CareerQuestsPage() {
                 ) : userXp ? (
                   <XpProgressBar 
                     balance={userXp.balance}
-                    monthlyEarned={userXp.currentMonthEarned}
                     lifetimeEarned={userXp.lifetimeEarned}
                   />
                 ) : (

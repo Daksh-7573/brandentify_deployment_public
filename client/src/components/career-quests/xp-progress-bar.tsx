@@ -82,8 +82,7 @@ export function XpProgressBar({ balance, lifetimeEarned, className }: XpProgress
       
       <Progress 
         value={progressPercentage} 
-        className="h-3" 
-        indicatorClassName="bg-gradient-to-r from-yellow-500 to-yellow-300" 
+        className="h-3"
       />
     </div>
   );
