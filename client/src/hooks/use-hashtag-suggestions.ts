@@ -8,6 +8,11 @@ interface HashtagResponse {
   [key: string]: unknown; // Allow for additional properties
 }
 
+// Type guard to check if a response is a valid HashtagResponse
+function isHashtagResponse(obj: any): obj is HashtagResponse {
+  return obj && typeof obj === 'object' && Array.isArray(obj.hashtags);
+}
+
 interface HashtagSuggestionsOptions {
   industry?: string;
   domain?: string;
@@ -55,10 +60,9 @@ export function useHashtagSuggestions(options: HashtagSuggestionsOptions): Hasht
         const staticResponse = await apiRequest('GET', `/api/personalized-hashtags/static/${questType}?count=${count}`);
         
         // Parse the response data
-        if (staticResponse && typeof staticResponse === 'object' && 'hashtags' in staticResponse) {
-          const typedResponse = staticResponse as unknown as HashtagResponse;
-          setHashtags(typedResponse.hashtags);
-          setSources(typedResponse.sources || ['Content trends']);
+        if (isHashtagResponse(staticResponse)) {
+          setHashtags(staticResponse.hashtags);
+          setSources(staticResponse.sources || ['Content trends']);
         } else {
           setHashtags([]);
           setSources([]);
@@ -77,10 +81,9 @@ export function useHashtagSuggestions(options: HashtagSuggestionsOptions): Hasht
         });
         
         // Parse the response data
-        if (response && typeof response === 'object' && 'hashtags' in response) {
-          const typedResponse = response as HashtagResponse;
-          setHashtags(typedResponse.hashtags);
-          setSources(typedResponse.sources || []);
+        if (isHashtagResponse(response)) {
+          setHashtags(response.hashtags);
+          setSources(response.sources || []);
         } else {
           setHashtags([]);
           setSources([]);
@@ -95,10 +98,9 @@ export function useHashtagSuggestions(options: HashtagSuggestionsOptions): Hasht
         const staticResponse = await apiRequest('GET', `/api/personalized-hashtags/static/${questType}?count=${count}`);
         
         // Parse the response data
-        if (staticResponse && typeof staticResponse === 'object' && 'hashtags' in staticResponse) {
-          const typedResponse = staticResponse as HashtagResponse;
-          setHashtags(typedResponse.hashtags);
-          setSources(typedResponse.sources || ['Static suggestions']);
+        if (isHashtagResponse(staticResponse)) {
+          setHashtags(staticResponse.hashtags);
+          setSources(staticResponse.sources || ['Static suggestions']);
         }
       } catch (fallbackErr) {
         console.error('Error fetching fallback hashtags:', fallbackErr);

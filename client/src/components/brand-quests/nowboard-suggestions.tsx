@@ -246,7 +246,33 @@ export function NowboardSuggestions({ userId, className, questType }: NowboardSu
   }
   
   if (!data || data.length === 0) {
-    return null;
+    return (
+      <Card className={cn(className)}>
+        <CardHeader className="pb-2">
+          <CardTitle className="flex items-center gap-2">
+            <Avatar className="h-8 w-8">
+              <AvatarFallback className="bg-primary/10">
+                <Bot className="h-4 w-4 text-primary" />
+              </AvatarFallback>
+            </Avatar>
+            <span>Nowboard Opportunities</span>
+          </CardTitle>
+          <CardDescription className="flex justify-between">
+            <span>Musk-recommended actions to complete your quests</span>
+            <Button size="sm" variant="ghost" className="h-6 p-1" onClick={() => refetch()}>
+              <RefreshCw className="h-3 w-3" />
+            </Button>
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center py-6 text-muted-foreground">
+            <Bot className="h-10 w-10 mx-auto mb-2 opacity-20" />
+            <p>No suggestions available right now.</p>
+            <p className="text-xs mt-1">Check back later for new activities!</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
   }
   
   return (
@@ -292,12 +318,10 @@ export function NowboardSuggestions({ userId, className, questType }: NowboardSu
                         "h-1.5", 
                         suggestion.progress === 0 ? "bg-gray-100" : "",
                         suggestion.progress > 0 && suggestion.progress < suggestion.targetCount ? "bg-amber-100" : "",
-                        suggestion.progress === suggestion.targetCount ? "bg-green-100" : ""
-                      )}
-                      indicatorClassName={cn(
-                        suggestion.progress === 0 ? "bg-gray-400" : "",
-                        suggestion.progress > 0 && suggestion.progress < suggestion.targetCount ? "bg-amber-500" : "",
-                        suggestion.progress === suggestion.targetCount ? "bg-green-500" : ""
+                        suggestion.progress === suggestion.targetCount ? "bg-green-100" : "",
+                        suggestion.progress === 0 ? "[&>div]:bg-gray-400" : "",
+                        suggestion.progress > 0 && suggestion.progress < suggestion.targetCount ? "[&>div]:bg-amber-500" : "",
+                        suggestion.progress === suggestion.targetCount ? "[&>div]:bg-green-500" : ""
                       )}
                     />
                   </div>
