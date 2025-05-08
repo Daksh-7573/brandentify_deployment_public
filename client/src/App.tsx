@@ -161,8 +161,7 @@ function Router() {
         <ProtectedRoute path="/career-quests" component={() => <Redirect to="/spatial-brand-quests" />} />
       </Route>
       <Route path="/career-capsule">
-        {/* Redirect to spatial version of Career Capsule */}
-        <ProtectedRoute path="/career-capsule" component={() => <Redirect to="/spatial-career-capsule" />} />
+        <ProtectedRoute path="/career-capsule" component={CareerCapsulePage} />
       </Route>
       {/* Replaced with Career Capsule - keeping both routes for backward compatibility */}
       <Route path="/career-roadmap">
@@ -245,8 +244,8 @@ function App() {
             </div>
           </div>
         }>
-          {/* Force enable the spatial UI for all routes by setting enableSpatialUI=true */}
-          <SpatialMainLayout enableSpatialUI={true}>
+          {/* Allow standard layouts with enhanced effects */}
+          <SpatialMainLayout enableSpatialUI={false}>
             <Router />
             <GlobalMuskButton />
             <Toaster />

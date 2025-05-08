@@ -1,6 +1,5 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useState } from 'react';
 import { cn } from '@/lib/utils';
-import { Card } from '@/components/ui/card';
 import { motion } from 'framer-motion';
 
 interface EnhancedCardProps {
@@ -24,80 +23,79 @@ export const EnhancedCard: React.FC<EnhancedCardProps> = ({
   onFocus,
   variant = 'default',
 }) => {
-  // Define base styles for different variants
-  const variantStyles = {
-    default: {
-      bg: 'bg-background/80',
-      border: 'border-border',
-      shadow: 'shadow-md',
-    },
-    prominent: {
-      bg: 'bg-black/30',
-      border: 'border-white/20',
-      shadow: 'shadow-lg',
-    },
-    glassy: {
-      bg: 'bg-black/20',
-      border: 'border-white/25',
-      shadow: 'shadow-xl',
+  const [isHovered, setIsHovered] = useState(false);
+  
+  // Determine blur amount based on card variant
+  const getBlurAmount = () => {
+    switch (variant) {
+      case 'default': return '8px';
+      case 'prominent': return '12px';
+      case 'glassy': return '15px';
+      default: return '8px';
     }
   };
-
-  const currentVariant = variantStyles[variant];
+  
+  // Determine background opacity based on card variant
+  const getBackgroundOpacity = () => {
+    switch (variant) {
+      case 'default': return '0.5';
+      case 'prominent': return '0.6';
+      case 'glassy': return '0.3';
+      default: return '0.5';
+    }
+  };
+  
+  // If card is focused or hovered, apply stronger effects
+  const isActive = isFocused || isHovered;
   
   return (
     <motion.div
-      onClick={() => onFocus?.()}
-      whileHover={{ 
-        scale: 1.01,
-        y: -3, 
-        transition: { type: 'spring', stiffness: 400, damping: 25 } 
-      }}
-      animate={{
-        boxShadow: isFocused 
-          ? '0 10px 30px rgba(0, 0, 0, 0.4), 0 0 20px rgba(130, 150, 255, 0.25)' 
-          : '0 8px 20px rgba(0, 0, 0, 0.25), 0 0 8px rgba(100, 130, 255, 0.15)',
-        borderColor: isFocused ? 'rgba(255, 255, 255, 0.35)' : 'rgba(255, 255, 255, 0.15)',
-      }}
       className={cn(
-        'rounded-xl overflow-hidden backdrop-blur-lg',
-        'border transition-all duration-300',
-        currentVariant.bg,
-        currentVariant.border,
-        currentVariant.shadow,
+        'relative overflow-hidden rounded-xl transition-all',
+        isActive ? 'shadow-xl' : 'shadow-lg',
         className
       )}
       style={{
-        backgroundImage: variant === 'glassy' 
-          ? 'linear-gradient(to bottom, rgba(35, 40, 65, 0.65), rgba(20, 25, 45, 0.7))'
-          : undefined,
+        backgroundColor: `rgba(20, 20, 30, ${getBackgroundOpacity()})`,
+        backdropFilter: `blur(${getBlurAmount()})`,
+        borderTop: variant === 'glassy' ? '1px solid rgba(255, 255, 255, 0.1)' : undefined,
+        borderRight: variant === 'glassy' ? '1px solid rgba(255, 255, 255, 0.05)' : undefined,
+        borderBottom: variant === 'glassy' ? '1px solid rgba(0, 0, 0, 0.1)' : undefined,
+        borderLeft: variant === 'glassy' ? '1px solid rgba(0, 0, 0, 0.05)' : undefined,
+        transformStyle: 'preserve-3d',
+        transform: isActive ? 'scale(1.01)' : 'scale(1)',
       }}
+      animate={{
+        y: isActive ? -5 : 0,
+        boxShadow: isActive 
+          ? '0 20px 40px rgba(0, 0, 0, 0.25), 0 0 20px rgba(100, 140, 255, 0.2)' 
+          : '0 10px 30px rgba(0, 0, 0, 0.15)',
+      }}
+      transition={{
+        duration: 0.3,
+        ease: 'easeOut',
+      }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onClick={onFocus}
     >
-      {/* Inner glow effects for the glassy variant */}
-      {variant === 'glassy' && (
-        <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-xl">
-          {/* Top highlight */}
-          <div 
-            className="absolute top-0 left-1/2 -translate-x-1/2 w-[90%] h-[2px]"
-            style={{ 
-              borderRadius: '100%',
-              filter: 'blur(1px)',
-              background: 'linear-gradient(to right, transparent, rgba(140, 180, 255, 0.25), transparent)' 
-            }}
-          />
-          
-          {/* Center glow effect */}
-          <div 
-            className="absolute inset-2 opacity-5 rounded-xl"
-            style={{
-              background: 'radial-gradient(circle, rgba(160, 190, 255, 0.5) 0%, transparent 70%)',
-              filter: 'blur(10px)'
-            }}
-          />
-        </div>
-      )}
+      {/* Inner lighting effect at the top of the card */}
+      <div 
+        className="absolute inset-0 opacity-40 pointer-events-none transition-opacity duration-500 z-0"
+        style={{
+          background: isActive 
+            ? 'linear-gradient(to bottom, rgba(120, 150, 255, 0.15) 0%, transparent 50%)' 
+            : 'linear-gradient(to bottom, rgba(120, 150, 255, 0.1) 0%, transparent 50%)',
+          opacity: isActive ? 0.7 : 0.4,
+        }}
+      />
       
-      {children}
+      {/* Content container with glass effect */}
+      <div 
+        className="relative z-10"
+      >
+        {children}
+      </div>
     </motion.div>
   );
 };
@@ -110,11 +108,7 @@ export const EnhancedCardHeader: React.FC<{
   className?: string;
 }> = ({ children, className }) => {
   return (
-    <div className={cn(
-      "bg-gradient-to-r from-gray-900/80 to-gray-800/80 backdrop-blur-md px-4 py-3",
-      "border-b border-white/10 text-white font-medium",
-      className
-    )}>
+    <div className={cn('p-5 pb-3', className)}>
       {children}
     </div>
   );
@@ -128,7 +122,7 @@ export const EnhancedCardContent: React.FC<{
   className?: string;
 }> = ({ children, className }) => {
   return (
-    <div className={cn("p-4", className)}>
+    <div className={cn('p-5 pt-2', className)}>
       {children}
     </div>
   );
@@ -142,14 +136,8 @@ export const EnhancedCardFooter: React.FC<{
   className?: string;
 }> = ({ children, className }) => {
   return (
-    <div className={cn(
-      "bg-gradient-to-r from-gray-900/70 to-gray-800/70 backdrop-blur-md px-4 py-3",
-      "border-t border-white/10 text-white",
-      className
-    )}>
+    <div className={cn('p-5 pt-2 flex items-center justify-end gap-2', className)}>
       {children}
     </div>
   );
 };
-
-export default EnhancedCard;

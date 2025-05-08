@@ -74,10 +74,10 @@ export const SpatialMainLayout: React.FC<SpatialMainLayoutProps> = ({
   // Check if the current route should be excluded from spatial layout
   const shouldExclude = excludedRoutes.some(route => location.startsWith(route));
   
-  // Force spatial UI to be enabled for all routes except specified exclusions
-  const forceSpatialUI = true;
+  // Use the enableSpatialUI prop to decide whether to force spatial UI
+  const forceSpatialUI = enableSpatialUI;
   
-  // Only exclude for routes that should never have spatial UI
+  // Only exclude for routes that should never have spatial UI or when spatial UI is disabled
   if (!forceSpatialUI || shouldExclude) {
     return <>{children}</>;
   }
