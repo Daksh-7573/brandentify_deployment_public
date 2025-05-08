@@ -243,7 +243,7 @@ export function NowboardSuggestions({ userId, className, questType }: NowboardSu
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
-          {data.map(suggestion => (
+          {data.map((suggestion: NowboardSuggestion) => (
             <div 
               key={suggestion.id} 
               className="flex items-start gap-3 p-3 rounded-lg border border-gray-100 hover:border-primary/20 hover:bg-accent/20 transition-colors group"
@@ -254,6 +254,18 @@ export function NowboardSuggestions({ userId, className, questType }: NowboardSu
               <div className="space-y-1 flex-1">
                 <h4 className="font-medium text-sm">{suggestion.title}</h4>
                 <p className="text-xs text-muted-foreground">{suggestion.description}</p>
+                {suggestion.progress !== undefined && suggestion.targetCount !== undefined && (
+                  <div className="mt-1 mb-1">
+                    <div className="flex justify-between items-center text-xs mb-1">
+                      <span className="text-muted-foreground">Progress</span>
+                      <span className="font-medium">{suggestion.progress}/{suggestion.targetCount}</span>
+                    </div>
+                    <Progress 
+                      value={(suggestion.progress / suggestion.targetCount) * 100} 
+                      className="h-1.5"
+                    />
+                  </div>
+                )}
                 <div className="text-xs text-amber-600 font-semibold">
                   +{suggestion.xpValue} XP potential
                 </div>

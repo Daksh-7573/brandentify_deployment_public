@@ -1,6 +1,13 @@
 import { useState, useCallback, useEffect } from 'react';
 import { apiRequest } from '@/lib/queryClient';
 
+// Define the response structure
+interface HashtagResponse {
+  hashtags: string[];
+  sources?: string[];
+  [key: string]: unknown; // Allow for additional properties
+}
+
 interface HashtagSuggestionsOptions {
   industry?: string;
   domain?: string;
@@ -47,9 +54,11 @@ export function useHashtagSuggestions(options: HashtagSuggestionsOptions): Hasht
       if (questType === 'static' || (!industry && !domain && !demo)) {
         const staticResponse = await apiRequest('GET', `/api/personalized-hashtags/static/${questType}?count=${count}`);
         
-        if (staticResponse && staticResponse.hashtags) {
-          setHashtags(staticResponse.hashtags);
-          setSources(staticResponse.sources || ['Content trends']);
+        // Parse the response data
+        if (staticResponse && typeof staticResponse === 'object' && 'hashtags' in staticResponse) {
+          const typedResponse = staticResponse as HashtagResponse;
+          setHashtags(typedResponse.hashtags);
+          setSources(typedResponse.sources || ['Content trends']);
         } else {
           setHashtags([]);
           setSources([]);
@@ -67,9 +76,11 @@ export function useHashtagSuggestions(options: HashtagSuggestionsOptions): Hasht
           count
         });
         
-        if (response && response.hashtags) {
-          setHashtags(response.hashtags);
-          setSources(response.sources || []);
+        // Parse the response data
+        if (response && typeof response === 'object' && 'hashtags' in response) {
+          const typedResponse = response as HashtagResponse;
+          setHashtags(typedResponse.hashtags);
+          setSources(typedResponse.sources || []);
         } else {
           setHashtags([]);
           setSources([]);
@@ -83,9 +94,11 @@ export function useHashtagSuggestions(options: HashtagSuggestionsOptions): Hasht
       try {
         const staticResponse = await apiRequest('GET', `/api/personalized-hashtags/static/${questType}?count=${count}`);
         
-        if (staticResponse && staticResponse.hashtags) {
-          setHashtags(staticResponse.hashtags);
-          setSources(staticResponse.sources || ['Static suggestions']);
+        // Parse the response data
+        if (staticResponse && typeof staticResponse === 'object' && 'hashtags' in staticResponse) {
+          const typedResponse = staticResponse as HashtagResponse;
+          setHashtags(typedResponse.hashtags);
+          setSources(typedResponse.sources || ['Static suggestions']);
         }
       } catch (fallbackErr) {
         console.error('Error fetching fallback hashtags:', fallbackErr);
