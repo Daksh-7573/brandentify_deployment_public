@@ -4,6 +4,67 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Spatial UI styles for Vision Pro */
+@layer components {
+  /* 3D perspective container */
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+  
+  /* 3D transformation styles */
+  .transform-style-3d {
+    transform-style: preserve-3d;
+  }
+  
+  /* Z-axis translation utilities */
+  .translate-z-0 {
+    transform: translateZ(0px);
+  }
+  
+  .translate-z-10 {
+    transform: translateZ(10px);
+  }
+  
+  .translate-z-20 {
+    transform: translateZ(20px);
+  }
+  
+  .translate-z-\[-10px\] {
+    transform: translateZ(-10px);
+  }
+  
+  .translate-z-\[-20px\] {
+    transform: translateZ(-20px);
+  }
+  
+  .translate-z-\[-30px\] {
+    transform: translateZ(-30px);
+  }
+  
+  .translate-z-\[-50px\] {
+    transform: translateZ(-50px);
+  }
+  
+  /* Glassmorphism components */
+  .glass-panel {
+    @apply bg-background/70 backdrop-blur-lg border border-white/10 shadow-lg;
+  }
+  
+  .glass-card {
+    @apply bg-background/60 backdrop-blur-md border border-white/10 shadow-md;
+  }
+  
+  /* Large touch targets for spatial UI */
+  .spatial-button {
+    @apply px-6 py-4 rounded-full text-lg shadow-md;
+  }
+  
+  /* Spatial navigation */
+  .spatial-nav-icon {
+    @apply p-4 rounded-full shadow-md hover:shadow-lg transition-all duration-200;
+  }
+}
+
 /* Quantum Card Animations */
 @layer components {
   /* Liquid Loading Animation */
