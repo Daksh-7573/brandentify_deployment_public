@@ -28,8 +28,11 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
     id: quest.id,
     status: quest.status,
     type: quest.questType || (quest.questDefinition?.type || quest.definition?.type),
-    muskTip: quest.questMuskTip || quest.muskResponse || 
-             (quest.questDefinition?.muskTip || quest.definition?.muskTip)
+    muskTip: quest.muskTip,
+    questMuskTip: quest.questMuskTip,
+    definitionMuskTip: quest.definition?.muskTip,
+    questDefinitionMuskTip: quest.questDefinition?.muskTip,
+    muskResponse: quest.muskResponse
   });
   
   // Handle all possible API data structures:
@@ -111,7 +114,8 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
   };
   
   // Get the Musk tip content from any available source
-  const muskTipContent = questDefinition.muskTip || 
+  const muskTipContent = quest.muskTip || 
+                         questDefinition.muskTip || 
                          quest.muskResponse || 
                          (typeof quest.definition === 'object' && quest.definition?.muskTip);
   
