@@ -1,15 +1,15 @@
 import { useContext } from 'react';
 import { AuthContext } from '@/context/auth-context';
 import Header from '@/components/layout/header';
-import { QuestPanel } from '@/components/career-quests/quest-panel';
-import { BadgeDisplay } from '@/components/career-quests/badge-display';
-import { XpProgressBar } from '@/components/career-quests/xp-progress-bar';
-import { HashtagSuggestions } from '@/components/career-quests/hashtag-suggestions';
+import { QuestPanel } from '@/components/brand-quests/quest-panel';
+import { BadgeDisplay } from '@/components/brand-quests/badge-display';
+import { XpProgressBar } from '@/components/brand-quests/xp-progress-bar';
+import { HashtagSuggestions } from '@/components/brand-quests/hashtag-suggestions';
 import { useToast } from '@/hooks/use-toast';
 import { 
   useUserXp,
   useXpTransactions
-} from '@/hooks/use-career-quests';
+} from '@/hooks/use-career-quests'; // Will keep using the same hooks for now
 import { 
   Card, 
   CardContent, 

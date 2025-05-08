@@ -10,11 +10,11 @@ interface StaticHashtagSuggestionsProps {
 }
 
 // Predefined hashtags for different quest types
-const QUEST_TYPE_HASHTAGS: Record<QuestType, string[]> = {
+const QUEST_TYPE_HASHTAGS: Record<string, string[]> = {
   'pulse_creation': ['career', 'professional', 'jobsearch', 'worklife', 'experience'],
   'networking': ['connect', 'networking', 'community', 'industry', 'professionals'],
   'visibility': ['personalbranding', 'visibility', 'careergoals', 'growth', 'opportunity'],
-  'skills': ['skills', 'learning', 'development', 'expertise', 'growth'],
+  'skill_acquisition': ['skills', 'learning', 'development', 'expertise', 'growth'],
   'portfolio': ['portfolio', 'showcase', 'projects', 'worksamples', 'achievements'],
   'engagement': ['engage', 'community', 'conversation', 'discuss', 'participate'],
   'profile': ['profile', 'professional', 'personal', 'brand', 'identity'],
