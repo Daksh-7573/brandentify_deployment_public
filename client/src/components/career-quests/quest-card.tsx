@@ -44,7 +44,6 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
   const targetCount = questDefinition.targetCount || 1;
   const progressPercentage = Math.min(100, Math.floor((quest.progress / targetCount) * 100));
   const isComplete = quest.status === 'completed';
-  const isDismissed = quest.status === 'dismissed';
   const isExpired = quest.status === 'expired';
   const isActive = quest.status === 'active';
   
@@ -120,7 +119,6 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
           <Badge 
             variant={
               isComplete ? "default" : 
-              isDismissed ? "destructive" : 
               isExpired ? "outline" : 
               "secondary"
             }
@@ -165,7 +163,7 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
           </div>
         )}
         
-        {(isComplete || isDismissed || isExpired) && (
+        {(isComplete || isExpired) && (
           <div className="w-full flex justify-end">
             <TooltipProvider>
               <Tooltip>
@@ -178,9 +176,7 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
                   >
                     {isComplete 
                       ? `Completed on ${new Date(quest.completedAt || '').toLocaleDateString()}`
-                      : isExpired 
-                        ? 'Quest expired'
-                        : 'Quest dismissed'}
+                      : 'Quest expired'}
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
@@ -188,9 +184,7 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
                     ? `You earned ${quest.xpEarned} XP and ${quest.badgeEarned ? `the ${getBadgeLabel(quest.badgeEarned)} badge` : 'no badge'}`
                     : isComplete 
                       ? 'Completed successfully'
-                      : isExpired 
-                        ? 'This quest has expired and is no longer available'
-                        : 'You dismissed this quest'}
+                      : 'This quest has expired and is no longer available'}
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
