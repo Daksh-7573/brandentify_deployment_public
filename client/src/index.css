@@ -1,6 +1,5 @@
 @import './styles/neopastel.css';
 @import './styles/lumos-animations.css';
-@import './styles/vision-pro.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
