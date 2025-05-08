@@ -109,8 +109,8 @@ export const questProgressMiddleware = async (req: Request, res: Response, next:
   const originalEnd = res.end;
   
   // Override the end method to check for successful requests
-  // @ts-ignore - Fix TypeScript compatibility issue with res.end method
-  res.end = function(...args: any[]): Response {
+  // We need to completely redefine the signature to avoid TypeScript errors
+  const endProxy = function(chunk: any, encoding?: any, callback?: any): any {
     // Only track successful requests (2xx status codes)
     if (res.statusCode >= 200 && res.statusCode < 300) {
       // If user is authenticated and we have their ID
@@ -132,7 +132,7 @@ export const questProgressMiddleware = async (req: Request, res: Response, next:
               const matchingQuests = await findMatchingQuests(userId, matchingTracker.targetAction);
               
               if (matchingQuests.length > 0) {
-                console.log(`Found ${matchingQuests.length} matching quests for action ${matchingTracker.targetAction}`);
+                console.log(`[Quest Tracker] Found ${matchingQuests.length} matching quests for action ${matchingTracker.targetAction}`);
                 
                 // Extract progress increment
                 const progressIncrement = await matchingTracker.progressExtractor(req);
@@ -141,22 +141,31 @@ export const questProgressMiddleware = async (req: Request, res: Response, next:
                 for (const quest of matchingQuests) {
                   const newProgress = quest.progress + progressIncrement;
                   
-                  console.log(`Automatically updating quest ${quest.id} progress from ${quest.progress} to ${newProgress}`);
+                  console.log(`[Quest Tracker] Automatically updating quest ${quest.id} progress from ${quest.progress} to ${newProgress}`);
                   
                   await updateQuestProgress(quest.id, userId, newProgress);
                 }
               }
             } catch (error) {
-              console.error('Error in quest progress tracking:', error);
+              console.error('[Quest Tracker] Error in quest progress tracking:', error);
             }
           })();
         }
       }
     }
     
-    // Call the original end method
-    return originalEnd.apply(this, args);
+    // Call the original end method with appropriate arguments
+    if (callback && typeof callback === 'function') {
+      return originalEnd.call(res, chunk, encoding, callback);
+    } else if (encoding && typeof encoding === 'function') {
+      return originalEnd.call(res, chunk, encoding);
+    } else {
+      return originalEnd.call(res, chunk);
+    }
   };
+  
+  // @ts-ignore - Override the res.end method
+  res.end = endProxy;
   
   next();
 };
