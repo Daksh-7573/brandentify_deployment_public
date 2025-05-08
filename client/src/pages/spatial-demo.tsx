@@ -38,7 +38,7 @@ export default function SpatialDemoPage() {
           <SpatialIconButton 
             icon={<Home size={20} />} 
             label="Home" 
-            onClick={() => navigate('/')}
+            onClick={() => setLocation('/')}
           />
           <SpatialIconButton 
             icon={<User size={20} />} 
