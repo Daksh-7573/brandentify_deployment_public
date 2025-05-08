@@ -113,6 +113,7 @@ export async function updateQuestProgress(questId: number, userId: number, progr
 /**
  * Update user XP balance when a quest is completed
  * Simplified to focus on essential functionality
+ * Monthly XP tracking removed as it's not being used
  */
 async function updateUserXp(userId: number, xpAmount: number, source: string): Promise<void> {
   try {
@@ -125,7 +126,7 @@ async function updateUserXp(userId: number, xpAmount: number, source: string): P
     try {
       await client.query('BEGIN');
       
-      // Get or create user XP record with a single query
+      // Get or create user XP record with a single query - no monthly tracking
       await client.query(`
         INSERT INTO user_xp (user_id, balance, lifetime_earned, updated_at)
         VALUES ($1, $2, $3, $4)
