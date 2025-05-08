@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Progress } from '@/components/ui/progress';
-import { ArrowRight, Zap, MessageSquare, ThumbsUp, Bot, RefreshCw } from 'lucide-react';
+import { ArrowRight, Zap, MessageSquare, ThumbsUp, Bot, RefreshCw, Lightbulb } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -266,7 +266,7 @@ export function NowboardSuggestions({ userId, className, questType }: NowboardSu
         </CardHeader>
         <CardContent>
           <div className="text-center py-6 text-muted-foreground">
-            <Bot className="h-10 w-10 mx-auto mb-2 opacity-20" />
+            <Lightbulb className="h-10 w-10 mx-auto mb-2 opacity-20" />
             <p>No suggestions available right now.</p>
             <p className="text-xs mt-1">Check back later for new activities!</p>
           </div>
@@ -316,12 +316,11 @@ export function NowboardSuggestions({ userId, className, questType }: NowboardSu
                       value={(suggestion.progress / suggestion.targetCount) * 100}
                       className={cn(
                         "h-1.5", 
-                        suggestion.progress === 0 ? "bg-gray-100" : "",
-                        suggestion.progress > 0 && suggestion.progress < suggestion.targetCount ? "bg-amber-100" : "",
-                        suggestion.progress === suggestion.targetCount ? "bg-green-100" : "",
-                        suggestion.progress === 0 ? "[&>div]:bg-gray-400" : "",
-                        suggestion.progress > 0 && suggestion.progress < suggestion.targetCount ? "[&>div]:bg-amber-500" : "",
-                        suggestion.progress === suggestion.targetCount ? "[&>div]:bg-green-500" : ""
+                        suggestion.progress === 0 
+                          ? "bg-gray-100 [&>div]:bg-gray-400" 
+                          : suggestion.progress < suggestion.targetCount 
+                            ? "bg-amber-100 [&>div]:bg-amber-500" 
+                            : "bg-green-100 [&>div]:bg-green-500"
                       )}
                     />
                   </div>
