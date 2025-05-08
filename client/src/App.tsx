@@ -253,6 +253,15 @@ function App() {
             <div className="relative z-10">
               <Router />
               <GlobalMuskButton />
+              {/* Quick access to spatial test page for development */}
+              <div className="fixed bottom-4 right-4 z-50">
+                <a 
+                  href="/spatial-test-new"
+                  className="vision-button bg-black/40 backdrop-blur-md text-white/80 text-xs px-2 py-1 rounded-full border border-white/10 hover:bg-black/50 hover:text-white/90 transition-all"
+                >
+                  Test Vision Pro UI
+                </a>
+              </div>
               <Toaster />
             </div>
           </div>

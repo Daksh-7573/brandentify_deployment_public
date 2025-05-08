@@ -38,6 +38,7 @@ const pageTitles: Record<string, string> = {
   '/news-sources': 'News Sources',
   '/musk-match': 'Musk Match',
   '/spatial-test': 'Spatial UI Test',
+  '/spatial-test-new': 'Vision Pro UI Components Test',
   '/spatial-industry-pulse': 'Industry Pulse',
   '/spatial-career-capsule': 'Career Capsule',
   '/spatial-brand-quests': 'Brand Quests',
@@ -64,7 +65,7 @@ export const SpatialMainLayout: React.FC<SpatialMainLayoutProps> = ({
   // Routes that already have their own spatial UI implementation
   // These actually use the SpatialPortalLayout directly
   const spatialSpecificRoutes = [
-    '/spatial-test', 
+    '/spatial-test-new', 
     '/spatial-industry-pulse', 
     '/spatial-career-capsule',
     '/spatial-brand-quests',
@@ -73,11 +74,22 @@ export const SpatialMainLayout: React.FC<SpatialMainLayoutProps> = ({
   // Routes that should be excluded from any spatial effects
   const excludedRoutes = [...nonSpatialRoutes];
   
+  // Add explicit test pages that should never have automatic spatial UI
+  const testPageExclusions = [
+    '/spatial-test',  // Our new test page has its own implementation
+    '/test-nowboard',
+    '/feed-test',
+    '/musk-testing',
+  ];
+  
+  // Add test page exclusions to the excluded routes
+  excludedRoutes.push(...testPageExclusions);
+  
   // Check if we're on a dedicated spatial route which implements its own UI
   const isDedicatedSpatialRoute = spatialSpecificRoutes.some(route => location.startsWith(route));
   
-  // Check if we're specifically on a test page, which should always have spatial UI
-  const isTestPage = location.includes('/spatial-test') || location.includes('/test/spatial') || location.includes('/ui/test');
+  // Check if we're specifically on one of our new spatial test pages
+  const isTestPage = location === '/spatial-test-new';
   
   // Check if the current route should be excluded from any spatial effects (excluding dedicated spatial routes)
   const shouldExclude = excludedRoutes.some(route => location.startsWith(route));
@@ -85,7 +97,7 @@ export const SpatialMainLayout: React.FC<SpatialMainLayoutProps> = ({
   // If we're on a test page, always use spatial UI
   if (isTestPage) {
     return (
-      <SpatialPortalLayout title="Spatial UI Test">
+      <SpatialPortalLayout title={pageTitles[location] || "Vision Pro UI Components Test"}>
         {children}
       </SpatialPortalLayout>
     );
