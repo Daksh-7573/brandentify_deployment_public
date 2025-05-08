@@ -26,12 +26,30 @@ export function HashtagSuggestions({ quest, maxToShow = 5 }: HashtagSuggestionsP
   const userIndustry = quest.industry || '';
   const userDomain = quest.domain || '';
   
+  // Log quest info to diagnose the issue
+  console.log("[HashtagSuggestions] Quest:", {
+    questId: quest.id,
+    title: questDefinition.title,
+    type: questDefinition.type,
+    targetAction: questDefinition.targetAction,
+    industry: userIndustry || questDefinition.industry,
+    domain: userDomain || questDefinition.domain,
+    muskTip: quest.questMuskTip || quest.muskResponse || (quest.definition?.muskTip)
+  });
+  
   // Fetch hashtag suggestions based on quest and user context
   const { data, isLoading, isError } = useHashtagSuggestions({
     industry: userIndustry || questDefinition.industry,
     domain: userDomain || questDefinition.domain,
     targetAction: typeof questDefinition.targetAction === 'string' ? questDefinition.targetAction : '',
     questTitle: questDefinition.title
+  });
+  
+  // Log API response data
+  console.log("[HashtagSuggestions] API Response:", {
+    isLoading,
+    isError,
+    hashtags: data?.hashtags
   });
   
   // Skip rendering if there's no data and we're not loading
