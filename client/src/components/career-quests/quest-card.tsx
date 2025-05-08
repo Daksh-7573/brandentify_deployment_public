@@ -22,6 +22,15 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
   const completeQuestMutation = useCompleteQuest();
   const updateProgressMutation = useUpdateQuestProgress();
   
+  // Log quest information to debug hashtag suggestions
+  console.log("[QuestCard] Quest data:", {
+    id: quest.id,
+    status: quest.status,
+    type: quest.questType || (quest.questDefinition?.type || quest.definition?.type),
+    muskTip: quest.questMuskTip || quest.muskResponse || 
+             (quest.questDefinition?.muskTip || quest.definition?.muskTip)
+  });
+  
   // Handle all possible API data structures:
   // 1. quest.questDefinition (original format)
   // 2. quest.definition (direct DB query format)
@@ -150,9 +159,166 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
               </div>
               <p className="text-sm text-muted-foreground">{muskTipContent}</p>
               
-              {/* Display hashtag suggestions for active quests related to content creation */}
+              {/* Display static hashtag suggestions for active quests related to content creation */}
               {isActive && ['pulse_creation', 'networking', 'visibility'].includes(questDefinition.type) && (
-                <HashtagSuggestions quest={quest} maxToShow={4} />
+                <div className="mt-3 space-y-2">
+                  <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+                    <span className="text-sm">✨</span>
+                    <span>Relevant hashtags to try:</span>
+                  </div>
+                  
+                  <div className="flex flex-wrap gap-1.5">
+                    {questDefinition.type === 'pulse_creation' && (
+                      <>
+                        <Badge 
+                          variant="outline"
+                          className="text-xs font-normal bg-muted/40 cursor-pointer hover:bg-muted/60 transition-colors"
+                          onClick={() => {
+                            navigator.clipboard.writeText("#TechInnovation");
+                            toast({
+                              title: "Hashtag copied",
+                              description: "#TechInnovation is now in your clipboard",
+                              duration: 2000,
+                            });
+                          }}
+                          title="Click to copy"
+                        >
+                          #TechInnovation
+                        </Badge>
+                        <Badge 
+                          variant="outline"
+                          className="text-xs font-normal bg-muted/40 cursor-pointer hover:bg-muted/60 transition-colors"
+                          onClick={() => {
+                            navigator.clipboard.writeText("#CareerGrowth");
+                            toast({
+                              title: "Hashtag copied",
+                              description: "#CareerGrowth is now in your clipboard",
+                              duration: 2000,
+                            });
+                          }}
+                          title="Click to copy"
+                        >
+                          #CareerGrowth
+                        </Badge>
+                        <Badge 
+                          variant="outline"
+                          className="text-xs font-normal bg-muted/40 cursor-pointer hover:bg-muted/60 transition-colors"
+                          onClick={() => {
+                            navigator.clipboard.writeText("#ProfessionalDevelopment");
+                            toast({
+                              title: "Hashtag copied",
+                              description: "#ProfessionalDevelopment is now in your clipboard",
+                              duration: 2000,
+                            });
+                          }}
+                          title="Click to copy"
+                        >
+                          #ProfessionalDevelopment
+                        </Badge>
+                      </>
+                    )}
+                    
+                    {questDefinition.type === 'networking' && (
+                      <>
+                        <Badge 
+                          variant="outline"
+                          className="text-xs font-normal bg-muted/40 cursor-pointer hover:bg-muted/60 transition-colors"
+                          onClick={() => {
+                            navigator.clipboard.writeText("#Networking");
+                            toast({
+                              title: "Hashtag copied",
+                              description: "#Networking is now in your clipboard",
+                              duration: 2000,
+                            });
+                          }}
+                          title="Click to copy"
+                        >
+                          #Networking
+                        </Badge>
+                        <Badge 
+                          variant="outline"
+                          className="text-xs font-normal bg-muted/40 cursor-pointer hover:bg-muted/60 transition-colors"
+                          onClick={() => {
+                            navigator.clipboard.writeText("#ConnectAndGrow");
+                            toast({
+                              title: "Hashtag copied",
+                              description: "#ConnectAndGrow is now in your clipboard",
+                              duration: 2000,
+                            });
+                          }}
+                          title="Click to copy"
+                        >
+                          #ConnectAndGrow
+                        </Badge>
+                        <Badge 
+                          variant="outline"
+                          className="text-xs font-normal bg-muted/40 cursor-pointer hover:bg-muted/60 transition-colors"
+                          onClick={() => {
+                            navigator.clipboard.writeText("#CareerConnections");
+                            toast({
+                              title: "Hashtag copied",
+                              description: "#CareerConnections is now in your clipboard",
+                              duration: 2000,
+                            });
+                          }}
+                          title="Click to copy"
+                        >
+                          #CareerConnections
+                        </Badge>
+                      </>
+                    )}
+                    
+                    {questDefinition.type === 'visibility' && (
+                      <>
+                        <Badge 
+                          variant="outline"
+                          className="text-xs font-normal bg-muted/40 cursor-pointer hover:bg-muted/60 transition-colors"
+                          onClick={() => {
+                            navigator.clipboard.writeText("#PersonalBranding");
+                            toast({
+                              title: "Hashtag copied",
+                              description: "#PersonalBranding is now in your clipboard",
+                              duration: 2000,
+                            });
+                          }}
+                          title="Click to copy"
+                        >
+                          #PersonalBranding
+                        </Badge>
+                        <Badge 
+                          variant="outline"
+                          className="text-xs font-normal bg-muted/40 cursor-pointer hover:bg-muted/60 transition-colors"
+                          onClick={() => {
+                            navigator.clipboard.writeText("#ThoughtLeadership");
+                            toast({
+                              title: "Hashtag copied",
+                              description: "#ThoughtLeadership is now in your clipboard",
+                              duration: 2000,
+                            });
+                          }}
+                          title="Click to copy"
+                        >
+                          #ThoughtLeadership
+                        </Badge>
+                        <Badge 
+                          variant="outline"
+                          className="text-xs font-normal bg-muted/40 cursor-pointer hover:bg-muted/60 transition-colors"
+                          onClick={() => {
+                            navigator.clipboard.writeText("#ProfessionalGrowth");
+                            toast({
+                              title: "Hashtag copied",
+                              description: "#ProfessionalGrowth is now in your clipboard",
+                              duration: 2000,
+                            });
+                          }}
+                          title="Click to copy"
+                        >
+                          #ProfessionalGrowth
+                        </Badge>
+                      </>
+                    )}
+                  </div>
+                </div>
               )}
             </div>
           )}
