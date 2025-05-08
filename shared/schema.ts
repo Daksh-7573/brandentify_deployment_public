@@ -961,18 +961,15 @@ export const userQuests = pgTable("user_quests", {
   // - dismissedReason (quest dismissal functionality removed)
 });
 
-// User XP model - tracks user XP balance and history (simplified version)
+// User XP model - tracks user XP balance and history (further simplified)
 export const userXp = pgTable("user_xp", {
   id: serial("id").primaryKey(),
-  userId: integer("user_id").references(() => users.id).notNull(),
+  userId: integer("user_id").references(() => users.id).notNull().unique(), // Added unique constraint for clarity
   balance: integer("balance").notNull().default(0), // Current XP balance
   lifetimeEarned: integer("lifetime_earned").notNull().default(0), // Total XP earned all-time
   lastEarnedAt: timestamp("last_earned_at"), // Last time XP was earned
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
-  // Removed unused fields:
-  // - currentMonthEarned (monthly XP tracking removed)
-  // - lastResetAt (monthly XP resets removed)
 });
 
 // User badges model - tracks badges earned by users
