@@ -150,8 +150,8 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
               </div>
               <p className="text-sm text-muted-foreground">{muskTipContent}</p>
               
-              {/* Only display hashtag suggestions for active quests related to pulse creation */}
-              {isActive && questDefinition.type === 'pulse_creation' && (
+              {/* Display hashtag suggestions for active quests related to content creation */}
+              {isActive && ['pulse_creation', 'networking', 'visibility'].includes(questDefinition.type) && (
                 <HashtagSuggestions quest={quest} maxToShow={4} />
               )}
             </div>

@@ -2,6 +2,7 @@ import { useHashtagSuggestions } from '@/hooks/use-hashtag-suggestions';
 import { Badge } from '@/components/ui/badge';
 import { UserQuest } from '@/types/career-quest';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useToast } from '@/hooks/use-toast';
 
 interface HashtagSuggestionsProps {
   quest: UserQuest;
@@ -9,6 +10,9 @@ interface HashtagSuggestionsProps {
 }
 
 export function HashtagSuggestions({ quest, maxToShow = 5 }: HashtagSuggestionsProps) {
+  // Get toast for notifications
+  const { toast } = useToast();
+  
   // Get quest information from different possible formats
   const questDefinition = quest.questDefinition || quest.definition || {
     title: quest.questTitle || '',
@@ -38,6 +42,28 @@ export function HashtagSuggestions({ quest, maxToShow = 5 }: HashtagSuggestionsP
   // Show limited number of hashtags
   const hashtags = data?.hashtags?.slice(0, maxToShow) || [];
   
+  // Handle hashtag click to copy to clipboard
+  const handleHashtagClick = (hashtag: string) => {
+    // Copy to clipboard
+    navigator.clipboard.writeText(hashtag)
+      .then(() => {
+        // Show a toast notification for user feedback
+        toast({
+          title: "Hashtag copied",
+          description: `"${hashtag}" is now in your clipboard`,
+          duration: 2000, // 2 seconds
+        });
+      })
+      .catch((err) => {
+        console.error('Failed to copy hashtag to clipboard:', err);
+        toast({
+          title: "Copy failed",
+          description: "Could not copy hashtag to clipboard",
+          variant: "destructive",
+        });
+      });
+  };
+  
   return (
     <div className="mt-1 space-y-2">
       <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
@@ -60,7 +86,9 @@ export function HashtagSuggestions({ quest, maxToShow = 5 }: HashtagSuggestionsP
             <Badge 
               key={`hashtag-${index}`} 
               variant="outline"
-              className="text-xs font-normal bg-muted/40"
+              className="text-xs font-normal bg-muted/40 cursor-pointer hover:bg-muted/60 transition-colors"
+              onClick={() => handleHashtagClick(hashtag)}
+              title="Click to copy"
             >
               {hashtag}
             </Badge>
