@@ -174,7 +174,7 @@ async function updateUserXp(userId: number, xpAmount: number, source: string): P
           user_id,
           amount,
           source,
-          transaction_date
+          created_at
         ) VALUES ($1, $2, $3, $4)
       `, [userId, xpAmount, source, now]);
       
