@@ -66,7 +66,8 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
     }
   }, [weeklyError, allError, toast]);
   
-  const activeQuests = allQuests?.filter(quest => quest.status === 'active') || [];
+  // For weekly tab, we'll use the filtered data from the dedicated weekly quests hook
+  // For completed and expired tabs, use the data from the all quests hook
   const completedQuests = allQuests?.filter(quest => quest.status === 'completed') || [];
   const expiredQuests = allQuests?.filter(quest => quest.status === 'expired') || [];
   

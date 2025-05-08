@@ -91,30 +91,36 @@ export const useUserWeeklyQuests = (userId: number, weekNumber: number, year: nu
           const contentType = currentWeekRes.headers.get('content-type');
           if (contentType && contentType.includes('application/json')) {
             const quests = await currentWeekRes.json() as UserQuest[];
-            if (quests && quests.length > 0) {
-              console.log(`Found ${quests.length} quests for current week`);
-              return quests;
+            // Only return ACTIVE quests for the weekly tab
+            const activeQuests = quests.filter(quest => quest.status === 'active');
+            if (activeQuests && activeQuests.length > 0) {
+              console.log(`Found ${activeQuests.length} active quests for current week`);
+              return activeQuests;
             }
           }
         }
         
-        // If no results, try with previous week (week 18)
-        console.log('No quests found for current week, trying week 18');
+        // If no results, try with previous week (week 18) but only active quests
+        console.log('No active quests found for current week, trying week 18');
         const prevWeekRes = await fetch(`/api/users/${userId}/quests-with-definitions`);
         if (prevWeekRes.ok) {
           const contentType = prevWeekRes.headers.get('content-type');
           if (contentType && contentType.includes('application/json')) {
             const allQuests = await prevWeekRes.json() as UserQuest[];
-            // Filter for week 18 quests
-            const week18Quests = allQuests.filter(q => q.weekNumber === 18 && q.year === 2025);
-            if (week18Quests && week18Quests.length > 0) {
-              console.log(`Found ${week18Quests.length} quests for week 18`);
-              return week18Quests;
+            // Filter for week 18 ACTIVE quests
+            const week18ActiveQuests = allQuests.filter(q => 
+              q.weekNumber === 18 && 
+              q.year === 2025 && 
+              q.status === 'active'
+            );
+            if (week18ActiveQuests && week18ActiveQuests.length > 0) {
+              console.log(`Found ${week18ActiveQuests.length} active quests for week 18`);
+              return week18ActiveQuests;
             }
           }
         }
         
-        console.error('Failed to fetch any weekly quests');
+        console.error('Failed to fetch any active weekly quests');
         return []; // Return empty array to avoid UI errors
       } catch (error) {
         console.error('Error fetching weekly quests:', error);

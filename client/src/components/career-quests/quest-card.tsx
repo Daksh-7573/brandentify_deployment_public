@@ -28,10 +28,7 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
     id: quest.id,
     status: quest.status,
     type: quest.questType || (quest.questDefinition?.type || quest.definition?.type),
-    muskTip: quest.muskTip,
-    questMuskTip: quest.questMuskTip,
-    definitionMuskTip: quest.definition?.muskTip,
-    questDefinitionMuskTip: quest.questDefinition?.muskTip,
+    definitionMuskTip: quest.definition?.muskTip || quest.muskTip || quest.questDefinition?.muskTip,
     muskResponse: quest.muskResponse
   });
   
