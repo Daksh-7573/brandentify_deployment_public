@@ -45,7 +45,7 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
   const targetCount = questDefinition.targetCount || 1;
   const progressPercentage = Math.min(100, Math.floor((quest.progress / targetCount) * 100));
   const isComplete = quest.status === 'completed';
-  const isUncompleted = quest.status === 'expired';
+  const isExpired = quest.status === 'expired';
   const isActive = quest.status === 'active';
   
   const handleActionClick = () => {
@@ -122,7 +122,7 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
           <Badge 
             variant={
               isComplete ? "default" : 
-              isUncompleted ? "destructive" : 
+              isExpired ? "destructive" : 
               "secondary"
             }
           >
@@ -167,20 +167,20 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
           </>
         )}
         
-        {(isComplete || isUncompleted) && (
+        {(isComplete || isExpired) && (
           <div className="w-full flex justify-end">
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button 
-                    variant={isUncompleted ? "destructive" : "secondary"}
+                    variant={isExpired ? "destructive" : "secondary"}
                     size="sm"
                     className="w-full"
                     disabled
                   >
                     {isComplete 
                       ? `Completed on ${new Date(quest.completedAt || '').toLocaleDateString()}`
-                      : isUncompleted 
+                      : isExpired 
                         ? `Missed ${questDefinition.xpReward} XP`
                         : 'Quest status'}
                   </Button>
@@ -190,7 +190,7 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
                     ? `You earned ${quest.xpEarned} XP and ${quest.badgeEarned ? `the ${getBadgeLabel(quest.badgeEarned)} badge` : 'no badge'}`
                     : isComplete 
                       ? 'Completed successfully'
-                      : isUncompleted 
+                      : isExpired 
                         ? `This quest expired at the end of week ${quest.weekNumber}. You missed out on earning ${questDefinition.xpReward} XP.`
                         : 'Quest status'}
                 </TooltipContent>

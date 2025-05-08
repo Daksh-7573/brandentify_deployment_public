@@ -227,12 +227,12 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
         const prevWeek = weekNumber > 1 ? weekNumber - 1 : 52;
         const prevYear = prevWeek === 52 ? year - 1 : year;
         
-        // First, let's mark any expired active quests as uncompleted
+        // First, let's mark any expired active quests with expired status
         // These would be quests from the previous week that weren't completed
         try {
-          const markUncompletedResult = await pool.query(`
+          const markExpiredResult = await pool.query(`
             UPDATE user_quests 
-            SET status = 'uncompleted'
+            SET status = 'expired'
             WHERE user_id = $1 
             AND status = 'active'
             AND week_number = $2 
@@ -245,9 +245,9 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
             RETURNING id
           `, [userId, prevWeek, prevYear]);
           
-          const rowCount = markUncompletedResult.rowCount || 0;
+          const rowCount = markExpiredResult.rowCount || 0;
           if (rowCount > 0) {
-            console.log(`[GET /users/${userId}/quests/current-week] Marked ${rowCount} expired quests as uncompleted`);
+            console.log(`[GET /users/${userId}/quests/current-week] Marked ${rowCount} expired quests as expired`);
           }
         } catch (markError) {
           console.error(`[GET /users/${userId}/quests/current-week] Error marking expired quests:`, markError);
@@ -346,11 +346,11 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
         const prevWeek = weekNumber > 1 ? weekNumber - 1 : 52;
         const prevYear = prevWeek === 52 ? year - 1 : year;
         
-        // Mark any expired active quests from previous weeks as uncompleted
+        // Mark any expired active quests from previous weeks as expired
         try {
-          const markUncompletedResult = await pool.query(`
+          const markExpiredResult = await pool.query(`
             UPDATE user_quests 
-            SET status = 'uncompleted'
+            SET status = 'expired'
             WHERE user_id = $1 
             AND status = 'active'
             AND (week_number < $2 OR (week_number = $2 AND year < $3))
@@ -362,9 +362,9 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
             RETURNING id
           `, [userId, weekNumber, year]);
           
-          const rowCount = markUncompletedResult.rowCount || 0;
+          const rowCount = markExpiredResult.rowCount || 0;
           if (rowCount > 0) {
-            console.log(`[GET /users/${userId}/quests-with-definitions] Marked ${rowCount} expired quests as uncompleted`);
+            console.log(`[GET /users/${userId}/quests-with-definitions] Marked ${rowCount} expired quests as expired`);
           }
         } catch (markError) {
           console.error(`[GET /users/${userId}/quests-with-definitions] Error marking expired quests:`, markError);
