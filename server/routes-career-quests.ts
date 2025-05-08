@@ -597,26 +597,7 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
     }
   });
 
-  apiRouter.post("/user-quests/:id/dismiss", async (req, res) => {
-    try {
-      const id = parseInt(req.params.id);
-      if (isNaN(id)) {
-        return res.status(400).json({ message: 'Invalid quest ID' });
-      }
-      
-      const { reason } = req.body;
-      const dismissedQuest = await storage.dismissUserQuest(id, reason);
-      
-      if (!dismissedQuest) {
-        return res.status(404).json({ message: 'Quest not found' });
-      }
-      
-      res.json(dismissedQuest);
-    } catch (error) {
-      console.error(`[POST /user-quests/${req.params.id}/dismiss] Error:`, error);
-      res.status(500).json({ message: 'Failed to dismiss user quest' });
-    }
-  });
+  // Quest dismissal endpoint removed per simplification requirements
 
   apiRouter.post("/user-quests/:id/progress", async (req, res) => {
     try {
@@ -747,25 +728,7 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
     }
   });
 
-  apiRouter.post("/users/:userId/xp/reset-monthly", async (req, res) => {
-    try {
-      const userId = parseInt(req.params.userId);
-      if (isNaN(userId)) {
-        return res.status(400).json({ message: 'Invalid user ID' });
-      }
-      
-      const userXp = await storage.resetMonthlyXp(userId);
-      
-      if (!userXp) {
-        return res.status(404).json({ message: 'User XP record not found' });
-      }
-      
-      res.json(userXp);
-    } catch (error) {
-      console.error(`[POST /users/${req.params.userId}/xp/reset-monthly] Error:`, error);
-      res.status(500).json({ message: 'Failed to reset monthly XP' });
-    }
-  });
+  // Monthly XP reset endpoint removed per simplification requirements
 
   // User Badge routes
   apiRouter.get("/users/:userId/badges", async (req, res) => {
