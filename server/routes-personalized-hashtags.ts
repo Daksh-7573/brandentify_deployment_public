@@ -1,129 +1,142 @@
 import express from 'express';
+import { storage } from './storage';
 import { 
   generatePersonalizedHashtags, 
-  getDemoFollowedHashtags, 
-  getDemoSearchedHashtags, 
-  getDemoEngagementHashtags
+  generateDemoHashtags 
 } from './services/personalized-hashtag-service';
 
-export const setupPersonalizedHashtagRoutes = (app: express.Express) => {
+/**
+ * Setup personalized hashtag routes
+ * @param app Express application
+ */
+export function setupPersonalizedHashtagRoutes(app: express.Express) {
+  // Create router
   const router = express.Router();
-
+  
   /**
-   * GET /api/hashtags/suggest-personalized
-   * 
-   * Get personalized hashtag suggestions based on comprehensive user context
-   * 
-   * Query parameters:
-   * - userId: User ID for personalization
-   * - industry: User's industry
-   * - domain: User's domain
-   * - questType: Type of quest (pulse_creation, networking, visibility)
-   * - targetAction: Specific action being taken
-   * - contentContext: Content being created (optional)
-   * - count: Number of hashtags to return (default: 5)
-   * - demo: Whether to use demo data (default: false)
+   * Generate personalized hashtag suggestions based on user profile and provided context
+   * POST /api/personalized-hashtags
    */
-  router.get('/suggest-personalized', async (req, res) => {
+  router.post('/personalized-hashtags', async (req, res) => {
     try {
+      const userId = req.session?.userId || req.body.userId;
       const {
-        userId,
         industry,
         domain,
         questType,
         targetAction,
         contentContext,
-        count = 5,
-        demo = false
-      } = req.query;
-
-      // Convert userId to number if provided
-      const userIdNum = userId ? parseInt(userId as string) : undefined;
+        count = 5
+      } = req.body;
       
-      // Demo mode uses synthetic data for demonstration
-      if (demo === 'true') {
-        // Get demo data based on provided context
-        const followedHashtags = getDemoFollowedHashtags(
-          industry as string | undefined,
-          domain as string | undefined
-        );
-        
-        const searchedHashtags = getDemoSearchedHashtags(
-          industry as string | undefined
-        );
-        
-        const engagementHashtags = getDemoEngagementHashtags(
-          questType as string | undefined
-        );
-
-        // Generate personalized hashtags with demo data
-        const result = await generatePersonalizedHashtags({
-          userId: userIdNum,
-          industry: industry as string | undefined,
-          domain: domain as string | undefined,
-          questType: questType as string | undefined,
-          targetAction: targetAction as string | undefined,
-          contentContext: contentContext as string | undefined,
-          followedHashtags,
-          searchedHashtags,
-          engagementHashtags,
-          count: count ? parseInt(count as string) : 5
-        });
-
-        // Add sources information for transparency
-        return res.json({
-          ...result,
-          sources: {
-            industry: industry || 'Not specified',
-            domain: domain || 'Not specified',
-            followedHashtags: followedHashtags.map(h => h.hashtag),
-            searchedHashtags: searchedHashtags.map(h => h.hashtag),
-            engagementHashtags: engagementHashtags.map(h => h.hashtag)
-          }
-        });
+      // Get user profile if userId is available
+      let user = null;
+      if (userId) {
+        try {
+          user = await storage.getUser(userId);
+        } catch (error) {
+          console.error(`Error fetching user ${userId} for hashtag suggestions:`, error);
+          // Continue without user data if there's an error
+        }
       }
       
-      // In a real implementation, we would fetch user's followed hashtags,
-      // search history, and engagement data from a database here
-      
-      // For now, fall back to demo mode if real data is requested
-      const followedHashtags = getDemoFollowedHashtags(
-        industry as string | undefined,
-        domain as string | undefined
-      );
-      
-      const searchedHashtags = getDemoSearchedHashtags(
-        industry as string | undefined
-      );
-      
-      const engagementHashtags = getDemoEngagementHashtags(
-        questType as string | undefined
-      );
-
       // Generate personalized hashtags
       const result = await generatePersonalizedHashtags({
-        userId: userIdNum,
-        industry: industry as string | undefined,
-        domain: domain as string | undefined,
-        questType: questType as string | undefined,
-        targetAction: targetAction as string | undefined,
-        contentContext: contentContext as string | undefined,
-        followedHashtags,
-        searchedHashtags,
-        engagementHashtags,
-        count: count ? parseInt(count as string) : 5
-      });
-
-      res.json(result);
-    } catch (error: any) {
-      console.error('Error in personalized hashtag suggestions endpoint:', error);
-      res.status(500).json({ 
-        error: error.message || 'Failed to generate personalized hashtag suggestions' 
+        industry,
+        domain,
+        questType,
+        targetAction,
+        contentContext,
+        count
+      }, user);
+      
+      // Return the generated hashtags
+      return res.json(result);
+    } catch (error) {
+      console.error('Error generating personalized hashtags:', error);
+      return res.status(500).json({ 
+        error: 'Failed to generate hashtag suggestions',
+        hashtags: [],
+        sources: []
       });
     }
   });
 
-  // Register routes
-  app.use('/api/hashtags', router);
+  /**
+   * Demo endpoint for personalized hashtag suggestions (no authentication required)
+   * POST /api/personalized-hashtags/demo
+   */
+  router.post('/personalized-hashtags/demo', async (req, res) => {
+    try {
+      const {
+        industry,
+        domain,
+        questType,
+        targetAction,
+        contentContext,
+        count = 5
+      } = req.body;
+      
+      // Generate demo hashtags
+      const result = await generateDemoHashtags({
+        industry,
+        domain,
+        questType,
+        targetAction,
+        contentContext,
+        count
+      });
+      
+      // Return the generated hashtags
+      return res.json(result);
+    } catch (error) {
+      console.error('Error generating demo hashtags:', error);
+      return res.status(500).json({ 
+        error: 'Failed to generate demo hashtag suggestions',
+        hashtags: [],
+        sources: []
+      });
+    }
+  });
+
+  /**
+   * Utility endpoint to get static hashtag suggestions for a specific quest type
+   * GET /api/personalized-hashtags/static/:questType
+   */
+  router.get('/personalized-hashtags/static/:questType', (req, res) => {
+    const { questType } = req.params;
+    const count = parseInt(req.query.count as string) || 5;
+    
+    // Map of static hashtags by quest type
+    const staticHashtags: Record<string, string[]> = {
+      pulse_creation: [
+        'careerjourney', 'professionalgrowth', 'jobsearch', 'careeradvice', 
+        'careertips', 'networking', 'leadership', 'skillbuilding',
+        'remotework', 'worklifebalance', 'productivitytips'
+      ],
+      networking: [
+        'networking', 'careerconnections', 'professionalnetwork', 'careergrowth',
+        'industryinsights', 'mentorship', 'collaboration', 'thoughtleadership'
+      ],
+      // Add more quest types as needed
+    };
+    
+    // Get hashtags for the specified quest type, or use pulse_creation as default
+    const relevantHashtags = staticHashtags[questType] || staticHashtags.pulse_creation;
+    
+    // Randomly select a subset of hashtags based on count
+    const shuffled = [...relevantHashtags].sort(() => 0.5 - Math.random());
+    const selected = shuffled.slice(0, Math.min(count, shuffled.length));
+    
+    // Return the selected hashtags
+    return res.json({
+      hashtags: selected,
+      sources: ['Static hashtag database']
+    });
+  });
+  
+  // Use the router
+  app.use('/api', router);
+  
   console.log('Personalized hashtag routes loaded');
-};
+}

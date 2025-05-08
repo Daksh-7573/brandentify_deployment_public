@@ -1,66 +1,74 @@
-import { useQuery } from '@tanstack/react-query';
 import { useState, useEffect } from 'react';
+import { apiRequest } from '@/lib/queryClient';
 
-// Simple user interface matching what we use in the application
-export interface User {
+interface User {
   id: number;
-  name: string | null;
-  email: string;
   username: string;
+  email: string;
+  name: string | null;
   photoURL: string | null;
   title: string | null;
-  industry: string | null;
-  domain: string | null;
   location: string | null;
-  company: string | null;
+  industry: string | null;
+  domain: string | null; 
   aboutMe: string | null;
-  lookingFor: string | null;
+  careerStage: string | null;
+  // Add other user properties as needed
 }
 
-export function useCurrentUser() {
-  const [userId, setUserId] = useState<number | null>(null);
+interface UseCurrentUserResult {
+  user: User | null;
+  isLoading: boolean;
+  error: string | null;
+  refreshUser: () => Promise<void>;
+}
+
+/**
+ * Hook to get the current authenticated user
+ */
+export function useCurrentUser(): UseCurrentUserResult {
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   
-  // Attempt to get user ID from localStorage on mount
-  useEffect(() => {
+  const fetchUser = async () => {
+    setIsLoading(true);
+    setError(null);
+    
     try {
-      // Try to get the demo user ID (for development/testing)
-      const savedUserId = localStorage.getItem('demoUserId') || localStorage.getItem('userId');
-      if (savedUserId) {
-        setUserId(parseInt(savedUserId));
+      // Try to get the user from the enhanced user endpoint
+      const userResponse = await apiRequest('/api/users/me', { method: 'GET' });
+      
+      if (userResponse && userResponse.id) {
+        setUser(userResponse);
       } else {
-        // Default to user ID 1 for demo/testing
-        setUserId(1);
+        // If not found, try to get a demo user
+        const demoResponse = await apiRequest('/api/demo-profile', { method: 'GET' });
+        
+        if (demoResponse && demoResponse.id) {
+          setUser(demoResponse);
+        } else {
+          setUser(null);
+        }
       }
-    } catch (error) {
-      console.error('Error accessing localStorage:', error);
-      // Fallback to user ID 1 for demo/testing
-      setUserId(1);
+    } catch (err) {
+      console.error('Error fetching current user:', err);
+      setError('Failed to fetch user information');
+      setUser(null);
+    } finally {
+      setIsLoading(false);
     }
-  }, []);
+  };
   
-  const { data: user, isLoading, error } = useQuery<User>({
-    queryKey: ['users', userId],
-    queryFn: async () => {
-      if (!userId) throw new Error('No user ID available');
-      
-      const response = await fetch(`/api/users/${userId}`);
-      if (!response.ok) {
-        throw new Error(`Failed to fetch user: ${response.status}`);
-      }
-      
-      return response.json();
-    },
-    enabled: !!userId,
-    // Stale time of 5 minutes
-    staleTime: 1000 * 60 * 5,
-  });
+  // Fetch the user on mount
+  useEffect(() => {
+    fetchUser();
+  }, []);
   
   return {
     user,
-    userId,
     isLoading,
     error,
-    // Utility function to set a different user ID (for testing)
-    setCurrentUserId: setUserId
+    refreshUser: fetchUser
   };
 }

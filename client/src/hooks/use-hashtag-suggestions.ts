@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
-import { useCurrentUser } from '@/hooks/use-current-user';
+import { useState, useCallback, useEffect } from 'react';
+import { apiRequest } from '@/lib/queryClient';
 
-interface UseHashtagSuggestionsOptions {
+interface HashtagSuggestionsOptions {
   industry?: string;
+  domain?: string;
   questType?: string;
   targetAction?: string;
   contentContext?: string;
@@ -15,84 +16,96 @@ interface HashtagSuggestionsResult {
   sources: string[];
   isLoading: boolean;
   error: string | null;
-  refreshHashtags: () => void;
+  refreshHashtags: () => Promise<void>;
 }
 
 /**
- * Hook to fetch personalized hashtag suggestions
+ * Hook to fetch personalized hashtag suggestions from the API
  */
-export function useHashtagSuggestions({
-  industry,
-  questType = 'pulse_creation',
-  targetAction,
-  contentContext,
-  count = 5,
-  demo = false
-}: UseHashtagSuggestionsOptions = {}): HashtagSuggestionsResult {
-  const { user } = useCurrentUser();
+export function useHashtagSuggestions(options: HashtagSuggestionsOptions): HashtagSuggestionsResult {
   const [hashtags, setHashtags] = useState<string[]>([]);
   const [sources, setSources] = useState<string[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
-  // Function to fetch hashtags from the API
-  const fetchHashtags = async () => {
+  const {
+    industry,
+    domain,
+    questType = 'pulse_creation',
+    targetAction,
+    contentContext,
+    count = 5,
+    demo = false
+  } = options;
+  
+  const fetchHashtags = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     
     try {
-      // Use demo endpoint if specified
-      const endpoint = demo 
-        ? '/api/personalized-hashtags/demo' 
-        : '/api/personalized-hashtags';
-      
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          industry: industry || user?.industry,
-          domain: user?.domain,
-          questType,
-          targetAction,
-          contentContext,
-          count
-        })
-      });
-      
-      if (!response.ok) {
-        throw new Error(`Failed to fetch hashtags: ${response.status}`);
-      }
-      
-      const data = await response.json();
-      
-      if (data.hashtags && Array.isArray(data.hashtags)) {
-        setHashtags(data.hashtags);
+      // If the questType is "static" or there's no user context (industry/domain), use static suggestions
+      if (questType === 'static' || (!industry && !domain && !demo)) {
+        const staticResponse = await apiRequest(`/api/personalized-hashtags/static/${questType}?count=${count}`, { 
+          method: 'GET' 
+        });
         
-        if (data.sources && Array.isArray(data.sources)) {
-          setSources(data.sources);
+        if (staticResponse && staticResponse.hashtags) {
+          setHashtags(staticResponse.hashtags);
+          setSources(staticResponse.sources || ['Content trends']);
         } else {
+          setHashtags([]);
           setSources([]);
         }
       } else {
-        setHashtags([]);
-        setSources([]);
+        // Use the personalized or demo endpoint based on the demo flag
+        const endpoint = demo ? '/api/personalized-hashtags/demo' : '/api/personalized-hashtags';
+        
+        const response = await apiRequest(endpoint, {
+          method: 'POST',
+          body: {
+            industry,
+            domain,
+            questType,
+            targetAction,
+            contentContext,
+            count
+          }
+        });
+        
+        if (response && response.hashtags) {
+          setHashtags(response.hashtags);
+          setSources(response.sources || []);
+        } else {
+          setHashtags([]);
+          setSources([]);
+        }
       }
     } catch (err) {
-      console.error('Error fetching hashtags:', err);
-      setError('Failed to load hashtag suggestions.');
-      setHashtags([]);
-      setSources([]);
+      console.error('Error fetching hashtag suggestions:', err);
+      setError('Failed to fetch hashtag suggestions');
+      
+      // Try to use static suggestions as a fallback
+      try {
+        const staticResponse = await apiRequest(`/api/personalized-hashtags/static/${questType}?count=${count}`, { 
+          method: 'GET' 
+        });
+        
+        if (staticResponse && staticResponse.hashtags) {
+          setHashtags(staticResponse.hashtags);
+          setSources(staticResponse.sources || ['Static suggestions']);
+        }
+      } catch (fallbackErr) {
+        console.error('Error fetching fallback hashtags:', fallbackErr);
+      }
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [industry, domain, questType, targetAction, contentContext, count, demo]);
   
-  // Fetch hashtags when dependencies change
+  // Fetch hashtags on mount and when dependencies change
   useEffect(() => {
     fetchHashtags();
-  }, [user, industry, questType, targetAction, contentContext, count, demo]);
+  }, [fetchHashtags]);
   
   return {
     hashtags,
