@@ -2,9 +2,9 @@ import express from 'express';
 import { 
   generateCareerAdvice, 
   analyzeResume, 
-  generateNetworkingRecommendations
+  generateNetworkingRecommendations,
+  suggestHashtags
 } from './services/openai-service';
-import { suggestHashtags } from './services/hashtag-suggestion-service';
 
 export const registerMuskAIRoutes = (app: express.Express) => {
   // Career advice endpoint
@@ -257,6 +257,7 @@ Open Source Contribution | 2019-Present
       const {
         industry,
         domain,
+        followedHashtags,
         previouslyUsedHashtags,
         contentContext,
         count
@@ -270,15 +271,16 @@ Open Source Contribution | 2019-Present
         });
       }
 
-      const hashtags = await suggestHashtags({
+      const result = await suggestHashtags({
         industry,
         domain,
+        followedHashtags,
         previouslyUsedHashtags,
         contentContext,
         count
       });
 
-      res.json({ hashtags });
+      res.json(result);
     } catch (error: unknown) {
       console.error('Error in hashtag suggestions endpoint:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -303,14 +305,14 @@ Open Source Contribution | 2019-Present
       
       const previouslyUsedHashtags = industryHashtagMap[industry.toLowerCase()] || [];
       
-      const hashtags = await suggestHashtags({
+      const result = await suggestHashtags({
         industry,
         domain,
         previouslyUsedHashtags,
         contentContext: `Professional discussing trends and innovations in the ${industry} industry${domain ? ` specifically in ${domain}` : ''}.`
       });
       
-      res.json({ hashtags });
+      res.json(result);
     } catch (error: unknown) {
       console.error('Error in demo hashtag suggestions endpoint:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';

@@ -34,7 +34,6 @@ import OnboardingPage from "@/pages/onboarding";
 import EditProfilePage from "@/pages/edit-profile";
 import MuskTestingPage from "@/pages/musk-testing";
 import ManageServicesPage from "@/pages/manage-services";
-import { HashtagSuggestionsPage } from "@/pages/hashtag-suggestions";
 // Lazy load the SharedCardPage to improve performance and show loader immediately
 import { lazy, Suspense } from "react";
 const SharedCardPage = lazy(() => import("@/pages/shared-card"));
@@ -160,10 +159,6 @@ function Router() {
       </Route>
       <Route path="/musk-testing">
         <ProtectedRoute path="/musk-testing" component={MuskTestingPage} />
-      </Route>
-      {/* Hashtag suggestions demo page */}
-      <Route path="/hashtag-suggestions">
-        <ProtectedRoute path="/hashtag-suggestions" component={HashtagSuggestionsPage} />
       </Route>
       {/* Unified Profile Page with comprehensive data fetching */}
       <Route path="/unified-profile">
