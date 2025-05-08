@@ -17,8 +17,24 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { MessageSquare, ThumbsUp, FileImage } from 'lucide-react';
 
 export default function EngagementQuestsPage() {
-  const { data } = useUserProfile();
-  const userId = data?.id || 0;
+  // Use Firebase auth context to get the current user ID
+  const { user } = useContext(AuthContext);
+  const firebaseId = user?.uid || null;
+  
+  // Get the user profile data using the firebase ID
+  const { data: userData } = useQuery<any>({
+    queryKey: ['/api/users', firebaseId],
+    enabled: !!firebaseId,
+    queryFn: async () => {
+      const res = await fetch(`/api/users/${firebaseId}`);
+      if (!res.ok) {
+        throw new Error('Failed to fetch user data');
+      }
+      return res.json();
+    }
+  });
+  
+  const userId = userData?.id || 0;
   const [activeTab, setActiveTab] = useState<string>('daily');
   
   // Get all user quests
@@ -96,7 +112,7 @@ export default function EngagementQuestsPage() {
         <CardContent>
           <div className="flex items-center justify-between mb-3">
             <div className="text-sm text-muted-foreground">
-              {quest?.currentProgress || 0} / {quest?.definition?.targetCount || 5} completed
+              {quest?.progress || 0} / {quest?.definition?.targetCount || 5} completed
             </div>
             <div className="text-sm font-medium">
               {quest?.definition?.xpReward || 50} XP
@@ -107,7 +123,7 @@ export default function EngagementQuestsPage() {
             <div 
               className="bg-primary h-2 rounded-full" 
               style={{ 
-                width: `${quest ? (quest.currentProgress / quest.definition.targetCount) * 100 : 0}%`
+                width: `${quest && quest.definition ? (quest.progress / quest.definition.targetCount) * 100 : 0}%`
               }}
             ></div>
           </div>
@@ -142,7 +158,7 @@ export default function EngagementQuestsPage() {
   };
   
   return (
-    <PageLayout>
+    <PageLayout title="Engagement Quests">
       <div className="container max-w-5xl mx-auto px-4 py-8">
         <div className="flex flex-col gap-6">
           <div>
