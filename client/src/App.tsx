@@ -114,7 +114,8 @@ function Router() {
         <ProtectedRoute path="/create-pulse" component={CreatePulsePage} />
       </Route>
       <Route path="/industry-pulse">
-        <ProtectedRoute path="/industry-pulse" component={IndustryPulsePage} />
+        {/* Redirect to spatial version of Industry Pulse */}
+        <ProtectedRoute path="/industry-pulse" component={() => <Redirect to="/spatial-industry-pulse" />} />
       </Route>
       <Route path="/search">
         <ProtectedRoute path="/search" component={SearchPage} />
@@ -150,15 +151,18 @@ function Router() {
       </Route>
       {/* Brand Quests (new name) */}
       <Route path="/brand-quests">
-        <ProtectedRoute path="/brand-quests" component={BrandQuestsPage} />
+        {/* Redirect to spatial version of Brand Quests */}
+        <ProtectedRoute path="/brand-quests" component={() => <Redirect to="/spatial-brand-quests" />} />
       </Route>
       
       {/* Legacy route - keeping for backward compatibility */}
       <Route path="/career-quests">
-        <ProtectedRoute path="/career-quests" component={BrandQuestsPage} />
+        {/* Redirect to spatial version of Brand Quests */}
+        <ProtectedRoute path="/career-quests" component={() => <Redirect to="/spatial-brand-quests" />} />
       </Route>
       <Route path="/career-capsule">
-        <ProtectedRoute path="/career-capsule" component={CareerCapsulePage} />
+        {/* Redirect to spatial version of Career Capsule */}
+        <ProtectedRoute path="/career-capsule" component={() => <Redirect to="/spatial-career-capsule" />} />
       </Route>
       {/* Replaced with Career Capsule - keeping both routes for backward compatibility */}
       <Route path="/career-roadmap">
@@ -241,7 +245,8 @@ function App() {
             </div>
           </div>
         }>
-          <SpatialMainLayout>
+          {/* Force enable the spatial UI for all routes by setting enableSpatialUI=true */}
+          <SpatialMainLayout enableSpatialUI={true}>
             <Router />
             <GlobalMuskButton />
             <Toaster />

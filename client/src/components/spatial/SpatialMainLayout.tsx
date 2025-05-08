@@ -47,7 +47,7 @@ export const SpatialMainLayout: React.FC<SpatialMainLayoutProps> = ({
 }) => {
   const [location] = useLocation();
   
-  // Routes that should NOT have the spatial layout
+  // Routes that should NEVER have the spatial layout
   // Landing page, auth, static pages, etc.
   const nonSpatialRoutes = [
     '/',
@@ -60,6 +60,7 @@ export const SpatialMainLayout: React.FC<SpatialMainLayoutProps> = ({
   ];
   
   // Routes that already have their own spatial UI implementation
+  // These actually use the SpatialPortalLayout directly
   const spatialSpecificRoutes = [
     '/spatial-test', 
     '/spatial-industry-pulse', 
@@ -73,8 +74,11 @@ export const SpatialMainLayout: React.FC<SpatialMainLayoutProps> = ({
   // Check if the current route should be excluded from spatial layout
   const shouldExclude = excludedRoutes.some(route => location.startsWith(route));
   
-  // If spatial UI is disabled or route is excluded, render children directly
-  if (!enableSpatialUI || shouldExclude) {
+  // Force spatial UI to be enabled for all routes except specified exclusions
+  const forceSpatialUI = true;
+  
+  // Only exclude for routes that should never have spatial UI
+  if (!forceSpatialUI || shouldExclude) {
     return <>{children}</>;
   }
   
