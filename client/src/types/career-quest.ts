@@ -13,7 +13,7 @@ export type QuestType =
 export type QuestStatus = 
   | 'active'
   | 'completed'
-  | 'uncompleted';
+  | 'expired';
 
 export type BadgeType = 
   | 'quest_initiate'
@@ -133,7 +133,7 @@ export const getQuestStatusLabel = (status: QuestStatus): string => {
   const labels: Record<QuestStatus, string> = {
     active: 'In Progress',
     completed: 'Completed',
-    uncompleted: 'Missed'
+    expired: 'Missed'
   };
   return labels[status] || status;
 };

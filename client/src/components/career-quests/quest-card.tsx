@@ -45,7 +45,7 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
   const targetCount = questDefinition.targetCount || 1;
   const progressPercentage = Math.min(100, Math.floor((quest.progress / targetCount) * 100));
   const isComplete = quest.status === 'completed';
-  const isUncompleted = quest.status === 'uncompleted';
+  const isUncompleted = quest.status === 'expired';
   const isActive = quest.status === 'active';
   
   const handleActionClick = () => {

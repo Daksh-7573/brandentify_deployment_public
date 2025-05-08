@@ -71,7 +71,7 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
   
   const activeQuests = allQuests?.filter(quest => quest.status === 'active') || [];
   const completedQuests = allQuests?.filter(quest => quest.status === 'completed') || [];
-  const uncompletedQuests = allQuests?.filter(quest => quest.status === 'uncompleted') || [];
+  const expiredQuests = allQuests?.filter(quest => quest.status === 'expired') || [];
   
   // Count skill-related quests
   const skillQuests = allQuests?.filter(quest => {
@@ -148,11 +148,10 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
         )}
         
         <Tabs defaultValue="weekly" value={tabValue} onValueChange={setTabValue}>
-          <TabsList className="grid grid-cols-4 mb-4">
+          <TabsList className="grid grid-cols-3 mb-4">
             <TabsTrigger value="weekly">Weekly ({weeklyQuests?.length || 0})</TabsTrigger>
-            <TabsTrigger value="active">Current ({activeQuests.length})</TabsTrigger>
-            <TabsTrigger value="uncompleted">Missed ({uncompletedQuests.length})</TabsTrigger>
             <TabsTrigger value="completed">Completed ({completedQuests.length})</TabsTrigger>
+            <TabsTrigger value="expired">Missed ({expiredQuests.length})</TabsTrigger>
           </TabsList>
           
           <TabsContent value="weekly" className="space-y-4">
@@ -162,18 +161,11 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
             {renderQuestsList(weeklyQuests, isLoadingWeekly)}
           </TabsContent>
           
-          <TabsContent value="active" className="space-y-4">
-            <div className="text-sm text-muted-foreground mb-2">
-              Active quests that are currently in progress
-            </div>
-            {renderQuestsList(activeQuests, isLoadingAll)}
-          </TabsContent>
-          
-          <TabsContent value="uncompleted" className="space-y-4">
+          <TabsContent value="expired" className="space-y-4">
             <div className="text-sm text-muted-foreground mb-2">
               Quests that expired without completion - missed XP opportunities
             </div>
-            {renderQuestsList(uncompletedQuests, isLoadingAll)}
+            {renderQuestsList(expiredQuests, isLoadingAll)}
           </TabsContent>
           
           <TabsContent value="completed" className="space-y-4">
