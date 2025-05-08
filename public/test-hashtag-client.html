@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Musk AI Hashtag Suggestions</title>
+  <style>
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+      color: #333;
+    }
+    
+    h1, h2 {
+      color: #0070f3;
+    }
+    
+    .card {
+      border-radius: 8px;
+      border: 1px solid #eaeaea;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .form-group {
+      margin-bottom: 15px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+    
+    input, textarea, select {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 14px;
+    }
+    
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+    
+    button {
+      background-color: #0070f3;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 10px 20px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    
+    button:hover {
+      background-color: #005ddb;
+    }
+    
+    #result {
+      margin-top: 20px;
+    }
+    
+    .hashtag {
+      display: inline-block;
+      background-color: #e6f7ff;
+      color: #0070f3;
+      border-radius: 16px;
+      padding: 4px 12px;
+      margin: 4px;
+      font-weight: 500;
+    }
+    
+    .error {
+      color: #d32f2f;
+      font-weight: 500;
+    }
+    
+    .demo-button {
+      background-color: #f0f0f0;
+      color: #333;
+      border: 1px solid #ddd;
+      margin-right: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Musk AI Hashtag Suggestions</h1>
+  
+  <div class="card">
+    <h2>Generate Hashtags</h2>
+    
+    <div class="form-group">
+      <label for="industry">Industry</label>
+      <input type="text" id="industry" placeholder="e.g., Technology, Healthcare, Education">
+    </div>
+    
+    <div class="form-group">
+      <label for="domain">Domain</label>
+      <input type="text" id="domain" placeholder="e.g., Software Development, Marketing, Finance">
+    </div>
+    
+    <div class="form-group">
+      <label for="followedHashtags">Followed Hashtags (comma separated)</label>
+      <input type="text" id="followedHashtags" placeholder="e.g., #Tech, #AI, #WebDev">
+    </div>
+    
+    <div class="form-group">
+      <label for="previouslyUsedHashtags">Previously Used Hashtags (comma separated)</label>
+      <input type="text" id="previouslyUsedHashtags" placeholder="e.g., #JavaScript, #ReactJS, #NodeJS">
+    </div>
+    
+    <div class="form-group">
+      <label for="contentContext">Content Context</label>
+      <textarea id="contentContext" placeholder="Describe what your post is about..."></textarea>
+    </div>
+    
+    <div class="form-group">
+      <label for="count">Number of Hashtags</label>
+      <input type="number" id="count" value="10" min="1" max="20">
+    </div>
+    
+    <button id="generateBtn">Generate Hashtags</button>
+    
+    <div style="margin-top: 20px;">
+      <p>Try Demo Templates:</p>
+      <button class="demo-button" data-demo="tech">Tech Developer</button>
+      <button class="demo-button" data-demo="healthcare">Healthcare Professional</button>
+      <button class="demo-button" data-demo="marketing">Marketing Expert</button>
+    </div>
+  </div>
+  
+  <div id="result" class="card" style="display: none;">
+    <h2>Suggested Hashtags</h2>
+    <div id="hashtags"></div>
+  </div>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const generateBtn = document.getElementById('generateBtn');
+      const resultDiv = document.getElementById('result');
+      const hashtagsDiv = document.getElementById('hashtags');
+      
+      // Demo templates
+      const demoTemplates = {
+        tech: {
+          industry: 'Technology',
+          domain: 'Software Development',
+          followedHashtags: '#JavaScript,#WebDev,#AI,#TechNews',
+          previouslyUsedHashtags: '#ReactJS,#NodeJS,#TechTrends,#Programming',
+          contentContext: 'Sharing my thoughts on the future of serverless computing and edge functions.'
+        },
+        healthcare: {
+          industry: 'Healthcare',
+          domain: 'Digital Health',
+          followedHashtags: '#HealthTech,#MedicalInnovation,#DigitalHealth',
+          previouslyUsedHashtags: '#Healthcare,#Telemedicine,#PatientCare',
+          contentContext: 'Discussing how AI is transforming remote patient monitoring and telehealth services.'
+        },
+        marketing: {
+          industry: 'Marketing',
+          domain: 'Digital Marketing',
+          followedHashtags: '#DigitalMarketing,#SocialMedia,#ContentStrategy',
+          previouslyUsedHashtags: '#MarketingTips,#BrandBuilding,#SEO',
+          contentContext: 'Sharing insights on how to create engaging content that converts in 2025.'
+        }
+      };
+      
+      // Set up demo template buttons
+      document.querySelectorAll('.demo-button').forEach(button => {
+        button.addEventListener('click', () => {
+          const template = demoTemplates[button.dataset.demo];
+          if (template) {
+            document.getElementById('industry').value = template.industry;
+            document.getElementById('domain').value = template.domain;
+            document.getElementById('followedHashtags').value = template.followedHashtags;
+            document.getElementById('previouslyUsedHashtags').value = template.previouslyUsedHashtags;
+            document.getElementById('contentContext').value = template.contentContext;
+          }
+        });
+      });
+      
+      generateBtn.addEventListener('click', async () => {
+        // Get values from form
+        const industry = document.getElementById('industry').value.trim();
+        const domain = document.getElementById('domain').value.trim();
+        const followedHashtagsStr = document.getElementById('followedHashtags').value.trim();
+        const previouslyUsedHashtagsStr = document.getElementById('previouslyUsedHashtags').value.trim();
+        const contentContext = document.getElementById('contentContext').value.trim();
+        const count = parseInt(document.getElementById('count').value) || 10;
+        
+        // Convert comma-separated strings to arrays
+        const followedHashtags = followedHashtagsStr ? followedHashtagsStr.split(',').map(tag => tag.trim()) : [];
+        const previouslyUsedHashtags = previouslyUsedHashtagsStr ? previouslyUsedHashtagsStr.split(',').map(tag => tag.trim()) : [];
+        
+        // Validate input
+        if (!industry && !domain && !contentContext) {
+          hashtagsDiv.innerHTML = '<p class="error">Please provide at least one context field (industry, domain, or content context)</p>';
+          resultDiv.style.display = 'block';
+          return;
+        }
+        
+        try {
+          // Show loading state
+          generateBtn.disabled = true;
+          generateBtn.textContent = 'Generating...';
+          hashtagsDiv.innerHTML = '<p>Loading hashtag suggestions...</p>';
+          resultDiv.style.display = 'block';
+          
+          // Call API
+          const response = await fetch('/api/musk-ai/suggest-hashtags', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              industry,
+              domain,
+              followedHashtags,
+              previouslyUsedHashtags,
+              contentContext,
+              count
+            }),
+          });
+          
+          const data = await response.json();
+          
+          // Reset button
+          generateBtn.disabled = false;
+          generateBtn.textContent = 'Generate Hashtags';
+          
+          // Display results
+          if (response.ok && data.hashtags) {
+            if (data.hashtags.length === 0) {
+              hashtagsDiv.innerHTML = '<p>No hashtag suggestions were generated. Try providing more context.</p>';
+            } else {
+              hashtagsDiv.innerHTML = data.hashtags.map(tag => 
+                `<span class="hashtag">${tag}</span>`
+              ).join('');
+            }
+          } else {
+            const errorMessage = data.error || 'Failed to generate hashtag suggestions';
+            hashtagsDiv.innerHTML = `<p class="error">${errorMessage}</p>`;
+          }
+        } catch (error) {
+          generateBtn.disabled = false;
+          generateBtn.textContent = 'Generate Hashtags';
+          hashtagsDiv.innerHTML = `<p class="error">Error: ${error.message}</p>`;
+        }
+      });
+    });
+  </script>
+</body>
+</html>

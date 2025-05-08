@@ -28,6 +28,7 @@ import whatIOfferRoutes from "./routes-what-i-offer";
 import profileServicesRoutes from "./routes-services-sync";
 import { resumeTestRoutes } from "./routes-resume-test";
 import { routesMigrateWorkExperiences } from "./routes-migrate-work-experiences";
+import path from "path";
 import resumeRoutes from "./routes-resume";
 import userProfileRoutes from "./routes-user-profile";
 import { registerMuskAIRoutes } from "./routes-musk-ai";
@@ -5952,6 +5953,11 @@ ${extractedText.substring(0, 5000)}
   console.log("Career Capsule routes loaded");
 
   app.use("/api", apiRouter);
+
+  // Add route for hashtag suggestions test page
+  app.get('/hashtag-test', (req, res) => {
+    res.sendFile(path.join(process.cwd(), 'test-hashtag-client.html'));
+  });
 
   const httpServer = createServer(app);
   return httpServer;
