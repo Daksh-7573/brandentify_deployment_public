@@ -40,6 +40,7 @@ import MuskTestingPage from "@/pages/musk-testing";
 import ManageServicesPage from "@/pages/manage-services";
 import TestNowboardPage from "@/pages/test-nowboard";
 import SpatialTestPage from "@/pages/spatial-test";
+import SpatialTestNew from "@/pages/spatial-test-new";
 import SpatialIndustryPulsePage from "@/pages/spatial-industry-pulse";
 import SpatialCareerCapsulePage from "@/pages/spatial-career-capsule";
 import SpatialBrandQuestsPage from "@/pages/spatial-brand-quests";
@@ -182,6 +183,7 @@ function Router() {
       </Route>
       {/* Spatial UI pages */}
       <Route path="/spatial-test" component={SpatialTestPage} />
+      <Route path="/spatial-test-new" component={SpatialTestNew} />
       <Route path="/spatial-industry-pulse">
         <ProtectedRoute path="/spatial-industry-pulse" component={SpatialIndustryPulsePage} />
       </Route>

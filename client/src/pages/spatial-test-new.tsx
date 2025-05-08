@@ -7,26 +7,25 @@ import { Home, User, Settings, Plus, X } from 'lucide-react';
 import { VisionProNavigation } from '@/components/ui/visionpro-nav';
 
 /**
- * SpatialTest - A dedicated page to test the Vision Pro UI components
+ * SpatialTestNew - A dedicated page to test the Vision Pro UI components
  * 
  * This page demonstrates various Vision Pro-inspired UI elements and effects
- * in both spatial and regular layouts.
+ * in a spatial environment with 3D floating windows.
  */
-export default function SpatialTest() {
+export default function SpatialTestNew() {
   const [showWindow1, setShowWindow1] = useState(true);
   const [showWindow2, setShowWindow2] = useState(true);
   const [showWindow3, setShowWindow3] = useState(false);
   
   // Navigation items for the Vision Pro navigation
   const navItems = [
-    { href: '/spatial-test', icon: <Home className="h-5 w-5" />, label: 'Home' },
+    { href: '/spatial-test-new', icon: <Home className="h-5 w-5" />, label: 'Home' },
     { href: '/profile', icon: <User className="h-5 w-5" />, label: 'Profile' },
     { href: '/settings', icon: <Settings className="h-5 w-5" />, label: 'Settings' },
   ];
   
   return (
     <SpatialLayout backgroundImage="radial-gradient(circle at center, rgba(25, 35, 60, 0.9) 0%, rgba(10, 15, 30, 0.95) 70%, rgba(5, 10, 20, 1) 100%)">
-      {/* Main Content Window */}
       {showWindow1 && (
         <FloatingWindow
           title="Vision Pro Components"
@@ -105,7 +104,6 @@ export default function SpatialTest() {
         </FloatingWindow>
       )}
       
-      {/* Secondary Window */}
       {showWindow2 && (
         <FloatingWindow
           title="Spatial Design System"
@@ -140,7 +138,6 @@ export default function SpatialTest() {
         </FloatingWindow>
       )}
       
-      {/* Third Window (optional) */}
       {showWindow3 && (
         <FloatingWindow
           title="Additional Window"
