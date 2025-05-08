@@ -32,7 +32,11 @@ export function useServices() {
   
   const createServiceMutation = useMutation({
     mutationFn: async (service: InsertService) => {
-      const response = await apiRequest('POST', '/api/services', service);
+      const response = await apiRequest({ 
+        method: 'POST', 
+        url: '/api/services', 
+        data: service 
+      });
       return response.json();
     },
     onSuccess: () => {
@@ -53,7 +57,11 @@ export function useServices() {
   
   const updateServiceMutation = useMutation({
     mutationFn: async ({ id, data }: { id: number, data: Partial<Service> }) => {
-      const response = await apiRequest('PUT', `/api/services/${id}`, data);
+      const response = await apiRequest({ 
+        method: 'PUT', 
+        url: `/api/services/${id}`, 
+        data: data 
+      });
       return response.json();
     },
     onSuccess: () => {
@@ -74,7 +82,10 @@ export function useServices() {
   
   const deleteServiceMutation = useMutation({
     mutationFn: async (id: number) => {
-      await apiRequest('DELETE', `/api/services/${id}`);
+      await apiRequest({ 
+        method: 'DELETE', 
+        url: `/api/services/${id}` 
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/users', userId, 'services'] });

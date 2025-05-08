@@ -124,7 +124,11 @@ export function useProfileServices() {
       if (!userId) throw new Error('User ID is required');
       
       console.log('useProfileServices hook - updating whatIOffer:', whatIOffer);
-      const response = await apiRequest('POST', `/api/users/${userId}/sync-profile-services`, { whatIOffer });
+      const response = await apiRequest({ 
+        method: 'POST', 
+        url: `/api/users/${userId}/sync-profile-services`, 
+        data: { whatIOffer } 
+      });
       
       if (!response.ok) {
         throw new Error('Failed to update "What I Offer" field');
