@@ -1,10 +1,13 @@
-import React from 'react';
-import { User, MessageSquare, Briefcase, Award, Lightbulb, Share2, Send } from 'lucide-react';
+import React, { useState } from 'react';
+import { User, MessageSquare, Briefcase, Award, Lightbulb, Share2, Send, ArrowRight, Eye, Layers, Move3d } from 'lucide-react';
 import { 
   TrackableButton, 
   GazeAwareCard, 
   SpatialInfoPanel,
-  VisionProDetector 
+  VisionProDetector,
+  FloatingElement,
+  SmartTransition,
+  DepthGradient 
 } from '@/components/vision-pro';
 
 /**
@@ -180,8 +183,158 @@ const VisionProDemoPage: React.FC = () => {
               </div>
             </div>
             
+            {/* NEW COMPONENTS SHOWCASE */}
+            <div className="max-w-5xl mx-auto mt-16 mb-12">
+              <h2 className="text-2xl font-bold mb-8 text-center text-gray-800 dark:text-white">
+                New Vision Pro UI Components
+              </h2>
+              
+              {/* Quick Design Wins Showcase */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* 1. FloatingElement Showcase */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold flex items-center gap-2 text-gray-700 dark:text-gray-200">
+                    <Move3d className="text-primary" size={20} />
+                    Floating UI Elements
+                  </h3>
+                  <div className="h-64 relative flex items-center justify-center bg-gray-100/50 dark:bg-gray-700/30 rounded-lg">
+                    <FloatingElement 
+                      floatLevel={6} 
+                      glowEffect={true}
+                      className="p-5 w-full max-w-xs mx-auto"
+                    >
+                      <div className="space-y-3">
+                        <h4 className="font-medium text-gray-800 dark:text-white">Career Growth Plan</h4>
+                        <p className="text-sm text-gray-600 dark:text-gray-300">
+                          Hover to see this card float above the background with subtle parallax movement.
+                        </p>
+                        <div className="pt-2">
+                          <button className="px-4 py-2 bg-primary/90 text-white rounded-md text-sm w-full">
+                            Explore Plan
+                          </button>
+                        </div>
+                      </div>
+                    </FloatingElement>
+                  </div>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Cards and menus that appear to float in space with subtle parallax movement on cursor hover. Great for call-to-action elements.
+                  </p>
+                </div>
+                
+                {/* 2. SmartTransition Showcase */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold flex items-center gap-2 text-gray-700 dark:text-gray-200">
+                    <ArrowRight className="text-primary" size={20} />
+                    Smart Transitions
+                  </h3>
+                  <div className="h-64 relative flex items-center justify-center bg-gray-100/50 dark:bg-gray-700/30 rounded-lg">
+                    <SmartTransition 
+                      type="spatial"
+                      direction="forward"
+                      secondaryContent={
+                        <div className="p-5 bg-white/90 dark:bg-gray-800/90 rounded-xl border border-gray-200 dark:border-gray-700 w-full max-w-xs mx-auto">
+                          <div className="space-y-3">
+                            <h4 className="font-medium text-primary">Career Mentor Details</h4>
+                            <div className="flex items-center gap-3">
+                              <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
+                                <User size={20} className="text-primary" />
+                              </div>
+                              <div>
+                                <p className="font-medium">Sarah Wilson</p>
+                                <p className="text-sm text-gray-500 dark:text-gray-400">UX Director • 8 yrs exp</p>
+                              </div>
+                            </div>
+                            <p className="text-sm">
+                              Available for 30-min mentoring sessions on Tuesdays
+                            </p>
+                          </div>
+                        </div>
+                      }
+                    >
+                      <div className="p-5 bg-white/90 dark:bg-gray-800/90 rounded-xl border border-gray-200 dark:border-gray-700 w-full max-w-xs mx-auto">
+                        <div className="space-y-3">
+                          <h4 className="font-medium text-gray-800 dark:text-white">Find a Career Mentor</h4>
+                          <p className="text-sm text-gray-600 dark:text-gray-300">
+                            Hover over this card to see a spatial transition effect. The content will smoothly transform in 3D space.
+                          </p>
+                          <div className="pt-2 flex justify-end">
+                            <div className="px-3 py-1.5 bg-primary/10 text-primary rounded-md text-xs flex items-center gap-1">
+                              <Eye size={14} />
+                              <span>Hover to see details</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </SmartTransition>
+                  </div>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Smooth transitions between UI states that respect spatial positioning. Perfect for revealing additional content while maintaining context.
+                  </p>
+                </div>
+                
+                {/* 3. DepthGradient Showcase */}
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold flex items-center gap-2 text-gray-700 dark:text-gray-200">
+                    <Layers className="text-primary" size={20} />
+                    Depth Gradients
+                  </h3>
+                  <div className="h-64 relative flex items-center justify-center bg-gray-100/50 dark:bg-gray-700/30 rounded-lg">
+                    <div className="relative w-full max-w-xs mx-auto">
+                      <DepthGradient 
+                        depth={8} 
+                        colorTheme="primary"
+                        direction="radial"
+                        className="mb-3 p-5"
+                      >
+                        <h4 className="font-medium text-gray-800 dark:text-white">Career Milestone</h4>
+                        <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
+                          Completed Advanced UX Certification
+                        </p>
+                        <div className="mt-3 flex items-center justify-between">
+                          <span className="text-xs text-gray-500 dark:text-gray-400">Last week</span>
+                          <span className="px-2 py-0.5 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100 text-xs rounded-full">+25 XP</span>
+                        </div>
+                      </DepthGradient>
+                      
+                      <DepthGradient 
+                        depth={3} 
+                        colorTheme="secondary"
+                        direction="horizontal"
+                        className="p-5 ml-6"
+                      >
+                        <h4 className="font-medium text-gray-800 dark:text-white">Upcoming Goal</h4>
+                        <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
+                          Complete portfolio update
+                        </p>
+                        <div className="mt-3 flex items-center justify-between">
+                          <span className="text-xs text-gray-500 dark:text-gray-400">Due in 2 days</span>
+                          <span className="px-2 py-0.5 bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100 text-xs rounded-full">In progress</span>
+                        </div>
+                      </DepthGradient>
+                    </div>
+                  </div>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Subtle color gradients and shadow effects create the illusion of depth. Items with higher depth values appear closer to the user.
+                  </p>
+                </div>
+              </div>
+              
+              {/* Component explanation */}
+              <div className="mt-12 p-6 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-xl shadow-lg">
+                <h3 className="text-lg font-semibold mb-3 text-gray-800 dark:text-white">Quick Design Wins Implementation</h3>
+                <p className="text-gray-600 dark:text-gray-300 mb-4">
+                  These Vision Pro UI components enhance the spatial computing experience by providing depth cues, improved interaction feedback, and smooth transitions between states.
+                </p>
+                <div className="space-y-2 text-sm text-gray-600 dark:text-gray-300">
+                  <p>• <strong>FloatingElement</strong>: Creates cards and menus that appear to float with parallax effects</p>
+                  <p>• <strong>SmartTransition</strong>: Implements smooth transitions that respect spatial positioning</p>
+                  <p>• <strong>DepthGradient</strong>: Uses subtle color and shadow changes for depth perception</p>
+                </div>
+              </div>
+            </div>
+            
             {/* Info footer */}
-            <div className="mt-16 mb-8 text-center text-gray-500 dark:text-gray-400 text-sm">
+            <div className="mt-8 mb-8 text-center text-gray-500 dark:text-gray-400 text-sm">
               <p>
                 Hover over elements to see enhanced Vision Pro feedback effects. <br />
                 These components automatically adjust based on device capabilities.
