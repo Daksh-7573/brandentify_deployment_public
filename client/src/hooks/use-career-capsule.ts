@@ -404,7 +404,10 @@ export const useCareerCapsule = (userId: number | string) => {
   const useDeleteProgressLog = (goalId: number) => {
     return useMutation({
       mutationFn: (logId: number) => {
-        return apiRequest('DELETE', `/api/goal-progress-logs/${logId}`);
+        return apiRequest({
+          method: 'DELETE',
+          url: `/api/goal-progress-logs/${logId}`
+        });
       },
       onSuccess: () => {
         toast({
@@ -434,7 +437,11 @@ export const useCareerCapsule = (userId: number | string) => {
         description?: string;
         useModel?: 'openai' | 'anthropic';
       }) => {
-        return apiRequest('POST', `/api/career-capsules/${capsuleId}/generate-milestones`, options || {});
+        return apiRequest({
+          method: 'POST',
+          url: `/api/career-capsules/${capsuleId}/generate-milestones`,
+          data: options || {}
+        });
       },
       onSuccess: () => {
         toast({
@@ -460,7 +467,10 @@ export const useCareerCapsule = (userId: number | string) => {
     return useMutation<any, any, number>({
       mutationFn: (taskId: number) => {
         console.log(`Toggling task completion for task ${taskId}`);
-        return apiRequest('POST', `/api/capsule-tasks/${taskId}/toggle`); // Added /api prefix
+        return apiRequest({
+          method: 'POST',
+          url: `/api/capsule-tasks/${taskId}/toggle`
+        });
       },
       onSuccess: (data, variables) => {
         console.log(`Successfully toggled task ${variables}:`, data);
@@ -501,7 +511,11 @@ export const useCareerCapsule = (userId: number | string) => {
     return useMutation<any, any, { taskId: number, taskData: any }>({
       mutationFn: ({ taskId, taskData }: { taskId: number, taskData: { title?: string; description?: string; isCompleted?: boolean; dueDate?: string } }) => {
         console.log(`Updating task ${taskId} with data:`, taskData);
-        return apiRequest('PUT', `/api/capsule-tasks/${taskId}`, taskData); // Added /api prefix
+        return apiRequest({
+          method: 'PUT',
+          url: `/api/capsule-tasks/${taskId}`,
+          data: taskData
+        });
       },
       onSuccess: (data, variables) => {
         console.log(`Successfully updated task ${variables.taskId}:`, data);
