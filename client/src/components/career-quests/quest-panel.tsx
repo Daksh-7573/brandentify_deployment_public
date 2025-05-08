@@ -97,7 +97,7 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
         <div className="text-center py-8">
           <h3 className="text-lg font-medium">No quests available</h3>
           <p className="text-muted-foreground mt-2">
-            Check back later for new career quests.
+            Check back later for new brand quests.
           </p>
         </div>
       );
@@ -115,7 +115,7 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
   return (
     <Card className={cn("w-full", className)}>
       <CardHeader className="pb-2">
-        <CardTitle className="text-2xl">Career Quests</CardTitle>
+        <CardTitle className="text-2xl">Brand Quests</CardTitle>
       </CardHeader>
       <CardContent>
         

@@ -29,6 +29,7 @@ import ResumeEditor from "@/pages/resume-editor";
 import UnifiedProfilePage from "@/pages/unified-profile";
 import FeedTestPage from "@/pages/feed-test";
 import CareerQuestsPage from "@/pages/career-quests";
+import BrandQuestsPage from "@/pages/brand-quests";
 import CareerCapsulePage from "@/pages/career-capsule"; // Career Capsule feature (renamed from Roadmap)
 import OnboardingPage from "@/pages/onboarding";
 import EditProfilePage from "@/pages/edit-profile";
@@ -141,8 +142,14 @@ function Router() {
       <Route path="/feed-test">
         <ProtectedRoute path="/feed-test" component={FeedTestPage} />
       </Route>
+      {/* Brand Quests (new name) */}
+      <Route path="/brand-quests">
+        <ProtectedRoute path="/brand-quests" component={BrandQuestsPage} />
+      </Route>
+      
+      {/* Legacy route - keeping for backward compatibility */}
       <Route path="/career-quests">
-        <ProtectedRoute path="/career-quests" component={CareerQuestsPage} />
+        <ProtectedRoute path="/career-quests" component={BrandQuestsPage} />
       </Route>
       <Route path="/career-capsule">
         <ProtectedRoute path="/career-capsule" component={CareerCapsulePage} />
