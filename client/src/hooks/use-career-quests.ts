@@ -288,8 +288,7 @@ export const useCompleteQuest = () => {
   });
 };
 
-// Dismiss a quest - Functionality removed as it's not being used
-// We keep the hook but display a message that this feature is disabled
+// Dismiss a quest
 export const useDismissQuest = () => {
   return useMutation({
     mutationFn: async ({ 
@@ -301,12 +300,25 @@ export const useDismissQuest = () => {
       reason?: string;
       userId: number
     }) => {
-      // Instead of making the API call, simply inform the user
-      console.log('Quest dismissal has been disabled in this version');
-      throw new Error('Quest dismissal is no longer available. Please focus on completing quests.');
+      const res = await fetch(`/api/users/${userId}/quests/${questId}/dismiss`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ reason })
+      });
+      
+      if (!res.ok) throw new Error('Failed to dismiss quest');
+      return res.json() as Promise<UserQuest>;
     },
-    onError: (error) => {
-      console.warn('Quest dismissal attempted but is disabled:', error);
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${data.userId}/quests`] });
+      queryClient.invalidateQueries({ 
+        queryKey: [`/api/users/${data.userId}/quests/current-week`] 
+      });
+      queryClient.invalidateQueries({ 
+        queryKey: [`/api/users/${data.userId}/quests-with-definitions`] 
+      });
     }
   });
 };

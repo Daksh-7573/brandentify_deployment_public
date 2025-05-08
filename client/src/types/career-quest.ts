@@ -13,6 +13,7 @@ export type QuestType =
 export type QuestStatus = 
   | 'active'
   | 'completed'
+  | 'dismissed'
   | 'expired';
 
 export type BadgeType = 
@@ -32,11 +33,8 @@ export interface QuestDefinition {
   targetAction: string;
   xpReward: number;
   badgeReward?: BadgeType;
-  // Profile completion requirements removed as they're not used in engagement quests
   requiredProfileCompletion?: number;
-  // Career stage requirements removed as they're not used in engagement quests
   requiredCareerStage?: string;
-  // Industry requirements removed as they're not used in engagement quests
   requiredIndustry?: string;
   muskTip?: string;
   isActive: boolean;
@@ -54,7 +52,6 @@ export interface UserQuest {
   completedAt?: string;
   weekNumber: number;
   year: number;
-  // Quest dismissal functionality removed; this field is kept for database compatibility
   dismissedReason?: string;
   xpEarned?: number;
   badgeEarned?: BadgeType;
@@ -77,11 +74,11 @@ export interface UserXp {
   userId: number;
   balance: number;
   lifetimeEarned: number;
-  // Monthly XP tracking removed as it's not used
+  currentMonthEarned: number;
   lastEarnedAt?: string;
-  lastUpdated?: string; // Changed field name to match API response
-  createdAt?: string;
-  updatedAt?: string;
+  lastResetAt?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface UserBadge {
@@ -137,6 +134,7 @@ export const getQuestStatusLabel = (status: QuestStatus): string => {
   const labels: Record<QuestStatus, string> = {
     active: 'In Progress',
     completed: 'Completed',
+    dismissed: 'Dismissed',
     expired: 'Expired'
   };
   return labels[status] || status;

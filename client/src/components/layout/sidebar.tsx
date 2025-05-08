@@ -12,7 +12,7 @@ export default function Sidebar({ activePage }: SidebarProps) {
     { id: "search", icon: "fas fa-search", label: "Discover & Connect", path: "/search" },
     { id: "services", icon: "fas fa-concierge-bell", label: "Services", path: "/services" },
     { id: "career-capsule", icon: "fas fa-road", label: "Career Capsule", path: "/career-capsule" },
-    { id: "engagement-quests", icon: "fas fa-tasks", label: "Engagement Quests", path: "/engagement-quests" },
+    { id: "career-quests", icon: "fas fa-tasks", label: "Career Quests", path: "/career-quests" },
   ];
 
   return (

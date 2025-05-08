@@ -130,14 +130,14 @@ export default function Header() {
                 variant="ghost"
                 size="sm" 
                 className={`flex items-center gap-2 font-medium px-3 py-2 h-auto ${
-                  isActive('/engagement-quests') 
+                  isActive('/career-quests') 
                     ? 'text-primary bg-primary/5 hover:bg-primary/10' 
                     : 'text-gray-800 hover:text-primary hover:bg-gray-50'
                 }`}
-                onClick={() => setLocation('/engagement-quests')}
+                onClick={() => setLocation('/career-quests')}
               >
                 <Trophy className="h-4 w-4" />
-                <span>Engagement Quests</span>
+                <span>Career Quests</span>
               </Button>
               
               <Button
@@ -296,17 +296,17 @@ export default function Header() {
               variant="ghost"
               size="sm"
               className={`w-full justify-start py-2.5 text-sm font-medium rounded-md ${
-                isActive('/engagement-quests') 
+                isActive('/career-quests') 
                   ? 'text-primary bg-primary/5' 
                   : 'text-gray-700 hover:bg-gray-50 hover:text-primary'
               }`}
               onClick={() => {
-                setLocation('/engagement-quests');
+                setLocation('/career-quests');
                 setIsMobileMenuOpen(false);
               }}
             >
               <Trophy className="h-4 w-4 mr-3 ml-0.5" />
-              <span>Engagement Quests</span>
+              <span>Career Quests</span>
             </Button>
             
             <Button

@@ -4,24 +4,6 @@
  * This middleware automatically tracks user progress for engagement quests
  * by intercepting relevant API calls and updating quest progress.
  * 
- * QUEST CATEGORIZATION:
- * Musk differentiates between Daily, Weekly, and Monthly quests using a combination of factors:
- * 
- * 1. Quest Type - Based on the "type" field in quest_definitions table
- *    - Daily quests: Usually simple engagement actions (commenting)
- *    - Weekly quests: Medium-effort engagement (multiple reactions)
- *    - Monthly quests: Higher-effort content creation (media uploads, original posts)
- * 
- * 2. Target Count - Number of actions required to complete the quest
- *    - Daily: Usually 1-2 actions (e.g., leave 1 comment)
- *    - Weekly: Usually 3-5 actions (e.g., react to 3 posts)
- *    - Monthly: Usually 5+ actions or significant effort (e.g., upload media)
- * 
- * 3. XP Reward - Amount of XP rewarded upon completion
- *    - Daily: 10-15 XP
- *    - Weekly: 20-30 XP
- *    - Monthly: 40-50 XP
- * 
  * OPTIMIZED VERSION:
  * - Reduced unnecessary debug logging
  * - Simplified quest tracking logic
@@ -138,8 +120,7 @@ export const questProgressMiddleware = async (req: Request, res: Response, next:
           );
           
           if (matchingTracker) {
-            // Minimized logging - only log the core information
-            console.log(`[Quest Tracker] Detected: ${matchingTracker.targetAction} by user ${userId}`);
+            console.log(`[Quest Tracker] Activity detected: ${matchingTracker.targetAction} by user ${userId} at ${path}`);
             
             // Process in background to not block response
             (async () => {
@@ -154,10 +135,7 @@ export const questProgressMiddleware = async (req: Request, res: Response, next:
                   // Update progress for each matching quest
                   for (const quest of matchingQuests) {
                     const newProgress = quest.progress + progressIncrement;
-                    // Reduced logging for better performance
-                    if (quest.progress === 0 || newProgress >= quest.targetCount) {
-                      console.log(`[Quest Tracker] Updating quest ${quest.id} progress: ${newProgress}/${quest.targetCount}`);
-                    }
+                    console.log(`[Quest Tracker] Updating quest ${quest.id} progress from ${quest.progress} to ${newProgress} (target: ${quest.targetCount})`);
                     
                     await updateQuestProgress(quest.id, userId, newProgress);
                   }

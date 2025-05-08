@@ -597,8 +597,26 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
     }
   });
 
-  // Quest dismissal functionality removed as it's not being used in the current system
-  // Focus on core engagement quests only (comments, reactions, media uploads)
+  apiRouter.post("/user-quests/:id/dismiss", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({ message: 'Invalid quest ID' });
+      }
+      
+      const { reason } = req.body;
+      const dismissedQuest = await storage.dismissUserQuest(id, reason);
+      
+      if (!dismissedQuest) {
+        return res.status(404).json({ message: 'Quest not found' });
+      }
+      
+      res.json(dismissedQuest);
+    } catch (error) {
+      console.error(`[POST /user-quests/${req.params.id}/dismiss] Error:`, error);
+      res.status(500).json({ message: 'Failed to dismiss user quest' });
+    }
+  });
 
   apiRouter.post("/user-quests/:id/progress", async (req, res) => {
     try {
@@ -641,12 +659,12 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
         if (!tableCheck.rows[0].exists) {
           console.log('[GET /users/:userId/xp] user_xp table does not exist, returning default XP');
           // Return default XP object to prevent UI crashes
-          // Return simplified user XP object without monthly tracking
           return res.json({
             id: 0,
             userId: userId,
             balance: 0,
             lifetimeEarned: 0,
+            currentMonthEarned: 0,
             lastUpdated: new Date()
           });
         }
@@ -654,13 +672,13 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
         // Get user XP directly from database
         console.log(`[GET /users/${userId}/xp] Fetching user XP directly from DB`);
         
-        // Remove current_month_earned column from query as monthly tracking is not used
         const userXpResult = await pool.query(`
           SELECT 
             id,
             user_id as "userId",
             balance,
             lifetime_earned as "lifetimeEarned",
+            current_month_earned as "currentMonthEarned",
             updated_at as "lastUpdated"
           FROM user_xp
           WHERE user_id = $1
@@ -673,36 +691,36 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
         } else {
           console.log(`[GET /users/${userId}/xp] No XP record found for user ${userId}, returning default`);
           // Return default XP object if no record exists
-          // Return simplified user XP object without monthly tracking
           res.json({
             id: 0,
             userId: userId,
             balance: 0,
             lifetimeEarned: 0,
+            currentMonthEarned: 0,
             lastUpdated: new Date()
           });
         }
       } catch (dbError) {
         console.error(`[GET /users/${req.params.userId}/xp] Database error:`, dbError);
         // Return default XP object to prevent UI crashes
-        // Return simplified user XP object without monthly tracking
         return res.json({
           id: 0,
           userId: userId,
           balance: 0,
           lifetimeEarned: 0,
+          currentMonthEarned: 0,
           lastUpdated: new Date()
         });
       }
     } catch (error) {
       console.error(`[GET /users/${req.params.userId}/xp] Error:`, error);
       // Return default XP object to prevent UI crashes
-      // Return simplified user XP object without monthly tracking
       return res.json({
         id: 0,
         userId: parseInt(req.params.userId) || 0,
         balance: 0,
         lifetimeEarned: 0,
+        currentMonthEarned: 0,
         lastUpdated: new Date()
       });
     }
@@ -729,8 +747,25 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
     }
   });
 
-  // Monthly XP tracking removed as it's not being used in the current system
-  // Focus on core engagement quests only (comments, reactions, media uploads)
+  apiRouter.post("/users/:userId/xp/reset-monthly", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      if (isNaN(userId)) {
+        return res.status(400).json({ message: 'Invalid user ID' });
+      }
+      
+      const userXp = await storage.resetMonthlyXp(userId);
+      
+      if (!userXp) {
+        return res.status(404).json({ message: 'User XP record not found' });
+      }
+      
+      res.json(userXp);
+    } catch (error) {
+      console.error(`[POST /users/${req.params.userId}/xp/reset-monthly] Error:`, error);
+      res.status(500).json({ message: 'Failed to reset monthly XP' });
+    }
+  });
 
   // User Badge routes
   apiRouter.get("/users/:userId/badges", async (req, res) => {
