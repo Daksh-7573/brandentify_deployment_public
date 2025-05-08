@@ -78,7 +78,7 @@ export default function SkillQuestsPage() {
   };
   
   return (
-    <PageLayout title="Skill Quests" subtitle="Complete specific skill-related quests to boost your profile and resume">
+    <PageLayout title="Engagement Quests" subtitle="Complete engagement activities like commenting, reacting, and sharing media to boost your profile">
       <div className="container max-w-5xl mx-auto py-8">
         <div className="flex flex-col md:flex-row gap-4 md:gap-8">
           <div className="w-full md:w-2/3">
@@ -97,7 +97,6 @@ export default function SkillQuestsPage() {
                   userXp && (
                     <XpProgressBar 
                       balance={userXp.balance} 
-                      monthlyEarned={userXp.currentMonthEarned}
                       lifetimeEarned={userXp.lifetimeEarned}
                       className="mb-6"
                     />
