@@ -5,6 +5,7 @@ import { QuestPanel } from '@/components/brand-quests/quest-panel';
 import { BadgeDisplay } from '@/components/brand-quests/badge-display';
 import { XpProgressBar } from '@/components/brand-quests/xp-progress-bar';
 import { HashtagSuggestions } from '@/components/brand-quests/hashtag-suggestions';
+import { NowboardSuggestions } from '@/components/brand-quests/nowboard-suggestions';
 import { useToast } from '@/hooks/use-toast';
 import { 
   useUserXp,
@@ -104,6 +105,12 @@ export default function BrandQuestsPage() {
                 />
               </CardContent>
             </Card>
+            
+            {/* Nowboard Suggestions */}
+            <NowboardSuggestions 
+              userId={userId} 
+              questType="engagement"
+            />
             
             {/* XP Transactions */}
             <Card>
