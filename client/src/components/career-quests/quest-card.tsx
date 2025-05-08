@@ -7,7 +7,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
 import { UserQuest, QuestDefinition, QuestType, getQuestTypeIcon, getQuestStatusLabel, getBadgeLabel } from '@/types/career-quest';
-import { useCompleteQuest, useDismissQuest, useUpdateQuestProgress } from '@/hooks/use-career-quests';
+import { useCompleteQuest, useUpdateQuestProgress } from '@/hooks/use-career-quests';
 
 interface QuestCardProps {
   quest: UserQuest;
@@ -17,10 +17,8 @@ interface QuestCardProps {
 export function QuestCard({ quest, onActionClick }: QuestCardProps) {
   const { toast } = useToast();
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const [dismissOpen, setDismissOpen] = useState(false);
   
   const completeQuestMutation = useCompleteQuest();
-  const dismissQuestMutation = useDismissQuest();
   const updateProgressMutation = useUpdateQuestProgress();
   
   // Handle all possible API data structures:
@@ -36,7 +34,7 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
     targetAction: '',
     xpReward: 0,
     badgeReward: undefined,
-    muskTip: quest.muskTip || quest.muskResponse || '',  // Fix for weekly quests
+    muskTip: quest.muskResponse || '',  // Custom tip or response from Musk
     isActive: true,
     createdAt: '',
     updatedAt: ''
@@ -75,6 +73,9 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
             });
           }
         });
+      } else if (progressPercentage >= 100) {
+        // If progress is at 100%, show completion dialog
+        setConfirmOpen(true);
       }
     }
   };
@@ -91,33 +92,10 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
         });
         setConfirmOpen(false);
       },
-      onError: (error) => {
+      onError: (error: Error) => {
         toast({
           title: 'Error',
           description: `Failed to complete quest: ${error.message}`,
-          variant: 'destructive',
-        });
-      }
-    });
-  };
-  
-  const handleDismiss = () => {
-    dismissQuestMutation.mutate({
-      questId: quest.id,
-      reason: 'User dismissed',
-      userId: quest.userId
-    }, {
-      onSuccess: () => {
-        toast({
-          title: 'Quest dismissed',
-          description: `You've dismissed "${questDefinition.title}".`,
-        });
-        setDismissOpen(false);
-      },
-      onError: (error) => {
-        toast({
-          title: 'Error',
-          description: `Failed to dismiss quest: ${error.message}`,
           variant: 'destructive',
         });
       }
@@ -175,23 +153,16 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
       </CardContent>
       <CardFooter className="pt-1 flex justify-between">
         {isActive && (
-          <>
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={() => setDismissOpen(true)}
-            >
-              Dismiss
-            </Button>
+          <div className="w-full flex justify-end">
             <Button 
               variant="default" 
               size="sm"
               onClick={handleActionClick}
-              disabled={updateProgressMutation.isPending}
+              disabled={updateProgressMutation.isPending || completeQuestMutation.isPending}
             >
               {progressPercentage >= 100 ? 'Complete Quest' : 'Track Progress'}
             </Button>
-          </>
+          </div>
         )}
         
         {(isComplete || isDismissed || isExpired) && (
@@ -241,24 +212,6 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={handleComplete}>
               Complete Quest
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-      
-      {/* Confirmation Dialog for Dismissal */}
-      <AlertDialog open={dismissOpen} onOpenChange={setDismissOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Dismiss Quest</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to dismiss this quest? You won't earn any XP or badges for this quest.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDismiss} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-              Dismiss Quest
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
