@@ -26,6 +26,7 @@ import brandsOfTheDayRoutes from "./routes-brands-of-the-day";
 import enhancedUserRoutes from "./routes-enhanced-user";
 import whatIOfferRoutes from "./routes-what-i-offer";
 import profileServicesRoutes from "./routes-services-sync";
+import nowboardRecommendationsRoutes from "./routes-nowboard-recommendations";
 import { resumeTestRoutes } from "./routes-resume-test";
 import { routesMigrateWorkExperiences } from "./routes-migrate-work-experiences";
 import path from "path";
@@ -5362,6 +5363,10 @@ ${extractedText.substring(0, 5000)}
   
   // Nowboard routes
   setupNowboardRoutes(apiRouter, storage);
+  
+  // Nowboard Recommendations routes
+  app.use(nowboardRecommendationsRoutes);
+  console.log("Nowboard Recommendations routes loaded");
   
   // Career Quests routes
   setupCareerQuestsRoutes(apiRouter, storage);
