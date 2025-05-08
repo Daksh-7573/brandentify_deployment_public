@@ -654,13 +654,13 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
         // Get user XP directly from database
         console.log(`[GET /users/${userId}/xp] Fetching user XP directly from DB`);
         
+        // Remove current_month_earned column from query as monthly tracking is not used
         const userXpResult = await pool.query(`
           SELECT 
             id,
             user_id as "userId",
             balance,
             lifetime_earned as "lifetimeEarned",
-            current_month_earned as "currentMonthEarned",
             updated_at as "lastUpdated"
           FROM user_xp
           WHERE user_id = $1
@@ -685,24 +685,24 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
       } catch (dbError) {
         console.error(`[GET /users/${req.params.userId}/xp] Database error:`, dbError);
         // Return default XP object to prevent UI crashes
+        // Return simplified user XP object without monthly tracking
         return res.json({
           id: 0,
           userId: userId,
           balance: 0,
           lifetimeEarned: 0,
-          currentMonthEarned: 0,
           lastUpdated: new Date()
         });
       }
     } catch (error) {
       console.error(`[GET /users/${req.params.userId}/xp] Error:`, error);
       // Return default XP object to prevent UI crashes
+      // Return simplified user XP object without monthly tracking
       return res.json({
         id: 0,
         userId: parseInt(req.params.userId) || 0,
         balance: 0,
         lifetimeEarned: 0,
-        currentMonthEarned: 0,
         lastUpdated: new Date()
       });
     }

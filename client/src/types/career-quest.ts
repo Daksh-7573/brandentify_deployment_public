@@ -74,11 +74,11 @@ export interface UserXp {
   userId: number;
   balance: number;
   lifetimeEarned: number;
-  currentMonthEarned: number;
+  // Monthly XP tracking removed as it's not used
   lastEarnedAt?: string;
-  lastResetAt?: string;
-  createdAt: string;
-  updatedAt: string;
+  lastUpdated?: string; // Changed field name to match API response
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface UserBadge {

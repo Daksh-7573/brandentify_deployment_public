@@ -120,7 +120,8 @@ export const questProgressMiddleware = async (req: Request, res: Response, next:
           );
           
           if (matchingTracker) {
-            console.log(`[Quest Tracker] Activity detected: ${matchingTracker.targetAction} by user ${userId} at ${path}`);
+            // Minimized logging - only log the core information
+            console.log(`[Quest Tracker] Detected: ${matchingTracker.targetAction} by user ${userId}`);
             
             // Process in background to not block response
             (async () => {
@@ -135,7 +136,10 @@ export const questProgressMiddleware = async (req: Request, res: Response, next:
                   // Update progress for each matching quest
                   for (const quest of matchingQuests) {
                     const newProgress = quest.progress + progressIncrement;
-                    console.log(`[Quest Tracker] Updating quest ${quest.id} progress from ${quest.progress} to ${newProgress} (target: ${quest.targetCount})`);
+                    // Reduced logging for better performance
+                    if (quest.progress === 0 || newProgress >= quest.targetCount) {
+                      console.log(`[Quest Tracker] Updating quest ${quest.id} progress: ${newProgress}/${quest.targetCount}`);
+                    }
                     
                     await updateQuestProgress(quest.id, userId, newProgress);
                   }
