@@ -1,0 +1,64 @@
+ Spatial Layout
+Floating windows are spaced naturally in the 3D environment, not bound to a flat screen.
+
+The main content (meditation dashboard) is center-aligned and larger, while secondary panels (Now Playing, Mini Player) float beside it.
+
+Use Case: Maintain clear visual hierarchy using Z-depth (how far each window is from the user).
+
+2. Soft UI & Visual Hierarchy
+The design uses glassmorphism (blurred background + semi-transparent panels).
+
+Light shadows and soft edges give a futuristic, non-intrusive aesthetic.
+
+Important actions (like “Start” button) use strong contrast and bright color to stand out.
+
+✅ Guideline: Use soft cards for content blocks, with vibrant call-to-actions.
+
+3. Modular Panels
+UI is modular, with sections like:
+
+Search bar
+
+Recommended sessions
+
+Audio controls (mini player)
+
+Side info panel (Now Playing)
+
+✅ Guideline: Break interfaces into reusable components that users can move, pin, or dismiss.
+
+4. Eye & Gesture-Friendly Buttons
+Buttons like “Start” and “Cancel” are large and have enough spacing—ideal for gaze + pinch gestures.
+
+Playback controls are simple and uncluttered.
+
+✅ Guideline: Use large touch targets with ample padding.
+
+5. Ambient Background Integration
+The floating UI exists in a realistic room, leveraging spatial anchoring.
+
+The clean, neutral background ensures no distraction from the UI.
+
+✅ Guideline: UI should feel native to the user's environment, not detached.
+
+6. Minimal Navigation
+Navigation icons (home, pause) are minimal and aligned vertically—perfect for gaze-based interaction.
+
+Avoids traditional tabs or menus.
+
+✅ Guideline: Simplify nav controls for spatial UX; reduce cognitive load.
+
+7. Interactive Feedback (Mini Player)
+The floating mini player shows active session and progress, with basic controls.
+
+It hovers close to the user, suggesting dynamic repositioning based on context.
+
+✅ Guideline: Add small floating utility UIs that follow user focus.
+
+🧠 Final Recommendations for Vision Pro UI
+Principle	Design Rule
+Depth	Position main panels at ~1 meter from user; stagger others
+Scaling	Auto-scale UI components to remain legible at all depths
+Lighting	Use light, shadows, and blur to guide attention
+Simplicity	Prioritize minimal, purpose-driven layouts
+Personal Space	Don’t overwhelm user’s FOV—leave space for real-world objects
