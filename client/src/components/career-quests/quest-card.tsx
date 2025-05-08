@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
-import { UserQuest, QuestDefinition, QuestType, getQuestTypeIcon, getQuestStatusLabel, getBadgeLabel } from '@/types/career-quest';
+import { UserQuest, QuestDefinition, QuestType, QuestStatus, getQuestTypeIcon, getQuestStatusLabel, getBadgeLabel } from '@/types/career-quest';
 import { useCompleteQuest, useUpdateQuestProgress } from '@/hooks/use-career-quests';
 
 interface QuestCardProps {
@@ -122,7 +122,7 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
           <Badge 
             variant={
               isComplete ? "default" : 
-              isExpired ? "outline" : 
+              isUncompleted ? "destructive" : 
               "secondary"
             }
           >
@@ -167,21 +167,21 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
           </>
         )}
         
-        {(isComplete || isExpired) && (
+        {(isComplete || isUncompleted) && (
           <div className="w-full flex justify-end">
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button 
-                    variant="secondary" 
+                    variant={isUncompleted ? "destructive" : "secondary"}
                     size="sm"
                     className="w-full"
                     disabled
                   >
                     {isComplete 
                       ? `Completed on ${new Date(quest.completedAt || '').toLocaleDateString()}`
-                      : isExpired 
-                        ? 'Quest expired'
+                      : isUncompleted 
+                        ? `Missed ${questDefinition.xpReward} XP`
                         : 'Quest status'}
                   </Button>
                 </TooltipTrigger>
@@ -190,8 +190,8 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
                     ? `You earned ${quest.xpEarned} XP and ${quest.badgeEarned ? `the ${getBadgeLabel(quest.badgeEarned)} badge` : 'no badge'}`
                     : isComplete 
                       ? 'Completed successfully'
-                      : isExpired 
-                        ? 'This quest has expired and is no longer available'
+                      : isUncompleted 
+                        ? `This quest expired at the end of week ${quest.weekNumber}. You missed out on earning ${questDefinition.xpReward} XP.`
                         : 'Quest status'}
                 </TooltipContent>
               </Tooltip>
