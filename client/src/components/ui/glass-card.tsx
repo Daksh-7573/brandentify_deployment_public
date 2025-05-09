@@ -48,12 +48,12 @@ const glassCardVariants = cva(
       }
     },
     defaultVariants: {
-      variant: "default",
+      variant: "frosted",
       size: "md",
       elevation: "raised",
       interactive: false,
       blurStrength: "md",
-      transparency: "low",
+      transparency: "medium",
     },
   }
 );
@@ -79,7 +79,7 @@ const GlassCard = React.forwardRef<HTMLDivElement, GlassCardProps>(
       transparency,
       children, 
       innerClassName,
-      backgroundEffect = "none",
+      backgroundEffect = "noise",
       backgroundIntensity = "medium",
       ...props 
     }, 

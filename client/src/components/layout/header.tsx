@@ -99,7 +99,7 @@ export default function Header() {
   const photoURL = userData?.photoURL || user?.photoURL;
 
   return (
-    <nav className="bg-white border-b border-gray-200 shadow-sm fixed top-0 left-0 right-0 z-50">
+    <nav className="bg-white/80 backdrop-blur-md border-b border-white/20 shadow-sm fixed top-0 left-0 right-0 z-50 transition-all duration-300 dark:bg-black/40 dark:border-gray-800/50">
       <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
