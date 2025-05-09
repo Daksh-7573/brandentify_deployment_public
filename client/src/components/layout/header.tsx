@@ -252,7 +252,7 @@ export default function Header() {
                 setLocation('/messages');
                 // Mark messages as read if there are any unread
                 if (hasUnreadMessages && userId) {
-                  apiRequest('POST', `/api/messages/mark-read?userId=${userId}`);
+                  apiRequest('POST', `/api/messaging/conversations/mark-all-read?userId=${userId}`);
                   setHasUnreadMessages(false);
                 }
               }}
@@ -361,7 +361,7 @@ export default function Header() {
                 setIsMobileMenuOpen(false);
                 // Mark messages as read if there are any unread
                 if (hasUnreadMessages && userId) {
-                  apiRequest('POST', `/api/messages/mark-read?userId=${userId}`);
+                  apiRequest('POST', `/api/messaging/conversations/mark-all-read?userId=${userId}`);
                   setHasUnreadMessages(false);
                 }
               }}
