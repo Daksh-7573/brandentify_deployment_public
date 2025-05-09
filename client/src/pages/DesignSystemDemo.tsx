@@ -224,8 +224,15 @@ const DesignSystemDemo: React.FC = () => {
 
   return (
     <div 
-      className="min-h-screen p-6 sm:p-8 lg:p-12 transition-colors duration-300"
-      style={{ background: 'var(--bg-gradient, linear-gradient(to bottom right, #F9FAFF, rgba(225, 229, 255, 0.2)))' }}
+      className="min-h-screen p-6 sm:p-8 lg:p-12 transition-all duration-300 relative"
+      style={{ 
+        backgroundImage: theme === 'light' 
+          ? 'url("/images/pattern-bg.svg")'
+          : 'url("/images/pattern-bg-dark.svg")',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed'
+      }}
     >
       <div className="max-w-7xl mx-auto">
         <div className="mb-12 text-center">
@@ -492,6 +499,157 @@ const DesignSystemDemo: React.FC = () => {
           </div>
         </section>
 
+        {/* Transparency Showcase */}
+        <section className="mb-16 relative">
+          <h2 className="text-2xl font-semibold mb-6 text-gray-800 dark:text-white">Transparency & Blur Showcase</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div className="relative h-64 overflow-hidden rounded-2xl border border-white/20">
+              {/* Background content */}
+              <div className="absolute inset-0 p-8 flex flex-col justify-between">
+                <div>
+                  <h3 className="text-3xl font-bold text-white">Background Content</h3>
+                  <p className="text-white/80 mt-2">This text is behind the glass panels</p>
+                </div>
+                <div className="flex gap-3">
+                  <div className="h-12 w-12 rounded-lg bg-primary"></div>
+                  <div className="h-12 w-12 rounded-lg bg-accent"></div>
+                  <div className="h-12 w-12 rounded-lg bg-success"></div>
+                </div>
+              </div>
+              
+              {/* Glass overlay panels with different blur and transparency */}
+              <div className="absolute right-0 top-0 w-3/4 h-1/2 p-4">
+                <GlassCard
+                  variant="ultraGlass"
+                  blurStrength="sm"
+                  transparency="low"
+                  className="h-full"
+                >
+                  <div className="flex items-center h-full justify-center">
+                    <div className="text-center">
+                      <p className="text-sm font-semibold dark:text-white">Subtle Blur</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-300">backdrop-blur-sm</p>
+                    </div>
+                  </div>
+                </GlassCard>
+              </div>
+              
+              <div className="absolute left-0 bottom-0 w-3/5 h-3/5 p-4">
+                <GlassCard
+                  variant="frosted"
+                  blurStrength="2xl"
+                  transparency="medium"
+                  className="h-full"
+                >
+                  <div className="flex items-center h-full justify-center">
+                    <div className="text-center">
+                      <p className="text-sm font-semibold dark:text-white">Heavy Blur</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-300">backdrop-blur-2xl</p>
+                    </div>
+                  </div>
+                </GlassCard>
+              </div>
+            </div>
+            
+            <div className="relative h-64 overflow-hidden rounded-2xl border border-white/20">
+              {/* Background pattern */}
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/30 to-accent/30">
+                <div className="absolute inset-0" style={{ 
+                  backgroundImage: 'radial-gradient(circle at 20px 20px, rgba(255,255,255,0.2) 2px, transparent 0)',
+                  backgroundSize: '30px 30px'
+                }}></div>
+              </div>
+              
+              {/* Overlapping transparent cards */}
+              <div className="absolute left-4 top-4 w-2/3 h-1/2">
+                <GlassCard
+                  variant="ultraGlass"
+                  blurStrength="lg"
+                  transparency="high"
+                  className="h-full"
+                >
+                  <div className="flex items-center h-full justify-center">
+                    <div className="text-center">
+                      <p className="text-sm font-semibold dark:text-white">High Transparency</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-300">bg-opacity-30</p>
+                    </div>
+                  </div>
+                </GlassCard>
+              </div>
+              
+              <div className="absolute right-4 bottom-4 w-2/3 h-1/2">
+                <GlassCard
+                  variant="ultraGlass"
+                  blurStrength="xl"
+                  transparency="ultra"
+                  className="h-full"
+                >
+                  <div className="flex items-center h-full justify-center">
+                    <div className="text-center">
+                      <p className="text-sm font-semibold dark:text-white">Ultra Transparency</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-300">bg-opacity-10</p>
+                    </div>
+                  </div>
+                </GlassCard>
+              </div>
+              
+              <div className="absolute left-1/4 top-1/4 right-1/4 bottom-1/4">
+                <GlassCard
+                  variant="cosmic"
+                  blurStrength="md"
+                  backgroundEffect="glow"
+                  className="h-full"
+                >
+                  <div className="flex items-center h-full justify-center">
+                    <div className="text-center">
+                      <p className="text-sm font-semibold dark:text-white">Glow Effect</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-300">Inner illumination</p>
+                    </div>
+                  </div>
+                </GlassCard>
+              </div>
+            </div>
+          </div>
+          
+          {/* Vision Pro-style Cards with Depth */}
+          <div className="relative h-40 overflow-hidden rounded-2xl border border-white/20 mb-6">
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-transparent to-accent/10"></div>
+              <div className="absolute inset-0" style={{
+                backgroundImage: 'radial-gradient(circle at 40px 40px, rgba(255,255,255,0.1) 1px, transparent 0)',
+                backgroundSize: '50px 50px'
+              }}></div>
+              
+              <div className="flex space-x-4">
+                {[...Array(5)].map((_, index) => (
+                  <div 
+                    key={index} 
+                    className="relative"
+                    style={{ transform: `translateZ(${(index + 1) * 5}px)` }}
+                  >
+                    <GlassCard
+                      variant={index % 2 === 0 ? "frosted" : "cosmic"}
+                      blurStrength={["sm", "md", "lg", "xl", "2xl"][index % 5] as any}
+                      transparency={["low", "medium", "high", "ultra", "low"][index % 5] as any}
+                      elevation="floating"
+                      className={`w-28 h-28 flex items-center justify-center transform transition-all duration-500 ${
+                        index === 2 ? 'scale-110 shadow-lg shadow-primary/20 z-10' : ''
+                      }`}
+                    >
+                      <div className="text-center">
+                        <div className="text-xl font-bold text-gray-800 dark:text-white">{index + 1}</div>
+                        <div className="text-xs text-gray-500 dark:text-gray-300">Layer</div>
+                      </div>
+                    </GlassCard>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+          
+        </section>
+        
         {/* Card Variants Section */}
         <section className="mb-16">
           <h2 className="text-2xl font-semibold mb-6 text-gray-800 dark:text-white">Glass Card Variants</h2>

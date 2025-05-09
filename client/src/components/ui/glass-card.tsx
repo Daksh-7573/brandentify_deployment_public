@@ -165,13 +165,15 @@ const GlassCard = React.forwardRef<HTMLDivElement, GlassCardProps>(
                 animation: 'refraction 10s ease-in-out infinite',
               }}
             />
-            <style jsx>{`
-              @keyframes refraction {
-                0% { background-position: 0% 0%; }
-                50% { background-position: 100% 100%; }
-                100% { background-position: 0% 0%; }
-              }
-            `}</style>
+            <style dangerouslySetInnerHTML={{
+              __html: `
+                @keyframes refraction {
+                  0% { background-position: 0% 0%; }
+                  50% { background-position: 100% 100%; }
+                  100% { background-position: 0% 0%; }
+                }
+              `
+            }} />
           </>
         );
       }
