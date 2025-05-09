@@ -39,7 +39,7 @@ const buttonVariants = cva(
       },
     },
     defaultVariants: {
-      variant: "glass-dark",
+      variant: "default",
       size: "default",
       glow: "none",
     },
