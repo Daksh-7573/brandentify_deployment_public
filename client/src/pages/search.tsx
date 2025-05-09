@@ -483,13 +483,13 @@ const SearchPage = () => {
         }
         
         setIsLoading(true);
-        const res = await apiRequest(
-          `/api/hashtags/${tag.id}/follow?userId=${userId}`,
-          {
-            method: 'POST',
-            data: { userId }
-          }
-        );
+        const res = await fetch(`/api/hashtags/${tag.id}/follow?userId=${userId}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ userId })
+        });
         
         return res.json();
       },
@@ -642,21 +642,24 @@ const SearchPage = () => {
 
   return (
     <DashboardLayout hideRightSidebar={true}>
-      {/* Enhanced background with gradients, pattern and decorative elements */}
-      <div className="absolute inset-0 w-full min-h-screen bg-[#0A0F1F] z-[-1] overflow-hidden">
-        {/* Background pattern */}
-        <div 
-          className="absolute inset-0 w-full h-full bg-cover bg-center opacity-70"
-          style={{ backgroundImage: "url('/images/pattern-bg-dark.svg')" }}
-        ></div>
+      {/* Rich background with vibrant gradients and effects */}
+      <div className="absolute inset-0 w-full min-h-screen z-[-1] overflow-hidden">
+        {/* Main background image with built-in gradients and effects */}
+        <img 
+          src="/images/glass-bg-dark.svg" 
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover"
+        />
         
-        {/* Decorative gradient circles */}
-        <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] rounded-full bg-primary/10 opacity-20 blur-[120px]"></div>
-        <div className="absolute bottom-1/3 right-1/4 w-[500px] h-[500px] rounded-full bg-purple-500/10 opacity-20 blur-[100px]"></div>
-        <div className="absolute top-2/3 right-1/3 w-[400px] h-[400px] rounded-full bg-blue-400/10 opacity-20 blur-[80px]"></div>
+        {/* Additional animated gradient overlays for depth and movement */}
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/[0.01] to-transparent opacity-60"></div>
         
-        {/* Noise texture overlay for added depth */}
-        <div className="absolute inset-0 bg-[url('/images/noise-texture.svg')] opacity-[0.03] mix-blend-overlay"></div>
+        {/* Extra glow effects for depth perception */}
+        <div className="absolute top-1/4 left-1/4 w-[700px] h-[700px] rounded-full bg-primary/5 opacity-30 blur-[150px] animate-pulse-slow"></div>
+        <div className="absolute bottom-1/3 right-1/4 w-[600px] h-[600px] rounded-full bg-purple-500/5 opacity-30 blur-[120px] animate-pulse-slow"></div>
+        
+        {/* Noise texture overlay for film grain effect */}
+        <div className="absolute inset-0 bg-[url('/images/noise-texture.svg')] opacity-[0.05] mix-blend-overlay"></div>
       </div>
 
       <div className="container mx-auto px-4 py-6 relative z-[1]">
