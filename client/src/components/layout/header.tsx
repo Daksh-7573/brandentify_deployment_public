@@ -305,7 +305,7 @@ export default function Header() {
 
       {/* Mobile menu dropdown */}
       {isMobileMenuOpen && (
-        <div className="md:hidden backdrop-blur-glass bg-opacity-15 border-b border-glass-border shadow-glass">
+        <div className="md:hidden backdrop-blur-sm bg-glass-bg/10 border-b border-glass-border shadow-glass">
           <div className="px-4 pt-3 pb-4 space-y-2">
             <Button
               variant="ghost"
@@ -408,8 +408,8 @@ export default function Header() {
               size="sm"
               className={`w-full justify-start py-2.5 text-sm font-medium rounded-md ${
                 isActive('/career-capsule') 
-                  ? 'text-primary bg-primary/5' 
-                  : 'text-gray-700 hover:bg-gray-50 hover:text-primary'
+                  ? 'text-white bg-primary-glass/20 backdrop-blur-sm shadow-glass-glow' 
+                  : 'text-glass-text hover:bg-glass-bg/25 hover:shadow-glass-hover'
               }`}
               onClick={() => {
                 setLocation('/career-capsule');
@@ -424,14 +424,14 @@ export default function Header() {
             
             {/* Brand of the Day feature is now integrated into Nowboard panel */}
 
-            <div className="pt-4 mt-2 border-t border-gray-200">
+            <div className="pt-4 mt-2 border-t border-glass-border/50">
               <Button
                 variant="ghost"
                 size="sm"
                 className={`w-full justify-start py-2.5 text-sm font-medium rounded-md ${
                   isActive('/profile') 
-                    ? 'text-primary bg-primary/5' 
-                    : 'text-gray-700 hover:bg-gray-50 hover:text-primary'
+                    ? 'text-white bg-primary-glass/20 backdrop-blur-sm shadow-glass-glow' 
+                    : 'text-glass-text hover:bg-glass-bg/25 hover:shadow-glass-hover'
                 }`}
                 onClick={() => {
                   setLocation('/profile');
@@ -447,7 +447,7 @@ export default function Header() {
               <Button
                 variant="ghost"
                 size="sm"
-                className="w-full justify-start py-2.5 text-sm font-medium rounded-md text-gray-700 hover:bg-gray-50 hover:text-primary"
+                className="w-full justify-start py-2.5 text-sm font-medium rounded-md text-glass-text hover:bg-glass-bg/25 hover:shadow-glass-hover"
                 onClick={() => {
                   setIsMobileMenuOpen(false);
                 }}
