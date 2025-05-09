@@ -197,7 +197,7 @@ export function VisionNowboardSuggestions({ userId, className, questType }: Visi
   
   if (isLoading || loadingAction) {
     return (
-      <VisionCard className={cn(className)}>
+      <VisionCard className={cn(className)} variant="dark" hover="subtle">
         <VisionCardHeader className="pb-2">
           <VisionCardTitle className="flex items-center gap-2">
             <Avatar className="h-8 w-8">
@@ -229,7 +229,7 @@ export function VisionNowboardSuggestions({ userId, className, questType }: Visi
   
   if (isError) {
     return (
-      <VisionCard className={cn(className)}>
+      <VisionCard className={cn(className)} variant="dark" hover="subtle">
         <VisionCardHeader className="pb-2">
           <VisionCardTitle className="flex items-center gap-2">
             <Avatar className="h-8 w-8">
@@ -254,7 +254,7 @@ export function VisionNowboardSuggestions({ userId, className, questType }: Visi
   
   if (!data || data.length === 0) {
     return (
-      <VisionCard className={cn(className)}>
+      <VisionCard className={cn(className)} variant="dark" hover="subtle">
         <VisionCardHeader className="pb-2">
           <VisionCardTitle className="flex items-center gap-2">
             <Avatar className="h-8 w-8">
@@ -283,7 +283,7 @@ export function VisionNowboardSuggestions({ userId, className, questType }: Visi
   }
   
   return (
-    <VisionCard className={cn(className)}>
+    <VisionCard className={cn(className)} variant="dark" hover="glow">
       <VisionCardHeader className="pb-2">
         <VisionCardTitle className="flex items-center gap-2">
           <Avatar className="h-8 w-8">
