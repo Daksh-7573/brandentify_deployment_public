@@ -100,19 +100,19 @@ export default function Header() {
 
   return (
     <nav className="fixed top-4 left-4 right-4 z-50 transition-all duration-300">
-      <div className="max-w-full mx-auto backdrop-filter backdrop-blur-xl bg-[rgba(25,25,25,0.5)] border border-[rgba(255,255,255,0.12)] rounded-2xl shadow-lg">
+      <div className="max-w-full mx-auto backdrop-filter backdrop-blur-xl bg-[rgba(20,20,20,0.6)] border border-[rgba(255,255,255,0.08)] rounded-2xl shadow-xl">
         <div className="flex justify-between h-16 px-4 sm:px-6 lg:px-8">
           <div className="flex items-center">
             <div className="flex-shrink-0 flex items-center mr-8">
               <div className="flex items-center">
                 <div
-                  className="flex items-center gap-1.5 cursor-pointer group"
+                  className="flex items-center gap-2 cursor-pointer group"
                   onClick={() => setLocation('/dashboard')}
                 >
-                  <div className="h-8 w-8 bg-gradient-to-br from-primary to-indigo-600 rounded-lg flex items-center justify-center shadow-sm transition-transform group-hover:scale-105">
+                  <div className="h-10 w-10 bg-gradient-to-br from-primary to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-primary/20 transition-all group-hover:shadow-primary/30 group-hover:scale-105">
                     <span className="text-white font-bold text-lg">B</span>
                   </div>
-                  <span className="text-primary text-xl font-bold cursor-pointer bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/80">
+                  <span className="text-white text-xl font-bold cursor-pointer">
                     Brandentifier
                   </span>
                 </div>
@@ -172,12 +172,12 @@ export default function Header() {
               
 
               <Button
-                variant="ghost"
+                variant="glass"
                 size="sm" 
                 className={`flex items-center gap-2 font-medium px-3 py-2 h-auto ${
                   isActive('/brand-quests') || isActive('/career-quests')
-                    ? 'text-primary bg-primary/5 hover:bg-primary/10' 
-                    : 'text-gray-800 hover:text-primary hover:bg-gray-50'
+                    ? 'text-primary border-primary/30 shadow-[0_0_10px_rgba(0,209,255,0.3)]' 
+                    : 'text-white hover:text-primary'
                 }`}
                 onClick={() => setLocation('/brand-quests')}
               >
@@ -186,12 +186,12 @@ export default function Header() {
               </Button>
               
               <Button
-                variant="ghost"
+                variant="glass"
                 size="sm" 
                 className={`flex items-center gap-2 font-medium px-3 py-2 h-auto ${
                   isActive('/career-capsule') 
-                    ? 'text-primary bg-primary/5 hover:bg-primary/10' 
-                    : 'text-gray-800 hover:text-primary hover:bg-gray-50'
+                    ? 'text-primary border-primary/30 shadow-[0_0_10px_rgba(0,209,255,0.3)]' 
+                    : 'text-white hover:text-primary'
                 }`}
                 onClick={() => setLocation('/career-capsule')}
               >
@@ -224,7 +224,7 @@ export default function Header() {
             <Button 
               variant="default" 
               size="sm"
-              className="hidden sm:flex px-4 py-2 text-sm font-medium bg-gradient-to-r from-primary to-indigo-600 hover:from-primary/90 hover:to-indigo-700 text-white shadow-sm items-center gap-1.5"
+              className="hidden sm:flex px-4 py-2 text-sm font-medium bg-gradient-to-r from-primary to-indigo-600 hover:from-primary/90 hover:to-indigo-700 text-white shadow-md hover:shadow-lg items-center gap-1.5 hover:scale-[1.02] transition-all duration-300"
               onClick={() => setLocation('/create-pulse')}
             >
               <Zap className="h-4 w-4" /> Create Pulse
@@ -234,10 +234,10 @@ export default function Header() {
             
             {/* Messages Button */}
             <Button
-              variant="ghost"
+              variant="glass"
               size="icon"
-              className={`hidden sm:flex rounded-full h-9 w-9 items-center justify-center hover:bg-gray-100 transition-colors relative ${
-                isActive('/messages') ? 'text-primary bg-primary/5' : 'text-gray-600'
+              className={`hidden sm:flex rounded-full h-9 w-9 items-center justify-center transition-all duration-300 relative ${
+                isActive('/messages') ? 'text-primary border-primary/30 shadow-[0_0_10px_rgba(0,209,255,0.3)]' : 'text-white'
               }`}
               onClick={() => {
                 setLocation('/messages');
@@ -265,15 +265,15 @@ export default function Header() {
             
             {/* User profile section - combined name and avatar */}
             <div 
-              className={`flex items-center gap-2 cursor-pointer px-3 py-1.5 rounded-lg border ${
+              className={`flex items-center gap-3 cursor-pointer px-4 py-2 rounded-2xl border transition-all duration-300 ${
                 isActive('/profile') 
-                  ? 'border-primary/30 bg-primary/5 shadow-sm' 
-                  : 'border-gray-100 hover:bg-gray-50 hover:border-gray-200'
-              } transition-all duration-200 group`}
+                  ? 'border-primary/30 backdrop-blur-md bg-[rgba(0,209,255,0.08)] shadow-[0_0_15px_rgba(0,209,255,0.2)]' 
+                  : 'border-[rgba(255,255,255,0.12)] backdrop-blur-md bg-[rgba(35,35,35,0.4)] hover:bg-[rgba(35,35,35,0.6)]'
+              } group`}
               onClick={() => setLocation('/profile')}
             >
               {/* User name */}
-              <span className="text-sm font-medium text-gray-800 hidden md:block">
+              <span className="text-sm font-medium text-white hidden md:block">
                 {userData?.name || (user && 'displayName' in user ? user.displayName : null) || "Profile"}
               </span>
               
@@ -283,7 +283,7 @@ export default function Header() {
                   className="flex items-center rounded-full focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-primary/70 transition-all"
                 >
                   <span className="sr-only">Open user menu</span>
-                  <div className="h-8 w-8 rounded-full overflow-hidden bg-primary/5 flex items-center justify-center border border-primary/10 shadow-sm group-hover:shadow-md transition-all">
+                  <div className="h-9 w-9 rounded-full overflow-hidden bg-[rgba(0,209,255,0.05)] flex items-center justify-center border border-[rgba(255,255,255,0.15)] shadow-md group-hover:shadow-lg transition-all group-hover:scale-105">
                     <img 
                       className="h-full w-full object-cover" 
                       src={photoURL || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"} 
