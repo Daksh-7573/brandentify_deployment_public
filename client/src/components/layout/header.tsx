@@ -12,6 +12,7 @@ export default function Header() {
   const { user, isDemoMode, signOut, refreshUserData } = useAuth();
   const [path, setLocation] = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [hasUnreadMessages, setHasUnreadMessages] = useState(false);
   
   // Helper function to check if current path matches
   const isActive = (routePath: string) => path === routePath;
@@ -49,6 +50,32 @@ export default function Header() {
       console.log("Header mounted - invalidating user query");
       queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}`] });
     }
+  }, [userId]);
+  
+  // Check for unread messages
+  useEffect(() => {
+    const checkUnreadMessages = async () => {
+      if (!userId) return;
+      
+      try {
+        const response = await apiRequest('GET', `/api/messages/unread/count?userId=${userId}`);
+        if (response.ok) {
+          const data = await response.json();
+          setHasUnreadMessages(data.count > 0);
+        }
+      } catch (error) {
+        console.error('Error checking for unread messages:', error);
+      }
+    };
+    
+    // Check initially
+    checkUnreadMessages();
+    
+    // Set up an interval to check every 30 seconds
+    const interval = setInterval(checkUnreadMessages, 30000);
+    
+    // Clean up the interval when the component unmounts
+    return () => clearInterval(interval);
   }, [userId]);
 
   // Determine which photo URL to use (prioritize userData if available)
@@ -110,19 +137,7 @@ export default function Header() {
                 <span>Discover & Connect</span>
               </Button>
               
-              <Button
-                variant="ghost"
-                size="sm"
-                className={`flex items-center gap-2 font-medium px-3 py-2 h-auto ${
-                  isActive('/messages') 
-                    ? 'text-primary bg-primary/5 hover:bg-primary/10' 
-                    : 'text-gray-800 hover:text-primary hover:bg-gray-50'
-                }`}
-                onClick={() => setLocation('/messages')}
-              >
-                <MessageSquare className="h-4 w-4" />
-                <span>Messages</span>
-              </Button>
+
               
               <Button
                 variant="ghost"
@@ -209,6 +224,22 @@ export default function Header() {
               <Settings className="h-5 w-5 text-gray-600" />
             </Button>
             
+            {/* Messages Button */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className={`hidden sm:flex rounded-full h-9 w-9 items-center justify-center hover:bg-gray-100 transition-colors relative ${
+                isActive('/messages') ? 'text-primary bg-primary/5' : 'text-gray-600'
+              }`}
+              onClick={() => setLocation('/messages')}
+              aria-label="Messages"
+            >
+              <MessageSquare className="h-5 w-5" />
+              {isActive('/messages') && (
+                <span className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1.5 h-1.5 bg-primary rounded-full"></span>
+              )}
+            </Button>
+            
             {/* Notification Bell */}
             <NotificationBell className="hidden sm:flex" />
             
@@ -291,7 +322,7 @@ export default function Header() {
             <Button
               variant="ghost"
               size="sm"
-              className={`w-full justify-start py-2.5 text-sm font-medium rounded-md ${
+              className={`flex items-center py-2.5 text-sm font-medium rounded-md ${
                 isActive('/messages') 
                   ? 'text-primary bg-primary/5' 
                   : 'text-gray-700 hover:bg-gray-50 hover:text-primary'
