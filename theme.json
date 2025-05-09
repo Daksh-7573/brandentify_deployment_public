@@ -1,7 +1,8 @@
 {
-  "variant": "tint",
-  "primary": "#667FFF",
-  "appearance": "light",
+  "variant": "vibrant",
+  "primary": "#8A6FFF",
+  "appearance": "dark",
+  "selectedTheme": "galaxy",
   "radius": 2.0,
   "colors": {
     "secondary": "#B6B8F3",
@@ -33,7 +34,46 @@
     "floatingEffect": "box-shadow: 0 15px 35px rgba(107, 126, 190, 0.2); backdrop-filter: blur(16px);",
     "glowEffect": "box-shadow: 0 0 15px rgba(102, 127, 255, 0.3);"
   },
+  "glass": {
+    "variant": "frosted",
+    "transparency": "medium", 
+    "blurStrength": "md",
+    "backgroundEffect": "noise",
+    "backgroundIntensity": "medium"
+  },
   "darkThemes": [
+    {
+      "name": "galaxy",
+      "displayName": "Galaxy",
+      "colors": {
+        "primary": "#8A6FFF",
+        "secondary": "#52B5F9",
+        "tertiary": "#2A1E4D",
+        "background": "#0A0F1F",
+        "card": "rgba(19, 26, 47, 0.85)",
+        "text": "#FFFFFF",
+        "textSecondary": "#B6C3E4",
+        "success": "#40DD7F",
+        "warning": "#FFBE0B",
+        "accent": "#667FFF",
+        "muted": "rgba(45, 55, 85, 0.75)",
+        "glass": "rgba(255, 255, 255, 0.12)",
+        "glassDark": "rgba(19, 26, 47, 0.75)",
+        "shadow": "rgba(0, 0, 0, 0.3)",
+        "border": "rgba(138, 111, 255, 0.2)",
+        "highlight": "rgba(138, 111, 255, 0.15)",
+        "glassBg": "rgba(255, 255, 255, 0.08)",
+        "glassDarkBg": "rgba(19, 26, 47, 0.8)"
+      },
+      "effects": {
+        "glassEffect": "backdrop-filter: blur(8px); background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.1);",
+        "glassDarkEffect": "backdrop-filter: blur(8px); background: rgba(19, 26, 47, 0.75); border: 1px solid rgba(138, 111, 255, 0.1);",
+        "shadowSm": "box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.2)",
+        "shadowMd": "box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2), 0 2px 5px rgba(0, 0, 0, 0.3)",
+        "shadowLg": "box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25), 0 4px 10px rgba(0, 0, 0, 0.3)",
+        "glowEffect": "box-shadow: 0 0 15px rgba(138, 111, 255, 0.5), 0 0 5px rgba(138, 111, 255, 0.3);"
+      }
+    },
     {
       "name": "midnight",
       "displayName": "Midnight",
