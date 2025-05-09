@@ -2,17 +2,18 @@
   "variant": "professional",
   "primary": "#4F8CFF",
   "appearance": "dark",
-  "radius": 1.6,
+  "radius": 0.8,
   "colors": {
     "secondary": "#3ED7C2",
-    "tertiary": "#6B7280",
+    "tertiary": "#4ADE80",
     "background": "#1C1C1E",
-    "card": "#242426",
+    "card": "rgba(255, 255, 255, 0.05)",
+    "border": "#3A3A3C",
     "text": "#E5E5E7",
     "textSecondary": "#A1A1AA",
+    "textDisabled": "#6B7280",
     "success": "#4ADE80",
     "warning": "#FCD34D",
-    "error": "#EF4444",
-    "border": "#3A3A3C"
+    "error": "#EF4444"
   }
 }
