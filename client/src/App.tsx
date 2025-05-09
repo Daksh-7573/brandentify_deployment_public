@@ -6,6 +6,8 @@ import { AuthProvider } from "./context/auth-context";
 import { useAuth } from "./hooks/use-auth";
 import { useEffect } from "react";
 import GlobalMuskButton from "@/components/musk/global-musk-button";
+import { GlassEffectsProvider } from "@/contexts/GlassEffectsContext";
+import { GlassEffectsToggle, GlassEffectsControls } from "@/components/ui/glass-effects-controls";
 
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
@@ -221,24 +223,28 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <Suspense fallback={
-          <div className="min-h-screen flex items-center justify-center bg-background">
-            <div className="w-[280px] aspect-[2/3.5] rounded-lg overflow-hidden shadow-lg">
-              <div className="h-[24%] bg-gray-300 dark:bg-gray-700 relative animate-pulse"></div>
-              <div className="bg-white dark:bg-gray-800 h-[76%] p-5 flex flex-col gap-4">
-                <div className="h-5 w-[70%] bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
-                <div className="h-4 w-[50%] bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
-                <div className="h-24 w-full bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
-                <div className="h-4 w-[80%] bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
-                <div className="h-4 w-[60%] bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
+        <GlassEffectsProvider>
+          <Suspense fallback={
+            <div className="min-h-screen flex items-center justify-center bg-background">
+              <div className="w-[280px] aspect-[2/3.5] rounded-lg overflow-hidden shadow-lg">
+                <div className="h-[24%] bg-gray-300 dark:bg-gray-700 relative animate-pulse"></div>
+                <div className="bg-white dark:bg-gray-800 h-[76%] p-5 flex flex-col gap-4">
+                  <div className="h-5 w-[70%] bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
+                  <div className="h-4 w-[50%] bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
+                  <div className="h-24 w-full bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
+                  <div className="h-4 w-[80%] bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
+                  <div className="h-4 w-[60%] bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
+                </div>
               </div>
             </div>
-          </div>
-        }>
-          <Router />
-          <GlobalMuskButton />
-          <Toaster />
-        </Suspense>
+          }>
+            <Router />
+            <GlobalMuskButton />
+            <GlassEffectsToggle />
+            <GlassEffectsControls />
+            <Toaster />
+          </Suspense>
+        </GlassEffectsProvider>
       </AuthProvider>
     </QueryClientProvider>
   );
