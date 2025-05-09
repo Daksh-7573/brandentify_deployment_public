@@ -20,7 +20,7 @@ import { ArrowLeft, Users } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 
 const Chat: React.FC<{ userId: number }> = ({ userId }) => {
-  const { currentConversation, setCurrentConversation } = useChat();
+  const { currentConversation, setCurrentConversation, createConversation } = useChat();
   const [isNewConversationModalOpen, setIsNewConversationModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const { toast } = useToast();
@@ -32,16 +32,15 @@ const Chat: React.FC<{ userId: number }> = ({ userId }) => {
   });
 
   // Filter out current user and apply search
-  const filteredUsers = users.filter(
+  const filteredUsers = Array.isArray(users) ? users.filter(
     (user) => 
       user.id !== userId && 
       (user.name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
        user.username?.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
+  ) : [];
 
   const handleStartConversation = async (otherUserId: number) => {
     try {
-      const { createConversation } = useChat();
       const newConversation = await createConversation(null, [otherUserId]);
       setCurrentConversation(newConversation);
       setIsNewConversationModalOpen(false);
