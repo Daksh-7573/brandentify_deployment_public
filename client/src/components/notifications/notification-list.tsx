@@ -1,14 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Check, X, Trash2, Bell } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { GlassButton } from '@/components/ui/glass-button';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { apiRequest } from '@/lib/queryClient';
 import { formatDistanceToNow } from 'date-fns';
-import { cn } from '@/lib/utils';
 
 // Define notification types based on schema
 interface Notification {
@@ -114,17 +112,17 @@ export default function NotificationList({
   
   return (
     <div className="max-h-[450px] overflow-hidden flex flex-col">
-      <div className="flex items-center justify-between p-3 border-b border-white/10 bg-gradient-to-b from-white/10 to-transparent dark:from-gray-800/20 dark:to-transparent">
-        <h3 className="font-semibold text-base text-gray-800 dark:text-gray-200">Notifications</h3>
-        <GlassButton 
-          variant="glass-dark" 
+      <div className="flex items-center justify-between p-3 border-b">
+        <h3 className="font-semibold text-base">Notifications</h3>
+        <Button 
+          variant="ghost" 
           size="sm" 
           onClick={onMarkAllAsRead}
-          className="text-xs rounded-full px-3 text-white bg-gray-800/40"
+          className="text-xs text-gray-600 hover:text-primary"
         >
           <Check className="h-3.5 w-3.5 mr-1" />
           Mark all as read
-        </GlassButton>
+        </Button>
       </div>
       
       <Tabs 
@@ -133,26 +131,10 @@ export default function NotificationList({
         value={activeTab} 
         onValueChange={(value) => setActiveTab(value as 'all' | 'unread')}
       >
-        <div className="border-b border-white/10 px-2 bg-white/5 dark:bg-gray-900/20">
-          <TabsList className="grid grid-cols-2 h-12 bg-transparent">
-            <TabsTrigger 
-              value="all" 
-              className={cn(
-                "text-sm rounded-full data-[state=active]:bg-white/20 data-[state=active]:backdrop-blur-lg dark:data-[state=active]:bg-gray-800/40",
-                "data-[state=active]:text-gray-900 dark:data-[state=active]:text-white data-[state=active]:shadow-sm"
-              )}
-            >
-              All
-            </TabsTrigger>
-            <TabsTrigger 
-              value="unread" 
-              className={cn(
-                "text-sm rounded-full data-[state=active]:bg-white/20 data-[state=active]:backdrop-blur-lg dark:data-[state=active]:bg-gray-800/40",
-                "data-[state=active]:text-gray-900 dark:data-[state=active]:text-white data-[state=active]:shadow-sm"
-              )}
-            >
-              Unread
-            </TabsTrigger>
+        <div className="border-b px-2">
+          <TabsList className="grid grid-cols-2 h-10">
+            <TabsTrigger value="all" className="text-sm">All</TabsTrigger>
+            <TabsTrigger value="unread" className="text-sm">Unread</TabsTrigger>
           </TabsList>
         </div>
         
@@ -174,57 +156,55 @@ export default function NotificationList({
               filteredNotifications.map((notification) => (
                 <div 
                   key={notification.id} 
-                  className={cn(
-                    "p-3 border-b border-white/10 last:border-0 transition-all",
-                    "hover:bg-white/10 dark:hover:bg-gray-800/20 backdrop-blur-sm",
-                    !notification.isRead ? "bg-blue-50/20 dark:bg-blue-900/10" : "bg-transparent"
-                  )}
+                  className={`p-3 border-b last:border-0 hover:bg-gray-50 ${
+                    !notification.isRead ? 'bg-blue-50/30' : ''
+                  }`}
                 >
                   <div className="flex items-start gap-3">
                     <div className="mt-0.5">
                       {getNotificationIcon(notification.type)}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium text-sm line-clamp-1 text-gray-800 dark:text-gray-100">{notification.title}</p>
-                      <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2 mt-0.5">
+                      <p className="font-medium text-sm line-clamp-1">{notification.title}</p>
+                      <p className="text-sm text-gray-600 line-clamp-2 mt-0.5">
                         {notification.message}
                       </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      <p className="text-xs text-gray-500 mt-1">
                         {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true })}
                       </p>
                     </div>
                     <div className="flex gap-1 shrink-0">
                       {!notification.isRead && (
-                        <GlassButton
-                          variant="glass"
+                        <Button
+                          variant="ghost"
                           size="icon"
-                          className="h-7 w-7 rounded-full bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 dark:text-blue-400"
+                          className="h-7 w-7 rounded-full hover:bg-blue-100 hover:text-blue-600"
                           onClick={() => handleMarkAsRead(notification.id)}
                           title="Mark as read"
                         >
                           <Check className="h-3.5 w-3.5" />
-                        </GlassButton>
+                        </Button>
                       )}
-                      <GlassButton
-                        variant="glass"
+                      <Button
+                        variant="ghost"
                         size="icon"
-                        className="h-7 w-7 rounded-full bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400"
+                        className="h-7 w-7 rounded-full hover:bg-red-100 hover:text-red-600"
                         onClick={() => handleDelete(notification.id)}
                         title="Delete notification"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
-                      </GlassButton>
+                      </Button>
                     </div>
                   </div>
                 </div>
               ))
             ) : (
               <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
-                <div className="bg-gray-100/50 dark:bg-gray-800/30 backdrop-blur-sm p-4 rounded-full mb-4 shadow-sm border border-white/20 dark:border-gray-700/30">
-                  <Bell className="h-6 w-6 text-gray-500 dark:text-gray-300" />
+                <div className="bg-gray-100 p-3 rounded-full mb-3">
+                  <Bell className="h-6 w-6 text-gray-400" />
                 </div>
-                <h3 className="text-base font-medium text-gray-900 dark:text-gray-100">No notifications</h3>
-                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                <h3 className="text-base font-medium text-gray-900">No notifications</h3>
+                <p className="mt-1 text-sm text-gray-500">
                   {activeTab === 'all' 
                     ? "You don't have any notifications yet" 
                     : "You don't have any unread notifications"}
@@ -252,55 +232,51 @@ export default function NotificationList({
               filteredNotifications.map((notification) => (
                 <div 
                   key={notification.id} 
-                  className={cn(
-                    "p-3 border-b border-white/10 last:border-0 transition-all",
-                    "hover:bg-white/10 dark:hover:bg-gray-800/20 backdrop-blur-sm",
-                    "bg-blue-50/20 dark:bg-blue-900/10"
-                  )}
+                  className="p-3 border-b last:border-0 hover:bg-gray-50 bg-blue-50/30"
                 >
                   <div className="flex items-start gap-3">
                     <div className="mt-0.5">
                       {getNotificationIcon(notification.type)}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium text-sm line-clamp-1 text-gray-800 dark:text-gray-100">{notification.title}</p>
-                      <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2 mt-0.5">
+                      <p className="font-medium text-sm line-clamp-1">{notification.title}</p>
+                      <p className="text-sm text-gray-600 line-clamp-2 mt-0.5">
                         {notification.message}
                       </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      <p className="text-xs text-gray-500 mt-1">
                         {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true })}
                       </p>
                     </div>
                     <div className="flex gap-1 shrink-0">
-                      <GlassButton
-                        variant="glass"
+                      <Button
+                        variant="ghost"
                         size="icon"
-                        className="h-7 w-7 rounded-full bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 dark:text-blue-400"
+                        className="h-7 w-7 rounded-full hover:bg-blue-100 hover:text-blue-600"
                         onClick={() => handleMarkAsRead(notification.id)}
                         title="Mark as read"
                       >
                         <Check className="h-3.5 w-3.5" />
-                      </GlassButton>
-                      <GlassButton
-                        variant="glass"
+                      </Button>
+                      <Button
+                        variant="ghost"
                         size="icon"
-                        className="h-7 w-7 rounded-full bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400"
+                        className="h-7 w-7 rounded-full hover:bg-red-100 hover:text-red-600"
                         onClick={() => handleDelete(notification.id)}
                         title="Delete notification"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
-                      </GlassButton>
+                      </Button>
                     </div>
                   </div>
                 </div>
               ))
             ) : (
               <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
-                <div className="bg-gray-100/50 dark:bg-gray-800/30 backdrop-blur-sm p-4 rounded-full mb-4 shadow-sm border border-white/20 dark:border-gray-700/30">
-                  <Bell className="h-6 w-6 text-gray-500 dark:text-gray-300" />
+                <div className="bg-gray-100 p-3 rounded-full mb-3">
+                  <Bell className="h-6 w-6 text-gray-400" />
                 </div>
-                <h3 className="text-base font-medium text-gray-900 dark:text-gray-100">No unread notifications</h3>
-                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                <h3 className="text-base font-medium text-gray-900">No unread notifications</h3>
+                <p className="mt-1 text-sm text-gray-500">
                   All caught up! You've read all your notifications.
                 </p>
               </div>

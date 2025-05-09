@@ -1,13 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Bell } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { GlassButton } from '@/components/ui/glass-button';
 import { Badge } from '@/components/ui/badge';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { apiRequest } from '@/lib/queryClient';
 import { useAuth } from '@/hooks/use-auth';
 import NotificationList from './notification-list';
-import { GlassCard } from '@/components/ui/glass-card';
 
 interface NotificationBellProps {
   className?: string;
@@ -66,36 +64,30 @@ export function NotificationBell({ className = '' }: NotificationBellProps) {
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
-        <GlassButton
-          variant="glass-dark"
+        <Button
+          variant="ghost"
           size="icon"
-          className={`relative rounded-full p-2 transition-all ${className}`}
+          className={`relative rounded-md p-2 hover:bg-gray-100 transition-colors ${className}`}
           onClick={() => setIsOpen(true)}
           aria-label="Notifications"
         >
-          <Bell className="h-5 w-5 text-white" />
+          <Bell className="h-5 w-5 text-gray-600" />
           {unreadCount > 0 && (
             <Badge 
-              className="absolute -top-1 -right-1 px-1.5 h-5 min-w-[20px] flex items-center justify-center bg-red-500 text-white border border-white/30 shadow-sm text-xs" 
+              className="absolute -top-1 -right-1 px-1.5 h-5 min-w-[20px] flex items-center justify-center bg-red-500 text-white border-0 text-xs" 
               variant="destructive"
             >
               {unreadCount > 99 ? '99+' : unreadCount}
             </Badge>
           )}
-        </GlassButton>
+        </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[350px] p-0 mr-4 overflow-hidden backdrop-blur-md bg-white/70 dark:bg-gray-900/50 border border-white/30 dark:border-gray-800/30 shadow-xl" align="end">
-        <GlassCard 
-          variant="frosted" 
-          className="p-0 rounded-none border-0 shadow-none"
-          backgroundEffect="noise"
-        >
-          <NotificationList 
-            userId={userId} 
-            onMarkAllAsRead={handleMarkAllAsRead}
-            onNotificationRead={() => fetchUnreadCount()}
-          />
-        </GlassCard>
+      <PopoverContent className="w-[350px] p-0 mr-4" align="end">
+        <NotificationList 
+          userId={userId} 
+          onMarkAllAsRead={handleMarkAllAsRead}
+          onNotificationRead={() => fetchUnreadCount()}
+        />
       </PopoverContent>
     </Popover>
   );
