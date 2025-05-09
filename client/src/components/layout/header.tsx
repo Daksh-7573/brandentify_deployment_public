@@ -99,7 +99,7 @@ export default function Header() {
   const photoURL = userData?.photoURL || user?.photoURL;
 
   return (
-    <nav className="bg-white border-b border-gray-200 shadow-sm fixed top-0 left-0 right-0 z-50">
+    <nav className="backdrop-blur-glass bg-opacity-15 border-b border-glass-border shadow-glass fixed top-0 left-0 right-0 z-50">
       <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
@@ -129,10 +129,10 @@ export default function Header() {
               <Button
                 variant="ghost"
                 size="sm"
-                className={`flex items-center gap-2 font-medium px-3 py-2 h-auto ${
+                className={`flex items-center gap-2 font-medium px-3 py-2 h-auto rounded-lg ${
                   isActive('/industry-pulse') 
-                    ? 'text-primary bg-primary/5 hover:bg-primary/10' 
-                    : 'text-gray-800 hover:text-primary hover:bg-gray-50'
+                    ? 'text-white bg-primary-glass/20 backdrop-blur-sm shadow-glass-glow' 
+                    : 'text-glass-text hover:bg-glass-bg/25 hover:shadow-glass-hover'
                 }`}
                 onClick={() => setLocation('/industry-pulse')}
               >
@@ -143,10 +143,10 @@ export default function Header() {
               <Button
                 variant="ghost"
                 size="sm"
-                className={`flex items-center gap-2 font-medium px-3 py-2 h-auto ${
+                className={`flex items-center gap-2 font-medium px-3 py-2 h-auto rounded-lg ${
                   isActive('/search') 
-                    ? 'text-primary bg-primary/5 hover:bg-primary/10' 
-                    : 'text-gray-800 hover:text-primary hover:bg-gray-50'
+                    ? 'text-white bg-primary-glass/20 backdrop-blur-sm shadow-glass-glow' 
+                    : 'text-glass-text hover:bg-glass-bg/25 hover:shadow-glass-hover'
                 }`}
                 onClick={() => setLocation('/search')}
               >
@@ -159,10 +159,10 @@ export default function Header() {
               <Button
                 variant="ghost"
                 size="sm" 
-                className={`flex items-center gap-2 font-medium px-3 py-2 h-auto ${
+                className={`flex items-center gap-2 font-medium px-3 py-2 h-auto rounded-lg ${
                   isActive('/radar') 
-                    ? 'text-primary bg-primary/5 hover:bg-primary/10' 
-                    : 'text-gray-800 hover:text-primary hover:bg-gray-50'
+                    ? 'text-white bg-primary-glass/20 backdrop-blur-sm shadow-glass-glow' 
+                    : 'text-glass-text hover:bg-glass-bg/25 hover:shadow-glass-hover'
                 }`}
                 onClick={() => setLocation('/radar')}
               >
@@ -174,10 +174,10 @@ export default function Header() {
               <Button
                 variant="ghost"
                 size="sm" 
-                className={`flex items-center gap-2 font-medium px-3 py-2 h-auto ${
+                className={`flex items-center gap-2 font-medium px-3 py-2 h-auto rounded-lg ${
                   isActive('/brand-quests') || isActive('/career-quests')
-                    ? 'text-primary bg-primary/5 hover:bg-primary/10' 
-                    : 'text-gray-800 hover:text-primary hover:bg-gray-50'
+                    ? 'text-white bg-primary-glass/20 backdrop-blur-sm shadow-glass-glow' 
+                    : 'text-glass-text hover:bg-glass-bg/25 hover:shadow-glass-hover'
                 }`}
                 onClick={() => setLocation('/brand-quests')}
               >
@@ -188,10 +188,10 @@ export default function Header() {
               <Button
                 variant="ghost"
                 size="sm" 
-                className={`flex items-center gap-2 font-medium px-3 py-2 h-auto ${
+                className={`flex items-center gap-2 font-medium px-3 py-2 h-auto rounded-lg ${
                   isActive('/career-capsule') 
-                    ? 'text-primary bg-primary/5 hover:bg-primary/10' 
-                    : 'text-gray-800 hover:text-primary hover:bg-gray-50'
+                    ? 'text-white bg-primary-glass/20 backdrop-blur-sm shadow-glass-glow' 
+                    : 'text-glass-text hover:bg-glass-bg/25 hover:shadow-glass-hover'
                 }`}
                 onClick={() => setLocation('/career-capsule')}
               >
@@ -267,13 +267,13 @@ export default function Header() {
             <div 
               className={`flex items-center gap-2 cursor-pointer px-3 py-1.5 rounded-lg border ${
                 isActive('/profile') 
-                  ? 'border-primary/30 bg-primary/5 shadow-sm' 
-                  : 'border-gray-100 hover:bg-gray-50 hover:border-gray-200'
+                  ? 'border-glass-border bg-primary-glass/20 text-white shadow-glass-glow' 
+                  : 'border-glass-border hover:bg-glass-bg/25 hover:shadow-glass-hover'
               } transition-all duration-200 group`}
               onClick={() => setLocation('/profile')}
             >
               {/* User name */}
-              <span className="text-sm font-medium text-gray-800 hidden md:block">
+              <span className="text-sm font-medium text-glass-text hidden md:block">
                 {userData?.name || (user && 'displayName' in user ? user.displayName : null) || "Profile"}
               </span>
               
@@ -283,7 +283,7 @@ export default function Header() {
                   className="flex items-center rounded-full focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-primary/70 transition-all"
                 >
                   <span className="sr-only">Open user menu</span>
-                  <div className="h-8 w-8 rounded-full overflow-hidden bg-primary/5 flex items-center justify-center border border-primary/10 shadow-sm group-hover:shadow-md transition-all">
+                  <div className="h-8 w-8 rounded-full overflow-hidden bg-glass-bg/30 flex items-center justify-center border border-glass-border shadow-glass group-hover:shadow-glass-glow transition-all">
                     <img 
                       className="h-full w-full object-cover" 
                       src={photoURL || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"} 
@@ -303,7 +303,7 @@ export default function Header() {
 
       {/* Mobile menu dropdown */}
       {isMobileMenuOpen && (
-        <div className="md:hidden bg-white border-b border-gray-200 shadow-lg">
+        <div className="md:hidden backdrop-blur-glass bg-opacity-15 border-b border-glass-border shadow-glass">
           <div className="px-4 pt-3 pb-4 space-y-2">
             <Button
               variant="ghost"
