@@ -7,6 +7,8 @@ import Header from "@/components/layout/header";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { GlassCard } from "@/components/ui/glass-card";
+import { useGlassEffects } from "@/contexts/GlassEffectsContext";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   MessageSquare, 
@@ -1512,12 +1514,12 @@ export default function IndustryPulsePage() {
             </div>
             
             <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="mb-6">
-                <TabsTrigger value="all">All</TabsTrigger>
-                <TabsTrigger value="poll">Polls</TabsTrigger>
-                <TabsTrigger value="media-pulse">Media</TabsTrigger>
-                <TabsTrigger value="project">Projects</TabsTrigger>
-                <TabsTrigger value="musk-news" className="flex items-center gap-1">
+              <TabsList className="mb-6 glass-nav backdrop-blur-md bg-opacity-30 border border-white/20">
+                <TabsTrigger value="all" className="text-foreground/80 data-[state=active]:text-foreground">All</TabsTrigger>
+                <TabsTrigger value="poll" className="text-foreground/80 data-[state=active]:text-foreground">Polls</TabsTrigger>
+                <TabsTrigger value="media-pulse" className="text-foreground/80 data-[state=active]:text-foreground">Media</TabsTrigger>
+                <TabsTrigger value="project" className="text-foreground/80 data-[state=active]:text-foreground">Projects</TabsTrigger>
+                <TabsTrigger value="musk-news" className="flex items-center gap-1 text-foreground/80 data-[state=active]:text-foreground">
                   <span className="text-amber-500">⚡</span> Musk News
                 </TabsTrigger>
               </TabsList>
@@ -1538,7 +1540,7 @@ export default function IndustryPulsePage() {
                     ))}
                   </div>
                 ) : filteredPulses.length === 0 ? (
-                  <Card>
+                  <GlassCard variant="frosted" transparency="medium" interactive={false} blurStrength="md">
                     <CardContent className="flex flex-col items-center justify-center py-10">
                       <Users className="h-16 w-16 text-muted-foreground/50 mb-4" />
                       <h3 className="text-xl font-semibold mb-2">No pulses yet</h3>
@@ -1559,11 +1561,19 @@ export default function IndustryPulsePage() {
                         </Button>
                       )}
                     </CardContent>
-                  </Card>
+                  </GlassCard>
                 ) : (
                   <div className="space-y-6">
                     {filteredPulses.map((pulse: PulseWithUser) => (
-                      <Card key={pulse.id} className="overflow-hidden">
+                      <GlassCard 
+                        key={pulse.id} 
+                        variant="frosted" 
+                        blurStrength="md" 
+                        transparency="medium" 
+                        className="overflow-hidden"
+                        interactive={true} 
+                        elevation="raised"
+                      >
                         <CardHeader className="pb-3">
                           <div className="flex justify-between">
                             <div className="flex gap-3 items-center">
@@ -1610,7 +1620,7 @@ export default function IndustryPulsePage() {
                         <CardFooter className="flex justify-between pt-0">
                           <PulseReactions pulse={pulse} />
                         </CardFooter>
-                      </Card>
+                      </GlassCard>
                     ))}
                   </div>
                 )}
