@@ -917,10 +917,15 @@ const SearchPage = () => {
                 ) : isLoading ? (
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-                      <Card key={i}>
-                        <CardContent className="p-4">
-                          <Skeleton className="h-6 w-24 mb-2" />
-                          <Skeleton className="h-4 w-16" />
+                      <Card key={i} className="backdrop-blur-md bg-[rgba(25,25,30,0.7)] border border-[rgba(255,255,255,0.1)] rounded-xl overflow-hidden shadow-md">
+                        <CardContent className="p-5 relative">
+                          <div className="flex items-center justify-between">
+                            <div className="space-y-2">
+                              <Skeleton className="h-6 w-28 bg-[rgba(255,255,255,0.1)]" />
+                              <Skeleton className="h-4 w-16 bg-[rgba(255,255,255,0.05)]" />
+                            </div>
+                            <Skeleton className="h-10 w-10 rounded-full bg-[rgba(255,255,255,0.05)]" />
+                          </div>
                         </CardContent>
                       </Card>
                     ))}
@@ -936,10 +941,12 @@ const SearchPage = () => {
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center py-12 border border-[rgba(255,255,255,0.1)] rounded-lg backdrop-blur-md bg-[rgba(25,25,30,0.5)] shadow-lg">
-                    <Hash className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                  <div className="text-center py-12 border border-[rgba(255,255,255,0.08)] rounded-xl backdrop-blur-md bg-[rgba(25,25,30,0.5)] shadow-lg">
+                    <div className="w-16 h-16 rounded-full backdrop-blur-md bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.1)] flex items-center justify-center mx-auto mb-4 shadow-md">
+                      <Hash className="h-8 w-8 text-gray-400" />
+                    </div>
                     <h3 className="text-lg font-medium text-white">No hashtags found</h3>
-                    <p className="text-gray-400 mt-2">
+                    <p className="text-gray-400 mt-2 max-w-md mx-auto">
                       Try a different search term or check for typos
                     </p>
                   </div>
