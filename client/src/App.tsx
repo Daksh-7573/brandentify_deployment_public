@@ -6,9 +6,6 @@ import { AuthProvider } from "./context/auth-context";
 import { useAuth } from "./hooks/use-auth";
 import { useEffect } from "react";
 import GlobalMuskButton from "@/components/musk/global-musk-button";
-import { GlassEffectsProvider } from "@/contexts/GlassEffectsContext";
-import { GlassEffectsToggle, GlassEffectsControls } from "@/components/ui/glass-effects-controls";
-import GlassEffectsInjector from "@/components/ui/glass-effects-injector";
 
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
@@ -40,8 +37,6 @@ import MuskTestingPage from "@/pages/musk-testing";
 import ManageServicesPage from "@/pages/manage-services";
 import TestNowboardPage from "@/pages/test-nowboard";
 import ChatPage from "@/pages/ChatPage"; // Chat messaging feature
-import DesignSystemDemo from "@/pages/DesignSystemDemo"; // Vision Pro Inspired UI
-import GlassEffectsDemo from "@/pages/GlassEffectsDemo"; // Glass Effects Demo
 // Lazy load the SharedCardPage to improve performance and show loader immediately
 import { lazy, Suspense } from "react";
 const SharedCardPage = lazy(() => import("@/pages/shared-card"));
@@ -189,14 +184,6 @@ function Router() {
       <Route path="/unified-profile/:userId">
         {(params) => <ProtectedRoute path="/unified-profile/:userId" component={() => <UnifiedProfilePage />} />}
       </Route>
-      {/* Design System Demo - Vision Pro inspired UI showcase */}
-      <Route path="/design-system">
-        <ProtectedRoute path="/design-system" component={DesignSystemDemo} />
-      </Route>
-      {/* Glass Effects Demo - Vision Pro inspired Glass UI controls */}
-      <Route path="/glass-effects">
-        <Route path="/glass-effects" component={GlassEffectsDemo} />
-      </Route>
       {/* Shared Quantum Card View route */}
       <Route path="/profile/card/:userId">
         {(params) => (
@@ -229,30 +216,24 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <GlassEffectsProvider>
-          {/* GlassEffectsInjector applies the global glass effects settings to the entire application */}
-          <GlassEffectsInjector />
-          <Suspense fallback={
-            <div className="min-h-screen flex items-center justify-center bg-background">
-              <div className="w-[280px] aspect-[2/3.5] rounded-lg overflow-hidden shadow-lg">
-                <div className="h-[24%] bg-gray-300 dark:bg-gray-700 relative animate-pulse"></div>
-                <div className="bg-white dark:bg-gray-800 h-[76%] p-5 flex flex-col gap-4">
-                  <div className="h-5 w-[70%] bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
-                  <div className="h-4 w-[50%] bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
-                  <div className="h-24 w-full bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
-                  <div className="h-4 w-[80%] bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
-                  <div className="h-4 w-[60%] bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
-                </div>
+        <Suspense fallback={
+          <div className="min-h-screen flex items-center justify-center bg-background">
+            <div className="w-[280px] aspect-[2/3.5] rounded-lg overflow-hidden shadow-lg">
+              <div className="h-[24%] bg-gray-300 dark:bg-gray-700 relative animate-pulse"></div>
+              <div className="bg-white dark:bg-gray-800 h-[76%] p-5 flex flex-col gap-4">
+                <div className="h-5 w-[70%] bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
+                <div className="h-4 w-[50%] bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
+                <div className="h-24 w-full bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
+                <div className="h-4 w-[80%] bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
+                <div className="h-4 w-[60%] bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
               </div>
             </div>
-          }>
-            <Router />
-            <GlobalMuskButton />
-            <GlassEffectsToggle />
-            <GlassEffectsControls />
-            <Toaster />
-          </Suspense>
-        </GlassEffectsProvider>
+          </div>
+        }>
+          <Router />
+          <GlobalMuskButton />
+          <Toaster />
+        </Suspense>
       </AuthProvider>
     </QueryClientProvider>
   );
