@@ -207,16 +207,16 @@ export default function Header() {
           <div className="flex items-center gap-4">
             {/* Mobile menu button */}
             <Button
-              variant="ghost"
+              variant="glass"
               size="icon"
-              className="md:hidden rounded-md p-2 hover:bg-gray-100 transition-colors"
+              className="md:hidden rounded-xl hover:bg-[rgba(45,45,45,0.6)] transition-all duration-300"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               aria-label="Mobile menu"
             >
               {isMobileMenuOpen ? (
-                <X className="h-5 w-5 text-gray-600" />
+                <X className="h-5 w-5 text-white" />
               ) : (
-                <Menu className="h-5 w-5 text-gray-600" />
+                <Menu className="h-5 w-5 text-white" />
               )}
             </Button>
 
@@ -303,15 +303,15 @@ export default function Header() {
 
       {/* Mobile menu dropdown */}
       {isMobileMenuOpen && (
-        <div className="md:hidden bg-white border-b border-gray-200 shadow-lg">
+        <div className="md:hidden mt-2 backdrop-blur-xl bg-[rgba(20,20,20,0.8)] border border-[rgba(255,255,255,0.08)] rounded-xl shadow-xl">
           <div className="px-4 pt-3 pb-4 space-y-2">
             <Button
-              variant="ghost"
+              variant="glass"
               size="sm"
               className={`w-full justify-start py-2.5 text-sm font-medium rounded-md ${
                 isActive('/industry-pulse') 
-                  ? 'text-primary bg-primary/5' 
-                  : 'text-gray-700 hover:bg-gray-50 hover:text-primary'
+                  ? 'text-primary border-primary/30 shadow-[0_0_10px_rgba(0,209,255,0.2)]' 
+                  : 'text-white hover:bg-[rgba(45,45,45,0.6)] hover:text-primary'
               }`}
               onClick={() => {
                 setLocation('/industry-pulse');
@@ -323,12 +323,12 @@ export default function Header() {
             </Button>
             
             <Button
-              variant="ghost"
+              variant="glass"
               size="sm"
               className={`w-full justify-start py-2.5 text-sm font-medium rounded-md ${
                 isActive('/search') 
-                  ? 'text-primary bg-primary/5' 
-                  : 'text-gray-700 hover:bg-gray-50 hover:text-primary'
+                  ? 'text-primary border-primary/30 shadow-[0_0_10px_rgba(0,209,255,0.2)]' 
+                  : 'text-white hover:bg-[rgba(45,45,45,0.6)] hover:text-primary'
               }`}
               onClick={() => {
                 setLocation('/search');
@@ -340,12 +340,12 @@ export default function Header() {
             </Button>
             
             <Button
-              variant="ghost"
+              variant="glass"
               size="sm"
               className={`flex items-center py-2.5 text-sm font-medium rounded-md ${
                 isActive('/messages') 
-                  ? 'text-primary bg-primary/5' 
-                  : 'text-gray-700 hover:bg-gray-50 hover:text-primary'
+                  ? 'text-primary border-primary/30 shadow-[0_0_10px_rgba(0,209,255,0.2)]' 
+                  : 'text-white hover:bg-[rgba(45,45,45,0.6)] hover:text-primary'
               }`}
               onClick={() => {
                 setLocation('/messages');
@@ -367,12 +367,12 @@ export default function Header() {
             </Button>
             
             <Button
-              variant="ghost"
+              variant="glass"
               size="sm"
               className={`w-full justify-start py-2.5 text-sm font-medium rounded-md ${
                 isActive('/radar') 
-                  ? 'text-primary bg-primary/5' 
-                  : 'text-gray-700 hover:bg-gray-50 hover:text-primary'
+                  ? 'text-primary border-primary/30 shadow-[0_0_10px_rgba(0,209,255,0.2)]' 
+                  : 'text-white hover:bg-[rgba(45,45,45,0.6)] hover:text-primary'
               }`}
               onClick={() => {
                 setLocation('/radar');
@@ -385,12 +385,12 @@ export default function Header() {
             
 
             <Button
-              variant="ghost"
+              variant="glass"
               size="sm"
               className={`w-full justify-start py-2.5 text-sm font-medium rounded-md ${
                 isActive('/brand-quests') || isActive('/career-quests')
-                  ? 'text-primary bg-primary/5' 
-                  : 'text-gray-700 hover:bg-gray-50 hover:text-primary'
+                  ? 'text-primary border-primary/30 shadow-[0_0_10px_rgba(0,209,255,0.2)]' 
+                  : 'text-white hover:bg-[rgba(45,45,45,0.6)] hover:text-primary'
               }`}
               onClick={() => {
                 setLocation('/brand-quests');
@@ -402,12 +402,12 @@ export default function Header() {
             </Button>
             
             <Button
-              variant="ghost"
+              variant="glass"
               size="sm"
               className={`w-full justify-start py-2.5 text-sm font-medium rounded-md ${
                 isActive('/career-capsule') 
-                  ? 'text-primary bg-primary/5' 
-                  : 'text-gray-700 hover:bg-gray-50 hover:text-primary'
+                  ? 'text-primary border-primary/30 shadow-[0_0_10px_rgba(0,209,255,0.2)]' 
+                  : 'text-white hover:bg-[rgba(45,45,45,0.6)] hover:text-primary'
               }`}
               onClick={() => {
                 setLocation('/career-capsule');
@@ -422,14 +422,14 @@ export default function Header() {
             
             {/* Brand of the Day feature is now integrated into Nowboard panel */}
 
-            <div className="pt-4 mt-2 border-t border-gray-200">
+            <div className="pt-4 mt-2 border-t border-[rgba(255,255,255,0.15)]">
               <Button
-                variant="ghost"
+                variant="glass"
                 size="sm"
                 className={`w-full justify-start py-2.5 text-sm font-medium rounded-md ${
                   isActive('/profile') 
-                    ? 'text-primary bg-primary/5' 
-                    : 'text-gray-700 hover:bg-gray-50 hover:text-primary'
+                    ? 'text-primary border-primary/30 shadow-[0_0_10px_rgba(0,209,255,0.2)]' 
+                    : 'text-white hover:bg-[rgba(45,45,45,0.6)] hover:text-primary'
                 }`}
                 onClick={() => {
                   setLocation('/profile');
@@ -443,9 +443,9 @@ export default function Header() {
               {/* Settings Button removed as requested */}
               
               <Button
-                variant="ghost"
+                variant="glass"
                 size="sm"
-                className="w-full justify-start py-2.5 text-sm font-medium rounded-md text-gray-700 hover:bg-gray-50 hover:text-primary"
+                className="w-full justify-start py-2.5 text-sm font-medium rounded-md text-white hover:bg-[rgba(45,45,45,0.6)] hover:text-primary"
                 onClick={() => {
                   setIsMobileMenuOpen(false);
                 }}
@@ -457,7 +457,7 @@ export default function Header() {
               <Button
                 variant="default"
                 size="sm"
-                className="w-full mt-3 justify-center py-3 text-sm font-medium bg-gradient-to-r from-primary to-indigo-600 hover:from-primary/90 hover:to-indigo-700 shadow-sm rounded-md"
+                className="w-full mt-4 justify-center py-3 text-sm font-medium bg-gradient-to-r from-primary to-indigo-600 hover:from-primary/90 hover:to-indigo-700 shadow-md hover:shadow-lg rounded-xl transition-all duration-300 hover:scale-[1.02]"
                 onClick={() => {
                   setLocation('/create-pulse');
                   setIsMobileMenuOpen(false);
