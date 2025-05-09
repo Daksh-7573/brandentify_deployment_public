@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect, useContext, ReactNode } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiRequest } from '@lib/queryClient';
+import { apiRequest } from '../lib/queryClient';
 
 // Types
 export type Message = {
@@ -112,7 +112,7 @@ export const ChatProvider: React.FC<{ children: ReactNode; userId: number }> = (
           };
           
           // Add to messages if in current conversation
-          if (currentConversation?.id === data.conversationId) {
+          if (currentConversation && currentConversation.id === data.conversationId) {
             queryClient.setQueryData<Message[]>(
               ['/api/messaging/conversations', currentConversation.id, 'messages'],
               (oldMessages) => [...(oldMessages || []), newMessage]
@@ -145,25 +145,32 @@ export const ChatProvider: React.FC<{ children: ReactNode; userId: number }> = (
   }, [userId, queryClient]);
 
   // Fetch conversations
-  const { data: conversations = [], isLoading: loadingConversations } = useQuery({
+  const { data: conversationsData, isLoading: loadingConversations } = useQuery({
     queryKey: ['/api/messaging/conversations'],
     enabled: !!userId,
   });
 
+  // Convert data to proper types
+  const conversations: Conversation[] = Array.isArray(conversationsData) ? conversationsData : [];
+
   // Fetch messages for current conversation
-  const { data: messages = [], isLoading: loadingMessages } = useQuery({
+  const { data: messagesData, isLoading: loadingMessages } = useQuery({
     queryKey: ['/api/messaging/conversations', currentConversation?.id, 'messages'],
     enabled: !!currentConversation,
   });
+  
+  // Convert data to proper types
+  const messages: Message[] = Array.isArray(messagesData) ? messagesData : [];
 
   // Create conversation mutation
   const createConversationMutation = useMutation({
     mutationFn: async ({ title, userIds }: { title: string | null, userIds: number[] }) => {
-      const response = await apiRequest('/api/messaging/conversations', {
-        method: 'POST',
-        body: JSON.stringify({ title, userIds }),
+      const response = await apiRequest('POST', '/api/messaging/conversations', {
+        title, 
+        userIds
       });
-      return response as Conversation;
+      const data = await response.json();
+      return data as Conversation;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/messaging/conversations'] });
@@ -173,10 +180,8 @@ export const ChatProvider: React.FC<{ children: ReactNode; userId: number }> = (
   // Mark conversation as read mutation
   const markAsReadMutation = useMutation({
     mutationFn: async (conversationId: number) => {
-      const response = await apiRequest(`/api/messaging/conversations/${conversationId}/read`, {
-        method: 'PATCH',
-      });
-      return response;
+      const response = await apiRequest('PATCH', `/api/messaging/conversations/${conversationId}/read`);
+      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/messaging/conversations'] });
@@ -202,14 +207,12 @@ export const ChatProvider: React.FC<{ children: ReactNode; userId: number }> = (
     socket.send(JSON.stringify(messageData));
 
     // Also send through API to persist
-    apiRequest('/api/messaging/messages', {
-      method: 'POST',
-      body: JSON.stringify({
-        conversationId,
-        content,
-      }),
+    apiRequest('POST', '/api/messaging/messages', {
+      conversationId,
+      content,
     })
-      .then((newMessage: Message) => {
+      .then(async (response) => {
+        const newMessage = await response.json() as Message;
         // Optimistically update message list
         queryClient.setQueryData<Message[]>(
           ['/api/messaging/conversations', conversationId, 'messages'],

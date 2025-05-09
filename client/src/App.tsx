@@ -36,6 +36,7 @@ import EditProfilePage from "@/pages/edit-profile";
 import MuskTestingPage from "@/pages/musk-testing";
 import ManageServicesPage from "@/pages/manage-services";
 import TestNowboardPage from "@/pages/test-nowboard";
+import ChatPage from "@/pages/ChatPage"; // Chat messaging feature
 // Lazy load the SharedCardPage to improve performance and show loader immediately
 import { lazy, Suspense } from "react";
 const SharedCardPage = lazy(() => import("@/pages/shared-card"));
@@ -171,6 +172,10 @@ function Router() {
       {/* Test route for nowboard integration */}
       <Route path="/test-nowboard">
         <ProtectedRoute path="/test-nowboard" component={TestNowboardPage} />
+      </Route>
+      {/* Messaging feature */}
+      <Route path="/messages">
+        <ProtectedRoute path="/messages" component={ChatPage} />
       </Route>
       {/* Unified Profile Page with comprehensive data fetching */}
       <Route path="/unified-profile">

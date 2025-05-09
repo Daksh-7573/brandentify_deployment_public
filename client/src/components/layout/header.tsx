@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Zap, Settings, Menu, X, Home, Search, Bot, User, MapPin, FileText, Trophy, Award, Calendar, Flag, Bell } from "lucide-react";
+import { Zap, Settings, Menu, X, Home, Search, Bot, User, MapPin, FileText, Trophy, Award, Calendar, Flag, Bell, MessageSquare } from "lucide-react";
 import NotificationBell from "@/components/notifications/notification-bell";
 
 export default function Header() {
@@ -110,7 +110,19 @@ export default function Header() {
                 <span>Discover & Connect</span>
               </Button>
               
-
+              <Button
+                variant="ghost"
+                size="sm"
+                className={`flex items-center gap-2 font-medium px-3 py-2 h-auto ${
+                  isActive('/messages') 
+                    ? 'text-primary bg-primary/5 hover:bg-primary/10' 
+                    : 'text-gray-800 hover:text-primary hover:bg-gray-50'
+                }`}
+                onClick={() => setLocation('/messages')}
+              >
+                <MessageSquare className="h-4 w-4" />
+                <span>Messages</span>
+              </Button>
               
               <Button
                 variant="ghost"
@@ -276,7 +288,22 @@ export default function Header() {
               <span>Discover & Connect</span>
             </Button>
             
-
+            <Button
+              variant="ghost"
+              size="sm"
+              className={`w-full justify-start py-2.5 text-sm font-medium rounded-md ${
+                isActive('/messages') 
+                  ? 'text-primary bg-primary/5' 
+                  : 'text-gray-700 hover:bg-gray-50 hover:text-primary'
+              }`}
+              onClick={() => {
+                setLocation('/messages');
+                setIsMobileMenuOpen(false);
+              }}
+            >
+              <MessageSquare className="h-4 w-4 mr-3 ml-0.5" />
+              <span>Messages</span>
+            </Button>
             
             <Button
               variant="ghost"
