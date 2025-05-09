@@ -192,7 +192,7 @@ export async function createMilestoneNotification(
     title: 'Milestone Reached',
     message: `You've reached your career milestone: ${milestoneName}!`,
     category: 'new_milestone',
-    read: false
+    isRead: false
   });
 }
 
@@ -214,7 +214,7 @@ export async function createPulseReactionNotification(
     title: 'New Reaction',
     message: `${reactorName} reacted to your pulse: "${pulseTitle.substring(0, 30)}${pulseTitle.length > 30 ? '...' : ''}"`,
     category: 'pulse_reaction',
-    read: false
+    isRead: false
   });
 }
 
@@ -236,7 +236,7 @@ export async function createPulseCommentNotification(
     title: 'New Comment',
     message: `${commenterName} commented on your pulse: "${pulseTitle.substring(0, 30)}${pulseTitle.length > 30 ? '...' : ''}"`,
     category: 'pulse_comment',
-    read: false
+    isRead: false
   });
 }
 
@@ -256,6 +256,6 @@ export async function createAchievementNotification(
     title: 'Achievement Unlocked',
     message: `You've unlocked the "${achievementName}" achievement!`,
     category: 'achievement',
-    read: false
+    isRead: false
   });
 }

@@ -1,148 +1,151 @@
-import { Router } from 'express';
-import { NotificationService } from './services/notification-service';
-import { insertNotificationSchema } from '@shared/notification-schema';
+import express from 'express';
+import * as NotificationService from './services/notification-service';
 import { z } from 'zod';
 
-const router = Router();
+const router = express.Router();
 
-// Create a notification (for testing or other services to use)
-router.post('/api/notifications', async (req, res) => {
+/**
+ * GET /api/notifications/:userId
+ * Get all notifications for a user, optionally filtered by read status
+ */
+router.get('/:userId', async (req, res) => {
   try {
-    const validatedData = insertNotificationSchema.parse(req.body);
-    const notification = await NotificationService.createNotification(validatedData);
-    res.status(201).json(notification);
-  } catch (error: any) {
-    console.error('Error creating notification:', error);
-    if (error.name === 'ZodError') {
-      return res.status(400).json({ message: 'Invalid notification data', errors: error.errors });
-    }
-    res.status(500).json({ message: 'Failed to create notification' });
-  }
-});
-
-// Get notifications for the current user with pagination
-router.get('/api/notifications', async (req, res) => {
-  try {
-    const userId = parseInt(req.query.userId as string);
-    const limit = req.query.limit ? parseInt(req.query.limit as string) : 20;
-    const offset = req.query.offset ? parseInt(req.query.offset as string) : 0;
-    
+    const userId = parseInt(req.params.userId);
     if (isNaN(userId)) {
       return res.status(400).json({ message: 'Invalid user ID' });
     }
+
+    const onlyUnread = req.query.onlyUnread === 'true';
+    const limit = req.query.limit ? parseInt(req.query.limit as string) : 50;
+
+    const notifications = await NotificationService.getUserNotifications(userId, onlyUnread, limit);
     
-    const result = await NotificationService.getUserNotifications(userId, limit, offset);
-    res.json(result);
+    return res.status(200).json(notifications);
   } catch (error) {
     console.error('Error fetching notifications:', error);
-    res.status(500).json({ message: 'Failed to fetch notifications' });
+    return res.status(500).json({ message: 'Failed to fetch notifications' });
   }
 });
 
-// Get unread notification count
-router.get('/api/notifications/unread-count', async (req, res) => {
+/**
+ * GET /api/notifications/:userId/count
+ * Get the count of unread notifications for a user
+ */
+router.get('/:userId/count', async (req, res) => {
   try {
-    const userId = parseInt(req.query.userId as string);
-    
+    const userId = parseInt(req.params.userId);
     if (isNaN(userId)) {
       return res.status(400).json({ message: 'Invalid user ID' });
     }
+
+    const count = await NotificationService.getUnreadNotificationCount(userId);
     
-    const count = await NotificationService.getUnreadCount(userId);
-    res.json({ count });
+    return res.status(200).json({ count });
   } catch (error) {
-    console.error('Error fetching unread count:', error);
-    res.status(500).json({ message: 'Failed to fetch unread count' });
+    console.error('Error counting notifications:', error);
+    return res.status(500).json({ message: 'Failed to count notifications' });
   }
 });
 
-// Mark notification as read
-router.patch('/api/notifications/:id/read', async (req, res) => {
+/**
+ * PATCH /api/notifications/:notificationId/read
+ * Mark a notification as read
+ */
+router.patch('/:notificationId/read', async (req, res) => {
   try {
-    const notificationId = req.params.id;
-    const userId = parseInt(req.body.userId);
+    const notificationId = req.params.notificationId;
     
-    if (isNaN(userId)) {
-      return res.status(400).json({ message: 'Invalid user ID' });
-    }
-    
-    const notification = await NotificationService.markAsRead(notificationId, userId);
-    res.json(notification);
-  } catch (error) {
-    console.error('Error marking notification as read:', error);
-    res.status(500).json({ message: 'Failed to mark notification as read' });
-  }
-});
-
-// Mark all notifications as read
-router.patch('/api/notifications/mark-all-read', async (req, res) => {
-  try {
-    const { userId } = z.object({ userId: z.number() }).parse(req.body);
-    const count = await NotificationService.markAllAsRead(userId);
-    res.json({ count });
-  } catch (error: any) {
-    console.error('Error marking all notifications as read:', error);
-    if (error.name === 'ZodError') {
-      return res.status(400).json({ message: 'Invalid user ID', errors: error.errors });
-    }
-    res.status(500).json({ message: 'Failed to mark all notifications as read' });
-  }
-});
-
-// Delete a notification
-router.delete('/api/notifications/:id', async (req, res) => {
-  try {
-    const notificationId = req.params.id;
-    const userId = parseInt(req.query.userId as string);
-    
-    if (isNaN(userId)) {
-      return res.status(400).json({ message: 'Invalid user ID' });
-    }
-    
-    const success = await NotificationService.deleteNotification(notificationId, userId);
-    
+    const success = await NotificationService.markNotificationAsRead(notificationId);
     if (!success) {
-      return res.status(404).json({ message: 'Notification not found or unauthorized' });
+      return res.status(404).json({ message: 'Notification not found' });
     }
     
-    res.json({ success: true });
+    return res.status(200).json({ message: 'Notification marked as read' });
+  } catch (error) {
+    console.error('Error updating notification:', error);
+    return res.status(500).json({ message: 'Failed to update notification' });
+  }
+});
+
+/**
+ * POST /api/notifications/:userId/read-all
+ * Mark all notifications as read for a user
+ */
+router.post('/:userId/read-all', async (req, res) => {
+  try {
+    const userId = parseInt(req.params.userId);
+    if (isNaN(userId)) {
+      return res.status(400).json({ message: 'Invalid user ID' });
+    }
+
+    const count = await NotificationService.markAllNotificationsAsRead(userId);
+    
+    return res.status(200).json({ 
+      message: `${count} notifications marked as read`,
+      count 
+    });
+  } catch (error) {
+    console.error('Error marking all notifications as read:', error);
+    return res.status(500).json({ message: 'Failed to mark notifications as read' });
+  }
+});
+
+/**
+ * DELETE /api/notifications/:notificationId
+ * Delete a notification
+ */
+router.delete('/:notificationId', async (req, res) => {
+  try {
+    const notificationId = req.params.notificationId;
+    
+    const success = await NotificationService.deleteNotification(notificationId);
+    if (!success) {
+      return res.status(404).json({ message: 'Notification not found' });
+    }
+    
+    return res.status(200).json({ message: 'Notification deleted' });
   } catch (error) {
     console.error('Error deleting notification:', error);
-    res.status(500).json({ message: 'Failed to delete notification' });
+    return res.status(500).json({ message: 'Failed to delete notification' });
   }
 });
 
-// Delete all notifications
-router.delete('/api/notifications', async (req, res) => {
+/**
+ * POST /api/notifications
+ * Create a new notification (for testing or system-generated notifications)
+ */
+router.post('/', async (req, res) => {
   try {
-    const userId = parseInt(req.query.userId as string);
-    
-    if (isNaN(userId)) {
-      return res.status(400).json({ message: 'Invalid user ID' });
-    }
-    
-    const count = await NotificationService.deleteAllNotifications(userId);
-    res.json({ count });
-  } catch (error) {
-    console.error('Error deleting all notifications:', error);
-    res.status(500).json({ message: 'Failed to delete all notifications' });
-  }
-});
+    const notificationSchema = z.object({
+      userId: z.number(),
+      type: z.enum(['success', 'error', 'info', 'warning']),
+      category: z.enum([
+        'quest_completed', 
+        'xp_earned', 
+        'system_error', 
+        'new_milestone', 
+        'new_follower', 
+        'pulse_reaction', 
+        'pulse_comment', 
+        'achievement',
+        'api_error'
+      ]),
+      title: z.string().min(1).max(100),
+      message: z.string().min(1).max(500),
+      link: z.string().optional(),
+      isRead: z.boolean().default(false)
+    });
 
-// Get notification statistics
-router.get('/api/notifications/stats', async (req, res) => {
-  try {
-    const userId = parseInt(req.query.userId as string);
+    const validatedData = notificationSchema.parse(req.body);
+    const notification = await NotificationService.createNotification(validatedData);
     
-    if (isNaN(userId)) {
-      return res.status(400).json({ message: 'Invalid user ID' });
-    }
-    
-    const stats = await NotificationService.getNotificationStats(userId);
-    res.json({ stats });
+    return res.status(201).json(notification);
   } catch (error) {
-    console.error('Error fetching notification stats:', error);
-    res.status(500).json({ message: 'Failed to fetch notification stats' });
+    console.error('Error creating notification:', error);
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({ message: 'Invalid notification data', errors: error.errors });
+    }
+    return res.status(500).json({ message: 'Failed to create notification' });
   }
 });
 
