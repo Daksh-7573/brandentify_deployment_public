@@ -9,7 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { UserQuest, QuestDefinition, QuestType, QuestStatus, getQuestTypeIcon, getQuestStatusLabel, getBadgeLabel } from '@/types/career-quest';
 import { useCompleteQuest, useUpdateQuestProgress } from '@/hooks/use-career-quests';
 import { HashtagSuggestions } from '../career-quests/hashtag-suggestions'; // Update path when we move this component
-import { StaticHashtagSuggestions } from '../career-quests/static-hashtag-suggestions'; // Update path when we move this component
+import { StaticHashtagSuggestionsByQuestType } from '../career-quests/static-hashtag-suggestions'; // Update path when we move this component
 
 interface QuestCardProps {
   quest: UserQuest;
@@ -113,53 +113,60 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
     quest.muskResponse;
   
   return (
-    <Card className="w-full shadow-md transition-all hover:shadow-lg">
+    <Card className="w-full glass-card transition-all duration-300 hover:border-glow">
       <CardHeader className="pb-2">
         <div className="flex justify-between items-start">
           <div className="flex-1">
             <div className="flex items-center gap-2">
-              <span className="text-xl">{getQuestTypeIcon(questDefinition.type)}</span>
-              <CardTitle className="text-lg">{questDefinition.title}</CardTitle>
+              <div className="glass-icon w-8 h-8 flex items-center justify-center text-xl">
+                {getQuestTypeIcon(questDefinition.type)}
+              </div>
+              <CardTitle className="text-lg text-glow">{questDefinition.title}</CardTitle>
             </div>
             {questDefinition.badgeReward && (
-              <Badge variant="outline" className="ml-7 mt-1">
+              <div className="glass-badge ml-10 mt-2 inline-block">
                 Award: {getBadgeLabel(questDefinition.badgeReward)}
-              </Badge>
+              </div>
             )}
           </div>
-          <Badge 
-            variant={
-              isComplete ? "default" : 
-              isExpired ? "destructive" : 
-              "secondary"
-            }
-          >
+          <div className={`glass-badge ${
+            isComplete ? "glass-badge-success" : 
+            isExpired ? "glass-badge-error" : 
+            "glass-badge-primary"
+          }`}>
             {getQuestStatusLabel(quest.status)}
-          </Badge>
+          </div>
         </div>
-        <CardDescription className="ml-7 mt-1">
+        <CardDescription className="ml-10 mt-1">
           {questDefinition.description}
         </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-2">
-          <div className="flex justify-between text-sm text-muted-foreground mb-1">
-            <span>Progress: {quest.progress} / {questDefinition.targetCount}</span>
-            <span>+{questDefinition.xpReward} XP</span>
+          <div className="flex justify-between text-sm mb-1">
+            <span className="text-muted-foreground">Progress: {quest.progress} / {questDefinition.targetCount}</span>
+            <span className="glass-badge glass-badge-primary">+{questDefinition.xpReward} XP</span>
           </div>
-          <Progress value={progressPercentage} className="h-2" />
+          <div className="glass-progress-bg">
+            <div 
+              className="glass-progress-fill"
+              style={{ width: `${progressPercentage}%` }}
+            />
+          </div>
           
           {muskTipContent && (
-            <div className="mt-3 bg-muted/50 p-3 rounded-md border border-muted">
-              <div className="flex items-center gap-2 text-sm font-medium mb-1">
-                <span>⚡</span>
-                <span>Musk's Tip</span>
+            <div className="mt-4 glass-panel-dark p-4 rounded-md">
+              <div className="flex items-center gap-2 text-sm font-medium mb-2">
+                <div className="glass-icon w-6 h-6 flex items-center justify-center">⚡</div>
+                <span className="text-primary text-glow">Musk's Tip</span>
               </div>
-              <p className="text-sm text-muted-foreground">{muskTipContent}</p>
+              <p className="text-sm text-muted-foreground ml-8">{muskTipContent}</p>
               
               {/* Display static hashtag suggestions for active quests related to content creation */}
               {isActive && ['pulse_creation', 'networking', 'visibility'].includes(questDefinition.type) && (
-                <StaticHashtagSuggestions questType={questDefinition.type as QuestType} />
+                <div className="mt-2 ml-8">
+                  <StaticHashtagSuggestionsByQuestType questType={questDefinition.type as QuestType} />
+                </div>
               )}
             </div>
           )}
@@ -170,7 +177,7 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
           <>
             <div className="w-4"></div> {/* Spacer to maintain layout without dismiss button */}
             <Button 
-              variant="default" 
+              className="glass-button"
               size="sm"
               onClick={handleActionClick}
               disabled={updateProgressMutation.isPending}
@@ -186,9 +193,8 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button 
-                    variant={isExpired ? "destructive" : "secondary"}
+                    className={`glass-button w-full ${isExpired ? "bg-red-900/20" : "bg-green-900/20"}`}
                     size="sm"
-                    className="w-full"
                     disabled
                   >
                     {isComplete 
@@ -198,7 +204,7 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
                         : 'Quest status'}
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>
+                <TooltipContent className="glass-toast">
                   {isComplete && quest.xpEarned 
                     ? `You earned ${quest.xpEarned} XP and ${quest.badgeEarned ? `the ${getBadgeLabel(quest.badgeEarned)} badge` : 'no badge'}`
                     : isComplete 
@@ -215,17 +221,20 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
       
       {/* Confirmation Dialog for Completion */}
       <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
-        <AlertDialogContent>
+        <AlertDialogContent className="glass-modal">
           <AlertDialogHeader>
-            <AlertDialogTitle>Complete Quest</AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogTitle className="text-glow">Complete Quest</AlertDialogTitle>
+            <AlertDialogDescription className="text-text">
               Are you sure you want to mark this quest as complete? You will earn {questDefinition.xpReward} XP
               {questDefinition.badgeReward ? ` and the ${getBadgeLabel(questDefinition.badgeReward)} badge` : ''}.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleComplete}>
+            <AlertDialogCancel className="glass-button">Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleComplete}
+              className="glass-button bg-primary/20 hover:bg-primary/30"
+            >
               Complete Quest
             </AlertDialogAction>
           </AlertDialogFooter>
