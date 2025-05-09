@@ -201,8 +201,8 @@ export function VisionNowboardSuggestions({ userId, className, questType }: Visi
         <VisionCardHeader className="pb-2">
           <VisionCardTitle className="flex items-center gap-2">
             <Avatar className="h-8 w-8">
-              <AvatarFallback className="bg-primary/20 border border-primary/10">
-                <Bot className="h-4 w-4 text-primary" />
+              <AvatarFallback className="bg-[#4F8CFF]/10 border border-[#4F8CFF]/20">
+                <Bot className="h-4 w-4 text-[#4F8CFF]" />
               </AvatarFallback>
             </Avatar>
             <Skeleton className="h-7 w-48 bg-white/10" />
@@ -212,7 +212,7 @@ export function VisionNowboardSuggestions({ userId, className, questType }: Visi
         <VisionCardContent>
           <div className="space-y-3">
             {[1, 2, 3].map(i => (
-              <div key={i} className="flex items-center gap-3 p-3 rounded-lg border border-white/5 bg-white/5">
+              <div key={i} className="flex items-center gap-3 p-3 rounded-lg border border-[#3A3A3C] bg-white/5">
                 <Skeleton className="h-8 w-8 rounded-full bg-white/10" />
                 <div className="space-y-1 flex-1">
                   <Skeleton className="h-5 w-3/4 bg-white/10" />
@@ -233,16 +233,16 @@ export function VisionNowboardSuggestions({ userId, className, questType }: Visi
         <VisionCardHeader className="pb-2">
           <VisionCardTitle className="flex items-center gap-2">
             <Avatar className="h-8 w-8">
-              <AvatarFallback className="bg-primary/20 border border-primary/10">
-                <Bot className="h-4 w-4 text-primary" />
+              <AvatarFallback className="bg-[#EF4444]/10 border border-[#EF4444]/20">
+                <Bot className="h-4 w-4 text-[#EF4444]" />
               </AvatarFallback>
             </Avatar>
             <span>Nowboard Opportunities</span>
           </VisionCardTitle>
-          <VisionCardDescription>
+          <VisionCardDescription className="text-[#A1A1AA]">
             <div className="flex items-center justify-between">
               <span>Failed to load recommendations</span>
-              <Button size="sm" variant="outline" onClick={() => refetch()} className="bg-white/10 border-white/20 text-white hover:bg-white/20">
+              <Button size="sm" variant="outline" onClick={() => refetch()} className="bg-white/5 border-[#3A3A3C] text-[#E5E5E7] hover:bg-[#4F8CFF]/10 hover:border-[#4F8CFF]/20">
                 <RefreshCw className="h-4 w-4 mr-2" /> Retry
               </Button>
             </div>
@@ -258,22 +258,22 @@ export function VisionNowboardSuggestions({ userId, className, questType }: Visi
         <VisionCardHeader className="pb-2">
           <VisionCardTitle className="flex items-center gap-2">
             <Avatar className="h-8 w-8">
-              <AvatarFallback className="bg-primary/20 border border-primary/10">
-                <Bot className="h-4 w-4 text-primary" />
+              <AvatarFallback className="bg-[#4F8CFF]/10 border border-[#4F8CFF]/20">
+                <Bot className="h-4 w-4 text-[#4F8CFF]" />
               </AvatarFallback>
             </Avatar>
             <span>Nowboard Opportunities</span>
           </VisionCardTitle>
-          <VisionCardDescription className="flex justify-between">
+          <VisionCardDescription className="flex justify-between text-[#A1A1AA]">
             <span>Musk-recommended actions to complete your quests</span>
-            <Button size="sm" variant="ghost" className="h-6 p-1 text-white/70 hover:text-white" onClick={() => refetch()}>
+            <Button size="sm" variant="ghost" className="h-6 p-1 text-[#A1A1AA] hover:text-[#E5E5E7]" onClick={() => refetch()}>
               <RefreshCw className="h-3 w-3" />
             </Button>
           </VisionCardDescription>
         </VisionCardHeader>
         <VisionCardContent>
-          <div className="text-center py-6 text-white/50">
-            <Lightbulb className="h-10 w-10 mx-auto mb-2 opacity-20" />
+          <div className="text-center py-6 text-[#A1A1AA]">
+            <Lightbulb className="h-10 w-10 mx-auto mb-2 text-[#A1A1AA] opacity-20" />
             <p>No suggestions available right now.</p>
             <p className="text-xs mt-1">Check back later for new activities!</p>
           </div>
@@ -287,15 +287,15 @@ export function VisionNowboardSuggestions({ userId, className, questType }: Visi
       <VisionCardHeader className="pb-2">
         <VisionCardTitle className="flex items-center gap-2">
           <Avatar className="h-8 w-8">
-            <AvatarFallback className="bg-primary/20 border border-primary/10">
-              <Bot className="h-4 w-4 text-primary" />
+            <AvatarFallback className="bg-[#4F8CFF]/10 border border-[#4F8CFF]/20">
+              <Bot className="h-4 w-4 text-[#4F8CFF]" />
             </AvatarFallback>
           </Avatar>
           <span>Nowboard Opportunities</span>
         </VisionCardTitle>
-        <VisionCardDescription className="flex justify-between">
+        <VisionCardDescription className="flex justify-between text-[#A1A1AA]">
           <span>Musk-recommended actions to complete your quests</span>
-          <Button size="sm" variant="ghost" className="h-6 p-1 text-white/70 hover:text-white" onClick={() => refetch()}>
+          <Button size="sm" variant="ghost" className="h-6 p-1 text-[#A1A1AA] hover:text-[#E5E5E7]" onClick={() => refetch()}>
             <RefreshCw className="h-3 w-3" />
           </Button>
         </VisionCardDescription>
@@ -305,19 +305,26 @@ export function VisionNowboardSuggestions({ userId, className, questType }: Visi
           {data.map((suggestion: NowboardSuggestion) => (
             <div 
               key={suggestion.id} 
-              className="flex items-start gap-3 p-3 rounded-lg border border-white/10 bg-white/5 hover:border-primary/20 hover:bg-white/10 transition-colors group"
+              className="flex items-start gap-3 p-3 rounded-lg border border-[#3A3A3C] bg-white/5 hover:border-[#4F8CFF]/20 hover:bg-white/8 transition-colors group"
             >
-              <div className="mt-1 h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 border border-primary/20">
+              <div 
+                className={cn(
+                  "mt-1 h-8 w-8 rounded-full flex items-center justify-center flex-shrink-0 border",
+                  suggestion.type === 'pulse' ? "bg-[#4F8CFF]/10 border-[#4F8CFF]/20" : 
+                  suggestion.type === 'comment' ? "bg-[#3ED7C2]/10 border-[#3ED7C2]/20" : 
+                  "bg-[#4ADE80]/10 border-[#4ADE80]/20"
+                )}
+              >
                 {getIconForType(suggestion.type)}
               </div>
               <div className="space-y-1 flex-1">
-                <h4 className="font-medium text-sm text-white">{suggestion.title}</h4>
-                <p className="text-xs text-white/70">{suggestion.description}</p>
+                <h4 className="font-medium text-sm text-[#E5E5E7]">{suggestion.title}</h4>
+                <p className="text-xs text-[#A1A1AA]">{suggestion.description}</p>
                 {suggestion.progress !== undefined && suggestion.targetCount !== undefined && (
                   <div className="mt-1 mb-1">
                     <div className="flex justify-between items-center text-xs mb-1">
-                      <span className="text-white/50">Progress</span>
-                      <span className="font-medium text-white/90">{suggestion.progress}/{suggestion.targetCount}</span>
+                      <span className="text-[#A1A1AA]">Progress</span>
+                      <span className="font-medium text-[#E5E5E7]">{suggestion.progress}/{suggestion.targetCount}</span>
                     </div>
                     <Progress 
                       value={(suggestion.progress / suggestion.targetCount) * 100}
@@ -326,13 +333,13 @@ export function VisionNowboardSuggestions({ userId, className, questType }: Visi
                         suggestion.progress === 0 
                           ? "bg-white/5 [&>div]:bg-white/20" 
                           : suggestion.progress < suggestion.targetCount 
-                            ? "bg-amber-950/20 [&>div]:bg-amber-500/80" 
-                            : "bg-green-950/20 [&>div]:bg-green-500/80"
+                            ? "bg-[#FCD34D]/10 [&>div]:bg-[#FCD34D]" 
+                            : "bg-[#4ADE80]/10 [&>div]:bg-[#4ADE80]"
                       )}
                     />
                   </div>
                 )}
-                <div className="text-xs text-amber-400/80 font-semibold">
+                <div className="text-xs text-[#FCD34D] font-semibold">
                   +{suggestion.xpValue} XP potential
                 </div>
               </div>
@@ -340,7 +347,7 @@ export function VisionNowboardSuggestions({ userId, className, questType }: Visi
                 <Button 
                   variant="ghost" 
                   size="sm"
-                  className="flex-shrink-0 text-xs text-green-400 cursor-default bg-green-950/20 border border-green-500/20"
+                  className="flex-shrink-0 text-xs text-[#4ADE80] cursor-default bg-[#4ADE80]/10 border border-[#4ADE80]/20"
                   disabled
                 >
                   Completed <Zap className="ml-1 h-3 w-3" />
@@ -349,7 +356,7 @@ export function VisionNowboardSuggestions({ userId, className, questType }: Visi
                 <Button 
                   variant="outline" 
                   size="sm"
-                  className="flex-shrink-0 text-xs bg-white/5 border-white/20 text-white/90 group-hover:border-primary/50 group-hover:text-primary-foreground transition-colors hover:bg-primary/20"
+                  className="flex-shrink-0 text-xs bg-white/5 border-[#3A3A3C] text-[#E5E5E7] hover:bg-[#4F8CFF]/10 hover:border-[#4F8CFF]/20 group-hover:text-[#E5E5E7]"
                   onClick={() => handleAction(suggestion)}
                 >
                   {suggestion.actionText} <ArrowRight className="ml-1 h-3 w-3" />
