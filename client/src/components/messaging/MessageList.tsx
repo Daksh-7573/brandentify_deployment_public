@@ -63,7 +63,7 @@ const MessageList: React.FC = () => {
     return (
       <div className="flex-1 flex items-center justify-center">
         <GlassCard 
-          variant="ultraGlass"
+          variant="frosted"
           blurStrength="md"
           transparency="medium"
           backgroundEffect="noise"

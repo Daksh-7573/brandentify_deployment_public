@@ -178,6 +178,9 @@ function Router() {
       <Route path="/messages">
         <ProtectedRoute path="/messages" component={ChatPage} />
       </Route>
+      <Route path="/chat">
+        <ProtectedRoute path="/chat" component={ChatPage} />
+      </Route>
       {/* Unified Profile Page with comprehensive data fetching */}
       <Route path="/unified-profile">
         <ProtectedRoute path="/unified-profile" component={UnifiedProfilePage} />
