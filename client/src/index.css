@@ -1,5 +1,6 @@
 @import './styles/neopastel.css';
 @import './styles/lumos-animations.css';
+@import './styles/glassmorphic.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

@@ -1,0 +1,267 @@
+1. Overall Visual Style
+Use a translucent/gray "glassmorphic" aesthetic, similar to the image.
+
+
+Panels should have semi-transparent backgrounds, soft shadows, and subtle borders.
+
+
+Keep everything flat and fixed to the screen (no 3D or parallax/floating behavior).
+
+
+✅ Best Practices:
+Use neutral grayscale backgrounds (#f3f4f6 to #1f1f1f) with subtle transparency (rgba(255,255,255,0.1–0.3)).
+
+
+Apply blur effects (backdrop-filter: blur(12px)) on main containers.
+
+
+Avoid harsh drop shadows; prefer soft depth via light overlays.
+
+
+
+2. Layout Structure
+Use a grid-based layout: hero section, navigation bar (vertical or top), media carousel/grid, and sidebar.
+
+
+Maintain consistent spacing, use padding (24–32px) for clarity.
+
+
+✅ Best Practices:
+Use 12-column grid for flexibility across breakpoints.
+
+
+Maintain minimum spacing of 16px between components.
+
+
+Side panels or cards should align in modular fashion, not float.
+
+
+
+3. Component Styling
+🔘 Buttons:
+Rounded corners (12–16px), subtle shadows.
+
+
+Minimalist icons or labels.
+
+
+Primary CTA should use bold, saturated colors (e.g., blue or teal) for standout.
+
+
+🔲 Cards:
+Glass-style cards with:
+
+
+Translucent gray background
+
+
+Soft inner shadows
+
+
+Hover effect with a slight scale or glow
+
+
+🔍 Search Bar:
+Center-aligned or top-fixed.
+
+
+Use placeholder animation or text suggestions for engagement.
+
+
+🎚 Media Controls:
+Simple, flat-style player at bottom or embedded in content.
+
+
+Seek bar, play/pause, volume — all accessible and touch-friendly.
+
+
+
+4. Typography
+Use modern, clean sans-serif fonts (e.g., Inter, SF Pro, or Poppins).
+
+
+Emphasize clear hierarchy:
+
+
+Headings: font-weight: 600–700
+
+
+Body: 400–500
+
+
+Use subtle contrast (not pure black)
+
+
+✅ Font Sizes:
+Type
+Desktop
+Mobile
+Headline
+32–48px
+24–32px
+Subheading
+20–24px
+18–20px
+Body Text
+16–18px
+14–16px
+Labels/Tags
+12–14px
+12–14px
+
+
+5. Responsiveness
+Use flex or grid layouts with media queries to reflow:
+
+
+Cards become stacked on mobile
+
+
+Side panels collapse into overlays or drawers
+
+
+Controls (like the mini player) adapt to bottom-fixed bar on mobile
+
+
+
+6. Interactions (Non-Movable)
+Since UI elements are fixed:
+
+
+Use hover/focus states for visual feedback
+
+
+Animate modals/panels in/out with fade + slide transitions
+
+
+Make collapsible/expandable sections instead of draggable ones
+
+
+
+7. Color Palette
+Refined Color Palette for Professional Media Portal
+Style: Clean • Minimal • Glass-Inspired • Professional
+ Theme: Neutral Gray with Clean Accent
+
+🧱 Base Colors
+Purpose
+Color Name
+Hex Code
+Notes
+Background
+Soft Charcoal
+#1C1C1E
+Clean dark, not fully black – perfect for content
+Card BG
+Translucent Silver
+rgba(255, 255, 255, 0.05)
+For panels and cards with glassmorphism
+Border/Line
+Light Slate
+#3A3A3C
+Very subtle borders, not high contrast
+
+
+🖋 Typography & Text
+Type
+Color Name
+Hex Code
+Notes
+Primary Text
+Off White
+#E5E5E7
+Easy to read, soft on the eyes
+Secondary Text
+Slate Gray
+#A1A1AA
+Use for subtext or captions
+Disabled/Hint
+Ash Gray
+#6B7280
+For placeholder and disabled states
+
+
+🔘 Accent Colors
+Purpose
+Color Name
+Hex Code
+Usage
+Primary CTA
+Electric Blue
+#4F8CFF
+Call to actions, play button, highlights
+Secondary Accent
+Teal Mist
+#3ED7C2
+For tags, hover, or category labels
+Success/Progress
+Mint Green
+#4ADE80
+Meditation progress, completion
+Warning
+Soft Yellow
+#FCD34D
+Use sparingly for attention
+Error
+Coral Red
+#EF4444
+Alerts or failure status
+
+
+🧊 UI Element Examples
+Element
+Background Color
+Text Color
+Border/Shadow
+Panel/Card
+rgba(255,255,255,0.05)
+#E5E5E7
+1px solid #3A3A3C + soft shadow
+Modal Overlay
+rgba(0,0,0,0.6)
+Inherit
+No shadow
+Hover Effect
+rgba(255,255,255,0.08)
+Inherit
+Slight blur or glow
+Player Bar
+#1F1F22
+#E5E5E7
+border-top: 1px solid #2E2E2E
+
+
+🌓 Dark & Light Compatibility
+This palette works best with a dark theme as the base.
+
+
+If you need a light mode too, I can create a complementary light version with soft whites, grays, and navy blue accents.
+
+
+
+8. Accessibility
+Use proper color contrast (WCAG AA)
+
+
+Focus indicators for keyboard navigation
+
+
+Avoid hidden elements on smaller viewports (collapsible instead)
+
+
+
+Example Sections to Use:
+Section
+Description
+Hero Banner
+Welcome message with CTA and quick actions
+Media Grid
+Cards for videos, articles, or playlists
+Sidebar Panel
+"Now Playing", "Queue", or user activity
+Bottom Player
+Always-visible mini player with basic controls
+Search + Filter
+Top-right or centered, with tag filters
+
+

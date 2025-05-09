@@ -190,28 +190,30 @@ export function NowboardSuggestions({ userId, className, questType }: NowboardSu
   
   if (isLoading || loadingAction) {
     return (
-      <Card className={cn(className)}>
+      <Card className={cn("glass-panel", className)}>
         <CardHeader className="pb-2">
           <CardTitle className="flex items-center gap-2">
-            <Avatar className="h-8 w-8">
-              <AvatarFallback className="bg-primary/10">
+            <Avatar className="h-8 w-8 glass-icon">
+              <AvatarFallback className="bg-transparent backdrop-blur-md">
                 <Bot className="h-4 w-4 text-primary" />
               </AvatarFallback>
             </Avatar>
-            <Skeleton className="h-7 w-48" />
+            <Skeleton className="h-7 w-48 bg-gray-800/50" />
           </CardTitle>
-          <CardDescription><Skeleton className="h-4 w-full" /></CardDescription>
+          <CardDescription><Skeleton className="h-4 w-full bg-gray-800/30" /></CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
             {[1, 2, 3].map(i => (
-              <div key={i} className="flex items-center gap-3">
-                <Skeleton className="h-8 w-8 rounded-full" />
+              <div key={i} className="flex items-center gap-3 p-4 glass-card">
+                <Skeleton className="h-8 w-8 rounded-full bg-gray-800/50" />
                 <div className="space-y-1 flex-1">
-                  <Skeleton className="h-5 w-3/4" />
-                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-5 w-3/4 bg-gray-800/40" />
+                  <Skeleton className="h-4 w-full bg-gray-800/30" />
+                  <Skeleton className="h-2 w-full mt-2 bg-gray-800/20" />
+                  <Skeleton className="h-5 w-16 mt-1 bg-gray-800/40" />
                 </div>
-                <Skeleton className="h-8 w-24" />
+                <Skeleton className="h-8 w-24 bg-gray-800/30" />
               </div>
             ))}
           </div>
@@ -222,20 +224,20 @@ export function NowboardSuggestions({ userId, className, questType }: NowboardSu
   
   if (isError) {
     return (
-      <Card className={cn(className)}>
+      <Card className={cn("glass-panel", className)}>
         <CardHeader className="pb-2">
           <CardTitle className="flex items-center gap-2">
-            <Avatar className="h-8 w-8">
-              <AvatarFallback className="bg-primary/10">
+            <Avatar className="h-8 w-8 glass-icon">
+              <AvatarFallback className="bg-transparent backdrop-blur-md">
                 <Bot className="h-4 w-4 text-primary" />
               </AvatarFallback>
             </Avatar>
-            <span>Nowboard Opportunities</span>
+            <span className="text-glow">Nowboard Opportunities</span>
           </CardTitle>
           <CardDescription>
             <div className="flex items-center justify-between">
               <span>Failed to load recommendations</span>
-              <Button size="sm" variant="ghost" onClick={() => refetch()}>
+              <Button size="sm" className="glass-button" onClick={() => refetch()}>
                 <RefreshCw className="h-4 w-4 mr-2" /> Retry
               </Button>
             </div>
@@ -247,28 +249,31 @@ export function NowboardSuggestions({ userId, className, questType }: NowboardSu
   
   if (!data || data.length === 0) {
     return (
-      <Card className={cn(className)}>
+      <Card className={cn("glass-panel", className)}>
         <CardHeader className="pb-2">
           <CardTitle className="flex items-center gap-2">
-            <Avatar className="h-8 w-8">
-              <AvatarFallback className="bg-primary/10">
+            <Avatar className="h-8 w-8 glass-icon">
+              <AvatarFallback className="bg-transparent backdrop-blur-md">
                 <Bot className="h-4 w-4 text-primary" />
               </AvatarFallback>
             </Avatar>
-            <span>Nowboard Opportunities</span>
+            <span className="text-glow">Nowboard Opportunities</span>
           </CardTitle>
           <CardDescription className="flex justify-between">
             <span>Musk-recommended actions to complete your quests</span>
-            <Button size="sm" variant="ghost" className="h-6 p-1" onClick={() => refetch()}>
+            <Button size="sm" variant="ghost" className="h-6 p-1 glass-button" onClick={() => refetch()}>
               <RefreshCw className="h-3 w-3" />
             </Button>
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="text-center py-6 text-muted-foreground">
-            <Lightbulb className="h-10 w-10 mx-auto mb-2 opacity-20" />
-            <p>No suggestions available right now.</p>
-            <p className="text-xs mt-1">Check back later for new activities!</p>
+          <div className="glass-card p-6 text-center text-muted-foreground">
+            <Lightbulb className="h-12 w-12 mx-auto mb-3 text-primary/30" />
+            <p className="text-text">No suggestions available right now.</p>
+            <p className="text-xs mt-2 text-muted-foreground">Check back later for new activities!</p>
+            <Button variant="ghost" size="sm" className="mt-4 glass-button" onClick={() => refetch()}>
+              <RefreshCw className="h-3 w-3 mr-2" /> Refresh
+            </Button>
           </div>
         </CardContent>
       </Card>
@@ -276,19 +281,19 @@ export function NowboardSuggestions({ userId, className, questType }: NowboardSu
   }
   
   return (
-    <Card className={cn(className)}>
+    <Card className={cn("glass-panel", className)}>
       <CardHeader className="pb-2">
         <CardTitle className="flex items-center gap-2">
-          <Avatar className="h-8 w-8">
-            <AvatarFallback className="bg-primary/10">
+          <Avatar className="h-8 w-8 glass-icon">
+            <AvatarFallback className="bg-transparent backdrop-blur-md">
               <Bot className="h-4 w-4 text-primary" />
             </AvatarFallback>
           </Avatar>
-          <span>Nowboard Opportunities</span>
+          <span className="text-glow">Nowboard Opportunities</span>
         </CardTitle>
         <CardDescription className="flex justify-between">
           <span>Musk-recommended actions to complete your quests</span>
-          <Button size="sm" variant="ghost" className="h-6 p-1" onClick={() => refetch()}>
+          <Button size="sm" variant="ghost" className="h-6 p-1 glass-button" onClick={() => refetch()}>
             <RefreshCw className="h-3 w-3" />
           </Button>
         </CardDescription>
@@ -298,51 +303,43 @@ export function NowboardSuggestions({ userId, className, questType }: NowboardSu
           {data.map((suggestion: NowboardSuggestion) => (
             <div 
               key={suggestion.id} 
-              className="flex items-start gap-3 p-3 rounded-lg border border-gray-100 hover:border-primary/20 hover:bg-accent/20 transition-colors group"
+              className="flex items-start gap-3 p-4 glass-card hover:border-glow transition-all duration-300 group"
             >
-              <div className="mt-1 h-8 w-8 rounded-full bg-primary/5 flex items-center justify-center flex-shrink-0">
+              <div className="mt-1 h-8 w-8 glass-icon flex items-center justify-center flex-shrink-0">
                 {getIconForType(suggestion.type)}
               </div>
               <div className="space-y-1 flex-1">
                 <h4 className="font-medium text-sm">{suggestion.title}</h4>
                 <p className="text-xs text-muted-foreground">{suggestion.description}</p>
                 {suggestion.progress !== undefined && suggestion.targetCount !== undefined && (
-                  <div className="mt-1 mb-1">
+                  <div className="mt-2 mb-2">
                     <div className="flex justify-between items-center text-xs mb-1">
                       <span className="text-muted-foreground">Progress</span>
                       <span className="font-medium">{suggestion.progress}/{suggestion.targetCount}</span>
                     </div>
-                    <Progress 
-                      value={(suggestion.progress / suggestion.targetCount) * 100}
-                      className={cn(
-                        "h-1.5", 
-                        suggestion.progress === 0 
-                          ? "bg-gray-100 [&>div]:bg-gray-400" 
-                          : suggestion.progress < suggestion.targetCount 
-                            ? "bg-amber-100 [&>div]:bg-amber-500" 
-                            : "bg-green-100 [&>div]:bg-green-500"
-                      )}
-                    />
+                    <div className="glass-progress-bg">
+                      <div 
+                        className="glass-progress-fill" 
+                        style={{ width: `${(suggestion.progress / suggestion.targetCount) * 100}%` }}
+                      ></div>
+                    </div>
                   </div>
                 )}
-                <div className="text-xs text-amber-600 font-semibold">
+                <div className="text-xs glass-badge glass-badge-primary inline-flex">
                   +{suggestion.xpValue} XP potential
                 </div>
               </div>
               {suggestion.progress === suggestion.targetCount ? (
+                <div 
+                  className="flex-shrink-0 text-xs glass-badge glass-badge-success flex items-center"
+                >
+                  Completed <Zap className="ml-1 h-3 w-3" />
+                </div>
+              ) : (
                 <Button 
                   variant="ghost" 
                   size="sm"
-                  className="flex-shrink-0 text-xs text-green-600 cursor-default"
-                  disabled
-                >
-                  Completed <Zap className="ml-1 h-3 w-3" />
-                </Button>
-              ) : (
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  className="flex-shrink-0 text-xs group-hover:border-primary/50 group-hover:text-primary transition-colors"
+                  className="flex-shrink-0 text-xs glass-button group-hover:border-primary/50 group-hover:text-primary transition-colors"
                   onClick={() => handleAction(suggestion)}
                 >
                   {suggestion.actionText} <ArrowRight className="ml-1 h-3 w-3" />
