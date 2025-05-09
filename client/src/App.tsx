@@ -178,9 +178,6 @@ function Router() {
       <Route path="/messages">
         <ProtectedRoute path="/messages" component={ChatPage} />
       </Route>
-      <Route path="/chat">
-        <ProtectedRoute path="/chat" component={ChatPage} />
-      </Route>
       {/* Unified Profile Page with comprehensive data fetching */}
       <Route path="/unified-profile">
         <ProtectedRoute path="/unified-profile" component={UnifiedProfilePage} />
@@ -219,8 +216,6 @@ function Router() {
   );
 }
 
-import SimpleTopMenuBar from "@/components/layout/simple-top-menu-bar";
-
 function App() {
   // Add a root-level Suspense boundary to ensure we never show a white screen
   return (
@@ -240,12 +235,9 @@ function App() {
             </div>
           </div>
         }>
-          <div className="pt-16">
-            <SimpleTopMenuBar />
-            <Router />
-            <GlobalMuskButton />
-            <Toaster />
-          </div>
+          <Router />
+          <GlobalMuskButton />
+          <Toaster />
         </Suspense>
       </AuthProvider>
     </QueryClientProvider>

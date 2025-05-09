@@ -4,7 +4,6 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { format, isToday, isYesterday } from 'date-fns';
 import { Check, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { GlassCard } from '@/components/ui/glass-card';
 
 const MessageList: React.FC = () => {
   const { messages, currentConversation, loadingMessages, markConversationAsRead } = useChat();
@@ -62,23 +61,15 @@ const MessageList: React.FC = () => {
   if (messages.length === 0) {
     return (
       <div className="flex-1 flex items-center justify-center">
-        <GlassCard 
-          variant="frosted"
-          blurStrength="md"
-          transparency="medium"
-          backgroundEffect="noise"
-          backgroundIntensity="medium"
-          className="text-center px-8 py-6 max-w-xs layer-3"
-          elevation="floating"
-        >
-          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center mx-auto mb-4 backdrop-blur-sm border border-primary/20">
+        <div className="text-center bg-muted/20 backdrop-blur-sm border border-muted/10 rounded-xl px-8 py-6 max-w-xs">
+          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mx-auto mb-4">
             <Check className="h-6 w-6 text-primary" />
           </div>
           <h3 className="font-semibold text-lg mb-2">Begin Your Conversation</h3>
           <p className="text-sm text-muted-foreground">
             Send your first message below to start connecting
           </p>
-        </GlassCard>
+        </div>
       </div>
     );
   }
@@ -170,10 +161,10 @@ const MessageList: React.FC = () => {
                   
                   <div 
                     className={cn(
-                      "max-w-[85%] px-4 py-3 shadow-md",
+                      "max-w-[85%] px-4 py-3",
                       isOwnMessage 
-                        ? "text-white bg-primary/90 border border-primary/30" 
-                        : "frosted-glass noise-texture bg-glass-bg",
+                        ? "text-primary-foreground bg-gradient-to-br from-primary/90 to-primary" 
+                        : "bg-muted/30 backdrop-blur-sm border border-muted/10",
                       // Dynamically add rounded corners based on message sequence
                       "rounded-2xl",
                       isOwnMessage && !isSequence ? "rounded-tr-md" : "",
@@ -182,13 +173,13 @@ const MessageList: React.FC = () => {
                       !isOwnMessage && !nextIsSameSender ? "rounded-bl-md" : ""
                     )}
                   >
-                    <div className="break-words whitespace-pre-line relative z-10">
+                    <div className="break-words whitespace-pre-line">
                       {message.content}
                     </div>
-                    <div className="text-[10px] opacity-70 mt-1 text-right flex items-center justify-end relative z-10">
+                    <div className="text-[10px] opacity-70 mt-1 text-right flex items-center justify-end">
                       {format(new Date(message.sentAt), 'h:mm a')}
                       {isOwnMessage && (
-                        <span className="ml-1 text-white">
+                        <span className="ml-1 text-primary-foreground">
                           {message.readAt ? (
                             <Check className="h-3 w-3 inline-block" />
                           ) : (

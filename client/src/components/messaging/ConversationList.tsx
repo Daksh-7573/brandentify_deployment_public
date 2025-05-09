@@ -7,9 +7,6 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { PlusCircle, Users } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
-import { GlassCard } from '@/components/ui/glass-card';
-import { GlassButton } from '@/components/ui/glass-button';
-import { cn } from '@/lib/utils';
 
 type ConversationListProps = {
   onNewConversation: () => void;
@@ -37,31 +34,15 @@ const ConversationList: React.FC<ConversationListProps> = ({ onNewConversation }
   if (conversations.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-full p-4 text-center">
-        <GlassCard 
-          variant="frosted" 
-          blurStrength="md"
-          transparency="medium"
-          backgroundEffect="noise"
-          backgroundIntensity="medium"
-          className="p-6 w-full max-w-xs layer-2"
-        >
-          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mx-auto mb-3 backdrop-blur-sm border border-primary/20">
-            <Users className="h-6 w-6 text-primary" />
-          </div>
-          <h3 className="font-medium text-lg mb-1">No conversations yet</h3>
-          <p className="text-sm text-muted-foreground mb-4">
-            Start chatting with other professionals
-          </p>
-          <GlassButton 
-            variant="glass"
-            size="default"
-            onClick={onNewConversation}
-            className="w-full"
-          >
-            <PlusCircle className="mr-2 h-4 w-4" />
-            New Conversation
-          </GlassButton>
-        </GlassCard>
+        <Users className="h-12 w-12 text-muted-foreground mb-2" />
+        <h3 className="font-medium">No conversations yet</h3>
+        <p className="text-sm text-muted-foreground mb-4">
+          Start chatting with other professionals
+        </p>
+        <Button onClick={onNewConversation}>
+          <PlusCircle className="mr-2 h-4 w-4" />
+          New Conversation
+        </Button>
       </div>
     );
   }
@@ -113,14 +94,12 @@ const ConversationList: React.FC<ConversationListProps> = ({ onNewConversation }
             const hasUnread = (conversation.unreadCount || 0) > 0;
             
             return (
-              <GlassButton
+              <Button
                 key={conversation.id}
-                variant={isActive ? "glass-dark" : "ghost"}
-                className={cn(
-                  "w-full justify-start px-3 py-6 h-auto",
-                  hasUnread ? 'font-medium' : '',
-                  isActive ? 'bg-primary/10 backdrop-blur-sm' : ''
-                )}
+                variant={isActive ? "secondary" : "ghost"}
+                className={`w-full justify-start px-3 py-6 h-auto ${
+                  hasUnread ? 'font-medium' : ''
+                }`}
                 onClick={() => {
                   setCurrentConversation(conversation);
                   // Mark conversation as read when clicked
@@ -181,7 +160,7 @@ const ConversationList: React.FC<ConversationListProps> = ({ onNewConversation }
                     </div>
                   </div>
                 </div>
-              </GlassButton>
+              </Button>
             );
           })}
         </div>
