@@ -436,6 +436,22 @@ export default function Dashboard() {
                   </CardContent>
                 </Card>
                 
+                {/* Vision Pro Glass UI Demo */}
+                <div className="mb-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-lg font-medium text-gray-900">Vision Pro-Inspired Glass UI</h2>
+                    <GlassButton 
+                      variant="glass-dark" 
+                      size="sm"
+                      onClick={() => setLocation('/design-system')}
+                      className="flex items-center gap-2"
+                    >
+                      <Eye className="h-3 w-3" /> Full Demo
+                    </GlassButton>
+                  </div>
+                  <GlassDemoCard />
+                </div>
+                
                 {/* Dashboard Message */}
                 <Card className="mb-6">
                   <CardContent className="pt-6">
