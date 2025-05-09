@@ -60,11 +60,11 @@ const GlassButton = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const { settings } = useGlassEffects();
     const { cssVariables } = useGlassEffectStyles();
     
-    // Use the provided variant, or if it's a glass variant, apply the settings
+    // Use the provided variant or determine it based on glass settings
     let variant = propVariant;
     
     // If no variant is provided, use 'glass' (with dark mode awareness)
-    if (!variant) {
+    if (variant === undefined) {
       variant = settings.variant === 'dark' ? 'glass-dark' : 'glass';
     } 
     // If it's already a glass variant, check if we need to adapt to dark mode
@@ -72,15 +72,18 @@ const GlassButton = React.forwardRef<HTMLButtonElement, ButtonProps>(
       variant = settings.variant === 'dark' ? 'glass-dark' : 'glass';
     }
     
+    // Ensure variant is a valid type
+    const validVariant = variant as "default" | "destructive" | "outline" | "secondary" | "ghost" | "link" | "glass" | "glass-dark" | "primary";
+    
     const Comp = asChild ? Slot : "button";
     return (
       <Comp
-        className={cn(buttonVariants({ variant, size, glow, className }))}
+        className={cn(buttonVariants({ variant: validVariant, size, glow, className }))}
         ref={ref}
         {...props}
         style={{
           ...(props.style || {}),
-          ...(cssVariables && (variant === 'glass' || variant === 'glass-dark') 
+          ...(cssVariables && (validVariant === 'glass' || validVariant === 'glass-dark') 
             ? { [cssVariables]: '' } 
             : {})
         }}

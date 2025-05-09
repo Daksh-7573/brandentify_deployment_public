@@ -40,6 +40,7 @@ import ManageServicesPage from "@/pages/manage-services";
 import TestNowboardPage from "@/pages/test-nowboard";
 import ChatPage from "@/pages/ChatPage"; // Chat messaging feature
 import DesignSystemDemo from "@/pages/DesignSystemDemo"; // Vision Pro Inspired UI
+import GlassEffectsDemo from "@/pages/GlassEffectsDemo"; // Glass Effects Demo
 // Lazy load the SharedCardPage to improve performance and show loader immediately
 import { lazy, Suspense } from "react";
 const SharedCardPage = lazy(() => import("@/pages/shared-card"));
@@ -190,6 +191,10 @@ function Router() {
       {/* Design System Demo - Vision Pro inspired UI showcase */}
       <Route path="/design-system">
         <ProtectedRoute path="/design-system" component={DesignSystemDemo} />
+      </Route>
+      {/* Glass Effects Demo - Vision Pro inspired Glass UI controls */}
+      <Route path="/glass-effects">
+        <Route path="/glass-effects" component={GlassEffectsDemo} />
       </Route>
       {/* Shared Quantum Card View route */}
       <Route path="/profile/card/:userId">
