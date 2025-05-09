@@ -219,6 +219,8 @@ function Router() {
   );
 }
 
+import SimpleTopMenuBar from "@/components/layout/simple-top-menu-bar";
+
 function App() {
   // Add a root-level Suspense boundary to ensure we never show a white screen
   return (
@@ -238,9 +240,12 @@ function App() {
             </div>
           </div>
         }>
-          <Router />
-          <GlobalMuskButton />
-          <Toaster />
+          <div className="pt-16">
+            <SimpleTopMenuBar />
+            <Router />
+            <GlobalMuskButton />
+            <Toaster />
+          </div>
         </Suspense>
       </AuthProvider>
     </QueryClientProvider>
