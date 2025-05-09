@@ -1404,20 +1404,28 @@ const SearchPage = () => {
                       ))}
                     </div>
                   ) : (
-                    <div className="text-center py-12 border rounded-lg bg-gray-50">
-                      <UserPlus className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                      <h3 className="text-lg font-medium">No matches found</h3>
-                      <p className="text-gray-500 mt-2">
-                        Try adjusting your criteria to find more professionals
-                      </p>
+                    <div className="text-center py-12 border border-[rgba(255,255,255,0.08)] rounded-xl backdrop-blur-xl bg-[rgba(25,25,30,0.55)] shadow-lg relative overflow-hidden">
+                      {/* Glassmorphic glow effects */}
+                      <div className="absolute top-0 w-24 h-24 bg-primary/5 rounded-full -mt-12 left-1/2 -translate-x-1/2 blur-2xl"></div>
+                      <div className="absolute bottom-0 w-32 h-32 bg-primary/5 rounded-full -mb-16 left-1/3 -translate-x-1/2 blur-3xl"></div>
+                      
+                      <div className="relative z-10">
+                        <div className="w-16 h-16 mx-auto mb-5 rounded-full backdrop-blur-xl bg-[rgba(0,100,255,0.08)] border border-[rgba(255,255,255,0.1)] flex items-center justify-center shadow-lg">
+                          <UserPlus className="h-8 w-8 text-primary/60" />
+                        </div>
+                        <h3 className="text-xl font-medium text-white mb-2">No matches found</h3>
+                        <p className="text-gray-400 max-w-md mx-auto">
+                          Try adjusting your criteria to find more professionals
+                        </p>
+                      </div>
                     </div>
                   )}
                 </CardContent>
                 {showMatchResults && matchMutation.isSuccess && matchMutation.data.length > 0 && (
                   <CardFooter className="flex justify-between">
-                    <p className="text-sm text-gray-500">Showing top {matchMutation.data.length} matches</p>
+                    <p className="text-sm text-gray-400">Showing top {matchMutation.data.length} matches</p>
                     <button 
-                      className="px-4 py-1.5 rounded-full bg-white border border-gray-200 hover:bg-gray-50 hover:border-primary/30 hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-sm font-medium transition-all text-sm flex items-center gap-1.5"
+                      className="px-4 py-1.5 rounded-full backdrop-blur-md bg-[rgba(255,255,255,0.1)] border border-[rgba(255,255,255,0.1)] hover:bg-[rgba(255,255,255,0.15)] hover:border-primary/30 hover:text-primary/90 text-white focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-md font-medium transition-all text-sm flex items-center gap-1.5"
                     >
                       <span>View More</span>
                       <ChevronRight size={14} />
