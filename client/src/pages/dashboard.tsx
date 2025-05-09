@@ -14,6 +14,7 @@ import { useState, useEffect } from "react";
 import { ArrowLeft, FileCode, Github, Globe, Calendar, User } from "lucide-react";
 import { format } from "date-fns";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import GlassDemoCard from "@/components/ui/glass-demo-card";
 
 // Project Detail Component
 function ProjectDetailView({ projectId, onBack }: { projectId: string, onBack: () => void }) {
