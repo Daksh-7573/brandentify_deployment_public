@@ -20,7 +20,7 @@ export function PageLayout({
   return (
     <div className="flex min-h-screen w-full flex-col">
       <Header />
-      <div className="pt-16"> {/* Changed from mt-16 to pt-16 for better spacing with fixed glass header */}
+      <div className="mt-16">
         <PageHeader 
           heading={title}
           description={description}
