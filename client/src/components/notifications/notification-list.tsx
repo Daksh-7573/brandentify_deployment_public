@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Check, X, Trash2, Bell } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { GlassButton } from '@/components/ui/glass-button';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { apiRequest } from '@/lib/queryClient';
 import { formatDistanceToNow } from 'date-fns';
+import { cn } from '@/lib/utils';
 
 // Define notification types based on schema
 interface Notification {
@@ -112,17 +114,17 @@ export default function NotificationList({
   
   return (
     <div className="max-h-[450px] overflow-hidden flex flex-col">
-      <div className="flex items-center justify-between p-3 border-b">
-        <h3 className="font-semibold text-base">Notifications</h3>
-        <Button 
-          variant="ghost" 
+      <div className="flex items-center justify-between p-3 border-b border-white/10 bg-gradient-to-b from-white/10 to-transparent dark:from-gray-800/20 dark:to-transparent">
+        <h3 className="font-semibold text-base text-gray-800 dark:text-gray-200">Notifications</h3>
+        <GlassButton 
+          variant="glass-dark" 
           size="sm" 
           onClick={onMarkAllAsRead}
-          className="text-xs text-gray-600 hover:text-primary"
+          className="text-xs rounded-full px-3 text-white bg-gray-800/40"
         >
           <Check className="h-3.5 w-3.5 mr-1" />
           Mark all as read
-        </Button>
+        </GlassButton>
       </div>
       
       <Tabs 
@@ -131,10 +133,26 @@ export default function NotificationList({
         value={activeTab} 
         onValueChange={(value) => setActiveTab(value as 'all' | 'unread')}
       >
-        <div className="border-b px-2">
-          <TabsList className="grid grid-cols-2 h-10">
-            <TabsTrigger value="all" className="text-sm">All</TabsTrigger>
-            <TabsTrigger value="unread" className="text-sm">Unread</TabsTrigger>
+        <div className="border-b border-white/10 px-2 bg-white/5 dark:bg-gray-900/20">
+          <TabsList className="grid grid-cols-2 h-12 bg-transparent">
+            <TabsTrigger 
+              value="all" 
+              className={cn(
+                "text-sm rounded-full data-[state=active]:bg-white/20 data-[state=active]:backdrop-blur-lg dark:data-[state=active]:bg-gray-800/40",
+                "data-[state=active]:text-gray-900 dark:data-[state=active]:text-white data-[state=active]:shadow-sm"
+              )}
+            >
+              All
+            </TabsTrigger>
+            <TabsTrigger 
+              value="unread" 
+              className={cn(
+                "text-sm rounded-full data-[state=active]:bg-white/20 data-[state=active]:backdrop-blur-lg dark:data-[state=active]:bg-gray-800/40",
+                "data-[state=active]:text-gray-900 dark:data-[state=active]:text-white data-[state=active]:shadow-sm"
+              )}
+            >
+              Unread
+            </TabsTrigger>
           </TabsList>
         </div>
         
@@ -156,44 +174,46 @@ export default function NotificationList({
               filteredNotifications.map((notification) => (
                 <div 
                   key={notification.id} 
-                  className={`p-3 border-b last:border-0 hover:bg-gray-50 ${
-                    !notification.isRead ? 'bg-blue-50/30' : ''
-                  }`}
+                  className={cn(
+                    "p-3 border-b border-white/10 last:border-0 transition-all",
+                    "hover:bg-white/10 dark:hover:bg-gray-800/20 backdrop-blur-sm",
+                    !notification.isRead ? "bg-blue-50/20 dark:bg-blue-900/10" : "bg-transparent"
+                  )}
                 >
                   <div className="flex items-start gap-3">
                     <div className="mt-0.5">
                       {getNotificationIcon(notification.type)}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium text-sm line-clamp-1">{notification.title}</p>
-                      <p className="text-sm text-gray-600 line-clamp-2 mt-0.5">
+                      <p className="font-medium text-sm line-clamp-1 text-gray-800 dark:text-gray-100">{notification.title}</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2 mt-0.5">
                         {notification.message}
                       </p>
-                      <p className="text-xs text-gray-500 mt-1">
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                         {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true })}
                       </p>
                     </div>
                     <div className="flex gap-1 shrink-0">
                       {!notification.isRead && (
-                        <Button
-                          variant="ghost"
+                        <GlassButton
+                          variant="glass"
                           size="icon"
-                          className="h-7 w-7 rounded-full hover:bg-blue-100 hover:text-blue-600"
+                          className="h-7 w-7 rounded-full bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 dark:text-blue-400"
                           onClick={() => handleMarkAsRead(notification.id)}
                           title="Mark as read"
                         >
                           <Check className="h-3.5 w-3.5" />
-                        </Button>
+                        </GlassButton>
                       )}
-                      <Button
-                        variant="ghost"
+                      <GlassButton
+                        variant="glass"
                         size="icon"
-                        className="h-7 w-7 rounded-full hover:bg-red-100 hover:text-red-600"
+                        className="h-7 w-7 rounded-full bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400"
                         onClick={() => handleDelete(notification.id)}
                         title="Delete notification"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
-                      </Button>
+                      </GlassButton>
                     </div>
                   </div>
                 </div>
