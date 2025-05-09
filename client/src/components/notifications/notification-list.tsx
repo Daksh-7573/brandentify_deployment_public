@@ -61,7 +61,7 @@ export default function NotificationList({
   }, [userId]);
   
   // Mark a notification as read
-  const handleMarkAsRead = async (id: number) => {
+  const handleMarkAsRead = async (id: string) => {
     try {
       await apiRequest('PATCH', `/api/notifications/${id}/read`);
       setNotifications(prevNotifications => 
@@ -78,7 +78,7 @@ export default function NotificationList({
   };
   
   // Delete a notification
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     try {
       await apiRequest('DELETE', `/api/notifications/${id}`);
       setNotifications(prevNotifications => 
