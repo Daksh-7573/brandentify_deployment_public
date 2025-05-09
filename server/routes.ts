@@ -43,6 +43,7 @@ import { setupServicesRoutes } from "./routes-services";
 import addProjectUpdateRoutes from "./routes-project-update";
 import careerCapsuleRoutes from "./routes-career-capsule";
 import { setupPersonalizedHashtagRoutes } from "./routes-personalized-hashtags";
+import notificationRoutes from "./routes-notifications";
 import { 
   handleSmartConnect, 
   handleCareerRecommendations, 
@@ -5447,6 +5448,10 @@ ${extractedText.substring(0, 5000)}
   // Personalized Hashtag routes
   setupPersonalizedHashtagRoutes(app);
   console.log("Personalized Hashtag routes loaded");
+  
+  // Notification routes
+  apiRouter.use('/notifications', notificationRoutes);
+  console.log("Notification routes loaded");
   
   // Get all career goals for a user
   apiRouter.get("/users/:userId/career-goals", async (req: Request, res: Response) => {

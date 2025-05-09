@@ -48,8 +48,13 @@ export async function getUserNotifications(
   
   if (onlyUnread) {
     // Get unread notifications
-    const results = await query.where(eq(notifications.isRead, false));
-    return results;
+    return await db
+      .select()
+      .from(notifications)
+      .where(eq(notifications.userId, userId))
+      .where(eq(notifications.isRead, false))
+      .orderBy(desc(notifications.createdAt))
+      .limit(limit);
   }
   
   return await query;
@@ -61,14 +66,13 @@ export async function getUserNotifications(
  * @returns The count of unread notifications
  */
 export async function getUnreadNotificationCount(userId: number): Promise<number> {
-  const result = await db
-    .select({ count: notifications.id })
+  const { rowCount } = await db
+    .select()
     .from(notifications)
     .where(eq(notifications.userId, userId))
-    .where(eq(notifications.isRead, false))
-    .count();
+    .where(eq(notifications.isRead, false));
   
-  return result[0]?.count || 0;
+  return rowCount || 0;
 }
 
 /**
@@ -92,13 +96,31 @@ export async function markNotificationAsRead(notificationId: string): Promise<No
  * @returns The number of notifications marked as read
  */
 export async function markAllNotificationsAsRead(userId: number): Promise<number> {
-  const result = await db
-    .update(notifications)
-    .set({ isRead: true })
+  // First find all unread notifications for this user
+  const unreadNotifications = await db
+    .select()
+    .from(notifications)
     .where(eq(notifications.userId, userId))
     .where(eq(notifications.isRead, false));
   
-  return result?.rowCount ?? 0;
+  if (unreadNotifications.length === 0) {
+    return 0;
+  }
+  
+  // Update all of them individually
+  let updatedCount = 0;
+  for (const notification of unreadNotifications) {
+    const result = await db
+      .update(notifications)
+      .set({ isRead: true })
+      .where(eq(notifications.id, notification.id));
+    
+    if (result.rowCount) {
+      updatedCount++;
+    }
+  }
+  
+  return updatedCount;
 }
 
 /**
