@@ -19,53 +19,105 @@
   --glass-pattern-opacity: 0;
 }
 
-/* Background patterns for glass effects */
-body[data-glass-variant] {
+/* Base glass component styling */
+.glass-card, 
+.glass-button,
+.glass-nav,
+.glass-panel,
+.glass-dropdown,
+.glass-sidebar,
+.glass-modal,
+.glass-toast {
   position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(var(--glass-backdrop-blur));
+  -webkit-backdrop-filter: blur(var(--glass-backdrop-blur));
+  background-color: rgba(255, 255, 255, var(--glass-background-opacity));
+  border: 1px solid rgba(255, 255, 255, var(--glass-border-opacity));
+  transition: all 0.3s ease;
 }
 
 /* Special styling for different glass variants */
-body.variant-frosted .glass-card,
-body.variant-frosted .glass-button {
+body[data-glass-variant="frosted"] .glass-card,
+body[data-glass-variant="frosted"] .glass-button,
+body[data-glass-variant="frosted"] .glass-nav,
+body[data-glass-variant="frosted"] .glass-panel,
+body[data-glass-variant="frosted"] .glass-dropdown,
+body[data-glass-variant="frosted"] .glass-sidebar,
+body[data-glass-variant="frosted"] .glass-modal,
+body[data-glass-variant="frosted"] .glass-toast {
   backdrop-filter: blur(var(--glass-backdrop-blur));
+  -webkit-backdrop-filter: blur(var(--glass-backdrop-blur));
   background-color: rgba(255, 255, 255, var(--glass-background-opacity));
   border: 1px solid rgba(255, 255, 255, var(--glass-border-opacity));
 }
 
-body.variant-ultra .glass-card,
-body.variant-ultra .glass-button {
+body[data-glass-variant="ultra"] .glass-card,
+body[data-glass-variant="ultra"] .glass-button,
+body[data-glass-variant="ultra"] .glass-nav,
+body[data-glass-variant="ultra"] .glass-panel,
+body[data-glass-variant="ultra"] .glass-dropdown,
+body[data-glass-variant="ultra"] .glass-sidebar,
+body[data-glass-variant="ultra"] .glass-modal,
+body[data-glass-variant="ultra"] .glass-toast {
   backdrop-filter: blur(var(--glass-backdrop-blur));
+  -webkit-backdrop-filter: blur(var(--glass-backdrop-blur));
   background-color: rgba(255, 255, 255, var(--glass-background-opacity));
   border: 1px solid rgba(255, 255, 255, var(--glass-border-opacity));
   box-shadow: 0 8px 32px rgba(31, 38, 135, var(--glass-shadow-opacity));
 }
 
-body.variant-cosmic .glass-card,
-body.variant-cosmic .glass-button {
+body[data-glass-variant="cosmic"] .glass-card,
+body[data-glass-variant="cosmic"] .glass-button,
+body[data-glass-variant="cosmic"] .glass-nav,
+body[data-glass-variant="cosmic"] .glass-panel,
+body[data-glass-variant="cosmic"] .glass-dropdown,
+body[data-glass-variant="cosmic"] .glass-sidebar,
+body[data-glass-variant="cosmic"] .glass-modal,
+body[data-glass-variant="cosmic"] .glass-toast {
   backdrop-filter: blur(var(--glass-backdrop-blur));
+  -webkit-backdrop-filter: blur(var(--glass-backdrop-blur));
   background-color: rgba(30, 30, 45, var(--glass-background-opacity));
   border: 1px solid rgba(255, 255, 255, var(--glass-border-opacity));
   box-shadow: 0 8px 32px rgba(80, 60, 200, var(--glass-shadow-opacity));
 }
 
-body.variant-colored .glass-card,
-body.variant-colored .glass-button {
+body[data-glass-variant="colored"] .glass-card,
+body[data-glass-variant="colored"] .glass-button,
+body[data-glass-variant="colored"] .glass-nav,
+body[data-glass-variant="colored"] .glass-panel,
+body[data-glass-variant="colored"] .glass-dropdown,
+body[data-glass-variant="colored"] .glass-sidebar,
+body[data-glass-variant="colored"] .glass-modal,
+body[data-glass-variant="colored"] .glass-toast {
   backdrop-filter: blur(var(--glass-backdrop-blur));
+  -webkit-backdrop-filter: blur(var(--glass-backdrop-blur));
   background-color: rgba(var(--primary-rgb), var(--glass-background-opacity));
   border: 1px solid rgba(var(--primary-rgb), var(--glass-border-opacity));
 }
 
-body.variant-dark .glass-card,
-body.variant-dark .glass-button {
+body[data-glass-variant="dark"] .glass-card,
+body[data-glass-variant="dark"] .glass-button,
+body[data-glass-variant="dark"] .glass-nav,
+body[data-glass-variant="dark"] .glass-panel,
+body[data-glass-variant="dark"] .glass-dropdown,
+body[data-glass-variant="dark"] .glass-sidebar,
+body[data-glass-variant="dark"] .glass-modal,
+body[data-glass-variant="dark"] .glass-toast {
   backdrop-filter: blur(var(--glass-backdrop-blur));
+  -webkit-backdrop-filter: blur(var(--glass-backdrop-blur));
   background-color: rgba(20, 20, 30, var(--glass-background-opacity));
   border: 1px solid rgba(40, 40, 60, var(--glass-border-opacity));
 }
 
-/* Background effect styles */
-body.effect-gradient::before {
+/* Background effect styles - apply only to specific background containers */
+.bg-gradient-effect {
+  position: relative;
+}
+
+.bg-gradient-effect::before {
   content: '';
-  position: fixed;
+  position: absolute;
   inset: 0;
   z-index: -1;
   background: 
@@ -74,9 +126,13 @@ body.effect-gradient::before {
   pointer-events: none;
 }
 
-body.effect-noise::before {
+.bg-noise-effect {
+  position: relative;
+}
+
+.bg-noise-effect::before {
   content: '';
-  position: fixed;
+  position: absolute;
   inset: 0;
   z-index: -1;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 600 600' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
@@ -85,9 +141,13 @@ body.effect-noise::before {
   pointer-events: none;
 }
 
-body.effect-pattern::before {
+.bg-pattern-effect {
+  position: relative;
+}
+
+.bg-pattern-effect::before {
   content: '';
-  position: fixed;
+  position: absolute;
   inset: 0;
   z-index: -1;
   background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23000000' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
@@ -95,9 +155,13 @@ body.effect-pattern::before {
   pointer-events: none;
 }
 
-body.effect-glow::before {
+.bg-glow-effect {
+  position: relative;
+}
+
+.bg-glow-effect::before {
   content: '';
-  position: fixed;
+  position: absolute;
   inset: 0;
   z-index: -1;
   background: 
