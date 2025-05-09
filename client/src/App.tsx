@@ -230,6 +230,8 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <GlassEffectsProvider>
+          {/* GlassEffectsInjector applies the global glass effects settings to the entire application */}
+          <GlassEffectsInjector />
           <Suspense fallback={
             <div className="min-h-screen flex items-center justify-center bg-background">
               <div className="w-[280px] aspect-[2/3.5] rounded-lg overflow-hidden shadow-lg">

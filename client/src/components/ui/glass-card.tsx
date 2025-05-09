@@ -100,12 +100,13 @@ const GlassCard = React.forwardRef<HTMLDivElement, GlassCardProps>(
     const backgroundEffect = propBackgroundEffect !== "none" ? propBackgroundEffect : settings.backgroundEffect as any;
     const backgroundIntensity = propBackgroundIntensity || settings.backgroundIntensity as any;
     
-    // Generate CSS custom properties based on the glass settings
+    // CSS custom properties will be automatically applied by the GlassEffectsInjector at the root level
     const inlineStyles = useMemo(() => {
+      // No need to apply CSS variables here as they're now applied to :root
       return {
-        style: cssVariables ? { ...props.style, [cssVariables]: '' } : props.style
+        style: props.style
       };
-    }, [cssVariables, props.style]);
+    }, [props.style]);
     
     // Determine background effect styles based on variant and effect type
     const renderBackgroundEffect = () => {
@@ -206,7 +207,10 @@ const GlassCard = React.forwardRef<HTMLDivElement, GlassCardProps>(
     return (
       <div
         ref={ref}
+        {...props}
+        style={props.style}
         className={cn(
+          "glass-card",
           glassCardVariants({ 
             variant, 
             size, 
@@ -217,11 +221,6 @@ const GlassCard = React.forwardRef<HTMLDivElement, GlassCardProps>(
           }),
           className
         )}
-        {...props}
-        style={{
-          ...(props.style || {}),
-          ...(cssVariables ? { [cssVariables]: '' } : {})
-        }}
       >
         <div className={cn("relative z-10 h-full w-full", innerClassName)}>
           {children}
