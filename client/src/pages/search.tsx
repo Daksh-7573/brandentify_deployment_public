@@ -796,10 +796,10 @@ const SearchPage = () => {
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center py-12 border rounded-lg bg-gray-50">
+                  <div className="text-center py-12 border border-[rgba(255,255,255,0.1)] rounded-lg backdrop-blur-md bg-[rgba(25,25,30,0.5)] shadow-lg">
                     <MessageSquare className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                    <h3 className="text-lg font-medium">No pulses found</h3>
-                    <p className="text-gray-500 mt-2">
+                    <h3 className="text-lg font-medium text-white">No pulses found</h3>
+                    <p className="text-gray-400 mt-2">
                       Try a different search term or check for typos
                     </p>
                   </div>
@@ -850,38 +850,38 @@ const SearchPage = () => {
                       location: string | null;
                       industry: string | null;
                     }) => (
-                      <Card key={profile.id} className="overflow-hidden rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border-0 group">
-                        <div className="bg-gradient-to-br from-primary/30 via-primary/20 to-primary/5 h-28 relative overflow-hidden">
-                          <div className="absolute inset-0 bg-white/10 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                      <Card key={profile.id} className="overflow-hidden rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 backdrop-blur-md bg-[rgba(25,25,30,0.7)] border border-[rgba(255,255,255,0.1)] group">
+                        <div className="bg-gradient-to-br from-primary/20 via-primary/10 to-transparent h-28 relative overflow-hidden">
+                          <div className="absolute inset-0 bg-primary/5 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                           <div className="absolute bottom-0 left-0 w-20 h-20 bg-primary/10 rounded-full -mb-10 -ml-10 blur-xl"></div>
                           <div className="absolute top-0 right-0 w-20 h-20 bg-primary/10 rounded-full -mt-10 -mr-10 blur-xl"></div>
                         </div>
                         <div className="px-6 pb-6 relative">
                           <div className="flex justify-center -mt-12 mb-4">
-                            <Avatar className="h-24 w-24 border-4 border-white shadow-md group-hover:shadow-lg transition-all duration-300">
+                            <Avatar className="h-24 w-24 border-4 border-[rgba(25,25,30,0.9)] shadow-md group-hover:shadow-lg transition-all duration-300 group-hover:border-primary/20">
                               <AvatarImage src={profile.photoURL || undefined} />
-                              <AvatarFallback className="text-xl bg-gradient-to-br from-primary/60 to-primary/80 text-white">{getInitials(profile.name)}</AvatarFallback>
+                              <AvatarFallback className="text-xl bg-gradient-to-br from-primary/40 to-primary/60 text-white">{getInitials(profile.name)}</AvatarFallback>
                             </Avatar>
                           </div>
                           <div className="text-center">
-                            <h3 className="text-xl font-semibold tracking-tight group-hover:text-primary transition-colors duration-300">{profile.name}</h3>
+                            <h3 className="text-xl font-semibold tracking-tight text-white group-hover:text-primary transition-colors duration-300">{profile.name}</h3>
                             {profile.title && (
-                              <p className="text-gray-600 mt-1 font-medium">{profile.title}</p>
+                              <p className="text-gray-300 mt-1 font-medium">{profile.title}</p>
                             )}
                             {(profile.location || profile.industry) && (
-                              <p className="text-gray-500 text-sm mt-2 flex items-center justify-center gap-1">
+                              <p className="text-gray-400 text-sm mt-2 flex items-center justify-center gap-1">
                                 {profile.location && (
                                   <span className="flex items-center">
-                                    <MapPin className="h-3 w-3 mr-1 text-gray-400" />
+                                    <MapPin className="h-3 w-3 mr-1 text-gray-300" />
                                     {profile.location}
                                   </span>
                                 )}
-                                {profile.location && profile.industry && <span className="mx-1 text-gray-300">•</span>}
+                                {profile.location && profile.industry && <span className="mx-1 text-gray-500">•</span>}
                                 {profile.industry && profile.industry}
                               </p>
                             )}
                             <button 
-                              className="mt-5 px-5 py-1.5 rounded-full bg-white border border-gray-200 hover:bg-gray-50 hover:border-primary/30 hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-sm font-medium text-sm transition-all group-hover:border-primary/40 group-hover:shadow"
+                              className="mt-5 px-5 py-1.5 rounded-full backdrop-blur-md bg-[rgba(0,100,255,0.1)] border border-primary/20 hover:bg-primary/20 hover:border-primary/40 text-primary focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-md hover:shadow-lg font-medium text-sm transition-all duration-300 hover:scale-[1.02]"
                               onClick={() => setLocation(`/profile/${profile.id}`)}
                             >
                               View Profile
@@ -892,10 +892,10 @@ const SearchPage = () => {
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center py-12 border rounded-lg bg-gray-50">
+                  <div className="text-center py-12 border border-[rgba(255,255,255,0.1)] rounded-lg backdrop-blur-md bg-[rgba(25,25,30,0.5)] shadow-lg">
                     <Users className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                    <h3 className="text-lg font-medium">No profiles found</h3>
-                    <p className="text-gray-500 mt-2">
+                    <h3 className="text-lg font-medium text-white">No profiles found</h3>
+                    <p className="text-gray-400 mt-2">
                       Try a different search term or check for typos
                     </p>
                   </div>
@@ -934,10 +934,10 @@ const SearchPage = () => {
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center py-12 border rounded-lg bg-gray-50">
+                  <div className="text-center py-12 border border-[rgba(255,255,255,0.1)] rounded-lg backdrop-blur-md bg-[rgba(25,25,30,0.5)] shadow-lg">
                     <Hash className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                    <h3 className="text-lg font-medium">No hashtags found</h3>
-                    <p className="text-gray-500 mt-2">
+                    <h3 className="text-lg font-medium text-white">No hashtags found</h3>
+                    <p className="text-gray-400 mt-2">
                       Try a different search term or check for typos
                     </p>
                   </div>
