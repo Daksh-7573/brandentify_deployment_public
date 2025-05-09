@@ -580,25 +580,25 @@ const SearchPage = () => {
     return (
       <Card 
         key={tag.id} 
-        className="overflow-hidden rounded-xl border-0 shadow-md hover:shadow-lg transition-all duration-300 group"
+        className="backdrop-blur-md bg-[rgba(25,25,30,0.7)] border border-[rgba(255,255,255,0.1)] hover:border-primary/20 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden group"
       >
         <CardContent className="p-5 relative">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full -mt-12 -mr-12 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <div className="absolute top-0 right-0 w-16 h-16 bg-primary/10 rounded-full -mt-8 -mr-8 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-lg font-medium group-hover:text-primary transition-colors">
+              <h3 className="text-lg font-medium text-white group-hover:text-primary transition-colors duration-300">
                 <span className="text-primary font-semibold">#</span>{tag.name}
               </h3>
-              <p className="text-gray-500 text-sm mt-1">
+              <p className="text-gray-400 text-sm mt-1">
                 {tag.count} {tag.count === 1 ? 'post' : 'posts'}
               </p>
             </div>
             {userId ? (
               <button
-                className={`min-w-[110px] px-4 py-1.5 rounded-full transition-all duration-300 shadow-sm font-medium text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 ${
+                className={`min-w-[110px] px-4 py-1.5 rounded-full transition-all duration-300 shadow-md hover:shadow-lg font-medium text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 ${
                   isFollowing 
-                    ? 'text-primary bg-white border border-primary/30 hover:bg-primary/5 hover:shadow-md' 
-                    : 'bg-primary text-white hover:bg-primary/90 hover:shadow-md'
+                    ? 'text-primary bg-[rgba(0,100,255,0.1)] backdrop-blur-md border border-primary/30 hover:bg-primary/15 hover:border-primary/40' 
+                    : 'bg-primary text-white hover:bg-primary/90 hover:scale-[1.02]'
                 }`}
                 onClick={handleFollowToggle}
                 disabled={isLoading}
@@ -625,7 +625,7 @@ const SearchPage = () => {
                 </span>
               </button>
             ) : (
-              <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors duration-300">
+              <div className="h-10 w-10 rounded-full backdrop-blur-md bg-[rgba(0,100,255,0.1)] border border-primary/20 flex items-center justify-center group-hover:bg-primary/20 group-hover:border-primary/30 transition-all duration-300 shadow-md">
                 <Hash className="h-5 w-5 text-primary" />
               </div>
             )}
@@ -905,10 +905,12 @@ const SearchPage = () => {
               {/* Hashtags Results */}
               <TabsContent value="hashtags">
                 {!submittedQuery ? (
-                  <div className="text-center py-12">
-                    <Hash className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                    <h3 className="text-lg font-medium">Search for hashtags</h3>
-                    <p className="text-gray-500 mt-2">
+                  <div className="text-center py-12 border border-[rgba(255,255,255,0.08)] rounded-xl backdrop-blur-md bg-[rgba(25,25,30,0.5)] shadow-lg">
+                    <div className="w-16 h-16 rounded-full backdrop-blur-md bg-[rgba(0,100,255,0.1)] border border-primary/20 flex items-center justify-center mx-auto mb-4 shadow-[0_0_15px_rgba(0,100,255,0.1)]">
+                      <Hash className="h-8 w-8 text-primary/80" />
+                    </div>
+                    <h3 className="text-lg font-medium text-white">Search for hashtags</h3>
+                    <p className="text-gray-400 mt-2 max-w-md mx-auto">
                       Discover trending topics and hashtags across the platform
                     </p>
                   </div>
