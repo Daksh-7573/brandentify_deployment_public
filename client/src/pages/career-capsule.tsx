@@ -294,7 +294,7 @@ export default function CareerCapsulePage() {
 
   return (
     <PageLayout title="Career Capsule">
-      <div className="container px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold">Career Capsule</h1>
           <Button onClick={() => setShowCreateDialog(true)}>Create New Goal</Button>

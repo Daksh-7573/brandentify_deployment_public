@@ -1497,8 +1497,8 @@ export default function IndustryPulsePage() {
     <div className="flex h-screen flex-col">
       <Header />
       <div className="flex flex-1 overflow-hidden pt-16"> {/* Added padding-top for fixed header */}
-        <div className="flex-1 overflow-auto">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 max-w-5xl">
+        <div className="flex-1 overflow-auto w-full">
+          <div className="max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div className="mb-8 flex justify-between items-center">
               <div>
                 <h1 className="text-3xl font-bold tracking-tight">Industry Pulse</h1>
