@@ -483,12 +483,10 @@ const SearchPage = () => {
         }
         
         setIsLoading(true);
-        const res = await fetch(`/api/hashtags/${tag.id}/follow?userId=${userId}`, {
+        const res = await apiRequest({
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ userId })
+          url: `/api/hashtags/${tag.id}/follow?userId=${userId}`,
+          data: { userId }
         });
         
         return res.json();
@@ -582,28 +580,25 @@ const SearchPage = () => {
     return (
       <Card 
         key={tag.id} 
-        className="backdrop-blur-xl bg-[rgba(25,25,30,0.55)] border border-[rgba(255,255,255,0.08)] hover:border-primary/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group"
+        className="overflow-hidden rounded-xl border-0 shadow-md hover:shadow-lg transition-all duration-300 group"
       >
         <CardContent className="p-5 relative">
-          {/* Glassmorphic glow effects */}
-          <div className="absolute top-0 right-0 w-24 h-24 bg-primary/10 rounded-full -mt-8 -mr-8 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
-          <div className="absolute bottom-0 left-0 w-16 h-16 bg-primary/5 rounded-full -mb-8 -ml-8 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 delay-100"></div>
-          
-          <div className="flex items-center justify-between relative z-10">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full -mt-12 -mr-12 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-lg font-medium text-white group-hover:text-primary transition-colors duration-300">
+              <h3 className="text-lg font-medium group-hover:text-primary transition-colors">
                 <span className="text-primary font-semibold">#</span>{tag.name}
               </h3>
-              <p className="text-gray-400 text-sm mt-1">
+              <p className="text-gray-500 text-sm mt-1">
                 {tag.count} {tag.count === 1 ? 'post' : 'posts'}
               </p>
             </div>
             {userId ? (
               <button
-                className={`min-w-[110px] px-4 py-1.5 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl font-medium text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 ${
+                className={`min-w-[110px] px-4 py-1.5 rounded-full transition-all duration-300 shadow-sm font-medium text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 ${
                   isFollowing 
-                    ? 'text-primary backdrop-blur-xl bg-[rgba(0,100,255,0.08)] border border-[rgba(0,100,255,0.25)] hover:bg-[rgba(0,100,255,0.15)] hover:border-primary/40 hover:shadow-[0_0_15px_rgba(0,209,255,0.15)]' 
-                    : 'backdrop-blur-md bg-primary/90 text-white hover:bg-primary hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(0,209,255,0.2)]'
+                    ? 'text-primary bg-white border border-primary/30 hover:bg-primary/5 hover:shadow-md' 
+                    : 'bg-primary text-white hover:bg-primary/90 hover:shadow-md'
                 }`}
                 onClick={handleFollowToggle}
                 disabled={isLoading}
@@ -630,7 +625,7 @@ const SearchPage = () => {
                 </span>
               </button>
             ) : (
-              <div className="h-10 w-10 rounded-full backdrop-blur-xl bg-[rgba(0,100,255,0.08)] border border-[rgba(255,255,255,0.1)] flex items-center justify-center group-hover:bg-primary/15 group-hover:border-primary/30 transition-all duration-300 shadow-md group-hover:shadow-[0_0_15px_rgba(0,209,255,0.15)]">
+              <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors duration-300">
                 <Hash className="h-5 w-5 text-primary" />
               </div>
             )}
@@ -642,38 +637,18 @@ const SearchPage = () => {
 
   return (
     <DashboardLayout hideRightSidebar={true}>
-      {/* Rich background with vibrant gradients and effects */}
-      <div className="absolute inset-0 w-full min-h-screen z-[-1] overflow-hidden">
-        {/* Main background image with built-in gradients and effects */}
-        <img 
-          src="/images/glass-bg-dark.svg" 
-          alt=""
-          className="absolute inset-0 w-full h-full object-cover"
-        />
-        
-        {/* Additional animated gradient overlays for depth and movement */}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/[0.01] to-transparent opacity-60"></div>
-        
-        {/* Extra glow effects for depth perception */}
-        <div className="absolute top-1/4 left-1/4 w-[700px] h-[700px] rounded-full bg-primary/5 opacity-30 blur-[150px] animate-pulse-slow"></div>
-        <div className="absolute bottom-1/3 right-1/4 w-[600px] h-[600px] rounded-full bg-purple-500/5 opacity-30 blur-[120px] animate-pulse-slow"></div>
-        
-        {/* Noise texture overlay for film grain effect */}
-        <div className="absolute inset-0 bg-[url('/images/noise-texture.svg')] opacity-[0.05] mix-blend-overlay"></div>
-      </div>
-
-      <div className="container mx-auto px-4 py-6 relative z-[1]">
+      <div className="container mx-auto px-4 py-6">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-3 text-white">Discover & Connect</h1>
-          <p className="text-gray-300">Find content, professionals, and networking opportunities in one place</p>
+          <h1 className="text-3xl font-bold mb-2">Discover & Connect</h1>
+          <p className="text-gray-600">Find content, professionals, and networking opportunities in one place</p>
         </div>
 
         {/* Main Tabs: Search vs Smart Connect */}
         <Tabs defaultValue={activeCategory === "smart-connect" ? "smart-connect" : "search"} className="mb-6">
-          <TabsList className="w-full backdrop-blur-xl bg-[rgba(20,20,20,0.7)] border border-[rgba(255,255,255,0.08)] rounded-xl shadow-md">
+          <TabsList className="w-full border-b shadow-sm rounded-lg overflow-hidden">
             <TabsTrigger 
               value="search" 
-              className="flex items-center justify-center gap-2 flex-1 py-4 text-white data-[state=active]:bg-[rgba(0,100,255,0.1)] data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:shadow-[0_0_15px_rgba(0,209,255,0.2)] data-[state=active]:text-primary transition-all duration-300"
+              className="flex items-center justify-center gap-2 flex-1 py-4 data-[state=active]:bg-gradient-to-b data-[state=active]:from-white data-[state=active]:to-gray-50 data-[state=active]:shadow-sm data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary transition-all"
               onClick={() => activeCategory !== "pulses" && setActiveCategory("pulses")}
             >
               <SearchIcon size={18} />
@@ -681,7 +656,7 @@ const SearchPage = () => {
             </TabsTrigger>
             <TabsTrigger 
               value="smart-connect" 
-              className="flex items-center justify-center gap-2 flex-1 py-4 text-white data-[state=active]:bg-[rgba(0,100,255,0.1)] data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:shadow-[0_0_15px_rgba(0,209,255,0.2)] data-[state=active]:text-primary transition-all duration-300"
+              className="flex items-center justify-center gap-2 flex-1 py-4 data-[state=active]:bg-gradient-to-b data-[state=active]:from-white data-[state=active]:to-gray-50 data-[state=active]:shadow-sm data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary transition-all"
               onClick={() => activeCategory !== "smart-connect" && setActiveCategory("smart-connect")}
             >
               <UserPlus size={18} />
@@ -692,23 +667,20 @@ const SearchPage = () => {
           {/* Search Tab Content */}
           <TabsContent value="search" className="mt-6">
             {/* Search Form */}
-            <form onSubmit={handleSearch} className="flex gap-2 mb-6 relative z-10">
-              {/* Glassmorphic glow effects behind search area */}
-              <div className="absolute -inset-4 bg-primary/5 rounded-3xl blur-3xl opacity-50 z-[-1]"></div>
-              
+            <form onSubmit={handleSearch} className="flex gap-2 mb-6">
               <div className="relative flex-1">
-                <SearchIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 text-primary/70 z-10" size={18} />
+                <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-primary/60 z-10" size={18} />
                 <input
                   type="search"
                   placeholder="Search pulses, profiles, or hashtags..."
-                  className="w-full rounded-xl pl-11 py-3.5 backdrop-blur-xl bg-[rgba(25,25,30,0.55)] border border-[rgba(255,255,255,0.08)] shadow-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 placeholder:text-gray-400 text-white transition-all duration-300"
+                  className="w-full rounded-md pl-10 py-2 bg-white border border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 placeholder:text-gray-400 text-gray-800 transition-all"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
               <button 
                 type="submit"
-                className="px-5 py-2.5 rounded-xl backdrop-blur-md bg-primary/90 text-white hover:bg-primary focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-lg hover:shadow-[0_0_20px_rgba(0,209,255,0.2)] font-medium transition-all duration-300 hover:scale-[1.02] min-w-[110px]"
+                className="px-5 py-2 rounded-md bg-primary text-white hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-sm font-medium transition-all min-w-[100px]"
                 disabled={isLoading}
               >
                 {isLoading ? (
@@ -727,34 +699,29 @@ const SearchPage = () => {
 
             {/* Search Category Tabs */}
             <Tabs defaultValue={activeCategory === "smart-connect" ? "pulses" : activeCategory} onValueChange={handleTabChange}>
-              <div className="relative mb-6">
-                {/* Glassmorphic glow effects behind the tabs */}
-                <div className="absolute -inset-4 bg-primary/5 rounded-3xl blur-3xl opacity-30 z-[-1]"></div>
-                
-                <TabsList className="backdrop-blur-xl bg-[rgba(25,25,30,0.55)] rounded-full p-1.5 border border-[rgba(255,255,255,0.08)] shadow-lg">
-                  <TabsTrigger 
-                    value="pulses" 
-                    className="flex items-center gap-1.5 py-2.5 px-5 rounded-full text-gray-300 data-[state=active]:bg-[rgba(0,100,255,0.15)] data-[state=active]:text-white data-[state=active]:shadow-[0_0_15px_rgba(0,209,255,0.25)] data-[state=active]:border-primary/20 transition-all duration-300"
-                  >
-                    <MessageSquare size={16} />
-                    <span>Pulses</span>
-                  </TabsTrigger>
-                  <TabsTrigger 
-                    value="profiles" 
-                    className="flex items-center gap-1.5 py-2.5 px-5 rounded-full text-gray-300 data-[state=active]:bg-[rgba(0,100,255,0.15)] data-[state=active]:text-white data-[state=active]:shadow-[0_0_15px_rgba(0,209,255,0.25)] data-[state=active]:border-primary/20 transition-all duration-300"
-                  >
-                    <Users size={16} />
-                    <span>Profiles</span>
-                  </TabsTrigger>
-                  <TabsTrigger 
-                    value="hashtags" 
-                    className="flex items-center gap-1.5 py-2.5 px-5 rounded-full text-gray-300 data-[state=active]:bg-[rgba(0,100,255,0.15)] data-[state=active]:text-white data-[state=active]:shadow-[0_0_15px_rgba(0,209,255,0.25)] data-[state=active]:border-primary/20 transition-all duration-300"
-                  >
-                    <Hash size={16} />
-                    <span>Hashtags</span>
-                  </TabsTrigger>
-                </TabsList>
-              </div>
+              <TabsList className="mb-6 bg-white rounded-full p-1 border border-gray-200 shadow-sm">
+                <TabsTrigger 
+                  value="pulses" 
+                  className="flex items-center gap-1.5 py-2 px-4 rounded-full data-[state=active]:bg-primary/5 data-[state=active]:text-primary data-[state=active]:shadow-sm data-[state=active]:border-primary/10 transition-all"
+                >
+                  <MessageSquare size={16} />
+                  <span>Pulses</span>
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="profiles" 
+                  className="flex items-center gap-1.5 py-2 px-4 rounded-full data-[state=active]:bg-primary/5 data-[state=active]:text-primary data-[state=active]:shadow-sm data-[state=active]:border-primary/10 transition-all"
+                >
+                  <Users size={16} />
+                  <span>Profiles</span>
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="hashtags" 
+                  className="flex items-center gap-1.5 py-2 px-4 rounded-full data-[state=active]:bg-primary/5 data-[state=active]:text-primary data-[state=active]:shadow-sm data-[state=active]:border-primary/10 transition-all"
+                >
+                  <Hash size={16} />
+                  <span>Hashtags</span>
+                </TabsTrigger>
+              </TabsList>
 
               {/* Pulses Results */}
               <TabsContent value="pulses">
@@ -798,28 +765,27 @@ const SearchPage = () => {
                         photoURL: string | null;
                       };
                     }) => (
-                      <Card key={pulse.id} className="backdrop-blur-md bg-[rgba(25,25,30,0.7)] border border-[rgba(255,255,255,0.1)] rounded-xl shadow-lg hover:shadow-xl hover:border-primary/30 transition-all duration-300 cursor-pointer overflow-hidden group">
-                        <CardContent className="p-5 relative">
-                          <div className="absolute top-0 right-0 w-24 h-24 bg-primary/10 rounded-full -mt-12 -mr-12 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                      <Card key={pulse.id} className="hover:border-primary/40 transition-colors cursor-pointer">
+                        <CardContent className="p-4">
                           <div className="flex items-center gap-3 mb-3">
-                            <Avatar className="border-2 border-[rgba(255,255,255,0.1)] group-hover:border-primary/30 transition-all duration-300">
+                            <Avatar>
                               <AvatarImage src={pulse.user.photoURL || undefined} />
-                              <AvatarFallback className="bg-primary/20 text-primary">{getInitials(pulse.user.name)}</AvatarFallback>
+                              <AvatarFallback>{getInitials(pulse.user.name)}</AvatarFallback>
                             </Avatar>
                             <div>
-                              <h3 className="font-medium text-white group-hover:text-primary transition-colors duration-300">{pulse.user.name}</h3>
-                              <p className="text-sm text-gray-400">
+                              <h3 className="font-medium">{pulse.user.name}</h3>
+                              <p className="text-sm text-gray-500">
                                 {formatDistanceToNow(new Date(pulse.createdAt), { addSuffix: true })}
                               </p>
                             </div>
                           </div>
-                          <h4 className="font-medium mb-2 text-white group-hover:text-primary transition-colors duration-300">{pulse.title}</h4>
-                          <p className="text-gray-300 mb-4 line-clamp-2">{pulse.content}</p>
+                          <h4 className="font-medium mb-2">{pulse.title}</h4>
+                          <p className="text-gray-600 mb-3 line-clamp-2">{pulse.content}</p>
                           <div className="flex">
                             <Badge variant={
                               pulse.type === "poll" ? "secondary" : 
                               pulse.type === "media-pulse" ? "outline" : "default"
-                            } className="bg-[rgba(0,209,255,0.1)] text-primary border-primary/30 px-3 py-1">
+                            }>
                               {pulse.type === "poll" ? "Poll" : 
                                pulse.type === "media-pulse" ? "Media" : "Project"}
                             </Badge>
@@ -829,20 +795,12 @@ const SearchPage = () => {
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center py-12 border border-[rgba(255,255,255,0.08)] rounded-xl backdrop-blur-xl bg-[rgba(25,25,30,0.55)] shadow-lg relative overflow-hidden">
-                    {/* Glassmorphic glow effects */}
-                    <div className="absolute top-0 w-24 h-24 bg-primary/5 rounded-full -mt-12 left-1/2 -translate-x-1/2 blur-2xl"></div>
-                    <div className="absolute bottom-0 w-32 h-32 bg-primary/5 rounded-full -mb-16 left-1/3 -translate-x-1/2 blur-3xl"></div>
-                    
-                    <div className="relative z-10">
-                      <div className="w-16 h-16 mx-auto mb-5 rounded-full backdrop-blur-xl bg-[rgba(0,100,255,0.08)] border border-[rgba(255,255,255,0.1)] flex items-center justify-center shadow-lg">
-                        <MessageSquare className="h-8 w-8 text-primary/60" />
-                      </div>
-                      <h3 className="text-xl font-medium text-white mb-2">No pulses found</h3>
-                      <p className="text-gray-400 max-w-md mx-auto">
-                        Try a different search term or check for typos
-                      </p>
-                    </div>
+                  <div className="text-center py-12 border rounded-lg bg-gray-50">
+                    <MessageSquare className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                    <h3 className="text-lg font-medium">No pulses found</h3>
+                    <p className="text-gray-500 mt-2">
+                      Try a different search term or check for typos
+                    </p>
                   </div>
                 )}
               </TabsContent>
@@ -891,38 +849,38 @@ const SearchPage = () => {
                       location: string | null;
                       industry: string | null;
                     }) => (
-                      <Card key={profile.id} className="overflow-hidden rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 backdrop-blur-md bg-[rgba(25,25,30,0.7)] border border-[rgba(255,255,255,0.1)] group">
-                        <div className="bg-gradient-to-br from-primary/20 via-primary/10 to-transparent h-28 relative overflow-hidden">
-                          <div className="absolute inset-0 bg-primary/5 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                      <Card key={profile.id} className="overflow-hidden rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border-0 group">
+                        <div className="bg-gradient-to-br from-primary/30 via-primary/20 to-primary/5 h-28 relative overflow-hidden">
+                          <div className="absolute inset-0 bg-white/10 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                           <div className="absolute bottom-0 left-0 w-20 h-20 bg-primary/10 rounded-full -mb-10 -ml-10 blur-xl"></div>
                           <div className="absolute top-0 right-0 w-20 h-20 bg-primary/10 rounded-full -mt-10 -mr-10 blur-xl"></div>
                         </div>
                         <div className="px-6 pb-6 relative">
                           <div className="flex justify-center -mt-12 mb-4">
-                            <Avatar className="h-24 w-24 border-4 border-[rgba(25,25,30,0.9)] shadow-md group-hover:shadow-lg transition-all duration-300 group-hover:border-primary/20">
+                            <Avatar className="h-24 w-24 border-4 border-white shadow-md group-hover:shadow-lg transition-all duration-300">
                               <AvatarImage src={profile.photoURL || undefined} />
-                              <AvatarFallback className="text-xl bg-gradient-to-br from-primary/40 to-primary/60 text-white">{getInitials(profile.name)}</AvatarFallback>
+                              <AvatarFallback className="text-xl bg-gradient-to-br from-primary/60 to-primary/80 text-white">{getInitials(profile.name)}</AvatarFallback>
                             </Avatar>
                           </div>
                           <div className="text-center">
-                            <h3 className="text-xl font-semibold tracking-tight text-white group-hover:text-primary transition-colors duration-300">{profile.name}</h3>
+                            <h3 className="text-xl font-semibold tracking-tight group-hover:text-primary transition-colors duration-300">{profile.name}</h3>
                             {profile.title && (
-                              <p className="text-gray-300 mt-1 font-medium">{profile.title}</p>
+                              <p className="text-gray-600 mt-1 font-medium">{profile.title}</p>
                             )}
                             {(profile.location || profile.industry) && (
-                              <p className="text-gray-400 text-sm mt-2 flex items-center justify-center gap-1">
+                              <p className="text-gray-500 text-sm mt-2 flex items-center justify-center gap-1">
                                 {profile.location && (
                                   <span className="flex items-center">
-                                    <MapPin className="h-3 w-3 mr-1 text-gray-300" />
+                                    <MapPin className="h-3 w-3 mr-1 text-gray-400" />
                                     {profile.location}
                                   </span>
                                 )}
-                                {profile.location && profile.industry && <span className="mx-1 text-gray-500">•</span>}
+                                {profile.location && profile.industry && <span className="mx-1 text-gray-300">•</span>}
                                 {profile.industry && profile.industry}
                               </p>
                             )}
                             <button 
-                              className="mt-5 px-5 py-1.5 rounded-full backdrop-blur-md bg-[rgba(0,100,255,0.1)] border border-primary/20 hover:bg-primary/20 hover:border-primary/40 text-primary focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-md hover:shadow-lg font-medium text-sm transition-all duration-300 hover:scale-[1.02]"
+                              className="mt-5 px-5 py-1.5 rounded-full bg-white border border-gray-200 hover:bg-gray-50 hover:border-primary/30 hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-sm font-medium text-sm transition-all group-hover:border-primary/40 group-hover:shadow"
                               onClick={() => setLocation(`/profile/${profile.id}`)}
                             >
                               View Profile
@@ -933,20 +891,12 @@ const SearchPage = () => {
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center py-12 border border-[rgba(255,255,255,0.08)] rounded-xl backdrop-blur-xl bg-[rgba(25,25,30,0.55)] shadow-lg relative overflow-hidden">
-                    {/* Glassmorphic glow effects */}
-                    <div className="absolute top-0 w-24 h-24 bg-primary/5 rounded-full -mt-12 left-1/2 -translate-x-1/2 blur-2xl"></div>
-                    <div className="absolute bottom-0 w-32 h-32 bg-primary/5 rounded-full -mb-16 left-1/3 -translate-x-1/2 blur-3xl"></div>
-                    
-                    <div className="relative z-10">
-                      <div className="w-16 h-16 mx-auto mb-5 rounded-full backdrop-blur-xl bg-[rgba(0,100,255,0.08)] border border-[rgba(255,255,255,0.1)] flex items-center justify-center shadow-lg">
-                        <Users className="h-8 w-8 text-primary/60" />
-                      </div>
-                      <h3 className="text-xl font-medium text-white mb-2">No profiles found</h3>
-                      <p className="text-gray-400 max-w-md mx-auto">
-                        Try a different search term or check for typos
-                      </p>
-                    </div>
+                  <div className="text-center py-12 border rounded-lg bg-gray-50">
+                    <Users className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                    <h3 className="text-lg font-medium">No profiles found</h3>
+                    <p className="text-gray-500 mt-2">
+                      Try a different search term or check for typos
+                    </p>
                   </div>
                 )}
               </TabsContent>
@@ -954,33 +904,20 @@ const SearchPage = () => {
               {/* Hashtags Results */}
               <TabsContent value="hashtags">
                 {!submittedQuery ? (
-                  <div className="text-center py-12 border border-[rgba(255,255,255,0.08)] rounded-xl backdrop-blur-xl bg-[rgba(25,25,30,0.55)] shadow-lg relative overflow-hidden">
-                    {/* Glassmorphic glow effects */}
-                    <div className="absolute top-0 w-24 h-24 bg-primary/5 rounded-full -mt-12 left-1/2 -translate-x-1/2 blur-2xl"></div>
-                    <div className="absolute bottom-0 w-32 h-32 bg-primary/5 rounded-full -mb-16 left-1/3 -translate-x-1/2 blur-3xl"></div>
-                    
-                    <div className="relative z-10">
-                      <div className="w-16 h-16 mx-auto mb-5 rounded-full backdrop-blur-xl bg-[rgba(0,100,255,0.08)] border border-[rgba(255,255,255,0.1)] flex items-center justify-center shadow-lg">
-                        <Hash className="h-8 w-8 text-primary/60" />
-                      </div>
-                      <h3 className="text-xl font-medium text-white mb-2">Search for hashtags</h3>
-                      <p className="text-gray-400 max-w-md mx-auto">
-                        Discover trending topics and hashtags across the platform
-                      </p>
-                    </div>
+                  <div className="text-center py-12">
+                    <Hash className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                    <h3 className="text-lg font-medium">Search for hashtags</h3>
+                    <p className="text-gray-500 mt-2">
+                      Discover trending topics and hashtags across the platform
+                    </p>
                   </div>
                 ) : isLoading ? (
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-                      <Card key={i} className="backdrop-blur-md bg-[rgba(25,25,30,0.7)] border border-[rgba(255,255,255,0.1)] rounded-xl overflow-hidden shadow-md">
-                        <CardContent className="p-5 relative">
-                          <div className="flex items-center justify-between">
-                            <div className="space-y-2">
-                              <Skeleton className="h-6 w-28 bg-[rgba(255,255,255,0.1)]" />
-                              <Skeleton className="h-4 w-16 bg-[rgba(255,255,255,0.05)]" />
-                            </div>
-                            <Skeleton className="h-10 w-10 rounded-full bg-[rgba(255,255,255,0.05)]" />
-                          </div>
+                      <Card key={i}>
+                        <CardContent className="p-4">
+                          <Skeleton className="h-6 w-24 mb-2" />
+                          <Skeleton className="h-4 w-16" />
                         </CardContent>
                       </Card>
                     ))}
@@ -996,20 +933,12 @@ const SearchPage = () => {
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center py-12 border border-[rgba(255,255,255,0.08)] rounded-xl backdrop-blur-xl bg-[rgba(25,25,30,0.55)] shadow-lg relative overflow-hidden">
-                    {/* Glassmorphic glow effects */}
-                    <div className="absolute top-0 w-24 h-24 bg-primary/5 rounded-full -mt-12 left-1/2 -translate-x-1/2 blur-2xl"></div>
-                    <div className="absolute bottom-0 w-32 h-32 bg-primary/5 rounded-full -mb-16 left-1/3 -translate-x-1/2 blur-3xl"></div>
-                    
-                    <div className="relative z-10">
-                      <div className="w-16 h-16 mx-auto mb-5 rounded-full backdrop-blur-xl bg-[rgba(0,100,255,0.08)] border border-[rgba(255,255,255,0.1)] flex items-center justify-center shadow-lg">
-                        <Hash className="h-8 w-8 text-primary/60" />
-                      </div>
-                      <h3 className="text-xl font-medium text-white mb-2">No hashtags found</h3>
-                      <p className="text-gray-400 max-w-md mx-auto">
-                        Try a different search term or check for typos
-                      </p>
-                    </div>
+                  <div className="text-center py-12 border rounded-lg bg-gray-50">
+                    <Hash className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                    <h3 className="text-lg font-medium">No hashtags found</h3>
+                    <p className="text-gray-500 mt-2">
+                      Try a different search term or check for typos
+                    </p>
                   </div>
                 )}
               </TabsContent>
@@ -1020,10 +949,10 @@ const SearchPage = () => {
           <TabsContent value="smart-connect" className="mt-6">
             <div className="space-y-6">
               {/* Matchmaking Form */}
-              <Card className="backdrop-blur-lg bg-[rgba(25,25,30,0.6)] border border-[rgba(255,255,255,0.08)] shadow-xl">
+              <Card>
                 <CardHeader>
-                  <CardTitle className="text-white">{showMatchResults ? "Your Match Criteria" : "Find Your Match"}</CardTitle>
-                  <CardDescription className="text-gray-300">
+                  <CardTitle>{showMatchResults ? "Your Match Criteria" : "Find Your Match"}</CardTitle>
+                  <CardDescription>
                     {showMatchResults 
                       ? "Based on these criteria, we found relevant matches for you" 
                       : "Fill in the criteria to find professionals matching your needs"}
@@ -1418,28 +1347,20 @@ const SearchPage = () => {
                       ))}
                     </div>
                   ) : (
-                    <div className="text-center py-12 border border-[rgba(255,255,255,0.08)] rounded-xl backdrop-blur-xl bg-[rgba(25,25,30,0.55)] shadow-lg relative overflow-hidden">
-                      {/* Glassmorphic glow effects */}
-                      <div className="absolute top-0 w-24 h-24 bg-primary/5 rounded-full -mt-12 left-1/2 -translate-x-1/2 blur-2xl"></div>
-                      <div className="absolute bottom-0 w-32 h-32 bg-primary/5 rounded-full -mb-16 left-1/3 -translate-x-1/2 blur-3xl"></div>
-                      
-                      <div className="relative z-10">
-                        <div className="w-16 h-16 mx-auto mb-5 rounded-full backdrop-blur-xl bg-[rgba(0,100,255,0.08)] border border-[rgba(255,255,255,0.1)] flex items-center justify-center shadow-lg">
-                          <UserPlus className="h-8 w-8 text-primary/60" />
-                        </div>
-                        <h3 className="text-xl font-medium text-white mb-2">No matches found</h3>
-                        <p className="text-gray-400 max-w-md mx-auto">
-                          Try adjusting your criteria to find more professionals
-                        </p>
-                      </div>
+                    <div className="text-center py-12 border rounded-lg bg-gray-50">
+                      <UserPlus className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                      <h3 className="text-lg font-medium">No matches found</h3>
+                      <p className="text-gray-500 mt-2">
+                        Try adjusting your criteria to find more professionals
+                      </p>
                     </div>
                   )}
                 </CardContent>
                 {showMatchResults && matchMutation.isSuccess && matchMutation.data.length > 0 && (
                   <CardFooter className="flex justify-between">
-                    <p className="text-sm text-gray-400">Showing top {matchMutation.data.length} matches</p>
+                    <p className="text-sm text-gray-500">Showing top {matchMutation.data.length} matches</p>
                     <button 
-                      className="px-4 py-1.5 rounded-full backdrop-blur-md bg-[rgba(255,255,255,0.1)] border border-[rgba(255,255,255,0.1)] hover:bg-[rgba(255,255,255,0.15)] hover:border-primary/30 hover:text-primary/90 text-white focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-md font-medium transition-all text-sm flex items-center gap-1.5"
+                      className="px-4 py-1.5 rounded-full bg-white border border-gray-200 hover:bg-gray-50 hover:border-primary/30 hover:text-primary focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-sm font-medium transition-all text-sm flex items-center gap-1.5"
                     >
                       <span>View More</span>
                       <ChevronRight size={14} />
