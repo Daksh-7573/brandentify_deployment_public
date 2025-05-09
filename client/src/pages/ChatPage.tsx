@@ -3,16 +3,22 @@ import { ChatProvider } from '@/contexts/ChatContext';
 import Chat from '@/components/messaging/Chat';
 import { Loader2 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
+import { useAuth } from '@/hooks/use-auth';
 
 const ChatPage: React.FC = () => {
-  // Get current user ID (using the stored userId in localStorage)
-  const userId = Number(localStorage.getItem('userId')) || 0;
+  // Get current user data from the auth context
+  const { user, isLoading: authLoading } = useAuth();
   
-  // Fetch current user for verification
-  const { data: user, isLoading, isError } = useQuery({
+  // Get current user ID (from auth context or localStorage as fallback)
+  const userId = user?.uid || Number(localStorage.getItem('userId')) || 0;
+  
+  // Fetch current user for verification from our backend
+  const { data: userData, isLoading: dataLoading, isError } = useQuery({
     queryKey: ['/api/users', userId],
     enabled: !!userId,
   });
+
+  const isLoading = authLoading || dataLoading;
 
   if (isLoading) {
     return (
@@ -23,14 +29,15 @@ const ChatPage: React.FC = () => {
     );
   }
 
-  if (isError || !user) {
+  // If we're not loading and either there's no user or there was an error fetching
+  if (!user && !userData) {
     return (
       <div className="h-screen flex items-center justify-center flex-col">
         <div className="text-lg font-medium mb-2">Authentication Required</div>
         <p className="text-muted-foreground mb-4">
           Please log in to access the chat feature
         </p>
-        <a href="/login" className="text-primary hover:underline">
+        <a href="/" className="text-primary hover:underline">
           Go to Login
         </a>
       </div>
