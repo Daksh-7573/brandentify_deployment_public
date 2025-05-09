@@ -1,6 +1,7 @@
 console.log("Loaded routes.ts");
 import express, { type Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
+import { WebSocketServer, WebSocket } from "ws";
 import { storage } from "./storage";
 import { pool } from "./db";
 import { z } from "zod";
@@ -30,7 +31,6 @@ import profileServicesRoutes from "./routes-services-sync";
 import nowboardRecommendationsRoutes from "./routes-nowboard-recommendations";
 import { resumeTestRoutes } from "./routes-resume-test";
 import { routesMigrateWorkExperiences } from "./routes-migrate-work-experiences";
-import path from "path";
 import resumeRoutes from "./routes-resume";
 import userProfileRoutes from "./routes-user-profile";
 import { registerMuskAIRoutes } from "./routes-musk-ai";
@@ -5454,6 +5454,9 @@ ${extractedText.substring(0, 5000)}
   apiRouter.use('/notifications', notificationRoutes);
   console.log("Notification routes loaded");
   
+  apiRouter.use('/messaging', messagingRoutes);
+  console.log("Messaging routes loaded");
+  
   // Get all career goals for a user
   apiRouter.get("/users/:userId/career-goals", async (req: Request, res: Response) => {
     try {
@@ -5976,5 +5979,71 @@ ${extractedText.substring(0, 5000)}
   });
 
   const httpServer = createServer(app);
+  
+  // Setup WebSocket server for real-time messaging
+  const wss = new WebSocketServer({ server: httpServer, path: '/ws' });
+  
+  // Map to store active connections by user ID
+  const clients = new Map<number, WebSocket>();
+  
+  wss.on('connection', (ws) => {
+    console.log('WebSocket client connected');
+    
+    // Expect an authentication message first with user ID
+    ws.on('message', (message) => {
+      try {
+        const data = JSON.parse(message.toString());
+        
+        if (data.type === 'auth') {
+          const userId = parseInt(data.userId);
+          if (!isNaN(userId)) {
+            // Store the connection with the user ID
+            clients.set(userId, ws);
+            console.log(`User ${userId} authenticated on WebSocket`);
+            
+            // Send confirmation
+            ws.send(JSON.stringify({
+              type: 'auth_success',
+              message: 'Authentication successful'
+            }));
+          }
+        } else if (data.type === 'message') {
+          // Handle new message
+          if (data.recipientId && data.conversationId && data.content) {
+            const recipientId = parseInt(data.recipientId);
+            
+            // If recipient is connected, send them the message
+            if (clients.has(recipientId) && clients.get(recipientId).readyState === WebSocket.OPEN) {
+              clients.get(recipientId).send(JSON.stringify({
+                type: 'new_message',
+                senderId: data.senderId,
+                senderName: data.senderName,
+                conversationId: data.conversationId,
+                content: data.content,
+                timestamp: new Date().toISOString()
+              }));
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error handling WebSocket message:', error);
+      }
+    });
+    
+    // Handle disconnection
+    ws.on('close', () => {
+      console.log('WebSocket client disconnected');
+      // Remove client from clients map
+      for (const [userId, client] of clients.entries()) {
+        if (client === ws) {
+          clients.delete(userId);
+          console.log(`User ${userId} disconnected from WebSocket`);
+          break;
+        }
+      }
+    });
+  });
+  
+  console.log('WebSocket server initialized on path: /ws');
   return httpServer;
 }
