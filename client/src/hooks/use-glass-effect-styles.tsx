@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 import { useGlassEffects } from '@/contexts/GlassEffectsContext';
 
 /**
@@ -89,6 +89,30 @@ export const useGlassEffectStyles = () => {
       .map(([key, value]) => `${key}: ${value};`)
       .join(' ');
   }, [styles]);
+
+  // Apply glass effect styles to :root (document-wide)
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      const root = document.documentElement;
+      
+      // Apply all styles to the root element
+      Object.entries(styles).forEach(([key, value]) => {
+        root.style.setProperty(key, value);
+      });
+      
+      // Set a data attribute on the body to track current variant
+      document.body.setAttribute('data-glass-variant', settings.variant);
+      document.body.setAttribute('data-glass-blur', settings.blurStrength);
+      document.body.setAttribute('data-glass-transparency', settings.transparency);
+      
+      // Cleanup function
+      return () => {
+        Object.keys(styles).forEach(key => {
+          root.style.removeProperty(key);
+        });
+      };
+    }
+  }, [styles, settings]);
 
   return {
     styles,

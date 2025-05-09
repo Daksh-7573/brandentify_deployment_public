@@ -8,6 +8,7 @@ import { useEffect } from "react";
 import GlobalMuskButton from "@/components/musk/global-musk-button";
 import { GlassEffectsProvider } from "@/contexts/GlassEffectsContext";
 import { GlassEffectsToggle, GlassEffectsControls } from "@/components/ui/glass-effects-controls";
+import GlassEffectsInjector from "@/components/ui/glass-effects-injector";
 
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
