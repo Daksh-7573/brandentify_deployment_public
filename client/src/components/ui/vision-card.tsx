@@ -1,19 +1,40 @@
 import * as React from "react"
 import { cn } from "@/lib/utils"
 
+interface VisionCardProps extends React.HTMLAttributes<HTMLDivElement> {
+  variant?: 'default' | 'dark' | 'light';
+  hover?: 'none' | 'subtle' | 'glow';
+}
+
 const VisionCard = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn(
-      "rounded-lg border border-[#3A3A3C] bg-white/5 backdrop-blur-sm shadow-sm",
-      className
-    )}
-    {...props}
-  />
-))
+  VisionCardProps
+>(({ className, variant = 'default', hover = 'none', ...props }, ref) => {
+  const variantClasses = {
+    default: "border-[#3A3A3C] bg-white/5",
+    dark: "border-[#1C1C1E] bg-black/20",
+    light: "border-[#6B7280] bg-white/10"
+  };
+  
+  const hoverClasses = {
+    none: "",
+    subtle: "hover:border-[#4F8CFF]/40 hover:bg-white/8 transition-colors",
+    glow: "hover:border-[#4F8CFF]/40 hover:bg-white/8 hover:shadow-[0_0_15px_rgba(79,140,255,0.2)] transition-all"
+  };
+  
+  return (
+    <div
+      ref={ref}
+      className={cn(
+        "rounded-lg border backdrop-blur-sm shadow-sm",
+        variantClasses[variant],
+        hoverClasses[hover],
+        className
+      )}
+      {...props}
+    />
+  );
+})
 VisionCard.displayName = "VisionCard"
 
 const VisionCardHeader = React.forwardRef<

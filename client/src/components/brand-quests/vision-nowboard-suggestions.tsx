@@ -197,7 +197,7 @@ export function VisionNowboardSuggestions({ userId, className, questType }: Visi
   
   if (isLoading || loadingAction) {
     return (
-      <VisionCard className={cn(className)} variant="dark" hover="subtle">
+      <VisionCard className={cn(className)}>
         <VisionCardHeader className="pb-2">
           <VisionCardTitle className="flex items-center gap-2">
             <Avatar className="h-8 w-8">
@@ -229,7 +229,7 @@ export function VisionNowboardSuggestions({ userId, className, questType }: Visi
   
   if (isError) {
     return (
-      <VisionCard className={cn(className)} variant="dark" hover="subtle">
+      <VisionCard className={cn(className)}>
         <VisionCardHeader className="pb-2">
           <VisionCardTitle className="flex items-center gap-2">
             <Avatar className="h-8 w-8">
@@ -242,9 +242,9 @@ export function VisionNowboardSuggestions({ userId, className, questType }: Visi
           <VisionCardDescription className="text-[#A1A1AA]">
             <div className="flex items-center justify-between">
               <span>Failed to load recommendations</span>
-              <Button size="sm" variant="outline" onClick={() => refetch()} className="bg-white/5 border-[#3A3A3C] text-[#E5E5E7] hover:bg-[#4F8CFF]/10 hover:border-[#4F8CFF]/20">
+              <VisionButton size="sm" variant="outline" onClick={() => refetch()}>
                 <RefreshCw className="h-4 w-4 mr-2" /> Retry
-              </Button>
+              </VisionButton>
             </div>
           </VisionCardDescription>
         </VisionCardHeader>
@@ -254,7 +254,7 @@ export function VisionNowboardSuggestions({ userId, className, questType }: Visi
   
   if (!data || data.length === 0) {
     return (
-      <VisionCard className={cn(className)} variant="dark" hover="subtle">
+      <VisionCard className={cn(className)}>
         <VisionCardHeader className="pb-2">
           <VisionCardTitle className="flex items-center gap-2">
             <Avatar className="h-8 w-8">
@@ -266,9 +266,9 @@ export function VisionNowboardSuggestions({ userId, className, questType }: Visi
           </VisionCardTitle>
           <VisionCardDescription className="flex justify-between text-[#A1A1AA]">
             <span>Musk-recommended actions to complete your quests</span>
-            <Button size="sm" variant="ghost" className="h-6 p-1 text-[#A1A1AA] hover:text-[#E5E5E7]" onClick={() => refetch()}>
+            <VisionButton size="sm" variant="ghost" className="h-6 p-1 text-[#A1A1AA] hover:text-[#E5E5E7]" onClick={() => refetch()}>
               <RefreshCw className="h-3 w-3" />
-            </Button>
+            </VisionButton>
           </VisionCardDescription>
         </VisionCardHeader>
         <VisionCardContent>
@@ -283,7 +283,7 @@ export function VisionNowboardSuggestions({ userId, className, questType }: Visi
   }
   
   return (
-    <VisionCard className={cn(className)} variant="dark" hover="subtle">
+    <VisionCard className={cn(className)}>
       <VisionCardHeader className="pb-2">
         <VisionCardTitle className="flex items-center gap-2">
           <Avatar className="h-8 w-8">
@@ -295,9 +295,9 @@ export function VisionNowboardSuggestions({ userId, className, questType }: Visi
         </VisionCardTitle>
         <VisionCardDescription className="flex justify-between text-[#A1A1AA]">
           <span>Musk-recommended actions to complete your quests</span>
-          <Button size="sm" variant="ghost" className="h-6 p-1 text-[#A1A1AA] hover:text-[#E5E5E7]" onClick={() => refetch()}>
+          <VisionButton size="sm" variant="ghost" className="h-6 p-1 text-[#A1A1AA] hover:text-[#E5E5E7]" onClick={() => refetch()}>
             <RefreshCw className="h-3 w-3" />
-          </Button>
+          </VisionButton>
         </VisionCardDescription>
       </VisionCardHeader>
       <VisionCardContent>
@@ -344,23 +344,23 @@ export function VisionNowboardSuggestions({ userId, className, questType }: Visi
                 </div>
               </div>
               {suggestion.progress === suggestion.targetCount ? (
-                <Button 
-                  variant="ghost" 
+                <VisionButton 
+                  variant="success" 
                   size="sm"
-                  className="flex-shrink-0 text-xs text-[#4ADE80] cursor-default bg-[#4ADE80]/10 border border-[#4ADE80]/20"
+                  className="flex-shrink-0 text-xs cursor-default"
                   disabled
                 >
                   Completed <Zap className="ml-1 h-3 w-3" />
-                </Button>
+                </VisionButton>
               ) : (
-                <Button 
+                <VisionButton 
                   variant="outline" 
                   size="sm"
-                  className="flex-shrink-0 text-xs bg-white/5 border-[#3A3A3C] text-[#E5E5E7] hover:bg-[#4F8CFF]/10 hover:border-[#4F8CFF]/20 group-hover:text-[#E5E5E7]"
+                  className="flex-shrink-0 text-xs"
                   onClick={() => handleAction(suggestion)}
                 >
                   {suggestion.actionText} <ArrowRight className="ml-1 h-3 w-3" />
-                </Button>
+                </VisionButton>
               )}
             </div>
           ))}
