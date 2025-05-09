@@ -8,6 +8,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { GlassCard } from "@/components/ui/glass-card";
+import { GlassButton } from "@/components/ui/glass-button";
 import { useGlassEffects } from "@/contexts/GlassEffectsContext";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
@@ -28,6 +29,7 @@ import {
   Newspaper,
   Share,
   AlertTriangle,
+  Plus,
   Flame
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
@@ -1508,9 +1510,16 @@ export default function IndustryPulsePage() {
                   Discover insights, polls, and media from your professional network
                 </p>
               </div>
-              <Button onClick={() => setLocation("/create-pulse")}>
+              <GlassButton 
+                onClick={() => setLocation("/create-pulse")} 
+                variant="primary"
+                blurStrength="md"
+                transparency="low"
+                interactive={true}
+              >
+                <Plus className="h-4 w-4 mr-2" />
                 Create Pulse
-              </Button>
+              </GlassButton>
             </div>
             
             <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab}>
@@ -1552,13 +1561,26 @@ export default function IndustryPulsePage() {
                             : `No ${activeTab} pulses available yet. Create one to get started!`}
                       </p>
                       {activeTab === "musk-news" ? (
-                        <Button variant="outline" onClick={() => setActiveTab("all")}>
+                        <GlassButton
+                          variant="secondary"
+                          onClick={() => setActiveTab("all")}
+                          blurStrength="md"
+                          transparency="medium"
+                          interactive={true}
+                        >
                           View All Pulses
-                        </Button>
+                        </GlassButton>
                       ) : (
-                        <Button onClick={() => setLocation("/create-pulse")}>
+                        <GlassButton
+                          variant="primary"
+                          onClick={() => setLocation("/create-pulse")}
+                          blurStrength="md"
+                          transparency="low"
+                          interactive={true}
+                        >
+                          <Plus className="h-4 w-4 mr-2" />
                           Create Your First Pulse
-                        </Button>
+                        </GlassButton>
                       )}
                     </CardContent>
                   </GlassCard>
