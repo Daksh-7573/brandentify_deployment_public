@@ -13,7 +13,7 @@ type ConversationListProps = {
 };
 
 const ConversationList: React.FC<ConversationListProps> = ({ onNewConversation }) => {
-  const { conversations, currentConversation, setCurrentConversation, loadingConversations } = useChat();
+  const { conversations, currentConversation, setCurrentConversation, loadingConversations, markConversationAsRead } = useChat();
 
   if (loadingConversations) {
     return (
@@ -100,7 +100,13 @@ const ConversationList: React.FC<ConversationListProps> = ({ onNewConversation }
                 className={`w-full justify-start px-3 py-6 h-auto ${
                   hasUnread ? 'font-medium' : ''
                 }`}
-                onClick={() => setCurrentConversation(conversation)}
+                onClick={() => {
+                  setCurrentConversation(conversation);
+                  // Mark conversation as read when clicked
+                  if (conversation.unreadCount && conversation.unreadCount > 0) {
+                    markConversationAsRead(conversation.id);
+                  }
+                }}
               >
                 <div className="flex items-start gap-3 w-full">
                   <Avatar className="h-10 w-10 flex-shrink-0">

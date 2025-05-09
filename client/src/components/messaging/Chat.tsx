@@ -27,7 +27,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const Chat: React.FC<{ userId: number }> = ({ userId }) => {
-  const { currentConversation, setCurrentConversation, createConversation } = useChat();
+  const { currentConversation, setCurrentConversation, createConversation, markConversationAsRead } = useChat();
   const [isNewConversationModalOpen, setIsNewConversationModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const { toast } = useToast();
@@ -39,6 +39,13 @@ const Chat: React.FC<{ userId: number }> = ({ userId }) => {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [currentConversation?.messages]);
+  
+  // Mark conversation as read when it's opened
+  useEffect(() => {
+    if (currentConversation?.id && currentConversation.unreadCount && currentConversation.unreadCount > 0) {
+      markConversationAsRead(currentConversation.id);
+    }
+  }, [currentConversation?.id, currentConversation?.unreadCount, markConversationAsRead]);
 
   // Fetch users for creating new conversations
   const { data: users = [], isLoading: loadingUsers } = useQuery({

@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
 import { Badge } from "@/components/ui/badge";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Zap, Settings, Menu, X, Home, Search, Bot, User, MapPin, FileText, Trophy, Award, Calendar, Flag, Bell, MessageSquare } from "lucide-react";
 import NotificationBell from "@/components/notifications/notification-bell";
@@ -52,22 +52,23 @@ export default function Header() {
     }
   }, [userId]);
   
-  // Check for unread messages
-  useEffect(() => {
-    const checkUnreadMessages = async () => {
-      if (!userId) return;
-      
-      try {
-        const response = await apiRequest('GET', `/api/messages/unread/count?userId=${userId}`);
-        if (response.ok) {
-          const data = await response.json();
-          setHasUnreadMessages(data.count > 0);
-        }
-      } catch (error) {
-        console.error('Error checking for unread messages:', error);
-      }
-    };
+  // Function to check for unread messages
+  const checkUnreadMessages = useCallback(async () => {
+    if (!userId) return;
     
+    try {
+      const response = await apiRequest('GET', `/api/messages/unread/count?userId=${userId}`);
+      if (response.ok) {
+        const data = await response.json();
+        setHasUnreadMessages(data.count > 0);
+      }
+    } catch (error) {
+      console.error('Error checking for unread messages:', error);
+    }
+  }, [userId]);
+
+  // Check for unread messages periodically
+  useEffect(() => {
     // Check initially
     checkUnreadMessages();
     
@@ -76,7 +77,23 @@ export default function Header() {
     
     // Clean up the interval when the component unmounts
     return () => clearInterval(interval);
-  }, [userId]);
+  }, [checkUnreadMessages]);
+  
+  // Recheck unread messages when route changes
+  useEffect(() => {
+    // Check for unread messages when user changes routes
+    if (path !== '/messages') {
+      checkUnreadMessages();
+    } else {
+      // If we're on the messages page, assume they've seen all messages
+      setHasUnreadMessages(false);
+      
+      // Mark all messages as read when visiting the messages page
+      if (userId) {
+        apiRequest('POST', `/api/messages/mark-read?userId=${userId}`);
+      }
+    }
+  }, [path, checkUnreadMessages, userId]);
 
   // Determine which photo URL to use (prioritize userData if available)
   const photoURL = userData?.photoURL || user?.photoURL;
@@ -231,12 +248,24 @@ export default function Header() {
               className={`hidden sm:flex rounded-full h-9 w-9 items-center justify-center hover:bg-gray-100 transition-colors relative ${
                 isActive('/messages') ? 'text-primary bg-primary/5' : 'text-gray-600'
               }`}
-              onClick={() => setLocation('/messages')}
+              onClick={() => {
+                setLocation('/messages');
+                // Mark messages as read if there are any unread
+                if (hasUnreadMessages && userId) {
+                  apiRequest('POST', `/api/messages/mark-read?userId=${userId}`);
+                  setHasUnreadMessages(false);
+                }
+              }}
               aria-label="Messages"
             >
               <MessageSquare className="h-5 w-5" />
+              {/* Show active indicator */}
               {isActive('/messages') && (
                 <span className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1.5 h-1.5 bg-primary rounded-full"></span>
+              )}
+              {/* Show unread messages indicator */}
+              {hasUnreadMessages && !isActive('/messages') && (
+                <span className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 bg-red-500 rounded-full border border-white"></span>
               )}
             </Button>
             
@@ -330,9 +359,19 @@ export default function Header() {
               onClick={() => {
                 setLocation('/messages');
                 setIsMobileMenuOpen(false);
+                // Mark messages as read if there are any unread
+                if (hasUnreadMessages && userId) {
+                  apiRequest('POST', `/api/messages/mark-read?userId=${userId}`);
+                  setHasUnreadMessages(false);
+                }
               }}
             >
-              <MessageSquare className="h-4 w-4 mr-3 ml-0.5" />
+              <div className="relative">
+                <MessageSquare className="h-4 w-4 mr-3 ml-0.5" />
+                {hasUnreadMessages && !isActive('/messages') && (
+                  <span className="absolute -top-1 -right-1 h-2 w-2 bg-red-500 rounded-full border border-white"></span>
+                )}
+              </div>
               <span>Messages</span>
             </Button>
             
