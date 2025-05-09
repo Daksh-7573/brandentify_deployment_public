@@ -9,7 +9,6 @@ export default {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
-        glass: "var(--card-radius)",
       },
       colors: {
         background: "hsl(var(--background))",
@@ -25,12 +24,10 @@ export default {
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
-          glass: "var(--color-primary)",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
-          glass: "var(--color-secondary)",
         },
         muted: {
           DEFAULT: "hsl(var(--muted))",
@@ -47,13 +44,6 @@ export default {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
-        glass: {
-          bg: "var(--glass-bg)",
-          border: "var(--glass-border)",
-          text: "var(--text-primary)",
-          textSecondary: "var(--text-secondary)",
-          shadow: "var(--soft-shadow)"
-        },
         chart: {
           "1": "hsl(var(--chart-1))",
           "2": "hsl(var(--chart-2))",
@@ -72,15 +62,6 @@ export default {
           ring: "hsl(var(--sidebar-ring))",
         },
       },
-      backgroundOpacity: {
-        '15': '0.15',
-      },
-      scale: {
-        '102': '1.02',
-      },
-      backdropBlur: {
-        'glass': 'var(--blur-amount)',
-      },
       keyframes: {
         "accordion-down": {
           from: {
@@ -98,20 +79,10 @@ export default {
             height: "0",
           },
         },
-        "float": {
-          "0%, 100%": { transform: "translateY(0)" },
-          "50%": { transform: "translateY(-10px)" },
-        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        "float": "float 6s ease-in-out infinite",
-      },
-      boxShadow: {
-        'glass': 'var(--soft-shadow)',
-        'glass-hover': '0 8px 32px rgba(0, 0, 0, 0.15)',
-        'glass-glow': '0 0 30px rgba(59, 130, 246, 0.3)',
       },
     },
   },
