@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useLocation } from 'wouter';
-import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { 
   VisionCard, 
@@ -10,6 +9,7 @@ import {
   VisionCardContent,
   VisionCardFooter
 } from '@/components/ui/vision-card';
+import { VisionButton } from '@/components/ui/vision-button';
 import { Progress } from '@/components/ui/progress';
 import { ArrowRight, Zap, MessageSquare, ThumbsUp, Bot, RefreshCw, Lightbulb } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
