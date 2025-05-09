@@ -637,7 +637,15 @@ const SearchPage = () => {
 
   return (
     <DashboardLayout hideRightSidebar={true}>
-      <div className="container mx-auto px-4 py-6">
+      {/* Background with gradients and pattern */}
+      <div className="absolute inset-0 w-full min-h-screen bg-[#0A0F1F] z-[-1] overflow-hidden">
+        <div 
+          className="absolute inset-0 w-full h-full bg-cover bg-center opacity-80"
+          style={{ backgroundImage: "url('/images/pattern-bg-dark.svg')" }}
+        ></div>
+      </div>
+
+      <div className="container mx-auto px-4 py-6 relative z-[1]">
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-3 text-white">Discover & Connect</h1>
           <p className="text-gray-300">Find content, professionals, and networking opportunities in one place</p>
@@ -959,10 +967,10 @@ const SearchPage = () => {
           <TabsContent value="smart-connect" className="mt-6">
             <div className="space-y-6">
               {/* Matchmaking Form */}
-              <Card>
+              <Card className="backdrop-blur-lg bg-[rgba(25,25,30,0.6)] border border-[rgba(255,255,255,0.08)] shadow-xl">
                 <CardHeader>
-                  <CardTitle>{showMatchResults ? "Your Match Criteria" : "Find Your Match"}</CardTitle>
-                  <CardDescription>
+                  <CardTitle className="text-white">{showMatchResults ? "Your Match Criteria" : "Find Your Match"}</CardTitle>
+                  <CardDescription className="text-gray-300">
                     {showMatchResults 
                       ? "Based on these criteria, we found relevant matches for you" 
                       : "Fill in the criteria to find professionals matching your needs"}
