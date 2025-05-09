@@ -23,6 +23,7 @@ import { setupCareerQuestsRoutes } from "./routes-career-quests";
 import { setupQuestProgressMiddleware } from "./routes-quest-progress";
 import mentorshipRoutes from "./routes-mentorship";
 import brandsOfTheDayRoutes from "./routes-brands-of-the-day";
+import messagingRoutes from "./routes-messaging";
 import enhancedUserRoutes from "./routes-enhanced-user";
 import whatIOfferRoutes from "./routes-what-i-offer";
 import profileServicesRoutes from "./routes-services-sync";
