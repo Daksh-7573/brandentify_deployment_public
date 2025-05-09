@@ -1,5 +1,5 @@
 import { db } from "../db";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, and } from "drizzle-orm";
 import { createId } from "@paralleldrive/cuid2";
 import {
   notifications,
@@ -51,8 +51,10 @@ export async function getUserNotifications(
     return await db
       .select()
       .from(notifications)
-      .where(eq(notifications.userId, userId))
-      .where(eq(notifications.isRead, false))
+      .where(and(
+        eq(notifications.userId, userId),
+        eq(notifications.isRead, false)
+      ))
       .orderBy(desc(notifications.createdAt))
       .limit(limit);
   }
@@ -69,8 +71,10 @@ export async function getUnreadNotificationCount(userId: number): Promise<number
   const { rowCount } = await db
     .select()
     .from(notifications)
-    .where(eq(notifications.userId, userId))
-    .where(eq(notifications.isRead, false));
+    .where(and(
+      eq(notifications.userId, userId),
+      eq(notifications.isRead, false)
+    ));
   
   return rowCount || 0;
 }
@@ -100,8 +104,10 @@ export async function markAllNotificationsAsRead(userId: number): Promise<number
   const unreadNotifications = await db
     .select()
     .from(notifications)
-    .where(eq(notifications.userId, userId))
-    .where(eq(notifications.isRead, false));
+    .where(and(
+      eq(notifications.userId, userId),
+      eq(notifications.isRead, false)
+    ));
   
   if (unreadNotifications.length === 0) {
     return 0;

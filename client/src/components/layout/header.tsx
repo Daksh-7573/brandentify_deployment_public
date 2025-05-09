@@ -6,6 +6,7 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Zap, Settings, Menu, X, Home, Search, Bot, User, MapPin, FileText, Trophy, Award, Calendar, Flag } from "lucide-react";
+import NotificationBell from "@/components/notifications/notification-bell";
 
 export default function Header() {
   const { user, isDemoMode, signOut, refreshUserData } = useAuth();
@@ -196,6 +197,9 @@ export default function Header() {
               <Settings className="h-5 w-5 text-gray-600" />
             </Button>
             
+            {/* Notification Bell */}
+            <NotificationBell className="hidden sm:flex" />
+            
             {/* User profile section - combined name and avatar */}
             <div 
               className={`flex items-center gap-2 cursor-pointer px-3 py-1.5 rounded-lg border ${
@@ -363,6 +367,18 @@ export default function Header() {
               >
                 <Settings className="h-4 w-4 mr-3 ml-0.5" />
                 <span>Settings</span>
+              </Button>
+              
+              <Button
+                variant="ghost"
+                size="sm"
+                className="w-full justify-start py-2.5 text-sm font-medium rounded-md text-gray-700 hover:bg-gray-50 hover:text-primary"
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                }}
+              >
+                <Bell className="h-4 w-4 mr-3 ml-0.5" />
+                <span>Notifications</span>
               </Button>
               
               <Button
