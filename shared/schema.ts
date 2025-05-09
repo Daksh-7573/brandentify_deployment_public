@@ -2,6 +2,7 @@ import { pgTable, text, serial, integer, boolean, timestamp, jsonb, varchar, dec
 import { pgEnum } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
+import { notifications, insertNotificationSchema } from "./notification-schema";
 
 // User model
 export const users = pgTable("users", {
@@ -1250,3 +1251,7 @@ export type InsertGoalProgressLog = z.infer<typeof insertGoalProgressLogSchema>;
 
 export type MentorshipFeedback = typeof mentorshipFeedback.$inferSelect;
 export type InsertMentorshipFeedback = z.infer<typeof insertMentorshipFeedbackSchema>;
+
+// Export notification types
+export type Notification = typeof notifications.$inferSelect;
+export type InsertNotification = z.infer<typeof insertNotificationSchema>;
