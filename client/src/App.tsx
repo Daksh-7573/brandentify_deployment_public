@@ -37,7 +37,6 @@ import MuskTestingPage from "@/pages/musk-testing";
 import ManageServicesPage from "@/pages/manage-services";
 import TestNowboardPage from "@/pages/test-nowboard";
 import ChatPage from "@/pages/ChatPage"; // Chat messaging feature
-import DesignSystemDemo from "@/pages/DesignSystemDemo"; // Vision Pro Inspired UI
 // Lazy load the SharedCardPage to improve performance and show loader immediately
 import { lazy, Suspense } from "react";
 const SharedCardPage = lazy(() => import("@/pages/shared-card"));
@@ -184,10 +183,6 @@ function Router() {
       </Route>
       <Route path="/unified-profile/:userId">
         {(params) => <ProtectedRoute path="/unified-profile/:userId" component={() => <UnifiedProfilePage />} />}
-      </Route>
-      {/* Design System Demo - Vision Pro inspired UI showcase */}
-      <Route path="/design-system">
-        <ProtectedRoute path="/design-system" component={DesignSystemDemo} />
       </Route>
       {/* Shared Quantum Card View route */}
       <Route path="/profile/card/:userId">
