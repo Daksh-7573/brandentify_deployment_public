@@ -99,9 +99,9 @@ export default function Header() {
   const photoURL = userData?.photoURL || user?.photoURL;
 
   return (
-    <nav className="bg-white/80 backdrop-blur-md border-b border-white/20 shadow-sm fixed top-0 left-0 right-0 z-50 transition-all duration-300 dark:bg-black/40 dark:border-gray-800/50">
-      <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
+    <nav className="fixed top-4 left-4 right-4 z-50 transition-all duration-300">
+      <div className="max-w-full mx-auto backdrop-filter backdrop-blur-xl bg-[rgba(25,25,25,0.5)] border border-[rgba(255,255,255,0.12)] rounded-2xl shadow-lg">
+        <div className="flex justify-between h-16 px-4 sm:px-6 lg:px-8">
           <div className="flex items-center">
             <div className="flex-shrink-0 flex items-center mr-8">
               <div className="flex items-center">
@@ -127,12 +127,12 @@ export default function Header() {
             {/* Main Navigation */}
             <div className="hidden md:flex space-x-6">
               <Button
-                variant="ghost"
+                variant="glass"
                 size="sm"
                 className={`flex items-center gap-2 font-medium px-3 py-2 h-auto ${
                   isActive('/industry-pulse') 
-                    ? 'text-primary bg-primary/5 hover:bg-primary/10' 
-                    : 'text-gray-800 hover:text-primary hover:bg-gray-50'
+                    ? 'text-primary border-primary/30 shadow-[0_0_10px_rgba(0,209,255,0.3)]' 
+                    : 'text-white hover:text-primary'
                 }`}
                 onClick={() => setLocation('/industry-pulse')}
               >
@@ -141,12 +141,12 @@ export default function Header() {
               </Button>
               
               <Button
-                variant="ghost"
+                variant="glass"
                 size="sm"
                 className={`flex items-center gap-2 font-medium px-3 py-2 h-auto ${
                   isActive('/search') 
-                    ? 'text-primary bg-primary/5 hover:bg-primary/10' 
-                    : 'text-gray-800 hover:text-primary hover:bg-gray-50'
+                    ? 'text-primary border-primary/30 shadow-[0_0_10px_rgba(0,209,255,0.3)]' 
+                    : 'text-white hover:text-primary'
                 }`}
                 onClick={() => setLocation('/search')}
               >
@@ -157,12 +157,12 @@ export default function Header() {
 
               
               <Button
-                variant="ghost"
+                variant="glass"
                 size="sm" 
                 className={`flex items-center gap-2 font-medium px-3 py-2 h-auto ${
                   isActive('/radar') 
-                    ? 'text-primary bg-primary/5 hover:bg-primary/10' 
-                    : 'text-gray-800 hover:text-primary hover:bg-gray-50'
+                    ? 'text-primary border-primary/30 shadow-[0_0_10px_rgba(0,209,255,0.3)]' 
+                    : 'text-white hover:text-primary'
                 }`}
                 onClick={() => setLocation('/radar')}
               >

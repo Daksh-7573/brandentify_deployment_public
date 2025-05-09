@@ -1,0 +1,138 @@
+ISION PRO–INSPIRED UI DESIGN SYSTEM (WEB + MOBILE)
+✨ DESIGN AESTHETIC
+🧊 Glassmorphism
+Transparency: rgba(255, 255, 255, 0.1) to rgba(255, 255, 255, 0.15)
+
+Blur: backdrop-filter: blur(20px)
+
+Noise Texture Overlay: Use a subtle SVG or PNG noise with opacity: 0.05
+
+Soft Shadows: box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3)
+
+Border Radius: 20px (cards), 40px (main panels)
+
+🌚 DARK MODE COLOR SYSTEM
+Element	Color Code	Notes
+Background (base)	#0E0E10	Ambient space feel
+Card Background	rgba(255, 255, 255, 0.05)	With blur
+Primary CTA	#00F0FF	For Start/Action
+Secondary CTA	#6D28D9	Supporting buttons
+Accent Color	#FF2D55	Alerts, tags
+Text Primary	#FFFFFF	Main text
+Text Secondary	#A0A0A0	Subtext, labels
+Border (glass edge)	rgba(255, 255, 255, 0.12)	Thin lines
+Hover Highlight	rgba(255, 255, 255, 0.08)	Button hover
+Glow Edge	#00F0FF33	Glow around buttons
+
+🧱 UI ELEMENTS
+🧭 Top Menu Bar (Floating)
+Position: Center-top anchored (floating, with parallax on scroll)
+
+Background: Frosted glass
+
+Elements:
+
+Logo (left-aligned)
+
+Navigation links (center-aligned)
+
+User avatar + Notifications (right)
+
+Shadow: 0 4px 12px rgba(0, 0, 0, 0.25)
+
+Hover: Light inner glow
+
+📦 Cards (Posts / Content Blocks)
+Padding: 24px
+
+Border radius: 20px
+
+Style: Frosted, with semi-transparent background
+
+Interactive Effects:
+
+Hover: Slight scale-up (transform: scale(1.02))
+
+Shadow pulse on focus: box-shadow: 0 0 16px #00F0FF55
+
+📲 Mobile Layout
+Navbar: Bottom tab bar (floating with safe area padding)
+
+Icons: Material or SF Symbols, neon glow on active
+
+Sidebar: Slide-out from left (glass panel)
+
+Modals / Overlays: Full-screen with strong blur and bright edges
+
+🌀 ANIMATIONS & EFFECTS
+🫧 Micro-Interactions
+Button press: Scale to 95%, glow intensifies (transition: 0.2s ease-in-out)
+
+Page transitions: Crossfade + slight 3D depth slide
+
+Floating cards: Slight hover lift and tilt
+
+Ambient shimmer: Gradient light passing across top edge (looped)
+
+💫 Scroll Effects
+Parallax layers: Cards and headers move at different speeds
+
+Depth Fade: Lower opacity as elements scroll away
+
+🌠 SPATIAL AWARENESS
+Ambient Background (Web/VR Mode)
+Use of WebXR or CSS Perspective Layers
+
+Elements appear anchored in space, not just on screen
+
+Floating panels subtly reflect background hue
+
+🖌️ TYPOGRAPHY
+Text Type	Font	Size	Weight	Color
+Headings	SF Pro Rounded	28–36px	600	#FFFFFF
+Subheadings	SF Pro	20–24px	500	#A0A0A0
+Body Text	Inter	16px	400	#D0D0D0
+Captions	Inter	13px	300	#808080
+
+🔘 COMPONENTS
+✅ Buttons
+Primary: background: linear-gradient(135deg, #00F0FF, #6D28D9)
+
+Secondary: border: 1px solid rgba(255,255,255,0.1)
+
+Hover: Brighter glow
+
+Glow Ring: box-shadow: 0 0 20px #00F0FF80
+
+Shape: Fully rounded (pill)
+
+🗂 Tabs
+Floating, soft border
+
+Active tab: neon bottom glow
+
+Inactive tab: semi-transparent white
+
+💬 Chat Bubbles / Comments
+Soft card-style
+
+Tail direction based on sender
+
+Typing effect: animated dots
+
+🧩 INTERFACE STRUCTURE
+📄 Main Pages
+Home Feed: Vertical scroll, cards appear with staggered fade-in
+
+Explore: Grid-style cards with hover animation
+
+Profile: Floating panel with tabs for Posts, Media, Info
+
+Notifications: Slide-in drawer
+
+Settings: Glass panel with grouped soft cards
+
+🔮 Voice & Gesture Controls (Future-ready for Vision Pro)
+Microphone input toggle on navbar
+
+Gesture hint UI near corners (if supported by device)

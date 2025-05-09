@@ -1,0 +1,160 @@
+ Navigation Bar (Top Menu)
+Purpose: Core navigation, search, notifications, profile.
+
+Look:
+Glass-like, floating with soft shadow and blur. Transparent dark background.
+
+Effects:
+Sticky top, hover glow on icons, smooth slide in from top on page load.
+
+Example:
+
+css
+Copy
+Edit
+.navbar {
+  backdrop-filter: blur(12px);
+  background: rgba(25, 25, 25, 0.5);
+  border-radius: 20px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.3);
+}
+2. Search Bar
+Look:
+Embedded inside the navbar, rounded, glowing border on focus.
+
+Effects:
+Soft focus animation, voice icon slide-in.
+
+Example:
+
+css
+Copy
+Edit
+.search-input {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 0.5rem 1rem;
+  color: white;
+  transition: box-shadow 0.3s ease;
+}
+3. Sidebar (Web Only)
+Purpose: Quick access to feed, messages, bookmarks, groups, etc.
+
+Look:
+Frosted glass panel with icons + text, slightly elevated with a glow.
+
+Effects:
+Slide in/out with smooth easing, active icon glows.
+
+4. Feed/Post Card
+Purpose: Main content block — posts, images, reactions.
+
+Look:
+Glassmorphic card with vibrant buttons and shadows. Rounded corners (border-radius: 24px).
+
+Effects:
+On hover: slight scale, deeper shadow. On post-load: fade & slide up.
+
+Elements inside:
+
+Avatar, username
+
+Timestamp (dimmed)
+
+Post content (text/media)
+
+Like, comment, share (icon glow on hover)
+
+5. Post Composer
+Purpose: User inputs status, image, or video.
+
+Look:
+Floating card with placeholder, image/video icon, “Post” CTA.
+
+Effects:
+Input grows as user types, glowing button on active.
+
+6. Buttons
+Primary CTA ("Post", "Start", etc.)
+
+css
+Copy
+Edit
+.button-primary {
+  background: linear-gradient(135deg, #00D1FF, #5271FF);
+  box-shadow: 0 0 10px rgba(0, 209, 255, 0.4);
+  color: white;
+  border-radius: 16px;
+}
+Secondary Button (Ghost):
+Transparent with border & glow on hover.
+
+7. Floating Action Button (FAB) – Mobile Only
+Purpose: Create new post or access camera.
+
+Look:
+Circular, glowing gradient button with an icon.
+
+Effects:
+Pop/scale on tap, shadow pulse idle animation.
+
+8. Input Fields / Forms
+Use: Login, signup, profile edit, comment box.
+
+Look:
+Glass background, dim border, glowing outline on focus.
+
+Effects:
+Label floats up, input expands.
+
+9. Profile Card (Mini)
+Use: Hover preview, sidebar profile.
+
+Look:
+Circular image, name, status, subtle shine hover effect.
+
+10. Modal / Dialog
+Look:
+Full glass pop-up with center scale-in animation.
+
+Use: Report post, settings, media preview.
+
+11. Story Bubbles / Status Row
+Look:
+Circular avatars with soft ring glow (blue or gradient). Shadow inside bubble.
+
+Effects:
+Animate in carousel format on mobile.
+
+12. Bottom Navigation (Mobile)
+Purpose: Home, Feed, Add, Messages, Profile.
+
+Look:
+Frosted bar with blurred background and glowing active icon.
+
+13. Notifications Dropdown
+Look:
+Floating card with stacked items (soft card inside a card), with glowing badge for unread.
+
+Effects:
+Slide & fade animation. Hover glow on each item.
+
+14. Settings Panel / Profile Settings
+Layout:
+Vertical layout with form fields and toggle switches (blurred glass style).
+
+15. Media Viewer / Gallery Modal
+Look:
+Fullscreen glass modal, media in center with edge-to-edge glow borders, dark ambient backdrop.
+
+🎨 Unified Color Palette
+Purpose	Color	Code
+Background	Deep Charcoal	#0F0F0F
+Card Base	Translucent Black	rgba(30,30,30,0.5)
+CTA Primary	Neon Cyan/Blue	#00D1FF / #5271FF
+Text Primary	White	#FFFFFF
+Text Secondary	Dimmed Gray	#B0B0B0
+Shadow	Subtle Black	rgba(0, 0, 0, 0.25)
+Accent Glow	Teal/Cyan	#00FFFF / #00D1FF
+Success/Active	Emerald	#00FFAA

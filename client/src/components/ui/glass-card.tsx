@@ -7,19 +7,20 @@ const glassCardVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-white/65 border-gray-200/50 shadow-sm hover:shadow-md dark:bg-gray-800/40 dark:border-gray-700/50",
-        dark: "bg-gray-900/70 border-gray-700/50 shadow-md hover:shadow-lg text-white",
-        colored: "bg-primary/10 border-primary/20 shadow-sm hover:shadow-md",
-        transparent: "bg-transparent border-gray-200/30 shadow-none hover:bg-white/10 dark:hover:bg-white/5",
-        ultraGlass: "bg-white/25 border-white/30 dark:bg-black/20 dark:border-white/10",
-        frosted: "bg-white/80 border-white/50 dark:bg-gray-900/50 dark:border-gray-800/50",
-        cosmic: "bg-primary/15 border-primary/30 shadow-md shadow-primary/10 dark:shadow-primary/20",
+        default: "bg-[rgba(45,45,45,0.4)] border-[rgba(255,255,255,0.12)] shadow-md dark:bg-[rgba(30,30,30,0.5)] dark:border-[rgba(255,255,255,0.08)]",
+        dark: "bg-[rgba(25,25,25,0.5)] border-[rgba(255,255,255,0.08)] shadow-md hover:shadow-lg text-white",
+        colored: "bg-primary/10 border-primary/20 shadow-md hover:shadow-lg",
+        transparent: "bg-transparent border-[rgba(255,255,255,0.1)] shadow-none hover:bg-white/10",
+        ultraGlass: "bg-[rgba(30,30,30,0.4)] border-[rgba(255,255,255,0.15)] dark:bg-[rgba(20,20,20,0.5)] dark:border-[rgba(255,255,255,0.1)]",
+        frosted: "bg-[rgba(45,45,45,0.4)] border-[rgba(255,255,255,0.12)] dark:bg-[rgba(30,30,30,0.5)] dark:border-[rgba(255,255,255,0.1)]",
+        cosmic: "bg-[rgba(35,35,45,0.4)] border-[rgba(100,120,255,0.15)] shadow-md shadow-primary/10",
+        spatial: "bg-[rgba(30,30,30,0.5)] border-[rgba(255,255,255,0.12)] shadow-lg",
       },
       size: {
-        sm: "p-3 rounded-lg",
-        md: "p-4 rounded-xl",
-        lg: "p-6 rounded-2xl",
-        xl: "p-8 rounded-3xl",
+        sm: "p-3 rounded-2xl",
+        md: "p-4 rounded-3xl",
+        lg: "p-6 rounded-3xl",
+        xl: "p-8 rounded-[32px]",
       },
       elevation: {
         flat: "shadow-none",
@@ -28,7 +29,7 @@ const glassCardVariants = cva(
         glow: "shadow-lg shadow-primary/20 hover:shadow-primary/30",
       },
       interactive: {
-        true: "hover:border-primary/30 hover:bg-white/75 dark:hover:bg-white/15 cursor-pointer",
+        true: "hover:border-primary/30 hover:bg-opacity-50 cursor-pointer scale-100 hover:scale-[1.02]",
         false: "",
       },
       blurStrength: {
@@ -41,10 +42,10 @@ const glassCardVariants = cva(
         "3xl": "backdrop-blur-3xl",
       },
       transparency: {
-        low: "",  // Use default transparency from variant
-        medium: "!bg-opacity-50",
-        high: "!bg-opacity-30",
-        ultra: "!bg-opacity-10",
+        low: "bg-opacity-30 dark:bg-opacity-30",  // More transparent
+        medium: "bg-opacity-40 dark:bg-opacity-50", // Medium transparency (default)
+        high: "bg-opacity-60 dark:bg-opacity-60",  // Less transparent
+        ultra: "bg-opacity-80 dark:bg-opacity-80",  // Almost opaque
       }
     },
     defaultVariants: {
@@ -52,7 +53,7 @@ const glassCardVariants = cva(
       size: "md",
       elevation: "raised",
       interactive: false,
-      blurStrength: "md",
+      blurStrength: "lg", // Higher blur for Vision Pro style
       transparency: "medium",
     },
   }
