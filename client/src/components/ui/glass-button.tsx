@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { Slot } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';
+import { useGlassEffects } from '@/contexts/GlassEffectsContext';
+import { useGlassEffectStyles } from '@/hooks/use-glass-effect-styles';
 
 import { cn } from '@/lib/utils';
 
@@ -53,13 +55,35 @@ export interface ButtonProps
 }
 
 const GlassButton = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, glow, asChild = false, ...props }, ref) => {
+  ({ className, variant: propVariant, size, glow, asChild = false, ...props }, ref) => {
+    // Get global glass effect settings
+    const { settings } = useGlassEffects();
+    const { cssVariables } = useGlassEffectStyles();
+    
+    // Use the provided variant, or if it's a glass variant, apply the settings
+    let variant = propVariant;
+    
+    // If no variant is provided, use 'glass' (with dark mode awareness)
+    if (!variant) {
+      variant = settings.variant === 'dark' ? 'glass-dark' : 'glass';
+    } 
+    // If it's already a glass variant, check if we need to adapt to dark mode
+    else if (variant === 'glass' || variant === 'glass-dark') {
+      variant = settings.variant === 'dark' ? 'glass-dark' : 'glass';
+    }
+    
     const Comp = asChild ? Slot : "button";
     return (
       <Comp
         className={cn(buttonVariants({ variant, size, glow, className }))}
         ref={ref}
         {...props}
+        style={{
+          ...(props.style || {}),
+          ...(cssVariables && (variant === 'glass' || variant === 'glass-dark') 
+            ? { [cssVariables]: '' } 
+            : {})
+        }}
       />
     );
   }

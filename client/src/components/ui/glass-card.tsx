@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { cn } from '@/lib/utils';
 import { VariantProps, cva } from 'class-variance-authority';
+import { useGlassEffects } from '@/contexts/GlassEffectsContext';
+import { useGlassEffectStyles } from '@/hooks/use-glass-effect-styles';
 
 const glassCardVariants = cva(
   "relative overflow-hidden border transition-all duration-300",
@@ -14,6 +16,7 @@ const glassCardVariants = cva(
         ultraGlass: "bg-white/25 border-white/30 dark:bg-black/20 dark:border-white/10",
         frosted: "bg-white/80 border-white/50 dark:bg-gray-900/50 dark:border-gray-800/50",
         cosmic: "bg-primary/15 border-primary/30 shadow-md shadow-primary/10 dark:shadow-primary/20",
+        ultra: "bg-white/25 border-white/30 dark:bg-black/20 dark:border-white/10", // Add Ultra variant to match settings type
       },
       size: {
         sm: "p-3 rounded-lg",
@@ -41,6 +44,7 @@ const glassCardVariants = cva(
         "3xl": "backdrop-blur-3xl",
       },
       transparency: {
+        none: "",  // For compatibility with the global settings
         low: "",  // Use default transparency from variant
         medium: "!bg-opacity-50",
         high: "!bg-opacity-30",
@@ -71,20 +75,38 @@ const GlassCard = React.forwardRef<HTMLDivElement, GlassCardProps>(
   (
     { 
       className, 
-      variant, 
+      variant: propVariant, 
       size, 
       elevation, 
       interactive, 
-      blurStrength,
-      transparency,
+      blurStrength: propBlurStrength,
+      transparency: propTransparency,
       children, 
       innerClassName,
-      backgroundEffect = "none",
-      backgroundIntensity = "medium",
+      backgroundEffect: propBackgroundEffect = "none",
+      backgroundIntensity: propBackgroundIntensity = "medium",
       ...props 
     }, 
     ref
   ) => {
+    // Get global glass effect settings
+    const { settings } = useGlassEffects();
+    const { cssVariables } = useGlassEffectStyles();
+    
+    // Use global settings or prop values with prop taking precedence
+    const variant = propVariant || (settings.variant === 'ultra' ? 'frosted' : settings.variant) as any;
+    const blurStrength = propBlurStrength || (settings.blurStrength === 'none' ? 'sm' : settings.blurStrength) as any;
+    const transparency = propTransparency || (settings.transparency === 'none' ? 'low' : settings.transparency) as any;
+    const backgroundEffect = propBackgroundEffect !== "none" ? propBackgroundEffect : settings.backgroundEffect as any;
+    const backgroundIntensity = propBackgroundIntensity || settings.backgroundIntensity as any;
+    
+    // Generate CSS custom properties based on the glass settings
+    const inlineStyles = useMemo(() => {
+      return {
+        style: cssVariables ? { ...props.style, [cssVariables]: '' } : props.style
+      };
+    }, [cssVariables, props.style]);
+    
     // Determine background effect styles based on variant and effect type
     const renderBackgroundEffect = () => {
       if (backgroundEffect === "none") return null;
@@ -196,6 +218,10 @@ const GlassCard = React.forwardRef<HTMLDivElement, GlassCardProps>(
           className
         )}
         {...props}
+        style={{
+          ...(props.style || {}),
+          ...(cssVariables ? { [cssVariables]: '' } : {})
+        }}
       >
         <div className={cn("relative z-10 h-full w-full", innerClassName)}>
           {children}
