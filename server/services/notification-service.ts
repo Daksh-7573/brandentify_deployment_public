@@ -68,7 +68,7 @@ export async function getUserNotifications(
  * @returns The count of unread notifications
  */
 export async function getUnreadNotificationCount(userId: number): Promise<number> {
-  const { rowCount } = await db
+  const result = await db
     .select()
     .from(notifications)
     .where(and(
@@ -76,7 +76,7 @@ export async function getUnreadNotificationCount(userId: number): Promise<number
       eq(notifications.isRead, false)
     ));
   
-  return rowCount || 0;
+  return result.length;
 }
 
 /**

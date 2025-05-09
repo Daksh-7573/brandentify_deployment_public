@@ -10,7 +10,7 @@ import { formatDistanceToNow } from 'date-fns';
 
 // Define notification types based on schema
 interface Notification {
-  id: number;
+  id: string;
   userId: number;
   title: string;
   message: string;
@@ -63,7 +63,7 @@ export default function NotificationList({
   // Mark a notification as read
   const handleMarkAsRead = async (id: number) => {
     try {
-      await apiRequest('POST', `/api/notifications/${id}/read`);
+      await apiRequest('PATCH', `/api/notifications/${id}/read`);
       setNotifications(prevNotifications => 
         prevNotifications.map(notification => 
           notification.id === id 
