@@ -270,4 +270,23 @@ router.delete("/messages/:id", async (req, res) => {
   }
 });
 
+/**
+ * Get unread message count for a user
+ */
+router.get("/unread/count", async (req, res) => {
+  try {
+    const userId = Number(req.query.userId);
+    
+    if (isNaN(userId)) {
+      return res.status(400).json({ error: "Invalid user ID" });
+    }
+    
+    const result = await messageService.getTotalUnreadMessageCount(userId);
+    res.json(result);
+  } catch (error) {
+    console.error("Error getting unread message count:", error);
+    res.status(500).json({ error: "Failed to get unread message count" });
+  }
+});
+
 export default router;

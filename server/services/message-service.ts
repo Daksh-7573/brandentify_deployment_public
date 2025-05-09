@@ -493,6 +493,52 @@ export async function deleteMessage(messageId: string, userId: number) {
  * @param user2Id Second user ID
  * @returns Conversation data
  */
+/**
+ * Get total count of unread messages for a user across all conversations
+ * @param userId User ID
+ * @returns Count of unread messages
+ */
+export async function getTotalUnreadMessageCount(userId: number) {
+  // Get all conversation IDs this user is part of
+  const userParticipations = await db
+    .select({ conversationId: conversationParticipants.conversationId })
+    .from(conversationParticipants)
+    .where(
+      and(
+        eq(conversationParticipants.userId, userId),
+        isNull(conversationParticipants.leftAt)
+      )
+    );
+    
+  const conversationIds = userParticipations.map(p => p.conversationId);
+  
+  if (conversationIds.length === 0) {
+    return { count: 0 };
+  }
+  
+  // Count all unread messages across all conversations
+  const unreadCount = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(messages)
+    .leftJoin(
+      readReceipts,
+      and(
+        eq(readReceipts.messageId, messages.id),
+        eq(readReceipts.userId, userId)
+      )
+    )
+    .where(
+      and(
+        sql`${messages.conversation_id} IN (${conversationIds.join(',')})`,
+        eq(messages.isDeleted, false),
+        isNull(readReceipts.id),
+        sql`${messages.sender_id} != ${userId}`
+      )
+    );
+    
+  return { count: unreadCount[0]?.count || 0 };
+}
+
 export async function getOrCreateDirectConversation(user1Id: number, user2Id: number) {
   // Check if these users already have a direct conversation
   // Find conversations where both users are participants
