@@ -67,7 +67,7 @@ export function NotificationBell({ className = '' }: NotificationBellProps) {
         <Button
           variant="ghost"
           size="icon"
-          className={`relative rounded-md p-2 hover:bg-gray-100 transition-colors ${className}`}
+          className={`relative rounded-full h-9 w-9 flex items-center justify-center hover:bg-gray-100 transition-colors ${className}`}
           onClick={() => setIsOpen(true)}
           aria-label="Notifications"
         >
@@ -82,7 +82,7 @@ export function NotificationBell({ className = '' }: NotificationBellProps) {
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[350px] p-0 mr-4" align="end">
+      <PopoverContent className="w-[350px] p-0 mr-4 bg-white/95 backdrop-blur-sm border border-gray-100 shadow-lg" align="end">
         <NotificationList 
           userId={userId} 
           onMarkAllAsRead={handleMarkAllAsRead}
