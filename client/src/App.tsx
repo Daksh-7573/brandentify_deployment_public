@@ -6,6 +6,7 @@ import { AuthProvider } from "./context/auth-context";
 import { useAuth } from "./hooks/use-auth";
 import { useEffect } from "react";
 import GlobalMuskButton from "@/components/musk/global-musk-button";
+import { GlassContainer } from "@/components/ui/glass-container";
 
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
@@ -65,9 +66,14 @@ function ProtectedRoute({ component: Component, ...rest }: { component: React.Co
   
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-      </div>
+      <GlassContainer variant="dark">
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="glass-card p-8 flex flex-col items-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-4"></div>
+            <p className="text-text text-sm">Loading...</p>
+          </div>
+        </div>
+      </GlassContainer>
     );
   }
   
@@ -183,18 +189,20 @@ function Router() {
       <Route path="/profile/card/:userId">
         {(params) => (
           <Suspense fallback={
-            <div className="min-h-screen flex items-center justify-center">
-              <div className="w-[280px] aspect-[2/3.5] rounded-lg overflow-hidden shadow-lg">
-                <div className="h-[24%] bg-gray-300 dark:bg-gray-700 relative animate-pulse"></div>
-                <div className="bg-white dark:bg-gray-800 h-[76%] p-5 flex flex-col gap-4">
-                  <div className="h-5 w-[70%] bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
-                  <div className="h-4 w-[50%] bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
-                  <div className="h-24 w-full bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
-                  <div className="h-4 w-[80%] bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
-                  <div className="h-4 w-[60%] bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
+            <GlassContainer variant="dark">
+              <div className="min-h-screen flex items-center justify-center">
+                <div className="w-[280px] aspect-[2/3.5] rounded-lg overflow-hidden glass-card p-0">
+                  <div className="h-[24%] bg-gray-800/50 relative animate-pulse"></div>
+                  <div className="glass-panel-dark h-[76%] p-5 flex flex-col gap-4">
+                    <div className="h-5 w-[70%] bg-gray-800/40 rounded animate-pulse"></div>
+                    <div className="h-4 w-[50%] bg-gray-800/30 rounded animate-pulse"></div>
+                    <div className="h-24 w-full bg-gray-800/20 rounded animate-pulse"></div>
+                    <div className="h-4 w-[80%] bg-gray-800/30 rounded animate-pulse"></div>
+                    <div className="h-4 w-[60%] bg-gray-800/40 rounded animate-pulse"></div>
+                  </div>
                 </div>
               </div>
-            </div>
+            </GlassContainer>
           }>
             <SharedCardPage userId={params.userId} />
           </Suspense>
@@ -212,22 +220,26 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <Suspense fallback={
-          <div className="min-h-screen flex items-center justify-center bg-background">
-            <div className="w-[280px] aspect-[2/3.5] rounded-lg overflow-hidden shadow-lg">
-              <div className="h-[24%] bg-gray-300 dark:bg-gray-700 relative animate-pulse"></div>
-              <div className="bg-white dark:bg-gray-800 h-[76%] p-5 flex flex-col gap-4">
-                <div className="h-5 w-[70%] bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
-                <div className="h-4 w-[50%] bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
-                <div className="h-24 w-full bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
-                <div className="h-4 w-[80%] bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
-                <div className="h-4 w-[60%] bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
+          <GlassContainer variant="dark">
+            <div className="min-h-screen flex items-center justify-center">
+              <div className="w-[280px] aspect-[2/3.5] rounded-lg overflow-hidden glass-card p-0">
+                <div className="h-[24%] bg-gray-800/50 relative animate-pulse"></div>
+                <div className="glass-panel-dark h-[76%] p-5 flex flex-col gap-4">
+                  <div className="h-5 w-[70%] bg-gray-800/40 rounded animate-pulse"></div>
+                  <div className="h-4 w-[50%] bg-gray-800/30 rounded animate-pulse"></div>
+                  <div className="h-24 w-full bg-gray-800/20 rounded animate-pulse"></div>
+                  <div className="h-4 w-[80%] bg-gray-800/30 rounded animate-pulse"></div>
+                  <div className="h-4 w-[60%] bg-gray-800/40 rounded animate-pulse"></div>
+                </div>
               </div>
             </div>
-          </div>
+          </GlassContainer>
         }>
-          <Router />
-          <GlobalMuskButton />
-          <Toaster />
+          <GlassContainer variant="dark">
+            <Router />
+            <GlobalMuskButton />
+            <Toaster />
+          </GlassContainer>
         </Suspense>
       </AuthProvider>
     </QueryClientProvider>

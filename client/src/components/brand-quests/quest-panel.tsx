@@ -113,35 +113,41 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
   };
   
   return (
-    <Card className={cn("w-full", className)}>
+    <Card className={cn("w-full glass-panel", className)}>
       <CardHeader className="pb-2">
-        <CardTitle className="text-2xl">Brand Quests</CardTitle>
+        <CardTitle className="text-2xl text-glow">Brand Quests</CardTitle>
       </CardHeader>
       <CardContent>
         
         <Tabs defaultValue="weekly" value={tabValue} onValueChange={setTabValue}>
-          <TabsList className="grid grid-cols-3 mb-4">
-            <TabsTrigger value="weekly">Weekly ({weeklyQuests?.length || 0})</TabsTrigger>
-            <TabsTrigger value="completed">Completed ({completedQuests.length})</TabsTrigger>
-            <TabsTrigger value="expired">Missed ({expiredQuests.length})</TabsTrigger>
+          <TabsList className="grid grid-cols-3 mb-4 glass-panel-dark">
+            <TabsTrigger value="weekly" className="data-[state=active]:bg-glass-gradient data-[state=active]:text-primary">
+              Weekly ({weeklyQuests?.length || 0})
+            </TabsTrigger>
+            <TabsTrigger value="completed" className="data-[state=active]:bg-glass-gradient data-[state=active]:text-primary">
+              Completed ({completedQuests.length})
+            </TabsTrigger>
+            <TabsTrigger value="expired" className="data-[state=active]:bg-glass-gradient data-[state=active]:text-primary">
+              Missed ({expiredQuests.length})
+            </TabsTrigger>
           </TabsList>
           
           <TabsContent value="weekly" className="space-y-4">
-            <div className="text-sm text-muted-foreground mb-2">
+            <div className="text-sm text-muted-foreground mb-2 glass-badge p-2">
               Week {currentWeek}, {currentYear} - Weekly quests refresh every Monday
             </div>
             {renderQuestsList(weeklyQuests, isLoadingWeekly)}
           </TabsContent>
           
           <TabsContent value="expired" className="space-y-4">
-            <div className="text-sm text-muted-foreground mb-2">
+            <div className="text-sm text-muted-foreground mb-2 glass-badge glass-badge-error p-2">
               Quests that expired without completion - missed XP opportunities
             </div>
             {renderQuestsList(expiredQuests, isLoadingAll)}
           </TabsContent>
           
           <TabsContent value="completed" className="space-y-4">
-            <div className="text-sm text-muted-foreground mb-2">
+            <div className="text-sm text-muted-foreground mb-2 glass-badge glass-badge-success p-2">
               Completed quests that earned you XP rewards
             </div>
             {renderQuestsList(completedQuests, isLoadingAll)}
