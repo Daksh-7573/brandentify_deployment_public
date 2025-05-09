@@ -30,7 +30,7 @@ export default function BrandQuestsPage() {
   
   if (!userId) {
     return (
-      <div className="container mx-auto py-8">
+      <div className="container px-4 sm:px-6 lg:px-8 py-8">
         <div className="text-center">
           <h1 className="text-3xl font-bold mb-4">Brand Quests</h1>
           <p className="text-muted-foreground">Please log in to view your brand quests.</p>
@@ -42,7 +42,7 @@ export default function BrandQuestsPage() {
   return (
     <>
       <Header />
-      <div className="container mx-auto py-8 mt-16">
+      <div className="container px-4 sm:px-6 lg:px-8 py-8 mt-16">
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-bold">Brand Quests</h1>
           <p className="text-muted-foreground">Complete quests to earn XP and badges</p>
