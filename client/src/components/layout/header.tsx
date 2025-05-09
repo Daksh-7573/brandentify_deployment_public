@@ -57,7 +57,7 @@ export default function Header() {
     if (!userId) return;
     
     try {
-      const response = await apiRequest('GET', `/api/messages/unread/count?userId=${userId}`);
+      const response = await apiRequest('GET', `/api/messaging/unread/count?userId=${userId}`);
       if (response.ok) {
         const data = await response.json();
         setHasUnreadMessages(data.count > 0);
@@ -90,7 +90,7 @@ export default function Header() {
       
       // Mark all messages as read when visiting the messages page
       if (userId) {
-        apiRequest('POST', `/api/messages/mark-read?userId=${userId}`);
+        apiRequest('POST', `/api/messaging/conversations/mark-all-read?userId=${userId}`);
       }
     }
   }, [path, checkUnreadMessages, userId]);
