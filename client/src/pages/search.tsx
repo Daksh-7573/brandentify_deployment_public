@@ -580,11 +580,14 @@ const SearchPage = () => {
     return (
       <Card 
         key={tag.id} 
-        className="backdrop-blur-md bg-[rgba(25,25,30,0.7)] border border-[rgba(255,255,255,0.1)] hover:border-primary/20 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden group"
+        className="backdrop-blur-xl bg-[rgba(25,25,30,0.55)] border border-[rgba(255,255,255,0.08)] hover:border-primary/20 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group"
       >
         <CardContent className="p-5 relative">
-          <div className="absolute top-0 right-0 w-16 h-16 bg-primary/10 rounded-full -mt-8 -mr-8 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-          <div className="flex items-center justify-between">
+          {/* Glassmorphic glow effects */}
+          <div className="absolute top-0 right-0 w-24 h-24 bg-primary/10 rounded-full -mt-8 -mr-8 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+          <div className="absolute bottom-0 left-0 w-16 h-16 bg-primary/5 rounded-full -mb-8 -ml-8 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 delay-100"></div>
+          
+          <div className="flex items-center justify-between relative z-10">
             <div>
               <h3 className="text-lg font-medium text-white group-hover:text-primary transition-colors duration-300">
                 <span className="text-primary font-semibold">#</span>{tag.name}
@@ -595,10 +598,10 @@ const SearchPage = () => {
             </div>
             {userId ? (
               <button
-                className={`min-w-[110px] px-4 py-1.5 rounded-full transition-all duration-300 shadow-md hover:shadow-lg font-medium text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 ${
+                className={`min-w-[110px] px-4 py-1.5 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl font-medium text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 ${
                   isFollowing 
-                    ? 'text-primary bg-[rgba(0,100,255,0.1)] backdrop-blur-md border border-primary/30 hover:bg-primary/15 hover:border-primary/40' 
-                    : 'bg-primary text-white hover:bg-primary/90 hover:scale-[1.02]'
+                    ? 'text-primary backdrop-blur-xl bg-[rgba(0,100,255,0.08)] border border-[rgba(0,100,255,0.25)] hover:bg-[rgba(0,100,255,0.15)] hover:border-primary/40 hover:shadow-[0_0_15px_rgba(0,209,255,0.15)]' 
+                    : 'backdrop-blur-md bg-primary/90 text-white hover:bg-primary hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(0,209,255,0.2)]'
                 }`}
                 onClick={handleFollowToggle}
                 disabled={isLoading}
@@ -625,7 +628,7 @@ const SearchPage = () => {
                 </span>
               </button>
             ) : (
-              <div className="h-10 w-10 rounded-full backdrop-blur-md bg-[rgba(0,100,255,0.1)] border border-primary/20 flex items-center justify-center group-hover:bg-primary/20 group-hover:border-primary/30 transition-all duration-300 shadow-md">
+              <div className="h-10 w-10 rounded-full backdrop-blur-xl bg-[rgba(0,100,255,0.08)] border border-[rgba(255,255,255,0.1)] flex items-center justify-center group-hover:bg-primary/15 group-hover:border-primary/30 transition-all duration-300 shadow-md group-hover:shadow-[0_0_15px_rgba(0,209,255,0.15)]">
                 <Hash className="h-5 w-5 text-primary" />
               </div>
             )}
@@ -675,20 +678,23 @@ const SearchPage = () => {
           {/* Search Tab Content */}
           <TabsContent value="search" className="mt-6">
             {/* Search Form */}
-            <form onSubmit={handleSearch} className="flex gap-2 mb-6">
+            <form onSubmit={handleSearch} className="flex gap-2 mb-6 relative z-10">
+              {/* Glassmorphic glow effects behind search area */}
+              <div className="absolute -inset-4 bg-primary/5 rounded-3xl blur-3xl opacity-50 z-[-1]"></div>
+              
               <div className="relative flex-1">
-                <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-primary/60 z-10" size={18} />
+                <SearchIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 text-primary/70 z-10" size={18} />
                 <input
                   type="search"
                   placeholder="Search pulses, profiles, or hashtags..."
-                  className="w-full rounded-xl pl-10 py-3 backdrop-blur-md bg-[rgba(25,25,30,0.7)] border border-[rgba(255,255,255,0.12)] shadow-md focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 placeholder:text-gray-400 text-white transition-all duration-300"
+                  className="w-full rounded-xl pl-11 py-3.5 backdrop-blur-xl bg-[rgba(25,25,30,0.55)] border border-[rgba(255,255,255,0.08)] shadow-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 placeholder:text-gray-400 text-white transition-all duration-300"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
               <button 
                 type="submit"
-                className="px-5 py-2.5 rounded-xl bg-primary text-white hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-md hover:shadow-lg font-medium transition-all duration-300 hover:scale-[1.02] min-w-[110px]"
+                className="px-5 py-2.5 rounded-xl backdrop-blur-md bg-primary/90 text-white hover:bg-primary focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-lg hover:shadow-[0_0_20px_rgba(0,209,255,0.2)] font-medium transition-all duration-300 hover:scale-[1.02] min-w-[110px]"
                 disabled={isLoading}
               >
                 {isLoading ? (
@@ -707,29 +713,34 @@ const SearchPage = () => {
 
             {/* Search Category Tabs */}
             <Tabs defaultValue={activeCategory === "smart-connect" ? "pulses" : activeCategory} onValueChange={handleTabChange}>
-              <TabsList className="mb-6 backdrop-blur-md bg-[rgba(25,25,30,0.5)] rounded-full p-1 border border-[rgba(255,255,255,0.1)] shadow-md">
-                <TabsTrigger 
-                  value="pulses" 
-                  className="flex items-center gap-1.5 py-2 px-4 rounded-full text-gray-300 data-[state=active]:bg-[rgba(0,100,255,0.1)] data-[state=active]:text-primary data-[state=active]:shadow-[0_0_10px_rgba(0,209,255,0.2)] data-[state=active]:border-primary/20 transition-all duration-300"
-                >
-                  <MessageSquare size={16} />
-                  <span>Pulses</span>
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="profiles" 
-                  className="flex items-center gap-1.5 py-2 px-4 rounded-full text-gray-300 data-[state=active]:bg-[rgba(0,100,255,0.1)] data-[state=active]:text-primary data-[state=active]:shadow-[0_0_10px_rgba(0,209,255,0.2)] data-[state=active]:border-primary/20 transition-all duration-300"
-                >
-                  <Users size={16} />
-                  <span>Profiles</span>
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="hashtags" 
-                  className="flex items-center gap-1.5 py-2 px-4 rounded-full text-gray-300 data-[state=active]:bg-[rgba(0,100,255,0.1)] data-[state=active]:text-primary data-[state=active]:shadow-[0_0_10px_rgba(0,209,255,0.2)] data-[state=active]:border-primary/20 transition-all duration-300"
-                >
-                  <Hash size={16} />
-                  <span>Hashtags</span>
-                </TabsTrigger>
-              </TabsList>
+              <div className="relative mb-6">
+                {/* Glassmorphic glow effects behind the tabs */}
+                <div className="absolute -inset-4 bg-primary/5 rounded-3xl blur-3xl opacity-30 z-[-1]"></div>
+                
+                <TabsList className="backdrop-blur-xl bg-[rgba(25,25,30,0.55)] rounded-full p-1.5 border border-[rgba(255,255,255,0.08)] shadow-lg">
+                  <TabsTrigger 
+                    value="pulses" 
+                    className="flex items-center gap-1.5 py-2.5 px-5 rounded-full text-gray-300 data-[state=active]:bg-[rgba(0,100,255,0.15)] data-[state=active]:text-white data-[state=active]:shadow-[0_0_15px_rgba(0,209,255,0.25)] data-[state=active]:border-primary/20 transition-all duration-300"
+                  >
+                    <MessageSquare size={16} />
+                    <span>Pulses</span>
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="profiles" 
+                    className="flex items-center gap-1.5 py-2.5 px-5 rounded-full text-gray-300 data-[state=active]:bg-[rgba(0,100,255,0.15)] data-[state=active]:text-white data-[state=active]:shadow-[0_0_15px_rgba(0,209,255,0.25)] data-[state=active]:border-primary/20 transition-all duration-300"
+                  >
+                    <Users size={16} />
+                    <span>Profiles</span>
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="hashtags" 
+                    className="flex items-center gap-1.5 py-2.5 px-5 rounded-full text-gray-300 data-[state=active]:bg-[rgba(0,100,255,0.15)] data-[state=active]:text-white data-[state=active]:shadow-[0_0_15px_rgba(0,209,255,0.25)] data-[state=active]:border-primary/20 transition-all duration-300"
+                  >
+                    <Hash size={16} />
+                    <span>Hashtags</span>
+                  </TabsTrigger>
+                </TabsList>
+              </div>
 
               {/* Pulses Results */}
               <TabsContent value="pulses">
@@ -804,12 +815,20 @@ const SearchPage = () => {
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center py-12 border border-[rgba(255,255,255,0.1)] rounded-lg backdrop-blur-md bg-[rgba(25,25,30,0.5)] shadow-lg">
-                    <MessageSquare className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                    <h3 className="text-lg font-medium text-white">No pulses found</h3>
-                    <p className="text-gray-400 mt-2">
-                      Try a different search term or check for typos
-                    </p>
+                  <div className="text-center py-12 border border-[rgba(255,255,255,0.08)] rounded-xl backdrop-blur-xl bg-[rgba(25,25,30,0.55)] shadow-lg relative overflow-hidden">
+                    {/* Glassmorphic glow effects */}
+                    <div className="absolute top-0 w-24 h-24 bg-primary/5 rounded-full -mt-12 left-1/2 -translate-x-1/2 blur-2xl"></div>
+                    <div className="absolute bottom-0 w-32 h-32 bg-primary/5 rounded-full -mb-16 left-1/3 -translate-x-1/2 blur-3xl"></div>
+                    
+                    <div className="relative z-10">
+                      <div className="w-16 h-16 mx-auto mb-5 rounded-full backdrop-blur-xl bg-[rgba(0,100,255,0.08)] border border-[rgba(255,255,255,0.1)] flex items-center justify-center shadow-lg">
+                        <MessageSquare className="h-8 w-8 text-primary/60" />
+                      </div>
+                      <h3 className="text-xl font-medium text-white mb-2">No pulses found</h3>
+                      <p className="text-gray-400 max-w-md mx-auto">
+                        Try a different search term or check for typos
+                      </p>
+                    </div>
                   </div>
                 )}
               </TabsContent>
@@ -900,12 +919,20 @@ const SearchPage = () => {
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center py-12 border border-[rgba(255,255,255,0.1)] rounded-lg backdrop-blur-md bg-[rgba(25,25,30,0.5)] shadow-lg">
-                    <Users className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                    <h3 className="text-lg font-medium text-white">No profiles found</h3>
-                    <p className="text-gray-400 mt-2">
-                      Try a different search term or check for typos
-                    </p>
+                  <div className="text-center py-12 border border-[rgba(255,255,255,0.08)] rounded-xl backdrop-blur-xl bg-[rgba(25,25,30,0.55)] shadow-lg relative overflow-hidden">
+                    {/* Glassmorphic glow effects */}
+                    <div className="absolute top-0 w-24 h-24 bg-primary/5 rounded-full -mt-12 left-1/2 -translate-x-1/2 blur-2xl"></div>
+                    <div className="absolute bottom-0 w-32 h-32 bg-primary/5 rounded-full -mb-16 left-1/3 -translate-x-1/2 blur-3xl"></div>
+                    
+                    <div className="relative z-10">
+                      <div className="w-16 h-16 mx-auto mb-5 rounded-full backdrop-blur-xl bg-[rgba(0,100,255,0.08)] border border-[rgba(255,255,255,0.1)] flex items-center justify-center shadow-lg">
+                        <Users className="h-8 w-8 text-primary/60" />
+                      </div>
+                      <h3 className="text-xl font-medium text-white mb-2">No profiles found</h3>
+                      <p className="text-gray-400 max-w-md mx-auto">
+                        Try a different search term or check for typos
+                      </p>
+                    </div>
                   </div>
                 )}
               </TabsContent>
@@ -913,14 +940,20 @@ const SearchPage = () => {
               {/* Hashtags Results */}
               <TabsContent value="hashtags">
                 {!submittedQuery ? (
-                  <div className="text-center py-12 border border-[rgba(255,255,255,0.08)] rounded-xl backdrop-blur-md bg-[rgba(25,25,30,0.5)] shadow-lg">
-                    <div className="w-16 h-16 rounded-full backdrop-blur-md bg-[rgba(0,100,255,0.1)] border border-primary/20 flex items-center justify-center mx-auto mb-4 shadow-[0_0_15px_rgba(0,100,255,0.1)]">
-                      <Hash className="h-8 w-8 text-primary/80" />
+                  <div className="text-center py-12 border border-[rgba(255,255,255,0.08)] rounded-xl backdrop-blur-xl bg-[rgba(25,25,30,0.55)] shadow-lg relative overflow-hidden">
+                    {/* Glassmorphic glow effects */}
+                    <div className="absolute top-0 w-24 h-24 bg-primary/5 rounded-full -mt-12 left-1/2 -translate-x-1/2 blur-2xl"></div>
+                    <div className="absolute bottom-0 w-32 h-32 bg-primary/5 rounded-full -mb-16 left-1/3 -translate-x-1/2 blur-3xl"></div>
+                    
+                    <div className="relative z-10">
+                      <div className="w-16 h-16 mx-auto mb-5 rounded-full backdrop-blur-xl bg-[rgba(0,100,255,0.08)] border border-[rgba(255,255,255,0.1)] flex items-center justify-center shadow-lg">
+                        <Hash className="h-8 w-8 text-primary/60" />
+                      </div>
+                      <h3 className="text-xl font-medium text-white mb-2">Search for hashtags</h3>
+                      <p className="text-gray-400 max-w-md mx-auto">
+                        Discover trending topics and hashtags across the platform
+                      </p>
                     </div>
-                    <h3 className="text-lg font-medium text-white">Search for hashtags</h3>
-                    <p className="text-gray-400 mt-2 max-w-md mx-auto">
-                      Discover trending topics and hashtags across the platform
-                    </p>
                   </div>
                 ) : isLoading ? (
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -949,14 +982,20 @@ const SearchPage = () => {
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center py-12 border border-[rgba(255,255,255,0.08)] rounded-xl backdrop-blur-md bg-[rgba(25,25,30,0.5)] shadow-lg">
-                    <div className="w-16 h-16 rounded-full backdrop-blur-md bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.1)] flex items-center justify-center mx-auto mb-4 shadow-md">
-                      <Hash className="h-8 w-8 text-gray-400" />
+                  <div className="text-center py-12 border border-[rgba(255,255,255,0.08)] rounded-xl backdrop-blur-xl bg-[rgba(25,25,30,0.55)] shadow-lg relative overflow-hidden">
+                    {/* Glassmorphic glow effects */}
+                    <div className="absolute top-0 w-24 h-24 bg-primary/5 rounded-full -mt-12 left-1/2 -translate-x-1/2 blur-2xl"></div>
+                    <div className="absolute bottom-0 w-32 h-32 bg-primary/5 rounded-full -mb-16 left-1/3 -translate-x-1/2 blur-3xl"></div>
+                    
+                    <div className="relative z-10">
+                      <div className="w-16 h-16 mx-auto mb-5 rounded-full backdrop-blur-xl bg-[rgba(0,100,255,0.08)] border border-[rgba(255,255,255,0.1)] flex items-center justify-center shadow-lg">
+                        <Hash className="h-8 w-8 text-primary/60" />
+                      </div>
+                      <h3 className="text-xl font-medium text-white mb-2">No hashtags found</h3>
+                      <p className="text-gray-400 max-w-md mx-auto">
+                        Try a different search term or check for typos
+                      </p>
                     </div>
-                    <h3 className="text-lg font-medium text-white">No hashtags found</h3>
-                    <p className="text-gray-400 mt-2 max-w-md mx-auto">
-                      Try a different search term or check for typos
-                    </p>
                   </div>
                 )}
               </TabsContent>
