@@ -392,6 +392,36 @@
   animation: ping-slow 3s cubic-bezier(0, 0, 0.2, 1) infinite;
 }
 
+/* Floating animation for background elements */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-15px); }
+  100% { transform: translateY(0px); }
+}
+.animate-float {
+  animation: float 12s ease-in-out infinite;
+}
+
+/* Slower pulse animation */
+@keyframes pulse-slow {
+  0% { opacity: 0.3; }
+  50% { opacity: 0.6; }
+  100% { opacity: 0.3; }
+}
+.animate-pulse-slow {
+  animation: pulse-slow 8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Even slower pulse animation */
+@keyframes pulse-slower {
+  0% { opacity: 0.2; }
+  50% { opacity: 0.5; }
+  100% { opacity: 0.2; }
+}
+.animate-pulse-slower {
+  animation: pulse-slower 12s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
 /* Animation delay utility */
 .animation-delay-500 {
   animation-delay: 1.5s;

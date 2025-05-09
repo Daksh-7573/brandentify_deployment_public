@@ -32,8 +32,12 @@ export function VisionLayout({ children }: VisionLayoutProps) {
 
   return (
     <div className="flex min-h-screen flex-col">
-      {/* Background with blur effect */}
-      <div className="vision-blur-bg"></div>
+      {/* Background with dynamic blur effect */}
+      <div className="vision-blur-bg">
+        <div className="animate-pulse-slow absolute -top-10 -left-10 w-72 h-72 bg-[#4F8CFF]/5 rounded-full blur-3xl opacity-50"></div>
+        <div className="animate-pulse-slower absolute bottom-10 right-10 w-96 h-96 bg-[#3ED7C2]/5 rounded-full blur-3xl opacity-50"></div>
+        <div className="animate-float absolute top-1/3 left-1/3 w-80 h-80 bg-[#4ADE80]/5 rounded-full blur-3xl opacity-30"></div>
+      </div>
       
       {/* Top navigation */}
       <header className="sticky top-0 z-50 w-full border-b border-[#3A3A3C] bg-[#1C1C1E]/80 backdrop-blur-lg">

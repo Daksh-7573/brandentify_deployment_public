@@ -8,7 +8,15 @@ import {
   VisionCardFooter
 } from '@/components/ui/vision-card';
 import { VisionButton } from '@/components/ui/vision-button';
-import { ArrowRight, Zap, MessageSquare, ThumbsUp, Bot, Lightbulb, User, BellRing, FileText, ShieldCheck, Award } from 'lucide-react';
+import { VisionInput } from '@/components/ui/vision-input';
+import { 
+  VisionSelect, 
+  VisionSelectTrigger, 
+  VisionSelectValue, 
+  VisionSelectContent, 
+  VisionSelectItem 
+} from '@/components/ui/vision-select';
+import { ArrowRight, Zap, MessageSquare, ThumbsUp, Bot, Lightbulb, User, BellRing, FileText, ShieldCheck, Award, Search } from 'lucide-react';
 import { VisionNowboardSuggestions } from '@/components/brand-quests/vision-nowboard-suggestions';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
@@ -275,6 +283,172 @@ export default function VisionUIPage() {
           </VisionCard>
         </div>
         
+        {/* Form Controls */}
+        <h2 className="text-2xl font-bold mb-4 text-[#E5E5E7]">Form Controls</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          {/* Input Fields */}
+          <VisionCard variant="default" hover="subtle">
+            <VisionCardHeader>
+              <div className="flex items-center gap-3 mb-3">
+                <div className="h-10 w-10 rounded-full bg-[#4F8CFF]/10 border border-[#4F8CFF]/20 flex items-center justify-center">
+                  <User className="h-5 w-5 text-[#4F8CFF]" />
+                </div>
+                <VisionCardTitle>Input Controls</VisionCardTitle>
+              </div>
+              <VisionCardDescription>
+                Vision-styled text input fields
+              </VisionCardDescription>
+            </VisionCardHeader>
+            <VisionCardContent>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <label className="text-xs text-[#A1A1AA]">Basic Input</label>
+                  <VisionInput placeholder="Enter text here..." />
+                </div>
+                
+                <div className="space-y-2">
+                  <label className="text-xs text-[#A1A1AA]">With Icon</label>
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#A1A1AA]" />
+                    <VisionInput className="pl-9" placeholder="Search..." />
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <label className="text-xs text-[#A1A1AA]">Disabled Input</label>
+                  <VisionInput disabled placeholder="Not available" />
+                </div>
+              </div>
+            </VisionCardContent>
+            <VisionCardFooter>
+              <VisionButton variant="default" size="sm">
+                Submit <ArrowRight className="ml-1 h-3 w-3" />
+              </VisionButton>
+            </VisionCardFooter>
+          </VisionCard>
+
+          {/* Select Fields */}
+          <VisionCard variant="dark" hover="subtle">
+            <VisionCardHeader>
+              <div className="flex items-center gap-3 mb-3">
+                <div className="h-10 w-10 rounded-full bg-[#3ED7C2]/10 border border-[#3ED7C2]/20 flex items-center justify-center">
+                  <Zap className="h-5 w-5 text-[#3ED7C2]" />
+                </div>
+                <VisionCardTitle>Select Controls</VisionCardTitle>
+              </div>
+              <VisionCardDescription>
+                Dropdown selection with glassmorphic styling
+              </VisionCardDescription>
+            </VisionCardHeader>
+            <VisionCardContent>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <label className="text-xs text-[#A1A1AA]">Basic Select</label>
+                  <VisionSelect>
+                    <VisionSelectTrigger>
+                      <VisionSelectValue placeholder="Select an option" />
+                    </VisionSelectTrigger>
+                    <VisionSelectContent>
+                      <VisionSelectItem value="design">UI/UX Design</VisionSelectItem>
+                      <VisionSelectItem value="development">Development</VisionSelectItem>
+                      <VisionSelectItem value="marketing">Marketing</VisionSelectItem>
+                      <VisionSelectItem value="product">Product Management</VisionSelectItem>
+                    </VisionSelectContent>
+                  </VisionSelect>
+                </div>
+                
+                <div className="space-y-2">
+                  <label className="text-xs text-[#A1A1AA]">Sort By</label>
+                  <VisionSelect defaultValue="recent">
+                    <VisionSelectTrigger>
+                      <VisionSelectValue placeholder="Sort by" />
+                    </VisionSelectTrigger>
+                    <VisionSelectContent>
+                      <VisionSelectItem value="recent">Most Recent</VisionSelectItem>
+                      <VisionSelectItem value="popular">Most Popular</VisionSelectItem>
+                      <VisionSelectItem value="trending">Trending</VisionSelectItem>
+                    </VisionSelectContent>
+                  </VisionSelect>
+                </div>
+                
+                <div className="space-y-2">
+                  <label className="text-xs text-[#A1A1AA]">Time Period</label>
+                  <VisionSelect>
+                    <VisionSelectTrigger>
+                      <VisionSelectValue placeholder="Select time period" />
+                    </VisionSelectTrigger>
+                    <VisionSelectContent>
+                      <VisionSelectItem value="day">Last 24 Hours</VisionSelectItem>
+                      <VisionSelectItem value="week">Last 7 Days</VisionSelectItem>
+                      <VisionSelectItem value="month">Last 30 Days</VisionSelectItem>
+                      <VisionSelectItem value="year">Last Year</VisionSelectItem>
+                    </VisionSelectContent>
+                  </VisionSelect>
+                </div>
+              </div>
+            </VisionCardContent>
+            <VisionCardFooter>
+              <VisionButton variant="secondary" size="sm">
+                Apply Filters <ArrowRight className="ml-1 h-3 w-3" />
+              </VisionButton>
+            </VisionCardFooter>
+          </VisionCard>
+
+          {/* Button Variants */}
+          <VisionCard variant="light" hover="glow">
+            <VisionCardHeader>
+              <div className="flex items-center gap-3 mb-3">
+                <div className="h-10 w-10 rounded-full bg-[#4ADE80]/10 border border-[#4ADE80]/20 flex items-center justify-center">
+                  <Award className="h-5 w-5 text-[#4ADE80]" />
+                </div>
+                <VisionCardTitle>Button Variants</VisionCardTitle>
+              </div>
+              <VisionCardDescription>
+                Enhanced buttons with hover effects
+              </VisionCardDescription>
+            </VisionCardHeader>
+            <VisionCardContent>
+              <div className="grid grid-cols-2 gap-3">
+                <VisionButton variant="default">
+                  Default
+                </VisionButton>
+                <VisionButton variant="secondary">
+                  Secondary
+                </VisionButton>
+                
+                <VisionButton variant="success">
+                  Success
+                </VisionButton>
+                <VisionButton variant="destructive">
+                  Destructive
+                </VisionButton>
+                
+                <VisionButton variant="warning">
+                  Warning
+                </VisionButton>
+                <VisionButton variant="outline">
+                  Outline
+                </VisionButton>
+                
+                <VisionButton variant="glass">
+                  Glass
+                </VisionButton>
+                <VisionButton variant="ghost">
+                  Ghost
+                </VisionButton>
+              </div>
+            </VisionCardContent>
+            <VisionCardFooter>
+              <VisionButton variant="link" className="mr-auto">
+                Learn More
+              </VisionButton>
+              <VisionButton variant="success" size="sm">
+                Proceed <ArrowRight className="ml-1 h-3 w-3" />
+              </VisionButton>
+            </VisionCardFooter>
+          </VisionCard>
+        </div>
+
         {/* Nowboard example using the new Vision UI style */}
         <h2 className="text-2xl font-bold mb-4 text-[#E5E5E7]">Integration Examples</h2>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
