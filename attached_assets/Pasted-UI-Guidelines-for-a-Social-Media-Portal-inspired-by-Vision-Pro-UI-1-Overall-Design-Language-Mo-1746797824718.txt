@@ -1,0 +1,118 @@
+UI Guidelines for a Social Media Portal (inspired by Vision Pro UI)
+🧱 1. Overall Design Language
+Modern minimalism with depth
+
+Use glassmorphism: semi-transparent backgrounds, subtle blur, layered shadows.
+
+Maintain a sense of "visual space" even on 2D screens using depth cues (shadows, contrast, layering).
+
+Rounded corners + soft gradients
+
+All cards, buttons, and content blocks should have smooth, rounded corners.
+
+Use light gradients or low-opacity colors for layering.
+
+📐 2. Layout System
+Fixed position layout
+
+All elements stay fixed relative to the screen—no user-repositionable windows.
+
+Use a responsive grid system (CSS Grid or Flexbox) to organize components.
+
+Three-tier structure
+
+Left Sidebar (navigation, profile, settings)
+
+Main Feed Area (posts, interactions, suggestions)
+
+Right Panel (notifications, trending, or extra content)
+
+🎯 3. UI Components
+Component	Guideline
+Search Bar	Centered or top-left; rounded; subtle shadow; voice icon optional
+Cards	Used for posts, suggestions, content previews; light glassmorphism
+Buttons	Large, round, with hover animation; primary CTAs in vibrant colors
+Tags/Chips	Rounded pills with soft borders (e.g., “#yoga”, “#wellness”)
+Side Panel	Sticky panel for active/related content, e.g., "Now Playing", "Trending"
+Audio Player	Minimalistic sticky bottom bar; modern play/pause/volume icons
+Feed	Scrollable card-based layout with inline interactions (like, comment)
+
+🎨 4. Color and Theme
+Neutral base with accent highlights
+
+Background: Light gray, white, or soft blur
+
+Accent: Soft blue/purple gradient for CTAs and highlights
+
+Dark Mode Support
+
+Inverse transparency, with dimmed background blur and high-contrast text
+
+👁️ 5. Typography & Iconography
+Typography
+
+Font: Use modern, sans-serif (e.g., SF Pro, Inter, Poppins)
+
+Hierarchy: Use weight and size for clear structure (H1 → H6, body, caption)
+
+Iconography
+
+Use outline-style icons with hover effects
+
+Icons should be scalable and intuitive (Feather, Lucide, or Apple style)
+
+🖱️ 6. Interaction Patterns
+Hover & Focus States
+
+Light glow or shadow to mimic the 3D "float" effect
+
+Micro-animations
+
+Smooth transitions between views (feed scroll, modal open, card flip)
+
+Feedback UI
+
+Success, error, and system notifications styled subtly (toasts, modals)
+
+📱 7. Responsive Design
+Breakpoints:
+
+Mobile: Stack all elements, bottom nav
+
+Tablet: Keep sidebar collapsible, use swipe actions
+
+Desktop: Full three-panel layout with sticky side content
+
+Touch Optimized:
+
+Large buttons
+
+Gesture-friendly interactions (swipe, long-press on mobile)
+
+📦 8. Component Reusability (Dev-Friendly)
+Ensure your design system supports:
+
+Atomic components (Button, Card, Input, Tag, Player, Modal)
+
+Variants (active, hover, selected)
+
+State management integration (e.g., Redux, VueX, Zustand, etc.)
+
+✅ Summary
+What You Keep from Vision Pro UI:
+
+Visual softness, layering, blur
+
+Panel-based modular layout
+
+Clean minimalism
+
+Content-centric design
+
+What You Adjust:
+
+No floating or movable screens
+
+Fixed layout on the page
+
+Web-responsiveness and scrollable feeds

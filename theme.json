@@ -1,16 +1,32 @@
 {
   "variant": "tint",
-  "primary": "#AEE6E6",
+  "primary": "#5E7CE2",
   "appearance": "light",
-  "radius": 1.2,
+  "radius": 1.6,
   "colors": {
-    "secondary": "#FFD6C0",
-    "tertiary": "#E4D7FA",
-    "background": "#F7F9FC",
-    "card": "#F2EDF8",
-    "text": "#2B2E33",
-    "textSecondary": "#70757B",
-    "success": "#B7E4C7",
-    "warning": "#FFB3AB"
+    "secondary": "#B6B8F3",
+    "tertiary": "#E1E5FF",
+    "background": "#F9FAFF",
+    "card": "rgba(255, 255, 255, 0.85)",
+    "text": "#1A1D24",
+    "textSecondary": "#636B7C",
+    "success": "#B1E3FF",
+    "warning": "#FFB3C0",
+    "accent": "#8A6FFF",
+    "muted": "rgba(230, 235, 255, 0.75)",
+    "glass": "rgba(255, 255, 255, 0.65)",
+    "glassDark": "rgba(40, 45, 70, 0.65)",
+    "shadow": "rgba(107, 126, 190, 0.15)",
+    "border": "rgba(200, 210, 255, 0.5)",
+    "highlight": "rgba(255, 255, 255, 0.95)"
+  },
+  "effects": {
+    "blur": "backdrop-filter: blur(10px)",
+    "shadowSm": "box-shadow: 0 2px 8px rgba(107, 126, 190, 0.08)",
+    "shadowMd": "box-shadow: 0 4px 12px rgba(107, 126, 190, 0.12)",
+    "shadowLg": "box-shadow: 0 8px 24px rgba(107, 126, 190, 0.15)",
+    "glassEffect": "backdrop-filter: blur(10px); background: rgba(255, 255, 255, 0.65)",
+    "glassDarkEffect": "backdrop-filter: blur(10px); background: rgba(40, 45, 70, 0.65)",
+    "cardHover": "transform: translateY(-2px); transition: all 0.2s ease-in-out"
   }
 }
