@@ -4,6 +4,85 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Glassmorphism Variables & Styles */
+:root {
+  --color-primary: #3B82F6;
+  --color-secondary: #22D3EE;
+  --glass-bg: rgba(255, 255, 255, 0.15);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --text-primary: rgba(255, 255, 255, 0.85);
+  --text-secondary: rgba(209, 213, 219, 0.65);
+  --soft-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  --card-radius: 24px;
+  --blur-amount: 40px;
+}
+
+/* Glassmorphism Components */
+@layer components {
+  .glass-card {
+    @apply bg-opacity-15 backdrop-blur-[var(--blur-amount)] rounded-[var(--card-radius)];
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--soft-shadow);
+  }
+  
+  .glass-panel {
+    @apply bg-opacity-15 backdrop-blur-[var(--blur-amount)] rounded-xl;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--soft-shadow);
+  }
+  
+  .glass-button {
+    @apply bg-opacity-15 backdrop-blur-md rounded-full transition-all;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--soft-shadow);
+  }
+  
+  .glass-button:hover {
+    @apply bg-opacity-25 transform scale-102;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  }
+  
+  .float-effect {
+    animation: float 6s ease-in-out infinite;
+    transform-origin: center;
+  }
+  
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+  
+  .parallax-slow {
+    transition: transform 0.3s ease-out;
+  }
+  
+  .card-glow {
+    position: relative;
+  }
+  
+  .card-glow::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: inherit;
+    box-shadow: 0 0 30px rgba(59, 130, 246, 0.3);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    z-index: -1;
+  }
+  
+  .card-glow:hover::after {
+    opacity: 1;
+  }
+}
+
 /* Quantum Card Animations */
 @layer components {
   /* Liquid Loading Animation */

@@ -1,0 +1,132 @@
+1. Color Palette & Transparency
+Usage	Color Code (HEX)	Opacity	Notes
+Background Blur	#FFFFFF	0.05–0.10	Apply 40–60px backdrop blur
+Primary Accent	#3B82F6	1.0	Vivid Blue for CTA buttons
+Secondary Accent	#22D3EE	1.0	Cyan/Aqua for hover & micro-interactions
+Panel Fill	#FFFFFF	0.15	Glass card base; add soft shadow + blur
+Text (Primary)	#FFFFFF	0.85	Clean, readable white
+Text (Secondary)	#D1D5DB	0.65	Muted light grey for descriptions
+Border	#FFFFFF	0.10	Subtle card borders
+Shadows	#000000	0.10–0.20	Use for soft glows, not hard shadows
+
+📐 2. Layout Structure
+Mobile & Web Common Principles:
+
+Card-based layout (Soft Cards with rounded 24px)
+
+Max Width (Web): 1200px center-aligned
+
+Padding: 24px outer margin, 16px inside cards
+
+Gaps between components: 16px–24px
+
+Mobile
+Stack layout, floating CTA at bottom
+
+Tab bar: floating glass bar with 5 icons (rounded corners)
+
+Gestural back/forward transitions
+
+Web
+Grid: 3-column layout (Feed | Action | Profile/Notifications)
+
+Responsive to 1-column on narrow screens
+
+Floating sidebar nav on hover, collapsible
+
+🧊 3. Glassmorphism & Soft UI Effects
+Card Elements:
+Blur: backdrop-filter: blur(40px)
+
+Transparency: rgba(255, 255, 255, 0.15)
+
+Border Radius: 24px
+
+Box Shadow: 0 4px 30px rgba(0, 0, 0, 0.1)
+
+Border: 1px solid rgba(255, 255, 255, 0.1)
+
+✨ 4. Animation & Interaction Guidelines
+Entrance Animations:
+Fade + Slide (opacity 0 → 1, translateY(10px → 0), duration: 0.4s)
+
+Use Framer Motion or CSS transitions
+
+Micro-interactions:
+Hover cards: slight scale (scale(1.02))
+
+Button press: press-down effect (translateY(2px))
+
+Long-press on mobile: ripple or highlight feedback
+
+Ambient Float:
+For Vision Pro-like experience, UI panels “float” in place
+
+Parallax on scroll/move (10–20px shift max)
+
+Optional soft particle glow background (subtle ambient motion)
+
+📱 5. Components & Visual Hierarchy
+Key Components:
+✅ Start/Primary CTA Button
+Color: #3B82F6 (blue), Hover: lighten by 10%
+
+Font: Medium weight, size: 18px
+
+Padding: 16px 32px, Radius: 20px
+
+Effect: Soft glow on hover (box-shadow: 0 0 12px rgba(59, 130, 246, 0.4))
+
+🗂 Content Card
+Background: semi-transparent white
+
+Blur: 40px
+
+Drop shadow: 0px 20px 40px rgba(0,0,0,0.15)
+
+Text Layout: Headline (bold), then body (lighter), then action buttons
+
+🖼 Media Viewer (Post)
+Fullscreen modal with blurred background
+
+Floating action icons (Like, Share, Comment) in circular glass buttons
+
+Swipeable gallery for Vision Pro gesture UX
+
+📋 6. Typography
+Text Style	Font Weight	Size	Use Case
+Heading (H1)	700	32px	Section titles
+Heading (H2)	600	24px	Card titles
+Body (Base)	400	16px	Post text, UI body copy
+Caption/Notes	300	14px	Date/time, usernames, etc.
+
+Font: SF Pro, Inter, or Poppins for modern feel.
+
+🌌 7. Ambient Background & Spatial Anchoring
+Use a neutral, blurred scenic room backdrop (grayscale or very soft gradients)
+
+UI should float in Z-space with:
+
+Subtle depth shadows
+
+Contextual lighting (dark/light theme adjusts ambient brightness)
+
+No hard edges or harsh contrasts
+
+UI feels present in the space, but non-distracting
+
+🔧 Developer-Friendly Tokens (CSS Variables)
+css
+Copy
+Edit
+:root {
+  --color-primary: #3B82F6;
+  --color-secondary: #22D3EE;
+  --glass-bg: rgba(255, 255, 255, 0.15);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --text-primary: rgba(255, 255, 255, 0.85);
+  --text-secondary: rgba(209, 213, 219, 0.65);
+  --soft-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  --card-radius: 24px;
+  --blur-amount: 40px;
+}

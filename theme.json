@@ -1,16 +1,17 @@
 {
-  "variant": "tint",
-  "primary": "#AEE6E6",
+  "variant": "vibrant",
+  "primary": "#3B82F6",
   "appearance": "light",
-  "radius": 1.2,
+  "radius": 2.4,
   "colors": {
-    "secondary": "#FFD6C0",
-    "tertiary": "#E4D7FA",
-    "background": "#F7F9FC",
-    "card": "#F2EDF8",
-    "text": "#2B2E33",
-    "textSecondary": "#70757B",
-    "success": "#B7E4C7",
-    "warning": "#FFB3AB"
+    "secondary": "#22D3EE",
+    "tertiary": "#FFFFFF",
+    "background": "#111827",
+    "card": "#1F2937",
+    "text": "#FFFFFF",
+    "textSecondary": "#D1D5DB",
+    "success": "#10B981",
+    "warning": "#F59E0B",
+    "border": "#374151"
   }
 }
