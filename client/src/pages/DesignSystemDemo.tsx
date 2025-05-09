@@ -650,6 +650,111 @@ const DesignSystemDemo: React.FC = () => {
           
         </section>
         
+        {/* Galaxy Theme Showcase - Vision Pro Inspired */}
+        <section className="mb-16">
+          <h2 className="text-2xl font-semibold mb-6 text-gray-800 dark:text-white">Vision Pro Inspired Galaxy Theme</h2>
+          
+          <GlassCard 
+            variant="frosted" 
+            blurStrength="md"
+            transparency="medium"
+            backgroundEffect="noise"
+            backgroundIntensity="medium"
+            className="p-6 mb-8"
+          >
+            <div className="flex flex-col md:flex-row gap-6">
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold mb-3 text-gray-800 dark:text-white">Selected Theme Settings</h3>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center pb-2 border-b border-gray-200 dark:border-gray-700">
+                    <span className="text-sm text-gray-600 dark:text-gray-300">Theme</span>
+                    <span className="font-medium text-primary">Galaxy</span>
+                  </div>
+                  <div className="flex justify-between items-center pb-2 border-b border-gray-200 dark:border-gray-700">
+                    <span className="text-sm text-gray-600 dark:text-gray-300">Glass Variant</span>
+                    <span className="font-medium text-primary">Frosted Glass</span>
+                  </div>
+                  <div className="flex justify-between items-center pb-2 border-b border-gray-200 dark:border-gray-700">
+                    <span className="text-sm text-gray-600 dark:text-gray-300">Transparency Level</span>
+                    <span className="font-medium text-primary">Medium</span>
+                  </div>
+                  <div className="flex justify-between items-center pb-2 border-b border-gray-200 dark:border-gray-700">
+                    <span className="text-sm text-gray-600 dark:text-gray-300">Blur Strength</span>
+                    <span className="font-medium text-primary">Medium</span>
+                  </div>
+                  <div className="flex justify-between items-center pb-2 border-b border-gray-200 dark:border-gray-700">
+                    <span className="text-sm text-gray-600 dark:text-gray-300">Background Effect</span>
+                    <span className="font-medium text-primary">Noise Texture</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold mb-3 text-gray-800 dark:text-white">Galaxy Color Palette</h3>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="rounded-md p-3 flex flex-col items-center" style={{ backgroundColor: '#BB6DFF' }}>
+                    <span className="text-xs font-mono mt-1 bg-black/30 text-white px-2 py-0.5 rounded-full">Primary</span>
+                  </div>
+                  <div className="rounded-md p-3 flex flex-col items-center" style={{ backgroundColor: '#52B5F9' }}>
+                    <span className="text-xs font-mono mt-1 bg-black/30 text-white px-2 py-0.5 rounded-full">Secondary</span>
+                  </div>
+                  <div className="rounded-md p-3 flex flex-col items-center" style={{ backgroundColor: '#667FFF' }}>
+                    <span className="text-xs font-mono mt-1 bg-black/30 text-white px-2 py-0.5 rounded-full">Accent</span>
+                  </div>
+                  <div className="rounded-md p-3 flex flex-col items-center" style={{ backgroundColor: '#42D392' }}>
+                    <span className="text-xs font-mono mt-1 bg-black/30 text-white px-2 py-0.5 rounded-full">Success</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="mt-8 flex items-center justify-center">
+              <GlassButton variant="glass-dark" size="pill" glow="active" className="flex items-center gap-2">
+                <Sparkles className="h-4 w-4" />
+                Galaxy Theme with Glass Dark Button
+              </GlassButton>
+            </div>
+          </GlassCard>
+          
+          {/* Layer 3 Demo */}
+          <div className="relative h-48 overflow-hidden rounded-2xl border border-white/20 mb-6">
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-accent/20"></div>
+            
+            {/* Background elements */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="grid grid-cols-3 gap-4">
+                <div className="w-16 h-16 rounded-lg bg-primary/30 backdrop-blur-sm flex items-center justify-center text-white">
+                  Layer 1
+                </div>
+                <div className="w-16 h-16 rounded-lg bg-secondary/30 backdrop-blur-sm flex items-center justify-center text-white">
+                  Layer 2
+                </div>
+                <div className="w-16 h-16 rounded-lg bg-accent/30 backdrop-blur-sm flex items-center justify-center text-white">
+                  Base
+                </div>
+              </div>
+            </div>
+            
+            {/* Layer 3 - Highlighted */}
+            <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
+              <GlassCard
+                variant="frosted"
+                blurStrength="md"
+                transparency="medium"
+                backgroundEffect="noise"
+                backgroundIntensity="medium"
+                elevation="floating"
+                className="w-36 h-36 flex items-center justify-center shadow-lg shadow-primary/30 ring-2 ring-primary/20 ring-offset-2 ring-offset-background/30 transform scale-110"
+              >
+                <div className="text-center">
+                  <div className="font-bold text-white mb-1">Layer 3</div>
+                  <div className="text-xs text-gray-200">Selected Layer</div>
+                </div>
+              </GlassCard>
+            </div>
+          </div>
+        </section>
+        
         {/* Card Variants Section */}
         <section className="mb-16">
           <h2 className="text-2xl font-semibold mb-6 text-gray-800 dark:text-white">Glass Card Variants</h2>
