@@ -230,16 +230,7 @@ export default function Header() {
               <Zap className="h-4 w-4" /> Create Pulse
             </Button>
             
-            {/* Settings Button */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="hidden sm:flex rounded-md p-2 hover:bg-gray-100 transition-colors"
-              onClick={() => setLocation('/settings')}
-              aria-label="Settings"
-            >
-              <Settings className="h-5 w-5 text-gray-600" />
-            </Button>
+            {/* Settings Button removed as requested */}
             
             {/* Messages Button */}
             <Button
@@ -449,22 +440,7 @@ export default function Header() {
                 <span>My Profile</span>
               </Button>
               
-              <Button
-                variant="ghost"
-                size="sm"
-                className={`w-full justify-start py-2.5 text-sm font-medium rounded-md ${
-                  isActive('/settings') 
-                    ? 'text-primary bg-primary/5' 
-                    : 'text-gray-700 hover:bg-gray-50 hover:text-primary'
-                }`}
-                onClick={() => {
-                  setLocation('/settings');
-                  setIsMobileMenuOpen(false);
-                }}
-              >
-                <Settings className="h-4 w-4 mr-3 ml-0.5" />
-                <span>Settings</span>
-              </Button>
+              {/* Settings Button removed as requested */}
               
               <Button
                 variant="ghost"
