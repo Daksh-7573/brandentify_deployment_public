@@ -16,7 +16,14 @@ import {
   Sun,
   Moon,
   Laptop,
-  Palette
+  Palette,
+  Wand2,
+  Eye,
+  Layers,
+  Droplets,
+  LayoutGrid,
+  Sliders,
+  Fingerprint
 } from 'lucide-react';
 
 // Load themes from theme.json
@@ -60,11 +67,60 @@ interface DarkTheme {
   effects: ThemeEffects;
 }
 
+// Glass Effect Showcase components
+const BlurStrength = ({ title, strength, active, onClick }: { 
+  title: string; 
+  strength: string; 
+  active: boolean;
+  onClick: () => void;
+}) => (
+  <button 
+    className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 ${
+      active 
+        ? 'bg-primary text-white' 
+        : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+    }`}
+    onClick={onClick}
+  >
+    {title}
+  </button>
+);
+
+const EffectSelector = ({ title, effect, active, onClick }: { 
+  title: string;
+  effect: string;
+  active: boolean;
+  onClick: () => void;
+}) => (
+  <button 
+    className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+      active 
+        ? 'bg-primary text-white' 
+        : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+    }`}
+    onClick={onClick}
+  >
+    {effect === 'none' && <Eye className="h-4 w-4" />}
+    {effect === 'gradient' && <Layers className="h-4 w-4" />}
+    {effect === 'noise' && <Fingerprint className="h-4 w-4" />}
+    {effect === 'glow' && <Wand2 className="h-4 w-4" />}
+    {effect === 'refraction' && <Droplets className="h-4 w-4" />}
+    {title}
+  </button>
+);
+
 // Demo component for Vision Pro-inspired UI
 const DesignSystemDemo: React.FC = () => {
   // State for theme selection
   const [theme, setTheme] = useState<'light' | string>('light');
   const [themeStyles, setThemeStyles] = useState<Record<string, string>>({});
+  
+  // States for glass configuration
+  const [blurStrength, setBlurStrength] = useState<"none" | "sm" | "md" | "lg" | "xl" | "2xl" | "3xl">("md");
+  const [transparency, setTransparency] = useState<"low" | "medium" | "high" | "ultra">("low");
+  const [backgroundEffect, setBackgroundEffect] = useState<"none" | "gradient" | "noise" | "glow" | "refraction">("none");
+  const [backgroundIntensity, setBackgroundIntensity] = useState<"low" | "medium" | "high">("medium");
+  const [selectedCardVariant, setSelectedCardVariant] = useState<string>("ultraGlass");
 
   // Get available dark themes from theme.json
   const darkThemes: DarkTheme[] = themeData.darkThemes || [];
@@ -122,6 +178,49 @@ const DesignSystemDemo: React.FC = () => {
       }
     };
   }, [theme, darkThemes]);
+
+  // Available card variants for glass effects showcase
+  const cardVariants = [
+    { id: 'ultraGlass', name: 'Ultra Glass' },
+    { id: 'frosted', name: 'Frosted Glass' },
+    { id: 'cosmic', name: 'Cosmic Glass' },
+    { id: 'transparent', name: 'Transparent' },
+  ];
+
+  // Available transparency levels
+  const transparencyLevels = [
+    { id: 'low', name: 'Low' },
+    { id: 'medium', name: 'Medium' },
+    { id: 'high', name: 'High' },
+    { id: 'ultra', name: 'Ultra' },
+  ];
+
+  // Available blur strengths
+  const blurStrengths = [
+    { id: 'none', name: 'None' },
+    { id: 'sm', name: 'Small' },
+    { id: 'md', name: 'Medium' },
+    { id: 'lg', name: 'Large' },
+    { id: 'xl', name: 'X-Large' },
+    { id: '2xl', name: '2X-Large' },
+    { id: '3xl', name: '3X-Large' },
+  ];
+
+  // Background effects
+  const backgroundEffects = [
+    { id: 'none', name: 'None' },
+    { id: 'gradient', name: 'Gradient' },
+    { id: 'noise', name: 'Noise Texture' },
+    { id: 'glow', name: 'Inner Glow' },
+    { id: 'refraction', name: 'Refraction' },
+  ];
+
+  // Intensity options
+  const intensityLevels = [
+    { id: 'low', name: 'Low' },
+    { id: 'medium', name: 'Medium' },
+    { id: 'high', name: 'High' },
+  ];
 
   return (
     <div 
@@ -202,6 +301,197 @@ const DesignSystemDemo: React.FC = () => {
           </section>
         )}
 
+        {/* Glass Effects Showcase Section */}
+        <section className="mb-16">
+          <h2 className="text-2xl font-semibold mb-6 text-gray-800 dark:text-white">Vision Pro Inspired Glass Effects</h2>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Controls Column */}
+            <div className="lg:col-span-1 space-y-8">
+              <GlassCard 
+                variant={theme === 'light' ? 'default' : 'dark'} 
+                size="lg"
+                blurStrength="md"
+              >
+                <div className="flex items-start gap-4 mb-6">
+                  <div className="p-3 rounded-full bg-primary/20 dark:bg-primary/30">
+                    <Sliders className="h-5 w-5 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-gray-800 dark:text-white">Glass Effect Controls</h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">
+                      Customize the glass effects to see Vision Pro-inspired UI in action
+                    </p>
+                  </div>
+                </div>
+                
+                {/* Card Variant Selection */}
+                <div className="mb-6">
+                  <h4 className="text-sm font-semibold mb-3 text-gray-700 dark:text-gray-300">Glass Type</h4>
+                  <div className="grid grid-cols-2 gap-2">
+                    {cardVariants.map(variant => (
+                      <button
+                        key={variant.id}
+                        className={`px-3 py-2 text-sm rounded-lg transition-all duration-200 ${
+                          selectedCardVariant === variant.id
+                            ? 'bg-primary text-white'
+                            : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+                        }`}
+                        onClick={() => setSelectedCardVariant(variant.id)}
+                      >
+                        {variant.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                
+                {/* Transparency Selection */}
+                <div className="mb-6">
+                  <h4 className="text-sm font-semibold mb-3 text-gray-700 dark:text-gray-300">Transparency Level</h4>
+                  <div className="grid grid-cols-2 gap-2">
+                    {transparencyLevels.map(level => (
+                      <button
+                        key={level.id}
+                        className={`px-3 py-2 text-sm rounded-lg transition-all duration-200 ${
+                          transparency === level.id
+                            ? 'bg-primary text-white'
+                            : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+                        }`}
+                        onClick={() => setTransparency(level.id as any)}
+                      >
+                        {level.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                
+                {/* Blur Strength Selection */}
+                <div className="mb-6">
+                  <h4 className="text-sm font-semibold mb-3 text-gray-700 dark:text-gray-300">Blur Strength</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {blurStrengths.map(strength => (
+                      <BlurStrength
+                        key={strength.id}
+                        title={strength.name}
+                        strength={strength.id}
+                        active={blurStrength === strength.id}
+                        onClick={() => setBlurStrength(strength.id as any)}
+                      />
+                    ))}
+                  </div>
+                </div>
+                
+                {/* Background Effects Selection */}
+                <div className="mb-6">
+                  <h4 className="text-sm font-semibold mb-3 text-gray-700 dark:text-gray-300">Background Effects</h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {backgroundEffects.map(effect => (
+                      <EffectSelector
+                        key={effect.id}
+                        title={effect.name}
+                        effect={effect.id}
+                        active={backgroundEffect === effect.id}
+                        onClick={() => setBackgroundEffect(effect.id as any)}
+                      />
+                    ))}
+                  </div>
+                </div>
+                
+                {/* Intensity Selection (only if background effect is set) */}
+                {backgroundEffect !== 'none' && (
+                  <div>
+                    <h4 className="text-sm font-semibold mb-3 text-gray-700 dark:text-gray-300">Effect Intensity</h4>
+                    <div className="flex gap-2">
+                      {intensityLevels.map(level => (
+                        <button
+                          key={level.id}
+                          className={`flex-1 px-3 py-2 text-sm rounded-lg transition-all duration-200 ${
+                            backgroundIntensity === level.id
+                              ? 'bg-primary text-white'
+                              : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+                          }`}
+                          onClick={() => setBackgroundIntensity(level.id as any)}
+                        >
+                          {level.name}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </GlassCard>
+            </div>
+            
+            {/* Preview Column */}
+            <div className="lg:col-span-2">
+              <div className="grid grid-cols-1 gap-6">
+                {/* Large Preview */}
+                <GlassCard
+                  variant={selectedCardVariant as any}
+                  size="lg"
+                  blurStrength={blurStrength}
+                  transparency={transparency}
+                  backgroundEffect={backgroundEffect}
+                  backgroundIntensity={backgroundIntensity}
+                  elevation="floating"
+                  className="min-h-[240px] transition-all duration-300 relative"
+                >
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="text-center">
+                      <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-3">Glass Effect Preview</h3>
+                      <p className="text-gray-600 dark:text-gray-300 mb-6 max-w-md">
+                        This is a real-time preview of the Vision Pro inspired glass effect with your selected settings.
+                      </p>
+                      <GlassButton variant="primary" size="pill">
+                        <Wand2 className="h-4 w-4 mr-2" />
+                        Interactive Glass Button
+                      </GlassButton>
+                    </div>
+                  </div>
+                </GlassCard>
+                
+                {/* Small Cards Showcase */}
+                <div className="grid grid-cols-2 gap-4">
+                  <GlassCard
+                    variant={selectedCardVariant as any}
+                    size="md"
+                    blurStrength={blurStrength}
+                    transparency={transparency}
+                    backgroundEffect={backgroundEffect === 'none' ? 'gradient' : backgroundEffect}
+                    backgroundIntensity={backgroundIntensity}
+                    elevation="raised"
+                    className="h-[180px] flex items-center justify-center"
+                  >
+                    <div className="text-center">
+                      <div className="mx-auto w-12 h-12 mb-3 rounded-full bg-primary/20 dark:bg-primary/30 flex items-center justify-center">
+                        <Shield className="h-6 w-6 text-primary" />
+                      </div>
+                      <h4 className="font-medium text-gray-800 dark:text-white">Protected View</h4>
+                    </div>
+                  </GlassCard>
+                  
+                  <GlassCard
+                    variant={selectedCardVariant as any}
+                    size="md"
+                    blurStrength={blurStrength}
+                    transparency={transparency}
+                    backgroundEffect={backgroundEffect === 'none' ? 'glow' : backgroundEffect}
+                    backgroundIntensity={backgroundIntensity}
+                    elevation="raised"
+                    className="h-[180px] flex items-center justify-center"
+                  >
+                    <div className="text-center">
+                      <div className="mx-auto w-12 h-12 mb-3 rounded-full bg-primary/20 dark:bg-primary/30 flex items-center justify-center">
+                        <LayoutGrid className="h-6 w-6 text-primary" />
+                      </div>
+                      <h4 className="font-medium text-gray-800 dark:text-white">Spatial View</h4>
+                    </div>
+                  </GlassCard>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Card Variants Section */}
         <section className="mb-16">
           <h2 className="text-2xl font-semibold mb-6 text-gray-800 dark:text-white">Glass Card Variants</h2>
@@ -221,7 +511,12 @@ const DesignSystemDemo: React.FC = () => {
               </div>
             </GlassCard>
 
-            <GlassCard variant="colored" elevation="floating" interactive={true}>
+            <GlassCard 
+              variant="colored" 
+              elevation="floating" 
+              interactive={true}
+              backgroundEffect="gradient"
+            >
               <div className="flex items-start gap-4">
                 <div className="bg-white/20 backdrop-blur-sm p-3 rounded-full">
                   <Bell className="h-5 w-5 text-primary" />
@@ -236,7 +531,12 @@ const DesignSystemDemo: React.FC = () => {
               </div>
             </GlassCard>
 
-            <GlassCard variant="dark" className="text-white">
+            <GlassCard 
+              variant="dark" 
+              className="text-white"
+              backgroundEffect="glow"
+              backgroundIntensity="low"
+            >
               <div className="flex items-start gap-4">
                 <div className="bg-white/10 backdrop-blur-sm p-3 rounded-full">
                   <Shield className="h-5 w-5 text-white" />
@@ -248,7 +548,12 @@ const DesignSystemDemo: React.FC = () => {
               </div>
             </GlassCard>
 
-            <GlassCard variant="transparent" elevation="raised" className="border border-primary/20 dark:border-primary/30">
+            <GlassCard 
+              variant="frosted" 
+              elevation="raised" 
+              className="border-primary/20 dark:border-primary/30"
+              blurStrength="xl"
+            >
               <div className="flex items-start gap-4">
                 <div className="bg-primary/10 dark:bg-primary/20 p-3 rounded-full">
                   <BookOpen className="h-5 w-5 text-primary" />
@@ -293,7 +598,14 @@ const DesignSystemDemo: React.FC = () => {
         <section className="mb-16">
           <h2 className="text-2xl font-semibold mb-6 text-gray-800 dark:text-white">Feature Cards</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <GlassCard variant={theme === 'light' ? 'default' : 'dark'} size="lg" elevation="floating" className="h-full">
+            <GlassCard 
+              variant={theme === 'light' ? 'default' : 'dark'} 
+              size="lg" 
+              elevation="floating" 
+              className="h-full"
+              backgroundEffect="gradient"
+              backgroundIntensity="low"
+            >
               <div className="flex flex-col h-full">
                 <div className={`bg-gradient-to-br ${theme === 'light' ? 'from-primary/20 to-accent/20' : 'from-primary/30 to-accent/30'} p-4 rounded-xl mb-4 w-fit`}>
                   <Award className="h-8 w-8 text-primary" />
@@ -313,7 +625,14 @@ const DesignSystemDemo: React.FC = () => {
               </div>
             </GlassCard>
             
-            <GlassCard variant={theme === 'light' ? 'default' : 'dark'} size="lg" elevation="floating" className="h-full">
+            <GlassCard 
+              variant={theme === 'light' ? 'default' : 'dark'} 
+              size="lg" 
+              elevation="floating" 
+              className="h-full"
+              backgroundEffect="noise"
+              backgroundIntensity="low"
+            >
               <div className="flex flex-col h-full">
                 <div className={`${theme === 'light' ? 'bg-gradient-to-br from-indigo-100 to-purple-100' : 'bg-gradient-to-br from-indigo-900/30 to-purple-900/30'} p-4 rounded-xl mb-4 w-fit`}>
                   <Users className={`h-8 w-8 ${theme === 'light' ? 'text-indigo-500' : 'text-indigo-300'}`} />
@@ -333,7 +652,14 @@ const DesignSystemDemo: React.FC = () => {
               </div>
             </GlassCard>
             
-            <GlassCard variant={theme === 'light' ? 'default' : 'dark'} size="lg" elevation="floating" className="h-full">
+            <GlassCard 
+              variant={theme === 'light' ? 'default' : 'dark'} 
+              size="lg" 
+              elevation="floating" 
+              className="h-full"
+              backgroundEffect="glow"
+              backgroundIntensity="low"
+            >
               <div className="flex flex-col h-full">
                 <div className={`${theme === 'light' ? 'bg-gradient-to-br from-blue-100 to-cyan-100' : 'bg-gradient-to-br from-blue-900/30 to-cyan-900/30'} p-4 rounded-xl mb-4 w-fit`}>
                   <Briefcase className={`h-8 w-8 ${theme === 'light' ? 'text-blue-500' : 'text-blue-300'}`} />
@@ -361,6 +687,9 @@ const DesignSystemDemo: React.FC = () => {
             variant={theme === 'light' ? 'colored' : 'dark'} 
             size="xl" 
             className="relative overflow-hidden border-primary/30"
+            blurStrength="lg"
+            backgroundEffect="refraction"
+            backgroundIntensity="medium"
           >
             <div className="absolute inset-0 z-0">
               <div className={`absolute inset-0 bg-gradient-to-br ${theme === 'light' ? 'from-primary/20 via-secondary/20 to-transparent' : 'from-primary/30 via-secondary/30 to-transparent'} opacity-50`} />
