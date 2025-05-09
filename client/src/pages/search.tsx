@@ -639,16 +639,16 @@ const SearchPage = () => {
     <DashboardLayout hideRightSidebar={true}>
       <div className="container mx-auto px-4 py-6">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Discover & Connect</h1>
-          <p className="text-gray-600">Find content, professionals, and networking opportunities in one place</p>
+          <h1 className="text-3xl font-bold mb-3 text-white">Discover & Connect</h1>
+          <p className="text-gray-300">Find content, professionals, and networking opportunities in one place</p>
         </div>
 
         {/* Main Tabs: Search vs Smart Connect */}
         <Tabs defaultValue={activeCategory === "smart-connect" ? "smart-connect" : "search"} className="mb-6">
-          <TabsList className="w-full border-b shadow-sm rounded-lg overflow-hidden">
+          <TabsList className="w-full backdrop-blur-xl bg-[rgba(20,20,20,0.7)] border border-[rgba(255,255,255,0.08)] rounded-xl shadow-md">
             <TabsTrigger 
               value="search" 
-              className="flex items-center justify-center gap-2 flex-1 py-4 data-[state=active]:bg-gradient-to-b data-[state=active]:from-white data-[state=active]:to-gray-50 data-[state=active]:shadow-sm data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary transition-all"
+              className="flex items-center justify-center gap-2 flex-1 py-4 text-white data-[state=active]:bg-[rgba(0,100,255,0.1)] data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:shadow-[0_0_15px_rgba(0,209,255,0.2)] data-[state=active]:text-primary transition-all duration-300"
               onClick={() => activeCategory !== "pulses" && setActiveCategory("pulses")}
             >
               <SearchIcon size={18} />
@@ -656,7 +656,7 @@ const SearchPage = () => {
             </TabsTrigger>
             <TabsTrigger 
               value="smart-connect" 
-              className="flex items-center justify-center gap-2 flex-1 py-4 data-[state=active]:bg-gradient-to-b data-[state=active]:from-white data-[state=active]:to-gray-50 data-[state=active]:shadow-sm data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary transition-all"
+              className="flex items-center justify-center gap-2 flex-1 py-4 text-white data-[state=active]:bg-[rgba(0,100,255,0.1)] data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:shadow-[0_0_15px_rgba(0,209,255,0.2)] data-[state=active]:text-primary transition-all duration-300"
               onClick={() => activeCategory !== "smart-connect" && setActiveCategory("smart-connect")}
             >
               <UserPlus size={18} />
@@ -673,14 +673,14 @@ const SearchPage = () => {
                 <input
                   type="search"
                   placeholder="Search pulses, profiles, or hashtags..."
-                  className="w-full rounded-md pl-10 py-2 bg-white border border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 placeholder:text-gray-400 text-gray-800 transition-all"
+                  className="w-full rounded-xl pl-10 py-3 backdrop-blur-md bg-[rgba(25,25,30,0.7)] border border-[rgba(255,255,255,0.12)] shadow-md focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/40 placeholder:text-gray-400 text-white transition-all duration-300"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
               <button 
                 type="submit"
-                className="px-5 py-2 rounded-md bg-primary text-white hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-sm font-medium transition-all min-w-[100px]"
+                className="px-5 py-2.5 rounded-xl bg-primary text-white hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-md hover:shadow-lg font-medium transition-all duration-300 hover:scale-[1.02] min-w-[110px]"
                 disabled={isLoading}
               >
                 {isLoading ? (
@@ -699,24 +699,24 @@ const SearchPage = () => {
 
             {/* Search Category Tabs */}
             <Tabs defaultValue={activeCategory === "smart-connect" ? "pulses" : activeCategory} onValueChange={handleTabChange}>
-              <TabsList className="mb-6 bg-white rounded-full p-1 border border-gray-200 shadow-sm">
+              <TabsList className="mb-6 backdrop-blur-md bg-[rgba(25,25,30,0.5)] rounded-full p-1 border border-[rgba(255,255,255,0.1)] shadow-md">
                 <TabsTrigger 
                   value="pulses" 
-                  className="flex items-center gap-1.5 py-2 px-4 rounded-full data-[state=active]:bg-primary/5 data-[state=active]:text-primary data-[state=active]:shadow-sm data-[state=active]:border-primary/10 transition-all"
+                  className="flex items-center gap-1.5 py-2 px-4 rounded-full text-gray-300 data-[state=active]:bg-[rgba(0,100,255,0.1)] data-[state=active]:text-primary data-[state=active]:shadow-[0_0_10px_rgba(0,209,255,0.2)] data-[state=active]:border-primary/20 transition-all duration-300"
                 >
                   <MessageSquare size={16} />
                   <span>Pulses</span>
                 </TabsTrigger>
                 <TabsTrigger 
                   value="profiles" 
-                  className="flex items-center gap-1.5 py-2 px-4 rounded-full data-[state=active]:bg-primary/5 data-[state=active]:text-primary data-[state=active]:shadow-sm data-[state=active]:border-primary/10 transition-all"
+                  className="flex items-center gap-1.5 py-2 px-4 rounded-full text-gray-300 data-[state=active]:bg-[rgba(0,100,255,0.1)] data-[state=active]:text-primary data-[state=active]:shadow-[0_0_10px_rgba(0,209,255,0.2)] data-[state=active]:border-primary/20 transition-all duration-300"
                 >
                   <Users size={16} />
                   <span>Profiles</span>
                 </TabsTrigger>
                 <TabsTrigger 
                   value="hashtags" 
-                  className="flex items-center gap-1.5 py-2 px-4 rounded-full data-[state=active]:bg-primary/5 data-[state=active]:text-primary data-[state=active]:shadow-sm data-[state=active]:border-primary/10 transition-all"
+                  className="flex items-center gap-1.5 py-2 px-4 rounded-full text-gray-300 data-[state=active]:bg-[rgba(0,100,255,0.1)] data-[state=active]:text-primary data-[state=active]:shadow-[0_0_10px_rgba(0,209,255,0.2)] data-[state=active]:border-primary/20 transition-all duration-300"
                 >
                   <Hash size={16} />
                   <span>Hashtags</span>
@@ -765,27 +765,28 @@ const SearchPage = () => {
                         photoURL: string | null;
                       };
                     }) => (
-                      <Card key={pulse.id} className="hover:border-primary/40 transition-colors cursor-pointer">
-                        <CardContent className="p-4">
+                      <Card key={pulse.id} className="backdrop-blur-md bg-[rgba(25,25,30,0.7)] border border-[rgba(255,255,255,0.1)] rounded-xl shadow-lg hover:shadow-xl hover:border-primary/30 transition-all duration-300 cursor-pointer overflow-hidden group">
+                        <CardContent className="p-5 relative">
+                          <div className="absolute top-0 right-0 w-24 h-24 bg-primary/10 rounded-full -mt-12 -mr-12 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                           <div className="flex items-center gap-3 mb-3">
-                            <Avatar>
+                            <Avatar className="border-2 border-[rgba(255,255,255,0.1)] group-hover:border-primary/30 transition-all duration-300">
                               <AvatarImage src={pulse.user.photoURL || undefined} />
-                              <AvatarFallback>{getInitials(pulse.user.name)}</AvatarFallback>
+                              <AvatarFallback className="bg-primary/20 text-primary">{getInitials(pulse.user.name)}</AvatarFallback>
                             </Avatar>
                             <div>
-                              <h3 className="font-medium">{pulse.user.name}</h3>
-                              <p className="text-sm text-gray-500">
+                              <h3 className="font-medium text-white group-hover:text-primary transition-colors duration-300">{pulse.user.name}</h3>
+                              <p className="text-sm text-gray-400">
                                 {formatDistanceToNow(new Date(pulse.createdAt), { addSuffix: true })}
                               </p>
                             </div>
                           </div>
-                          <h4 className="font-medium mb-2">{pulse.title}</h4>
-                          <p className="text-gray-600 mb-3 line-clamp-2">{pulse.content}</p>
+                          <h4 className="font-medium mb-2 text-white group-hover:text-primary transition-colors duration-300">{pulse.title}</h4>
+                          <p className="text-gray-300 mb-4 line-clamp-2">{pulse.content}</p>
                           <div className="flex">
                             <Badge variant={
                               pulse.type === "poll" ? "secondary" : 
                               pulse.type === "media-pulse" ? "outline" : "default"
-                            }>
+                            } className="bg-[rgba(0,209,255,0.1)] text-primary border-primary/30 px-3 py-1">
                               {pulse.type === "poll" ? "Poll" : 
                                pulse.type === "media-pulse" ? "Media" : "Project"}
                             </Badge>
