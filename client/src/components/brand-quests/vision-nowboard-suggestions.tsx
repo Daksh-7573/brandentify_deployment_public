@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useLocation } from 'wouter';
+import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { 
   VisionCard, 
@@ -9,7 +10,6 @@ import {
   VisionCardContent,
   VisionCardFooter
 } from '@/components/ui/vision-card';
-import { VisionButton } from '@/components/ui/vision-button';
 import { Progress } from '@/components/ui/progress';
 import { ArrowRight, Zap, MessageSquare, ThumbsUp, Bot, RefreshCw, Lightbulb } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
@@ -242,9 +242,9 @@ export function VisionNowboardSuggestions({ userId, className, questType }: Visi
           <VisionCardDescription className="text-[#A1A1AA]">
             <div className="flex items-center justify-between">
               <span>Failed to load recommendations</span>
-              <VisionButton size="sm" variant="outline" onClick={() => refetch()}>
+              <Button size="sm" variant="outline" onClick={() => refetch()} className="bg-white/5 border-[#3A3A3C] text-[#E5E5E7] hover:bg-[#4F8CFF]/10 hover:border-[#4F8CFF]/20">
                 <RefreshCw className="h-4 w-4 mr-2" /> Retry
-              </VisionButton>
+              </Button>
             </div>
           </VisionCardDescription>
         </VisionCardHeader>
@@ -266,9 +266,9 @@ export function VisionNowboardSuggestions({ userId, className, questType }: Visi
           </VisionCardTitle>
           <VisionCardDescription className="flex justify-between text-[#A1A1AA]">
             <span>Musk-recommended actions to complete your quests</span>
-            <VisionButton size="sm" variant="ghost" className="h-6 p-1 text-[#A1A1AA] hover:text-[#E5E5E7]" onClick={() => refetch()}>
+            <Button size="sm" variant="ghost" className="h-6 p-1 text-[#A1A1AA] hover:text-[#E5E5E7]" onClick={() => refetch()}>
               <RefreshCw className="h-3 w-3" />
-            </VisionButton>
+            </Button>
           </VisionCardDescription>
         </VisionCardHeader>
         <VisionCardContent>
@@ -283,7 +283,7 @@ export function VisionNowboardSuggestions({ userId, className, questType }: Visi
   }
   
   return (
-    <VisionCard className={cn(className)} variant="dark" hover="glow">
+    <VisionCard className={cn(className)} variant="dark" hover="subtle">
       <VisionCardHeader className="pb-2">
         <VisionCardTitle className="flex items-center gap-2">
           <Avatar className="h-8 w-8">
@@ -295,9 +295,9 @@ export function VisionNowboardSuggestions({ userId, className, questType }: Visi
         </VisionCardTitle>
         <VisionCardDescription className="flex justify-between text-[#A1A1AA]">
           <span>Musk-recommended actions to complete your quests</span>
-          <VisionButton size="sm" variant="ghost" className="h-6 p-1 text-[#A1A1AA] hover:text-[#E5E5E7]" onClick={() => refetch()}>
+          <Button size="sm" variant="ghost" className="h-6 p-1 text-[#A1A1AA] hover:text-[#E5E5E7]" onClick={() => refetch()}>
             <RefreshCw className="h-3 w-3" />
-          </VisionButton>
+          </Button>
         </VisionCardDescription>
       </VisionCardHeader>
       <VisionCardContent>
@@ -344,23 +344,23 @@ export function VisionNowboardSuggestions({ userId, className, questType }: Visi
                 </div>
               </div>
               {suggestion.progress === suggestion.targetCount ? (
-                <VisionButton 
-                  variant="success" 
+                <Button 
+                  variant="ghost" 
                   size="sm"
-                  className="flex-shrink-0 text-xs cursor-default"
+                  className="flex-shrink-0 text-xs text-[#4ADE80] cursor-default bg-[#4ADE80]/10 border border-[#4ADE80]/20"
                   disabled
                 >
                   Completed <Zap className="ml-1 h-3 w-3" />
-                </VisionButton>
+                </Button>
               ) : (
-                <VisionButton 
+                <Button 
                   variant="outline" 
                   size="sm"
-                  className="flex-shrink-0 text-xs"
+                  className="flex-shrink-0 text-xs bg-white/5 border-[#3A3A3C] text-[#E5E5E7] hover:bg-[#4F8CFF]/10 hover:border-[#4F8CFF]/20 group-hover:text-[#E5E5E7]"
                   onClick={() => handleAction(suggestion)}
                 >
                   {suggestion.actionText} <ArrowRight className="ml-1 h-3 w-3" />
-                </VisionButton>
+                </Button>
               )}
             </div>
           ))}
