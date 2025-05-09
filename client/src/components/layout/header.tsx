@@ -99,7 +99,7 @@ export default function Header() {
   const photoURL = userData?.photoURL || user?.photoURL;
 
   return (
-    <nav className="backdrop-blur-glass bg-opacity-15 border-b border-glass-border shadow-glass fixed top-0 left-0 right-0 z-50">
+    <nav className="backdrop-blur-md bg-white/25 border-b border-glass-border shadow-glass fixed top-0 left-0 right-0 z-50">
       <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
@@ -224,7 +224,7 @@ export default function Header() {
             <Button 
               variant="default" 
               size="sm"
-              className="hidden sm:flex px-4 py-2 text-sm font-medium bg-primary-glass/30 hover:bg-primary-glass/40 backdrop-blur-sm text-white shadow-glass-glow items-center gap-1.5 border border-glass-border"
+              className="hidden sm:flex px-4 py-2 text-sm font-medium bg-gradient-to-r from-primary-glass/40 to-purple-500/40 hover:from-primary-glass/50 hover:to-purple-500/50 backdrop-blur-md text-white shadow-glass-glow items-center gap-1.5 border border-glass-border transition-all duration-200"
               onClick={() => setLocation('/create-pulse')}
             >
               <Zap className="h-4 w-4" /> Create Pulse
@@ -459,7 +459,7 @@ export default function Header() {
               <Button
                 variant="default"
                 size="sm"
-                className="w-full mt-3 justify-center py-3 text-sm font-medium bg-primary-glass/30 hover:bg-primary-glass/40 backdrop-blur-sm text-white shadow-glass-glow rounded-md border border-glass-border"
+                className="w-full mt-3 justify-center py-3 text-sm font-medium bg-gradient-to-r from-primary-glass/40 to-purple-500/40 hover:from-primary-glass/50 hover:to-purple-500/50 backdrop-blur-md text-white shadow-glass-glow rounded-md border border-glass-border transition-all duration-200"
                 onClick={() => {
                   setLocation('/create-pulse');
                   setIsMobileMenuOpen(false);
