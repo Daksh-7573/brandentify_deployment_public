@@ -209,14 +209,14 @@ export default function Header() {
             <Button
               variant="ghost"
               size="icon"
-              className="md:hidden rounded-md p-2 hover:bg-gray-100 transition-colors"
+              className="md:hidden rounded-md p-2 hover:bg-glass-bg/25 hover:shadow-glass-hover transition-all border border-glass-border/50"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               aria-label="Mobile menu"
             >
               {isMobileMenuOpen ? (
-                <X className="h-5 w-5 text-gray-600" />
+                <X className="h-5 w-5 text-glass-text" />
               ) : (
-                <Menu className="h-5 w-5 text-gray-600" />
+                <Menu className="h-5 w-5 text-glass-text" />
               )}
             </Button>
 
@@ -224,7 +224,7 @@ export default function Header() {
             <Button 
               variant="default" 
               size="sm"
-              className="hidden sm:flex px-4 py-2 text-sm font-medium bg-gradient-to-r from-primary to-indigo-600 hover:from-primary/90 hover:to-indigo-700 text-white shadow-sm items-center gap-1.5"
+              className="hidden sm:flex px-4 py-2 text-sm font-medium bg-primary-glass/30 hover:bg-primary-glass/40 backdrop-blur-sm text-white shadow-glass-glow items-center gap-1.5 border border-glass-border"
               onClick={() => setLocation('/create-pulse')}
             >
               <Zap className="h-4 w-4" /> Create Pulse
@@ -236,8 +236,10 @@ export default function Header() {
             <Button
               variant="ghost"
               size="icon"
-              className={`hidden sm:flex rounded-full h-9 w-9 items-center justify-center hover:bg-gray-100 transition-colors relative ${
-                isActive('/messages') ? 'text-primary bg-primary/5' : 'text-gray-600'
+              className={`hidden sm:flex rounded-full h-9 w-9 items-center justify-center transition-all relative ${
+                isActive('/messages') 
+                  ? 'text-white bg-primary-glass/20 backdrop-blur-sm shadow-glass-glow' 
+                  : 'text-glass-text hover:bg-glass-bg/25 hover:shadow-glass-hover'
               }`}
               onClick={() => {
                 setLocation('/messages');
@@ -310,8 +312,8 @@ export default function Header() {
               size="sm"
               className={`w-full justify-start py-2.5 text-sm font-medium rounded-md ${
                 isActive('/industry-pulse') 
-                  ? 'text-primary bg-primary/5' 
-                  : 'text-gray-700 hover:bg-gray-50 hover:text-primary'
+                  ? 'text-white bg-primary-glass/20 backdrop-blur-sm shadow-glass-glow' 
+                  : 'text-glass-text hover:bg-glass-bg/25 hover:shadow-glass-hover'
               }`}
               onClick={() => {
                 setLocation('/industry-pulse');
@@ -327,8 +329,8 @@ export default function Header() {
               size="sm"
               className={`w-full justify-start py-2.5 text-sm font-medium rounded-md ${
                 isActive('/search') 
-                  ? 'text-primary bg-primary/5' 
-                  : 'text-gray-700 hover:bg-gray-50 hover:text-primary'
+                  ? 'text-white bg-primary-glass/20 backdrop-blur-sm shadow-glass-glow' 
+                  : 'text-glass-text hover:bg-glass-bg/25 hover:shadow-glass-hover'
               }`}
               onClick={() => {
                 setLocation('/search');
@@ -344,8 +346,8 @@ export default function Header() {
               size="sm"
               className={`flex items-center py-2.5 text-sm font-medium rounded-md ${
                 isActive('/messages') 
-                  ? 'text-primary bg-primary/5' 
-                  : 'text-gray-700 hover:bg-gray-50 hover:text-primary'
+                  ? 'text-white bg-primary-glass/20 backdrop-blur-sm shadow-glass-glow' 
+                  : 'text-glass-text hover:bg-glass-bg/25 hover:shadow-glass-hover'
               }`}
               onClick={() => {
                 setLocation('/messages');
@@ -371,8 +373,8 @@ export default function Header() {
               size="sm"
               className={`w-full justify-start py-2.5 text-sm font-medium rounded-md ${
                 isActive('/radar') 
-                  ? 'text-primary bg-primary/5' 
-                  : 'text-gray-700 hover:bg-gray-50 hover:text-primary'
+                  ? 'text-white bg-primary-glass/20 backdrop-blur-sm shadow-glass-glow' 
+                  : 'text-glass-text hover:bg-glass-bg/25 hover:shadow-glass-hover'
               }`}
               onClick={() => {
                 setLocation('/radar');
@@ -389,8 +391,8 @@ export default function Header() {
               size="sm"
               className={`w-full justify-start py-2.5 text-sm font-medium rounded-md ${
                 isActive('/brand-quests') || isActive('/career-quests')
-                  ? 'text-primary bg-primary/5' 
-                  : 'text-gray-700 hover:bg-gray-50 hover:text-primary'
+                  ? 'text-white bg-primary-glass/20 backdrop-blur-sm shadow-glass-glow' 
+                  : 'text-glass-text hover:bg-glass-bg/25 hover:shadow-glass-hover'
               }`}
               onClick={() => {
                 setLocation('/brand-quests');
@@ -457,7 +459,7 @@ export default function Header() {
               <Button
                 variant="default"
                 size="sm"
-                className="w-full mt-3 justify-center py-3 text-sm font-medium bg-gradient-to-r from-primary to-indigo-600 hover:from-primary/90 hover:to-indigo-700 shadow-sm rounded-md"
+                className="w-full mt-3 justify-center py-3 text-sm font-medium bg-primary-glass/30 hover:bg-primary-glass/40 backdrop-blur-sm text-white shadow-glass-glow rounded-md border border-glass-border"
                 onClick={() => {
                   setLocation('/create-pulse');
                   setIsMobileMenuOpen(false);
