@@ -18,8 +18,8 @@ const VisionCard = React.forwardRef<
   
   const hoverClasses = {
     none: "",
-    subtle: "hover:border-[#4F8CFF]/40 hover:bg-white/8 transition-colors",
-    glow: "hover:border-[#4F8CFF]/40 hover:bg-white/8 hover:shadow-[0_0_15px_rgba(79,140,255,0.2)] transition-all"
+    subtle: "hover:border-[#4F8CFF]/40 hover:bg-white/8 transition-all duration-300 ease-in-out",
+    glow: "hover:border-[#4F8CFF]/40 hover:bg-white/8 hover:shadow-[0_0_20px_rgba(79,140,255,0.25)] transition-all duration-300 ease-out"
   };
   
   return (
