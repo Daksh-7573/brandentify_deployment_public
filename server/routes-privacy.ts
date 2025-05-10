@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Router } from 'express';
 import { privacyService } from './services/privacy-service';
 import { authenticateJWT } from './middleware/auth-middleware';
 import { consentCategoryEnum, consentStatusEnum, geoRegionEnum } from '../shared/privacy-schema';
@@ -84,7 +84,7 @@ export function setupPrivacyRoutes(app: express.Express) {
    */
   
   // Get current cookie consent preferences
-  router.get('/cookie-consent', authenticate, async (req, res) => {
+  router.get('/cookie-consent', authenticateJWT, async (req, res) => {
     try {
       const consents = await privacyService.getUserConsents(req.user!.username);
       res.json(consents);
@@ -95,7 +95,7 @@ export function setupPrivacyRoutes(app: express.Express) {
   });
 
   // Set cookie consent preference
-  router.post('/cookie-consent', authenticate, async (req, res) => {
+  router.post('/cookie-consent', authenticateJWT, async (req, res) => {
     try {
       const { category, status } = consentPreferenceSchema.parse(req.body);
       
@@ -119,7 +119,7 @@ export function setupPrivacyRoutes(app: express.Express) {
   });
 
   // Check specific consent status
-  router.get('/cookie-consent/:category', authenticate, async (req, res) => {
+  router.get('/cookie-consent/:category', authenticateJWT, async (req, res) => {
     try {
       const category = req.params.category;
       
@@ -144,7 +144,7 @@ export function setupPrivacyRoutes(app: express.Express) {
    */
   
   // Request data export
-  router.post('/data-export', authenticate, rateLimitPrivacyRequests, async (req, res) => {
+  router.post('/data-export', authenticateJWT, rateLimitPrivacyRequests, async (req, res) => {
     try {
       const verificationToken = await privacyService.requestDataExport(
         req.user!.username,
@@ -165,7 +165,7 @@ export function setupPrivacyRoutes(app: express.Express) {
   });
 
   // Request data deletion
-  router.post('/data-deletion', authenticate, rateLimitPrivacyRequests, async (req, res) => {
+  router.post('/data-deletion', authenticateJWT, rateLimitPrivacyRequests, async (req, res) => {
     try {
       const verificationToken = await privacyService.requestDataDeletion(
         req.user!.username,
@@ -203,7 +203,7 @@ export function setupPrivacyRoutes(app: express.Express) {
   });
 
   // Download exported data (requires admin auth in real app)
-  router.get('/download-export/:filename', authenticate, async (req, res) => {
+  router.get('/download-export/:filename', authenticateJWT, async (req, res) => {
     try {
       const { filename } = req.params;
       
@@ -231,7 +231,7 @@ export function setupPrivacyRoutes(app: express.Express) {
    */
   
   // Acknowledge privacy policy
-  router.post('/acknowledge-policy', authenticate, async (req, res) => {
+  router.post('/acknowledge-policy', authenticateJWT, async (req, res) => {
     try {
       const { policyVersion } = policyAcknowledgmentSchema.parse(req.body);
       
@@ -254,7 +254,7 @@ export function setupPrivacyRoutes(app: express.Express) {
   });
 
   // Check if user has acknowledged latest policy
-  router.get('/policy-status/:version', authenticate, async (req, res) => {
+  router.get('/policy-status/:version', authenticateJWT, async (req, res) => {
     try {
       const { version } = req.params;
       
@@ -278,7 +278,7 @@ export function setupPrivacyRoutes(app: express.Express) {
    */
   
   // Set data residency preference
-  router.post('/data-residency', authenticate, async (req, res) => {
+  router.post('/data-residency', authenticateJWT, async (req, res) => {
     try {
       const { preferredRegion, detectedRegion } = dataResidencySchema.parse(req.body);
       
@@ -300,7 +300,7 @@ export function setupPrivacyRoutes(app: express.Express) {
   });
 
   // Get data residency preference
-  router.get('/data-residency', authenticate, async (req, res) => {
+  router.get('/data-residency', authenticateJWT, async (req, res) => {
     try {
       const preference = await privacyService.getDataResidencyPreference(req.user!.username);
       
@@ -320,7 +320,7 @@ export function setupPrivacyRoutes(app: express.Express) {
    */
   
   // Set communication preferences
-  router.post('/communication-preferences', authenticate, async (req, res) => {
+  router.post('/communication-preferences', authenticateJWT, async (req, res) => {
     try {
       const preferences = communicationPreferencesSchema.parse(req.body);
       
@@ -341,7 +341,7 @@ export function setupPrivacyRoutes(app: express.Express) {
   });
 
   // Get communication preferences
-  router.get('/communication-preferences', authenticate, async (req, res) => {
+  router.get('/communication-preferences', authenticateJWT, async (req, res) => {
     try {
       const preferences = await privacyService.getCommunicationPreferences(req.user!.username);
       
@@ -361,7 +361,7 @@ export function setupPrivacyRoutes(app: express.Express) {
    */
   
   // Get user privacy logs
-  router.get('/audit-logs', authenticate, async (req, res) => {
+  router.get('/audit-logs', authenticateJWT, async (req, res) => {
     try {
       const logs = await privacyService.getUserPrivacyLogs(req.user!.username);
       res.json(logs);
