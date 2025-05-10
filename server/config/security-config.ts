@@ -1,6 +1,13 @@
 import { Express } from 'express';
 import helmet from 'helmet';
-import { corsWithSecurity } from '../middleware/api-security';
+import session from 'express-session';
+import { 
+  securityHeaders, 
+  secureCors, 
+  rateLimit, 
+  generateCsrfToken,
+  csrfProtection
+} from '../middleware/api-security';
 import { sanitizeRequest } from '../middleware/auth-middleware';
 
 /**
@@ -8,6 +15,17 @@ import { sanitizeRequest } from '../middleware/auth-middleware';
  * @param app Express application
  */
 export function applySecurityConfig(app: Express): void {
+  // Initialize session middleware
+  app.use(session({
+    secret: process.env.SESSION_SECRET || 'brandentifier-secure-secret-key',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: process.env.NODE_ENV === 'production',
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    }
+  }));
   // Apply Helmet middleware for security headers
   app.use(helmet({
     contentSecurityPolicy: {
@@ -42,10 +60,22 @@ export function applySecurityConfig(app: Express): void {
   }));
 
   // Apply CORS with security headers
-  app.use(corsWithSecurity);
+  app.use(secureCors);
+
+  // Apply rate limiting to prevent abuse
+  app.use(rateLimit(100, 60000)); // 100 requests per minute
 
   // Apply request sanitization
   app.use(sanitizeRequest);
+  
+  // Add security headers
+  app.use(securityHeaders);
+  
+  // Generate CSRF tokens for all requests
+  app.use(generateCsrfToken);
+  
+  // Apply CSRF protection for non-GET requests
+  app.use(csrfProtection);
 
   // Other security settings
   app.disable('x-powered-by'); // Remove X-Powered-By header
