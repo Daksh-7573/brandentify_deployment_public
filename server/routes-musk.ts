@@ -741,7 +741,6 @@ export const handleResumeUpload = async (req: Request, res: Response) => {
     // SECURITY: Enhanced file validation to prevent file upload attacks
     try {
       // Check file type - only accept PDF and Microsoft Word documents
-      const fileExt = path.extname(resumeFile.name).toLowerCase();
       if (!['.pdf', '.doc', '.docx', '.txt'].includes(fileExt)) {
         console.error('SECURITY: Invalid file extension detected:', fileExt);
         return res.status(400).json({
@@ -1038,28 +1037,68 @@ export const handlePitchDeckUpload = async (req: Request, res: Response) => {
       return res.status(400).json({ error: "Pitch deck file not found in the request" });
     }
     
-    // Check file type - only accept PDF for pitch decks
+    // Extract file extension for use in validation and path creation
     const fileExt = path.extname(pitchDeckFile.name).toLowerCase();
-    if (!['.pdf'].includes(fileExt)) {
-      return res.status(400).json({
-        error: "Invalid file type. Only PDF files are accepted for pitch decks."
+    
+    // SECURITY: Enhanced file validation to prevent file upload attacks
+    try {
+      // Check file type - only accept PDF for pitch decks
+      if (!['.pdf'].includes(fileExt)) {
+        console.error('SECURITY: Invalid file extension detected for pitch deck:', fileExt);
+        return res.status(400).json({
+          error: "Invalid file type. Only PDF files are accepted for pitch decks.",
+          securityCode: "INVALID_FILE_TYPE"
+        });
+      }
+      
+      // SECURITY: Also verify MIME type as a secondary security measure
+      const allowedMimeTypes = ['application/pdf'];
+      
+      if (!allowedMimeTypes.includes(pitchDeckFile.mimetype)) {
+        console.error('SECURITY: Invalid MIME type detected for pitch deck:', pitchDeckFile.mimetype);
+        return res.status(400).json({
+          error: "Invalid file type. Only PDF files are accepted for pitch decks.",
+          securityCode: "INVALID_MIME_TYPE"
+        });
+      }
+      
+      // SECURITY: Validate file size (max 20MB for pitch decks)
+      const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB in bytes
+      if (pitchDeckFile.size > MAX_FILE_SIZE) {
+        console.error('SECURITY: Pitch deck file size exceeded limit:', pitchDeckFile.size);
+        return res.status(400).json({
+          error: "File too large. Maximum file size is 20MB.",
+          securityCode: "FILE_SIZE_EXCEEDED"
+        });
+      }
+      
+      // SECURITY: Check for path traversal attempts in filename
+      const originalFilename = pitchDeckFile.name || '';
+      if (/[/\\]/.test(originalFilename) || originalFilename.includes('..')) {
+        console.error('SECURITY: Path traversal attempt detected in pitch deck filename:', originalFilename);
+        return res.status(400).json({ 
+          error: "Invalid filename", 
+          securityCode: "PATH_TRAVERSAL_ATTEMPTED" 
+        });
+      }
+      
+      // SECURITY: Sanitize file name to prevent directory traversal attacks
+      const sanitizedFileName = path.basename(pitchDeckFile.name).replace(/[^a-zA-Z0-9_\-\.]/g, '_');
+      
+      if (sanitizedFileName !== pitchDeckFile.name) {
+        console.log(`Pitch deck upload: Sanitized filename from "${pitchDeckFile.name}" to "${sanitizedFileName}"`);
+        pitchDeckFile.name = sanitizedFileName;
+      }
+      
+      console.log('SECURITY: File validation passed for pitch deck upload');
+    } catch (error) {
+      console.error('SECURITY: Error during file validation for pitch deck:', error);
+      return res.status(400).json({ 
+        error: "File validation failed",
+        securityCode: "FILE_VALIDATION_ERROR"
       });
     }
-    
-    // SECURITY: Validate file size (max 20MB for pitch decks)
-    const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB in bytes
-    if (pitchDeckFile.size > MAX_FILE_SIZE) {
-      return res.status(400).json({
-        error: "File too large. Maximum file size is 20MB."
-      });
-    }
-    
-    // SECURITY: Sanitize file name to prevent directory traversal attacks
-    const sanitizedFileName = path.basename(pitchDeckFile.name).replace(/[^a-zA-Z0-9_\-\.]/g, '_');
-    if (sanitizedFileName !== pitchDeckFile.name) {
-      console.log(`Pitch deck upload: Sanitized filename from "${pitchDeckFile.name}" to "${sanitizedFileName}"`);
-      pitchDeckFile.name = sanitizedFileName;
-    }
+    // Note: We've already sanitized the filename inside the try block above
     
     // SECURITY: Create uploads directory if it doesn't exist using a secure path
     // Use absolute path construction to prevent path traversal
