@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from "express";
 import { SecurityMonitoringService } from "../services/security-monitoring-service";
-import { getUserFromRequest } from "./auth-middleware";
 
 /**
  * Middleware to log security events for sensitive operations
@@ -29,7 +28,7 @@ export function logSecurityEvent(
         res.end = originalEnd;
         
         // Get user if available
-        const user = getUserFromRequest(req);
+        const userId = req.user?.id ? req.user.id.toString() : null;
         
         // Determine success/failure based on status code
         const status = res.statusCode >= 400 ? "failure" : "success";
@@ -40,7 +39,7 @@ export function logSecurityEvent(
           action,
           severity,
           status,
-          userId: user?.username,
+          userId,
           ...metadata,
           details: {
             params: req.params,
@@ -73,7 +72,7 @@ export function errorMonitoringMiddleware(err: any, req: Request, res: Response,
     const metadata = SecurityMonitoringService.getRequestMetadata(req);
     
     // Get user if available
-    const user = getUserFromRequest(req);
+    const userId = req.user?.id ? req.user.id.toString() : null;
     
     // Determine severity based on status code
     let severity: "info" | "low" | "medium" | "high" | "critical" = "medium";
@@ -98,7 +97,7 @@ export function errorMonitoringMiddleware(err: any, req: Request, res: Response,
       severity,
       message,
       stackTrace,
-      userId: user?.username,
+      userId: userId,
       ...metadata,
       requestMethod: metadata.requestMethod,
       affectedData: {
@@ -184,7 +183,7 @@ export function attackDetectionMiddleware(req: Request, res: Response, next: Nex
     };
     
     // Get user if available
-    const user = getUserFromRequest(req);
+    // Get user ID if available
     
     // Convert request data to string for pattern matching
     const dataString = JSON.stringify(requestData).toLowerCase();
@@ -218,7 +217,7 @@ export function attackDetectionMiddleware(req: Request, res: Response, next: Nex
         attackType: attackType as any,
         severity: "medium", // Default to medium
         blocked: false, // Just detecting, not blocking yet
-        userId: user?.username,
+      userId: userId,
         ...metadata,
         requestData: requestData,
         headers: req.headers,
@@ -243,7 +242,7 @@ export function attackDetectionMiddleware(req: Request, res: Response, next: Nex
           action: `Blocked ${attackType} attack attempt`,
           severity: "high",
           status: "blocked",
-          userId: user?.username,
+      userId: userId,
           ...metadata,
           details: {
             attackType,
@@ -282,7 +281,7 @@ export function adminActionLoggingMiddleware(req: Request, res: Response, next: 
       const metadata = SecurityMonitoringService.getRequestMetadata(req);
       
       // Get user
-      const user = getUserFromRequest(req);
+    // Get user ID if available
       
       if (!user) {
         // If no user is found for an admin route, log as a security event
@@ -370,14 +369,14 @@ export function requestMetricsMiddleware(req: Request, res: Response, next: Next
         // For very slow requests, log as a system event for investigation
         if (duration > 5000) {
           const metadata = SecurityMonitoringService.getRequestMetadata(req);
-          const user = getUserFromRequest(req);
+          const userId = req.user?.id ? req.user.id.toString() : null;
           
           SecurityMonitoringService.logSystemError({
             errorType: "PerformanceIssue",
             component: "api",
             severity: "medium",
             message: `Slow request detected: ${req.method} ${req.originalUrl} took ${duration}ms`,
-            userId: user?.username,
+      userId: userId,
             ...metadata,
             requestMethod: metadata.requestMethod,
             affectedData: {

@@ -69,8 +69,7 @@ router.get("/api/admin/security/logs",
  * Get attack attempts with filtering
  */
 router.get("/api/admin/security/attacks", 
-  authenticateJWT,
-  authorize(['admin']), 
+  requireAdmin, 
   logSecurityEvent("admin_action", "View attack attempts", "medium"),
   async (req: Request, res: Response) => {
     try {
@@ -116,8 +115,7 @@ router.get("/api/admin/security/attacks",
  * Get system errors with filtering
  */
 router.get("/api/admin/security/errors", 
-  authenticateJWT,
-  authorize(['admin']), 
+  requireAdmin, 
   logSecurityEvent("admin_action", "View system errors", "medium"),
   async (req: Request, res: Response) => {
     try {
@@ -165,8 +163,7 @@ router.get("/api/admin/security/errors",
  * Mark a system error as resolved
  */
 router.patch("/api/admin/security/errors/:id", 
-  authenticateJWT,
-  authorize(['admin']), 
+  requireAdmin, 
   logSecurityEvent("admin_action", "Update system error status", "medium"),
   async (req: Request, res: Response) => {
     try {
@@ -204,8 +201,7 @@ router.patch("/api/admin/security/errors/:id",
  * Get security statistics for dashboard
  */
 router.get("/api/admin/security/statistics", 
-  authenticateJWT,
-  authorize(['admin']), 
+  requireAdmin, 
   async (req: Request, res: Response) => {
     try {
       const { timeRange = "week" } = req.query;
@@ -232,8 +228,7 @@ router.get("/api/admin/security/statistics",
  * Get vulnerability scans
  */
 router.get("/api/admin/security/vulnerability-scans", 
-  authenticateJWT,
-  authorize(['admin']), 
+  requireAdmin, 
   logSecurityEvent("admin_action", "View vulnerability scans", "medium"),
   async (req: Request, res: Response) => {
     try {
@@ -273,8 +268,7 @@ router.get("/api/admin/security/vulnerability-scans",
  * Create a new vulnerability scan
  */
 router.post("/api/admin/security/vulnerability-scans", 
-  authenticateJWT,
-  authorize(['admin']), 
+  requireAdmin, 
   logSecurityEvent("admin_action", "Create vulnerability scan", "medium"),
   async (req: Request, res: Response) => {
     try {
@@ -311,8 +305,7 @@ router.post("/api/admin/security/vulnerability-scans",
  * Get vulnerabilities for a scan
  */
 router.get("/api/admin/security/vulnerability-scans/:scanId/vulnerabilities", 
-  authenticateJWT,
-  authorize(['admin']), 
+  requireAdmin, 
   async (req: Request, res: Response) => {
     try {
       const { scanId } = req.params;
@@ -348,8 +341,7 @@ router.get("/api/admin/security/vulnerability-scans/:scanId/vulnerabilities",
  * Add a vulnerability to a scan
  */
 router.post("/api/admin/security/vulnerability-scans/:scanId/vulnerabilities", 
-  authenticateJWT,
-  authorize(['admin']), 
+  requireAdmin, 
   logSecurityEvent("admin_action", "Add vulnerability", "medium"),
   async (req: Request, res: Response) => {
     try {
@@ -390,8 +382,7 @@ router.post("/api/admin/security/vulnerability-scans/:scanId/vulnerabilities",
  * Update a vulnerability
  */
 router.patch("/api/admin/security/vulnerabilities/:id", 
-  authenticateJWT,
-  authorize(['admin']), 
+  requireAdmin, 
   logSecurityEvent("admin_action", "Update vulnerability", "medium"),
   async (req: Request, res: Response) => {
     try {
@@ -446,8 +437,7 @@ router.patch("/api/admin/security/vulnerabilities/:id",
  * Get penetration tests
  */
 router.get("/api/admin/security/pentest", 
-  authenticateJWT,
-  authorize(['admin']), 
+  requireAdmin, 
   logSecurityEvent("admin_action", "View penetration tests", "medium"),
   async (req: Request, res: Response) => {
     try {
@@ -485,8 +475,7 @@ router.get("/api/admin/security/pentest",
  * Create a new penetration test
  */
 router.post("/api/admin/security/pentest", 
-  authenticateJWT,
-  authorize(['admin']), 
+  requireAdmin, 
   logSecurityEvent("admin_action", "Create penetration test", "medium"),
   async (req: Request, res: Response) => {
     try {
@@ -525,8 +514,7 @@ router.post("/api/admin/security/pentest",
  * Get findings for a penetration test
  */
 router.get("/api/admin/security/pentest/:id/findings", 
-  authenticateJWT,
-  authorize(['admin']), 
+  requireAdmin, 
   async (req: Request, res: Response) => {
     try {
       const { id } = req.params;
@@ -562,8 +550,7 @@ router.get("/api/admin/security/pentest/:id/findings",
  * Add a finding to a penetration test
  */
 router.post("/api/admin/security/pentest/:id/findings", 
-  authenticateJWT,
-  authorize(['admin']), 
+  requireAdmin, 
   logSecurityEvent("admin_action", "Add pentest finding", "medium"),
   async (req: Request, res: Response) => {
     try {
@@ -604,8 +591,7 @@ router.post("/api/admin/security/pentest/:id/findings",
  * Update a penetration test finding
  */
 router.patch("/api/admin/security/pentest/findings/:id", 
-  authenticateJWT,
-  authorize(['admin']), 
+  requireAdmin, 
   logSecurityEvent("admin_action", "Update pentest finding", "medium"),
   async (req: Request, res: Response) => {
     try {
@@ -656,8 +642,7 @@ router.patch("/api/admin/security/pentest/findings/:id",
  * Update a vulnerability scan status
  */
 router.patch("/api/admin/security/vulnerability-scans/:scanId", 
-  authenticateJWT,
-  authorize(['admin']), 
+  requireAdmin, 
   logSecurityEvent("admin_action", "Update vulnerability scan", "medium"),
   async (req: Request, res: Response) => {
     try {
@@ -701,8 +686,7 @@ router.patch("/api/admin/security/vulnerability-scans/:scanId",
  * Update a penetration test
  */
 router.patch("/api/admin/security/pentest/:id", 
-  authenticateJWT,
-  authorize(['admin']), 
+  requireAdmin, 
   logSecurityEvent("admin_action", "Update penetration test", "medium"),
   async (req: Request, res: Response) => {
     try {
