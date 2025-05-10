@@ -6,6 +6,11 @@ import OpenAI from 'openai';
 import { analyzeResume } from './services/fixed-openai-service';
 import { storage } from './storage';
 import { generatePersonalizedResponse, MuskContext } from './services/musk-intelligence-system';
+import { 
+  secureMuskInteraction, 
+  secureAIResponse, 
+  MuskSecurityError 
+} from './services/musk-security-service';
 
 // Initialize global variable for resume context storage and user interaction memory
 declare global {
@@ -401,27 +406,57 @@ export const handleMuskChat = async (req: Request, res: Response) => {
       }
     }
     
-    // Generate response using the appropriate AI model
-    const response = await generateMuskResponse(message, enrichedContext);
+    // SECURITY: Apply security measures to the input and context
+    let sanitizedInput;
+    let sanitizedContext;
     
-    // Update user interaction memory with this conversation
+    try {
+      // Apply all security measures to user input and context
+      const securityResult = await secureMuskInteraction(message, enrichedContext, userId);
+      sanitizedInput = securityResult.sanitizedInput;
+      sanitizedContext = securityResult.sanitizedContext;
+      
+      console.log('Security checks passed for Musk interaction');
+    } catch (error) {
+      if (error instanceof MuskSecurityError) {
+        // Return the security error message to the user
+        return res.status(403).json({
+          id: 'security-' + Date.now(),
+          message: error.message,
+          securityCode: error.securityCode,
+          timestamp: new Date()
+        });
+      }
+      // For other errors, log and continue with unsanitized input as fallback
+      console.error('Security check error:', error);
+      sanitizedInput = message;
+      sanitizedContext = enrichedContext;
+    }
+    
+    // Generate response using the appropriate AI model with sanitized inputs
+    const rawResponse = await generateMuskResponse(sanitizedInput, sanitizedContext);
+    
+    // SECURITY: Sanitize the AI response before sending to user
+    const secureResponse = secureAIResponse(rawResponse);
+    
+    // Update user interaction memory with this conversation (using sanitized values)
     if (userId) {
       const userIdString = userId.toString();
       if (userIdString) {
-        updateUserInteractionMemory(userIdString, message, response, enrichedContext);
+        updateUserInteractionMemory(userIdString, sanitizedInput, secureResponse, sanitizedContext);
       }
     }
     
-    // Return the response
+    // Return the secured response
     return res.status(200).json({
       id: 'response-' + Date.now(),
-      message: response,
+      message: secureResponse,
       timestamp: new Date(),
       contextUsed: {
-        dataSource: enrichedContext.dataSource || 'profile',
-        hasResumeData: !!enrichedContext.resumeData,
-        detectedRole: enrichedContext.resumeData?.detectedRole || null,
-        hasUserMemory: !!enrichedContext.userMemory
+        dataSource: sanitizedContext.dataSource || 'profile',
+        hasResumeData: !!sanitizedContext.resumeData,
+        detectedRole: sanitizedContext.resumeData?.detectedRole || null,
+        hasUserMemory: !!sanitizedContext.userMemory
       }
     });
   } catch (error) {
