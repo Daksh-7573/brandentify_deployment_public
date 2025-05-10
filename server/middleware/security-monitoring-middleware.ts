@@ -280,10 +280,10 @@ export function adminActionLoggingMiddleware(req: Request, res: Response, next: 
       // Get request metadata
       const metadata = SecurityMonitoringService.getRequestMetadata(req);
       
-      // Get user
-    // Get user ID if available
+      // Get user ID if available
+      const userId = req.user?.id ? req.user.id.toString() : null;
       
-      if (!user) {
+      if (!userId) {
         // If no user is found for an admin route, log as a security event
         SecurityMonitoringService.logSecurityEvent({
           eventType: "authorization",
