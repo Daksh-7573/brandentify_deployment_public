@@ -18,6 +18,7 @@ import { handleMuskChat, handleResumeUpload, handlePitchDeckUpload } from "./rou
 import muskSuggestionRoutes from "./routes-musk-suggestions";
 import muskMatchRoutes from "./routes-musk-match";
 import { registerSmartConnectRoutes } from "./routes-smart-connect";
+import { setupPrivacyRoutes } from "./routes-privacy";
 import { setupShadowResumeRoutes } from "./routes-shadow-resume";
 import { setupNowboardRoutes } from "./routes-nowboard";
 import { setupCareerQuestsRoutes } from "./routes-career-quests";
