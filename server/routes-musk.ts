@@ -685,6 +685,39 @@ export const handleResumeUpload = async (req: Request, res: Response) => {
       }
     }
     
+    // SECURITY: Apply rate limiting to prevent resume upload abuse
+    try {
+      // Import the rate limiting function from our security service
+      const { checkRateLimit, MuskSecurityError } = await import('./services/musk-security-service');
+      
+      // Lower rate limits for resource-intensive operations like resume analysis
+      // Allow authenticated users more uploads than unauthenticated ones
+      const maxRequests = userId ? 10 : 5; // 10 uploads per hour for authenticated users, 5 for unauthenticated
+      const windowMs = 3600000; // 1 hour window (milliseconds)
+      const blockDurationMs = 3600000; // 1 hour block duration if exceeded
+      
+      // Apply rate limiting
+      checkRateLimit(
+        userId || req.ip || 'anonymous', 
+        'resume-upload', 
+        maxRequests,
+        windowMs,
+        blockDurationMs
+      );
+      
+      console.log('SECURITY: Rate limit check passed for resume upload');
+    } catch (error: any) {
+      if (error instanceof MuskSecurityError && error.securityCode === 'RATE_LIMIT_EXCEEDED') {
+        console.warn('SECURITY: Rate limit exceeded for resume upload:', error.message);
+        return res.status(429).json({ 
+          error: error.message,
+          securityCode: 'RATE_LIMIT_EXCEEDED'
+        });
+      }
+      // For other errors, log but continue (fail open for rate limiting only)
+      console.error('SECURITY: Unexpected error during rate limiting:', error);
+    }
+    
     // Don't default to demo user, log a warning instead
     if (!userId) {
       console.log(`Resume upload: Warning - No valid user ID found (raw input: ${rawUserId})`);
@@ -913,6 +946,39 @@ export const handlePitchDeckUpload = async (req: Request, res: Response) => {
     // Don't default to demo user, log a warning instead
     if (!userId) {
       console.log(`Pitch deck upload: Warning - No valid user ID found (raw input: ${rawUserId})`);
+    }
+    
+    // SECURITY: Apply rate limiting to prevent pitch deck upload abuse
+    try {
+      // Import the rate limiting function from our security service
+      const { checkRateLimit, MuskSecurityError } = await import('./services/musk-security-service');
+      
+      // Lower rate limits for resource-intensive operations like pitch deck analysis
+      // Allow authenticated users more uploads than unauthenticated ones
+      const maxRequests = userId ? 10 : 5; // 10 uploads per hour for authenticated users, 5 for unauthenticated
+      const windowMs = 3600000; // 1 hour window (milliseconds)
+      const blockDurationMs = 3600000; // 1 hour block duration if exceeded
+      
+      // Apply rate limiting
+      checkRateLimit(
+        userId || req.ip || 'anonymous', 
+        'pitch-deck-upload', 
+        maxRequests,
+        windowMs,
+        blockDurationMs
+      );
+      
+      console.log('SECURITY: Rate limit check passed for pitch deck upload');
+    } catch (error: any) {
+      if (error instanceof MuskSecurityError && error.securityCode === 'RATE_LIMIT_EXCEEDED') {
+        console.warn('SECURITY: Rate limit exceeded for pitch deck upload:', error.message);
+        return res.status(429).json({ 
+          error: error.message,
+          securityCode: 'RATE_LIMIT_EXCEEDED'
+        });
+      }
+      // For other errors, log but continue (fail open for rate limiting only)
+      console.error('SECURITY: Unexpected error during rate limiting:', error);
     }
     
     // Check if file was uploaded
