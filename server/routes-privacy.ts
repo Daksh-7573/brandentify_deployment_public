@@ -1,4 +1,4 @@
-import express, { Router } from 'express';
+import express, { Router, Express } from 'express';
 import { privacyService } from './services/privacy-service';
 import { authenticateJWT } from './middleware/auth-middleware';
 import { consentCategoryEnum, consentStatusEnum, geoRegionEnum } from '../shared/privacy-schema';
@@ -76,7 +76,7 @@ const communicationPreferencesSchema = z.object({
   newsletterFrequency: z.string().optional(),
 });
 
-export function setupPrivacyRoutes(app: express.Express) {
+export function setupPrivacyRoutes(): Router {
   const router = express.Router();
 
   /**

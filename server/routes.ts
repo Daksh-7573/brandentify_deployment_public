@@ -99,6 +99,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Register Smart Connect routes directly
   registerSmartConnectRoutes(app, storage);
   
+  // Register privacy routes
+  app.use('/api/privacy', setupPrivacyRoutes());
+  
   // Initialize the email service
   await initEmailService();
   
