@@ -5,6 +5,7 @@ import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { questProgressMiddleware } from "./middleware/quest-progress-tracker";
 import { applySecurityConfig } from "./config/security-config";
+import { DataPrivacyService } from './services/data-privacy-service';
 
 const app = express();
 
@@ -83,7 +84,15 @@ app.use((req, res, next) => {
     if (path.startsWith("/api")) {
       let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
       if (capturedJsonResponse) {
-        logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
+        // Sanitize PII data from logs using DataPrivacyService
+        try {
+          const sanitizedResponse = JSON.stringify(capturedJsonResponse);
+          const sanitizedLogResponse = DataPrivacyService.sanitizeLogging(sanitizedResponse);
+          logLine += ` :: ${sanitizedLogResponse}`;
+        } catch (error) {
+          // Fallback if sanitization fails - avoid showing raw data
+          logLine += " :: [Response with potential PII data - not shown]";
+        }
       }
 
       if (logLine.length > 80) {
