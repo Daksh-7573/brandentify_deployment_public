@@ -17,7 +17,7 @@ import { Progress } from "@/components/ui/progress";
 import { Search as SearchIcon, Users, MessageSquare, Hash, UserPlus, Star, MapPin, ArrowUpRight, ArrowDownRight, Plus, Check, ChevronRight } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { JobTitleCombobox } from "@/components/ui/job-title-combobox";
-import DashboardLayout from "@/components/layout/dashboard-layout";
+import Header from "@/components/layout/header";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 
 // Types for search
