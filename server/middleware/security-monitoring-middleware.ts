@@ -182,8 +182,8 @@ export function attackDetectionMiddleware(req: Request, res: Response, next: Nex
       headers: req.headers,
     };
     
-    // Get user if available
     // Get user ID if available
+    const userId = req.user?.id ? req.user.id.toString() : null;
     
     // Convert request data to string for pattern matching
     const dataString = JSON.stringify(requestData).toLowerCase();
@@ -217,7 +217,7 @@ export function attackDetectionMiddleware(req: Request, res: Response, next: Nex
         attackType: attackType as any,
         severity: "medium", // Default to medium
         blocked: false, // Just detecting, not blocking yet
-      userId: userId,
+        userId: userId,
         ...metadata,
         requestData: requestData,
         headers: req.headers,
@@ -318,7 +318,7 @@ export function adminActionLoggingMiddleware(req: Request, res: Response, next: 
           action: `Admin ${req.method} ${req.originalUrl}`,
           severity: "medium",
           status: res.statusCode >= 400 ? "failure" : "success",
-          userId: user.username,
+          userId: userId,
           ...metadata,
           details: {
             route: req.originalUrl,
