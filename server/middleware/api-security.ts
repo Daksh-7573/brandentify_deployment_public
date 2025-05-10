@@ -47,25 +47,28 @@ export const csrfProtection = (req: Request, res: Response, next: NextFunction) 
  * Also adds the token to res.locals so it can be included in rendered pages
  */
 export const generateCsrfToken = (req: Request, res: Response, next: NextFunction) => {
-  // Check if session is available
-  if (!req.session) {
-    console.error('Session not available for CSRF token generation');
-    return next();
-  }
+  // Get client IP as identifier - in production use better identifiers
+  const clientId = req.ip || 'unknown';
   
-  // Generate a random token if one doesn't exist in the session
-  if (!req.session.csrfToken) {
-    req.session.csrfToken = crypto.randomBytes(32).toString('hex');
+  // Generate a random token if one doesn't exist in the store
+  if (!csrfTokenStore[clientId]) {
+    csrfTokenStore[clientId] = crypto.randomBytes(32).toString('hex');
+    
+    // Store expiration time (24 hours)
+    setTimeout(() => {
+      delete csrfTokenStore[clientId];
+    }, 24 * 60 * 60 * 1000);
   }
 
   // Make the token available to templates via res.locals
-  res.locals.csrfToken = req.session.csrfToken;
+  res.locals.csrfToken = csrfTokenStore[clientId];
 
   // Set the token in a cookie as well (for SPA applications)
-  res.cookie('XSRF-TOKEN', req.session.csrfToken, {
+  res.cookie('XSRF-TOKEN', csrfTokenStore[clientId], {
     httpOnly: false, // Must be accessible to JavaScript
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'strict',
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
   });
 
   next();
