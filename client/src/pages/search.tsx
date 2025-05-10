@@ -636,8 +636,11 @@ const SearchPage = () => {
   };
 
   return (
-    <DashboardLayout hideRightSidebar={true}>
-      <div className="max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="flex h-screen flex-col">
+      <Header />
+      <div className="flex flex-1 overflow-hidden pt-16"> {/* Added padding-top for fixed header */}
+        <div className="flex-1 overflow-auto w-full">
+          <div className="max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">Discover & Connect</h1>
           <p className="text-gray-600">Find content, professionals, and networking opportunities in one place</p>
@@ -1371,8 +1374,10 @@ const SearchPage = () => {
             </div>
           </TabsContent>
         </Tabs>
+          </div>
+        </div>
       </div>
-    </DashboardLayout>
+    </div>
   );
 };
 
