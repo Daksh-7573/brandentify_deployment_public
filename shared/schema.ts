@@ -4,6 +4,17 @@ import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 import { notifications, insertNotificationSchema } from "./notification-schema";
 
+// User roles enum
+export const userRoleEnum = pgEnum("user_role", [
+  "user",           // Basic user
+  "verified_user",  // User with verified identity
+  "premium_user",   // User with premium subscription
+  "moderator",      // Can moderate content
+  "admin",          // Full system access
+  "support",        // Customer support access
+  "content_manager" // Can manage public content
+]);
+
 // User model
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
