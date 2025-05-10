@@ -735,27 +735,72 @@ export const handleResumeUpload = async (req: Request, res: Response) => {
       return res.status(400).json({ error: "Resume file not found in the request" });
     }
     
-    // Check file type - only accept PDF and Microsoft Word documents
+    // Extract file extension for use in validation and path creation
     const fileExt = path.extname(resumeFile.name).toLowerCase();
-    if (!['.pdf', '.doc', '.docx'].includes(fileExt)) {
-      return res.status(400).json({
-        error: "Invalid file type. Only PDF, DOC, and DOCX files are accepted."
-      });
-    }
     
-    // SECURITY: Validate file size (max 10MB)
-    const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB in bytes
-    if (resumeFile.size > MAX_FILE_SIZE) {
-      return res.status(400).json({
-        error: "File too large. Maximum file size is 10MB."
+    // SECURITY: Enhanced file validation to prevent file upload attacks
+    try {
+      // Check file type - only accept PDF and Microsoft Word documents
+      const fileExt = path.extname(resumeFile.name).toLowerCase();
+      if (!['.pdf', '.doc', '.docx', '.txt'].includes(fileExt)) {
+        console.error('SECURITY: Invalid file extension detected:', fileExt);
+        return res.status(400).json({
+          error: "Invalid file type. Only PDF, DOC, DOCX, and TXT files are accepted.",
+          securityCode: "INVALID_FILE_TYPE"
+        });
+      }
+      
+      // SECURITY: Also verify MIME type as a secondary security measure
+      const allowedMimeTypes = [
+        'application/pdf', 
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // docx
+        'application/msword', // doc
+        'text/plain'
+      ];
+      
+      if (!allowedMimeTypes.includes(resumeFile.mimetype)) {
+        console.error('SECURITY: Invalid MIME type detected:', resumeFile.mimetype);
+        return res.status(400).json({
+          error: "Invalid file type. Only PDF, DOC, DOCX, and TXT files are accepted.",
+          securityCode: "INVALID_MIME_TYPE"
+        });
+      }
+      
+      // SECURITY: Validate file size (max 10MB)
+      const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB in bytes
+      if (resumeFile.size > MAX_FILE_SIZE) {
+        console.error('SECURITY: File size exceeded limit:', resumeFile.size);
+        return res.status(400).json({
+          error: "File too large. Maximum file size is 10MB.",
+          securityCode: "FILE_SIZE_EXCEEDED"
+        });
+      }
+      
+      // SECURITY: Check for path traversal attempts in filename
+      const originalFilename = resumeFile.name || '';
+      if (/[/\\]/.test(originalFilename) || originalFilename.includes('..')) {
+        console.error('SECURITY: Path traversal attempt detected in filename:', originalFilename);
+        return res.status(400).json({ 
+          error: "Invalid filename", 
+          securityCode: "PATH_TRAVERSAL_ATTEMPTED" 
+        });
+      }
+      
+      // SECURITY: Sanitize file name to prevent directory traversal attacks
+      const sanitizedFileName = path.basename(resumeFile.name).replace(/[^a-zA-Z0-9_\-\.]/g, '_');
+      
+      if (sanitizedFileName !== resumeFile.name) {
+        console.log(`Resume upload: Sanitized filename from "${resumeFile.name}" to "${sanitizedFileName}"`);
+        resumeFile.name = sanitizedFileName;
+      }
+      
+      console.log('SECURITY: File validation passed for resume upload');
+    } catch (error) {
+      console.error('SECURITY: Error during file validation:', error);
+      return res.status(400).json({ 
+        error: "File validation failed",
+        securityCode: "FILE_VALIDATION_ERROR"
       });
-    }
-    
-    // SECURITY: Sanitize file name to prevent directory traversal attacks
-    const sanitizedFileName = path.basename(resumeFile.name).replace(/[^a-zA-Z0-9_\-\.]/g, '_');
-    if (sanitizedFileName !== resumeFile.name) {
-      console.log(`Resume upload: Sanitized filename from "${resumeFile.name}" to "${sanitizedFileName}"`);
-      resumeFile.name = sanitizedFileName;
     }
     
     // SECURITY: Create uploads directory if it doesn't exist using a secure path
