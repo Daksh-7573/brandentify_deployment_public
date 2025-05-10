@@ -406,6 +406,40 @@ export const handleMuskChat = async (req: Request, res: Response) => {
       }
     }
     
+    // SECURITY: Apply rate limiting to prevent abuse
+    try {
+      // Import the rate limiting function from our security service
+      const { checkRateLimit } = await import('./services/musk-security-service');
+      
+      // Different rate limits based on user authentication status
+      const maxRequests = userId ? 40 : 20; // Authenticated users get higher limits
+      const windowMs = 60000; // 1 minute window
+      const blockDurationMs = 300000; // 5 minute block duration
+      
+      // Apply rate limiting using a unique key for the user and endpoint
+      checkRateLimit(
+        userId || req.ip || 'anonymous', 
+        'musk-chat',
+        maxRequests,
+        windowMs,
+        blockDurationMs
+      );
+      
+      console.log('SECURITY: Rate limit check passed for Musk interaction');
+    } catch (error: any) {
+      if (error instanceof MuskSecurityError && error.securityCode === 'RATE_LIMIT_EXCEEDED') {
+        console.warn('SECURITY: Rate limit exceeded:', error.message);
+        return res.status(429).json({ 
+          id: 'ratelimit-' + Date.now(),
+          message: error.message,
+          securityCode: 'RATE_LIMIT_EXCEEDED',
+          timestamp: new Date()
+        });
+      }
+      // For other errors, log but continue (fail open for rate limiting only)
+      console.error('Unexpected error during rate limiting:', error);
+    }
+    
     // SECURITY: Apply security measures to the input and context
     let sanitizedInput;
     let sanitizedContext;
