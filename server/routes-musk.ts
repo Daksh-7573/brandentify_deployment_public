@@ -1055,6 +1055,22 @@ async function analyzePitchDeck(pitchDeckText: string): Promise<string> {
     
     console.log("SECURITY: Sanitized pitch deck text for analysis");
     
+    // SECURITY: Apply content moderation to check for inappropriate content
+    try {
+      // Import the moderation function from our security service
+      const { moderateContent, MuskSecurityError } = await import('./services/musk-security-service');
+      
+      await moderateContent(sanitizedText);
+      console.log("SECURITY: Content moderation passed for pitch deck");
+    } catch (error) {
+      if (error.name === 'MuskSecurityError') {
+        console.error("SECURITY: Content moderation failed for pitch deck:", error.message);
+        return `I'm unable to analyze this pitch deck as it contains content that may violate our content policy. Please ensure your pitch deck adheres to our community guidelines and try again.`;
+      }
+      // For other errors, log and continue with the analysis
+      console.error("SECURITY: Content moderation error:", error);
+    }
+    
     const openai = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
     });
