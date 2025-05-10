@@ -676,16 +676,47 @@ export const handleResumeUpload = async (req: Request, res: Response) => {
       });
     }
     
-    // Create uploads directory if it doesn't exist
-    const uploadsDir = path.join(process.cwd(), 'public', 'uploads', 'resumes');
-    if (!fs.existsSync(uploadsDir)) {
-      fs.mkdirSync(uploadsDir, { recursive: true });
+    // SECURITY: Validate file size (max 10MB)
+    const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB in bytes
+    if (resumeFile.size > MAX_FILE_SIZE) {
+      return res.status(400).json({
+        error: "File too large. Maximum file size is 10MB."
+      });
     }
     
-    // Generate unique filename with original extension
-    const uniqueId = crypto.randomBytes(16).toString('hex');
+    // SECURITY: Sanitize file name to prevent directory traversal attacks
+    const sanitizedFileName = path.basename(resumeFile.name).replace(/[^a-zA-Z0-9_\-\.]/g, '_');
+    if (sanitizedFileName !== resumeFile.name) {
+      console.log(`Resume upload: Sanitized filename from "${resumeFile.name}" to "${sanitizedFileName}"`);
+      resumeFile.name = sanitizedFileName;
+    }
+    
+    // SECURITY: Create uploads directory if it doesn't exist using a secure path
+    // Use absolute path construction to prevent path traversal
+    const baseDir = process.cwd();
+    const uploadsDir = path.resolve(baseDir, 'public', 'uploads', 'resumes');
+    
+    // Verify the resolved path is within the expected directory structure
+    if (!uploadsDir.startsWith(path.resolve(baseDir, 'public', 'uploads'))) {
+      console.error(`SECURITY: Attempted path traversal - ${uploadsDir}`);
+      return res.status(400).json({ error: "Invalid file path" });
+    }
+    
+    // Create directory with secure permissions
+    if (!fs.existsSync(uploadsDir)) {
+      fs.mkdirSync(uploadsDir, { recursive: true, mode: 0o755 }); // Secure permissions
+    }
+    
+    // Generate unique filename with original extension using cryptographically secure random values
+    const uniqueId = crypto.randomBytes(32).toString('hex'); // More entropy
     const uniqueFilename = `${uniqueId}${fileExt}`;
-    const uploadPath = path.join(uploadsDir, uniqueFilename);
+    const uploadPath = path.resolve(uploadsDir, uniqueFilename);
+    
+    // Final path verification
+    if (!uploadPath.startsWith(uploadsDir)) {
+      console.error(`SECURITY: Path traversal detected in file upload - ${uploadPath}`);
+      return res.status(400).json({ error: "Invalid file path" });
+    }
     
     // Move the file to the uploads directory
     await new Promise<void>((resolve, reject) => {
@@ -751,8 +782,28 @@ export const handleResumeUpload = async (req: Request, res: Response) => {
       const industryMatch = analysisText.match(industryPattern);
       const detectedIndustry = industryMatch ? industryMatch[1] : null;
       
+      // SECURITY: Sanitize resume text to remove sensitive information before storing
+      let sanitizedResumeText = resumeText.substring(0, 5000); // Store a portion of the resume text for context
+      
+      // Use PII patterns from our security service to mask sensitive data
+      const PII_PATTERNS = [
+        // Email addresses
+        /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/,
+        // Phone numbers (various formats)
+        /\b(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}\b/,
+        // Address patterns
+        /\b\d{1,5}\s[A-Za-z\s]{1,20}\b(?:street|st|avenue|ave|road|rd|boulevard|blvd|drive|dr|court|ct|lane|ln|way|parkway|pkwy)/i,
+        // SSN/Government IDs (generic pattern)
+        /\b\d{3}[-]?\d{2}[-]?\d{4}\b/,
+      ];
+      
+      // Apply PII masking
+      for (const pattern of PII_PATTERNS) {
+        sanitizedResumeText = sanitizedResumeText.replace(pattern, '[REDACTED]');
+      }
+      
       resumeContext = {
-        resumeText: resumeText.substring(0, 5000), // Store a portion of the resume text for context
+        resumeText: sanitizedResumeText,
         detectedRole,
         skills,
         detectedIndustry,
@@ -850,16 +901,47 @@ export const handlePitchDeckUpload = async (req: Request, res: Response) => {
       });
     }
     
-    // Create uploads directory if it doesn't exist
-    const uploadsDir = path.join(process.cwd(), 'public', 'uploads', 'pitchdecks');
-    if (!fs.existsSync(uploadsDir)) {
-      fs.mkdirSync(uploadsDir, { recursive: true });
+    // SECURITY: Validate file size (max 20MB for pitch decks)
+    const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB in bytes
+    if (pitchDeckFile.size > MAX_FILE_SIZE) {
+      return res.status(400).json({
+        error: "File too large. Maximum file size is 20MB."
+      });
     }
     
-    // Generate unique filename with original extension
-    const uniqueId = crypto.randomBytes(16).toString('hex');
+    // SECURITY: Sanitize file name to prevent directory traversal attacks
+    const sanitizedFileName = path.basename(pitchDeckFile.name).replace(/[^a-zA-Z0-9_\-\.]/g, '_');
+    if (sanitizedFileName !== pitchDeckFile.name) {
+      console.log(`Pitch deck upload: Sanitized filename from "${pitchDeckFile.name}" to "${sanitizedFileName}"`);
+      pitchDeckFile.name = sanitizedFileName;
+    }
+    
+    // SECURITY: Create uploads directory if it doesn't exist using a secure path
+    // Use absolute path construction to prevent path traversal
+    const baseDir = process.cwd();
+    const uploadsDir = path.resolve(baseDir, 'public', 'uploads', 'pitchdecks');
+    
+    // Verify the resolved path is within the expected directory structure
+    if (!uploadsDir.startsWith(path.resolve(baseDir, 'public', 'uploads'))) {
+      console.error(`SECURITY: Attempted path traversal in pitch deck upload - ${uploadsDir}`);
+      return res.status(400).json({ error: "Invalid file path" });
+    }
+    
+    // Create directory with secure permissions
+    if (!fs.existsSync(uploadsDir)) {
+      fs.mkdirSync(uploadsDir, { recursive: true, mode: 0o755 }); // Secure permissions
+    }
+    
+    // Generate unique filename with original extension using cryptographically secure random values
+    const uniqueId = crypto.randomBytes(32).toString('hex'); // More entropy
     const uniqueFilename = `${uniqueId}${fileExt}`;
-    const uploadPath = path.join(uploadsDir, uniqueFilename);
+    const uploadPath = path.resolve(uploadsDir, uniqueFilename);
+    
+    // Final path verification
+    if (!uploadPath.startsWith(uploadsDir)) {
+      console.error(`SECURITY: Path traversal detected in pitch deck upload - ${uploadPath}`);
+      return res.status(400).json({ error: "Invalid file path" });
+    }
     
     // Move the file to the uploads directory
     await new Promise<void>((resolve, reject) => {
@@ -949,6 +1031,29 @@ async function analyzePitchDeck(pitchDeckText: string): Promise<string> {
       console.log("Using fallback responses as OpenAI API key is not set");
       return generatePitchDeckFallbackResponse();
     }
+    
+    // SECURITY: Sanitize pitch deck text to remove sensitive information
+    // Use PII patterns from our security service to mask sensitive data
+    const PII_PATTERNS = [
+      // Email addresses
+      /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/,
+      // Phone numbers (various formats)
+      /\b(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}\b/,
+      // Address patterns
+      /\b\d{1,5}\s[A-Za-z\s]{1,20}\b(?:street|st|avenue|ave|road|rd|boulevard|blvd|drive|dr|court|ct|lane|ln|way|parkway|pkwy)/i,
+      // SSN/Government IDs (generic pattern)
+      /\b\d{3}[-]?\d{2}[-]?\d{4}\b/,
+      // API Keys and tokens (generic pattern)
+      /\b[A-Za-z0-9_\-]{20,64}\b/
+    ];
+    
+    // Apply PII masking
+    let sanitizedText = pitchDeckText;
+    for (const pattern of PII_PATTERNS) {
+      sanitizedText = sanitizedText.replace(pattern, '[REDACTED]');
+    }
+    
+    console.log("SECURITY: Sanitized pitch deck text for analysis");
     
     const openai = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
