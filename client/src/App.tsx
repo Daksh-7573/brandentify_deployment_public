@@ -222,26 +222,29 @@ function App() {
   // Add a root-level Suspense boundary to ensure we never show a white screen
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <Suspense fallback={
-          <div className="min-h-screen flex items-center justify-center bg-background">
-            <div className="w-[280px] aspect-[2/3.5] rounded-lg overflow-hidden shadow-lg">
-              <div className="h-[24%] bg-gray-300 dark:bg-gray-700 relative animate-pulse"></div>
-              <div className="bg-white dark:bg-gray-800 h-[76%] p-5 flex flex-col gap-4">
-                <div className="h-5 w-[70%] bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
-                <div className="h-4 w-[50%] bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
-                <div className="h-24 w-full bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
-                <div className="h-4 w-[80%] bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
-                <div className="h-4 w-[60%] bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
+      <CookieConsentProvider>
+        <AuthProvider>
+          <Suspense fallback={
+            <div className="min-h-screen flex items-center justify-center bg-background">
+              <div className="w-[280px] aspect-[2/3.5] rounded-lg overflow-hidden shadow-lg">
+                <div className="h-[24%] bg-gray-300 dark:bg-gray-700 relative animate-pulse"></div>
+                <div className="bg-white dark:bg-gray-800 h-[76%] p-5 flex flex-col gap-4">
+                  <div className="h-5 w-[70%] bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
+                  <div className="h-4 w-[50%] bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
+                  <div className="h-24 w-full bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
+                  <div className="h-4 w-[80%] bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
+                  <div className="h-4 w-[60%] bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
+                </div>
               </div>
             </div>
-          </div>
-        }>
-          <Router />
-          <GlobalMuskButton />
-          <Toaster />
-        </Suspense>
-      </AuthProvider>
+          }>
+            <Router />
+            <GlobalMuskButton />
+            <ConsentManager />
+            <Toaster />
+          </Suspense>
+        </AuthProvider>
+      </CookieConsentProvider>
     </QueryClientProvider>
   );
 }
