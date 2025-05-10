@@ -4,8 +4,10 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "./context/auth-context";
 import { useAuth } from "./hooks/use-auth";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import GlobalMuskButton from "@/components/musk/global-musk-button";
+import ConsentManager from "@/components/privacy/ConsentManager";
+import { CookieConsentProvider } from "@/hooks/use-cookie-consent";
 
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
@@ -37,6 +39,7 @@ import MuskTestingPage from "@/pages/musk-testing";
 import ManageServicesPage from "@/pages/manage-services";
 import TestNowboardPage from "@/pages/test-nowboard";
 import ChatPage from "@/pages/ChatPage"; // Chat messaging feature
+import PrivacySettings from "@/pages/privacy-settings"; // Privacy settings page
 // Lazy load the SharedCardPage to improve performance and show loader immediately
 import { lazy, Suspense } from "react";
 const SharedCardPage = lazy(() => import("@/pages/shared-card"));
@@ -183,6 +186,10 @@ function Router() {
       </Route>
       <Route path="/unified-profile/:userId">
         {(params) => <ProtectedRoute path="/unified-profile/:userId" component={() => <UnifiedProfilePage />} />}
+      </Route>
+      {/* Privacy Settings */}
+      <Route path="/privacy-settings">
+        <ProtectedRoute path="/privacy-settings" component={PrivacySettings} />
       </Route>
       {/* Shared Quantum Card View route */}
       <Route path="/profile/card/:userId">
