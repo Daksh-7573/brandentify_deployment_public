@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
 import { promisify } from 'util';
-import fileType from 'file-type';
+import * as fileType from 'file-type';
 import sanitize from 'sanitize-filename';
 
 // Convert callbacks to promises
@@ -64,7 +64,8 @@ export class FileUploadService {
 
     // Verify mime type using file-type library
     try {
-      const typeInfo = await fileType.fromBuffer(file);
+      // Using fileType.fileTypeFromBuffer as the correct method
+      const typeInfo = await fileType.fileTypeFromBuffer(file);
       
       // If file-type can't determine the type for text files, check extension
       if (!typeInfo && ext === '.txt') {

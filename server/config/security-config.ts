@@ -1,0 +1,67 @@
+import { Express } from 'express';
+import helmet from 'helmet';
+import { corsWithSecurity } from '../middleware/api-security';
+import { sanitizeRequest } from '../middleware/auth-middleware';
+
+/**
+ * Apply security configurations to Express application
+ * @param app Express application
+ */
+export function applySecurityConfig(app: Express): void {
+  // Apply Helmet middleware for security headers
+  app.use(helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "https://trusted-cdn.com"],
+        styleSrc: ["'self'", "'unsafe-inline'", "https://trusted-cdn.com"],
+        imgSrc: ["'self'", "data:", "https://trusted-cdn.com"],
+        connectSrc: ["'self'", "https://api.openai.com"],
+        fontSrc: ["'self'", "https://trusted-cdn.com"],
+        objectSrc: ["'none'"],
+        mediaSrc: ["'self'"],
+        frameSrc: ["'none'"],
+      },
+    },
+    crossOriginEmbedderPolicy: false, // May need to adjust based on iframe usage
+    crossOriginOpenerPolicy: { policy: 'same-origin' },
+    crossOriginResourcePolicy: { policy: 'same-site' },
+    dnsPrefetchControl: { allow: false },
+    frameguard: { action: 'deny' },
+    hsts: {
+      maxAge: 15552000, // 180 days
+      includeSubDomains: true,
+      preload: true,
+    },
+    ieNoOpen: true,
+    noSniff: true,
+    originAgentCluster: true,
+    permittedCrossDomainPolicies: { permittedPolicies: 'none' },
+    referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+    xssFilter: true,
+  }));
+
+  // Apply CORS with security headers
+  app.use(corsWithSecurity);
+
+  // Apply request sanitization
+  app.use(sanitizeRequest);
+
+  // Other security settings
+  app.disable('x-powered-by'); // Remove X-Powered-By header
+  
+  // Set secure cookie configuration
+  app.set('trust proxy', 1); // Trust first proxy
+  const sessionConfig = {
+    cookie: {
+      secure: process.env.NODE_ENV === 'production', // Secure in production
+      httpOnly: true, // Not accessible via JavaScript
+      sameSite: 'lax' as const, // Restricts cross-site usage
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    },
+  };
+  
+  app.set('session', sessionConfig);
+}
+
+export default applySecurityConfig;

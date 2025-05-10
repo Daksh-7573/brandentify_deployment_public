@@ -4,8 +4,12 @@ import fileUpload from "express-fileupload";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { questProgressMiddleware } from "./middleware/quest-progress-tracker";
+import { applySecurityConfig } from "./config/security-config";
 
 const app = express();
+
+// Apply security configurations
+applySecurityConfig(app);
 // Increase body size limit to handle file uploads (10MB)
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: false, limit: '10mb' }));

@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import { users } from '@shared/schema';
 import { eq } from 'drizzle-orm';
 import { db } from '../db';
@@ -40,7 +40,20 @@ export class AuthService {
       const decoded = jwt.verify(token, JWT_SECRET, {
         algorithms: ['HS512'],
       });
-      return decoded as { sub: number };
+      
+      // Safely handle different JWT payload formats
+      if (typeof decoded === 'object' && decoded !== null) {
+        const jwtPayload = decoded as JwtPayload;
+        if (jwtPayload.sub) {
+          // Convert string sub to number if needed
+          const userId = typeof jwtPayload.sub === 'string' 
+            ? parseInt(jwtPayload.sub, 10) 
+            : jwtPayload.sub;
+          
+          return { sub: userId };
+        }
+      }
+      return null;
     } catch (error) {
       console.error('JWT verification failed:', error);
       return null;
