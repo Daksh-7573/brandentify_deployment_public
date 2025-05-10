@@ -62,6 +62,43 @@ export async function generatePersonalizedResponse(
       hasResumeData: !!context.resumeData,
       hasUserMemory: !!context.userMemory
     });
+    
+    // SECURITY: Final validation of message content
+    // This is an additional safety check even though secureMuskInteraction should already have been called
+    try {
+      if (message.length > 10000) {
+        console.warn("SECURITY: Truncating excessively long message");
+        message = message.substring(0, 10000) + "... [truncated for security reasons]";
+      }
+      
+      // Check for any remaining PII patterns that might have been missed
+      const PII_PATTERNS = [
+        // Email addresses
+        /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/,
+        // Phone numbers (various formats)
+        /\b(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}\b/,
+        // SSN/Government IDs (generic pattern)
+        /\b\d{3}[-]?\d{2}[-]?\d{4}\b/,
+      ];
+      
+      for (const pattern of PII_PATTERNS) {
+        message = message.replace(pattern, '[REDACTED]');
+      }
+      
+      // Ensure context doesn't have any unexpected data or potentially malicious properties
+      if (context.userData) {
+        // Deep clone to avoid modifying original, then sanitize
+        const sanitizedUserData = JSON.parse(JSON.stringify(context.userData));
+        // Remove any sensitive fields that shouldn't be processed
+        delete sanitizedUserData.password;
+        delete sanitizedUserData.authToken;
+        delete sanitizedUserData.apiKeys;
+        context.userData = sanitizedUserData;
+      }
+    } catch (error) {
+      console.error("SECURITY: Error during additional validation:", error);
+      // Continue with original message if validation fails
+    }
 
     // Analyze user's career profile from all available sources
     const careerProfile = analyzeCareerProfile(context);
@@ -92,11 +129,25 @@ export async function generatePersonalizedResponse(
     const aiResponse = response.choices[0].message.content || 
       "I apologize, but I'm unable to process your request right now. Please try again later.";
     
+    // SECURITY: Sanitize the AI response to prevent any potential sensitive data leakage
+    let sanitizedResponse = aiResponse;
+    
+    try {
+      // Import sanitization function from the security service
+      const { sanitizeAIResponse } = await import('./musk-security-service');
+      sanitizedResponse = sanitizeAIResponse(aiResponse);
+      console.log("SECURITY: AI response sanitized successfully");
+    } catch (error) {
+      console.error("SECURITY: Error sanitizing AI response:", error);
+      // Continue with the original response if sanitization fails
+      sanitizedResponse = aiResponse;
+    }
+    
     // Generate potential follow-up questions based on intent and context
     const followUpQuestions = generateFollowUpQuestions(intent, context);
     
     // Choose one follow-up question to add to the response if appropriate
-    let finalResponse = formatResponseWithPersonalization(aiResponse, context);
+    let finalResponse = formatResponseWithPersonalization(sanitizedResponse, context);
     
     // Add a follow-up question if the response doesn't already contain a question
     // and it's not too long (to avoid making it overwhelming)

@@ -283,3 +283,76 @@ export async function secureMuskInteraction(
 export function secureAIResponse(response: string): string {
   return sanitizeAIResponse(response);
 }
+
+// Rate limiting implementation
+interface RateLimitRecord {
+  count: number;
+  lastRequestTime: number;
+  blockedUntil?: number;
+}
+
+// In-memory store for rate limiting 
+// In production, this would be in Redis or a database
+const rateLimitStore: Record<string, RateLimitRecord> = {};
+
+/**
+ * Apply rate limiting to protect AI endpoints from abuse
+ * @param userId User identifier for tracking request rates
+ * @param endpoint Name of the endpoint being accessed
+ * @param maxRequests Maximum number of requests allowed in the time window
+ * @param windowMs Time window in milliseconds (default 60000ms = 1min)
+ * @param blockDurationMs Duration to block if limit exceeded (default 300000ms = 5min)
+ * @returns Boolean indicating if the request is allowed
+ * @throws MuskSecurityError if rate limit is exceeded
+ */
+export function checkRateLimit(
+  userId: string | number,
+  endpoint: string,
+  maxRequests: number = 20,
+  windowMs: number = 60000,
+  blockDurationMs: number = 300000
+): boolean {
+  const key = `${userId}:${endpoint}`;
+  const now = Date.now();
+  
+  // Initialize or get the rate limit record
+  if (!rateLimitStore[key]) {
+    rateLimitStore[key] = {
+      count: 0,
+      lastRequestTime: now
+    };
+  }
+  
+  const record = rateLimitStore[key];
+  
+  // Check if currently blocked
+  if (record.blockedUntil && now < record.blockedUntil) {
+    const remainingBlockTime = Math.ceil((record.blockedUntil - now) / 1000);
+    throw new MuskSecurityError(
+      `Rate limit exceeded. Please try again in ${remainingBlockTime} seconds.`,
+      'RATE_LIMIT_EXCEEDED'
+    );
+  }
+  
+  // Reset counter if outside window
+  if (now - record.lastRequestTime > windowMs) {
+    record.count = 0;
+    record.lastRequestTime = now;
+    delete record.blockedUntil;
+  }
+  
+  // Increment counter
+  record.count++;
+  
+  // Check if rate limit exceeded
+  if (record.count > maxRequests) {
+    // Block user for block duration
+    record.blockedUntil = now + blockDurationMs;
+    throw new MuskSecurityError(
+      `Rate limit of ${maxRequests} requests per ${windowMs/1000} seconds exceeded. Please try again later.`,
+      'RATE_LIMIT_EXCEEDED'
+    );
+  }
+  
+  return true;
+}
