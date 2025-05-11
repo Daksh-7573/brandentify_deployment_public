@@ -1,5 +1,6 @@
 import { pool } from './db';
 import { sql } from 'drizzle-orm';
+import { PulseFlag, InsertPulseFlag } from '../shared/schema';
 
 // Career Capsule interface
 export interface CareerCapsule {
@@ -352,6 +353,13 @@ export interface IStorage {
   getPulseById(id: number): Promise<Pulse | undefined>;
   createPulse(pulse: InsertPulse): Promise<Pulse>;
   updatePulse(id: number, pulse: Partial<Pulse>): Promise<Pulse | undefined>;
+  
+  // Pulse flag operations
+  createPulseFlag(flag: InsertPulseFlag): Promise<PulseFlag>;
+  getPulseFlagsByPulseId(pulseId: number): Promise<PulseFlag[]>;
+  getPulseFlagsByStatus(status: string): Promise<PulseFlag[]>;
+  updatePulseFlagStatus(id: number, status: string, reviewedByUserId?: number, reviewNotes?: string): Promise<PulseFlag | undefined>;
+  getPendingFlagCount(): Promise<number>;
   deletePulse(id: number): Promise<boolean>;
   
   // Pulse Comment operations
@@ -8856,6 +8864,173 @@ export class DatabaseStorage implements IStorage {
       return capsule;
     } catch (error) {
       console.error(`[db.updateCapsuleProgress] Error updating progress for career capsule with ID ${id}:`, error);
+      throw error;
+    }
+  }
+
+  // Pulse flag operations
+  async createPulseFlag(flag: InsertPulseFlag): Promise<PulseFlag> {
+    try {
+      console.log('[storage] createPulseFlag: Creating new pulse flag');
+      
+      // Start a transaction
+      const client = await pool.connect();
+      try {
+        await client.query('BEGIN');
+        
+        // Insert flag into pulse_flags table
+        const flagResult = await client.query(`
+          INSERT INTO pulse_flags (
+            pulse_id, flagged_by_user_id, reason, details
+          ) VALUES ($1, $2, $3, $4)
+          RETURNING *
+        `, [flag.pulseId, flag.flaggedByUserId, flag.reason, flag.details]);
+        
+        // Increment flag_count in pulses table
+        await client.query(`
+          UPDATE pulses
+          SET flag_count = COALESCE(flag_count, 0) + 1
+          WHERE id = $1
+        `, [flag.pulseId]);
+        
+        await client.query('COMMIT');
+        
+        const pulseFlag = flagResult.rows[0];
+        return {
+          id: pulseFlag.id,
+          pulseId: pulseFlag.pulse_id,
+          flaggedByUserId: pulseFlag.flagged_by_user_id,
+          reason: pulseFlag.reason,
+          details: pulseFlag.details,
+          status: pulseFlag.status,
+          reviewedByUserId: pulseFlag.reviewed_by_user_id,
+          reviewNotes: pulseFlag.review_notes,
+          createdAt: pulseFlag.created_at,
+          reviewedAt: pulseFlag.reviewed_at
+        };
+      } catch (error) {
+        await client.query('ROLLBACK');
+        console.error('Transaction failed:', error);
+        throw error;
+      } finally {
+        client.release();
+      }
+    } catch (error) {
+      console.error('Error creating pulse flag:', error);
+      throw error;
+    }
+  }
+  
+  async getPulseFlagsByPulseId(pulseId: number): Promise<PulseFlag[]> {
+    try {
+      console.log(`[storage] getPulseFlagsByPulseId: Getting flags for pulse ${pulseId}`);
+      const result = await pool.query(`
+        SELECT * FROM pulse_flags
+        WHERE pulse_id = $1
+        ORDER BY created_at DESC
+      `, [pulseId]);
+      
+      return result.rows.map(flag => ({
+        id: flag.id,
+        pulseId: flag.pulse_id,
+        flaggedByUserId: flag.flagged_by_user_id,
+        reason: flag.reason,
+        details: flag.details,
+        status: flag.status,
+        reviewedByUserId: flag.reviewed_by_user_id,
+        reviewNotes: flag.review_notes,
+        createdAt: flag.created_at,
+        reviewedAt: flag.reviewed_at
+      }));
+    } catch (error) {
+      console.error('Error getting pulse flags by pulse ID:', error);
+      throw error;
+    }
+  }
+  
+  async getPulseFlagsByStatus(status: string): Promise<PulseFlag[]> {
+    try {
+      console.log(`[storage] getPulseFlagsByStatus: Getting flags with status ${status}`);
+      const result = await pool.query(`
+        SELECT pf.*, p.content as pulse_content, p.flag_count
+        FROM pulse_flags pf
+        JOIN pulses p ON pf.pulse_id = p.id
+        WHERE pf.status = $1
+        ORDER BY pf.created_at DESC
+      `, [status]);
+      
+      return result.rows.map(flag => ({
+        id: flag.id,
+        pulseId: flag.pulse_id,
+        flaggedByUserId: flag.flagged_by_user_id,
+        reason: flag.reason,
+        details: flag.details,
+        status: flag.status,
+        reviewedByUserId: flag.reviewed_by_user_id,
+        reviewNotes: flag.review_notes,
+        createdAt: flag.created_at,
+        reviewedAt: flag.reviewed_at,
+        // Additional fields from the join
+        pulseContent: flag.pulse_content,
+        flagCount: flag.flag_count
+      }));
+    } catch (error) {
+      console.error('Error getting pulse flags by status:', error);
+      throw error;
+    }
+  }
+  
+  async updatePulseFlagStatus(id: number, status: string, reviewedByUserId?: number, reviewNotes?: string): Promise<PulseFlag | undefined> {
+    try {
+      console.log(`[storage] updatePulseFlagStatus: Updating flag ${id} status to ${status}`);
+      
+      const result = await pool.query(`
+        UPDATE pulse_flags
+        SET 
+          status = $1,
+          reviewed_by_user_id = $2,
+          review_notes = $3,
+          reviewed_at = NOW()
+        WHERE id = $4
+        RETURNING *
+      `, [status, reviewedByUserId || null, reviewNotes || null, id]);
+      
+      if (result.rows.length === 0) {
+        console.log(`No flag found with ID ${id}`);
+        return undefined;
+      }
+      
+      const flag = result.rows[0];
+      return {
+        id: flag.id,
+        pulseId: flag.pulse_id,
+        flaggedByUserId: flag.flagged_by_user_id,
+        reason: flag.reason,
+        details: flag.details,
+        status: flag.status,
+        reviewedByUserId: flag.reviewed_by_user_id,
+        reviewNotes: flag.review_notes,
+        createdAt: flag.created_at,
+        reviewedAt: flag.reviewed_at
+      };
+    } catch (error) {
+      console.error('Error updating pulse flag status:', error);
+      throw error;
+    }
+  }
+  
+  async getPendingFlagCount(): Promise<number> {
+    try {
+      console.log('[storage] getPendingFlagCount: Getting count of pending flags');
+      const result = await pool.query(`
+        SELECT COUNT(*) as count
+        FROM pulse_flags
+        WHERE status = 'pending'
+      `);
+      
+      return parseInt(result.rows[0].count, 10);
+    } catch (error) {
+      console.error('Error getting pending flag count:', error);
       throw error;
     }
   }

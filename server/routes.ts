@@ -46,6 +46,7 @@ import addProjectUpdateRoutes from "./routes-project-update";
 import careerCapsuleRoutes from "./routes-career-capsule";
 import { setupPersonalizedHashtagRoutes } from "./routes-personalized-hashtags";
 import notificationRoutes from "./routes-notifications";
+import contentModerationRoutes from "./routes-content-moderation";
 import { 
   handleSmartConnect, 
   handleCareerRecommendations, 
