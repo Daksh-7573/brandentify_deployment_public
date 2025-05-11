@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Flag } from "lucide-react";
+import { Flag, Loader2 } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/context/auth-context";
 import { useToast } from "@/hooks/use-toast";
@@ -152,7 +152,7 @@ export function PulseFlagButton({ pulseId, className }: PulseFlagButtonProps) {
             disabled={flagMutation.isPending}
           >
             {flagMutation.isPending && (
-              <span className="mr-2 h-4 w-4 animate-spin" />
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             )}
             Submit Report
           </Button>
