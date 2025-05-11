@@ -5443,6 +5443,10 @@ ${extractedText.substring(0, 5000)}
   setupServicesRoutes(app);
   console.log("Services routes loaded");
   
+  // Register Content Moderation routes for pulse flagging
+  app.use(contentModerationRoutes);
+  console.log("Content moderation routes loaded");
+  
   // Register Project Industry PATCH endpoint to fix industry field updates
   addProjectUpdateRoutes(apiRouter);
   console.log("Project Update routes loaded");
