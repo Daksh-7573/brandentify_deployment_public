@@ -115,23 +115,10 @@ export const rateLimit = (maxRequests = 100, timeWindowMs = 60000) => {
  * CORS configuration middleware with security enhancements
  */
 export const secureCors = (req: Request, res: Response, next: NextFunction) => {
-  // Define allowed origins (restrictive by default)
-  const allowedOrigins = process.env.ALLOWED_ORIGINS 
-    ? process.env.ALLOWED_ORIGINS.split(',') 
-    : ['https://brandentifier.replit.app'];
-  
-  const origin = req.headers.origin;
-  
-  // Set appropriate CORS headers
-  if (origin && allowedOrigins.includes(origin)) {
-    res.header('Access-Control-Allow-Origin', origin);
-  } else {
-    // Default to the first allowed origin if the request origin isn't in the list
-    res.header('Access-Control-Allow-Origin', allowedOrigins[0]);
-  }
-  
+  // Permissive CORS for development
+  res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-CSRF-Token, X-XSRF-Token');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-CSRF-Token, X-XSRF-Token, *');
   res.header('Access-Control-Allow-Credentials', 'true');
   
   // Handle OPTIONS preflight requests
@@ -146,30 +133,30 @@ export const secureCors = (req: Request, res: Response, next: NextFunction) => {
  * Security headers middleware to add recommended security headers to all responses
  */
 export const securityHeaders = (req: Request, res: Response, next: NextFunction) => {
-  // Content Security Policy
+  // Content Security Policy - temporarily relaxed for development
   res.header('Content-Security-Policy', `
-    default-src 'self';
-    script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://unpkg.com;
-    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net;
-    img-src 'self' data: https: blob:;
-    font-src 'self' https://fonts.gstatic.com;
-    connect-src 'self' https://api.openai.com https://api.anthropic.com https://firestore.googleapis.com;
-    frame-src 'self';
-    object-src 'none';
+    default-src * 'unsafe-inline' 'unsafe-eval' data: blob:;
+    script-src * 'unsafe-inline' 'unsafe-eval';
+    style-src * 'unsafe-inline';
+    img-src * data: blob:;
+    font-src * data:;
+    connect-src * ws: wss:;
+    frame-src *;
+    object-src *;
     base-uri 'self';
     form-action 'self';
     frame-ancestors 'self';
-    upgrade-insecure-requests;
   `.replace(/\s+/g, ' ').trim());
   
   // Prevent browser from MIME-sniffing a response away from the declared content-type
   res.header('X-Content-Type-Options', 'nosniff');
   
+  // Commented out for development
   // Strict Transport Security (use HTTPS only)
-  res.header('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
+  // res.header('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
   
-  // Clickjacking protection
-  res.header('X-Frame-Options', 'DENY');
+  // Clickjacking protection - relaxed for development
+  res.header('X-Frame-Options', 'SAMEORIGIN');
   
   // XSS protection for older browsers
   res.header('X-XSS-Protection', '1; mode=block');
@@ -177,12 +164,12 @@ export const securityHeaders = (req: Request, res: Response, next: NextFunction)
   // Referrer policy
   res.header('Referrer-Policy', 'strict-origin-when-cross-origin');
   
-  // Permissions policy (formerly Feature-Policy)
+  // Permissions policy (formerly Feature-Policy) - relaxed for development
   res.header('Permissions-Policy', `
-    camera=(),
-    microphone=(),
+    camera=(self),
+    microphone=(self),
     geolocation=(self),
-    payment=()
+    payment=(self)
   `.replace(/\s+/g, ' ').trim());
   
   next();

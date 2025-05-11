@@ -26,38 +26,38 @@ export function applySecurityConfig(app: Express): void {
       maxAge: 24 * 60 * 60 * 1000 // 24 hours
     }
   }));
-  // Apply Helmet middleware for security headers
-  app.use(helmet({
-    contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "'unsafe-inline'", "https://trusted-cdn.com"],
-        styleSrc: ["'self'", "'unsafe-inline'", "https://trusted-cdn.com"],
-        imgSrc: ["'self'", "data:", "https://trusted-cdn.com"],
-        connectSrc: ["'self'", "https://api.openai.com"],
-        fontSrc: ["'self'", "https://trusted-cdn.com"],
-        objectSrc: ["'none'"],
-        mediaSrc: ["'self'"],
-        frameSrc: ["'none'"],
-      },
-    },
-    crossOriginEmbedderPolicy: false, // May need to adjust based on iframe usage
-    crossOriginOpenerPolicy: { policy: 'same-origin' },
-    crossOriginResourcePolicy: { policy: 'same-site' },
-    dnsPrefetchControl: { allow: false },
-    frameguard: { action: 'deny' },
-    hsts: {
-      maxAge: 15552000, // 180 days
-      includeSubDomains: true,
-      preload: true,
-    },
-    ieNoOpen: true,
-    noSniff: true,
-    originAgentCluster: true,
-    permittedCrossDomainPolicies: { permittedPolicies: 'none' },
-    referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
-    xssFilter: true,
-  }));
+  // Temporarily disable Helmet for development purposes
+  // app.use(helmet({
+  //   contentSecurityPolicy: {
+  //     directives: {
+  //       defaultSrc: ["'self'"],
+  //       scriptSrc: ["'self'", "'unsafe-inline'", "https://trusted-cdn.com"],
+  //       styleSrc: ["'self'", "'unsafe-inline'", "https://trusted-cdn.com"],
+  //       imgSrc: ["'self'", "data:", "https://trusted-cdn.com"],
+  //       connectSrc: ["'self'", "https://api.openai.com"],
+  //       fontSrc: ["'self'", "https://trusted-cdn.com"],
+  //       objectSrc: ["'none'"],
+  //       mediaSrc: ["'self'"],
+  //       frameSrc: ["'none'"],
+  //     },
+  //   },
+  //   crossOriginEmbedderPolicy: false,
+  //   crossOriginOpenerPolicy: { policy: 'same-origin' },
+  //   crossOriginResourcePolicy: { policy: 'same-site' },
+  //   dnsPrefetchControl: { allow: false },
+  //   frameguard: { action: 'deny' },
+  //   hsts: {
+  //     maxAge: 15552000,
+  //     includeSubDomains: true,
+  //     preload: true,
+  //   },
+  //   ieNoOpen: true,
+  //   noSniff: true,
+  //   originAgentCluster: true,
+  //   permittedCrossDomainPolicies: { permittedPolicies: 'none' },
+  //   referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+  //   xssFilter: true,
+  // }));
 
   // Apply CORS with security headers
   app.use(secureCors);
