@@ -540,6 +540,17 @@ export const reactionTypeEnum = pgEnum("reaction_type", [
   "misinformed",
 ]);
 
+// Flag reason enum for reporting content
+export const flagReasonEnum = pgEnum("flag_reason", [
+  "inappropriate",
+  "spam",
+  "misinformation",
+  "harmful",
+  "personal_attack",
+  "copyright",
+  "other",
+]);
+
 // Pulses model for user-created content
 export const pulses = pgTable("pulses", {
   id: serial("id").primaryKey(),
@@ -813,6 +824,32 @@ export type InsertUserReactionQuota = z.infer<typeof insertUserReactionQuotaSche
 
 export type PulseShare = typeof pulseShares.$inferSelect;
 export type InsertPulseShare = z.infer<typeof insertPulseShareSchema>;
+
+// Pulse flags model for content moderation
+export const pulseFlags = pgTable("pulse_flags", {
+  id: serial("id").primaryKey(),
+  pulseId: integer("pulse_id").references(() => pulses.id).notNull(),
+  flaggedByUserId: integer("flagged_by_user_id").references(() => users.id).notNull(),
+  reason: flagReasonEnum("reason").notNull(),
+  details: text("details"),
+  status: text("status").default("pending").notNull(), // pending, reviewed, dismissed, actioned
+  reviewedByUserId: integer("reviewed_by_user_id").references(() => users.id),
+  reviewNotes: text("review_notes"),
+  createdAt: timestamp("created_at").defaultNow(),
+  reviewedAt: timestamp("reviewed_at"),
+});
+
+export const insertPulseFlagSchema = createInsertSchema(pulseFlags).omit({
+  id: true,
+  status: true,
+  reviewedByUserId: true,
+  reviewNotes: true,
+  createdAt: true,
+  reviewedAt: true
+});
+
+export type PulseFlag = typeof pulseFlags.$inferSelect;
+export type InsertPulseFlag = z.infer<typeof insertPulseFlagSchema>;
 
 // MuskMatch model - tracks AI suggestions for user connections
 export const muskMatches = pgTable("musk_matches", {
