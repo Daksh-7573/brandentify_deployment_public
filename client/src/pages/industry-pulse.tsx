@@ -4,6 +4,7 @@ import { Pulse } from "@shared/schema";
 import { useLocation } from "wouter";
 import Header from "@/components/layout/header";
 // Removed Sidebar import, using top navigation only
+import { PulseFlagButton } from "@/components/industry-pulse/pulse-flag-button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
