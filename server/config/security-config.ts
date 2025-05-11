@@ -63,7 +63,7 @@ export function applySecurityConfig(app: Express): void {
   app.use(secureCors);
 
   // Apply rate limiting to prevent abuse
-  app.use(rateLimit(100, 60000)); // 100 requests per minute
+  app.use(rateLimit(300, 60000)); // 300 requests per minute (temporarily increased for development)
 
   // Apply request sanitization
   app.use(sanitizeRequest);
