@@ -17,7 +17,7 @@ import PublicProfile from "@/pages/public-profile";
 import PersonalDetailsPage from "@/pages/personal-details";
 import PortfolioBuilder from "@/pages/portfolio-builder";
 import CreatePulsePage from "@/pages/create-pulse";
-import IndustryPulsePage from "@/pages/industry-pulse";
+import IndustryPulsePage from "@/pages/industry-pulse-new";
 import SearchPage from "@/pages/search";
 import AuthPage from "@/pages/auth-page";
 import EmailVerification from "@/pages/email-verification";

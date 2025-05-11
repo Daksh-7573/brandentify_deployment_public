@@ -5,6 +5,7 @@ import { useLocation } from "wouter";
 import Header from "@/components/layout/header";
 // Nowboard panel import
 import NowboardPanel from "@/components/nowboard/nowboard-panel";
+import { PulseFlagButton } from "@/components/industry-pulse/pulse-flag-button";
 // Removed Sidebar import, using top navigation only
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -371,6 +372,9 @@ function PulseReactions({ pulse }: PulseReactionsProps) {
         <MessageSquare className="h-4 w-4 mr-2 text-muted-foreground" />
         {formatCount(pulse.comments || 0)}
       </Button>
+      
+      {/* Flag Button for Content Moderation */}
+      <PulseFlagButton pulseId={pulse.id} />
     </div>
   );
 }

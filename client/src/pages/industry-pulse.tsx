@@ -3,8 +3,10 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { Pulse } from "@shared/schema";
 import { useLocation } from "wouter";
 import Header from "@/components/layout/header";
-// Removed Sidebar import, using top navigation only
+// Nowboard panel import
+import NowboardPanel from "@/components/nowboard/nowboard-panel";
 import { PulseFlagButton } from "@/components/industry-pulse/pulse-flag-button";
+// Removed Sidebar import, using top navigation only
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -31,7 +33,6 @@ import {
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
-import { CardSkeleton } from "@/components/ui/skeleton-loaders";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { formatDistanceToNow } from "date-fns";
 import { useAuth } from "@/context/auth-context";
@@ -88,6 +89,116 @@ interface PulseReactionsProps {
   pulse: PulseWithUser;
 }
 
+function PulseReactions({ pulse }: PulseReactionsProps) {
+  const { toast } = useToast();
+  const { user } = useAuth();
+  const userId = user?.id || 1; // Default to 1 (demo user) if not authenticated
+  
+  // State for the share dialog
+  const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
+  const [shareMessage, setShareMessage] = useState("");
+  const [shareRecipientId, setShareRecipientId] = useState<number | null>(null);
+  
+  // Get user reaction quota
+  const { data: quotaData } = useQuery<any>({
+    queryKey: [`/api/users/${userId}/reaction-quota`],
+  });
+  
+  // Get user's reactions for this pulse
+  const { data: userReactionsData } = useQuery<any[]>({
+    queryKey: [`/api/pulses/${pulse.id}/reactions`],
+  });
+  
+  // Determine if user has already reacted to this pulse
+  const hasInsightfulReaction = userReactionsData?.some(
+    (reaction: any) => reaction.userId === userId && reaction.reactionType === "insightful"
+  );
+  
+  const hasMisinformedReaction = userReactionsData?.some(
+    (reaction: any) => reaction.userId === userId && reaction.reactionType === "misinformed"
+  );
+
+  // Mutation for creating reactions
+  const reactionMutation = useMutation({
+    mutationFn: async (reactionType: "insightful" | "misinformed") => {
+      const res = await apiRequest("POST", "/api/pulse-reactions", {
+        userId,
+        pulseId: pulse.id,
+        reactionType
+      });
+      return await res.json();
+    },
+    onSuccess: (data) => {
+      // Invalidate queries to refresh reaction data
+      queryClient.invalidateQueries({ queryKey: [`/api/pulses/${pulse.id}/reactions`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/reaction-quota`] });
+      queryClient.invalidateQueries({ queryKey: ["/api/pulses"] }); // Refresh all pulses
+      
+      toast({
+        title: data.reaction.reactionType === "insightful" 
+          ? "Marked as Insightful 🔥" 
+          : "Flagged as Misinformed ⚠️",
+        description: `Daily quota: ${data.quota.used}/${data.quota.max}`,
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Failed to react",
+        description: 'Error submitting your reaction',
+        variant: "destructive",
+      });
+    },
+  });
+  
+  // Mutation for deleting reactions
+  const deleteReactionMutation = useMutation({
+    mutationFn: async (reactionId: number) => {
+      const res = await apiRequest("DELETE", `/api/pulse-reactions/${reactionId}`);
+      return res.ok;
+    },
+    onSuccess: () => {
+      // Invalidate queries to refresh reaction data
+      queryClient.invalidateQueries({ queryKey: [`/api/pulses/${pulse.id}/reactions`] });
+      queryClient.invalidateQueries({ queryKey: ["/api/pulses"] }); // Refresh all pulses
+      
+      toast({
+        title: "Reaction removed",
+        description: "Your reaction has been removed",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Failed to remove reaction",
+        description: 'Error removing your reaction',
+        variant: "destructive",
+      });
+    },
+  });
+  
+  // Mutation for sharing pulses
+  const shareMutation = useMutation({
+    mutationFn: async () => {
+      if (!shareRecipientId) throw new Error("No recipient selected");
+      
+      const res = await apiRequest("POST", "/api/pulse-shares", {
+        pulseId: pulse.id,
+        senderId: userId,
+        recipientId: shareRecipientId,
+        message: shareMessage
+      });
+      return await res.json();
+    },
+    onSuccess: () => {
+      setIsShareDialogOpen(false);
+      setShareMessage("");
+      setShareRecipientId(null);
+      
+      // Invalidate queries to refresh share data
+      queryClient.invalidateQueries({ queryKey: ["/api/pulses"] }); // Refresh all pulses
+      
+      toast({
+        title: "Pulse shared successfully",
+        description: "The recipient will be notified",
       });
     },
     onError: (error) => {
@@ -101,24 +212,22 @@ interface PulseReactionsProps {
   
   // Handle reaction button click
   const handleReaction = (reactionType: "insightful" | "misinformed") => {
-    const userReactions = userReactionData || [];
-    const existingReaction = userReactions.find(
+    const userReaction = userReactionsData?.find(
       (reaction: any) => reaction.userId === userId && reaction.reactionType === reactionType
     );
     
-    if (existingReaction) {
+    if (userReaction) {
       // Remove existing reaction
-      deleteReactionMutation.mutate(existingReaction.id);
+      deleteReactionMutation.mutate(userReaction.id);
     } else {
       // Check quota and add new reaction
       const quota = quotaData?.[reactionType];
       const hasRemainingQuota = quota?.remaining > 0;
       
-      if (!hasRemainingQuota) {
+      if (!hasRemainingQuota && quota) {
         toast({
           title: "Daily limit reached",
           description: `You've used all your ${reactionType} reactions for today (${quota?.max})`,
-          variant: "warning",
         });
         return;
       }
@@ -133,7 +242,6 @@ interface PulseReactionsProps {
       toast({
         title: "Select a recipient",
         description: "Please select a recipient to share with",
-        variant: "warning",
       });
       return;
     }
@@ -162,13 +270,13 @@ interface PulseReactionsProps {
         <Tooltip>
           <TooltipTrigger asChild>
             <Button 
-              variant={hasInsightfulReaction ? "default" : "ghost"} 
+              variant="ghost" 
               size="sm" 
               disabled={isLoading}
-              className={`${hasInsightfulReaction ? "bg-amber-600 hover:bg-amber-700" : "text-muted-foreground"}`}
+              className="text-muted-foreground hover:bg-amber-50 hover:text-amber-700 transition-all duration-200"
               onClick={() => handleReaction("insightful")}
             >
-              <Flame className={`h-4 w-4 mr-2 ${hasInsightfulReaction ? "text-white" : ""}`} />
+              <Flame className={`h-4 w-4 mr-2 transition-all duration-200 ${hasInsightfulReaction ? "text-amber-600 fill-amber-500 scale-110" : "text-muted-foreground"}`} />
               {formatCount(pulse.insightfulCount || 0)}
             </Button>
           </TooltipTrigger>
@@ -186,13 +294,13 @@ interface PulseReactionsProps {
         <Tooltip>
           <TooltipTrigger asChild>
             <Button 
-              variant={hasMisinformedReaction ? "default" : "ghost"} 
+              variant="ghost" 
               size="sm" 
               disabled={isLoading}
-              className={`${hasMisinformedReaction ? "bg-red-600 hover:bg-red-700" : "text-muted-foreground"}`}
+              className="text-muted-foreground hover:bg-red-50 hover:text-red-700 transition-all duration-200"
               onClick={() => handleReaction("misinformed")}
             >
-              <AlertTriangle className={`h-4 w-4 mr-2 ${hasMisinformedReaction ? "text-white" : ""}`} />
+              <AlertTriangle className={`h-4 w-4 mr-2 transition-all duration-200 ${hasMisinformedReaction ? "text-red-600 fill-red-300 scale-110" : "text-muted-foreground"}`} />
               {formatCount(pulse.misinformedCount || 0)}
             </Button>
           </TooltipTrigger>
@@ -208,8 +316,8 @@ interface PulseReactionsProps {
       {/* Share Button */}
       <Dialog open={isShareDialogOpen} onOpenChange={setIsShareDialogOpen}>
         <DialogTrigger asChild>
-          <Button variant="ghost" size="sm" className="text-muted-foreground">
-            <Share className="h-4 w-4 mr-2" />
+          <Button variant="ghost" size="sm" className="text-muted-foreground hover:bg-blue-50 hover:text-blue-700 transition-all duration-200">
+            <Share className={`h-4 w-4 mr-2 transition-all duration-200 ${isShareDialogOpen ? "text-blue-600 scale-110" : "text-muted-foreground"}`} />
             {formatCount(pulse.shareCount || 0)}
           </Button>
         </DialogTrigger>
@@ -223,7 +331,6 @@ interface PulseReactionsProps {
           <div className="space-y-4 py-4">
             <div className="space-y-2">
               <Label htmlFor="recipient">Recipient</Label>
-              {/* This would be replaced with a proper user search/select */}
               <select 
                 id="recipient" 
                 className="w-full rounded-md border border-input p-2"
@@ -257,8 +364,12 @@ interface PulseReactionsProps {
       </Dialog>
       
       {/* Comments Button */}
-      <Button variant="ghost" size="sm" className="text-muted-foreground">
-        <MessageSquare className="h-4 w-4 mr-2" />
+      <Button 
+        variant="ghost" 
+        size="sm" 
+        className="text-muted-foreground hover:bg-purple-50 hover:text-purple-700 transition-all duration-200"
+      >
+        <MessageSquare className="h-4 w-4 mr-2 text-muted-foreground" />
         {formatCount(pulse.comments || 0)}
       </Button>
     </div>
@@ -356,7 +467,7 @@ function PollVoting({ pulse }: PollVotingProps) {
   return (
     <div className="mt-4 space-y-3">
       <div className="text-sm font-medium flex items-center gap-2">
-        <BarChart className="h-4 w-4 text-purple-500" />
+        <BarChart className="h-4 w-4 text-muted-foreground" />
         <span>Poll Options</span>
       </div>
       
@@ -533,13 +644,20 @@ function ImageCarousel({ pulse }: { pulse: PulseWithUser }) {
     <>
       <div className="mt-4 space-y-2">
         <div className="text-sm font-medium flex items-center gap-2">
-          <Image className="h-4 w-4 text-blue-500" />
+          <Image className="h-4 w-4 text-muted-foreground" />
           <span>Image Gallery ({images.length})</span>
         </div>
         <div className="mt-2">
           {isLoading ? (
-            <div className="h-72 flex items-center justify-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            <div className="h-72 flex flex-col p-4 space-y-4">
+              {/* Carousel skeleton */}
+              <div className="h-8 w-40 bg-muted rounded mb-2 animate-pulse"></div>
+              <div className="flex-1 bg-muted rounded-lg animate-pulse"></div>
+              <div className="flex justify-center gap-2">
+                <div className="h-2 w-2 rounded-full bg-muted animate-pulse"></div>
+                <div className="h-2 w-2 rounded-full bg-muted animate-pulse"></div>
+                <div className="h-2 w-2 rounded-full bg-muted animate-pulse"></div>
+              </div>
             </div>
           ) : (
             <Carousel className="w-full" 
@@ -666,15 +784,10 @@ function ImageCarousel({ pulse }: { pulse: PulseWithUser }) {
   );
 }
 
-// Video Component for Media Pulses
+// Video Player Component for Media Pulses
 function VideoPlayer({ pulse }: { pulse: PulseWithUser }) {
-  // Only render for video media pulses
-  if (pulse.type !== 'media-pulse' || pulse.mediaType !== 'video') {
-    return null;
-  }
-  
   const [isLoading, setIsLoading] = useState(true);
-  const [videoSrc, setVideoSrc] = useState<string>('');
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
   
   useEffect(() => {
     // Log what we received from the server
@@ -682,32 +795,35 @@ function VideoPlayer({ pulse }: { pulse: PulseWithUser }) {
     console.log("Video media URLs:", pulse.mediaUrls);
     console.log("Video localStorage keys:", pulse.mediaLocalStorageKeys);
     
-    let videoUrl = '';
-    
     // First try to use mediaUrls if they exist
     if (pulse.mediaUrls && pulse.mediaUrls.length > 0) {
-      // Get the first valid URL
-      const validUrl = pulse.mediaUrls.find(url => url && url.trim() !== '');
-      if (validUrl) {
-        videoUrl = validUrl;
-        console.log("Using mediaUrls for video:", videoUrl);
-      }
+      // Use the first video URL (should only be one video per pulse)
+      setVideoUrl(pulse.mediaUrls[0]);
+      console.log("Using mediaUrls for video:", pulse.mediaUrls[0]);
     } 
     // If no mediaUrls, try mediaLocalStorageKeys
     else if (pulse.mediaLocalStorageKeys && pulse.mediaLocalStorageKeys.length > 0) {
       // Check if these are URLs (from newer uploads) or localStorage keys (from older uploads)
-      const firstKey = pulse.mediaLocalStorageKeys[0];
+      const allStartWithHttp = pulse.mediaLocalStorageKeys.every(
+        key => key && (key.startsWith('http://') || key.startsWith('https://'))
+      );
       
-      if (firstKey && (firstKey.startsWith('http://') || firstKey.startsWith('https://'))) {
-        videoUrl = firstKey;
-        console.log("Using mediaLocalStorageKeys as direct URL:", videoUrl);
-      } else if (firstKey) {
-        // These might be old localStorage keys, try to retrieve the first one
+      if (allStartWithHttp) {
+        // These are already URLs (from server)
+        setVideoUrl(pulse.mediaLocalStorageKeys[0]);
+        console.log("Using mediaLocalStorageKeys as direct URL:", pulse.mediaLocalStorageKeys[0]);
+      } else {
+        // These might be old localStorage keys, try to retrieve them
         try {
-          const storedData = localStorage.getItem(firstKey);
-          if (storedData && (storedData.startsWith('data:video') || storedData.startsWith('blob:'))) {
-            videoUrl = storedData;
-            console.log("Retrieved video from localStorage");
+          const key = pulse.mediaLocalStorageKeys[0];
+          if (key) {
+            const storedData = localStorage.getItem(key);
+            if (storedData) {
+              setVideoUrl(storedData);
+              console.log("Retrieved video from localStorage for key:", key);
+            } else {
+              console.warn("No video data found in localStorage for key:", key);
+            }
           }
         } catch (e) {
           console.error("Error retrieving video from localStorage:", e);
@@ -715,78 +831,41 @@ function VideoPlayer({ pulse }: { pulse: PulseWithUser }) {
       }
     }
     
-    // Log if no video URL was found
-    if (!videoUrl) {
-      console.warn("No video URL found for this pulse. This pulse might be missing video data.");
-    }
-    
-    setVideoSrc(videoUrl);
     setIsLoading(false);
   }, [pulse]);
-  
+
   return (
     <div className="mt-4 space-y-2">
       <div className="text-sm font-medium flex items-center gap-2">
-        <Video className="h-4 w-4 text-blue-500" />
+        <Video className="h-4 w-4 text-muted-foreground" />
         <span>Video</span>
       </div>
-      <div className="mt-2">
+      <div className="rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300">
         {isLoading ? (
-          <div className="h-72 flex flex-col p-4 space-y-4">
-            {/* Carousel skeleton */}
-            <div className="h-8 w-40 bg-muted rounded mb-2 animate-pulse"></div>
-            <div className="flex-1 bg-muted rounded-lg animate-pulse"></div>
-            <div className="flex justify-center gap-2">
-              <div className="h-2 w-2 rounded-full bg-muted animate-pulse"></div>
-              <div className="h-2 w-2 rounded-full bg-muted animate-pulse"></div>
-              <div className="h-2 w-2 rounded-full bg-muted animate-pulse"></div>
+          <div className="h-60 bg-gradient-to-b from-gray-50 to-gray-100 animate-pulse">
+            <div className="h-full w-full flex flex-col items-center justify-center">
+              <div className="rounded-full bg-muted w-16 h-16 mb-4"></div>
+              <div className="h-4 w-32 bg-muted rounded"></div>
+              <div className="mt-4 flex items-center justify-center w-full px-8">
+                <div className="h-4 w-full max-w-sm bg-muted rounded"></div>
+              </div>
             </div>
           </div>
+        ) : videoUrl ? (
+          <video 
+            src={videoUrl} 
+            controls 
+            className="w-full aspect-video bg-black" 
+            poster="/images/demo/video-placeholder.svg"
+            onError={(e) => {
+              console.error(`Failed to load video: ${videoUrl}`);
+              e.currentTarget.poster = 'https://via.placeholder.com/800x450?text=Video+Not+Available';
+            }}
+          />
         ) : (
-          <div className="relative group">
-            {videoSrc ? (
-              <div className="rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300">
-                <div className="relative">
-                  <video 
-                    src={videoSrc} 
-                    controls 
-                    className="w-full h-full object-cover rounded-lg"
-                    style={{ maxHeight: "400px" }}
-                    onError={(e) => {
-                      console.error(`Failed to load video: ${videoSrc}`);
-                      // If video fails to load, show message
-                      const parent = e.currentTarget.parentElement;
-                      if (parent) {
-                        parent.innerHTML = `
-                          <div class="h-72 flex items-center justify-center bg-gradient-to-b from-gray-50 to-gray-100 rounded-lg">
-                            <div class="text-center">
-                              <div class="mb-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-blue-300 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                              </div>
-                              <p class="text-blue-500">Video could not be loaded</p>
-                            </div>
-                          </div>
-                        `;
-                      }
-                    }}
-                  />
-                  {/* Video play overlay (can be customized) */}
-                  <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition-opacity flex items-center justify-center pointer-events-none">
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="h-72 flex items-center justify-center bg-gradient-to-b from-gray-50 to-gray-100 rounded-lg shadow-sm">
-                <div className="text-center">
-                  <div className="mb-2">
-                    <Video className="h-12 w-12 text-blue-300 mx-auto" />
-                  </div>
-                  <p className="text-blue-500">No video available for this pulse</p>
-                </div>
-              </div>
-            )}
+          <div className="h-60 flex flex-col items-center justify-center bg-gradient-to-b from-gray-50 to-gray-100">
+            <Video className="h-12 w-12 text-gray-300 mb-2" />
+            <span className="text-sm text-muted-foreground">Video not available</span>
           </div>
         )}
       </div>
@@ -796,130 +875,85 @@ function VideoPlayer({ pulse }: { pulse: PulseWithUser }) {
 
 // Project Details Component
 function ProjectDetails({ pulse }: { pulse: PulseWithUser }) {
-  if (pulse.type !== 'project') {
-    return null;
-  }
-
-  // Initial loading state reference for skeleton UI
-  const [initialLoad, setInitialLoad] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
+  const [projectDetails, setProjectDetails] = useState<any>(null);
   
-  // Add project data state to show UI while fetching in background
-  const [localProject, setLocalProject] = useState<any>(null);
-  
-  // Use location hook at the component level (NOT inside event handlers)
-  const [_, setLocation] = useLocation();
-  
-  // Use React Query for better caching and performance
-  const { data: project } = useQuery({
-    queryKey: [`/api/projects/${pulse.projectId}`],
-    enabled: !!pulse.projectId,
-    staleTime: 300000, // Cache for 5 minutes
-    refetchOnWindowFocus: false,
-    
-    // Add prefetching to improve loading speed
-    initialData: () => {
-      // Return cached data if it exists in window.__PROJECT_CACHE__
-      // @ts-ignore
+  useEffect(() => {
+    const fetchProjectDetails = async () => {
+      if (!pulse.projectId) {
+        setIsLoading(false);
+        return;
+      }
+      
+      // Check if we have a cached version of this project
+      // @ts-ignore - This is a global variable set in the main component
       if (window.__PROJECT_CACHE__ && window.__PROJECT_CACHE__[pulse.projectId]) {
         // @ts-ignore
-        return window.__PROJECT_CACHE__[pulse.projectId];
+        setProjectDetails(window.__PROJECT_CACHE__[pulse.projectId]);
+        setIsLoading(false);
+        return;
       }
-      return undefined;
-    },
-    
-    // Initialize the UI with partial data immediately
-    onSuccess: (data) => {
-      setLocalProject(data);
-      setInitialLoad(false);
-    }
-  });
-  
-  // Fast parallel fetch outside React Query for faster initial render
-  useEffect(() => {
-    if (!pulse.projectId) return;
-    
-    // This fetch happens in parallel with React Query but renders faster
-    const fetchProjectFast = async () => {
+      
       try {
-        // @ts-ignore - Check if we already have the data in cache first
-        if (window.__PROJECT_CACHE__ && window.__PROJECT_CACHE__[pulse.projectId]) {
-          // @ts-ignore
-          setLocalProject(window.__PROJECT_CACHE__[pulse.projectId]);
-          setInitialLoad(false);
-          return;
-        }
-        
-        // Only proceed if we don't have data yet
         const response = await fetch(`/api/projects/${pulse.projectId}`);
         if (response.ok) {
           const data = await response.json();
-          setLocalProject(data);
-          // Also update the cache
+          setProjectDetails(data);
+          
+          // Also cache this for future use
           // @ts-ignore
-          window.__PROJECT_CACHE__ = window.__PROJECT_CACHE__ || {};
+          if (!window.__PROJECT_CACHE__) window.__PROJECT_CACHE__ = {};
           // @ts-ignore
           window.__PROJECT_CACHE__[pulse.projectId] = data;
+        } else {
+          console.error(`Error fetching project details: ${response.status}`);
         }
       } catch (error) {
-        console.error('Fast fetch error:', error);
+        console.error("Error fetching project details:", error);
       } finally {
-        // Always ensure we stop showing the loading state
-        setInitialLoad(false);
+        setIsLoading(false);
       }
     };
     
-    fetchProjectFast();
+    fetchProjectDetails();
   }, [pulse.projectId]);
-  
+
   return (
     <div className="mt-4 space-y-2">
       <div className="text-sm font-medium flex items-center gap-2">
-        <FileCode className="h-4 w-4 text-green-500" />
-        <span>Project Details</span>
+        <FileCode className="h-4 w-4 text-muted-foreground" />
+        <span>Project Update</span>
       </div>
+      
       <div className="rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-4 bg-gradient-to-b from-green-50/30 to-green-50/10">
-        {initialLoad ? (
-          <div className="h-20 space-y-3 animate-pulse">
+        {isLoading ? (
+          <div className="h-24 space-y-3 animate-pulse">
             <div className="h-5 w-2/3 bg-muted rounded"></div>
             <div className="h-4 w-full bg-muted rounded"></div>
             <div className="h-8 w-32 bg-muted rounded mt-4"></div>
           </div>
-        ) : (localProject || project) ? (
-          <>
-            <div className="mb-3">
-              <h4 className="font-medium text-sm text-green-700">{(localProject || project)?.title}</h4>
-              <p className="text-sm mt-1">{(localProject || project)?.description}</p>
-            </div>
-            
-            {(localProject || project)?.skills && (localProject || project)?.skills.length > 0 && (
-              <div className="mt-3 flex flex-wrap gap-1">
-                {(localProject || project)?.skills.map((skill: string, index: number) => (
-                  <span key={index} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                    {skill}
-                  </span>
-                ))}
-              </div>
+        ) : projectDetails ? (
+          <div className="space-y-2">
+            <h3 className="font-medium">{projectDetails.title}</h3>
+            {projectDetails.description && (
+              <p className="text-sm text-muted-foreground line-clamp-2">{projectDetails.description}</p>
             )}
-            
-            <div className="mt-3 pt-3 border-t border-green-100 flex items-center justify-between">
-              <div className="text-xs text-gray-500">
-                Status: <span className="font-medium text-green-600 capitalize">{(localProject || project)?.status}</span>
-              </div>
+            <div className="flex gap-2">
               <Button 
-                size="sm" 
                 variant="outline" 
-                className="text-xs border-green-200 text-green-700 hover:bg-green-50"
-                onClick={() => {
-                  // Use the already declared setLocation hook
-                  setLocation(`/dashboard?view=project&projectId=${pulse.projectId}`);
-                }}
+                size="sm" 
+                className="hover:bg-green-50 hover:border-green-200 border-muted"
+                onClick={() => window.location.href = `/projects/${projectDetails.id}`}
               >
-                <FileCode className="h-3 w-3 mr-1" /> View Full Project
+                View Project
               </Button>
             </div>
-          </>
+          </div>
         ) : (
-          <p className="text-sm text-gray-500">Project details not available</p>
+          <div className="h-24 flex flex-col items-center justify-center">
+            <FileCode className="h-8 w-8 text-gray-300 mb-2" />
+            <span className="text-sm text-muted-foreground">Project not found</span>
+          </div>
         )}
       </div>
     </div>
@@ -936,314 +970,24 @@ interface SmartRefreshBannerProps {
 function SmartRefreshBanner({ hasNewContent, onRefresh, isPremiumContent = false }: SmartRefreshBannerProps) {
   if (!hasNewContent) return null;
   
+  const bannerClasses = isPremiumContent
+    ? "bg-amber-50 border-amber-200 text-amber-900" // Premium content (Musk)
+    : "bg-gray-50 border-gray-200 text-gray-900"; // Regular content
+    
+  const iconClasses = isPremiumContent
+    ? "text-amber-500" // Premium content (Musk)
+    : "text-muted-foreground"; // Regular content
+  
   return (
-    <button
-      className={cn(
-        "w-full flex items-center justify-center gap-2 py-3 px-4 rounded-lg shadow-md transition-all duration-300 transform hover:shadow-lg hover:-translate-y-px mb-4",
-        isPremiumContent
-          ? "bg-gradient-to-r from-yellow-50 to-amber-50 border border-amber-200 text-amber-800"
-          : "bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 text-blue-800"
-      )}
+    <button 
+      className={`w-full py-3 px-4 rounded-lg border flex items-center justify-center gap-2 mb-4 hover:opacity-90 transition-all ${bannerClasses}`}
       onClick={onRefresh}
     >
-      <RefreshCw className={cn(
-        "h-4 w-4 animate-spin-slow", 
-        isPremiumContent ? "text-amber-500" : "text-blue-500"
-      )} />
-      <span className="font-medium">New posts available</span>
+      <RefreshCw className={`h-4 w-4 ${iconClasses}`} />
+      <span className="font-medium">
+        {isPremiumContent ? 'Musk has updated your feed' : 'New posts available'}
+      </span>
     </button>
-  );
-}
-
-// Pulse Reactions Component
-interface PulseReactionsProps {
-  pulse: PulseWithUser;
-}
-
-function PulseReactions({ pulse }: PulseReactionsProps) {
-  const { toast } = useToast();
-  const { user } = useAuth();
-  const userId = user?.id || 1; // Default to 1 (demo user) if not authenticated
-  
-  // State for the share dialog
-  const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
-  const [shareMessage, setShareMessage] = useState("");
-  const [shareRecipientId, setShareRecipientId] = useState<number | null>(null);
-  
-  // Get user reaction quota
-  const { data: quotaData } = useQuery<any>({
-    queryKey: [`/api/users/${userId}/reaction-quota`],
-  });
-  
-  // Get user's reactions for this pulse
-  const { data: userReactionData, refetch: refetchUserReactions } = useQuery<any>({
-    queryKey: [`/api/pulses/${pulse.id}/reactions`],
-  });
-  
-  // Determine if user has already reacted to this pulse
-  const hasInsightfulReaction = userReactionData?.some(
-    (reaction: any) => reaction.userId === userId && reaction.reactionType === "insightful"
-  );
-  
-  const hasMisinformedReaction = userReactionData?.some(
-    (reaction: any) => reaction.userId === userId && reaction.reactionType === "misinformed"
-  );
-  
-  // Mutation for creating reactions
-  const reactionMutation = useMutation({
-    mutationFn: async (reactionType: "insightful" | "misinformed") => {
-      const res = await apiRequest("POST", "/api/pulse-reactions", {
-        userId,
-        pulseId: pulse.id,
-        reactionType
-      });
-      return await res.json();
-    },
-    onSuccess: (data) => {
-      // Invalidate queries to refresh reaction data
-      queryClient.invalidateQueries({ queryKey: [`/api/pulses/${pulse.id}/reactions`] });
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/reaction-quota`] });
-      queryClient.invalidateQueries({ queryKey: ["/api/pulses"] }); // Refresh all pulses
-      
-      toast({
-        title: data.reaction.reactionType === "insightful" 
-          ? "Marked as Insightful! 🔥" 
-          : "Flagged as Misinformed ⚠️",
-        description: `Daily usage: ${data.quota.used}/${data.quota.max}`,
-      });
-    },
-    onError: (error) => {
-      toast({
-        title: "Failed to react",
-        description: 'Error submitting your reaction',
-        variant: "destructive",
-      });
-    },
-  });
-  
-  // Mutation for deleting reactions
-  const deleteReactionMutation = useMutation({
-    mutationFn: async (reactionId: number) => {
-      const res = await apiRequest("DELETE", `/api/pulse-reactions/${reactionId}`);
-      return res.ok;
-    },
-    onSuccess: () => {
-      // Invalidate queries to refresh reaction data
-      queryClient.invalidateQueries({ queryKey: [`/api/pulses/${pulse.id}/reactions`] });
-      queryClient.invalidateQueries({ queryKey: ["/api/pulses"] }); // Refresh all pulses
-      
-      toast({
-        title: "Reaction removed",
-        description: "Your reaction has been removed",
-      });
-    },
-    onError: (error) => {
-      toast({
-        title: "Failed to remove reaction",
-        description: 'Error removing your reaction',
-        variant: "destructive",
-      });
-    },
-  });
-  
-  // Mutation for sharing pulses
-  const shareMutation = useMutation({
-    mutationFn: async () => {
-      if (!shareRecipientId) throw new Error("No recipient selected");
-      
-      const res = await apiRequest("POST", "/api/pulse-shares", {
-        pulseId: pulse.id,
-        senderId: userId,
-        recipientId: shareRecipientId,
-        message: shareMessage
-      });
-      return await res.json();
-    },
-    onSuccess: () => {
-      setIsShareDialogOpen(false);
-      setShareMessage("");
-      setShareRecipientId(null);
-      
-      // Invalidate queries to refresh share data
-      queryClient.invalidateQueries({ queryKey: ["/api/pulses"] }); // Refresh all pulses
-      
-      toast({
-        title: "Pulse shared successfully",
-        description: "The recipient will be notified",
-      });
-    },
-    onError: (error) => {
-      toast({
-        title: "Failed to share pulse",
-        description: 'Error sharing the pulse',
-        variant: "destructive",
-      });
-    },
-  });
-  
-  // Handle reaction button click
-  const handleReaction = (reactionType: "insightful" | "misinformed") => {
-    const userReactions = userReactionData || [];
-    const existingReaction = userReactions.find(
-      (reaction: any) => reaction.userId === userId && reaction.reactionType === reactionType
-    );
-    
-    if (existingReaction) {
-      // Remove existing reaction
-      deleteReactionMutation.mutate(existingReaction.id);
-    } else {
-      // Check quota and add new reaction
-      const quota = quotaData?.[reactionType];
-      const hasRemainingQuota = quota?.remaining > 0;
-      
-      if (!hasRemainingQuota) {
-        toast({
-          title: "Daily limit reached",
-          description: `You've used all your ${reactionType} reactions for today (${quota?.max})`,
-          variant: "warning",
-        });
-        return;
-      }
-      
-      reactionMutation.mutate(reactionType);
-    }
-  };
-  
-  // Handle share button click
-  const handleShareSubmit = () => {
-    if (!shareRecipientId) {
-      toast({
-        title: "Select a recipient",
-        description: "Please select a recipient to share with",
-        variant: "warning",
-      });
-      return;
-    }
-    
-    shareMutation.mutate();
-  };
-  
-  // React query gives us loading states
-  const isLoading = reactionMutation.isPending || deleteReactionMutation.isPending || shareMutation.isPending;
-  
-  // Format counts with abbreviations for large numbers
-  const formatCount = (count: number = 0) => {
-    if (count >= 1000000) {
-      return `${(count / 1000000).toFixed(1)}M`;
-    }
-    if (count >= 1000) {
-      return `${(count / 1000).toFixed(1)}K`;
-    }
-    return count.toString();
-  };
-  
-  return (
-    <div className="flex flex-wrap gap-2">
-      {/* Insightful Button */}
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button 
-              variant={hasInsightfulReaction ? "default" : "ghost"} 
-              size="sm" 
-              disabled={isLoading}
-              className={`${hasInsightfulReaction ? "bg-amber-600 hover:bg-amber-700" : "text-muted-foreground"}`}
-              onClick={() => handleReaction("insightful")}
-            >
-              <Flame className={`h-4 w-4 mr-2 ${hasInsightfulReaction ? "text-white" : ""}`} />
-              {formatCount(pulse.insightfulCount || 0)}
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Mark as Insightful 🔥</p>
-            {quotaData && (
-              <p className="text-xs mt-1">Remaining: {quotaData.insightful?.remaining}/{quotaData.insightful?.max}</p>
-            )}
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-      
-      {/* Misinformed Button */}
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button 
-              variant={hasMisinformedReaction ? "default" : "ghost"} 
-              size="sm" 
-              disabled={isLoading}
-              className={`${hasMisinformedReaction ? "bg-red-600 hover:bg-red-700" : "text-muted-foreground"}`}
-              onClick={() => handleReaction("misinformed")}
-            >
-              <AlertTriangle className={`h-4 w-4 mr-2 ${hasMisinformedReaction ? "text-white" : ""}`} />
-              {formatCount(pulse.misinformedCount || 0)}
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Flag as Misinformed ⚠️</p>
-            {quotaData && (
-              <p className="text-xs mt-1">Remaining: {quotaData.misinformed?.remaining}/{quotaData.misinformed?.max}</p>
-            )}
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-      
-      {/* Share Button */}
-      <Dialog open={isShareDialogOpen} onOpenChange={setIsShareDialogOpen}>
-        <DialogTrigger asChild>
-          <Button variant="ghost" size="sm" className="text-muted-foreground">
-            <Share className="h-4 w-4 mr-2" />
-            {formatCount(pulse.shareCount || 0)}
-          </Button>
-        </DialogTrigger>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Share this pulse</DialogTitle>
-            <DialogDescription>
-              Share this pulse with another user in your network.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="recipient">Recipient</Label>
-              {/* This would be replaced with a proper user search/select */}
-              <select 
-                id="recipient" 
-                className="w-full rounded-md border border-input p-2"
-                value={shareRecipientId || ""}
-                onChange={(e) => setShareRecipientId(Number(e.target.value) || null)}
-              >
-                <option value="">Select a user</option>
-                <option value="1">Demo User</option>
-                {userId !== 1 && <option value="1">Senior Professional</option>}
-                {userId !== 2 && user && <option value="2">{user.name || user.username}</option>}
-              </select>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="message">Message (optional)</Label>
-              <Input
-                id="message"
-                placeholder="Add a message..."
-                value={shareMessage}
-                onChange={(e) => setShareMessage(e.target.value)}
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsShareDialogOpen(false)}>Cancel</Button>
-            <Button onClick={handleShareSubmit} disabled={isLoading}>
-              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Share
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-      
-      {/* Comments Button */}
-      <Button variant="ghost" size="sm" className="text-muted-foreground">
-        <MessageSquare className="h-4 w-4 mr-2" />
-        {formatCount(pulse.comments || 0)}
-      </Button>
-    </div>
   );
 }
 
@@ -1260,79 +1004,7 @@ export default function IndustryPulsePage() {
   // Fetch all pulses
   const { data: pulses = [], isLoading, refetch } = useQuery<PulseWithUser[]>({
     queryKey: ["/api/pulses"],
-    // @ts-ignore - onSuccess is valid but TS is complaining
-    onSuccess: (data: PulseWithUser[]) => {
-      // Initialize project cache for faster loading
-      const projectPulses = data.filter((pulse: PulseWithUser) => pulse.type === 'project' && pulse.projectId);
-      
-      if (projectPulses.length > 0) {
-        // Pre-fetch project data for all project pulses
-        const prefetchProjects = async () => {
-          // @ts-ignore - Create global cache if it doesn't exist
-          window.__PROJECT_CACHE__ = window.__PROJECT_CACHE__ || {};
-          
-          for (const pulse of projectPulses) {
-            if (!pulse.projectId) continue;
-            
-            try {
-              const response = await fetch(`/api/projects/${pulse.projectId}`);
-              if (response.ok) {
-                const projectData = await response.json();
-                // @ts-ignore - Add to global cache
-                window.__PROJECT_CACHE__[pulse.projectId] = projectData;
-              }
-            } catch (error) {
-              console.error(`Error prefetching project ${pulse.projectId}:`, error);
-            }
-          }
-        };
-        
-        prefetchProjects();
-      }
-    }
   });
-  
-  // Simulate a new content notification (for demo purposes)
-  // In a real implementation, this would be triggered by a websocket or polling
-  useEffect(() => {
-    const simulateNewContent = () => {
-      // Randomly decide if this is premium content (like a Musk update)
-      const isPremiumUpdate = Math.random() > 0.7;
-      
-      setHasNewContent(true);
-      setHasPremiumContent(isPremiumUpdate);
-      
-      // Show toast notification for premium content
-      if (isPremiumUpdate) {
-        toast({
-          title: "Premium Update",
-          description: "Musk just updated your feed 💡",
-          variant: "default",
-        });
-      }
-      
-      // Set timeout to auto-refresh after 10 minutes if user doesn't interact
-      if (refreshTimeoutRef.current) {
-        clearTimeout(refreshTimeoutRef.current);
-      }
-      
-      refreshTimeoutRef.current = setTimeout(() => {
-        handleRefresh();
-      }, 10 * 60 * 1000); // 10 minutes
-    };
-    
-    // For demo purposes, simulate new content arriving after a delay
-    const newContentTimer = setTimeout(() => {
-      simulateNewContent();
-    }, 20000); // 20 seconds - for demo purposes
-    
-    return () => {
-      clearTimeout(newContentTimer);
-      if (refreshTimeoutRef.current) {
-        clearTimeout(refreshTimeoutRef.current);
-      }
-    };
-  }, []);
   
   // Handle refresh button click
   const handleRefresh = async () => {
@@ -1359,7 +1031,6 @@ export default function IndustryPulsePage() {
     
     if (activeTab === "musk-news") {
       // Filter for news pulses specifically from Musk (userId 3 is Musk in our system)
-      // Need to use type assertion for TypeScript since "news-pulse" isn't in the basic types
       return (pulse.type as string) === "news-pulse" && pulse.userId === 3;
     }
     
@@ -1369,13 +1040,13 @@ export default function IndustryPulsePage() {
   const getPulseIcon = (pulse: PulseWithUser) => {
     switch (pulse.type) {
       case "poll":
-        return <BarChart className="h-5 w-5 text-purple-500" />;
+        return <BarChart className="h-5 w-5 text-muted-foreground" />;
       case "media-pulse":
         return pulse.mediaType === "video" ? 
-          <Video className="h-5 w-5 text-blue-500" /> : 
-          <Image className="h-5 w-5 text-blue-500" />;
+          <Video className="h-5 w-5 text-muted-foreground" /> : 
+          <Image className="h-5 w-5 text-muted-foreground" />;
       case "project":
-        return <FileCode className="h-5 w-5 text-green-500" />;
+        return <FileCode className="h-5 w-5 text-muted-foreground" />;
       case "news-pulse":
         // Special icon for news pulses, amber/yellow color to match Musk branding
         return <Newspaper className="h-5 w-5 text-amber-500" />;
@@ -1388,125 +1059,173 @@ export default function IndustryPulsePage() {
     <div className="flex h-screen flex-col">
       <Header />
       <div className="flex flex-1 overflow-hidden pt-16"> {/* Added padding-top for fixed header */}
-        <div className="flex-1 overflow-auto w-full">
-          <div className="max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div className="mb-8 flex justify-between items-center">
-              <div>
-                <h1 className="text-3xl font-bold tracking-tight">Industry Pulse</h1>
-                <p className="text-muted-foreground mt-1">
-                  Discover insights, polls, and media from your professional network
-                </p>
+        {/* Main content area */}
+        <div className="flex-1 overflow-auto">
+          <div className="container py-8 px-6 mx-auto flex">
+            {/* Main content */}
+            <div className="flex-1 max-w-4xl mr-6">
+              <div className="mb-8 flex justify-between items-center">
+                <div>
+                  <h1 className="text-3xl font-bold tracking-tight">Industry Pulse</h1>
+                  <p className="text-muted-foreground mt-1">
+                    Discover insights, polls, and media from your professional network
+                  </p>
+                </div>
+                <Button onClick={() => setLocation("/create-pulse")}>
+                  Create Pulse
+                </Button>
               </div>
-              <Button onClick={() => setLocation("/create-pulse")}>
-                Create Pulse
-              </Button>
-            </div>
-            
-            <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="mb-6">
-                <TabsTrigger value="all">All</TabsTrigger>
-                <TabsTrigger value="poll">Polls</TabsTrigger>
-                <TabsTrigger value="media-pulse">Media</TabsTrigger>
-                <TabsTrigger value="project">Projects</TabsTrigger>
-                <TabsTrigger value="musk-news" className="flex items-center gap-1">
-                  <span className="text-amber-500">⚡</span> Musk News
-                </TabsTrigger>
-              </TabsList>
               
-              <TabsContent value={activeTab} className="mt-0">
-                {/* Smart Refresh Banner */}
-                <SmartRefreshBanner 
-                  hasNewContent={hasNewContent} 
-                  onRefresh={handleRefresh} 
-                  isPremiumContent={hasPremiumContent} 
-                />
-
-                {isLoading ? (
-                  <div className="space-y-4 py-4">
-                    {/* Skeleton loaders for pulse cards */}
-                    {[1, 2, 3, 4].map((i) => (
-                      <CardSkeleton key={i} className="h-[300px]" />
-                    ))}
-                  </div>
-                ) : filteredPulses.length === 0 ? (
-                  <Card>
-                    <CardContent className="flex flex-col items-center justify-center py-10">
-                      <Users className="h-16 w-16 text-muted-foreground/50 mb-4" />
-                      <h3 className="text-xl font-semibold mb-2">No pulses yet</h3>
-                      <p className="text-center text-muted-foreground max-w-md mb-6">
-                        {activeTab === "all" 
-                          ? "Be the first to create a pulse in your professional network!" 
-                          : activeTab === "musk-news" 
-                            ? "No Musk news updates available yet. Check back later for the latest insights!" 
-                            : `No ${activeTab} pulses available yet. Create one to get started!`}
-                      </p>
-                      {activeTab === "musk-news" ? (
-                        <Button variant="outline" onClick={() => setActiveTab("all")}>
-                          View All Pulses
-                        </Button>
-                      ) : (
-                        <Button onClick={() => setLocation("/create-pulse")}>
-                          Create Your First Pulse
-                        </Button>
-                      )}
-                    </CardContent>
-                  </Card>
-                ) : (
-                  <div className="space-y-6">
-                    {filteredPulses.map((pulse: PulseWithUser) => (
-                      <Card key={pulse.id} className="overflow-hidden">
-                        <CardHeader className="pb-3">
-                          <div className="flex justify-between">
-                            <div className="flex gap-3 items-center">
-                              <Avatar>
-                                <AvatarImage src={pulse.user?.photoURL || ""} alt={pulse.user?.name || ""} />
-                                <AvatarFallback>{pulse.user?.name?.charAt(0) || "U"}</AvatarFallback>
-                              </Avatar>
-                              <div>
-                                <div className="font-semibold">{pulse.user?.name || "User"}</div>
-                                <div className="text-xs text-muted-foreground flex items-center gap-1">
-                                  <Calendar className="h-3 w-3" />
-                                  {pulse.createdAt 
-                                    ? formatDistanceToNow(new Date(pulse.createdAt), { addSuffix: true }) 
-                                    : "Recently"}
+              <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab}>
+                <TabsList className="mb-6">
+                  <TabsTrigger value="all">All</TabsTrigger>
+                  <TabsTrigger value="media-pulse">Media</TabsTrigger>
+                  <TabsTrigger value="poll">Polls</TabsTrigger>
+                  <TabsTrigger value="project">Projects</TabsTrigger>
+                  <TabsTrigger value="musk-news" className="bg-amber-50 text-amber-900 hover:bg-amber-100 data-[state=active]:bg-amber-200">
+                    Musk ⚡
+                  </TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value={activeTab}>
+                  {/* Smart refresh banner */}
+                  <SmartRefreshBanner 
+                    hasNewContent={hasNewContent} 
+                    onRefresh={handleRefresh}
+                    isPremiumContent={hasPremiumContent}
+                  />
+                  
+                  {isLoading ? (
+                    <div className="space-y-4 py-4">
+                      {/* Skeleton loaders for pulse cards */}
+                      {[1, 2, 3, 4].map((i) => (
+                        <div key={i} className="border rounded-lg overflow-hidden shadow-sm animate-pulse">
+                          <div className="p-4">
+                            {/* Header skeleton */}
+                            <div className="flex items-center justify-between mb-3">
+                              <div className="flex items-center gap-2">
+                                <div className="h-8 w-8 rounded-full bg-muted"></div>
+                                <div>
+                                  <div className="h-4 w-24 bg-muted rounded"></div>
+                                  <div className="h-3 w-16 bg-muted rounded mt-1"></div>
+                                </div>
+                              </div>
+                              <div className="h-5 w-16 bg-muted rounded"></div>
+                            </div>
+                            
+                            {/* Title and content skeleton */}
+                            <div className="h-6 w-3/4 bg-muted rounded mb-2"></div>
+                            <div className="h-4 w-full bg-muted rounded mb-2"></div>
+                            <div className="h-4 w-2/3 bg-muted rounded mb-4"></div>
+                            
+                            {/* Media placeholder skeleton */}
+                            <div className="bg-muted h-40 rounded mb-3"></div>
+                            
+                            {/* Engagement buttons skeleton */}
+                            <div className="flex flex-wrap gap-2 mt-4">
+                              <div className="h-8 w-20 bg-muted rounded"></div>
+                              <div className="h-8 w-20 bg-muted rounded"></div>
+                              <div className="h-8 w-20 bg-muted rounded"></div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : filteredPulses.length === 0 ? (
+                    <Card>
+                      <CardContent className="flex flex-col items-center justify-center py-10">
+                        <Users className="h-16 w-16 text-muted-foreground/50 mb-4" />
+                        <h3 className="text-xl font-semibold mb-2">No pulses yet</h3>
+                        <p className="text-center text-muted-foreground max-w-md mb-6">
+                          {activeTab === "all" 
+                            ? "Be the first to create a pulse in your professional network!" 
+                            : activeTab === "musk-news" 
+                              ? "No Musk news updates available yet. Check back later for the latest insights!" 
+                              : `No ${activeTab} pulses available yet. Create one to get started!`}
+                        </p>
+                        {activeTab === "musk-news" ? (
+                          <Button variant="outline" onClick={() => setActiveTab("all")}>
+                            View All Pulses
+                          </Button>
+                        ) : (
+                          <Button onClick={() => setLocation("/create-pulse")}>
+                            Create Your First Pulse
+                          </Button>
+                        )}
+                      </CardContent>
+                    </Card>
+                  ) : (
+                    <div className="space-y-6">
+                      {filteredPulses.map((pulse: PulseWithUser) => (
+                        <Card key={pulse.id} className="overflow-hidden">
+                          <CardHeader className="pb-3">
+                            <div className="flex justify-between">
+                              <div className="flex items-start gap-3">
+                                <Avatar className="h-9 w-9">
+                                  {pulse.user?.photoURL ? (
+                                    <AvatarImage src={pulse.user.photoURL} alt={pulse.user.name || "User"} />
+                                  ) : (
+                                    <AvatarFallback>
+                                      {pulse.user?.name?.[0] || "U"}
+                                    </AvatarFallback>
+                                  )}
+                                </Avatar>
+                                <div>
+                                  <div className="font-medium">
+                                    {pulse.user?.name || "Anonymous User"}
+                                    {/* Special labeling for Musk */}
+                                    {pulse.userId === 3 && <span className="text-amber-500 ml-1">⚡</span>}
+                                  </div>
+                                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                    <span>
+                                      {formatDistanceToNow(new Date(pulse.createdAt), { addSuffix: true })}
+                                    </span>
+                                    <span>•</span>
+                                    <span className="flex items-center gap-1">
+                                      {getPulseIcon(pulse)}
+                                      {pulse.type === 'media-pulse' ? pulse.mediaType : pulse.type}
+                                    </span>
+                                  </div>
                                 </div>
                               </div>
                             </div>
-                            <div>
-                              {getPulseIcon(pulse)}
-                            </div>
-                          </div>
-                        </CardHeader>
-                        <CardContent>
-                          <CardTitle className="mb-3">{pulse.title}</CardTitle>
-                          <p className="text-muted-foreground">{pulse.content}</p>
-                          
-                          {/* Render pulse content based on type */}
-                          {pulse.type === 'poll' && (
-                            <PollVoting pulse={pulse} />
-                          )}
-                          
-                          {pulse.type === 'media-pulse' && pulse.mediaType === 'image' && (
-                            <ImageCarousel pulse={pulse} />
-                          )}
-                          
-                          {pulse.type === 'media-pulse' && pulse.mediaType === 'video' && (
-                            <VideoPlayer pulse={pulse} />
-                          )}
-                          
-                          {pulse.type === 'project' && (
-                            <ProjectDetails pulse={pulse} />
-                          )}
-                        </CardContent>
-                        <CardFooter className="flex justify-between pt-0">
-                          <PulseReactions pulse={pulse} />
-                        </CardFooter>
-                      </Card>
-                    ))}
-                  </div>
-                )}
-              </TabsContent>
-            </Tabs>
+                          </CardHeader>
+                          <CardContent>
+                            <CardTitle className="mb-3">{pulse.title}</CardTitle>
+                            <p className="text-muted-foreground">{pulse.content}</p>
+                            
+                            {/* Render pulse content based on type */}
+                            {pulse.type === 'poll' && (
+                              <PollVoting pulse={pulse} />
+                            )}
+                            
+                            {pulse.type === 'media-pulse' && pulse.mediaType === 'image' && (
+                              <ImageCarousel pulse={pulse} />
+                            )}
+                            
+                            {pulse.type === 'media-pulse' && pulse.mediaType === 'video' && (
+                              <VideoPlayer pulse={pulse} />
+                            )}
+                            
+                            {pulse.type === 'project' && (
+                              <ProjectDetails pulse={pulse} />
+                            )}
+                          </CardContent>
+                          <CardFooter className="flex justify-between pt-0">
+                            <PulseReactions pulse={pulse} />
+                          </CardFooter>
+                        </Card>
+                      ))}
+                    </div>
+                  )}
+                </TabsContent>
+              </Tabs>
+            </div>
+            
+            {/* Nowboard Panel Sidebar */}
+            <div className="hidden lg:block w-80">
+              <NowboardPanel />
+            </div>
           </div>
         </div>
       </div>
