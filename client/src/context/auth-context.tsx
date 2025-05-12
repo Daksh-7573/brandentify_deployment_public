@@ -33,6 +33,7 @@ type AuthContextType = {
   signInWithGoogle: () => Promise<void>;
   signInWithPhone: (user: User) => void; // Function for phone authentication
   signInWithEmail: (user: User) => void; // Function for email authentication
+  activateDemoMode: (userData: any) => void; // Function to activate demo mode
   signOut: () => Promise<void>;
   refreshUserData: () => Promise<void>;
 };
@@ -45,6 +46,7 @@ export const AuthContext = createContext<AuthContextType>({
   signInWithGoogle: async () => {},
   signInWithPhone: () => {},
   signInWithEmail: () => {},
+  activateDemoMode: () => {},
   signOut: async () => {},
   refreshUserData: async () => {},
 });
@@ -458,14 +460,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
       
       toast({
-        title: "Login successful",
+        title: "Email verified successfully",
         description: "Welcome to Brandentifier"
       });
     } catch (error) {
       console.error("Error signing in with email:", error);
       toast({
         title: "Sign in failed",
-        description: "There was a problem signing in with email and password",
+        description: "There was a problem signing in with email verification",
         variant: "destructive"
       });
     } finally {
@@ -473,26 +475,75 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
   
-  const signOut = async () => {
+  // Demo mode implementation
+  const activateDemoMode = (userData: any) => {
+    setIsLoading(true);
+    
     try {
-      // Clear user state explicitly before Firebase signout
-      setUser(null);
+      console.log("activateDemoMode received userData:", userData);
       
-      // Clear query client cache
-      queryClient.clear();
+      if (!userData || !userData.id) {
+        throw new Error("Invalid demo user data received");
+      }
       
-      // Then sign out from Firebase
-      await firebaseSignOut(auth);
+      // Convert demo user to our AuthUser type
+      setUser({
+        uid: userData.id.toString(),
+        id: userData.id,
+        username: userData.username || `demo_${userData.id}`,
+        email: userData.email || `demo_${userData.id}@example.com`,
+        name: userData.name || "Demo User",
+        photoURL: userData.photoURL || null,
+        title: userData.title || "Professional",
+        location: userData.location || "Demo Location"
+      });
       
-      // Add a brief delay to allow state updates to propagate
-      setTimeout(() => {
-        // Force a page reload to ensure all auth state is cleared
-        window.location.href = "/";
-      }, 100);
+      // Set demo mode flag
+      setIsDemoMode(true);
+      localStorage.setItem('demoMode', 'true');
       
       toast({
-        title: "Signed out successfully"
+        title: "Demo mode activated",
+        description: "You're now using the app in demo mode. Some features may be limited."
       });
+    } catch (error) {
+      console.error("Error activating demo mode:", error);
+      toast({
+        title: "Demo mode failed",
+        description: "There was a problem activating demo mode",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const signOut = async () => {
+    setIsLoading(true);
+    
+    try {
+      // If we're in demo mode, just clear the user state
+      if (isDemoMode) {
+        setUser(null);
+        setIsDemoMode(false);
+        localStorage.removeItem('demoMode');
+        
+        // Clear all query cache to prevent stale data
+        queryClient.clear();
+        
+        toast({
+          title: "Signed out",
+          description: "You've been signed out of demo mode"
+        });
+      } else {
+        // Normal Firebase sign out
+        await firebaseSignOut(auth);
+        
+        toast({
+          title: "Signed out",
+          description: "You've been successfully signed out"
+        });
+      }
     } catch (error) {
       console.error("Error signing out:", error);
       toast({
@@ -500,201 +551,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         description: "There was a problem signing out",
         variant: "destructive"
       });
-    }
-  };
-
-  // Add the refreshUserData function to update user profile data
-  const refreshUserData = async () => {
-    // Get the user ID
-    const userId = user?.uid;
-    
-    if (!userId) {
-      console.log("Cannot refresh user data: No user ID available");
-      return;
-    }
-    
-    setIsLoading(true);
-    
-    try {
-      console.log("Refreshing user data with ID:", userId);
-      
-      // Invalidate the user data query to ensure fresh data on next fetch - using consistent array format
-      queryClient.invalidateQueries({ queryKey: ['/api/users', userId] });
-      
-      // Fetch latest user data from the backend
-      const updatedUser = await fetchUserData(userId);
-      if (updatedUser) {
-        setUser(updatedUser);
-        console.log("Updated user state with fresh data:", updatedUser);
-      }
-      
-      // Also invalidate other related queries for the profile components using consistent array format
-      console.log("Refreshing profile data queries");
-      queryClient.invalidateQueries({ queryKey: ['/api/users', userId, 'resume'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/users', userId, 'experiences'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/users', userId, 'educations'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/users', userId, 'skills'] });
-      
-      // Manually fetch ALL data directly using fetch API to bypass any caching
-      try {
-        console.log("Manually fetching all profile data using direct API requests");
-        
-        // First, let's try to get the user's profile data directly
-        try {
-          const userResponse = await fetch(`/api/users/${userId}`, {
-            method: 'GET',
-            headers: { 'Cache-Control': 'no-cache, no-store' }
-          });
-          
-          // If the user is found, update the cache
-          if (userResponse.ok) {
-            const userData = await userResponse.json();
-            console.log(`Successfully fetched user data:`, userData);
-            
-            // Update the user data cache with consistent array format
-            queryClient.setQueryData(['/api/users', userId], userData);
-          } else {
-            console.error(`Failed to fetch user data for ID ${userId}:`, userResponse.statusText);
-          }
-        } catch (userFetchError) {
-          console.error("Error fetching user profile data:", userFetchError);
-        }
-        
-        // For other data, we need to make sure we're using the correct user ID
-        // We need the numeric ID for backend queries
-        const backendUserId = user?.id || (parseInt(userId.toString().substring(0, 5), 36) || 999);
-        
-        // Fetch resume data
-        try {
-          const resumeResponse = await fetch(`/api/users/${backendUserId}/resume`, {
-            method: 'GET',
-            headers: { 'Cache-Control': 'no-cache, no-store' }
-          });
-          
-          if (resumeResponse.ok) {
-            const resumeData = await resumeResponse.json();
-            console.log(`Successfully fetched resume data:`, resumeData);
-            queryClient.setQueryData(['/api/users', backendUserId, 'resume'], resumeData);
-          }
-        } catch (resumeFetchError) {
-          console.error("Error fetching resume data:", resumeFetchError);
-        }
-        
-        // Fetch experiences data
-        try {
-          const expResponse = await fetch(`/api/users/${backendUserId}/experiences`, {
-            method: 'GET',
-            headers: { 'Cache-Control': 'no-cache, no-store' }
-          });
-          
-          if (expResponse.ok) {
-            const expData = await expResponse.json();
-            console.log(`Successfully fetched experiences data:`, expData);
-            queryClient.setQueryData(['/api/users', backendUserId, 'experiences'], expData);
-          }
-        } catch (expFetchError) {
-          console.error("Error fetching experiences data:", expFetchError);
-        }
-        
-        // Fetch educations data
-        try {
-          const eduResponse = await fetch(`/api/users/${backendUserId}/educations`, {
-            method: 'GET',
-            headers: { 'Cache-Control': 'no-cache, no-store' }
-          });
-          
-          if (eduResponse.ok) {
-            const eduData = await eduResponse.json();
-            console.log(`Successfully fetched educations data:`, eduData);
-            queryClient.setQueryData(['/api/users', backendUserId, 'educations'], eduData);
-          }
-        } catch (eduFetchError) {
-          console.error("Error fetching educations data:", eduFetchError);
-        }
-        
-        // Fetch skills data
-        try {
-          const skillsResponse = await fetch(`/api/users/${backendUserId}/skills`, {
-            method: 'GET',
-            headers: { 'Cache-Control': 'no-cache, no-store' }
-          });
-          
-          if (skillsResponse.ok) {
-            const skillsData = await skillsResponse.json();
-            console.log(`Successfully fetched skills data:`, skillsData);
-            queryClient.setQueryData(['/api/users', backendUserId, 'skills'], skillsData);
-          }
-        } catch (skillsFetchError) {
-          console.error("Error fetching skills data:", skillsFetchError);
-        }
-        
-        // Fetch portfolios
-        try {
-          const portfoliosResponse = await fetch(`/api/users/${backendUserId}/portfolio`, {
-            method: 'GET',
-            headers: { 'Cache-Control': 'no-cache, no-store' }
-          });
-          
-          if (portfoliosResponse.ok) {
-            const portfoliosData = await portfoliosResponse.json();
-            console.log(`Successfully fetched portfolio data:`, portfoliosData);
-            queryClient.setQueryData(['/api/users', backendUserId, 'portfolio'], portfoliosData);
-          }
-        } catch (portfoliosFetchError) {
-          console.error("Error fetching portfolio data:", portfoliosFetchError);
-        }
-        
-        // Fetch projects
-        try {
-          const projectsResponse = await fetch(`/api/users/${backendUserId}/projects`, {
-            method: 'GET',
-            headers: { 'Cache-Control': 'no-cache, no-store' }
-          });
-          
-          if (projectsResponse.ok) {
-            const projectsData = await projectsResponse.json();
-            console.log(`Successfully fetched projects data:`, projectsData);
-            queryClient.setQueryData(['/api/users', backendUserId, 'projects'], projectsData);
-          }
-        } catch (projectsFetchError) {
-          console.error("Error fetching projects data:", projectsFetchError);
-        }
-        
-        // Fetch services
-        try {
-          const servicesResponse = await fetch(`/api/users/${backendUserId}/services`, {
-            method: 'GET',
-            headers: { 'Cache-Control': 'no-cache, no-store' }
-          });
-          
-          if (servicesResponse.ok) {
-            const servicesData = await servicesResponse.json();
-            console.log(`Successfully fetched services data:`, servicesData);
-            queryClient.setQueryData(['/api/users', backendUserId, 'services'], servicesData);
-          }
-        } catch (servicesFetchError) {
-          console.error("Error fetching services data:", servicesFetchError);
-        }
-      } catch (error) {
-        console.error("Error manually refreshing data:", error);
-      }
-      
-      toast({
-        title: "Profile refreshed",
-        description: "Your profile data has been refreshed"
-      });
-    } catch (error) {
-      console.error("Error refreshing user data:", error);
-      toast({
-        title: "Refresh failed",
-        description: "Failed to refresh your profile data",
-        variant: "destructive"
-      });
     } finally {
       setIsLoading(false);
     }
   };
-  
+
+  const refreshUserData = async () => {
+    setIsLoading(true);
+    
+    try {
+      if (!user) {
+        console.error("Cannot refresh user data: No user is signed in");
+        return;
+      }
+      
+      // Fetch latest user data
+      const refreshedData = await fetchUserData(user.uid);
+      
+      if (refreshedData) {
+        setUser(refreshedData);
+        
+        // Update cache
+        localStorage.setItem('userDataCache', JSON.stringify(refreshedData));
+        localStorage.setItem('userDataCacheTimestamp', Date.now().toString());
+      }
+    } catch (error) {
+      console.error("Error refreshing user data:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -705,6 +592,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         signInWithGoogle,
         signInWithPhone,
         signInWithEmail,
+        activateDemoMode,
         signOut,
         refreshUserData
       }}
@@ -715,9 +603,5 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 }
 
 export function useAuth() {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
+  return useContext(AuthContext);
 }

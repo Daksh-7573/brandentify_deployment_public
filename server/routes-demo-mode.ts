@@ -1,57 +1,162 @@
 import express from 'express';
-import { storage } from './storage';
-import { v4 as uuidv4 } from 'uuid';
+import { pool } from './db';
+import { User } from '@shared/schema';
+import { Json } from 'type-fest';
 
+// Create a new router for demo mode-related routes
 const router = express.Router();
 
 /**
  * Demo mode login endpoint
  * Creates or reuses a demo user account for testing without authentication
+ * 
+ * This endpoint is especially useful when Firebase authentication is not working
+ * or for quick testing without requiring users to create actual accounts
  */
-router.get('/login', async (req, res) => {
+router.post('/api/demo-login', async (req, res) => {
   try {
-    // Generate a unique ID based on session or IP to potentially reuse the same demo account
-    const clientIdentifier = req.session?.id || req.ip || uuidv4().substring(0, 8);
-    const demoUsername = `demo_${clientIdentifier.replace(/[^a-zA-Z0-9]/g, '')}`;
+    console.log('[POST /api/demo-login] Processing demo login request');
     
-    // Check if demo user already exists
-    let user = await storage.getUserByUsername(demoUsername);
+    // Generate a unique demo username
+    const timestamp = new Date().getTime().toString();
+    const demoUsername = `demo_${timestamp.substring(timestamp.length - 8)}`;
+    const demoEmail = `${demoUsername}@example.com`;
     
-    if (!user) {
-      // Create a new demo user if it doesn't exist
-      const demoUser = {
-        username: demoUsername,
-        email: `${demoUsername}@demo.brandentifier.app`,
-        name: "Demo User",
-        password: null, // No password for demo accounts
-        photoURL: "https://api.dicebear.com/7.x/avataaars/svg?seed=demo&backgroundColor=b6e3f4",
-        title: "Product Designer",
-        aboutMe: "This is a demo account with pre-populated data for testing.",
-        location: "San Francisco, CA",
-        industry: "Technology",
-        lookingFor: "Collaboration opportunities",
-        availability: "Open to work",
-        profileCompleted: 75,
-        role: "user" as const,
-        demoMode: true
-      };
-      
-      // Create the user
-      user = await storage.createUser(demoUser);
-      console.log("Created new demo user:", demoUser.username);
-      
-      // Here you could add sample work experiences, projects, education, etc.
-      // But for simplicity, we're just creating the basic user for now
+    // First check if a demo user exists from the last 24 hours to reuse
+    // This reduces database clutter
+    const recentDemoUsers = await pool.query(
+      'SELECT * FROM users WHERE username LIKE $1 AND created_at > NOW() - INTERVAL \'24 hours\' LIMIT 1',
+      ['demo_%']
+    );
+    
+    let demoUser: User | null = null;
+    
+    if (recentDemoUsers.rows.length > 0) {
+      // Reuse existing demo user
+      demoUser = recentDemoUsers.rows[0];
+      console.log(`[POST /api/demo-login] Reusing existing demo user: ${demoUser?.id} (${demoUser?.username})`);
     } else {
-      console.log("Using existing demo user:", user.username);
+      // Create a new demo user
+      const result = await pool.query(
+        `INSERT INTO users 
+         (username, email, name, photo_url, title, location, is_demo_user) 
+         VALUES ($1, $2, $3, $4, $5, $6, $7) 
+         RETURNING *`,
+        [
+          demoUsername,
+          demoEmail,
+          'Demo User',
+          '/uploads/default-avatar.png', // Default avatar
+          'Professional',
+          'Demo Location',
+          true // Mark as demo user
+        ]
+      );
+      
+      demoUser = result.rows[0];
+      console.log(`[POST /api/demo-login] Created new demo user: ${demoUser?.id} (${demoUser?.username})`);
+      
+      // Optionally add some demo data (skills, experiences) to the demo user
+      try {
+        if (demoUser && demoUser.id) {
+          // Add a few basic skills
+          await pool.query(
+            `INSERT INTO skills (user_id, name, proficiency) 
+             VALUES 
+             ($1, 'JavaScript', 4),
+             ($1, 'React', 3),
+             ($1, 'TypeScript', 3)`,
+            [demoUser.id]
+          );
+          
+          // Add a work experience
+          await pool.query(
+            `INSERT INTO work_experiences 
+             (user_id, company, title, start_date, end_date, is_current, description) 
+             VALUES 
+             ($1, 'Demo Company', 'Software Developer', NOW() - INTERVAL '1 year', NULL, true, 'Working on various web projects using modern technologies.')`,
+            [demoUser.id]
+          );
+          
+          console.log(`[POST /api/demo-login] Added demo data for user ${demoUser.id}`);
+        }
+      } catch (demoDataError) {
+        // Non-fatal error if adding demo data fails
+        console.error('[POST /api/demo-login] Error adding demo data:', demoDataError);
+      }
     }
     
-    // Send the user data back to the client
-    res.json(user);
+    if (!demoUser) {
+      return res.status(500).json({
+        success: false,
+        message: 'Failed to create or retrieve demo user'
+      });
+    }
     
+    // Return the demo user information
+    res.status(200).json({
+      success: true,
+      demoUser: {
+        id: demoUser.id,
+        username: demoUser.username,
+        email: demoUser.email,
+        name: demoUser.name,
+        photoURL: demoUser.photoURL, // Use photoURL instead of photo_url
+        title: demoUser.title,
+        location: demoUser.location
+      },
+      message: 'Demo mode activated successfully'
+    });
   } catch (error) {
-    console.error("Error in demo mode login:", error);
-    res.status(500).json({ message: "Failed to create demo user" });
+    console.error('[POST /api/demo-login] Error creating demo user:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error creating demo user account'
+    });
+  }
+});
+
+/**
+ * Endpoint to check if a demo user exists
+ * Useful for automatic login for returning demo users
+ */
+router.get('/api/demo-user/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    // Find the demo user by ID
+    const result = await pool.query(
+      'SELECT * FROM users WHERE id = $1 AND is_demo_user = true',
+      [id]
+    );
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'Demo user not found'
+      });
+    }
+    
+    const demoUser = result.rows[0];
+    
+    res.status(200).json({
+      success: true,
+      demoUser: {
+        id: demoUser.id,
+        username: demoUser.username,
+        email: demoUser.email,
+        name: demoUser.name,
+        photoURL: demoUser.photo_url,
+        title: demoUser.title,
+        location: demoUser.location
+      }
+    });
+  } catch (error) {
+    console.error('[GET /api/demo-user/:id] Error fetching demo user:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching demo user'
+    });
   }
 });
 

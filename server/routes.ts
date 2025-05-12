@@ -17,6 +17,7 @@ import { updateUserGeolocation, updateUserRadarVisibility, getNearbyUsers } from
 import { handleMuskChat, handleResumeUpload, handlePitchDeckUpload } from "./routes-musk";
 import muskSuggestionRoutes from "./routes-musk-suggestions";
 import muskMatchRoutes from "./routes-musk-match";
+import demoModeRoutes from "./routes-demo-mode";
 import { registerSmartConnectRoutes } from "./routes-smart-connect";
 import { setupPrivacyRoutes } from "./routes-privacy";
 import { setupShadowResumeRoutes } from "./routes-shadow-resume";
@@ -5398,6 +5399,9 @@ ${extractedText.substring(0, 5000)}
   
   // Enhanced User data routes
   app.use(enhancedUserRoutes);
+  
+  // Demo Mode routes
+  app.use(demoModeRoutes);
   
   // What I Offer specialized routes
   app.use(whatIOfferRoutes);
