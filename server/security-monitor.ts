@@ -123,8 +123,8 @@ export function initializeSecurityMonitoring(app: Express): void {
 function addBasicRateLimiting(app: Express): void {
   const requestCounts: Record<string, { count: number, timestamp: number }> = {};
   const WINDOW_MS = 60 * 1000; // 1 minute
-  const MAX_REQUESTS = 100; // Max requests per IP per minute
-  const MAX_AUTH_ATTEMPTS = 5; // Max login attempts per IP per minute
+  const MAX_REQUESTS = 1000; // Max requests per IP per minute (increased from 100)
+  const MAX_AUTH_ATTEMPTS = 20; // Max login attempts per IP per minute (increased from 5)
   
   app.use((req: Request, res: Response, next: NextFunction) => {
     const ip = req.ip || req.socket.remoteAddress || 'unknown';

@@ -371,7 +371,7 @@ export function setupSecurity(app: any) {
   // 3. Rate limiting to prevent brute force attacks
   const apiLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 500, // limit each IP to 500 requests per windowMs (generous limit to avoid breaking functionality)
+    max: 2000, // limit each IP to 2000 requests per 15 minutes (very generous limit to avoid breaking functionality)
     standardHeaders: true,
     legacyHeaders: false,
     message: { message: 'Too many requests, please try again later.' }

@@ -116,7 +116,7 @@ export function createEndpointRateLimiters(app: any) {
   // Rate limiter for API endpoints
   const apiLimiter = rateLimit({
     windowMs: 60 * 1000, // 1 minute
-    max: 60, // Limit each IP to 60 requests per minute (1 req/sec)
+    max: 300, // Limit each IP to 300 requests per minute (5 req/sec)
     standardHeaders: true,
     legacyHeaders: false,
     message: {
