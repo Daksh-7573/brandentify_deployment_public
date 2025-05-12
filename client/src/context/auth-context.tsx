@@ -277,7 +277,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const isFirefox = navigator.userAgent.indexOf('Firefox') > -1;
       const isSafari = navigator.userAgent.indexOf('Safari') > -1 && !isChrome;
       const isEdge = navigator.userAgent.indexOf('Edg') > -1;
-      const browserInfo = { isChrome, isFirefox, isSafari, isEdge };
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      const isReplit = window.location.hostname.includes('.replit.app') || 
+                      window.location.hostname.includes('.repl.co') ||
+                      window.location.hostname.includes('picard.replit.dev');
+      
+      const browserInfo = { isChrome, isFirefox, isSafari, isEdge, isMobile, isReplit };
       
       // Log Firebase configuration for debugging
       console.log("Firebase config:", {
@@ -289,50 +294,71 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         browserInfo
       });
       
-      // Check if we're on mobile - if so, use redirect flow which works better on mobile
-      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-      
       let result;
       
-      // Try popup method first as it's more reliable in the Replit environment
-      try {
-        console.log("Starting Google sign-in with popup method");
+      // Configure Google provider with specific options for Replit environment
+      googleProvider.setCustomParameters({
+        // Force account selection to prevent automatic sign-in
+        prompt: 'select_account',
+        // Improved permissions handling for cross-domain authentication
+        auth_type: 'rerequest',
+        // Set login hint to current email if available
+        login_hint: window.location.hostname,
+      });
+      
+      // Special handling for Replit environment
+      if (isReplit) {
+        console.log("Running in Replit environment - using specialized authentication approach");
         
-        // Configure auth provider with more options to prevent third-party cookie issues
-        googleProvider.setCustomParameters({
-          prompt: 'select_account',
-          // Use rerequest for improved permissions handling
-          auth_type: 'rerequest',
-        });
-        
-        // Always try popup first as it has better compatibility in Replit
-        result = await signInWithPopup(auth, googleProvider);
-      } catch (popupError: any) {
-        console.error("Popup authentication failed:", popupError);
-        
-        // If popup fails with specific errors, try redirect as fallback
-        if (
-          popupError.code === 'auth/popup-blocked' || 
-          popupError.code === 'auth/popup-closed-by-user' ||
-          popupError.code === 'auth/cancelled-popup-request'
-        ) {
-          try {
-            console.log("Popup blocked, attempting redirect method as fallback...");
-            await signInWithRedirect(auth, googleProvider);
-            return; // We'll pick up the result in the getRedirectResult() handler
-          } catch (redirectError: any) {
-            console.error("Redirect authentication also failed:", redirectError);
-            throw redirectError; // Both methods failed
+        try {
+          // Try popup method with specific configuration for Replit
+          result = await signInWithPopup(auth, googleProvider);
+        } catch (popupError: any) {
+          console.error("Popup authentication failed in Replit:", popupError);
+          
+          // Don't try redirect method in Replit as it often doesn't work
+          // Instead, throw a more helpful error message
+          if (popupError.code === 'auth/internal-error') {
+            throw {
+              code: 'auth/replit-environment',
+              message: "Google authentication is not fully supported in the Replit environment due to cookie constraints. Please use email sign-in instead."
+            };
+          } else {
+            throw popupError;
           }
-        } else {
-          throw popupError; // Other errors should be handled by caller
+        }
+      } else {
+        // Standard environment - try popup first, then redirect as fallback
+        try {
+          console.log("Starting Google sign-in with popup method");
+          result = await signInWithPopup(auth, googleProvider);
+        } catch (popupError: any) {
+          console.error("Popup authentication failed:", popupError);
+          
+          // If popup fails with specific errors, try redirect as fallback
+          if (
+            popupError.code === 'auth/popup-blocked' || 
+            popupError.code === 'auth/popup-closed-by-user' ||
+            popupError.code === 'auth/cancelled-popup-request'
+          ) {
+            try {
+              console.log("Popup blocked, attempting redirect method as fallback...");
+              await signInWithRedirect(auth, googleProvider);
+              return; // We'll pick up the result in the getRedirectResult() handler
+            } catch (redirectError: any) {
+              console.error("Redirect authentication also failed:", redirectError);
+              throw redirectError; // Both methods failed
+            }
+          } else {
+            throw popupError; // Other errors should be handled by caller
+          }
         }
       }
       
-      // If we get here, popup was successful
-      console.log("Google sign-in successful:", result.user);
+      // If we get here, authentication was successful
+      console.log("Google sign-in successful:", result?.user);
       
-      if (result.user) {
+      if (result?.user) {
         // Create or update user in our backend
         await createOrUpdateUserInBackend(result.user);
         
@@ -346,7 +372,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           // Fallback to Firebase data if backend fetch fails
           setUser({
             uid: result.user.uid,
-            id: parseInt(result.user.uid.substring(0, 5), 36) || 999,
+            id: parseInt(result.user.uid.substring(0, 5), 36) || Math.floor(Math.random() * 10000),
             username: result.user.uid.substring(0, 8),
             email: result.user.email,
             name: result.user.displayName,
@@ -361,40 +387,53 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     } catch (error: any) {
       console.error("Error signing in with Google:", error);
-      
-      // More informative error message
-      let errorMessage = "There was a problem signing in with Google";
-      let errorDetails = ""; // Additional details for debugging
+      setIsLoading(false);
       
       // Enhanced error handling with more specific messages
       if (error.code === 'auth/configuration-not-found') {
-        errorMessage = "Firebase authentication is not properly configured.";
-        errorDetails = `Project ID: ${import.meta.env.VITE_FIREBASE_PROJECT_ID}, Domain: ${window.location.hostname}`;
+        toast({
+          title: "Authentication Error",
+          description: "Firebase authentication is not properly configured. Please check your Firebase setup.",
+          variant: "destructive"
+        });
+        
         console.log("Configuration details:", {
-          apiKey: import.meta.env.VITE_FIREBASE_API_KEY ? "Set (length: " + import.meta.env.VITE_FIREBASE_API_KEY.length + ")" : "Not set",
           projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "Not set",
-          authDomain: window.location.hostname,
-          appId: import.meta.env.VITE_FIREBASE_APP_ID ? "Set (length: " + import.meta.env.VITE_FIREBASE_APP_ID.length + ")" : "Not set"
+          apiKeyPresent: !!import.meta.env.VITE_FIREBASE_API_KEY,
+          appIdPresent: !!import.meta.env.VITE_FIREBASE_APP_ID,
+          domain: window.location.hostname
         });
       } else if (error.code === 'auth/internal-error') {
-        errorMessage = "There was an internal authentication error. Please check browser settings below.";
-        errorDetails = "Please try one or more of these solutions:\n1. Enable third-party cookies in your browser settings\n2. Disable any ad-blockers or privacy extensions temporarily\n3. Use a different browser (Chrome recommended)\n4. Clear your browser cache and cookies";
-        
-        // Show a more helpful toast with detailed instructions
         toast({
           title: "Authentication Failed",
-          description: "There was an internal authentication error. Please check if third-party cookies are enabled and try disabling ad-blockers.",
+          description: "There was an internal authentication error. This is likely due to browser cookie settings. Try using email authentication instead.",
           variant: "destructive",
           duration: 10000, // Show for longer so user can read it
         });
+      } else if (error.code === 'auth/replit-environment') {
+        toast({
+          title: "Authentication Notice",
+          description: error.message || "Google authentication doesn't work in this environment. Please use email sign-in instead.",
+          duration: 10000,
+        });
       } else if (error.code === 'auth/popup-blocked' || error.code === 'auth/popup-closed-by-user') {
-        errorMessage = "Sign-in popup was blocked or closed. Please try again.";
-        errorDetails = "Ensure your browser allows popups for this website.";
+        toast({
+          title: "Authentication Failed",
+          description: "Sign-in popup was blocked or closed. Please allow popups for this site and try again.",
+          variant: "destructive"
+        });
       } else if (error.code === 'auth/unauthorized-domain') {
-        errorMessage = "This domain is not authorized for Firebase authentication.";
-        errorDetails = `Current domain "${window.location.hostname}" needs to be added to your Firebase console under Auth > Settings > Authorized domains.`;
+        toast({
+          title: "Authentication Failed",
+          description: `This domain (${window.location.hostname}) is not authorized for Firebase authentication. Please add it to your Firebase console.`,
+          variant: "destructive"
+        });
       } else if (error.code === 'auth/network-request-failed') {
-        errorMessage = "Network connection issue. Please check your internet connection.";
+        toast({
+          title: "Network Error",
+          description: "Network connection issue. Please check your internet connection.",
+          variant: "destructive"
+        });
       } else if (error.code === 'auth/timeout') {
         errorMessage = "The authentication request timed out. Please try again.";
       } else if (error.message) {

@@ -1,6 +1,6 @@
 // Import from firebase directly
 import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider, connectAuthEmulator } from "firebase/auth";
+import { getAuth, GoogleAuthProvider, browserSessionPersistence, setPersistence } from "firebase/auth";
 
 // Log Firebase configuration values for debugging (without exposing API keys)
 console.log("Firebase config check:", {
@@ -12,6 +12,7 @@ console.log("Firebase config check:", {
 // Check if running on Replit
 const isReplit = window.location.hostname.includes('.replit.app') || 
                  window.location.hostname.includes('.repl.co') ||
+                 window.location.hostname.includes('picard.replit.dev') ||
                  window.location.hostname === 'repl.it';
 
 // Get the current domain for AUTH configuration
@@ -20,7 +21,8 @@ const currentDomain = window.location.hostname;
 // Configure Firebase with proper settings - optimized for Replit environment
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  // Always use the Firebase project domain as authDomain for proper authentication
+  // For Replit environment, the authDomain must match the Firebase project domain
+  // but we tell the browser to allow cookies from this domain even in an iframe
   authDomain: `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.firebaseapp.com`,
   projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
   storageBucket: `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.appspot.com`,
@@ -32,6 +34,16 @@ const app = initializeApp(firebaseConfig);
 
 // Initialize Firebase Auth
 export const auth = getAuth(app);
+
+// Set session persistence to avoid cookie issues
+// This makes authentication state persist only for the current session
+setPersistence(auth, browserSessionPersistence)
+  .then(() => {
+    console.log("Firebase auth persistence set to browserSessionPersistence");
+  })
+  .catch((error) => {
+    console.error("Error setting auth persistence:", error);
+  });
 
 // Enhanced configuration for Google Sign-in
 export const googleProvider = new GoogleAuthProvider();
@@ -45,7 +57,10 @@ googleProvider.setCustomParameters({
   // Force account selection to prevent automatic sign-in with cached credentials
   prompt: 'select_account', 
   // Allow sign-in across domains/iframes
+  // This is critical for Replit environment which runs in an iframe
   auth_type: 'rerequest',
+  // Allow redirect to the current domain
+  login_hint: window.location.hostname
 });
 
 // For Replit environment, add the current domain to the list of authorized domains

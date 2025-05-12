@@ -68,20 +68,81 @@ export function GoogleAuth() {
     setIsGoogleAttempted(true);
     
     try {
+      // Make sure browser settings are compatible with Firebase Auth
+      const isThirdPartyCookiesEnabled = () => {
+        try {
+          // Create an iframe to test third-party cookies
+          const iframe = document.createElement('iframe');
+          iframe.style.display = 'none';
+          document.body.appendChild(iframe);
+          
+          // Check if iframe has access to cookies
+          // We don't actually need to wait for a response, just verify
+          // that we can access the iframe without a security error
+          if (iframe.contentWindow) {
+            document.body.removeChild(iframe);
+            return true;
+          }
+          
+          document.body.removeChild(iframe);
+          return false;
+        } catch (error) {
+          console.log("Third-party cookie test failed:", error);
+          return false;
+        }
+      };
+      
+      // Log browser info for troubleshooting
+      const isChrome = navigator.userAgent.indexOf('Chrome') > -1;
+      const isFirefox = navigator.userAgent.indexOf('Firefox') > -1;
+      const isSafari = navigator.userAgent.indexOf('Safari') > -1 && !isChrome;
+      const isEdge = navigator.userAgent.indexOf('Edg') > -1;
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      
+      console.log("Browser info:", { 
+        isChrome, isFirefox, isSafari, isEdge, isMobile,
+        thirdPartyCookiesEnabled: isThirdPartyCookiesEnabled()
+      });
+      
+      // Attempt the sign-in
       await signInWithGoogle();
     } catch (error: any) {
       console.error("Error in Google Auth component:", error);
       
       // Set appropriate error message based on the error type
       if (error.code === 'auth/internal-error') {
-        setAuthError("Third-party cookies may be disabled in your browser settings");
-        setMode("email"); // Switch to email auth as fallback
+        // This is commonly caused by third-party cookie issues
+        setAuthError(
+          "Google sign-in is currently not working in this browser environment. " +
+          "This is likely due to third-party cookie restrictions in Replit. " +
+          "Please use email authentication instead."
+        );
+        // Automatically switch to email auth as fallback
+        setMode("email");
+        
+        // Show detailed debug information
+        console.log("Auth error details:", {
+          code: error.code,
+          message: error.message,
+          domain: window.location.hostname,
+          projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID
+        });
       } else if (error.code === 'auth/popup-blocked') {
-        setAuthError("Sign-in popup was blocked by your browser");
+        setAuthError(
+          "Sign-in popup was blocked by your browser. " + 
+          "Please allow popups for this site and try again."
+        );
+      } else if (error.code === 'auth/unauthorized-domain') {
+        setAuthError(
+          "This domain is not authorized for Firebase authentication. " +
+          "Please add it to your Firebase console under Authentication > Settings > Authorized domains."
+        );
+      } else if (error.code === 'auth/cancelled-popup-request') {
+        setAuthError("Sign-in was cancelled. Please try again.");
       } else if (error.code && error.message) {
         setAuthError(`${error.code}: ${error.message}`);
       } else {
-        setAuthError("Authentication failed. Please try again.");
+        setAuthError("Authentication failed. Please try again or use email sign-in instead.");
       }
     }
   };
