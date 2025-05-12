@@ -39,6 +39,7 @@ import ManageServicesPage from "@/pages/manage-services";
 import TestNowboardPage from "@/pages/test-nowboard";
 import ChatPage from "@/pages/ChatPage"; // Chat messaging feature
 import PrivacyPage from "@/pages/privacy"; // Privacy & Data Control page
+import QuestDemoPage from "@/pages/quest-demo"; // Quest Demo Page
 import CookieConsentBanner from "@/components/privacy/cookie-consent-banner"; // Cookie consent banner
 // Lazy load the SharedCardPage to improve performance and show loader immediately
 import { lazy, Suspense } from "react";
@@ -84,10 +85,7 @@ function Router() {
       <Route path="/" component={Landing} />
       <Route path="/auth" component={AuthPage} />
       <Route path="/verify-email" component={EmailVerification} />
-      <Route path="/quest-demo">
-        {/* Redirect to demo quest launcher page */}
-        {() => <iframe src="/redirect-to-demo-quest.html" style={{width: '100%', height: '100vh', border: 'none'}} />}
-      </Route>
+      <Route path="/quest-demo" component={QuestDemoPage} />
       <Route path="/dashboard">
         <ProtectedRoute path="/dashboard" component={() => <Redirect to="/industry-pulse" />} />
       </Route>

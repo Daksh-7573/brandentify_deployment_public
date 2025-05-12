@@ -50,17 +50,19 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
   
   useEffect(() => {
     if (weeklyError) {
+      console.log('Error fetching weekly quests:', weeklyError);
       toast({
         title: 'Error fetching weekly quests',
-        description: (weeklyError as Error).message,
+        description: "We'll try to recover your data. You can also try using demo mode.",
         variant: 'destructive',
       });
     }
     
     if (allError) {
+      console.log('Error fetching all quests:', allError);
       toast({
         title: 'Error fetching quests',
-        description: (allError as Error).message,
+        description: "We'll try to recover your data. You can also try using demo mode.",
         variant: 'destructive',
       });
     }

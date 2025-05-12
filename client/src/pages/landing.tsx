@@ -83,6 +83,15 @@ export default function Landing() {
                     </Button>
                   </div>
                 </div>
+                <div className="mt-4 text-center lg:text-left">
+                  <Button 
+                    variant="ghost"
+                    className="text-green-600 hover:text-green-700 hover:bg-green-50 border border-green-200"
+                    onClick={() => setLocation('/quest-demo')}
+                  >
+                    Try Brand Quests Demo →
+                  </Button>
+                </div>
               </div>
             </main>
           </div>
