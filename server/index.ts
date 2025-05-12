@@ -8,7 +8,6 @@ import { setupSecurity, validateFileUpload } from "./security";
 import { setupInfrastructureSecurity } from "./infrastructure-security";
 import { setupPrivacyRoutes } from "./privacy-compliance";
 import { aiSecurityMiddleware } from "./ai-security";
-import { initializeSecurityMonitoring } from "./security-monitor";
 
 const app = express();
 // Increase body size limit to handle file uploads (10MB)
@@ -142,10 +141,6 @@ setupPrivacyRoutes(app);
 // Setup AI-specific security middleware (in a non-breaking way)
 console.log("Setting up AI-Specific Security");
 app.use(aiSecurityMiddleware);
-
-// Setup security monitoring (in a non-breaking way)
-console.log("Setting up Security Monitoring & Threat Detection");
-initializeSecurityMonitoring(app);
 
 (async () => {
   const server = await registerRoutes(app);
