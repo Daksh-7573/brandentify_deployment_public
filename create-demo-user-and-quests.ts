@@ -125,11 +125,11 @@ async function createDemoUserAndAssignQuests() {
         qd.musk_tip as "muskTip"
       FROM user_quests uq
       JOIN quest_definitions qd ON uq.quest_definition_id = qd.id 
-      WHERE uq.user_id = 51502375 AND 
-            uq.week_number = $1 AND 
-            uq.year = $2
+      WHERE uq.user_id = $1 AND 
+            uq.week_number = $2 AND 
+            uq.year = $3
       ORDER BY uq.assigned_at DESC
-    `, [currentWeek, currentYear]);
+    `, [demoUserId, currentWeek, currentYear]);
     
     console.log("Assigned quests:", JSON.stringify(assignedQuests, null, 2));
 

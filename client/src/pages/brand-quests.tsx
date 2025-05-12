@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { AuthContext } from '@/context/auth-context';
 import Header from '@/components/layout/header';
 import { QuestPanel } from '@/components/brand-quests/quest-panel';
@@ -23,7 +23,26 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 export default function BrandQuestsPage() {
   const { user } = useContext(AuthContext);
-  const userId = user?.id;
+  const [effectiveUserId, setEffectiveUserId] = useState<number | undefined>(undefined);
+  const { toast } = useToast();
+  
+  // Check for demo user ID in localStorage
+  useEffect(() => {
+    const demoUserId = localStorage.getItem('demo_user_id');
+    if (demoUserId) {
+      const demoId = parseInt(demoUserId, 10);
+      setEffectiveUserId(demoId);
+      toast({
+        title: "Demo Mode Active",
+        description: `Viewing quests for demo user ID: ${demoId}`,
+        duration: 5000,
+      });
+    } else {
+      setEffectiveUserId(user?.id);
+    }
+  }, [user?.id, toast]);
+  
+  const userId = effectiveUserId;
   
   const { data: userXp, isLoading: isLoadingXp } = useUserXp(userId as number);
   const { data: xpTransactions, isLoading: isLoadingTransactions } = useXpTransactions(userId as number);
@@ -33,7 +52,7 @@ export default function BrandQuestsPage() {
       <div className="max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="text-center">
           <h1 className="text-3xl font-bold mb-4">Brand Quests</h1>
-          <p className="text-muted-foreground">Please log in to view your brand quests.</p>
+          <p className="text-muted-foreground">Please log in to view your brand quests or use the demo launcher.</p>
         </div>
       </div>
     );
