@@ -1,5 +1,5 @@
-import { Loader2, Check, AlertTriangle, Info, User, Mail } from "lucide-react";
-import { useState } from "react";
+import { Loader2, AlertTriangle, Info, ExternalLink } from "lucide-react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
@@ -9,166 +9,202 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { apiRequest } from "@/lib/queryClient";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
 
 // Define schema for the form
 const formSchema = z.object({
   email: z.string().email("Please enter a valid email"),
-  name: z.string().min(2, "Name must be at least 2 characters").optional(),
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
 type FormValues = z.infer<typeof formSchema>;
 
-// Simple demo mode authentication - completely replaces Firebase auth
 export function GoogleAuth() {
-  const { signInWithEmail, isLoading } = useAuth();
+  const { signInWithGoogle, isLoading, signInWithEmail } = useAuth();
   const { toast } = useToast();
+  const [authAttempted, setAuthAttempted] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
-  const [isSignUp, setIsSignUp] = useState(false);
+  const [isFirebaseConfigured, setIsFirebaseConfigured] = useState(true);
+  const [isGoogleAttempted, setIsGoogleAttempted] = useState(false);
+  const [mode, setMode] = useState<"google" | "email">("google");
+  const auth = getAuth();
   
   // Form setup for email auth
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: "",
-      name: "",
       password: "",
     },
   });
+  
+  // Check if Firebase is properly configured
+  useEffect(() => {
+    const checkFirebaseConfig = () => {
+      const hasProjectId = !!import.meta.env.VITE_FIREBASE_PROJECT_ID;
+      const hasApiKey = !!import.meta.env.VITE_FIREBASE_API_KEY;
+      const hasAppId = !!import.meta.env.VITE_FIREBASE_APP_ID;
+      
+      const isConfigured = hasProjectId && hasApiKey && hasAppId;
+      setIsFirebaseConfigured(isConfigured);
+      
+      if (!isConfigured) {
+        console.error("Firebase configuration is incomplete");
+      } else {
+        console.log("Firebase config:", {
+          projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+          hasApiKey: !!import.meta.env.VITE_FIREBASE_API_KEY,
+          hasAppId: !!import.meta.env.VITE_FIREBASE_APP_ID
+        });
+      }
+    };
+    
+    checkFirebaseConfig();
+  }, []);
 
-  // Direct authentication with our backend
-  const handleDirectAuth = async (values: FormValues) => {
+  const handleGoogleSignIn = async () => {
+    setAuthAttempted(true);
+    setAuthError(null);
+    setIsGoogleAttempted(true);
+    
+    try {
+      await signInWithGoogle();
+    } catch (error: any) {
+      console.error("Error in Google Auth component:", error);
+      
+      // Set appropriate error message based on the error type
+      if (error.code === 'auth/internal-error') {
+        setAuthError("Third-party cookies may be disabled in your browser settings");
+        setMode("email"); // Switch to email auth as fallback
+      } else if (error.code === 'auth/popup-blocked') {
+        setAuthError("Sign-in popup was blocked by your browser");
+      } else if (error.code && error.message) {
+        setAuthError(`${error.code}: ${error.message}`);
+      } else {
+        setAuthError("Authentication failed. Please try again.");
+      }
+    }
+  };
+  
+  const handleEmailAuth = async (values: FormValues) => {
+    setAuthAttempted(true);
     setAuthError(null);
     
     try {
-      // Attempt to sign in directly with our backend
-      const signInResponse = await apiRequest('POST', '/api/auth/login', {
-        email: values.email,
-        password: values.password
-      });
-      
-      if (signInResponse.ok) {
-        const userData = await signInResponse.json();
+      // First try to sign in - if the user exists
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, values.email, values.password);
+        const user = userCredential.user;
         
-        // Successfully authenticated with our backend
-        signInWithEmail({
-          id: userData.id || Math.floor(Math.random() * 10000),
-          username: userData.username || values.email.split('@')[0],
-          email: values.email,
-          name: userData.name || values.name || values.email.split('@')[0],
-          phoneNumber: null,
-          photoURL: null,
-          password: null
-        });
-        
-        toast({
-          title: "Sign in successful",
-          description: "Welcome to Brandentifier!",
-        });
-      } else if (signInResponse.status === 404 && isSignUp) {
-        // User not found, but we're in signup mode, so create the account
-        const signUpResponse = await apiRequest('POST', '/api/auth/register', {
-          email: values.email,
-          password: values.password,
-          name: values.name || values.email.split('@')[0],
-          username: values.email.split('@')[0]
-        });
-        
-        if (signUpResponse.ok) {
-          const userData = await signUpResponse.json();
-          
-          // Successfully created account
+        // Call our custom auth context to handle the user
+        if (user) {
           signInWithEmail({
-            id: userData.id || Math.floor(Math.random() * 10000),
-            username: userData.username || values.email.split('@')[0],
-            email: values.email,
-            name: userData.name || values.name || values.email.split('@')[0],
-            phoneNumber: null,
-            photoURL: null,
+            id: parseInt(user.uid.substring(0, 5), 36) || Math.floor(Math.random() * 10000),
+            uid: user.uid,
+            username: user.email?.split('@')[0] || '',
+            email: user.email,
+            name: user.displayName,
+            phoneNumber: user.phoneNumber,
+            photoURL: user.photoURL,
             password: null
           });
           
           toast({
-            title: "Account created",
-            description: "Your account has been created and you're now signed in!",
+            title: "Sign in successful",
+            description: "Welcome to Brandentifier!",
           });
-        } else {
-          // Failed to create account
-          const errorData = await signUpResponse.text();
-          setAuthError(`Failed to create account: ${errorData || "Unknown error"}`);
         }
-      } else if (signInResponse.status === 404) {
-        // User not found and we're in login mode
-        setAuthError("No account found with this email. Please sign up first.");
-        setIsSignUp(true); // Switch to sign up mode
-      } else if (signInResponse.status === 401) {
-        // Invalid credentials
-        setAuthError("Invalid email or password");
-      } else {
-        // Other error
-        const errorData = await signInResponse.text();
-        setAuthError(`Authentication failed: ${errorData || "Unknown error"}`);
+      } catch (signInError: any) {
+        // If the user doesn't exist, create a new account
+        if (signInError.code === 'auth/user-not-found') {
+          try {
+            const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
+            const user = userCredential.user;
+            
+            if (user) {
+              signInWithEmail({
+                id: parseInt(user.uid.substring(0, 5), 36) || Math.floor(Math.random() * 10000),
+                uid: user.uid,
+                username: user.email?.split('@')[0] || '',
+                email: user.email,
+                name: user.displayName,
+                phoneNumber: user.phoneNumber,
+                photoURL: user.photoURL,
+                password: null
+              });
+              
+              toast({
+                title: "Account created",
+                description: "Your account has been created and you're now signed in!",
+              });
+            }
+          } catch (createError: any) {
+            setAuthError("Error creating account: " + createError.message);
+          }
+        } else {
+          // Handle other sign-in errors
+          if (signInError.code === 'auth/wrong-password') {
+            setAuthError("Incorrect password. Please try again.");
+          } else {
+            setAuthError(signInError.message);
+          }
+        }
       }
     } catch (error: any) {
-      console.error("Error in Direct Auth:", error);
-      
-      // Create a direct demo/development account as fallback
-      const userId = Math.floor(Math.random() * 10000);
-      
-      // Generate username from email or use fallback
-      const username = values.email ? values.email.split('@')[0] : `user${userId}`;
-      
-      // Create user directly from form data (development/demo mode)
-      try {
-        await apiRequest('POST', '/api/users', {
-          id: userId,
-          username: username,
-          email: values.email,
-          name: values.name || username,
-          title: "New User",
-          location: "Global",
-          photoURL: null
-        });
-        
-        signInWithEmail({
-          id: userId,
-          username: username,
-          email: values.email,
-          name: values.name || username,
-          phoneNumber: null,
-          photoURL: null,
-          password: null
-        });
-        
-        toast({
-          title: "Demo account created",
-          description: "A demo account has been created for you.",
-        });
-      } catch (createError) {
-        console.error("Error creating demo user:", createError);
-        setAuthError("Failed to create a demo account. Please try again.");
-      }
+      console.error("Error in Email Auth:", error);
+      setAuthError(error.message);
     }
   };
 
   return (
     <div className="space-y-4">
-      <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-4 mb-4">
-        <div className="flex items-center justify-center mb-4 text-center">
-          <div className="bg-primary/10 text-primary rounded-full p-3 mr-3">
-            {isSignUp ? <User size={22} /> : <Mail size={22} />}
-          </div>
-          <div>
-            <h3 className="text-lg font-semibold">{isSignUp ? "Create an Account" : "Sign In to Brandentifier"}</h3>
-            <p className="text-sm text-muted-foreground">
-              {isSignUp ? "Set up your new account" : "Continue to your dashboard"}
-            </p>
-          </div>
+      {!isFirebaseConfigured && (
+        <div className="p-2 mb-2 bg-amber-50 border border-amber-200 rounded-md text-amber-800 text-sm flex items-center">
+          <AlertTriangle className="h-4 w-4 mr-2 flex-shrink-0" />
+          <span>Firebase configuration is incomplete. Please check your environment variables.</span>
         </div>
+      )}
       
+      {mode === "google" ? (
+        // Google Sign-in Option
+        <Button
+          variant="outline"
+          onClick={handleGoogleSignIn}
+          disabled={isLoading || !isFirebaseConfigured}
+          className="w-full relative"
+        >
+          {isLoading ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <svg
+              className="mr-2 h-4 w-4"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 48 48"
+            >
+              <path
+                fill="#FFC107"
+                d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"
+              />
+              <path
+                fill="#FF3D00"
+                d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"
+              />
+              <path
+                fill="#4CAF50"
+                d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"
+              />
+              <path
+                fill="#1976D2"
+                d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"
+              />
+            </svg>
+          )}
+          {isLoading ? "Signing in..." : "Continue with Google"}
+        </Button>
+      ) : (
+        // Email Sign-in Form
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleDirectAuth)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(handleEmailAuth)} className="space-y-4">
             <FormField
               control={form.control}
               name="email"
@@ -182,23 +218,6 @@ export function GoogleAuth() {
                 </FormItem>
               )}
             />
-            
-            {isSignUp && (
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Name (Optional)</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Your name" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
-            
             <FormField
               control={form.control}
               name="password"
@@ -212,27 +231,13 @@ export function GoogleAuth() {
                 </FormItem>
               )}
             />
-            
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-              {isLoading ? "Processing..." : isSignUp ? "Create Account" : "Sign In"}
+              {isLoading ? "Signing in..." : "Sign In / Sign Up"}
             </Button>
           </form>
         </Form>
-        
-        <div className="mt-4 text-center">
-          <Button 
-            variant="link" 
-            className="text-sm font-medium" 
-            onClick={() => setIsSignUp(!isSignUp)}
-            type="button"
-          >
-            {isSignUp 
-              ? "Already have an account? Sign in" 
-              : "Need an account? Sign up"}
-          </Button>
-        </div>
-      </div>
+      )}
       
       {authError && (
         <div className="p-3 bg-red-50 border border-red-200 rounded-md text-red-800 text-sm">
@@ -246,27 +251,34 @@ export function GoogleAuth() {
         </div>
       )}
       
-      <Card className="p-4 space-y-3">
-        <h4 className="font-medium text-sm flex items-center">
-          <Info className="h-4 w-4 mr-2 text-blue-500" />
-          Features you'll get access to:
-        </h4>
-        
-        <div className="space-y-2 text-sm">
-          <div className="flex items-start">
-            <Check className="h-4 w-4 mr-2 text-green-500 mt-0.5" />
-            <span>AI-powered career guidance tailored to your experience</span>
+      {/* Toggle between Google and Email authentication */}
+      <div className="text-center">
+        <Button 
+          variant="link" 
+          className="text-sm font-medium" 
+          onClick={() => setMode(mode === "google" ? "email" : "google")}
+        >
+          {mode === "google" 
+            ? "Use email and password instead" 
+            : "Try Google sign-in again"}
+        </Button>
+      </div>
+      
+      {isGoogleAttempted && (
+        <Card className="p-3 bg-blue-50 border-blue-200">
+          <div className="text-sm space-y-2">
+            <div className="flex items-center text-blue-800 font-medium mb-1">
+              <Info className="h-4 w-4 mr-2 flex-shrink-0" />
+              <span>Having trouble with Google Sign-in?</span>
+            </div>
+            
+            <p className="text-blue-700 text-sm">
+              We've added a simpler email-based sign-in option that should work without running into cookie-related issues. 
+              You can use this method to create a new account or sign in with an existing one.
+            </p>
           </div>
-          <div className="flex items-start">
-            <Check className="h-4 w-4 mr-2 text-green-500 mt-0.5" />
-            <span>Smart networking with professionals in your field</span>
-          </div>
-          <div className="flex items-start">
-            <Check className="h-4 w-4 mr-2 text-green-500 mt-0.5" />
-            <span>Resume parsing and profile enhancement</span>
-          </div>
-        </div>
-      </Card>
+        </Card>
+      )}
     </div>
   );
 }

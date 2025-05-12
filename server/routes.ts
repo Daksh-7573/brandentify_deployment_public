@@ -28,7 +28,6 @@ import mentorshipRoutes from "./routes-mentorship";
 import brandsOfTheDayRoutes from "./routes-brands-of-the-day";
 import messagingRoutes from "./routes-messaging";
 import enhancedUserRoutes from "./routes-enhanced-user";
-import { setupAuthRoutes } from "./routes-auth";
 import whatIOfferRoutes from "./routes-what-i-offer";
 import profileServicesRoutes from "./routes-services-sync";
 import nowboardRecommendationsRoutes from "./routes-nowboard-recommendations";
@@ -103,9 +102,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Register privacy routes
   app.use('/api/privacy', setupPrivacyRoutes());
-  
-  // Register auth routes
-  app.use('/api/auth', setupAuthRoutes());
   
   // Initialize the email service
   await initEmailService();

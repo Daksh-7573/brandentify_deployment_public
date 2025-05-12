@@ -26,7 +26,7 @@ export default function Header() {
   const isActive = (routePath: string) => path === routePath;
   
   // Get the user ID for queries
-  const userId = user?.id;
+  const userId = user?.uid;
   
   // Use TanStack Query to fetch and cache user data
   const { data: userData, isError } = useQuery({
