@@ -8,8 +8,8 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { useToast } from '@/hooks/use-toast';
 import { UserQuest, QuestDefinition, QuestType, QuestStatus, getQuestTypeIcon, getQuestStatusLabel, getBadgeLabel } from '@/types/career-quest';
 import { useCompleteQuest, useUpdateQuestProgress } from '@/hooks/use-career-quests';
-import { HashtagSuggestions } from '../career-quests/hashtag-suggestions'; // Update path when we move this component
-import { StaticHashtagSuggestions } from '../career-quests/static-hashtag-suggestions'; // Update path when we move this component
+import { HashtagSuggestions } from '@/components/brand-quests/hashtag-suggestions';
+import { StaticHashtagSuggestions } from '@/components/brand-quests/static-hashtag-suggestions';
 
 interface QuestCardProps {
   quest: UserQuest;
@@ -149,20 +149,40 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
           </div>
           <Progress value={progressPercentage} className="h-2" />
           
-          {muskTipContent && (
-            <div className="mt-3 bg-muted/50 p-3 rounded-md border border-muted">
-              <div className="flex items-center gap-2 text-sm font-medium mb-1">
-                <span>⚡</span>
-                <span>Musk's Tip</span>
-              </div>
-              <p className="text-sm text-muted-foreground">{muskTipContent}</p>
-              
-              {/* Display static hashtag suggestions for active quests related to content creation */}
-              {isActive && ['pulse_creation', 'networking', 'visibility'].includes(questDefinition.type) && (
-                <StaticHashtagSuggestions questType={questDefinition.type as QuestType} />
-              )}
+          {/* Musk's Tip with integrated hashtag suggestions */}
+          <div className="mt-3 bg-muted/50 p-3 rounded-md border border-muted">
+            <div className="flex items-center gap-2 text-sm font-medium mb-1">
+              <span>⚡</span>
+              <span>Musk's Tip</span>
             </div>
-          )}
+            
+            {muskTipContent && (
+              <p className="text-sm text-muted-foreground mb-3">{muskTipContent}</p>
+            )}
+            
+            {/* Display dynamic hashtag suggestions for all quests */}
+            {isActive && (
+              <div className="mt-2">
+                <div className="text-xs font-medium text-muted-foreground mb-1">Recommended hashtags:</div>
+                <HashtagSuggestions 
+                  questType={questDefinition.type}
+                  targetAction={questDefinition.targetAction}
+                  showTitle={false}
+                  count={5}
+                  contentContext={questDefinition.title}
+                  onHashtagClick={(hashtag) => {
+                    navigator.clipboard.writeText(hashtag);
+                    toast({
+                      title: "Hashtag copied",
+                      description: `#${hashtag} has been copied to your clipboard`,
+                      duration: 2000
+                    });
+                  }}
+                  className="mt-1"
+                />
+              </div>
+            )}
+          </div>
         </div>
       </CardContent>
       <CardFooter className="pt-1 flex justify-between">
