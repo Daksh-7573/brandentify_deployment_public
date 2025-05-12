@@ -60,7 +60,39 @@ export const CookieConsentProvider: React.FC<{ children: React.ReactNode }> = ({
     setError(null);
 
     try {
-      const response = await fetch('/api/privacy/cookie-consent');
+      // Check if user is authenticated
+      const isAuthenticated = !!localStorage.getItem('authToken');
+      
+      // If not authenticated, try to load from localStorage first
+      if (!isAuthenticated) {
+        const savedPreferences = localStorage.getItem('cookiePreferences');
+        if (savedPreferences) {
+          try {
+            const parsedPreferences = JSON.parse(savedPreferences);
+            setPreferences(parsedPreferences);
+            setHasConsented(true);
+            setLoading(false);
+            return;
+          } catch (parseError) {
+            console.warn('Could not parse saved preferences', parseError);
+            // Continue with default preferences
+          }
+        }
+        
+        // No saved preferences, use default settings for unauthenticated users
+        setHasConsented(false);
+        setLoading(false);
+        return;
+      }
+      
+      // For authenticated users, try server first
+      const authToken = localStorage.getItem('authToken');
+      const response = await fetch('/api/privacy/cookie-consent', {
+        headers: {
+          'Authorization': `Bearer ${authToken || ''}`,
+        },
+        credentials: 'include',
+      });
       
       if (response.ok) {
         const data: ConsentResponse[] = await response.json();
@@ -89,11 +121,37 @@ export const CookieConsentProvider: React.FC<{ children: React.ReactNode }> = ({
         
         setHasConsented(hasExplicitlyConsented);
       } else {
-        // If not authorized or no preferences yet, just show initial state
-        setHasConsented(false);
+        // If not authorized or no preferences yet on server, try localStorage
+        const savedPreferences = localStorage.getItem('cookiePreferences');
+        if (savedPreferences) {
+          try {
+            const parsedPreferences = JSON.parse(savedPreferences);
+            setPreferences(parsedPreferences);
+            setHasConsented(true);
+          } catch (parseError) {
+            console.warn('Could not parse saved preferences', parseError);
+            // Use default preferences (already set)
+            setHasConsented(false);
+          }
+        } else {
+          // No preferences anywhere, use defaults
+          setHasConsented(false);
+        }
       }
     } catch (err) {
-      setError('Failed to load cookie preferences');
+      // On error, fallback to localStorage
+      const savedPreferences = localStorage.getItem('cookiePreferences');
+      if (savedPreferences) {
+        try {
+          const parsedPreferences = JSON.parse(savedPreferences);
+          setPreferences(parsedPreferences);
+          setHasConsented(true);
+        } catch (parseError) {
+          console.warn('Could not parse saved preferences', parseError);
+          // Use default preferences (already set)
+        }
+      }
+      
       console.error('Error fetching cookie consent preferences:', err);
     } finally {
       setLoading(false);
@@ -140,7 +198,30 @@ export const CookieConsentProvider: React.FC<{ children: React.ReactNode }> = ({
     setError(null);
     
     try {
-      // Save each preference to the server
+      // Get CSRF token from cookie if it exists
+      const getCsrfToken = () => {
+        const cookies = document.cookie.split(';');
+        for (const cookie of cookies) {
+          const [name, value] = cookie.trim().split('=');
+          if (name === 'XSRF-TOKEN') {
+            return value;
+          }
+        }
+        return '';
+      };
+      
+      const csrfToken = getCsrfToken();
+      
+      // If user is not authenticated, store in localStorage instead
+      // This is a fallback for unauthenticated users
+      if (!localStorage.getItem('authToken')) {
+        // Store in localStorage for unauthenticated users
+        localStorage.setItem('cookiePreferences', JSON.stringify(preferences));
+        setHasConsented(true);
+        return;
+      }
+      
+      // Save each preference to the server for authenticated users
       for (const [category, granted] of Object.entries(preferences)) {
         if (category === 'essential') continue; // Essential cookies are always required
         
@@ -148,22 +229,29 @@ export const CookieConsentProvider: React.FC<{ children: React.ReactNode }> = ({
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'X-CSRF-Token': csrfToken,
+            'Authorization': `Bearer ${localStorage.getItem('authToken') || ''}`,
           },
           body: JSON.stringify({
             category,
             status: granted ? 'granted' : 'denied',
           }),
+          credentials: 'include',
         });
         
         if (!response.ok) {
-          throw new Error(`Failed to save ${category} preference`);
+          // If server response fails, fallback to localStorage
+          localStorage.setItem('cookiePreferences', JSON.stringify(preferences));
+          console.warn(`Server-side preference saving failed, using localStorage fallback for ${category}`);
         }
       }
       
       setHasConsented(true);
     } catch (err) {
-      setError('Failed to save cookie preferences');
+      // On error, use localStorage as fallback
+      localStorage.setItem('cookiePreferences', JSON.stringify(preferences));
       console.error('Error saving cookie consent preferences:', err);
+      // Don't set error state for users, since we've successfully saved to localStorage
     } finally {
       setLoading(false);
     }
