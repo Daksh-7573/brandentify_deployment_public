@@ -461,47 +461,50 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         throw new Error("Invalid user data received");
       }
       
-      // First create or update the user in our backend
-      const createUserResponse = await apiRequest('POST', '/api/users', {
-        id: userData.id,
-        username: userData.username || `user_${userData.id}`,
-        email: userData.email,
-        name: userData.name,
-        photoURL: userData.photoURL,
-        title: userData.title || null,
-        location: userData.location || null,
-        uid: userData.uid || `firebase_${userData.id}`
-      });
+      // Skip the backend call for demo accounts
+      const isDemoUser = typeof userData.email === 'string' && userData.email.includes('@brandentifier.demo');
       
-      if (!createUserResponse.ok) {
-        console.error("Error creating user in backend:", await createUserResponse.text());
-        throw new Error("Failed to create user in backend");
+      // Only make backend API call for non-demo users
+      if (!isDemoUser) {
+        // First create or update the user in our backend
+        const createUserResponse = await apiRequest('POST', '/api/users', {
+          id: userData.id,
+          username: userData.username || `user_${userData.id}`,
+          email: userData.email,
+          name: userData.name,
+          photoURL: userData.photoURL,
+          title: userData.title || null,
+          location: userData.location || null,
+          // Use id as fallback for uid
+          uid: userData.id.toString()
+        });
+        
+        if (!createUserResponse.ok) {
+          console.error("Error creating user in backend:", await createUserResponse.text());
+          throw new Error("Failed to create user in backend");
+        }
       }
       
       // Convert database user to our AuthUser type
-      setUser({
-        uid: userData.uid || userData.id.toString(),
+      const authUser = {
+        // Use id as uid for demo users
+        uid: userData.id.toString(),
         id: userData.id,
         username: userData.username || userData.id.toString().substring(0, 8),
         email: userData.email,
         name: userData.name,
         photoURL: userData.photoURL,
         title: userData.title || undefined,
-        location: userData.location || undefined
-      });
+        location: userData.location || undefined,
+        isDemo: isDemoUser
+      };
+      
+      setUser(authUser);
       
       // Cache user data for offline use
       try {
-        localStorage.setItem('userDataCache', JSON.stringify({
-          uid: userData.uid || userData.id.toString(),
-          id: userData.id,
-          username: userData.username || userData.id.toString().substring(0, 8),
-          email: userData.email,
-          name: userData.name,
-          photoURL: userData.photoURL,
-          title: userData.title || undefined,
-          location: userData.location || undefined
-        }));
+        localStorage.setItem('userDataCache', JSON.stringify(authUser));
+        localStorage.setItem('authMethod', 'email');
         localStorage.setItem('userDataCacheTimestamp', Date.now().toString());
       } catch (cacheError) {
         console.error("Error caching user data:", cacheError);

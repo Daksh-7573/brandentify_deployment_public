@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
 import { useAuth } from "@/context/auth-context";
 
 export function DemoAuth() {
@@ -20,24 +19,28 @@ export function DemoAuth() {
       
       console.log("Attempting demo login with:", { demoEmail });
       
-      // Register a temporary demo user
-      const response = await fetch("/api/demo-login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ email: demoEmail, password: demoPassword }),
-      });
+      // Create a demo user object directly
+      // This simulates a successful login response with a demo user
+      const demoUser = {
+        id: timestamp,
+        username: `demo_user_${timestamp}`,
+        email: demoEmail,
+        name: "Demo User",
+        photoURL: null,
+        title: "Demo Account",
+        role: "user",
+        emailVerified: true,
+        profileCompleted: 70,
+        aboutMe: "This is a demo account for testing purposes",
+        location: "Demo City",
+        industry: "Technology",
+        domain: "Software Development",
+        lookingFor: "Testing the application",
+        createdAt: new Date()
+      };
       
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || "Demo login failed");
-      }
-      
-      const user = await response.json();
-      
-      // Log the user in
-      login(user);
+      // Log the user in with the demo user
+      login(demoUser);
       
       toast({
         title: "Demo account created",
