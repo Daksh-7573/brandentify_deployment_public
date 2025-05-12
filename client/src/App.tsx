@@ -84,6 +84,10 @@ function Router() {
       <Route path="/" component={Landing} />
       <Route path="/auth" component={AuthPage} />
       <Route path="/verify-email" component={EmailVerification} />
+      <Route path="/quest-demo">
+        {/* Redirect to demo quest launcher page */}
+        {() => <iframe src="/redirect-to-demo-quest.html" style={{width: '100%', height: '100vh', border: 'none'}} />}
+      </Route>
       <Route path="/dashboard">
         <ProtectedRoute path="/dashboard" component={() => <Redirect to="/industry-pulse" />} />
       </Route>
@@ -147,9 +151,13 @@ function Router() {
       <Route path="/feed-test">
         <ProtectedRoute path="/feed-test" component={FeedTestPage} />
       </Route>
-      {/* Brand Quests (new name) */}
+      {/* Brand Quests (new name) - Special implementation to support demo mode */}
       <Route path="/brand-quests">
-        <ProtectedRoute path="/brand-quests" component={BrandQuestsPage} />
+        {() => {
+          // Check if we're in demo mode
+          const demoMode = localStorage.getItem('demo_user_id') !== null;
+          return demoMode ? <BrandQuestsPage /> : <ProtectedRoute path="/brand-quests" component={BrandQuestsPage} />;
+        }}
       </Route>
       
       {/* Legacy route - keeping for backward compatibility */}
