@@ -41,19 +41,27 @@ const PrivacySettings: React.FC = () => {
           </TabsList>
 
           <TabsContent value="cookies">
-            <CookieSettingsTab />
+            <div className="max-h-[70vh] overflow-y-auto">
+              <CookieSettingsTab />
+            </div>
           </TabsContent>
 
           <TabsContent value="data">
-            <DataManagementTab />
+            <div className="max-h-[70vh] overflow-y-auto">
+              <DataManagementTab />
+            </div>
           </TabsContent>
 
           <TabsContent value="region">
-            <DataResidencyTab />
+            <div className="max-h-[70vh] overflow-y-auto">
+              <DataResidencyTab />
+            </div>
           </TabsContent>
 
           <TabsContent value="communications">
-            <CommunicationsTab />
+            <div className="max-h-[70vh] overflow-y-auto">
+              <CommunicationsTab />
+            </div>
           </TabsContent>
         </Tabs>
       </div>
