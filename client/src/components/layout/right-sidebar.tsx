@@ -9,20 +9,20 @@ import { calculateOverallProfileCompletion } from "@/lib/profile-utils";
 export default function RightSidebar() {
   const { user, isDemoMode } = useAuth();
   
-  // Get the Firebase UID for initial query
-  const firebaseUid = isDemoMode ? 1 : user?.uid;
+  // Get the user ID for initial query
+  const userId = isDemoMode ? 1 : user?.id;
   
   // Use TanStack Query to fetch and cache user data
   const { data: userData } = useQuery({
-    queryKey: [`/api/users/${firebaseUid}`],
+    queryKey: [`/api/users/${userId}`],
     queryFn: async () => {
-      if (!firebaseUid) return null;
+      if (!userId) return null;
       
-      console.log(`RightSidebar: Fetching user data with ID: ${firebaseUid}`);
-      const response = await apiRequest('GET', `/api/users/${firebaseUid}`);
+      console.log(`RightSidebar: Fetching user data with ID: ${userId}`);
+      const response = await apiRequest('GET', `/api/users/${userId}`);
       
       if (response.status === 404) {
-        console.error(`User with ID ${firebaseUid} not found in backend`);
+        console.error(`User with ID ${userId} not found in backend`);
         return null;
       }
       
