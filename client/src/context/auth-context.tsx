@@ -32,6 +32,7 @@ type AuthContextType = {
   signInWithGoogle: () => Promise<void>;
   signInWithPhone: (user: User) => void; // Function for phone authentication
   signInWithEmail: (user: User) => void; // Function for email authentication
+  login: (user: any) => void; // Direct login function, mainly for demo users
   signOut: () => Promise<void>;
   refreshUserData: () => Promise<void>;
 };
@@ -43,6 +44,7 @@ export const AuthContext = createContext<AuthContextType>({
   signInWithGoogle: async () => {},
   signInWithPhone: () => {},
   signInWithEmail: () => {},
+  login: () => {},
   signOut: async () => {},
   refreshUserData: async () => {},
 });
@@ -578,6 +580,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  // Direct login function (mainly for demo users)
+  const login = (userData: any) => {
+    return signInWithEmail(userData);
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -587,6 +594,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         signInWithGoogle,
         signInWithPhone,
         signInWithEmail,
+        login,
         signOut,
         refreshUserData
       }}
