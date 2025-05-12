@@ -1221,10 +1221,7 @@ export default function IndustryPulsePage() {
               </Tabs>
             </div>
             
-            {/* Nowboard Panel Sidebar */}
-            <div className="hidden lg:block w-80">
-              <NowboardPanel />
-            </div>
+            {/* Nowboard Panel Sidebar removed as it's now integrated into quests */}
           </div>
         </div>
       </div>

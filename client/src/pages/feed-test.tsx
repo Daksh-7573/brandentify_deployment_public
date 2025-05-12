@@ -5,7 +5,7 @@ import { useAuth } from "@/context/auth-context";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
-import NowboardPanel from "@/components/nowboard/nowboard-panel";
+// Removed Nowboard panel import as it's now integrated into quests
 import PulseFeed from "@/components/industry-pulse/pulse-feed";
 
 export default function FeedTestPage() {
@@ -72,7 +72,7 @@ export default function FeedTestPage() {
           
           {/* Sidebar - Nowboard Panel */}
           <div className="md:col-span-1">
-            <NowboardPanel />
+            {/* Nowboard Panel removed as it's now integrated into quests */}
           </div>
         </div>
       </main>
