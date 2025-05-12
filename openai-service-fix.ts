@@ -7,8 +7,6 @@
 import OpenAI from "openai";
 // Import required types
 import type { WorkExperience, Education, Skill } from "./shared/schema";
-// Import AI security functions
-import { sanitizeResumeText, moderateAIResponse } from "./server/ai-security";
 
 // Create the OpenAI instance
 const openai = new OpenAI({
@@ -820,5 +818,133 @@ export async function generateNetworkingRecommendations(
   } catch (error: any) {
     console.error("Error generating networking recommendations:", error);
     throw new Error(`Failed to generate networking recommendations: ${error.message}`);
+  }
+}
+
+/**
+ * Suggest hashtags based on user context, industry, and content
+ * @param options Hashtag suggestion options including industry, domain, etc.
+ * @returns List of suggested hashtags with explanations
+ */
+export async function suggestHashtags(options: {
+  industry?: string;
+  domain?: string;
+  followedHashtags?: string[];
+  previouslyUsedHashtags?: string[];
+  contentContext?: string;
+  count?: number;
+}) {
+  try {
+    // Extract options with defaults
+    const industry = options.industry || "general";
+    const domain = options.domain || "";
+    const followedHashtags = options.followedHashtags || [];
+    const previouslyUsedHashtags = options.previouslyUsedHashtags || [];
+    const contentContext = options.contentContext || "";
+    const count = options.count || 10;
+
+    // Sanitize inputs for security
+    const sanitizedContentContext = sanitizeResumeText(contentContext);
+    
+    const prompt = `
+    I need to suggest relevant and engaging hashtags for a professional in the ${industry} industry${domain ? ` specializing in ${domain}` : ''}.
+    
+    CONTEXT:
+    ${sanitizedContentContext || "No specific content context provided"}
+    
+    HASHTAGS THEY FOLLOW:
+    ${followedHashtags.length > 0 ? followedHashtags.join(", ") : "No followed hashtags provided"}
+    
+    HASHTAGS THEY'VE USED BEFORE:
+    ${previouslyUsedHashtags.length > 0 ? previouslyUsedHashtags.join(", ") : "No previously used hashtags provided"}
+    
+    Please suggest ${count} hashtags that would be:
+    1. Relevant to their industry and domain
+    2. Trending or popular in their professional field
+    3. Specific enough to reach the right audience
+    4. A mix of popular and niche hashtags
+    5. Complementary to hashtags they already follow or use
+    
+    FORMAT YOUR RESPONSE AS A JSON OBJECT with:
+    - "hashtags": An array of suggested hashtags (without the # symbol)
+    - "explanations": A matching array with brief explanations for each hashtag
+    - "meta": Object with "industry", "domain", and "contextRelevance" (0-10 score) properties
+    
+    Here's an example of the expected format:
+    {
+      "hashtags": ["TechInnovation", "AIFuture", "ProductDevelopment"],
+      "explanations": [
+        "Popular in technology circles discussing cutting-edge developments",
+        "Focuses on artificial intelligence trends and applications",
+        "Targeted at product management and development professionals"
+      ],
+      "meta": {
+        "industry": "technology",
+        "domain": "product management",
+        "contextRelevance": 8
+      }
+    }
+    `;
+
+    const response = await openai.chat.completions.create({
+      model: MODEL,
+      messages: [
+        {
+          role: "system",
+          content:
+            "You are Musk, a hashtag recommendation specialist within the Brandentifier platform. Your expertise is in suggesting relevant, trending, and engaging hashtags for professionals based on their industry, domain, and content context. Provide hashtag suggestions in JSON format exactly as requested, ensuring hashtags are professionally relevant, current, and appropriate for the target audience.",
+        },
+        { role: "user", content: prompt },
+      ],
+      temperature: 0.7,
+      max_tokens: 1000,
+      response_format: { type: "json_object" }, // Ensure JSON response
+    });
+
+    // Parse the JSON response
+    const content = response.choices[0].message.content || "{}";
+    
+    // Apply AI security: Moderate the AI-generated content
+    console.log("[AI SECURITY] Moderating AI-generated hashtag suggestions");
+    const moderatedContent = await moderateAIResponse(content);
+    
+    try {
+      const result = JSON.parse(moderatedContent);
+      
+      // Ensure the result has the expected format
+      if (!result.hashtags || !Array.isArray(result.hashtags)) {
+        result.hashtags = [];
+      }
+      
+      if (!result.explanations || !Array.isArray(result.explanations)) {
+        result.explanations = result.hashtags.map(() => "Relevant to your industry and interests");
+      }
+      
+      if (!result.meta || typeof result.meta !== 'object') {
+        result.meta = {
+          industry: industry,
+          domain: domain || "general",
+          contextRelevance: 5
+        };
+      }
+      
+      return result;
+    } catch (parseError) {
+      console.error("Error parsing hashtag suggestions:", parseError);
+      // Return a basic response if parsing fails
+      return {
+        hashtags: [],
+        explanations: [],
+        meta: {
+          industry: industry,
+          domain: domain || "general",
+          contextRelevance: 0,
+          error: "Failed to generate suggestions"
+        }
+      };
+    }
+  } catch (error: any) {
+    console.error("Error suggesting hashtags:", error);
+    throw new Error(`Failed to suggest hashtags: ${error.message}`);
   }
 }
