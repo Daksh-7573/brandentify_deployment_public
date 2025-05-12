@@ -85,7 +85,7 @@ export function setupAuthRoutes(): Router {
       }
 
       // Generate a username if not provided
-      const generatedUsername = username || email.split("@")[0];
+      let generatedUsername = username || email.split("@")[0];
 
       // Check if username is already taken
       const existingUsername = await storage.getUserByUsername(generatedUsername);

@@ -1,21 +1,9 @@
 import { createContext, useState, useEffect, ReactNode, useContext } from "react";
-import { 
-  signInWithRedirect,
-  signInWithPopup,
-  getRedirectResult,
-  signOut as firebaseSignOut, 
-  onAuthStateChanged, 
-  GoogleAuthProvider, 
-  User as FirebaseUser,
-  AuthErrorCodes
-} from "firebase/auth";
-import { auth, googleProvider } from "../lib/firebase";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { User } from "@shared/schema";
 
 type AuthUser = {
-  uid: string;
   id: number;
   username: string;
   email: string | null;
