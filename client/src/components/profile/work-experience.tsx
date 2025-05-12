@@ -395,8 +395,8 @@ export default function WorkExperience() {
   const { toast } = useToast();
   
   // Get user ID (use demo ID if in demo mode)
-  // We need the Firebase UID as is - it's a string and will be converted to numeric ID on the server
-  const userId = isDemoMode ? 1 : (user?.uid || null);
+  // Using the user ID from our authentication system
+  const userId = isDemoMode ? 1 : (user?.id || null);
   
   // Get user data from profile page
   const { data: userData } = useQuery<any>({

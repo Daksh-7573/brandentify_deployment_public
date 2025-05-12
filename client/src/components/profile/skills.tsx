@@ -30,8 +30,8 @@ type SkillItem = {
 
 export default function Skills() {
   const { user, isDemoMode } = useAuth();
-  // Don't try to parse Firebase UID as an integer - use the string directly for Firebase auth users
-  const userId = isDemoMode ? 1 : (user?.uid || 1);
+  // Use the user id from our authentication system
+  const userId = isDemoMode ? 1 : (user?.id || 1);
   
   // Get the numeric user ID if available from auth context (for database operations)
   const userNumericId = user?.id || 2;
