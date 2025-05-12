@@ -165,43 +165,43 @@ const ConsentManager: React.FC = () => {
   }
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-background/90 backdrop-blur-sm z-50 p-4">
-      <Card className="max-w-5xl mx-auto">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <ShieldCheck className="h-5 w-5" />
+    <div className="fixed bottom-0 left-0 right-0 bg-background/90 backdrop-blur-sm z-50 p-4 sm:p-6 overflow-y-auto max-h-[90vh]">
+      <Card className="max-w-5xl mx-auto shadow-lg border-t-4 border-primary">
+        <CardHeader className="space-y-2 pt-6 px-6">
+          <CardTitle className="flex items-center gap-2 text-xl">
+            <ShieldCheck className="h-6 w-6" />
             Privacy Preferences
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="text-sm sm:text-base">
             We use cookies to enhance your browsing experience, analyze site traffic, and personalize content. Please select your consent preferences below.
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-4 px-6">
           <div className="space-y-4">
-            <Alert>
-              <AlertCircle className="h-4 w-4" />
-              <AlertTitle>Important</AlertTitle>
-              <AlertDescription>
+            <Alert className="border-amber-500">
+              <AlertCircle className="h-4 w-4 text-amber-500" />
+              <AlertTitle className="font-medium">Important</AlertTitle>
+              <AlertDescription className="text-sm">
                 Essential cookies are required for the website to function and cannot be disabled.
               </AlertDescription>
             </Alert>
             
             <div className="grid gap-4">
               {/* Essential Cookies - Always enabled */}
-              <div className="flex items-center justify-between rounded-lg border p-4">
-                <div className="space-y-0.5">
-                  <Label className="text-base">Essential Cookies</Label>
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between rounded-lg border p-4 gap-3">
+                <div className="space-y-1">
+                  <Label className="text-base font-medium">Essential Cookies</Label>
                   <div className="text-sm text-muted-foreground">
                     Required for the website to function properly. These cannot be disabled.
                   </div>
                 </div>
-                <Switch checked={true} disabled={true} />
+                <Switch checked={true} disabled={true} className="mt-1 sm:mt-0" />
               </div>
               
               {/* Functional Cookies */}
-              <div className="flex items-center justify-between rounded-lg border p-4">
-                <div className="space-y-0.5">
-                  <Label className="text-base">Functional Cookies</Label>
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between rounded-lg border p-4 gap-3">
+                <div className="space-y-1">
+                  <Label className="text-base font-medium">Functional Cookies</Label>
                   <div className="text-sm text-muted-foreground">
                     Enables enhanced functionality and personalization.
                   </div>
@@ -209,6 +209,7 @@ const ConsentManager: React.FC = () => {
                 <Switch 
                   checked={consentPreferences.functional}
                   onCheckedChange={() => handleToggle('functional')}
+                  className="mt-1 sm:mt-0"
                 />
               </div>
               
@@ -256,16 +257,16 @@ const ConsentManager: React.FC = () => {
             </div>
           </div>
         </CardContent>
-        <CardFooter className="flex flex-col sm:flex-row gap-2 justify-between">
-          <div className="flex flex-col xs:flex-row gap-2">
-            <Button onClick={acceptAll} className="bg-primary text-primary-foreground">
+        <CardFooter className="flex flex-col sm:flex-row gap-3 justify-between pt-4 pb-6 px-6">
+          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+            <Button onClick={acceptAll} className="bg-primary text-primary-foreground w-full sm:w-auto">
               Accept All
             </Button>
-            <Button onClick={rejectNonEssential} variant="outline">
+            <Button onClick={rejectNonEssential} variant="outline" className="w-full sm:w-auto">
               Reject Non-Essential
             </Button>
           </div>
-          <Button onClick={savePreferences} variant="secondary">
+          <Button onClick={savePreferences} variant="secondary" className="w-full mt-3 sm:mt-0 sm:w-auto">
             Save Preferences
           </Button>
         </CardFooter>
