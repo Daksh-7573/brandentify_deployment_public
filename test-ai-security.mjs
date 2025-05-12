@@ -5,7 +5,7 @@
  * including prompt injection protection, data leakage prevention, and content moderation.
  */
 
-const fetch = require('node-fetch');
+import fetch from 'node-fetch';
 
 // Base URL for API requests
 const API_BASE_URL = 'http://localhost:5000/api';

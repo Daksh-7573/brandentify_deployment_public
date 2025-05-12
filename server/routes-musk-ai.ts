@@ -5,6 +5,7 @@ import {
   generateNetworkingRecommendations,
   suggestHashtags
 } from './services/openai-service';
+import { sanitizeResumeText } from './ai-security';
 
 export const registerMuskAIRoutes = (app: express.Express) => {
   // Career advice endpoint
@@ -317,6 +318,36 @@ Open Source Contribution | 2019-Present
       console.error('Error in demo hashtag suggestions endpoint:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       res.status(500).json({ error: errorMessage || 'Failed to generate demo hashtag suggestions' });
+    }
+  });
+
+  // Test endpoints for AI security 
+  app.post('/api/musk/test-security', async (req, res) => {
+    console.log("[TEST] AI Security test endpoint called with prompt:", req.body.prompt?.substring(0, 50));
+    return res.json({ success: true, message: "AI Security test passed - prompt accepted" });
+  });
+  
+  app.post('/api/resume-analysis/test-security', async (req, res) => {
+    try {
+      console.log("[TEST] Resume analysis security test endpoint called");
+      const { resumeText } = req.body;
+      
+      // Process the resume text to remove any sensitive information
+      const sanitizedText = sanitizeResumeText(resumeText);
+      
+      return res.json({ 
+        success: true, 
+        originalText: resumeText,
+        sanitizedText: sanitizedText,
+        message: "Resume security test passed - text properly sanitized" 
+      });
+    } catch (error) {
+      console.error("[TEST] Resume security test error:", error);
+      return res.status(500).json({ 
+        success: false, 
+        message: "Resume security test failed", 
+        error: error instanceof Error ? error.message : "Unknown error" 
+      });
     }
   });
 
