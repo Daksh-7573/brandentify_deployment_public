@@ -92,72 +92,75 @@ const CookieSettingsTab: React.FC = () => {
           Manage how cookies are used across our platform
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
-        {/* Essential Cookies */}
-        <div className="flex items-center justify-between rounded-lg border p-4">
-          <div className="space-y-0.5">
-            <Label className="text-base">Essential Cookies</Label>
-            <div className="text-sm text-muted-foreground">
-              Required for the website to function properly. These cannot be disabled.
+      <CardContent>
+        {/* Added max-h-[60vh] to create a scrollable container with a maximum height */}
+        <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
+          {/* Essential Cookies */}
+          <div className="flex items-center justify-between rounded-lg border p-4">
+            <div className="space-y-0.5">
+              <Label className="text-base">Essential Cookies</Label>
+              <div className="text-sm text-muted-foreground">
+                Required for the website to function properly. These cannot be disabled.
+              </div>
             </div>
+            <Switch checked={true} disabled={true} />
           </div>
-          <Switch checked={true} disabled={true} />
-        </div>
-        
-        {/* Functional Cookies */}
-        <div className="flex items-center justify-between rounded-lg border p-4">
-          <div className="space-y-0.5">
-            <Label className="text-base">Functional Cookies</Label>
-            <div className="text-sm text-muted-foreground">
-              Enables enhanced functionality and personalization.
+          
+          {/* Functional Cookies */}
+          <div className="flex items-center justify-between rounded-lg border p-4">
+            <div className="space-y-0.5">
+              <Label className="text-base">Functional Cookies</Label>
+              <div className="text-sm text-muted-foreground">
+                Enables enhanced functionality and personalization.
+              </div>
             </div>
+            <Switch 
+              checked={preferences.functional}
+              onCheckedChange={(checked) => updatePreference('functional', checked)}
+            />
           </div>
-          <Switch 
-            checked={preferences.functional}
-            onCheckedChange={(checked) => updatePreference('functional', checked)}
-          />
-        </div>
-        
-        {/* Analytics Cookies */}
-        <div className="flex items-center justify-between rounded-lg border p-4">
-          <div className="space-y-0.5">
-            <Label className="text-base">Analytics Cookies</Label>
-            <div className="text-sm text-muted-foreground">
-              Helps us understand how you use our website.
+          
+          {/* Analytics Cookies */}
+          <div className="flex items-center justify-between rounded-lg border p-4">
+            <div className="space-y-0.5">
+              <Label className="text-base">Analytics Cookies</Label>
+              <div className="text-sm text-muted-foreground">
+                Helps us understand how you use our website.
+              </div>
             </div>
+            <Switch 
+              checked={preferences.analytics}
+              onCheckedChange={(checked) => updatePreference('analytics', checked)}
+            />
           </div>
-          <Switch 
-            checked={preferences.analytics}
-            onCheckedChange={(checked) => updatePreference('analytics', checked)}
-          />
-        </div>
-        
-        {/* Advertising Cookies */}
-        <div className="flex items-center justify-between rounded-lg border p-4">
-          <div className="space-y-0.5">
-            <Label className="text-base">Advertising Cookies</Label>
-            <div className="text-sm text-muted-foreground">
-              Used to deliver relevant ads and marketing campaigns.
+          
+          {/* Advertising Cookies */}
+          <div className="flex items-center justify-between rounded-lg border p-4">
+            <div className="space-y-0.5">
+              <Label className="text-base">Advertising Cookies</Label>
+              <div className="text-sm text-muted-foreground">
+                Used to deliver relevant ads and marketing campaigns.
+              </div>
             </div>
+            <Switch 
+              checked={preferences.advertising}
+              onCheckedChange={(checked) => updatePreference('advertising', checked)}
+            />
           </div>
-          <Switch 
-            checked={preferences.advertising}
-            onCheckedChange={(checked) => updatePreference('advertising', checked)}
-          />
-        </div>
-        
-        {/* Social Media Cookies */}
-        <div className="flex items-center justify-between rounded-lg border p-4">
-          <div className="space-y-0.5">
-            <Label className="text-base">Social Media Cookies</Label>
-            <div className="text-sm text-muted-foreground">
-              Enables sharing content on social media and integrating social features.
+          
+          {/* Social Media Cookies */}
+          <div className="flex items-center justify-between rounded-lg border p-4">
+            <div className="space-y-0.5">
+              <Label className="text-base">Social Media Cookies</Label>
+              <div className="text-sm text-muted-foreground">
+                Enables sharing content on social media and integrating social features.
+              </div>
             </div>
+            <Switch 
+              checked={preferences.social}
+              onCheckedChange={(checked) => updatePreference('social', checked)}
+            />
           </div>
-          <Switch 
-            checked={preferences.social}
-            onCheckedChange={(checked) => updatePreference('social', checked)}
-          />
         </div>
       </CardContent>
       <CardFooter className="flex justify-between">
@@ -248,36 +251,39 @@ const DataManagementTab: React.FC = () => {
           Download or delete your personal data
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-6">
-        <div>
-          <h3 className="text-lg font-medium mb-2">Export Your Data</h3>
-          <p className="text-sm text-muted-foreground mb-4">
-            You can request a copy of all the personal data we store about you. We'll send you an email with a download link when it's ready.
-          </p>
-          <Button 
-            onClick={handleDataExport} 
-            disabled={exportLoading}
-            className="w-full sm:w-auto"
-          >
-            {exportLoading ? 'Processing...' : 'Request Data Export'}
-          </Button>
-        </div>
-        
-        <Separator />
-        
-        <div>
-          <h3 className="text-lg font-medium mb-2 text-destructive">Delete Your Data</h3>
-          <p className="text-sm text-muted-foreground mb-4">
-            Request permanent deletion of all your personal data. This action cannot be undone. Your account will be deactivated and all your data will be permanently deleted.
-          </p>
-          <Button 
-            variant="destructive" 
-            onClick={handleDataDeletion} 
-            disabled={deleteLoading}
-            className="w-full sm:w-auto"
-          >
-            {deleteLoading ? 'Processing...' : 'Request Account Deletion'}
-          </Button>
+      <CardContent>
+        {/* Added max-h-[60vh] to create a scrollable container with a maximum height */}
+        <div className="space-y-6 max-h-[60vh] overflow-y-auto pr-2">
+          <div>
+            <h3 className="text-lg font-medium mb-2">Export Your Data</h3>
+            <p className="text-sm text-muted-foreground mb-4">
+              You can request a copy of all the personal data we store about you. We'll send you an email with a download link when it's ready.
+            </p>
+            <Button 
+              onClick={handleDataExport} 
+              disabled={exportLoading}
+              className="w-full sm:w-auto"
+            >
+              {exportLoading ? 'Processing...' : 'Request Data Export'}
+            </Button>
+          </div>
+          
+          <Separator />
+          
+          <div>
+            <h3 className="text-lg font-medium mb-2 text-destructive">Delete Your Data</h3>
+            <p className="text-sm text-muted-foreground mb-4">
+              Request permanent deletion of all your personal data. This action cannot be undone. Your account will be deactivated and all your data will be permanently deleted.
+            </p>
+            <Button 
+              variant="destructive" 
+              onClick={handleDataDeletion} 
+              disabled={deleteLoading}
+              className="w-full sm:w-auto"
+            >
+              {deleteLoading ? 'Processing...' : 'Request Account Deletion'}
+            </Button>
+          </div>
         </div>
       </CardContent>
     </Card>
