@@ -215,8 +215,6 @@ export default function Header() {
               </Button>
               
               {/* Career Capsule feature added */}
-              
-              {/* Brand of the Day feature is now integrated into Nowboard panel */}
             </div>
           </div>
           <div className="flex items-center gap-4">
@@ -452,7 +450,7 @@ export default function Header() {
             
             {/* Career Capsule feature added to mobile menu */}
             
-            {/* Brand of the Day feature is now integrated into Nowboard panel */}
+
 
             <div className="pt-4 mt-2 border-t border-gray-200">
               <Button

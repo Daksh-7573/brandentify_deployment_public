@@ -178,10 +178,7 @@ function Router() {
       <Route path="/musk-testing">
         <ProtectedRoute path="/musk-testing" component={MuskTestingPage} />
       </Route>
-      {/* Test route for nowboard integration */}
-      <Route path="/test-nowboard">
-        <ProtectedRoute path="/test-nowboard" component={TestNowboardPage} />
-      </Route>
+      {/* Removed Test route for nowboard integration as it's now part of quests */}
       {/* Messaging feature */}
       <Route path="/messages">
         <ProtectedRoute path="/messages" component={ChatPage} />
