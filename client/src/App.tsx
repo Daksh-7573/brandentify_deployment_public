@@ -194,6 +194,8 @@ function Router() {
       </Route>
       {/* Cookie Consent Test */}
       <Route path="/cookie-consent-test" component={CookieConsentTest} />
+      {/* Simple Cookie Test Page (backup version) */}
+      <Route path="/cookie-test-simple" component={lazy(() => import('@/pages/cookie-test-simple'))} />
       {/* Shared Quantum Card View route */}
       <Route path="/profile/card/:userId">
         {(params) => (
