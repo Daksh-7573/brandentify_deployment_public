@@ -4,7 +4,7 @@ import { Pulse } from "@shared/schema";
 import { useLocation } from "wouter";
 import Header from "@/components/layout/header";
 // Nowboard panel import
-import NowboardPanel from "@/components/nowboard/nowboard-panel";
+// Removed Nowboard panel import as it's now integrated into quests
 // Removed Sidebar import, using top navigation only
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";

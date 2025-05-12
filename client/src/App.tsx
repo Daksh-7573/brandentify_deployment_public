@@ -36,7 +36,7 @@ import OnboardingPage from "@/pages/onboarding";
 import EditProfilePage from "@/pages/edit-profile";
 import MuskTestingPage from "@/pages/musk-testing";
 import ManageServicesPage from "@/pages/manage-services";
-import TestNowboardPage from "@/pages/test-nowboard";
+// TestNowboardPage import removed as it's no longer needed
 import ChatPage from "@/pages/ChatPage"; // Chat messaging feature
 import PrivacyPage from "@/pages/privacy"; // Privacy & Data Control page
 import QuestDemoPage from "@/pages/quest-demo"; // Quest Demo Page
