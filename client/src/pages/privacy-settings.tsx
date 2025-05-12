@@ -74,11 +74,20 @@ const CookieSettingsTab: React.FC = () => {
   const { toast } = useToast();
 
   const handleSave = async () => {
-    await savePreferences();
-    toast({
-      title: "Cookie preferences saved",
-      description: "Your cookie consent preferences have been updated.",
-    });
+    try {
+      await savePreferences();
+      toast({
+        title: "Cookie preferences saved",
+        description: "Your cookie consent preferences have been updated.",
+      });
+    } catch (error) {
+      // Also save to localStorage as a fallback
+      localStorage.setItem('cookiePreferences', JSON.stringify(preferences));
+      toast({
+        title: "Cookie preferences saved locally",
+        description: "Your preferences are saved on this device.",
+      });
+    }
   };
 
   return (

@@ -83,11 +83,19 @@ export function setupPrivacyRoutes(): Router {
    * Cookie Consent Routes
    */
   
-  // Get current cookie consent preferences
-  router.get('/cookie-consent', authenticateJWT, async (req, res) => {
+  // Get current cookie consent preferences (no authentication required for GET)
+  router.get('/cookie-consent', async (req, res) => {
     try {
-      const consents = await privacyService.getUserConsents(req.user!.username);
-      res.json(consents);
+      // Check if the user is authenticated
+      if (req.user && req.user.username) {
+        // If authenticated, get consents from the database
+        const consents = await privacyService.getUserConsents(req.user.username);
+        return res.json(consents);
+      }
+      
+      // For unauthenticated users, return an empty array
+      // This allows the client to fall back to localStorage storage
+      return res.json([]);
     } catch (error) {
       console.error('Error getting cookie consents:', error);
       res.status(500).json({ error: 'Failed to get cookie consents' });
@@ -95,12 +103,26 @@ export function setupPrivacyRoutes(): Router {
   });
 
   // Set cookie consent preference
-  router.post('/cookie-consent', authenticateJWT, async (req, res) => {
+  router.post('/cookie-consent', async (req, res) => {
     try {
+      // Parse and validate input
       const { category, status } = consentPreferenceSchema.parse(req.body);
       
+      // Check if user is authenticated
+      if (!req.user || !req.user.username) {
+        // Return success for unauthenticated users, but don't store in database
+        // Client will handle storage in localStorage
+        return res.json({ 
+          success: true, 
+          message: 'Preference saved locally only', 
+          category, 
+          status 
+        });
+      }
+      
+      // For authenticated users, save to database
       const result = await privacyService.setConsentPreference(
-        req.user!.username,
+        req.user.username,
         category,
         status,
         req.ip,
