@@ -6,14 +6,6 @@ import { setupVite, serveStatic, log } from "./vite";
 import { questProgressMiddleware } from "./middleware/quest-progress-tracker";
 import { applySecurityConfig } from "./config/security-config";
 import { DataPrivacyService } from './services/data-privacy-service';
-import securityMonitoringRoutes from './routes-security-monitoring';
-import { 
-  errorMonitoringMiddleware, 
-  attackDetectionMiddleware, 
-  adminActionLoggingMiddleware,
-  requestMetricsMiddleware
-} from './middleware/security-monitoring-middleware';
-import { SecurityMonitoringService } from './services/security-monitoring-service';
 
 const app = express();
 
@@ -22,11 +14,6 @@ applySecurityConfig(app);
 // Increase body size limit to handle file uploads (10MB)
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: false, limit: '10mb' }));
-
-// Apply security monitoring middleware
-app.use(requestMetricsMiddleware); // Track request metrics for all requests
-app.use(attackDetectionMiddleware); // Detect attack attempts
-app.use(adminActionLoggingMiddleware); // Log admin actions
 
 // Request timeout middleware (45 seconds)
 const requestTimeout = (req: Request, res: Response, next: NextFunction) => {
@@ -123,18 +110,10 @@ app.use((req, res, next) => {
 console.log("Setting up Optimized Quest Progress Tracking Middleware");
 app.use(questProgressMiddleware);
 
-// Register security monitoring routes
-app.use(securityMonitoringRoutes);
-console.log("Security Monitoring and Threat Detection system initialized");
-
 (async () => {
   const server = await registerRoutes(app);
 
-  // Add error monitoring middleware for security logging
-  app.use(errorMonitoringMiddleware);
-  
-  // Global error handler
-  app.use((err: any, req: Request, res: Response, _next: NextFunction) => {
+  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
 
