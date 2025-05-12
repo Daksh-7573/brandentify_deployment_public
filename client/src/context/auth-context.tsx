@@ -35,6 +35,7 @@ type AuthContextType = {
   signInWithEmail: (user: User) => void; // Function for email authentication
   signOut: () => Promise<void>;
   refreshUserData: () => Promise<void>;
+  enterDemoMode: () => void; // Function to enter demo mode
 };
 
 export const AuthContext = createContext<AuthContextType>({
@@ -47,6 +48,7 @@ export const AuthContext = createContext<AuthContextType>({
   signInWithEmail: () => {},
   signOut: async () => {},
   refreshUserData: async () => {},
+  enterDemoMode: () => {},
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
