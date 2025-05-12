@@ -5986,6 +5986,16 @@ ${extractedText.substring(0, 5000)}
   app.get('/test', (req, res) => {
     res.sendFile(path.join(process.cwd(), 'public/test.html'));
   });
+  
+  // Add route for industry pulse bridge test page
+  app.get('/industry-test', (req, res) => {
+    res.sendFile(path.join(process.cwd(), 'public/industry-test.html'));
+  });
+  
+  // Add route for minimal React test page
+  app.get('/minimal-react', (req, res) => {
+    res.sendFile(path.join(process.cwd(), 'public/minimal-react.html'));
+  });
 
   const httpServer = createServer(app);
   

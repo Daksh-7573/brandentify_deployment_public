@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minimal React Test</title>
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    .card {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #333;
+    }
+    .success {
+      color: green;
+      font-weight: bold;
+    }
+    .error {
+      color: red;
+      font-weight: bold;
+    }
+    button {
+      background-color: #4CAF50;
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    pre {
+      background-color: #f5f5f5;
+      padding: 10px;
+      border-radius: 4px;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>Minimal React Test</h1>
+  
+  <div id="root"></div>
+  
+  <script type="text/babel">
+    // Simple React Component
+    function App() {
+      const [apiData, setApiData] = React.useState(null);
+      const [error, setError] = React.useState(null);
+      const [loading, setLoading] = React.useState(false);
+      
+      const testApi = async () => {
+        setLoading(true);
+        setError(null);
+        
+        try {
+          const response = await fetch('/api/privacy/cookie-consent');
+          const data = await response.json();
+          setApiData(data);
+        } catch (err) {
+          setError(err.message);
+        } finally {
+          setLoading(false);
+        }
+      };
+      
+      const goToIndustryPulse = () => {
+        window.location.href = '/industry-pulse';
+      };
+      
+      return (
+        <div>
+          <div className="card">
+            <h2>React Component Test</h2>
+            <p className="success">✓ Success: React is rendering correctly!</p>
+          </div>
+          
+          <div className="card">
+            <h2>API Connection Test</h2>
+            <button onClick={testApi} disabled={loading}>
+              {loading ? "Testing..." : "Test API Connection"}
+            </button>
+            
+            {error && (
+              <div className="error">
+                ✗ Error: {error}
+              </div>
+            )}
+            
+            {apiData && (
+              <div className="success">
+                <p>✓ Success: API connection working!</p>
+                <pre>{JSON.stringify(apiData, null, 2)}</pre>
+              </div>
+            )}
+          </div>
+          
+          <div className="card">
+            <h2>Go to Industry Pulse</h2>
+            <p>Once the tests above are successful, proceed to the full page:</p>
+            <button onClick={goToIndustryPulse}>Go to Industry Pulse</button>
+          </div>
+        </div>
+      );
+    }
+    
+    // Render App
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>

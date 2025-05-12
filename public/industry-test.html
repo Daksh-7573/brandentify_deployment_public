@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Industry Pulse - Test Bridge</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    .card {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #333;
+    }
+    .success {
+      color: green;
+      font-weight: bold;
+    }
+    .error {
+      color: red;
+      font-weight: bold;
+    }
+    button {
+      background-color: #4CAF50;
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    .status {
+      padding: 10px;
+      border-radius: 4px;
+      margin-top: 5px;
+    }
+    .loading {
+      background-color: #f8f9fa;
+    }
+    pre {
+      background-color: #f5f5f5;
+      padding: 10px;
+      border-radius: 4px;
+      overflow-x: auto;
+    }
+    #scriptOutput {
+      margin-top: 10px;
+      padding: 10px;
+      background-color: #f5f5f5;
+      border-radius: 4px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>Industry Pulse - Test Bridge</h1>
+  
+  <div class="card">
+    <h2>Step 1: Basic Page Rendering</h2>
+    <p class="success">✓ Success: This bridge page is rendering correctly!</p>
+  </div>
+
+  <div class="card">
+    <h2>Step 2: API Connection</h2>
+    <button id="testApiBtn">Test API Connection</button>
+    <div id="apiResult"></div>
+  </div>
+
+  <div class="card">
+    <h2>Step 3: Client-Side Scripts</h2>
+    <button id="testScriptsBtn">Load Minimal React</button>
+    <div id="scriptsStatus" class="status"></div>
+    <div id="scriptOutput"></div>
+  </div>
+
+  <div class="card">
+    <h2>Step 4: Go to Industry Pulse</h2>
+    <p>Once the tests above are successful, proceed to the full page:</p>
+    <button id="goToIndustryBtn">Go to Industry Pulse</button>
+  </div>
+
+  <script>
+    // API Test
+    document.getElementById('testApiBtn').addEventListener('click', async () => {
+      const resultDiv = document.getElementById('apiResult');
+      resultDiv.innerHTML = 'Testing API connection...';
+      
+      try {
+        const response = await fetch('/api/privacy/cookie-consent');
+        const data = await response.json();
+        
+        resultDiv.innerHTML = `
+          <p class="success">✓ Success: API connection working!</p>
+          <pre>${JSON.stringify(data, null, 2)}</pre>
+        `;
+      } catch (error) {
+        resultDiv.innerHTML = `
+          <p class="error">✗ Error: ${error.message}</p>
+        `;
+      }
+    });
+
+    // Client-side scripts test
+    document.getElementById('testScriptsBtn').addEventListener('click', async () => {
+      const statusDiv = document.getElementById('scriptsStatus');
+      const outputDiv = document.getElementById('scriptOutput');
+      
+      statusDiv.textContent = 'Loading React...';
+      statusDiv.className = 'status loading';
+      
+      try {
+        // Try to load React from CDN
+        const reactScript = document.createElement('script');
+        reactScript.src = 'https://unpkg.com/react@18/umd/react.development.js';
+        reactScript.crossOrigin = '';
+        
+        const reactDomScript = document.createElement('script');
+        reactDomScript.src = 'https://unpkg.com/react-dom@18/umd/react-dom.development.js';
+        reactDomScript.crossOrigin = '';
+        
+        document.body.appendChild(reactScript);
+        
+        reactScript.onload = () => {
+          document.body.appendChild(reactDomScript);
+          
+          reactDomScript.onload = () => {
+            statusDiv.textContent = '✓ React loaded successfully!';
+            statusDiv.className = 'status success';
+            
+            // Create a simple React component
+            const script = document.createElement('script');
+            script.type = 'text/babel';
+            script.text = `
+              const root = ReactDOM.createRoot(document.getElementById('scriptOutput'));
+              root.render(
+                React.createElement('div', null, [
+                  React.createElement('h3', null, 'Simple React Component'),
+                  React.createElement('p', null, 'This is a minimal React component rendering correctly!')
+                ])
+              );
+            `;
+            
+            // Add Babel to transpile JSX
+            const babelScript = document.createElement('script');
+            babelScript.src = 'https://unpkg.com/babel-standalone@6/babel.min.js';
+            document.body.appendChild(babelScript);
+            
+            babelScript.onload = () => {
+              document.body.appendChild(script);
+            };
+          };
+          
+          reactDomScript.onerror = (error) => {
+            statusDiv.textContent = '✗ Failed to load React DOM';
+            statusDiv.className = 'status error';
+            console.error('React DOM load error:', error);
+          };
+        };
+        
+        reactScript.onerror = (error) => {
+          statusDiv.textContent = '✗ Failed to load React';
+          statusDiv.className = 'status error';
+          console.error('React load error:', error);
+        };
+      } catch (error) {
+        statusDiv.textContent = `✗ Error: ${error.message}`;
+        statusDiv.className = 'status error';
+        console.error('Script error:', error);
+      }
+    });
+    
+    // Go to Industry Pulse
+    document.getElementById('goToIndustryBtn').addEventListener('click', () => {
+      window.location.href = '/industry-pulse';
+    });
+  </script>
+</body>
+</html>
