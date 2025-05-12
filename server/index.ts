@@ -23,11 +23,10 @@ applySecurityConfig(app);
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: false, limit: '10mb' }));
 
-// Temporarily disable security monitoring middleware causing issues
-// app.use(requestMetricsMiddleware); // Track request metrics for all requests
-// app.use(attackDetectionMiddleware); // Detect attack attempts
-// Only apply admin action logging to admin routes, not globally
-// app.use(adminActionLoggingMiddleware);
+// Apply security monitoring middleware
+app.use(requestMetricsMiddleware); // Track request metrics for all requests
+app.use(attackDetectionMiddleware); // Detect attack attempts
+app.use(adminActionLoggingMiddleware); // Log admin actions
 
 // Request timeout middleware (45 seconds)
 const requestTimeout = (req: Request, res: Response, next: NextFunction) => {

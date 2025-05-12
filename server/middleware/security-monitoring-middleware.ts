@@ -136,11 +136,10 @@ const ATTACK_PATTERNS = {
     /('|").*\s+AND\s+('|"|\d).*=\s*\2/i,
     /^.*(;|\||\|\|).*(SELECT|INSERT|UPDATE|DELETE|CREATE|ALTER|DROP)/i,
     /UNION\s+ALL\s+SELECT/i,
-    // Commented out patterns causing false positives
-    // /SELECT\s+.*\s+FROM\s+/i,
-    // /INSERT\s+INTO\s+/i,
-    // /UPDATE\s+.*\s+SET\s+/i,
-    // /DELETE\s+FROM\s+/i,
+    /SELECT\s+.*\s+FROM\s+/i,
+    /INSERT\s+INTO\s+/i,
+    /UPDATE\s+.*\s+SET\s+/i,
+    /DELETE\s+FROM\s+/i,
   ],
   path_traversal: [
     /\.\.\//g,
@@ -183,8 +182,8 @@ export function attackDetectionMiddleware(req: Request, res: Response, next: Nex
       headers: req.headers,
     };
     
+    // Get user if available
     // Get user ID if available
-    const userId = req.user?.id ? req.user.id.toString() : null;
     
     // Convert request data to string for pattern matching
     const dataString = JSON.stringify(requestData).toLowerCase();
@@ -319,7 +318,7 @@ export function adminActionLoggingMiddleware(req: Request, res: Response, next: 
           action: `Admin ${req.method} ${req.originalUrl}`,
           severity: "medium",
           status: res.statusCode >= 400 ? "failure" : "success",
-          userId: userId || 'unknown',
+          userId: user.username,
           ...metadata,
           details: {
             route: req.originalUrl,

@@ -5981,26 +5981,6 @@ ${extractedText.substring(0, 5000)}
   app.get('/hashtag-test', (req, res) => {
     res.sendFile(path.join(process.cwd(), 'test-hashtag-client.html'));
   });
-  
-  // Add route for basic connectivity test page
-  app.get('/test', (req, res) => {
-    res.sendFile(path.join(process.cwd(), 'public/test.html'));
-  });
-  
-  // Add route for industry pulse bridge test page
-  app.get('/industry-test', (req, res) => {
-    res.sendFile(path.join(process.cwd(), 'public/industry-test.html'));
-  });
-  
-  // Add route for minimal React test page
-  app.get('/minimal-react', (req, res) => {
-    res.sendFile(path.join(process.cwd(), 'public/minimal-react.html'));
-  });
-  
-  // Add route for simplified Industry Pulse page (no auth required)
-  app.get('/simple-pulse', (req, res) => {
-    res.sendFile(path.join(process.cwd(), 'public/simplified-industry-pulse.html'));
-  });
 
   const httpServer = createServer(app);
   
@@ -6037,8 +6017,8 @@ ${extractedText.substring(0, 5000)}
             const recipientId = parseInt(data.recipientId);
             
             // If recipient is connected, send them the message
-            if (clients.has(recipientId) && clients.get(recipientId)?.readyState === WebSocket.OPEN) {
-              clients.get(recipientId)?.send(JSON.stringify({
+            if (clients.has(recipientId) && clients.get(recipientId).readyState === WebSocket.OPEN) {
+              clients.get(recipientId).send(JSON.stringify({
                 type: 'new_message',
                 senderId: data.senderId,
                 senderName: data.senderName,
@@ -6048,14 +6028,6 @@ ${extractedText.substring(0, 5000)}
               }));
             }
           }
-        } else if (data.type === 'test') {
-          // Handle test message - respond directly to the sender
-          console.log('Received test WebSocket message:', data.message);
-          ws.send(JSON.stringify({
-            type: 'test_response',
-            message: 'Test message received successfully!',
-            timestamp: new Date().toISOString()
-          }));
         }
       } catch (error) {
         console.error('Error handling WebSocket message:', error);
@@ -6065,16 +6037,13 @@ ${extractedText.substring(0, 5000)}
     // Handle disconnection
     ws.on('close', () => {
       console.log('WebSocket client disconnected');
-      // Remove client from clients map - use forEach for safer iteration
-      try {
-        clients.forEach((client, userId) => {
-          if (client === ws) {
-            clients.delete(userId);
-            console.log(`User ${userId} disconnected from WebSocket`);
-          }
-        });
-      } catch (error) {
-        console.error('Error cleaning up WebSocket connection:', error);
+      // Remove client from clients map
+      for (const [userId, client] of clients.entries()) {
+        if (client === ws) {
+          clients.delete(userId);
+          console.log(`User ${userId} disconnected from WebSocket`);
+          break;
+        }
       }
     });
   });

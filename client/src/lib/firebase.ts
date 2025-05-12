@@ -1,13 +1,6 @@
 // Import from firebase directly
 import { initializeApp } from "firebase/app";
-import { 
-  getAuth, 
-  GoogleAuthProvider, 
-  connectAuthEmulator,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  signInWithPopup
-} from "firebase/auth";
+import { getAuth, GoogleAuthProvider, connectAuthEmulator } from "firebase/auth";
 
 // Log Firebase configuration values for debugging (without exposing API keys)
 console.log("Firebase config check:", {
@@ -36,37 +29,5 @@ export const auth = getAuth(app);
 auth.settings.appVerificationDisabledForTesting = true;
 
 export const googleProvider = new GoogleAuthProvider();
-
-// Add scopes for better profile access
-googleProvider.addScope('email');
-googleProvider.addScope('profile');
-
-// Log the domain for debugging
-console.log("Current domain:", window.location.hostname);
-console.log("Firebase auth domain:", `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.firebaseapp.com`);
-
-// Standard Google sign-in function with better logging
-export const enhancedGoogleSignIn = async () => {
-  try {
-    console.log("Firebase config:", {
-      projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-      authDomain: `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.firebaseapp.com`,
-      hasApiKey: !!import.meta.env.VITE_FIREBASE_API_KEY,
-      hasAppId: !!import.meta.env.VITE_FIREBASE_APP_ID
-    });
-    
-    console.log("Attempting Google sign-in with popup...");
-    return await signInWithPopup(auth, googleProvider);
-  } catch (error) {
-    console.error("Error signing in with Google:", error);
-    
-    // Log more details about the error
-    if (error.code === 'auth/unauthorized-domain') {
-      console.error(`Current domain (${window.location.hostname}) is not authorized in Firebase console. Please add it to Firebase console under Auth > Settings > Authorized domains.`);
-    }
-    
-    throw error;
-  }
-};
 
 export default app;

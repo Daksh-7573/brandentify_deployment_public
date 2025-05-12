@@ -9,11 +9,7 @@ import {
   User as FirebaseUser,
   AuthErrorCodes
 } from "firebase/auth";
-import { 
-  auth, 
-  googleProvider,
-  enhancedGoogleSignIn
-} from "../lib/firebase";
+import { auth, googleProvider } from "../lib/firebase";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { User } from "@shared/schema";
@@ -39,7 +35,6 @@ type AuthContextType = {
   signInWithEmail: (user: User) => void; // Function for email authentication
   signOut: () => Promise<void>;
   refreshUserData: () => Promise<void>;
-  enterDemoMode: () => void; // Function to enter demo mode
 };
 
 export const AuthContext = createContext<AuthContextType>({
@@ -52,7 +47,6 @@ export const AuthContext = createContext<AuthContextType>({
   signInWithEmail: () => {},
   signOut: async () => {},
   refreshUserData: async () => {},
-  enterDemoMode: () => {},
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -280,11 +274,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signInWithGoogle = async () => {
     setIsLoading(true);
     try {
-      // Use our enhanced sign-in function that handles domain authorization issues
-      const result = await enhancedGoogleSignIn();
+      // Log Firebase configuration for debugging
+      console.log("Firebase config:", {
+        projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+        authDomain: `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.firebaseapp.com`,
+        hasApiKey: !!import.meta.env.VITE_FIREBASE_API_KEY,
+        hasAppId: !!import.meta.env.VITE_FIREBASE_APP_ID
+      });
       
-      // If we get here, sign-in was successful (either with Google or test credentials)
-      console.log("Sign-in successful:", result.user);
+      // Add some scopes for Google auth
+      googleProvider.addScope('email');
+      googleProvider.addScope('profile');
+      
+      // Try popup instead of redirect
+      console.log("Attempting Google sign-in with popup...");
+      const result = await signInWithPopup(auth, googleProvider);
+      
+      // If we get here, popup was successful
+      console.log("Google sign-in successful:", result.user);
       
       if (result.user) {
         // Create or update user in our backend
@@ -634,42 +641,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsLoading(false);
     }
   };
-
-  // Function to enter demo mode with a randomized demo user
-  const enterDemoMode = () => {
-    setIsLoading(true);
-    
-    // Create a demo user with randomly generated ID
-    const demoUserId = Math.floor(1000 + Math.random() * 9000);
-    
-    const demoUser: AuthUser = {
-      uid: `demo-${demoUserId}`,
-      id: demoUserId,
-      username: `demo_user_${demoUserId}`,
-      email: `demo${demoUserId}@example.com`,
-      name: 'Demo User',
-      photoURL: 'https://ui-avatars.com/api/?name=Demo+User&background=random',
-      title: 'Career Explorer',
-      location: 'Demo City, DD',
-    };
-    
-    // Set the demo mode flag
-    setIsDemoMode(true);
-    
-    // Set the user data
-    setUser(demoUser);
-    
-    // Add a demo flag to localStorage
-    localStorage.setItem('demoMode', 'true');
-    
-    setIsLoading(false);
-    
-    // Toast notification
-    toast({
-      title: "Demo Mode Activated",
-      description: "You're now browsing in demo mode. All changes will be temporary."
-    });
-  };
   
   return (
     <AuthContext.Provider
@@ -682,8 +653,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         signInWithPhone,
         signInWithEmail,
         signOut,
-        refreshUserData,
-        enterDemoMode
+        refreshUserData
       }}
     >
       {children}
