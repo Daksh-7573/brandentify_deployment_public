@@ -11,10 +11,8 @@ import {
 } from "firebase/auth";
 import { 
   auth, 
-  googleProvider, 
-  signInWithGoogleSafe, 
-  signInWithTestCredentials,
-  isDevelopment 
+  googleProvider,
+  enhancedGoogleSignIn
 } from "../lib/firebase";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -283,7 +281,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(true);
     try {
       // Use our enhanced sign-in function that handles domain authorization issues
-      const result = await signInWithGoogleSafe();
+      const result = await enhancedGoogleSignIn();
       
       // If we get here, sign-in was successful (either with Google or test credentials)
       console.log("Sign-in successful:", result.user);

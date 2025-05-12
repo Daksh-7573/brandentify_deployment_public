@@ -37,33 +37,16 @@ auth.settings.appVerificationDisabledForTesting = true;
 
 export const googleProvider = new GoogleAuthProvider();
 
-// Helper function to sign in with email/password (for testing)
-export const signInWithTestCredentials = async () => {
-  try {
-    // First, check if the test user exists by trying to sign in
-    return await signInWithEmailAndPassword(auth, "test@example.com", "Test123!");
-  } catch (error) {
-    console.log("Test user doesn't exist, creating...");
-    try {
-      // If the user doesn't exist, create a new one
-      return await createUserWithEmailAndPassword(auth, "test@example.com", "Test123!");
-    } catch (createError) {
-      console.error("Error creating test user:", createError);
-      throw createError;
-    }
-  }
-};
-
-// Detect if we're in a development environment
-export const isDevelopment = import.meta.env.DEV || 
-  window.location.hostname === 'localhost' || 
-  window.location.hostname.includes('replit');
+// Add scopes for better profile access
+googleProvider.addScope('email');
+googleProvider.addScope('profile');
 
 // Log the domain for debugging
 console.log("Current domain:", window.location.hostname);
+console.log("Firebase auth domain:", `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.firebaseapp.com`);
 
-// Helper function for Google sign-in with domain error handling
-export const signInWithGoogleSafe = async () => {
+// Standard Google sign-in function with better logging
+export const enhancedGoogleSignIn = async () => {
   try {
     console.log("Firebase config:", {
       projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
@@ -77,11 +60,9 @@ export const signInWithGoogleSafe = async () => {
   } catch (error) {
     console.error("Error signing in with Google:", error);
     
-    // If we get an unauthorized domain error and we're in development,
-    // fall back to the test credentials
-    if (error.code === 'auth/unauthorized-domain' && isDevelopment) {
-      console.log("Domain not authorized for Google Auth. Using test credentials instead.");
-      return await signInWithTestCredentials();
+    // Log more details about the error
+    if (error.code === 'auth/unauthorized-domain') {
+      console.error(`Current domain (${window.location.hostname}) is not authorized in Firebase console. Please add it to Firebase console under Auth > Settings > Authorized domains.`);
     }
     
     throw error;
