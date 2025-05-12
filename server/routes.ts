@@ -96,6 +96,10 @@ import * as xaiService from "./services/xai-service";
 export async function registerRoutes(app: Express): Promise<Server> {
   const apiRouter = express.Router();
   
+  // Setup Replit Authentication
+  await setupAuth(app);
+  console.log("Replit Auth setup complete");
+  
   // Register Smart Connect routes directly
   registerSmartConnectRoutes(app, storage);
   

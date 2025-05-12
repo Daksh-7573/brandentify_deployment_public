@@ -4,6 +4,8 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "./context/auth-context";
 import { useAuth } from "./hooks/use-auth";
+import { ReplitAuthProvider } from "./contexts/ReplitAuthContext";
+import { useReplitAuthContext } from "./contexts/ReplitAuthContext";
 import { useEffect } from "react";
 import GlobalMuskButton from "@/components/musk/global-musk-button";
 
@@ -11,6 +13,7 @@ import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
 import Dashboard from "@/pages/dashboard";
 import Profile from "@/pages/profile";
+import ReplitLoginPage from "@/pages/replit-login";
 import PublicProfile from "@/pages/public-profile";
 import PersonalDetailsPage from "@/pages/personal-details";
 import PortfolioBuilder from "@/pages/portfolio-builder";
@@ -80,6 +83,7 @@ function Router() {
     <Switch>
       <Route path="/" component={Landing} />
       <Route path="/auth" component={AuthPage} />
+      <Route path="/replit-login" component={ReplitLoginPage} />
       <Route path="/verify-email" component={EmailVerification} />
       <Route path="/dashboard">
         <ProtectedRoute path="/dashboard" component={() => <Redirect to="/industry-pulse" />} />
@@ -215,8 +219,9 @@ function App() {
   // Add a root-level Suspense boundary to ensure we never show a white screen
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <Suspense fallback={
+      <ReplitAuthProvider>
+        <AuthProvider>
+          <Suspense fallback={
           <div className="min-h-screen flex items-center justify-center bg-background">
             <div className="w-[280px] aspect-[2/3.5] rounded-lg overflow-hidden shadow-lg">
               <div className="h-[24%] bg-gray-300 dark:bg-gray-700 relative animate-pulse"></div>
@@ -234,7 +239,8 @@ function App() {
           <GlobalMuskButton />
           <Toaster />
         </Suspense>
-      </AuthProvider>
+        </AuthProvider>
+      </ReplitAuthProvider>
     </QueryClientProvider>
   );
 }
