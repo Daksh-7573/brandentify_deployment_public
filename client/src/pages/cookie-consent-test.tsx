@@ -5,8 +5,10 @@ import { useCookieConsent } from '@/hooks/use-cookie-consent';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
+import { useToast } from '@/hooks/use-toast';
 
 const CookieConsentTest: React.FC = () => {
+  const { toast } = useToast();
   const { 
     preferences, 
     hasConsented, 
@@ -75,10 +77,68 @@ const CookieConsentTest: React.FC = () => {
     }
   };
   
+  // Custom wrapped functions with toast notifications
+  const wrappedAcceptAll = async () => {
+    try {
+      await acceptAll();
+      toast({
+        title: "Preferences updated",
+        description: "All cookie categories have been accepted.",
+        variant: "default",
+      });
+    } catch (error) {
+      toast({
+        title: "Error updating preferences",
+        description: error instanceof Error ? error.message : String(error),
+        variant: "destructive",
+      });
+    }
+  };
+  
+  const wrappedRejectNonEssential = async () => {
+    try {
+      await rejectNonEssential();
+      toast({
+        title: "Preferences updated",
+        description: "Only essential cookies are accepted.",
+        variant: "default",
+      });
+    } catch (error) {
+      toast({
+        title: "Error updating preferences",
+        description: error instanceof Error ? error.message : String(error),
+        variant: "destructive",
+      });
+    }
+  };
+  
+  const wrappedSavePreferences = async () => {
+    try {
+      await savePreferences();
+      toast({
+        title: "Preferences saved",
+        description: "Your cookie preferences have been saved.",
+        variant: "default",
+      });
+    } catch (error) {
+      toast({
+        title: "Error saving preferences",
+        description: error instanceof Error ? error.message : String(error),
+        variant: "destructive",
+      });
+    }
+  };
+  
   // Toggle a preference and update UI
   const togglePreference = (category: string) => {
     if (category === 'essential') return; // Can't toggle essential
     updatePreference(category as any, !preferences[category as keyof typeof preferences]);
+    
+    toast({
+      title: "Preference updated",
+      description: `${category} cookies are now ${!preferences[category as keyof typeof preferences] ? 'accepted' : 'rejected'}.`,
+      variant: "default",
+    });
   };
   
   return (
@@ -93,12 +153,12 @@ const CookieConsentTest: React.FC = () => {
         <CardContent className="space-y-6">
           <div>
             <h3 className="text-lg font-medium mb-2">Current Consent Status</h3>
-            <p className="mb-2">
-              Has explicitly set preferences: {' '}
+            <div className="flex items-center gap-2 mb-2">
+              <span>Has explicitly set preferences:</span>
               <Badge variant={hasConsented ? "default" : "outline"}>
                 {hasConsented ? 'Yes' : 'No'}
               </Badge>
-            </p>
+            </div>
             <div className="grid gap-2">
               {Object.entries(preferences).map(([category, granted]) => (
                 <div 
@@ -147,13 +207,13 @@ const CookieConsentTest: React.FC = () => {
           </div>
         </CardContent>
         <CardFooter className="flex flex-wrap gap-2">
-          <Button onClick={acceptAll} className="w-full sm:w-auto">
+          <Button onClick={wrappedAcceptAll} className="w-full sm:w-auto">
             Accept All
           </Button>
-          <Button onClick={rejectNonEssential} variant="outline" className="w-full sm:w-auto">
+          <Button onClick={wrappedRejectNonEssential} variant="outline" className="w-full sm:w-auto">
             Reject Non-Essential
           </Button>
-          <Button onClick={savePreferences} variant="secondary" className="w-full sm:w-auto">
+          <Button onClick={wrappedSavePreferences} variant="secondary" className="w-full sm:w-auto">
             Save Preferences
           </Button>
           <Button onClick={checkApiEndpoints} variant="outline" className="w-full sm:w-auto">
