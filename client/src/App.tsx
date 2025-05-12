@@ -58,12 +58,19 @@ const Redirect = ({ to }: { to: string }) => {
 
 // Protected route component that checks if the user is authenticated
 function ProtectedRoute({ component: Component, ...rest }: { component: React.ComponentType, path: string }) {
-  const { isAuthenticated, isLoading } = useAuth();
+  // Check both auth contexts for now to allow for a smooth transition
+  const { isAuthenticated: isFirebaseAuthenticated, isLoading: isFirebaseLoading } = useAuth();
+  const { isAuthenticated: isReplitAuthenticated, isLoading: isReplitLoading } = useReplitAuthContext();
+  
+  const isAuthenticated = isFirebaseAuthenticated || isReplitAuthenticated;
+  const isLoading = isFirebaseLoading || isReplitLoading;
+  
   const [_, navigate] = useLocation();
   
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      navigate('/');
+      // Redirect to Replit login for new auth flow
+      navigate('/replit-login');
     }
   }, [isAuthenticated, isLoading, navigate]);
   
