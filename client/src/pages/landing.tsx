@@ -37,7 +37,7 @@ export default function Landing() {
               <Button 
                 variant="default" 
                 className="ml-4"
-                onClick={() => setLocation('/replit-login')}
+                onClick={() => setLocation('/auth')}
                 disabled={isLoading}
               >
                 {isLoading ? "Loading..." : "Sign in"}
@@ -65,7 +65,7 @@ export default function Landing() {
                     <Button 
                       size="lg"
                       className="w-full flex items-center justify-center px-8 py-3 md:py-4 md:text-lg md:px-10"
-                      onClick={() => setLocation('/replit-login')}
+                      onClick={() => setLocation('/auth')}
                       disabled={isLoading}
                     >
                       Sign up now
