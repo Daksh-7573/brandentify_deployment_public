@@ -5996,6 +5996,11 @@ ${extractedText.substring(0, 5000)}
   app.get('/minimal-react', (req, res) => {
     res.sendFile(path.join(process.cwd(), 'public/minimal-react.html'));
   });
+  
+  // Add route for simplified Industry Pulse page (no auth required)
+  app.get('/simple-pulse', (req, res) => {
+    res.sendFile(path.join(process.cwd(), 'public/simplified-industry-pulse.html'));
+  });
 
   const httpServer = createServer(app);
   
