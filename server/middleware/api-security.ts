@@ -21,11 +21,6 @@ export const csrfProtection = (req: Request, res: Response, next: NextFunction) 
   if (req.path.startsWith('/api/external/')) {
     return next();
   }
-  
-  // Skip CSRF for anonymous cookie consent endpoints
-  if (req.path.includes('/cookie-consent/anonymous')) {
-    return next();
-  }
 
   // Get client IP as identifier - in production use better identifiers 
   const clientId = req.ip || 'unknown';
