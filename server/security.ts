@@ -22,8 +22,10 @@ import path from 'path';
 import fs from 'fs';
 import cors from 'express';
 import { z } from 'zod';
+// Import security monitoring middleware
 import { securityMonitorMiddleware, enhancedApiProtection } from './security-monitor';
-import { endpointProtectionMiddleware, createEndpointRateLimiters } from './endpoint-protection';
+// Import endpoint protection middleware (to be implemented)
+// import { endpointProtectionMiddleware, createEndpointRateLimiters } from './endpoint-protection';
 
 // Secure JWT signing key (in production, this should be in environment variables)
 const JWT_SECRET = process.env.JWT_SECRET || 'brandentifier-secure-jwt-secret-key-2025';
@@ -348,7 +350,7 @@ export function setupSecurity(app: any) {
   );
   
   // 2. Set up CORS with whitelisted origins
-  const corsOptions = {
+  const corsMiddleware = cors({
     origin: function (origin: any, callback: any) {
       // Allow requests with no origin (like mobile apps or curl requests)
       if (!origin) return callback(null, true);
@@ -362,9 +364,9 @@ export function setupSecurity(app: any) {
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-CSRF-Token', 'x-firebase-auth']
-  };
+  });
   
-  app.use(cors(corsOptions));
+  app.use(corsMiddleware);
   
   // 3. Rate limiting to prevent brute force attacks
   const apiLimiter = rateLimit({
@@ -423,10 +425,10 @@ export function setupSecurity(app: any) {
   app.use(enhancedApiProtection);
   
   // 11. More Specific API Endpoint Protection
-  app.use(endpointProtectionMiddleware);
+  // To be implemented in a separate module
   
   // 12. Set up specialized rate limiting for sensitive endpoints
-  createEndpointRateLimiters(app);
+  // To be implemented in a separate module
   
   // 13. CSP Reporting Endpoint (for collecting CSP violations)
   app.post('/api/csp-report', (req: Request, res: Response) => {
