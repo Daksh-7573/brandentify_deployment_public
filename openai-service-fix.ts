@@ -120,7 +120,12 @@ export async function generateCareerAdvice(userProfile: {
       presence_penalty: 0.3,  // Encourage including new topics
     });
 
-    return response.choices[0].message.content || "Unable to generate career advice";
+    // Apply AI security: Moderate the AI-generated content
+    const rawContent = response.choices[0].message.content || "Unable to generate career advice";
+    console.log("[AI SECURITY] Moderating AI-generated career advice");
+    const moderatedContent = await moderateAIResponse(rawContent);
+    
+    return moderatedContent;
   } catch (error: any) {
     console.error("Error generating career advice:", error);
     throw new Error(`Failed to generate career advice: ${error.message}`);
@@ -139,6 +144,9 @@ export interface ResumeAnalysisOptions {
   isBase64?: boolean;
   isLink?: boolean;
 }
+
+// Import AI security functionalities
+import { sanitizeResumeText, moderateAIResponse } from './ai-security';
 
 export async function analyzeResume(options: ResumeAnalysisOptions | string, isBase64?: boolean, isLink?: boolean) {
   let resumeText: string;
@@ -181,6 +189,12 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
       isDirectTextInput = !isBase64Value && !isLinkValue; // If not base64 or link, it's direct text
     }
 
+    // Apply AI security: Sanitize resume text for PII and sensitive data
+    if (isDirectTextInput) {
+      console.log("[AI SECURITY] Sanitizing resume text for PII and sensitive data");
+      resumeText = sanitizeResumeText(resumeText);
+    }
+    
     console.log("analyzeResume called with parameters:", { 
       resumeTextStart: resumeText ? resumeText.substring(0, 50) + "..." : "null", 
       isBase64: isBase64Value, 
@@ -620,7 +634,13 @@ export async function analyzeResume(options: ResumeAnalysisOptions | string, isB
         frequency_penalty: 0.3,  // Reduce repetition in longer responses
       });
       console.log("Received response from OpenAI API");
-      return response.choices[0].message.content || "Unable to analyze resume";
+      
+      // Apply AI security: Moderate the AI-generated content
+      const rawContent = response.choices[0].message.content || "Unable to analyze resume";
+      console.log("[AI SECURITY] Moderating AI-generated content");
+      const moderatedContent = await moderateAIResponse(rawContent);
+      
+      return moderatedContent;
     } catch (apiError) {
       console.error("OpenAI API error:", apiError);
       throw apiError;

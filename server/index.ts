@@ -7,6 +7,7 @@ import { questProgressMiddleware } from "./middleware/quest-progress-tracker";
 import { setupSecurity, validateFileUpload } from "./security";
 import { setupInfrastructureSecurity } from "./infrastructure-security";
 import { setupPrivacyRoutes } from "./privacy-compliance";
+import { aiSecurityMiddleware } from "./ai-security";
 
 const app = express();
 // Increase body size limit to handle file uploads (10MB)
@@ -136,6 +137,10 @@ setupInfrastructureSecurity(app);
 // Setup privacy and compliance features (in a non-breaking way)
 console.log("Setting up Privacy & Compliance Features");
 setupPrivacyRoutes(app);
+
+// Setup AI-specific security middleware (in a non-breaking way)
+console.log("Setting up AI-Specific Security");
+app.use(aiSecurityMiddleware);
 
 (async () => {
   const server = await registerRoutes(app);
