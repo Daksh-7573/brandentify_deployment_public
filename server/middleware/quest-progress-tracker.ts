@@ -61,6 +61,20 @@ const questTrackers: QuestTracker[] = [
     method: 'POST',
     progressExtractor: async () => 1, // Increment by 1 for each media upload
     routeName: 'media'
+  },
+  
+  // Hashtag usage tracker
+  {
+    targetAction: 'use_hashtag',
+    routePattern: /^\/api\/pulses(?:\/.*)?$/,
+    method: 'POST',
+    progressExtractor: async (req: Request) => {
+      // Extract hashtags from pulse content
+      const content = req.body?.content || '';
+      const hashtags = (content.match(/#[a-zA-Z0-9_]+/g) || []);
+      return hashtags.length; // Return count of hashtags used
+    },
+    routeName: 'hashtags'
   }
 ];
 

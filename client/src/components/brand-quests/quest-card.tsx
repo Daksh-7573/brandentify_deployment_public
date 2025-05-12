@@ -11,6 +11,22 @@ import { useCompleteQuest, useUpdateQuestProgress } from '@/hooks/use-career-que
 import { HashtagSuggestions } from '../career-quests/hashtag-suggestions'; // Update path when we move this component
 import { StaticHashtagSuggestions } from '../career-quests/static-hashtag-suggestions'; // Update path when we move this component
 
+/**
+ * Get default hashtags based on quest type
+ */
+function getDefaultHashtagsByType(questType: string): string[] {
+  switch (questType) {
+    case 'pulse_creation':
+      return ['CareerGrowth', 'ProfessionalDevelopment', 'Innovation', 'LeadershipSkills', 'WorkCulture'];
+    case 'networking':
+      return ['Networking', 'CareerConnections', 'ProfessionalNetwork', 'IndustryInsights', 'MentorshipMatters'];
+    case 'visibility':
+      return ['PersonalBranding', 'ThoughtLeadership', 'IndustryTrends', 'CareerMilestones', 'ProfessionalJourney'];
+    default:
+      return ['BrandIdentity', 'SkillsBuild', 'CareerAdvice', 'WorkLifeBalance', 'FutureOfWork'];
+  }
+}
+
 interface QuestCardProps {
   quest: UserQuest;
   onActionClick?: (quest: UserQuest) => void;
@@ -159,58 +175,55 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
               
               {/* Display static hashtag suggestions for active quests related to content creation */}
               {isActive && ['pulse_creation', 'networking', 'visibility'].includes(questDefinition.type) && (
-                <StaticHashtagSuggestions questType={questDefinition.type as QuestType} />
+                <StaticHashtagSuggestions 
+                  hashtags={getDefaultHashtagsByType(questDefinition.type)} 
+                  onHashtagClick={(hashtag) => {
+                    navigator.clipboard.writeText(hashtag);
+                    toast({
+                      title: "Hashtag copied!",
+                      description: `${hashtag} has been copied to clipboard`
+                    });
+                  }}
+                />
               )}
             </div>
           )}
         </div>
       </CardContent>
       <CardFooter className="pt-1 flex justify-between">
-        {isActive && (
-          <>
-            <div className="w-4"></div> {/* Spacer to maintain layout without dismiss button */}
-            <Button 
-              variant="default" 
-              size="sm"
-              onClick={handleActionClick}
-              disabled={updateProgressMutation.isPending}
-            >
-              {progressPercentage >= 100 ? 'Complete Quest' : 'Track Progress'}
-            </Button>
-          </>
-        )}
-        
-        {(isComplete || isExpired) && (
-          <div className="w-full flex justify-end">
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button 
-                    variant={isExpired ? "destructive" : "secondary"}
-                    size="sm"
-                    className="w-full"
-                    disabled
-                  >
-                    {isComplete 
-                      ? `Completed on ${new Date(quest.completedAt || '').toLocaleDateString()}`
-                      : isExpired 
-                        ? `Missed ${questDefinition.xpReward} XP`
-                        : 'Quest status'}
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  {isComplete && quest.xpEarned 
-                    ? `You earned ${quest.xpEarned} XP and ${quest.badgeEarned ? `the ${getBadgeLabel(quest.badgeEarned)} badge` : 'no badge'}`
-                    : isComplete 
-                      ? 'Completed successfully'
-                      : isExpired 
-                        ? `This quest expired at the end of week ${quest.weekNumber}. You missed out on earning ${questDefinition.xpReward} XP.`
-                        : 'Quest status'}
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
-        )}
+        <div className="w-full flex justify-end">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  variant={
+                    isComplete ? "secondary" : 
+                    isExpired ? "destructive" : 
+                    "default"
+                  }
+                  size="sm"
+                  className="w-full"
+                  disabled={!isActive || updateProgressMutation.isPending}
+                >
+                  {isComplete 
+                    ? `Completed on ${new Date(quest.completedAt || '').toLocaleDateString()}`
+                    : isExpired 
+                      ? `Missed ${questDefinition.xpReward} XP`
+                      : `Auto-tracking progress (${quest.progress}/${questDefinition.targetCount})`}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                {isComplete && quest.xpEarned 
+                  ? `You earned ${quest.xpEarned} XP and ${quest.badgeEarned ? `the ${getBadgeLabel(quest.badgeEarned)} badge` : 'no badge'}`
+                  : isComplete 
+                    ? 'Completed successfully'
+                    : isExpired 
+                      ? `This quest expired at the end of week ${quest.weekNumber}. You missed out on earning ${questDefinition.xpReward} XP.`
+                      : 'Progress is tracked automatically as you engage with the platform'}
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
       </CardFooter>
       
       {/* Confirmation Dialog for Completion */}
