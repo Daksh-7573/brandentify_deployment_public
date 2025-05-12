@@ -440,8 +440,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         });
       } else if (error.code === 'auth/internal-error') {
         toast({
-          title: "Authentication Failed",
-          description: "There was an internal authentication error. This is likely due to browser cookie settings. Try using email authentication instead.",
+          title: "Google Authentication Unavailable",
+          description: "Google login is currently unavailable in this environment. Please use the Demo Login option instead for the best experience.",
           variant: "destructive",
           duration: 10000, // Show for longer so user can read it
         });

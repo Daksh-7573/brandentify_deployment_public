@@ -58,6 +58,22 @@ export default function AuthPage() {
               {/* Email Authentication */}
               <TabsContent value="email">
                 <div className="space-y-6">
+                  {/* Highlight the Demo Auth as the recommended option */}
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                    <h3 className="font-medium text-blue-800 mb-2">Recommended for Replit Environment</h3>
+                    <p className="text-sm text-blue-700 mb-3">Due to browser security limitations in this environment, we recommend using our instant Demo Login for the best experience.</p>
+                    <DemoAuth />
+                  </div>
+                
+                  <div className="relative w-full">
+                    <div className="absolute inset-0 flex items-center">
+                      <span className="w-full border-t border-gray-300" />
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className="bg-white px-2 text-gray-500">other login options</span>
+                    </div>
+                  </div>
+                  
                   <EmailAuth />
                   
                   <div className="relative w-full">
@@ -65,19 +81,7 @@ export default function AuthPage() {
                       <span className="w-full border-t border-gray-300" />
                     </div>
                     <div className="relative flex justify-center text-xs uppercase">
-                      <span className="bg-white px-2 text-gray-500">or sign in with</span>
-                    </div>
-                  </div>
-                  
-                  {/* Add Demo Auth as a more reliable option */}
-                  <DemoAuth />
-                  
-                  <div className="relative w-full">
-                    <div className="absolute inset-0 flex items-center">
-                      <span className="w-full border-t border-gray-300" />
-                    </div>
-                    <div className="relative flex justify-center text-xs uppercase">
-                      <span className="bg-white px-2 text-gray-500">or use</span>
+                      <span className="bg-white px-2 text-gray-500">or</span>
                     </div>
                   </div>
                   
@@ -88,19 +92,23 @@ export default function AuthPage() {
               {/* Phone Authentication */}
               <TabsContent value="phone">
                 <div className="space-y-6">
-                  <PhoneAuth />
-                  
+                  {/* Highlight the Demo Auth as the recommended option */}
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                    <h3 className="font-medium text-blue-800 mb-2">Recommended for Replit Environment</h3>
+                    <p className="text-sm text-blue-700 mb-3">Due to browser security limitations in this environment, we recommend using our instant Demo Login for the best experience.</p>
+                    <DemoAuth />
+                  </div>
+                
                   <div className="relative w-full">
                     <div className="absolute inset-0 flex items-center">
                       <span className="w-full border-t border-gray-300" />
                     </div>
                     <div className="relative flex justify-center text-xs uppercase">
-                      <span className="bg-white px-2 text-gray-500">or try demo account</span>
+                      <span className="bg-white px-2 text-gray-500">other login options</span>
                     </div>
                   </div>
                   
-                  {/* Add Demo Auth to phone tab as well */}
-                  <DemoAuth />
+                  <PhoneAuth />
                 </div>
               </TabsContent>
             </Tabs>
