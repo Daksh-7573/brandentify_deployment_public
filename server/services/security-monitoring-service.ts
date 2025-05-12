@@ -974,6 +974,3 @@ export class SecurityMonitoringService {
     }
   }
 }
-
-// Create and export a singleton instance of the security monitoring service
-export const securityMonitorService = new SecurityMonitoringService();

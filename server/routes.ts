@@ -46,7 +46,6 @@ import addProjectUpdateRoutes from "./routes-project-update";
 import careerCapsuleRoutes from "./routes-career-capsule";
 import { setupPersonalizedHashtagRoutes } from "./routes-personalized-hashtags";
 import notificationRoutes from "./routes-notifications";
-import contentModerationRoutes from "./routes-content-moderation";
 import { 
   handleSmartConnect, 
   handleCareerRecommendations, 
@@ -5442,10 +5441,6 @@ ${extractedText.substring(0, 5000)}
   // Register Services routes for managing user services
   setupServicesRoutes(app);
   console.log("Services routes loaded");
-  
-  // Register Content Moderation routes for pulse flagging
-  app.use(contentModerationRoutes);
-  console.log("Content moderation routes loaded");
   
   // Register Project Industry PATCH endpoint to fix industry field updates
   addProjectUpdateRoutes(apiRouter);

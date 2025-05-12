@@ -11,14 +11,13 @@ import { CookieConsentProvider } from "@/hooks/use-cookie-consent";
 
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
-import SimpleLanding from "@/pages/simple-landing"; // Import our new simple landing page
 import Dashboard from "@/pages/dashboard";
 import Profile from "@/pages/profile";
 import PublicProfile from "@/pages/public-profile";
 import PersonalDetailsPage from "@/pages/personal-details";
 import PortfolioBuilder from "@/pages/portfolio-builder";
 import CreatePulsePage from "@/pages/create-pulse";
-import IndustryPulsePage from "@/pages/industry-pulse";
+import IndustryPulsePage from "@/pages/industry-pulse-new";
 import SearchPage from "@/pages/search";
 import AuthPage from "@/pages/auth-page";
 import EmailVerification from "@/pages/email-verification";
@@ -79,19 +78,7 @@ function ProtectedRoute({ component: Component, ...rest }: { component: React.Co
   return isAuthenticated ? <Component /> : null;
 }
 
-// Simple router for debugging
-function SimpleDebugRouter() {
-  return (
-    <Switch>
-      <Route path="/" component={SimpleLanding} />
-      <Route path="/debug" component={SimpleLanding} />
-      <Route component={SimpleLanding} />
-    </Switch>
-  );
-}
-
-// Normal router with all routes
-function NormalRouter() {
+function Router() {
   return (
     <Switch>
       <Route path="/" component={Landing} />
@@ -232,19 +219,7 @@ function NormalRouter() {
 }
 
 function App() {
-  // Use the simple router for debugging the blank screen issue
-  const useSimpleRouter = true;
-
   // Add a root-level Suspense boundary to ensure we never show a white screen
-  return (
-    <div className="bg-white">
-      <h1 className="text-center text-2xl font-bold py-4">Debug Mode - Simple Landing Page</h1>
-      <SimpleDebugRouter />
-    </div>
-  );
-
-  // Original App structure (commented out for debugging)
-  /*
   return (
     <QueryClientProvider client={queryClient}>
       <CookieConsentProvider>
@@ -263,7 +238,7 @@ function App() {
               </div>
             </div>
           }>
-            {useSimpleRouter ? <SimpleDebugRouter /> : <NormalRouter />}
+            <Router />
             <GlobalMuskButton />
             <ConsentManager />
             <Toaster />
@@ -272,7 +247,6 @@ function App() {
       </CookieConsentProvider>
     </QueryClientProvider>
   );
-  */
 }
 
 export default App;

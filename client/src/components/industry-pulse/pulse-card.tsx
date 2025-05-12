@@ -3,7 +3,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import PulseEngagementButton from "./pulse-engagement-button";
-import { PulseFlagButton } from "./pulse-flag-button";
 import { formatFeedDate } from "@/hooks/feed";
 
 interface PulseCardProps {
@@ -174,9 +173,6 @@ export default function PulseCard({
                 quotaData={quotaData}
                 onClick={() => onShare && onShare(pulse.id)}
               />
-              
-              {/* Flag Button for Content Moderation */}
-              <PulseFlagButton pulseId={pulse.id} />
             </div>
           </div>
         </div>

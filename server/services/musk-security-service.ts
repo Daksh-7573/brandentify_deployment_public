@@ -312,11 +312,6 @@ export function checkRateLimit(
   windowMs: number = 60000,
   blockDurationMs: number = 300000
 ): boolean {
-  // Temporarily disabled for development
-  // Skipping all rate limit checks
-  return true;
-  
-  /*
   const key = `${userId}:${endpoint}`;
   const now = Date.now();
   
@@ -360,5 +355,4 @@ export function checkRateLimit(
   }
   
   return true;
-  */
 }
