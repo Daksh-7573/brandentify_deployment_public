@@ -47,7 +47,40 @@ async function assignNowboardQuests() {
     // Assign quests to user 1
     const userId = 1;
     
+    // Check how many active quests user already has for current week
+    const activeQuestCount = await executeQuery(`
+      SELECT COUNT(*) as count 
+      FROM user_quests 
+      WHERE user_id = $1 AND status = 'active' AND week_number = $2 AND year = $3
+    `, [userId, weekNumber, year]);
+    
+    const currentActiveQuests = parseInt(activeQuestCount.rows[0].count);
+    console.log(`User ${userId} has ${currentActiveQuests} active quests for week ${weekNumber}`);
+    
+    // Maximum quests per week
+    const maxQuestsPerWeek = 3;
+    
+    // If we already have 3 or more active quests, don't add more
+    if (currentActiveQuests >= maxQuestsPerWeek) {
+      console.log(`User ${userId} already has ${currentActiveQuests} active quests for week ${weekNumber}, skipping assignment`);
+      await executeQuery('COMMIT');
+      return;
+    }
+    
+    // How many more quests we can assign
+    const remainingSlots = maxQuestsPerWeek - currentActiveQuests;
+    console.log(`Can assign up to ${remainingSlots} more quests for week ${weekNumber}`);
+    
+    // Count of quests assigned in this run
+    let assignedCount = 0;
+    
     for (const quest of questsResult.rows) {
+      // Break if we've assigned the maximum allowed
+      if (assignedCount >= remainingSlots) {
+        console.log(`Reached maximum of ${maxQuestsPerWeek} quests per week`);
+        break;
+      }
+      
       const questDefinitionId = quest.id;
       
       // Check if quest is already assigned to user
@@ -70,6 +103,7 @@ async function assignNowboardQuests() {
       `, [userId, questDefinitionId, weekNumber, year]);
       
       console.log(`Assigned quest ${questDefinitionId} to user ${userId}`);
+      assignedCount++;
     }
     
     // Commit transaction

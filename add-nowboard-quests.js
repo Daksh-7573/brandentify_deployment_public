@@ -66,23 +66,63 @@ async function addNowboardQuestDefinitions() {
     
     // Insert quest definitions
     for (const quest of nowboardQuests) {
-      await executeQuery(
-        `INSERT INTO quest_definitions 
-          (title, description, type, target_count, target_action, xp_reward, badge_reward, musk_tip, is_active, created_at, updated_at)
-         VALUES
-          ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), NOW())`,
-        [
-          quest.title,
-          quest.description,
-          quest.type,
-          quest.targetCount,
-          quest.targetAction,
-          quest.xpReward,
-          quest.badgeReward,
-          quest.muskTip,
-          quest.isActive
-        ]
+      // First check if quest already exists
+      const existingQuest = await executeQuery(
+        `SELECT id FROM quest_definitions WHERE title = $1`,
+        [quest.title]
       );
+      
+      if (existingQuest.rows.length > 0) {
+        // Update existing quest
+        const questId = existingQuest.rows[0].id;
+        console.log(`Updating existing quest: ${quest.title} (ID: ${questId})`);
+        
+        await executeQuery(
+          `UPDATE quest_definitions
+           SET description = $2,
+               type = $3,
+               target_count = $4,
+               target_action = $5,
+               xp_reward = $6,
+               badge_reward = $7,
+               musk_tip = $8,
+               is_active = $9,
+               updated_at = NOW()
+           WHERE id = $1`,
+          [
+            questId,
+            quest.description,
+            quest.type,
+            quest.targetCount,
+            quest.targetAction,
+            quest.xpReward,
+            quest.badgeReward,
+            quest.muskTip,
+            quest.isActive
+          ]
+        );
+      } else {
+        // Insert new quest
+        console.log(`Creating new quest: ${quest.title}`);
+        
+        await executeQuery(
+          `INSERT INTO quest_definitions 
+            (title, description, type, target_count, target_action, xp_reward, badge_reward, musk_tip, is_active, created_at, updated_at)
+           VALUES
+            ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), NOW())`,
+          [
+            quest.title,
+            quest.description,
+            quest.type,
+            quest.targetCount,
+            quest.targetAction,
+            quest.xpReward,
+            quest.badgeReward,
+            quest.muskTip,
+            quest.isActive
+          ]
+        );
+      }
     }
     
     // Commit transaction
