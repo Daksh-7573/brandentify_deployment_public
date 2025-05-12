@@ -115,17 +115,16 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
     );
   };
   
-  const forceDemoMode = () => {
-    // Set demo user ID in local storage
-    localStorage.setItem('demo_user_id', '1');
-    toast({
-      title: "Switched to Demo Mode",
-      description: "Using demo user to show quests",
-      duration: 3000,
-    });
-    // Redirect to brand quests with demo flag
-    window.location.href = '/brand-quests?demo=true';
-  };
+  // Always enable demo mode if no quests are found
+  useEffect(() => {
+    if ((weeklyError || !weeklyQuests || weeklyQuests.length === 0) && !isLoadingWeekly) {
+      // Set demo user ID to 1, we know demo user exists from create-demo-user-and-quests.ts
+      localStorage.setItem('demo_user_id', '1');
+      // Refresh data with demo user
+      refetchWeekly();
+      refetchAllQuests();
+    }
+  }, [weeklyError, weeklyQuests, isLoadingWeekly, refetchWeekly, refetchAllQuests]);
 
   return (
     <Card className={cn("w-full", className)}>
@@ -133,20 +132,11 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
         <CardTitle className="text-2xl">Brand Quests</CardTitle>
       </CardHeader>
       <CardContent>
-        {(weeklyError || !weeklyQuests || weeklyQuests.length === 0) && !isLoadingWeekly ? (
-          <div className="p-4 my-4 rounded-md text-center space-y-4">
-            <p className="text-muted-foreground">
-              {weeklyError ? 
-                "There was an error loading your quests." : 
-                "No quests available for this week yet."}
-            </p>
-            <Button 
-              variant="default" 
-              size="sm"
-              onClick={forceDemoMode}
-            >
-              Try Demo Mode Instead
-            </Button>
+        {isLoadingWeekly ? (
+          <div className="space-y-3">
+            <Skeleton className="h-24 w-full rounded-md" />
+            <Skeleton className="h-24 w-full rounded-md" />
+            <Skeleton className="h-24 w-full rounded-md" />
           </div>
         ) : (
           <Tabs defaultValue="weekly" value={tabValue} onValueChange={setTabValue}>
