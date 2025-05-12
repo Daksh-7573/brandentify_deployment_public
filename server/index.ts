@@ -4,6 +4,7 @@ import fileUpload from "express-fileupload";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { questProgressMiddleware } from "./middleware/quest-progress-tracker";
+import { setupSecurity, validateFileUpload } from "./security";
 
 const app = express();
 // Increase body size limit to handle file uploads (10MB)
@@ -32,14 +33,39 @@ const requestTimeout = (req: Request, res: Response, next: NextFunction) => {
 
 app.use(requestTimeout);
 
-// Setup express-fileupload middleware
+// Setup express-fileupload middleware with enhanced security
 app.use(fileUpload({
   limits: { fileSize: 10 * 1024 * 1024 }, // 10MB max file size
   useTempFiles: true,
   tempFileDir: path.join(process.cwd(), 'tmp'),
   createParentPath: true,
-  debug: process.env.NODE_ENV === 'development' // Enable debug mode in development
+  debug: process.env.NODE_ENV === 'development', // Enable debug mode in development
+  abortOnLimit: true, // Prevent DOS attacks
+  safeFileNames: true, // Remove special characters 
+  preserveExtension: true // Preserve file extension
 }));
+
+// Add secure file validation middleware
+app.use((req: Request, res: Response, next: NextFunction) => {
+  if (!req.files) {
+    return next();
+  }
+  
+  // Loop through all uploaded files to validate them
+  const fileArray = Object.values(req.files as Record<string, any>).flat();
+  
+  for (const file of fileArray) {
+    const validation = validateFileUpload(file);
+    if (!validation.valid) {
+      return res.status(400).json({
+        error: 'INVALID_FILE',
+        message: validation.message || 'Invalid file uploaded'
+      });
+    }
+  }
+  
+  next();
+});
 
 // Create uploads directory if it doesn't exist
 const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
@@ -96,6 +122,10 @@ app.use((req, res, next) => {
 // Apply the optimized quest progress tracking middleware
 console.log("Setting up Optimized Quest Progress Tracking Middleware");
 app.use(questProgressMiddleware);
+
+// Setup security features (in a non-breaking way)
+console.log("Setting up Enhanced Security Features");
+setupSecurity(app);
 
 (async () => {
   const server = await registerRoutes(app);
