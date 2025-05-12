@@ -127,7 +127,7 @@ export function PhoneAuth() {
           setUserData(data.user);
         } else {
           // For existing users, log in directly
-          authContext.signInWithPhone(data.user);
+          authContext.signInWithEmail(data.user);
           
           // Small delay to show success message before redirecting
           setTimeout(() => {
@@ -169,7 +169,7 @@ export function PhoneAuth() {
       }
       
       // Now sign in with the updated user data
-      authContext.signInWithPhone(updatedUser);
+      authContext.signInWithEmail(updatedUser);
       
       setSuccessMessage("Profile created successfully! Redirecting...");
       
