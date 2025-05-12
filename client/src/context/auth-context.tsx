@@ -118,9 +118,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         });
       });
       
-    // Remove any demo mode flags if they exist
-    localStorage.removeItem('demoMode');
-      
     // Listen for auth state changes with enhanced error handling
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       setIsLoading(true);
