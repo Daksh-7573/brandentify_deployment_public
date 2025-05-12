@@ -39,6 +39,7 @@ import ManageServicesPage from "@/pages/manage-services";
 import TestNowboardPage from "@/pages/test-nowboard";
 import ChatPage from "@/pages/ChatPage"; // Chat messaging feature
 import PrivacyPage from "@/pages/privacy"; // Privacy & Data Control page
+import CookieConsentBanner from "@/components/privacy/cookie-consent-banner"; // Cookie consent banner
 // Lazy load the SharedCardPage to improve performance and show loader immediately
 import { lazy, Suspense } from "react";
 const SharedCardPage = lazy(() => import("@/pages/shared-card"));
@@ -179,6 +180,10 @@ function Router() {
       <Route path="/messages">
         <ProtectedRoute path="/messages" component={ChatPage} />
       </Route>
+      {/* Privacy & Data Control page */}
+      <Route path="/privacy">
+        <ProtectedRoute path="/privacy" component={PrivacyPage} />
+      </Route>
       {/* Unified Profile Page with comprehensive data fetching */}
       <Route path="/unified-profile">
         <ProtectedRoute path="/unified-profile" component={UnifiedProfilePage} />
@@ -236,6 +241,8 @@ function App() {
           <GlobalMuskButton />
           <DomainHelper />
           <Toaster />
+          {/* Cookie Consent Banner - shown based on user's consent status */}
+          <CookieConsentBanner />
         </Suspense>
       </AuthProvider>
     </QueryClientProvider>
