@@ -2,6 +2,22 @@ import express, { Router, Express } from 'express';
 import { privacyService } from './services/privacy-service';
 import { authenticateJWT } from './middleware/auth-middleware';
 import { consentCategoryEnum, consentStatusEnum, geoRegionEnum } from '../shared/privacy-schema';
+import { Session } from 'express-session';
+
+// Extend the express-session SessionData type to include our consent preferences
+declare module 'express-session' {
+  interface SessionData {
+    consentPreferences?: {
+      essential: boolean;
+      functional: boolean;
+      analytics: boolean;
+      advertising: boolean;
+      social: boolean;
+      [key: string]: boolean;  // Index signature for dynamic access
+    };
+  }
+}
+
 // Create our own simple rate limiter
 class RateLimiterMemory {
   private points: number;
@@ -124,16 +140,33 @@ export function setupPrivacyRoutes(): Router {
       const { category, status } = consentPreferenceSchema.parse(req.body);
       
       // Store in session instead of database
-      if (!req.session.cookieConsents) {
-        req.session.cookieConsents = {};
+      if (!req.session.consentPreferences) {
+        req.session.consentPreferences = {
+          essential: true, // Always required
+          functional: false,
+          analytics: false,
+          advertising: false,
+          social: false,
+        };
       }
       
-      req.session.cookieConsents[category] = status === 'granted';
+      // TypeScript workaround - we know category is a valid key
+      const categoryKey = category as keyof typeof req.session.consentPreferences;
+      req.session.consentPreferences[categoryKey] = status === 'granted';
       
-      res.json({ 
-        success: true, 
-        category, 
-        status 
+      // Save session explicitly to ensure it's persisted
+      req.session.save((err) => {
+        if (err) {
+          console.error('Error saving session:', err);
+          res.status(500).json({ error: 'Failed to save cookie consent preferences' });
+          return;
+        }
+        
+        res.json({ 
+          success: true, 
+          category, 
+          status 
+        });
       });
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -145,7 +178,32 @@ export function setupPrivacyRoutes(): Router {
     }
   });
 
-  // Check specific consent status
+  // Get all cookie consent preferences for anonymous users
+  // This route needs to be defined BEFORE the /:category route to avoid conflicts
+  router.get('/cookie-consent/anonymous', async (req, res) => {
+    try {
+      const preferences = req.session.consentPreferences || {
+        essential: true, // Always required
+        functional: false,
+        analytics: false,
+        advertising: false,
+        social: false,
+      };
+      
+      // Format the response to match the authenticated endpoint format
+      const formattedPreferences = Object.entries(preferences).map(([category, granted]) => ({
+        category,
+        status: granted ? 'granted' : 'denied'
+      }));
+      
+      res.json(formattedPreferences);
+    } catch (error) {
+      console.error('Error getting anonymous cookie consents:', error);
+      res.status(500).json({ error: 'Failed to get cookie consents' });
+    }
+  });
+
+  // Check specific consent status for authenticated users
   router.get('/cookie-consent/:category', authenticateJWT, async (req, res) => {
     try {
       const category = req.params.category;

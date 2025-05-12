@@ -59,10 +59,39 @@ export const CookieConsentProvider: React.FC<{ children: React.ReactNode }> = ({
     setLoading(true);
     setError(null);
 
+    // Try to get from localStorage first for faster initial load
+    const storedPreferences = localStorage.getItem('cookieConsent');
+    if (storedPreferences) {
+      try {
+        const parsedPreferences = JSON.parse(storedPreferences);
+        const newPreferences: ConsentPreferences = {
+          essential: true, // Always required
+          functional: Boolean(parsedPreferences.functional),
+          analytics: Boolean(parsedPreferences.analytics),
+          advertising: Boolean(parsedPreferences.advertising),
+          social: Boolean(parsedPreferences.social),
+        };
+        setPreferences(newPreferences);
+        
+        // If any non-essential cookie is set, consider it as having consented
+        const hasAnyNonEssentialSet = 
+          parsedPreferences.functional || 
+          parsedPreferences.analytics || 
+          parsedPreferences.advertising || 
+          parsedPreferences.social;
+        
+        setHasConsented(hasAnyNonEssentialSet);
+      } catch (parseError) {
+        console.warn('Failed to parse stored cookie preferences', parseError);
+      }
+    }
+
     try {
+      // Try authenticated API first
       const response = await fetch('/api/privacy/cookie-consent');
       
       if (response.ok) {
+        // If authenticated, get preferences from main endpoint
         const data: ConsentResponse[] = await response.json();
         
         // Default preferences
@@ -89,12 +118,89 @@ export const CookieConsentProvider: React.FC<{ children: React.ReactNode }> = ({
         
         setHasConsented(hasExplicitlyConsented);
       } else {
-        // If not authorized or no preferences yet, just show initial state
-        setHasConsented(false);
+        // If not authenticated, try the anonymous endpoint
+        try {
+          const anonResponse = await fetch('/api/privacy/cookie-consent/anonymous');
+          
+          if (anonResponse.ok) {
+            const anonData: ConsentResponse[] = await anonResponse.json();
+            
+            // Default preferences
+            const anonPreferences: ConsentPreferences = {
+              essential: true, // Always required
+              functional: false,
+              analytics: false,
+              advertising: false,
+              social: false,
+            };
+            
+            // Update from server response
+            anonData.forEach(consent => {
+              anonPreferences[consent.category as keyof ConsentPreferences] = consent.status === 'granted';
+            });
+            
+            setPreferences(anonPreferences);
+            
+            // Check if non-essential preferences have been explicitly set
+            const hasExplicitlyConsented = anonData.some(consent => 
+              consent.category !== 'essential' && 
+              (consent.status === 'granted' || consent.status === 'denied')
+            );
+            
+            setHasConsented(hasExplicitlyConsented);
+          } else if (!storedPreferences) {
+            // Only reset if we didn't already load from localStorage
+            setHasConsented(false);
+          }
+        } catch (anonErr) {
+          if (!storedPreferences) {
+            // Only set error if we didn't successfully load from localStorage
+            console.error('Error fetching anonymous cookie consent preferences:', anonErr);
+          }
+        }
       }
     } catch (err) {
-      setError('Failed to load cookie preferences');
-      console.error('Error fetching cookie consent preferences:', err);
+      // If main endpoint fails, try anonymous endpoint
+      try {
+        const anonResponse = await fetch('/api/privacy/cookie-consent/anonymous');
+        
+        if (anonResponse.ok) {
+          const anonData: ConsentResponse[] = await anonResponse.json();
+          
+          // Default preferences
+          const anonPreferences: ConsentPreferences = {
+            essential: true, // Always required
+            functional: false,
+            analytics: false,
+            advertising: false,
+            social: false,
+          };
+          
+          // Update from server response
+          anonData.forEach(consent => {
+            anonPreferences[consent.category as keyof ConsentPreferences] = consent.status === 'granted';
+          });
+          
+          setPreferences(anonPreferences);
+          
+          // Check if non-essential preferences have been explicitly set
+          const hasExplicitlyConsented = anonData.some(consent => 
+            consent.category !== 'essential' && 
+            (consent.status === 'granted' || consent.status === 'denied')
+          );
+          
+          setHasConsented(hasExplicitlyConsented);
+        } else if (!storedPreferences) {
+          // If still fails and no localStorage, show error
+          setError('Failed to load cookie preferences');
+        }
+      } catch (anonErr) {
+        if (!storedPreferences) {
+          // Only set error if we didn't successfully load from localStorage
+          setError('Failed to load cookie preferences');
+          console.error('Error fetching cookie consent preferences:', err);
+        }
+      }
     } finally {
       setLoading(false);
     }
@@ -144,7 +250,8 @@ export const CookieConsentProvider: React.FC<{ children: React.ReactNode }> = ({
       for (const [category, granted] of Object.entries(preferences)) {
         if (category === 'essential') continue; // Essential cookies are always required
         
-        const response = await fetch('/api/privacy/cookie-consent', {
+        // Use the anonymous endpoint to store in session
+        const response = await fetch('/api/privacy/cookie-consent/anonymous', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -156,11 +263,15 @@ export const CookieConsentProvider: React.FC<{ children: React.ReactNode }> = ({
         });
         
         if (!response.ok) {
+          const errorData = await response.json();
+          console.warn(`Cookie consent error:`, errorData);
           throw new Error(`Failed to save ${category} preference`);
         }
       }
       
       setHasConsented(true);
+      // Store in localStorage as a fallback
+      localStorage.setItem('cookieConsent', JSON.stringify(preferences));
     } catch (err) {
       setError('Failed to save cookie preferences');
       console.error('Error saving cookie consent preferences:', err);
