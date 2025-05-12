@@ -5,6 +5,7 @@ import { WebSocketServer, WebSocket } from "ws";
 import { storage } from "./storage";
 import { pool } from "./db";
 import { z } from "zod";
+import { setupAuth, isAuthenticated } from "./replitAuth";
 import crypto from "crypto";
 import path from "path";
 import fs from "fs";

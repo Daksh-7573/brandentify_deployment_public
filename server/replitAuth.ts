@@ -58,7 +58,7 @@ async function upsertUser(
   claims: any,
 ) {
   // Convert Replit user info format to our database format
-  await storage.upsertUser({
+  await authStorage.upsertUser({
     username: claims["sub"],
     id: parseInt(claims["sub"], 10) || Math.floor(Math.random() * 10000), // Convert sub to integer ID if possible
     email: claims["email"] || `${claims["sub"]}@example.com`,
@@ -152,7 +152,7 @@ export async function setupAuth(app: Express) {
   app.get("/api/auth/user", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
+      const user = await authStorage.getUser(userId);
       
       // If user not found in our database, get info from claims
       if (!user) {

@@ -1,5 +1,6 @@
 import { db } from './db';
 import { eq } from 'drizzle-orm';
+import { sql } from 'drizzle-orm';
 import { users } from '@shared/schema';
 
 /**
@@ -72,8 +73,16 @@ export class AuthStorage implements IAuthStorage {
         // First get the next available ID if the user ID is not provided
         let nextId = 1;
         if (!userData.id) {
-          const result = await db.execute(sql`SELECT MAX(id) + 1 as next_id FROM users`);
-          nextId = result.rows[0]?.next_id || 1;
+          try {
+            const result = await db.execute(sql`SELECT MAX(id) + 1 as next_id FROM users`);
+            if (result && result.rows && result.rows.length > 0) {
+              nextId = parseInt(result.rows[0].next_id, 10) || 1;
+            }
+          } catch (error) {
+            console.error("Error getting next user ID:", error);
+            // Just use a random ID as fallback
+            nextId = Math.floor(10000 + Math.random() * 90000);
+          }
         }
 
         const [newUser] = await db
