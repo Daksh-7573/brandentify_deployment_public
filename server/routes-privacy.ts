@@ -182,7 +182,14 @@ export function setupPrivacyRoutes(): Router {
   // This route needs to be defined BEFORE the /:category route to avoid conflicts
   router.get('/cookie-consent/anonymous', async (req, res) => {
     try {
-      const preferences = req.session.consentPreferences || {
+      const preferences: {
+        essential: boolean;
+        functional: boolean;
+        analytics: boolean;
+        advertising: boolean;
+        social: boolean;
+        [key: string]: boolean;
+      } = req.session.consentPreferences || {
         essential: true, // Always required
         functional: false,
         analytics: false,
@@ -200,6 +207,57 @@ export function setupPrivacyRoutes(): Router {
     } catch (error) {
       console.error('Error getting anonymous cookie consents:', error);
       res.status(500).json({ error: 'Failed to get cookie consents' });
+    }
+  });
+  
+  // Save cookie consent preferences for anonymous users
+  router.post('/cookie-consent/anonymous', async (req, res) => {
+    try {
+      const preferences = req.body;
+      
+      // Validate preferences format
+      if (!preferences || typeof preferences !== 'object') {
+        return res.status(400).json({ error: 'Invalid preferences format' });
+      }
+      
+      // Basic validation that only expected categories are present
+      const allowedCategories = ['essential', 'functional', 'analytics', 'advertising', 'social'];
+      
+      // Initialize with required structure and types
+      const validPreferences: {
+        essential: boolean;
+        functional: boolean;
+        analytics: boolean;
+        advertising: boolean;
+        social: boolean;
+        [key: string]: boolean;
+      } = {
+        essential: true, // Always required
+        functional: false,
+        analytics: false,
+        advertising: false,
+        social: false
+      };
+      
+      // Process other categories
+      for (const category of allowedCategories) {
+        if (category === 'essential') continue;
+        validPreferences[category] = Boolean(preferences[category]);
+      }
+      
+      // Store in session
+      req.session.consentPreferences = validPreferences;
+      
+      // Create response in standard format
+      const formattedPreferences = Object.entries(validPreferences).map(([category, granted]) => ({
+        category,
+        status: granted ? 'granted' : 'denied'
+      }));
+      
+      res.status(200).json(formattedPreferences);
+    } catch (error) {
+      console.error('Error saving anonymous cookie consents:', error);
+      res.status(500).json({ error: 'Failed to save cookie consents' });
     }
   });
 

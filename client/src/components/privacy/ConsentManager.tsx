@@ -40,7 +40,9 @@ const ConsentManager: React.FC = () => {
     // Fetch current consent preferences from the server
     const fetchConsentPreferences = async () => {
       try {
+        // Try the authenticated endpoint first
         const response = await fetch('/api/privacy/cookie-consent');
+        
         if (response.ok) {
           const data: ConsentResponse[] = await response.json();
           
@@ -68,12 +70,84 @@ const ConsentManager: React.FC = () => {
           
           setShowBanner(!hasSetAllPreferences);
         } else {
-          // If the user is not logged in or no preferences are set yet, show the banner
-          setShowBanner(true);
+          // If authenticated endpoint fails, try anonymous endpoint
+          try {
+            const anonResponse = await fetch('/api/privacy/cookie-consent/anonymous');
+            
+            if (anonResponse.ok) {
+              const anonData: ConsentResponse[] = await anonResponse.json();
+              
+              // Update the local state with anonymous data
+              const anonPreferences: ConsentPreferences = {
+                essential: true, // Always required
+                functional: false,
+                analytics: false,
+                advertising: false,
+                social: false
+              };
+              
+              // Update the preferences based on anonymous response
+              anonData.forEach(consent => {
+                const category = consent.category as keyof ConsentPreferences;
+                anonPreferences[category] = consent.status === 'granted';
+              });
+              
+              setConsentPreferences(anonPreferences);
+              
+              // Check if we need to show the banner for anonymous user
+              const hasSetAllPreferences = Object.keys(anonPreferences).every(
+                key => key === 'essential' || anonPreferences[key as keyof ConsentPreferences] !== null
+              );
+              
+              setShowBanner(!hasSetAllPreferences);
+            } else {
+              // If both endpoints fail, show the banner
+              setShowBanner(true);
+            }
+          } catch (anonError) {
+            console.error('Error fetching anonymous consent preferences:', anonError);
+            setShowBanner(true);
+          }
         }
       } catch (error) {
-        console.error('Error fetching consent preferences:', error);
-        setShowBanner(true);
+        // If authenticated endpoint throws an error, try anonymous endpoint
+        try {
+          const anonResponse = await fetch('/api/privacy/cookie-consent/anonymous');
+          
+          if (anonResponse.ok) {
+            const anonData: ConsentResponse[] = await anonResponse.json();
+            
+            // Update the local state with anonymous data
+            const anonPreferences: ConsentPreferences = {
+              essential: true, // Always required
+              functional: false,
+              analytics: false,
+              advertising: false,
+              social: false
+            };
+            
+            // Update the preferences based on anonymous response
+            anonData.forEach(consent => {
+              const category = consent.category as keyof ConsentPreferences;
+              anonPreferences[category] = consent.status === 'granted';
+            });
+            
+            setConsentPreferences(anonPreferences);
+            
+            // Check if we need to show the banner for anonymous user
+            const hasSetAllPreferences = Object.keys(anonPreferences).every(
+              key => key === 'essential' || anonPreferences[key as keyof ConsentPreferences] !== null
+            );
+            
+            setShowBanner(!hasSetAllPreferences);
+          } else {
+            // If both endpoints fail, show the banner
+            setShowBanner(true);
+          }
+        } catch (anonError) {
+          console.error('Error fetching anonymous consent preferences:', anonError);
+          setShowBanner(true);
+        }
       } finally {
         setLoading(false);
       }
@@ -86,7 +160,9 @@ const ConsentManager: React.FC = () => {
     setLoading(true);
     
     try {
-      // Save each consent preference to the server
+      // First try to save to the authenticated endpoint
+      let authenticatedSuccess = true;
+      
       for (const [category, granted] of Object.entries(consentPreferences)) {
         if (category === 'essential') continue; // Essential cookies are always required
         
@@ -102,7 +178,34 @@ const ConsentManager: React.FC = () => {
         });
         
         if (!response.ok) {
-          throw new Error(`Failed to save ${category} consent preference`);
+          authenticatedSuccess = false;
+          break;
+        }
+      }
+      
+      // If authenticated endpoint failed, try the anonymous endpoint
+      if (!authenticatedSuccess) {
+        try {
+          const anonResponse = await fetch('/api/privacy/cookie-consent/anonymous', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(consentPreferences)
+          });
+          
+          if (!anonResponse.ok) {
+            // If even anonymous fails, try to store in localStorage as backup
+            localStorage.setItem('cookie-preferences', JSON.stringify(consentPreferences));
+            
+            // Also store in localStorage that the user has explicitly set preferences
+            localStorage.setItem('has-set-cookie-preferences', 'true');
+          }
+        } catch (anonError) {
+          console.error('Error saving to anonymous endpoint:', anonError);
+          // Store in localStorage as fallback
+          localStorage.setItem('cookie-preferences', JSON.stringify(consentPreferences));
+          localStorage.setItem('has-set-cookie-preferences', 'true');
         }
       }
       
@@ -115,11 +218,26 @@ const ConsentManager: React.FC = () => {
       setShowBanner(false);
     } catch (error) {
       console.error('Error saving consent preferences:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to save your preferences. Please try again.',
-        variant: 'destructive',
-      });
+      
+      // Try to store in localStorage as backup
+      try {
+        localStorage.setItem('cookie-preferences', JSON.stringify(consentPreferences));
+        localStorage.setItem('has-set-cookie-preferences', 'true');
+        
+        toast({
+          title: 'Preferences Saved Locally',
+          description: 'Your preferences have been saved to your browser.',
+          variant: 'default',
+        });
+        
+        setShowBanner(false);
+      } catch (localStorageError) {
+        toast({
+          title: 'Error',
+          description: 'Failed to save your preferences. Please try again.',
+          variant: 'destructive',
+        });
+      }
     } finally {
       setLoading(false);
     }
@@ -134,25 +252,47 @@ const ConsentManager: React.FC = () => {
     }));
   };
 
-  const acceptAll = () => {
-    setConsentPreferences({
+  const acceptAll = async () => {
+    const newPreferences = {
       essential: true,
       functional: true,
       analytics: true,
       advertising: true,
       social: true
-    });
+    };
+    
+    setConsentPreferences(newPreferences);
+    
+    // Store temporarily in localStorage as backup even before the API call
+    try {
+      localStorage.setItem('cookie-preferences', JSON.stringify(newPreferences));
+      localStorage.setItem('has-set-cookie-preferences', 'true');
+    } catch (e) {
+      // Ignore localStorage errors
+    }
+    
     savePreferences();
   };
 
-  const rejectNonEssential = () => {
-    setConsentPreferences({
+  const rejectNonEssential = async () => {
+    const newPreferences = {
       essential: true,
       functional: false,
       analytics: false,
       advertising: false,
       social: false
-    });
+    };
+    
+    setConsentPreferences(newPreferences);
+    
+    // Store temporarily in localStorage as backup even before the API call
+    try {
+      localStorage.setItem('cookie-preferences', JSON.stringify(newPreferences));
+      localStorage.setItem('has-set-cookie-preferences', 'true');
+    } catch (e) {
+      // Ignore localStorage errors
+    }
+    
     savePreferences();
   };
 
