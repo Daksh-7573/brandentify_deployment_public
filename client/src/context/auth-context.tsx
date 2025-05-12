@@ -470,75 +470,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
   
-  // Demo mode implementation
-  const activateDemoMode = (userData: any) => {
-    setIsLoading(true);
-    
-    try {
-      console.log("activateDemoMode received userData:", userData);
-      
-      if (!userData || !userData.id) {
-        throw new Error("Invalid demo user data received");
-      }
-      
-      // Convert demo user to our AuthUser type
-      setUser({
-        uid: userData.id.toString(),
-        id: userData.id,
-        username: userData.username || `demo_${userData.id}`,
-        email: userData.email || `demo_${userData.id}@example.com`,
-        name: userData.name || "Demo User",
-        photoURL: userData.photoURL || null,
-        title: userData.title || "Professional",
-        location: userData.location || "Demo Location"
-      });
-      
-      // Set demo mode flag
-      setIsDemoMode(true);
-      localStorage.setItem('demoMode', 'true');
-      
-      toast({
-        title: "Demo mode activated",
-        description: "You're now using the app in demo mode. Some features may be limited."
-      });
-    } catch (error) {
-      console.error("Error activating demo mode:", error);
-      toast({
-        title: "Demo mode failed",
-        description: "There was a problem activating demo mode",
-        variant: "destructive"
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const signOut = async () => {
     setIsLoading(true);
     
     try {
-      // If we're in demo mode, just clear the user state
-      if (isDemoMode) {
-        setUser(null);
-        setIsDemoMode(false);
-        localStorage.removeItem('demoMode');
-        
-        // Clear all query cache to prevent stale data
-        queryClient.clear();
-        
-        toast({
-          title: "Signed out",
-          description: "You've been signed out of demo mode"
-        });
-      } else {
-        // Normal Firebase sign out
-        await firebaseSignOut(auth);
-        
-        toast({
-          title: "Signed out",
-          description: "You've been successfully signed out"
-        });
-      }
+      // Normal Firebase sign out
+      await firebaseSignOut(auth);
+      
+      // Clear all query cache to prevent stale data
+      queryClient.clear();
+      
+      toast({
+        title: "Signed out",
+        description: "You've been successfully signed out"
+      });
     } catch (error) {
       console.error("Error signing out:", error);
       toast({
@@ -583,11 +528,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         user,
         isAuthenticated: !!user,
         isLoading,
-        isDemoMode,
         signInWithGoogle,
         signInWithPhone,
         signInWithEmail,
-        activateDemoMode,
         signOut,
         refreshUserData
       }}
