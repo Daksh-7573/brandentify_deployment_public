@@ -6,6 +6,8 @@ import { AuthProvider } from "./context/auth-context";
 import { useAuth } from "./hooks/use-auth";
 import { useEffect, useState } from "react";
 import GlobalMuskButton from "@/components/musk/global-musk-button";
+import ConsentManager from "@/components/privacy/ConsentManager";
+import { CookieConsentProvider } from "@/hooks/use-cookie-consent";
 
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
@@ -31,7 +33,6 @@ import FeedTestPage from "@/pages/feed-test";
 import CareerQuestsPage from "@/pages/career-quests";
 import BrandQuestsPage from "@/pages/brand-quests";
 import CareerCapsulePage from "@/pages/career-capsule"; // Career Capsule feature (renamed from Roadmap)
-import CareerCapsuleEnhancedPage from "@/pages/career-capsule-enhanced"; // Enhanced Career Capsule with timeline view
 import OnboardingPage from "@/pages/onboarding";
 import EditProfilePage from "@/pages/edit-profile";
 import MuskTestingPage from "@/pages/musk-testing";
@@ -156,15 +157,11 @@ function Router() {
         <ProtectedRoute path="/career-quests" component={BrandQuestsPage} />
       </Route>
       <Route path="/career-capsule">
-        <ProtectedRoute path="/career-capsule" component={CareerCapsuleEnhancedPage} />
-      </Route>
-      {/* Legacy route - keeping for backward compatibility */}
-      <Route path="/career-capsule-legacy">
-        <ProtectedRoute path="/career-capsule-legacy" component={CareerCapsulePage} />
+        <ProtectedRoute path="/career-capsule" component={CareerCapsulePage} />
       </Route>
       {/* Replaced with Career Capsule - keeping both routes for backward compatibility */}
       <Route path="/career-roadmap">
-        <ProtectedRoute path="/career-roadmap" component={CareerCapsuleEnhancedPage} />
+        <ProtectedRoute path="/career-roadmap" component={CareerCapsulePage} />
       </Route>
       <Route path="/onboarding">
         <ProtectedRoute path="/onboarding" component={OnboardingPage} />
@@ -225,26 +222,29 @@ function App() {
   // Add a root-level Suspense boundary to ensure we never show a white screen
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <Suspense fallback={
-          <div className="min-h-screen flex items-center justify-center bg-background">
-            <div className="w-[280px] aspect-[2/3.5] rounded-lg overflow-hidden shadow-lg">
-              <div className="h-[24%] bg-gray-300 dark:bg-gray-700 relative animate-pulse"></div>
-              <div className="bg-white dark:bg-gray-800 h-[76%] p-5 flex flex-col gap-4">
-                <div className="h-5 w-[70%] bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
-                <div className="h-4 w-[50%] bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
-                <div className="h-24 w-full bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
-                <div className="h-4 w-[80%] bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
-                <div className="h-4 w-[60%] bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
+      <CookieConsentProvider>
+        <AuthProvider>
+          <Suspense fallback={
+            <div className="min-h-screen flex items-center justify-center bg-background">
+              <div className="w-[280px] aspect-[2/3.5] rounded-lg overflow-hidden shadow-lg">
+                <div className="h-[24%] bg-gray-300 dark:bg-gray-700 relative animate-pulse"></div>
+                <div className="bg-white dark:bg-gray-800 h-[76%] p-5 flex flex-col gap-4">
+                  <div className="h-5 w-[70%] bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
+                  <div className="h-4 w-[50%] bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
+                  <div className="h-24 w-full bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
+                  <div className="h-4 w-[80%] bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
+                  <div className="h-4 w-[60%] bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
+                </div>
               </div>
             </div>
-          </div>
-        }>
-          <Router />
-          <GlobalMuskButton />
-          <Toaster />
-        </Suspense>
-      </AuthProvider>
+          }>
+            <Router />
+            <GlobalMuskButton />
+            <ConsentManager />
+            <Toaster />
+          </Suspense>
+        </AuthProvider>
+      </CookieConsentProvider>
     </QueryClientProvider>
   );
 }

@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export default function Header() {
-  const { user, signOut, refreshUserData } = useAuth();
+  const { user, isDemoMode, signOut, refreshUserData } = useAuth();
   const [path, setLocation] = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [hasUnreadMessages, setHasUnreadMessages] = useState(false);
@@ -26,7 +26,7 @@ export default function Header() {
   const isActive = (routePath: string) => path === routePath;
   
   // Get the user ID for queries
-  const userId = user?.uid;
+  const userId = isDemoMode ? 1 : user?.uid;
   
   // Use TanStack Query to fetch and cache user data
   const { data: userData, isError } = useQuery({
@@ -124,7 +124,11 @@ export default function Header() {
                     Brandentifier
                   </span>
                 </div>
-
+                {isDemoMode && (
+                  <Badge variant="outline" className="ml-2 text-orange-500 border-orange-500">
+                    Demo Mode
+                  </Badge>
+                )}
               </div>
             </div>
             
@@ -315,17 +319,7 @@ export default function Header() {
                   <span>Privacy Settings</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem 
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    // Force a full page reload to the auth page
-                    // This ensures complete cleanup and state reset
-                    window.location.href = '/auth';
-                    // Call the sign out function which will clean up state
-                    signOut();
-                  }}
-                >
+                <DropdownMenuItem onClick={() => signOut()}>
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Sign out</span>
                 </DropdownMenuItem>

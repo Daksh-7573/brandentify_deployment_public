@@ -12,12 +12,11 @@ import fileUpload from "express-fileupload";
 import { projectThumbnailUpload, getFileUrl } from "./utils/upload";
 // Resume parsing functionality
 import { handleParseResume } from "./routes-parse-resume";
-
+import { handleCreateDemoProfiles } from "./routes-demo-profiles";
 import { updateUserGeolocation, updateUserRadarVisibility, getNearbyUsers } from "./routes-radar";
 import { handleMuskChat, handleResumeUpload, handlePitchDeckUpload } from "./routes-musk";
 import muskSuggestionRoutes from "./routes-musk-suggestions";
 import muskMatchRoutes from "./routes-musk-match";
-
 import { registerSmartConnectRoutes } from "./routes-smart-connect";
 import { setupPrivacyRoutes } from "./routes-privacy";
 import { setupShadowResumeRoutes } from "./routes-shadow-resume";
@@ -89,7 +88,6 @@ import {
   InsertNewsArticle,
   InsertNewsUserPreference
 } from "@shared/schema";
-import { users } from "@shared/schema";
 import { generateCareerAdvice } from "./services/ai-service";
 import { getJobTitleSuggestions } from "./services/title-suggestions";
 import { initEmailService, sendVerificationEmail, sendWelcomeEmail } from "./services/email-service";
@@ -3690,70 +3688,6 @@ ${extractedText.substring(0, 5000)}
     }
   });
   
-  // Demo login route
-  apiRouter.post("/demo-login", async (req: Request, res: Response) => {
-    try {
-      const { email, password } = req.body;
-      
-      console.log(`Demo login attempt with email: ${email}`);
-      
-      if (!email || !password) {
-        return res.status(400).json({ message: "Email and password are required" });
-      }
-      
-      // Check if this is a valid demo email
-      if (!email.includes("demo_") || !email.endsWith("@brandentifier.demo")) {
-        return res.status(400).json({ message: "Invalid demo credentials" });
-      }
-      
-      // Check if user already exists
-      let user = await storage.getUserByEmail(email);
-      
-      if (!user) {
-        // Create a new demo user
-        // First generate a username from the email
-        const timestamp = email.split("_")[1].split("@")[0];
-        const username = `demo_user_${timestamp}`;
-        
-        // Create the user
-        user = await db.transaction(async (tx) => {
-          const [newUser] = await tx.insert(users).values({
-            username,
-            email,
-            password,
-            name: "Demo User",
-            phoneNumber: null,
-            photoURL: null,
-            title: "Demo Account",
-            aboutMe: "This is a demo account for testing purposes.",
-            location: "Demo City",
-            industry: "Technology",
-            domain: "Software Development",
-            lookingFor: "Testing the application",
-            whatIOffer: "Demo capabilities",
-            visitingCardType: "minimal",
-            profileCompleted: 70,
-            emailVerified: true,
-            emailVerificationToken: null,
-            emailVerificationExpires: null,
-            role: "user",
-            createdAt: new Date()
-          }).returning();
-          
-          return newUser;
-        });
-        
-        console.log(`Created new demo user: ${user.id}`);
-      }
-      
-      return res.status(200).json(user);
-      
-    } catch (error) {
-      console.error("Error during demo login:", error);
-      return res.status(500).json({ message: "Failed to create demo account" });
-    }
-  });
-
   // Email/Password authentication routes
   apiRouter.post("/login", async (req: Request, res: Response) => {
     try {

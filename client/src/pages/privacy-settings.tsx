@@ -41,27 +41,19 @@ const PrivacySettings: React.FC = () => {
           </TabsList>
 
           <TabsContent value="cookies">
-            <div className="max-h-[70vh] overflow-y-auto">
-              <CookieSettingsTab />
-            </div>
+            <CookieSettingsTab />
           </TabsContent>
 
           <TabsContent value="data">
-            <div className="max-h-[70vh] overflow-y-auto">
-              <DataManagementTab />
-            </div>
+            <DataManagementTab />
           </TabsContent>
 
           <TabsContent value="region">
-            <div className="max-h-[70vh] overflow-y-auto">
-              <DataResidencyTab />
-            </div>
+            <DataResidencyTab />
           </TabsContent>
 
           <TabsContent value="communications">
-            <div className="max-h-[70vh] overflow-y-auto">
-              <CommunicationsTab />
-            </div>
+            <CommunicationsTab />
           </TabsContent>
         </Tabs>
       </div>
@@ -82,20 +74,11 @@ const CookieSettingsTab: React.FC = () => {
   const { toast } = useToast();
 
   const handleSave = async () => {
-    try {
-      await savePreferences();
-      toast({
-        title: "Cookie preferences saved",
-        description: "Your cookie consent preferences have been updated.",
-      });
-    } catch (error) {
-      // Also save to localStorage as a fallback
-      localStorage.setItem('cookiePreferences', JSON.stringify(preferences));
-      toast({
-        title: "Cookie preferences saved locally",
-        description: "Your preferences are saved on this device.",
-      });
-    }
+    await savePreferences();
+    toast({
+      title: "Cookie preferences saved",
+      description: "Your cookie consent preferences have been updated.",
+    });
   };
 
   return (
@@ -109,75 +92,72 @@ const CookieSettingsTab: React.FC = () => {
           Manage how cookies are used across our platform
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        {/* Added max-h-[60vh] to create a scrollable container with a maximum height */}
-        <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
-          {/* Essential Cookies */}
-          <div className="flex items-center justify-between rounded-lg border p-4">
-            <div className="space-y-0.5">
-              <Label className="text-base">Essential Cookies</Label>
-              <div className="text-sm text-muted-foreground">
-                Required for the website to function properly. These cannot be disabled.
-              </div>
+      <CardContent className="space-y-4">
+        {/* Essential Cookies */}
+        <div className="flex items-center justify-between rounded-lg border p-4">
+          <div className="space-y-0.5">
+            <Label className="text-base">Essential Cookies</Label>
+            <div className="text-sm text-muted-foreground">
+              Required for the website to function properly. These cannot be disabled.
             </div>
-            <Switch checked={true} disabled={true} />
           </div>
-          
-          {/* Functional Cookies */}
-          <div className="flex items-center justify-between rounded-lg border p-4">
-            <div className="space-y-0.5">
-              <Label className="text-base">Functional Cookies</Label>
-              <div className="text-sm text-muted-foreground">
-                Enables enhanced functionality and personalization.
-              </div>
+          <Switch checked={true} disabled={true} />
+        </div>
+        
+        {/* Functional Cookies */}
+        <div className="flex items-center justify-between rounded-lg border p-4">
+          <div className="space-y-0.5">
+            <Label className="text-base">Functional Cookies</Label>
+            <div className="text-sm text-muted-foreground">
+              Enables enhanced functionality and personalization.
             </div>
-            <Switch 
-              checked={preferences.functional}
-              onCheckedChange={(checked) => updatePreference('functional', checked)}
-            />
           </div>
-          
-          {/* Analytics Cookies */}
-          <div className="flex items-center justify-between rounded-lg border p-4">
-            <div className="space-y-0.5">
-              <Label className="text-base">Analytics Cookies</Label>
-              <div className="text-sm text-muted-foreground">
-                Helps us understand how you use our website.
-              </div>
+          <Switch 
+            checked={preferences.functional}
+            onCheckedChange={(checked) => updatePreference('functional', checked)}
+          />
+        </div>
+        
+        {/* Analytics Cookies */}
+        <div className="flex items-center justify-between rounded-lg border p-4">
+          <div className="space-y-0.5">
+            <Label className="text-base">Analytics Cookies</Label>
+            <div className="text-sm text-muted-foreground">
+              Helps us understand how you use our website.
             </div>
-            <Switch 
-              checked={preferences.analytics}
-              onCheckedChange={(checked) => updatePreference('analytics', checked)}
-            />
           </div>
-          
-          {/* Advertising Cookies */}
-          <div className="flex items-center justify-between rounded-lg border p-4">
-            <div className="space-y-0.5">
-              <Label className="text-base">Advertising Cookies</Label>
-              <div className="text-sm text-muted-foreground">
-                Used to deliver relevant ads and marketing campaigns.
-              </div>
+          <Switch 
+            checked={preferences.analytics}
+            onCheckedChange={(checked) => updatePreference('analytics', checked)}
+          />
+        </div>
+        
+        {/* Advertising Cookies */}
+        <div className="flex items-center justify-between rounded-lg border p-4">
+          <div className="space-y-0.5">
+            <Label className="text-base">Advertising Cookies</Label>
+            <div className="text-sm text-muted-foreground">
+              Used to deliver relevant ads and marketing campaigns.
             </div>
-            <Switch 
-              checked={preferences.advertising}
-              onCheckedChange={(checked) => updatePreference('advertising', checked)}
-            />
           </div>
-          
-          {/* Social Media Cookies */}
-          <div className="flex items-center justify-between rounded-lg border p-4">
-            <div className="space-y-0.5">
-              <Label className="text-base">Social Media Cookies</Label>
-              <div className="text-sm text-muted-foreground">
-                Enables sharing content on social media and integrating social features.
-              </div>
+          <Switch 
+            checked={preferences.advertising}
+            onCheckedChange={(checked) => updatePreference('advertising', checked)}
+          />
+        </div>
+        
+        {/* Social Media Cookies */}
+        <div className="flex items-center justify-between rounded-lg border p-4">
+          <div className="space-y-0.5">
+            <Label className="text-base">Social Media Cookies</Label>
+            <div className="text-sm text-muted-foreground">
+              Enables sharing content on social media and integrating social features.
             </div>
-            <Switch 
-              checked={preferences.social}
-              onCheckedChange={(checked) => updatePreference('social', checked)}
-            />
           </div>
+          <Switch 
+            checked={preferences.social}
+            onCheckedChange={(checked) => updatePreference('social', checked)}
+          />
         </div>
       </CardContent>
       <CardFooter className="flex justify-between">
@@ -268,39 +248,36 @@ const DataManagementTab: React.FC = () => {
           Download or delete your personal data
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        {/* Added max-h-[60vh] to create a scrollable container with a maximum height */}
-        <div className="space-y-6 max-h-[60vh] overflow-y-auto pr-2">
-          <div>
-            <h3 className="text-lg font-medium mb-2">Export Your Data</h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              You can request a copy of all the personal data we store about you. We'll send you an email with a download link when it's ready.
-            </p>
-            <Button 
-              onClick={handleDataExport} 
-              disabled={exportLoading}
-              className="w-full sm:w-auto"
-            >
-              {exportLoading ? 'Processing...' : 'Request Data Export'}
-            </Button>
-          </div>
-          
-          <Separator />
-          
-          <div>
-            <h3 className="text-lg font-medium mb-2 text-destructive">Delete Your Data</h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              Request permanent deletion of all your personal data. This action cannot be undone. Your account will be deactivated and all your data will be permanently deleted.
-            </p>
-            <Button 
-              variant="destructive" 
-              onClick={handleDataDeletion} 
-              disabled={deleteLoading}
-              className="w-full sm:w-auto"
-            >
-              {deleteLoading ? 'Processing...' : 'Request Account Deletion'}
-            </Button>
-          </div>
+      <CardContent className="space-y-6">
+        <div>
+          <h3 className="text-lg font-medium mb-2">Export Your Data</h3>
+          <p className="text-sm text-muted-foreground mb-4">
+            You can request a copy of all the personal data we store about you. We'll send you an email with a download link when it's ready.
+          </p>
+          <Button 
+            onClick={handleDataExport} 
+            disabled={exportLoading}
+            className="w-full sm:w-auto"
+          >
+            {exportLoading ? 'Processing...' : 'Request Data Export'}
+          </Button>
+        </div>
+        
+        <Separator />
+        
+        <div>
+          <h3 className="text-lg font-medium mb-2 text-destructive">Delete Your Data</h3>
+          <p className="text-sm text-muted-foreground mb-4">
+            Request permanent deletion of all your personal data. This action cannot be undone. Your account will be deactivated and all your data will be permanently deleted.
+          </p>
+          <Button 
+            variant="destructive" 
+            onClick={handleDataDeletion} 
+            disabled={deleteLoading}
+            className="w-full sm:w-auto"
+          >
+            {deleteLoading ? 'Processing...' : 'Request Account Deletion'}
+          </Button>
         </div>
       </CardContent>
     </Card>
@@ -355,26 +332,23 @@ const DataResidencyTab: React.FC = () => {
           Choose where your data is stored and processed
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        {/* Added max-h-[60vh] to create a scrollable container with a maximum height */}
-        <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
-          <div className="space-y-2">
-            <Label htmlFor="region">Storage Region</Label>
-            <Select value={region} onValueChange={setRegion}>
-              <SelectTrigger id="region" className="w-full sm:w-[300px]">
-                <SelectValue placeholder="Select a region" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="global">Global (Default)</SelectItem>
-                <SelectItem value="in">India</SelectItem>
-              </SelectContent>
-            </Select>
-            <p className="text-sm text-muted-foreground mt-2">
-              {region === 'in' 
-                ? 'Your data will be stored on servers located in India in compliance with Indian IT Rules 2021.' 
-                : 'Your data will be stored globally for optimal performance.'}
-            </p>
-          </div>
+      <CardContent className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="region">Storage Region</Label>
+          <Select value={region} onValueChange={setRegion}>
+            <SelectTrigger id="region" className="w-full sm:w-[300px]">
+              <SelectValue placeholder="Select a region" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="global">Global (Default)</SelectItem>
+              <SelectItem value="in">India</SelectItem>
+            </SelectContent>
+          </Select>
+          <p className="text-sm text-muted-foreground mt-2">
+            {region === 'in' 
+              ? 'Your data will be stored on servers located in India in compliance with Indian IT Rules 2021.' 
+              : 'Your data will be stored globally for optimal performance.'}
+          </p>
         </div>
       </CardContent>
       <CardFooter>
@@ -453,64 +427,59 @@ const CommunicationsTab: React.FC = () => {
           Manage how and when we contact you
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
-          <div className="flex items-center justify-between rounded-lg border p-4">
-            <div className="space-y-0.5">
-              <Label className="text-base">Marketing Communications</Label>
-              <div className="text-sm text-muted-foreground">
-                Receive promotions, offers, and marketing materials
-              </div>
+      <CardContent className="space-y-4">
+        <div className="flex items-center justify-between rounded-lg border p-4">
+          <div className="space-y-0.5">
+            <Label className="text-base">Marketing Communications</Label>
+            <div className="text-sm text-muted-foreground">
+              Receive promotions, offers, and marketing materials
             </div>
-            <Switch 
-              checked={preferences.marketing}
-              onCheckedChange={() => handleToggle('marketing')}
-            />
           </div>
-          
-          <div className="flex items-center justify-between rounded-lg border p-4">
-            <div className="space-y-0.5">
-              <Label className="text-base">Product Updates</Label>
-              <div className="text-sm text-muted-foreground">
-                Notifications about new features and platform changes
-              </div>
+          <Switch 
+            checked={preferences.marketing}
+            onCheckedChange={() => handleToggle('marketing')}
+          />
+        </div>
+        
+        <div className="flex items-center justify-between rounded-lg border p-4">
+          <div className="space-y-0.5">
+            <Label className="text-base">Product Updates</Label>
+            <div className="text-sm text-muted-foreground">
+              Notifications about new features and platform changes
             </div>
-            <Switch 
-              checked={preferences.product}
-              onCheckedChange={() => handleToggle('product')}
-            />
           </div>
-          
-          <div className="flex items-center justify-between rounded-lg border p-4">
-            <div className="space-y-0.5">
-              <Label className="text-base">Security Alerts</Label>
-              <div className="text-sm text-muted-foreground">
-                Critical security notifications and account alerts
-              </div>
+          <Switch 
+            checked={preferences.product}
+            onCheckedChange={() => handleToggle('product')}
+          />
+        </div>
+        
+        <div className="flex items-center justify-between rounded-lg border p-4">
+          <div className="space-y-0.5">
+            <Label className="text-base">Security Alerts</Label>
+            <div className="text-sm text-muted-foreground">
+              Critical security notifications and account alerts
             </div>
-            <Switch 
-              checked={preferences.security}
-              onCheckedChange={() => handleToggle('security')}
-            />
           </div>
-          
-          <div className="space-y-2 rounded-lg border p-4">
-            <Label htmlFor="frequency">Newsletter Frequency</Label>
-            <Select value={preferences.newsletterFrequency} onValueChange={handleFrequencyChange}>
-              <SelectTrigger id="frequency" className="w-full sm:w-[300px]">
-                <SelectValue placeholder="Select frequency" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="daily">Daily</SelectItem>
-                <SelectItem value="weekly">Weekly</SelectItem>
-                <SelectItem value="monthly">Monthly</SelectItem>
-                <SelectItem value="never">Never</SelectItem>
-              </SelectContent>
-            </Select>
-            <p className="text-sm text-muted-foreground mt-2">
-              How often you'd like to receive our newsletter with industry insights and career tips
-            </p>
-          </div>
+          <Switch 
+            checked={preferences.security}
+            onCheckedChange={() => handleToggle('security')}
+          />
+        </div>
+        
+        <div className="space-y-2 pt-2">
+          <Label htmlFor="frequency">Newsletter Frequency</Label>
+          <Select value={preferences.newsletterFrequency} onValueChange={handleFrequencyChange}>
+            <SelectTrigger id="frequency" className="w-full sm:w-[300px]">
+              <SelectValue placeholder="Select frequency" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="daily">Daily</SelectItem>
+              <SelectItem value="weekly">Weekly</SelectItem>
+              <SelectItem value="monthly">Monthly</SelectItem>
+              <SelectItem value="never">Never</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </CardContent>
       <CardFooter>

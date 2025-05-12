@@ -1,10 +1,10 @@
-import { useAuth } from "../context/auth-context";
+import { useAuth } from "@/hooks/use-auth";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { useEffect } from "react";
 
 export default function Landing() {
-  const { isLoading, isAuthenticated } = useAuth();
+  const { enterDemoMode, isLoading, isAuthenticated } = useAuth();
   const [_, setLocation] = useLocation();
 
   // Redirect to dashboard if already authenticated - using useEffect to avoid state updates during render
@@ -27,7 +27,16 @@ export default function Landing() {
             </div>
             <div className="flex items-center">
               <Button 
-                variant="default"
+                variant="outline" 
+                className="ml-4"
+                onClick={enterDemoMode}
+                disabled={false} // Never disable demo mode button
+              >
+                Try Demo
+              </Button>
+              <Button 
+                variant="default" 
+                className="ml-4"
                 onClick={() => setLocation('/auth')}
                 disabled={isLoading}
               >
@@ -62,7 +71,17 @@ export default function Landing() {
                       Sign up now
                     </Button>
                   </div>
-
+                  <div className="mt-3 sm:mt-0 sm:ml-3">
+                    <Button 
+                      size="lg"
+                      variant="outline"
+                      className="w-full flex items-center justify-center px-8 py-3 md:py-4 md:text-lg md:px-10"
+                      onClick={enterDemoMode}
+                      disabled={false} // Never disable demo mode button
+                    >
+                      Try Demo Mode
+                    </Button>
+                  </div>
                 </div>
               </div>
             </main>

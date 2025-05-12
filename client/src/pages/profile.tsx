@@ -2310,13 +2310,7 @@ export default function Profile() {
               <Button 
                 variant="outline"
                 className="px-6 bg-red-50 text-red-600 hover:bg-red-100 border-red-200"
-                onClick={(e) => {
-                  e.preventDefault();
-                  // Force a full page reload to the auth page to ensure complete cleanup
-                  window.location.href = '/auth';
-                  // Call the sign out function which will clean up state
-                  signOut();
-                }}
+                onClick={() => signOut()}
               >
                 <i className="fas fa-sign-out-alt mr-2"></i>
                 Sign Out

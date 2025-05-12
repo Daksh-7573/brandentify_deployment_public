@@ -21,20 +21,13 @@ export const csrfProtection = (req: Request, res: Response, next: NextFunction) 
   if (req.path.startsWith('/api/external/')) {
     return next();
   }
-  
-  // Skip CSRF for privacy endpoints when not authenticated
-  // These are specifically designed to work with localStorage for unauthenticated users
-  if (req.path.startsWith('/api/privacy/cookie-consent') && !req.user) {
-    return next();
-  }
 
   // Get client IP as identifier - in production use better identifiers 
   const clientId = req.ip || 'unknown';
   const csrfToken = req.headers['x-csrf-token'] || req.headers['x-xsrf-token'];
   const storedToken = csrfTokenStore[clientId];
 
-  // If CSRF tokens are not present or don't match, log and continue
-  // The warning helps with debugging but doesn't block the request
+  // If CSRF tokens are not present or don't match, deny the request
   if (!csrfToken || !storedToken || csrfToken !== storedToken) {
     // For MVP, just log the error and continue instead of blocking
     // This avoids breaking existing functionality during the transition

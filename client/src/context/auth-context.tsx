@@ -29,10 +29,10 @@ type AuthContextType = {
   user: AuthUser | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  isDemoMode: boolean;
   signInWithGoogle: () => Promise<void>;
   signInWithPhone: (user: User) => void; // Function for phone authentication
   signInWithEmail: (user: User) => void; // Function for email authentication
-  login: (user: any) => void; // Direct login function, mainly for demo users
   signOut: () => Promise<void>;
   refreshUserData: () => Promise<void>;
 };
@@ -41,10 +41,10 @@ export const AuthContext = createContext<AuthContextType>({
   user: null,
   isAuthenticated: false,
   isLoading: true,
+  isDemoMode: false,
   signInWithGoogle: async () => {},
   signInWithPhone: () => {},
   signInWithEmail: () => {},
-  login: () => {},
   signOut: async () => {},
   refreshUserData: async () => {},
 });
@@ -52,6 +52,7 @@ export const AuthContext = createContext<AuthContextType>({
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true); // Set to true initially
+  const [isDemoMode, setIsDemoMode] = useState(false);
   const { toast } = useToast();
 
   // Fetch user data from our backend - used for both initial load and refreshes
@@ -119,6 +120,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           variant: "destructive"
         });
       });
+      
+    // Remove any demo mode flags if they exist
+    localStorage.removeItem('demoMode');
       
     // Listen for auth state changes with enhanced error handling
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
@@ -270,140 +274,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signInWithGoogle = async () => {
     setIsLoading(true);
     try {
-      // Enhanced error handling for Google Sign-in
-      
-      // Set up browser compatibility checks
-      const isChrome = navigator.userAgent.indexOf('Chrome') > -1;
-      const isFirefox = navigator.userAgent.indexOf('Firefox') > -1;
-      const isSafari = navigator.userAgent.indexOf('Safari') > -1 && !isChrome;
-      const isEdge = navigator.userAgent.indexOf('Edg') > -1;
-      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-      const isReplit = window.location.hostname.includes('.replit.app') || 
-                      window.location.hostname.includes('.repl.co') ||
-                      window.location.hostname.includes('picard.replit.dev');
-      
-      const browserInfo = { isChrome, isFirefox, isSafari, isEdge, isMobile, isReplit };
-      
       // Log Firebase configuration for debugging
       console.log("Firebase config:", {
         projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
         authDomain: `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.firebaseapp.com`,
         hasApiKey: !!import.meta.env.VITE_FIREBASE_API_KEY,
-        hasAppId: !!import.meta.env.VITE_FIREBASE_APP_ID,
-        currentUrl: window.location.href,
-        browserInfo
+        hasAppId: !!import.meta.env.VITE_FIREBASE_APP_ID
       });
       
-      let result;
+      // Add some scopes for Google auth
+      googleProvider.addScope('email');
+      googleProvider.addScope('profile');
       
-      // Configure Google provider with specific options for Replit environment
-      googleProvider.setCustomParameters({
-        // Force account selection to prevent automatic sign-in
-        prompt: 'select_account',
-        // Improved permissions handling for cross-domain authentication
-        auth_type: 'rerequest',
-        // Set login hint to current email if available
-        login_hint: window.location.hostname,
-      });
+      // Try popup instead of redirect
+      console.log("Attempting Google sign-in with popup...");
+      const result = await signInWithPopup(auth, googleProvider);
       
-      // Special handling to bypass third-party cookie and iframe restrictions
-      console.log("Using specialized authentication approach that works better in Replit");
+      // If we get here, popup was successful
+      console.log("Google sign-in successful:", result.user);
       
-      try {
-        // Try advanced custom popup window approach to bypass iframe restrictions
-        if (window.location.hostname.includes('replit')) {
-          // Create a special window configuration that allows popups to work better in Replit
-          const width = 500;
-          const height = 600;
-          const left = window.screen.width / 2 - width / 2;
-          const top = window.screen.height / 2 - height / 2;
-          
-          // Open a new window with specific parameters that allow it to bypass some restrictions
-          const authWindow = window.open(
-            `https://${import.meta.env.VITE_FIREBASE_PROJECT_ID}.firebaseapp.com/__/auth/handler?apiKey=${import.meta.env.VITE_FIREBASE_API_KEY}`,
-            'googleAuthPopup',
-            `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes,status=yes`
-          );
-          
-          if (!authWindow) {
-            // If window.open failed, still try the regular popup method
-            console.log("Custom window approach failed, falling back to signInWithPopup");
-            result = await signInWithPopup(auth, googleProvider);
-          } else {
-            // Set up message listener to receive authentication result from popup
-            console.log("Using custom window authentication approach");
-            
-            // This will be a fallback in case the popup approach doesn't work
-            // We'll still try the normal Firebase popup method after a timeout
-            const popupTimeout = setTimeout(async () => {
-              if (authWindow && !authWindow.closed) {
-                authWindow.close();
-                console.log("Custom window timed out, trying standard popup");
-                try {
-                  result = await signInWithPopup(auth, googleProvider);
-                } catch (popupError: any) {
-                  console.error("Standard popup also failed:", popupError);
-                  throw popupError;
-                }
-              }
-            }, 10000); // 10 second timeout
-            
-            try {
-              // Close the popup and try the regular signInWithPopup
-              clearTimeout(popupTimeout);
-              if (authWindow && !authWindow.closed) {
-                authWindow.close();
-              }
-              result = await signInWithPopup(auth, googleProvider);
-            } catch (error) {
-              console.error("Error during authentication:", error);
-              throw error;
-            }
-          }
-        } else {
-          // Standard environment - use normal popup
-          console.log("Starting standard Google sign-in with popup method");
-          result = await signInWithPopup(auth, googleProvider);
-        }
-      } catch (popupError: any) {
-        console.error("Popup authentication failed:", popupError);
-          
-        // If popup fails with specific errors, try redirect as fallback
-        if (
-          popupError.code === 'auth/popup-blocked' || 
-          popupError.code === 'auth/popup-closed-by-user' ||
-          popupError.code === 'auth/cancelled-popup-request'
-        ) {
-          try {
-            console.log("Popup blocked, attempting redirect method as fallback...");
-            await signInWithRedirect(auth, googleProvider);
-            return; // We'll pick up the result in the getRedirectResult() handler
-          } catch (redirectError: any) {
-            console.error("Redirect authentication also failed:", redirectError);
-            throw redirectError; // Both methods failed
-          }
-        } else if (popupError.code === 'auth/internal-error') {
-          console.log("Internal error - this may be due to third-party cookie restrictions");
-          // Try one more approach - open a new tab directly to Firebase auth
-          try {
-            window.open(`https://${import.meta.env.VITE_FIREBASE_PROJECT_ID}.firebaseapp.com/auth`, '_blank');
-            throw {
-              code: 'auth/custom-window-opened',
-              message: "We've opened a new window for authentication. Please complete the sign-in there and then return to this page and refresh."
-            };
-          } catch (windowError) {
-            console.error("Failed to open authentication window:", windowError);
-            throw popupError;
-          }
-        } else {
-          throw popupError; // Other errors should be handled by caller
-        }
-      }
-      
-      // If we get here, authentication was successful
-      console.log("Google sign-in successful:", result?.user);
-      
-      if (result?.user) {
+      if (result.user) {
         // Create or update user in our backend
         await createOrUpdateUserInBackend(result.user);
         
@@ -417,7 +307,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           // Fallback to Firebase data if backend fetch fails
           setUser({
             uid: result.user.uid,
-            id: parseInt(result.user.uid.substring(0, 5), 36) || Math.floor(Math.random() * 10000),
+            id: parseInt(result.user.uid.substring(0, 5), 36) || 999,
             username: result.user.uid.substring(0, 8),
             email: result.user.email,
             name: result.user.displayName,
@@ -432,66 +322,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     } catch (error: any) {
       console.error("Error signing in with Google:", error);
-      setIsLoading(false);
       
-      // Enhanced error handling with more specific messages
+      // More informative error message
+      let errorMessage = "There was a problem signing in with Google";
+      
       if (error.code === 'auth/configuration-not-found') {
-        toast({
-          title: "Authentication Error",
-          description: "Firebase authentication is not properly configured. Please check your Firebase setup.",
-          variant: "destructive"
-        });
-        
-        console.log("Configuration details:", {
-          projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "Not set",
-          apiKeyPresent: !!import.meta.env.VITE_FIREBASE_API_KEY,
-          appIdPresent: !!import.meta.env.VITE_FIREBASE_APP_ID,
-          domain: window.location.hostname
-        });
-      } else if (error.code === 'auth/internal-error') {
-        toast({
-          title: "Authentication Failed",
-          description: "There was an internal authentication error. This is likely due to browser cookie settings. Try using email authentication instead.",
-          variant: "destructive",
-          duration: 10000, // Show for longer so user can read it
-        });
-      } else if (error.code === 'auth/replit-environment') {
-        toast({
-          title: "Authentication Notice",
-          description: error.message || "Google authentication doesn't work in this environment. Please use email sign-in instead.",
-          duration: 10000,
-        });
+        errorMessage = "Firebase authentication is not properly configured. Please check your Firebase setup in the console.";
+        console.log("Detailed error:", error);
       } else if (error.code === 'auth/popup-blocked' || error.code === 'auth/popup-closed-by-user') {
-        toast({
-          title: "Authentication Failed",
-          description: "Sign-in popup was blocked or closed. Please allow popups for this site and try again.",
-          variant: "destructive"
-        });
+        errorMessage = "Sign-in popup was blocked or closed. Please try again.";
       } else if (error.code === 'auth/unauthorized-domain') {
-        toast({
-          title: "Authentication Failed",
-          description: `This domain (${window.location.hostname}) is not authorized for Firebase authentication. Please add it to your Firebase console.`,
-          variant: "destructive"
-        });
-      } else if (error.code === 'auth/network-request-failed') {
-        toast({
-          title: "Network Error",
-          description: "Network connection issue. Please check your internet connection.",
-          variant: "destructive"
-        });
-      } else if (error.code === 'auth/timeout') {
-        errorMessage = "The authentication request timed out. Please try again.";
+        errorMessage = "This domain is not authorized for Firebase authentication. Please add it to your Firebase console under Auth > Settings > Authorized domains.";
+        console.log("Current domain:", window.location.hostname);
       } else if (error.message) {
-        errorMessage = `Authentication error: ${error.message}`;
+        errorMessage = `Error: ${error.message}`;
       }
-      
-      // Log the detailed error information for debugging
-      console.log("Auth error details:", {
-        code: error.code,
-        message: error.message,
-        details: errorDetails,
-        error
-      });
       
       toast({
         title: "Sign in failed",
@@ -536,8 +381,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
   
-  // Enhanced Email auth implementation
-  const signInWithEmail = async (userData: User) => {
+  // Email auth implementation
+  const signInWithEmail = (userData: User) => {
     setIsLoading(true);
     
     try {
@@ -547,33 +392,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         throw new Error("Invalid user data received");
       }
       
-      // Skip the backend call for demo accounts
-      const isDemoUser = typeof userData.email === 'string' && userData.email.includes('@brandentifier.demo');
-      
-      // Only make backend API call for non-demo users
-      if (!isDemoUser) {
-        // First create or update the user in our backend
-        const createUserResponse = await apiRequest('POST', '/api/users', {
-          id: userData.id,
-          username: userData.username || `user_${userData.id}`,
-          email: userData.email,
-          name: userData.name,
-          photoURL: userData.photoURL,
-          title: userData.title || null,
-          location: userData.location || null,
-          // Use id as fallback for uid
-          uid: userData.id.toString()
-        });
-        
-        if (!createUserResponse.ok) {
-          console.error("Error creating user in backend:", await createUserResponse.text());
-          throw new Error("Failed to create user in backend");
-        }
-      }
-      
       // Convert database user to our AuthUser type
-      const authUser = {
-        // Use id as uid for demo users
+      setUser({
         uid: userData.id.toString(),
         id: userData.id,
         username: userData.username || userData.id.toString().substring(0, 8),
@@ -581,30 +401,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         name: userData.name,
         photoURL: userData.photoURL,
         title: userData.title || undefined,
-        location: userData.location || undefined,
-        isDemo: isDemoUser
-      };
-      
-      setUser(authUser);
-      
-      // Cache user data for offline use
-      try {
-        localStorage.setItem('userDataCache', JSON.stringify(authUser));
-        localStorage.setItem('authMethod', 'email');
-        localStorage.setItem('userDataCacheTimestamp', Date.now().toString());
-      } catch (cacheError) {
-        console.error("Error caching user data:", cacheError);
-      }
+        location: userData.location || undefined
+      });
       
       toast({
-        title: "Signed in successfully",
+        title: "Login successful",
         description: "Welcome to Brandentifier"
       });
     } catch (error) {
       console.error("Error signing in with email:", error);
       toast({
         title: "Sign in failed",
-        description: "There was a problem signing in with email verification",
+        description: "There was a problem signing in with email and password",
         variant: "destructive"
       });
     } finally {
@@ -613,37 +421,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
   
   const signOut = async () => {
-    setIsLoading(true);
-    
     try {
-      try {
-        // Normal Firebase sign out - try/catch to handle if not using Firebase
-        await firebaseSignOut(auth);
-      } catch (firebaseError) {
-        console.log("Firebase sign out not applicable or failed", firebaseError);
-      }
-      
-      // Clear user state
+      // Clear user state explicitly before Firebase signout
       setUser(null);
       
-      // Clear localStorage
-      try {
-        localStorage.removeItem('userDataCache');
-        localStorage.removeItem('authMethod');
-        localStorage.removeItem('userDataCacheTimestamp');
-      } catch (storageError) {
-        console.error("Error clearing localStorage:", storageError);
-      }
-      
-      // Clear all query cache to prevent stale data
+      // Clear query client cache
       queryClient.clear();
       
-      // Redirect to auth page (using window.location for a full refresh)
-      window.location.href = '/auth';
+      // Then sign out from Firebase
+      await firebaseSignOut(auth);
+      
+      // Add a brief delay to allow state updates to propagate
+      setTimeout(() => {
+        // Force a page reload to ensure all auth state is cleared
+        window.location.href = "/";
+      }, 100);
       
       toast({
-        title: "Signed out",
-        description: "You've been successfully signed out"
+        title: "Signed out successfully"
       });
     } catch (error) {
       console.error("Error signing out:", error);
@@ -652,52 +447,211 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         description: "There was a problem signing out",
         variant: "destructive"
       });
-    } finally {
-      setIsLoading(false);
     }
   };
 
+  // Add the refreshUserData function to update user profile data
   const refreshUserData = async () => {
+    // Get the user ID
+    const userId = user?.uid;
+    
+    if (!userId) {
+      console.log("Cannot refresh user data: No user ID available");
+      return;
+    }
+    
     setIsLoading(true);
     
     try {
-      if (!user) {
-        console.error("Cannot refresh user data: No user is signed in");
-        return;
+      console.log("Refreshing user data with ID:", userId);
+      
+      // Invalidate the user data query to ensure fresh data on next fetch - using consistent array format
+      queryClient.invalidateQueries({ queryKey: ['/api/users', userId] });
+      
+      // Fetch latest user data from the backend
+      const updatedUser = await fetchUserData(userId);
+      if (updatedUser) {
+        setUser(updatedUser);
+        console.log("Updated user state with fresh data:", updatedUser);
       }
       
-      // Fetch latest user data
-      const refreshedData = await fetchUserData(user.uid);
+      // Also invalidate other related queries for the profile components using consistent array format
+      console.log("Refreshing profile data queries");
+      queryClient.invalidateQueries({ queryKey: ['/api/users', userId, 'resume'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/users', userId, 'experiences'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/users', userId, 'educations'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/users', userId, 'skills'] });
       
-      if (refreshedData) {
-        setUser(refreshedData);
+      // Manually fetch ALL data directly using fetch API to bypass any caching
+      try {
+        console.log("Manually fetching all profile data using direct API requests");
         
-        // Update cache
-        localStorage.setItem('userDataCache', JSON.stringify(refreshedData));
-        localStorage.setItem('userDataCacheTimestamp', Date.now().toString());
+        // First, let's try to get the user's profile data directly
+        try {
+          const userResponse = await fetch(`/api/users/${userId}`, {
+            method: 'GET',
+            headers: { 'Cache-Control': 'no-cache, no-store' }
+          });
+          
+          // If the user is found, update the cache
+          if (userResponse.ok) {
+            const userData = await userResponse.json();
+            console.log(`Successfully fetched user data:`, userData);
+            
+            // Update the user data cache with consistent array format
+            queryClient.setQueryData(['/api/users', userId], userData);
+          } else {
+            console.error(`Failed to fetch user data for ID ${userId}:`, userResponse.statusText);
+          }
+        } catch (userFetchError) {
+          console.error("Error fetching user profile data:", userFetchError);
+        }
+        
+        // For other data, we need to make sure we're using the correct user ID
+        // We need the numeric ID for backend queries
+        const backendUserId = user?.id || (parseInt(userId.toString().substring(0, 5), 36) || 999);
+        
+        // Fetch resume data
+        try {
+          const resumeResponse = await fetch(`/api/users/${backendUserId}/resume`, {
+            method: 'GET',
+            headers: { 'Cache-Control': 'no-cache, no-store' }
+          });
+          
+          if (resumeResponse.ok) {
+            const resumeData = await resumeResponse.json();
+            console.log(`Successfully fetched resume data:`, resumeData);
+            queryClient.setQueryData(['/api/users', backendUserId, 'resume'], resumeData);
+          }
+        } catch (resumeFetchError) {
+          console.error("Error fetching resume data:", resumeFetchError);
+        }
+        
+        // Fetch experiences data
+        try {
+          const expResponse = await fetch(`/api/users/${backendUserId}/experiences`, {
+            method: 'GET',
+            headers: { 'Cache-Control': 'no-cache, no-store' }
+          });
+          
+          if (expResponse.ok) {
+            const expData = await expResponse.json();
+            console.log(`Successfully fetched experiences data:`, expData);
+            queryClient.setQueryData(['/api/users', backendUserId, 'experiences'], expData);
+          }
+        } catch (expFetchError) {
+          console.error("Error fetching experiences data:", expFetchError);
+        }
+        
+        // Fetch educations data
+        try {
+          const eduResponse = await fetch(`/api/users/${backendUserId}/educations`, {
+            method: 'GET',
+            headers: { 'Cache-Control': 'no-cache, no-store' }
+          });
+          
+          if (eduResponse.ok) {
+            const eduData = await eduResponse.json();
+            console.log(`Successfully fetched educations data:`, eduData);
+            queryClient.setQueryData(['/api/users', backendUserId, 'educations'], eduData);
+          }
+        } catch (eduFetchError) {
+          console.error("Error fetching educations data:", eduFetchError);
+        }
+        
+        // Fetch skills data
+        try {
+          const skillsResponse = await fetch(`/api/users/${backendUserId}/skills`, {
+            method: 'GET',
+            headers: { 'Cache-Control': 'no-cache, no-store' }
+          });
+          
+          if (skillsResponse.ok) {
+            const skillsData = await skillsResponse.json();
+            console.log(`Successfully fetched skills data:`, skillsData);
+            queryClient.setQueryData(['/api/users', backendUserId, 'skills'], skillsData);
+          }
+        } catch (skillsFetchError) {
+          console.error("Error fetching skills data:", skillsFetchError);
+        }
+        
+        // Fetch portfolios
+        try {
+          const portfoliosResponse = await fetch(`/api/users/${backendUserId}/portfolio`, {
+            method: 'GET',
+            headers: { 'Cache-Control': 'no-cache, no-store' }
+          });
+          
+          if (portfoliosResponse.ok) {
+            const portfoliosData = await portfoliosResponse.json();
+            console.log(`Successfully fetched portfolio data:`, portfoliosData);
+            queryClient.setQueryData(['/api/users', backendUserId, 'portfolio'], portfoliosData);
+          }
+        } catch (portfoliosFetchError) {
+          console.error("Error fetching portfolio data:", portfoliosFetchError);
+        }
+        
+        // Fetch projects
+        try {
+          const projectsResponse = await fetch(`/api/users/${backendUserId}/projects`, {
+            method: 'GET',
+            headers: { 'Cache-Control': 'no-cache, no-store' }
+          });
+          
+          if (projectsResponse.ok) {
+            const projectsData = await projectsResponse.json();
+            console.log(`Successfully fetched projects data:`, projectsData);
+            queryClient.setQueryData(['/api/users', backendUserId, 'projects'], projectsData);
+          }
+        } catch (projectsFetchError) {
+          console.error("Error fetching projects data:", projectsFetchError);
+        }
+        
+        // Fetch services
+        try {
+          const servicesResponse = await fetch(`/api/users/${backendUserId}/services`, {
+            method: 'GET',
+            headers: { 'Cache-Control': 'no-cache, no-store' }
+          });
+          
+          if (servicesResponse.ok) {
+            const servicesData = await servicesResponse.json();
+            console.log(`Successfully fetched services data:`, servicesData);
+            queryClient.setQueryData(['/api/users', backendUserId, 'services'], servicesData);
+          }
+        } catch (servicesFetchError) {
+          console.error("Error fetching services data:", servicesFetchError);
+        }
+      } catch (error) {
+        console.error("Error manually refreshing data:", error);
       }
+      
+      toast({
+        title: "Profile refreshed",
+        description: "Your profile data has been refreshed"
+      });
     } catch (error) {
       console.error("Error refreshing user data:", error);
+      toast({
+        title: "Refresh failed",
+        description: "Failed to refresh your profile data",
+        variant: "destructive"
+      });
     } finally {
       setIsLoading(false);
     }
   };
-
-  // Direct login function (mainly for demo users)
-  const login = (userData: any) => {
-    return signInWithEmail(userData);
-  };
-
+  
   return (
     <AuthContext.Provider
       value={{
         user,
         isAuthenticated: !!user,
         isLoading,
+        isDemoMode,
         signInWithGoogle,
         signInWithPhone,
         signInWithEmail,
-        login,
         signOut,
         refreshUserData
       }}
@@ -708,5 +662,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 }
 
 export function useAuth() {
-  return useContext(AuthContext);
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
 }
