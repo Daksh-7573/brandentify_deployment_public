@@ -233,6 +233,7 @@ function App() {
         }>
           <Router />
           <GlobalMuskButton />
+          <DomainHelper />
           <Toaster />
         </Suspense>
       </AuthProvider>
