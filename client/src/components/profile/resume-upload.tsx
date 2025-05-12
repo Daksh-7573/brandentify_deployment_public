@@ -139,8 +139,8 @@ export default function ResumeUpload() {
       const base64Data = await fileReadPromise;
       console.log("File successfully converted to base64, length:", base64Data.length);
       
-      // In demo mode, use user ID 1, otherwise try to parse the user's UID as a number
-      const userId = isDemoMode ? 1 : (user?.uid ? parseInt(user.uid) : 1);
+      // In demo mode, use user ID 1, otherwise use the user's ID
+      const userId = isDemoMode ? 1 : (user?.id || 1);
       
       // Save the resume
       console.log("Sending resume to server");
@@ -236,8 +236,8 @@ export default function ResumeUpload() {
     setIsConfirming(true);
     
     try {
-      // In demo mode, use user ID 1, otherwise try to parse the user's UID as a number
-      const userId = isDemoMode ? 1 : (user?.uid ? parseInt(user.uid) : 1);
+      // In demo mode, use user ID 1, otherwise use the user's ID
+      const userId = isDemoMode ? 1 : (user?.id || 1);
       
       // Call the confirm-resume-data endpoint to save the data
       const response = await apiRequest('POST', '/api/confirm-resume-data', {
