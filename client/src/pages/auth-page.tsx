@@ -65,7 +65,7 @@ export default function AuthPage() {
                       <span className="w-full border-t border-gray-300" />
                     </div>
                     <div className="relative flex justify-center text-xs uppercase">
-                      <span className="bg-white px-2 text-gray-500">or</span>
+                      <span className="bg-white px-2 text-gray-500">or sign in with</span>
                     </div>
                   </div>
                   
@@ -76,7 +76,7 @@ export default function AuthPage() {
                       <span className="w-full border-t border-gray-300" />
                     </div>
                     <div className="relative flex justify-center text-xs uppercase">
-                      <span className="bg-white px-2 text-gray-500">or</span>
+                      <span className="bg-white px-2 text-gray-500">or try preview</span>
                     </div>
                   </div>
                   
@@ -93,7 +93,7 @@ export default function AuthPage() {
                     <span className="w-full border-t border-gray-300" />
                   </div>
                   <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-white px-2 text-gray-500">or try demo</span>
+                    <span className="bg-white px-2 text-gray-500">or try preview</span>
                   </div>
                 </div>
                 

@@ -63,10 +63,10 @@ export function DemoAuth({ onDemoLogin }: DemoAuthProps) {
       <div className="bg-amber-50 border border-amber-200 rounded-md p-3 mb-2">
         <h3 className="text-sm font-medium text-amber-800 flex items-center">
           <Rocket className="w-4 h-4 mr-2" />
-          Skip the sign-in process
+          Quick Test Preview
         </h3>
         <p className="text-xs text-amber-700 mt-1">
-          Experience all features instantly with our demo mode. No account creation required.
+          Try the platform features with temporary access. For full features and data persistence, please sign in with Google.
         </p>
       </div>
       
@@ -76,7 +76,7 @@ export function DemoAuth({ onDemoLogin }: DemoAuthProps) {
         onClick={startDemoMode}
         disabled={isLoading}
       >
-        {isLoading ? "Setting up demo..." : "Enter Demo Mode"}
+        {isLoading ? "Setting up preview..." : "Try Platform Preview"}
         {!isLoading && <ArrowRight className="w-4 h-4 ml-2" />}
       </Button>
     </div>
