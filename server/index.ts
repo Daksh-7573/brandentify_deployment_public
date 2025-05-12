@@ -4,13 +4,8 @@ import fileUpload from "express-fileupload";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { questProgressMiddleware } from "./middleware/quest-progress-tracker";
-import { applySecurityConfig } from "./config/security-config";
-import { DataPrivacyService } from './services/data-privacy-service';
 
 const app = express();
-
-// Apply security configurations
-applySecurityConfig(app);
 // Increase body size limit to handle file uploads (10MB)
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: false, limit: '10mb' }));
@@ -84,15 +79,7 @@ app.use((req, res, next) => {
     if (path.startsWith("/api")) {
       let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
       if (capturedJsonResponse) {
-        // Sanitize PII data from logs using DataPrivacyService
-        try {
-          const sanitizedResponse = JSON.stringify(capturedJsonResponse);
-          const sanitizedLogResponse = DataPrivacyService.sanitizeLogging(sanitizedResponse);
-          logLine += ` :: ${sanitizedLogResponse}`;
-        } catch (error) {
-          // Fallback if sanitization fails - avoid showing raw data
-          logLine += " :: [Response with potential PII data - not shown]";
-        }
+        logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
       }
 
       if (logLine.length > 80) {

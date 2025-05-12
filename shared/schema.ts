@@ -4,17 +4,6 @@ import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 import { notifications, insertNotificationSchema } from "./notification-schema";
 
-// User roles enum
-export const userRoleEnum = pgEnum("user_role", [
-  "user",           // Basic user
-  "verified_user",  // User with verified identity
-  "premium_user",   // User with premium subscription
-  "moderator",      // Can moderate content
-  "admin",          // Full system access
-  "support",        // Customer support access
-  "content_manager" // Can manage public content
-]);
-
 // User model
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
@@ -32,7 +21,6 @@ export const users = pgTable("users", {
   lookingFor: text("looking_for"), // What the user is looking for (networking type)
   whatIOffer: text("what_i_offer"), // What skills/services the user offers - max 250 words
   visitingCardType: text("visiting_card_type"), // Type of digital visiting card
-  role: userRoleEnum("role").default("user"), // User role for RBAC - default to basic user
   profileCompleted: integer("profile_completed").default(0), // Percentage
   hasGeneratedResume: boolean("has_generated_resume").default(false), // Whether a resume has been auto-generated
   resumeUrl: text("resume_url"), // URL to the generated resume
