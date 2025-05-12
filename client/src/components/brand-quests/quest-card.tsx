@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
-import { UserQuest, QuestDefinition, QuestType, QuestStatus, getQuestTypeIcon, getQuestStatusLabel, getBadgeLabel } from '@/types/career-quest';
+import { UserQuest, QuestDefinition, QuestType, QuestStatus, getQuestTypeIcon, getQuestStatusLabel, getBadgeLabel, getHashtagTipByQuestType } from '@/types/career-quest';
 import { useCompleteQuest, useUpdateQuestProgress } from '@/hooks/use-career-quests';
 import { HashtagSuggestions } from '@/components/brand-quests/hashtag-suggestions';
 import { StaticHashtagSuggestions } from '@/components/brand-quests/static-hashtag-suggestions';
@@ -156,9 +156,9 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
               <span>Musk's Tip</span>
             </div>
             
-            {muskTipContent && (
-              <p className="text-sm text-muted-foreground mb-3">{muskTipContent}</p>
-            )}
+            <p className="text-sm text-muted-foreground mb-3">
+              {muskTipContent || getHashtagTipByQuestType(questDefinition.type as QuestType)}
+            </p>
             
             {/* Display dynamic hashtag suggestions for all quests */}
             {isActive && (
