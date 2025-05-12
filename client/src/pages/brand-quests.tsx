@@ -6,11 +6,15 @@ import { BadgeDisplay } from '@/components/brand-quests/badge-display';
 import { XpProgressBar } from '@/components/brand-quests/xp-progress-bar';
 import { HashtagSuggestions } from '@/components/brand-quests/hashtag-suggestions';
 import { NowboardSuggestions } from '@/components/brand-quests/nowboard-suggestions';
+import { BrandQuestDemo } from '@/components/brand-quests/BrandQuestDemo';
 import { useToast } from '@/hooks/use-toast';
 import { 
   useUserXp,
-  useXpTransactions
-} from '@/hooks/use-career-quests'; // Will keep using the same hooks for now
+  useXpTransactions,
+  useUserWeeklyQuests,
+  getCurrentWeekNumber,
+  getCurrentYear
+} from '@/hooks/use-career-quests';
 import { 
   Card, 
   CardContent, 

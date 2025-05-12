@@ -2,9 +2,22 @@ import { useAuth } from "@/hooks/use-auth";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { useEffect } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Landing() {
-  const { enterDemoMode, isLoading, isAuthenticated } = useAuth();
+  const { isLoading, isAuthenticated } = useAuth();
+  const { toast } = useToast();
+  
+  // Create our own demo mode function since it's not in the auth context
+  const enterDemoMode = () => {
+    localStorage.setItem('demo_user_id', '1');
+    toast({
+      title: "Demo Mode Activated",
+      description: "You are now browsing in demo mode.",
+      duration: 3000,
+    });
+    window.location.href = '/industry-pulse?demo=true';
+  };
   const [_, setLocation] = useLocation();
 
   // Redirect to dashboard if already authenticated - using useEffect to avoid state updates during render
