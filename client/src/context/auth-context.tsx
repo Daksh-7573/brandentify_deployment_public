@@ -332,8 +332,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } else if (error.code === 'auth/popup-blocked' || error.code === 'auth/popup-closed-by-user') {
         errorMessage = "Sign-in popup was blocked or closed. Please try again.";
       } else if (error.code === 'auth/unauthorized-domain') {
-        errorMessage = "This domain is not authorized for Firebase authentication. Please add it to your Firebase console under Auth > Settings > Authorized domains.";
-        console.log("Current domain:", window.location.hostname);
+        const currentDomain = window.location.hostname;
+        errorMessage = `This domain "${currentDomain}" is not authorized for Firebase authentication. Please add it to your Firebase console under Auth > Settings > Authorized domains.`;
+        console.log("Current domain:", currentDomain);
+        
+        // Display the domain in the console in a very visible way
+        console.log("%c ⚠️ ADD THIS DOMAIN TO FIREBASE AUTHORIZED DOMAINS ⚠️ ", "background: #ff0000; color: white; font-size: 16px; font-weight: bold; padding: 4px;");
+        console.log("%c " + currentDomain + " ", "background: #ff0000; color: white; font-size: 16px; font-weight: bold; padding: 4px;");
       } else if (error.message) {
         errorMessage = `Error: ${error.message}`;
       }
