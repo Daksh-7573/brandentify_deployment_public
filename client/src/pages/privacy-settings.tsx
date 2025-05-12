@@ -338,23 +338,26 @@ const DataResidencyTab: React.FC = () => {
           Choose where your data is stored and processed
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="region">Storage Region</Label>
-          <Select value={region} onValueChange={setRegion}>
-            <SelectTrigger id="region" className="w-full sm:w-[300px]">
-              <SelectValue placeholder="Select a region" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="global">Global (Default)</SelectItem>
-              <SelectItem value="in">India</SelectItem>
-            </SelectContent>
-          </Select>
-          <p className="text-sm text-muted-foreground mt-2">
-            {region === 'in' 
-              ? 'Your data will be stored on servers located in India in compliance with Indian IT Rules 2021.' 
-              : 'Your data will be stored globally for optimal performance.'}
-          </p>
+      <CardContent>
+        {/* Added max-h-[60vh] to create a scrollable container with a maximum height */}
+        <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
+          <div className="space-y-2">
+            <Label htmlFor="region">Storage Region</Label>
+            <Select value={region} onValueChange={setRegion}>
+              <SelectTrigger id="region" className="w-full sm:w-[300px]">
+                <SelectValue placeholder="Select a region" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="global">Global (Default)</SelectItem>
+                <SelectItem value="in">India</SelectItem>
+              </SelectContent>
+            </Select>
+            <p className="text-sm text-muted-foreground mt-2">
+              {region === 'in' 
+                ? 'Your data will be stored on servers located in India in compliance with Indian IT Rules 2021.' 
+                : 'Your data will be stored globally for optimal performance.'}
+            </p>
+          </div>
         </div>
       </CardContent>
       <CardFooter>
@@ -433,59 +436,64 @@ const CommunicationsTab: React.FC = () => {
           Manage how and when we contact you
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="flex items-center justify-between rounded-lg border p-4">
-          <div className="space-y-0.5">
-            <Label className="text-base">Marketing Communications</Label>
-            <div className="text-sm text-muted-foreground">
-              Receive promotions, offers, and marketing materials
+      <CardContent>
+        <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
+          <div className="flex items-center justify-between rounded-lg border p-4">
+            <div className="space-y-0.5">
+              <Label className="text-base">Marketing Communications</Label>
+              <div className="text-sm text-muted-foreground">
+                Receive promotions, offers, and marketing materials
+              </div>
             </div>
+            <Switch 
+              checked={preferences.marketing}
+              onCheckedChange={() => handleToggle('marketing')}
+            />
           </div>
-          <Switch 
-            checked={preferences.marketing}
-            onCheckedChange={() => handleToggle('marketing')}
-          />
-        </div>
-        
-        <div className="flex items-center justify-between rounded-lg border p-4">
-          <div className="space-y-0.5">
-            <Label className="text-base">Product Updates</Label>
-            <div className="text-sm text-muted-foreground">
-              Notifications about new features and platform changes
+          
+          <div className="flex items-center justify-between rounded-lg border p-4">
+            <div className="space-y-0.5">
+              <Label className="text-base">Product Updates</Label>
+              <div className="text-sm text-muted-foreground">
+                Notifications about new features and platform changes
+              </div>
             </div>
+            <Switch 
+              checked={preferences.product}
+              onCheckedChange={() => handleToggle('product')}
+            />
           </div>
-          <Switch 
-            checked={preferences.product}
-            onCheckedChange={() => handleToggle('product')}
-          />
-        </div>
-        
-        <div className="flex items-center justify-between rounded-lg border p-4">
-          <div className="space-y-0.5">
-            <Label className="text-base">Security Alerts</Label>
-            <div className="text-sm text-muted-foreground">
-              Critical security notifications and account alerts
+          
+          <div className="flex items-center justify-between rounded-lg border p-4">
+            <div className="space-y-0.5">
+              <Label className="text-base">Security Alerts</Label>
+              <div className="text-sm text-muted-foreground">
+                Critical security notifications and account alerts
+              </div>
             </div>
+            <Switch 
+              checked={preferences.security}
+              onCheckedChange={() => handleToggle('security')}
+            />
           </div>
-          <Switch 
-            checked={preferences.security}
-            onCheckedChange={() => handleToggle('security')}
-          />
-        </div>
-        
-        <div className="space-y-2 pt-2">
-          <Label htmlFor="frequency">Newsletter Frequency</Label>
-          <Select value={preferences.newsletterFrequency} onValueChange={handleFrequencyChange}>
-            <SelectTrigger id="frequency" className="w-full sm:w-[300px]">
-              <SelectValue placeholder="Select frequency" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="daily">Daily</SelectItem>
-              <SelectItem value="weekly">Weekly</SelectItem>
-              <SelectItem value="monthly">Monthly</SelectItem>
-              <SelectItem value="never">Never</SelectItem>
-            </SelectContent>
-          </Select>
+          
+          <div className="space-y-2 rounded-lg border p-4">
+            <Label htmlFor="frequency">Newsletter Frequency</Label>
+            <Select value={preferences.newsletterFrequency} onValueChange={handleFrequencyChange}>
+              <SelectTrigger id="frequency" className="w-full sm:w-[300px]">
+                <SelectValue placeholder="Select frequency" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="daily">Daily</SelectItem>
+                <SelectItem value="weekly">Weekly</SelectItem>
+                <SelectItem value="monthly">Monthly</SelectItem>
+                <SelectItem value="never">Never</SelectItem>
+              </SelectContent>
+            </Select>
+            <p className="text-sm text-muted-foreground mt-2">
+              How often you'd like to receive our newsletter with industry insights and career tips
+            </p>
+          </div>
         </div>
       </CardContent>
       <CardFooter>
