@@ -1,157 +1,98 @@
 /**
- * Security Dashboard API Routes
+ * Security Dashboard API Module
  * 
- * This module provides API routes for the security dashboard
- * to view security events, suspicious activities, and system health.
+ * This module provides APIs for security monitoring, dashboards, and administrative security controls.
+ * It exposes security event data and monitoring information for administrative interfaces.
  */
 
-import express from 'express';
-import { securityEvents, logSecurityEvent } from './security-monitor';
-import { UserRole, authorize } from './security';
-import fs from 'fs';
-import path from 'path';
+import { Router, Request, Response } from 'express';
+import { getSecurityDashboardData, getRecentSecurityEvents, checkVulnerableDependencies, getPenetrationTestingStatus } from './security-monitoring';
 
-const router = express.Router();
-const LOG_FILE_PATH = path.join(process.cwd(), 'logs', 'security-events.log');
+const router = Router();
 
-// Get security events (admin only)
-router.get('/events', (req, res) => {
-  try {
-    // In a production environment, this would be protected with role-based access control:
-    // authorize([UserRole.ADMIN])
-    
-    // Get the latest security events
-    const events = {
-      failedLogins: Array.from(securityEvents.failedLogins.entries()).map(([key, data]) => ({
-        user: key.split(':')[0],
-        ipAddress: key.split(':')[1],
-        count: data.count,
-        lastAttempt: data.timestamps.length > 0 ? new Date(Math.max(...data.timestamps)) : null
-      })),
-      suspiciousIPs: Array.from(securityEvents.suspiciousIPs),
-      sensitiveEndpoints: Array.from(securityEvents.knownVulnerableEndpoints),
-    };
-    
-    res.json({ 
-      events,
-      timestamp: new Date(),
-      status: 'Security monitoring active'
+// Middleware to verify admin access
+function requireAdmin(req: Request, res: Response, next: Function) {
+  // This is a simplified check - in a real application, this would be more robust
+  // and would check against roles stored in a database
+  if (!(req as any).user || (req as any).user.role !== 'admin') {
+    return res.status(403).json({
+      error: 'Forbidden',
+      message: 'You do not have permission to access this resource'
     });
+  }
+  next();
+}
+
+// Get security dashboard data (requires admin)
+router.get('/dashboard', requireAdmin, async (req: Request, res: Response) => {
+  try {
+    const dashboardData = await getSecurityDashboardData();
+    res.json(dashboardData);
   } catch (error) {
-    console.error('Error fetching security events:', error);
-    res.status(500).json({ message: 'Error fetching security events' });
+    console.error('Error getting security dashboard data:', error);
+    res.status(500).json({
+      error: 'Internal Server Error',
+      message: 'Failed to retrieve security dashboard data'
+    });
   }
 });
 
-// Get security logs (admin only)
-router.get('/logs', (req, res) => {
+// Get recent security events (requires admin)
+router.get('/events', requireAdmin, async (req: Request, res: Response) => {
   try {
-    // In a production environment, this would be protected with role-based access control:
-    // authorize([UserRole.ADMIN])
-    
-    if (!fs.existsSync(LOG_FILE_PATH)) {
-      return res.json({ logs: [], message: 'No security logs yet' });
-    }
-    
-    const logContent = fs.readFileSync(LOG_FILE_PATH, 'utf8');
-    const logs = logContent.split('\n')
-      .filter(line => line.trim() !== '')
-      .map(line => {
-        try {
-          return JSON.parse(line);
-        } catch (e) {
-          return { error: 'Malformed log entry', raw: line };
-        }
-      });
-    
-    res.json({ 
-      logs,
-      count: logs.length,
-      timestamp: new Date()
-    });
+    const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 100;
+    const events = await getRecentSecurityEvents(limit);
+    res.json({ events });
   } catch (error) {
-    console.error('Error fetching security logs:', error);
-    res.status(500).json({ message: 'Error fetching security logs' });
+    console.error('Error getting security events:', error);
+    res.status(500).json({
+      error: 'Internal Server Error',
+      message: 'Failed to retrieve security events'
+    });
   }
 });
 
-// Create a test security event (for development/testing only)
-router.post('/test-event', (req, res) => {
+// Run vulnerability scan (requires admin)
+router.post('/scan/vulnerabilities', requireAdmin, async (req: Request, res: Response) => {
   try {
-    // This endpoint should be disabled in production
-    if (process.env.NODE_ENV === 'production') {
-      return res.status(404).json({ message: 'Endpoint not found' });
-    }
-    
-    const { event, details } = req.body;
-    
-    if (!event || !details) {
-      return res.status(400).json({ message: 'Event and details are required' });
-    }
-    
-    logSecurityEvent(event, details);
-    
-    res.json({ 
-      message: 'Test security event logged',
-      event,
-      details
-    });
+    const result = await checkVulnerableDependencies();
+    res.json(result);
   } catch (error) {
-    console.error('Error creating test security event:', error);
-    res.status(500).json({ message: 'Error creating test security event' });
+    console.error('Error running vulnerability scan:', error);
+    res.status(500).json({
+      error: 'Internal Server Error',
+      message: 'Failed to run vulnerability scan'
+    });
   }
 });
 
-// Get security dashboard statistics
-router.get('/stats', (req, res) => {
+// Get penetration testing status (requires admin)
+router.get('/penetration-testing', requireAdmin, (req: Request, res: Response) => {
   try {
-    // In a production environment, this would be protected with role-based access control:
-    // authorize([UserRole.ADMIN])
-    
-    // Calculate statistics
-    const failedLoginCount = Array.from(securityEvents.failedLogins.values())
-      .reduce((sum, data) => sum + data.count, 0);
-    
-    const suspiciousIPCount = securityEvents.suspiciousIPs.size;
-    
-    const apiRequestCount = Array.from(securityEvents.apiRequests.values())
-      .reduce((sum, data) => {
-        return sum + Array.from(data.endpoints.values())
-          .reduce((endpointSum, timestamps) => endpointSum + timestamps.length, 0);
-      }, 0);
-    
-    // Read log file to count events by type
-    let eventsByType = {};
-    if (fs.existsSync(LOG_FILE_PATH)) {
-      const logContent = fs.readFileSync(LOG_FILE_PATH, 'utf8');
-      logContent.split('\n')
-        .filter(line => line.trim() !== '')
-        .forEach(line => {
-          try {
-            const logEntry = JSON.parse(line);
-            if (logEntry.event) {
-              eventsByType[logEntry.event] = (eventsByType[logEntry.event] || 0) + 1;
-            }
-          } catch (e) {
-            // Skip malformed log entries
-          }
-        });
-    }
-    
-    res.json({
-      stats: {
-        failedLoginAttempts: failedLoginCount,
-        suspiciousIPs: suspiciousIPCount,
-        apiRequests: apiRequestCount,
-        eventsByType
-      },
-      timestamp: new Date(),
-      monitoringStatus: 'active'
-    });
+    const status = getPenetrationTestingStatus();
+    res.json(status);
   } catch (error) {
-    console.error('Error fetching security statistics:', error);
-    res.status(500).json({ message: 'Error fetching security statistics' });
+    console.error('Error getting penetration testing status:', error);
+    res.status(500).json({
+      error: 'Internal Server Error',
+      message: 'Failed to retrieve penetration testing status'
+    });
   }
+});
+
+// Get block list status (requires admin)
+router.get('/block-list', requireAdmin, (req: Request, res: Response) => {
+  // This would be implemented to show currently blocked IPs
+  const mockBlockList = [
+    {
+      ip: '192.168.1.1',
+      reason: 'Brute force attempt',
+      createdAt: new Date().toISOString(),
+      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() // 24 hours from now
+    }
+  ];
+  
+  res.json({ blockedIPs: mockBlockList });
 });
 
 export default router;
