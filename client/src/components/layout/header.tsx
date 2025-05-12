@@ -315,7 +315,17 @@ export default function Header() {
                   <span>Privacy Settings</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => signOut()}>
+                <DropdownMenuItem 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    // Force a full page reload to the auth page
+                    // This ensures complete cleanup and state reset
+                    window.location.href = '/auth';
+                    // Call the sign out function which will clean up state
+                    signOut();
+                  }}
+                >
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Sign out</span>
                 </DropdownMenuItem>

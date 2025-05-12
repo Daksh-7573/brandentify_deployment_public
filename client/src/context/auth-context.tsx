@@ -532,11 +532,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(true);
     
     try {
-      // Normal Firebase sign out
-      await firebaseSignOut(auth);
+      try {
+        // Normal Firebase sign out - try/catch to handle if not using Firebase
+        await firebaseSignOut(auth);
+      } catch (firebaseError) {
+        console.log("Firebase sign out not applicable or failed", firebaseError);
+      }
+      
+      // Clear user state
+      setUser(null);
+      
+      // Clear localStorage
+      try {
+        localStorage.removeItem('userDataCache');
+        localStorage.removeItem('authMethod');
+        localStorage.removeItem('userDataCacheTimestamp');
+      } catch (storageError) {
+        console.error("Error clearing localStorage:", storageError);
+      }
       
       // Clear all query cache to prevent stale data
       queryClient.clear();
+      
+      // Redirect to auth page (using window.location for a full refresh)
+      window.location.href = '/auth';
       
       toast({
         title: "Signed out",
