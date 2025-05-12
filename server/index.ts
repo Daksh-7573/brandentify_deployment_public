@@ -5,6 +5,8 @@ import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { questProgressMiddleware } from "./middleware/quest-progress-tracker";
 import { setupSecurity, validateFileUpload } from "./security";
+import { setupInfrastructureSecurity } from "./infrastructure-security";
+import { setupPrivacyRoutes } from "./privacy-compliance";
 
 const app = express();
 // Increase body size limit to handle file uploads (10MB)
@@ -126,6 +128,14 @@ app.use(questProgressMiddleware);
 // Setup security features (in a non-breaking way)
 console.log("Setting up Enhanced Security Features");
 setupSecurity(app);
+
+// Setup infrastructure and hosting security (in a non-breaking way)
+console.log("Setting up Infrastructure & Hosting Security");
+setupInfrastructureSecurity(app);
+
+// Setup privacy and compliance features (in a non-breaking way)
+console.log("Setting up Privacy & Compliance Features");
+setupPrivacyRoutes(app);
 
 (async () => {
   const server = await registerRoutes(app);
