@@ -56,7 +56,7 @@ console.log(`Current auth domain is: ${currentDomain}`);
 // Log detailed configuration for debugging
 console.log("Firebase config:", {
   projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  authDomain: `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.firebaseapp.com`,
+  authDomain: firebaseConfig.authDomain, // Use the actual authDomain from config
   hasApiKey: !!import.meta.env.VITE_FIREBASE_API_KEY,
   hasAppId: !!import.meta.env.VITE_FIREBASE_APP_ID
 });

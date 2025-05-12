@@ -450,8 +450,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
   
-  // Email auth implementation
-  const signInWithEmail = (userData: User) => {
+  // Enhanced Email auth implementation
+  const signInWithEmail = async (userData: User) => {
     setIsLoading(true);
     
     try {
@@ -461,9 +461,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         throw new Error("Invalid user data received");
       }
       
+      // First create or update the user in our backend
+      const createUserResponse = await apiRequest('POST', '/api/users', {
+        id: userData.id,
+        username: userData.username || `user_${userData.id}`,
+        email: userData.email,
+        name: userData.name,
+        photoURL: userData.photoURL,
+        title: userData.title || null,
+        location: userData.location || null,
+        uid: userData.uid || `firebase_${userData.id}`
+      });
+      
+      if (!createUserResponse.ok) {
+        console.error("Error creating user in backend:", await createUserResponse.text());
+        throw new Error("Failed to create user in backend");
+      }
+      
       // Convert database user to our AuthUser type
       setUser({
-        uid: userData.id.toString(),
+        uid: userData.uid || userData.id.toString(),
         id: userData.id,
         username: userData.username || userData.id.toString().substring(0, 8),
         email: userData.email,
@@ -473,8 +490,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         location: userData.location || undefined
       });
       
+      // Cache user data for offline use
+      try {
+        localStorage.setItem('userDataCache', JSON.stringify({
+          uid: userData.uid || userData.id.toString(),
+          id: userData.id,
+          username: userData.username || userData.id.toString().substring(0, 8),
+          email: userData.email,
+          name: userData.name,
+          photoURL: userData.photoURL,
+          title: userData.title || undefined,
+          location: userData.location || undefined
+        }));
+        localStorage.setItem('userDataCacheTimestamp', Date.now().toString());
+      } catch (cacheError) {
+        console.error("Error caching user data:", cacheError);
+      }
+      
       toast({
-        title: "Email verified successfully",
+        title: "Signed in successfully",
         description: "Welcome to Brandentifier"
       });
     } catch (error) {
