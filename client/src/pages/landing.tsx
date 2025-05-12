@@ -2,6 +2,8 @@ import { useAuth } from "@/hooks/use-auth";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { useEffect } from "react";
+import { signInWithTestCredentials, isDevelopment } from "@/lib/firebase";
+import { AlertCircle } from "lucide-react";
 
 export default function Landing() {
   const { enterDemoMode, isLoading, isAuthenticated } = useAuth();
@@ -13,6 +15,15 @@ export default function Landing() {
       setLocation('/dashboard');
     }
   }, [isAuthenticated, setLocation]);
+
+  // Direct test login function (for development only)
+  const handleTestLogin = async () => {
+    try {
+      await signInWithTestCredentials();
+    } catch (error) {
+      console.error("Test login failed:", error);
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -37,11 +48,24 @@ export default function Landing() {
               <Button 
                 variant="default" 
                 className="ml-4"
-                onClick={() => setLocation('/auth')}
+                onClick={() => setLocation('/auth-page')}
                 disabled={isLoading}
               >
                 {isLoading ? "Loading..." : "Sign in"}
               </Button>
+              
+              {/* Only show test login in development environment */}
+              {isDevelopment && (
+                <Button 
+                  variant="secondary" 
+                  className="ml-4 flex items-center gap-1.5"
+                  onClick={handleTestLogin}
+                  disabled={isLoading}
+                >
+                  <AlertCircle className="h-4 w-4" />
+                  Test Login
+                </Button>
+              )}
             </div>
           </div>
         </div>
