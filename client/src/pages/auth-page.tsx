@@ -15,6 +15,7 @@ import { Mail, Phone, Check } from "lucide-react";
 import { GoogleAuth } from "@/components/auth/google-auth";
 import { PhoneAuth } from "@/components/auth/phone-auth";
 import { EmailAuth } from "@/components/auth/email-auth";
+import { DemoAuth } from "@/components/auth/demo-auth";
 
 export default function AuthPage() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -68,13 +69,39 @@ export default function AuthPage() {
                     </div>
                   </div>
                   
+                  {/* Add Demo Auth as a more reliable option */}
+                  <DemoAuth />
+                  
+                  <div className="relative w-full">
+                    <div className="absolute inset-0 flex items-center">
+                      <span className="w-full border-t border-gray-300" />
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className="bg-white px-2 text-gray-500">or use</span>
+                    </div>
+                  </div>
+                  
                   <GoogleAuth />
                 </div>
               </TabsContent>
 
               {/* Phone Authentication */}
               <TabsContent value="phone">
-                <PhoneAuth />
+                <div className="space-y-6">
+                  <PhoneAuth />
+                  
+                  <div className="relative w-full">
+                    <div className="absolute inset-0 flex items-center">
+                      <span className="w-full border-t border-gray-300" />
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className="bg-white px-2 text-gray-500">or try demo account</span>
+                    </div>
+                  </div>
+                  
+                  {/* Add Demo Auth to phone tab as well */}
+                  <DemoAuth />
+                </div>
               </TabsContent>
             </Tabs>
           </CardContent>
