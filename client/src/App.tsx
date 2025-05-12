@@ -31,6 +31,7 @@ import FeedTestPage from "@/pages/feed-test";
 import CareerQuestsPage from "@/pages/career-quests";
 import BrandQuestsPage from "@/pages/brand-quests";
 import CareerCapsulePage from "@/pages/career-capsule"; // Career Capsule feature (renamed from Roadmap)
+import CareerCapsuleEnhancedPage from "@/pages/career-capsule-enhanced"; // Enhanced Career Capsule with timeline view
 import OnboardingPage from "@/pages/onboarding";
 import EditProfilePage from "@/pages/edit-profile";
 import MuskTestingPage from "@/pages/musk-testing";
@@ -155,11 +156,15 @@ function Router() {
         <ProtectedRoute path="/career-quests" component={BrandQuestsPage} />
       </Route>
       <Route path="/career-capsule">
-        <ProtectedRoute path="/career-capsule" component={CareerCapsulePage} />
+        <ProtectedRoute path="/career-capsule" component={CareerCapsuleEnhancedPage} />
+      </Route>
+      {/* Legacy route - keeping for backward compatibility */}
+      <Route path="/career-capsule-legacy">
+        <ProtectedRoute path="/career-capsule-legacy" component={CareerCapsulePage} />
       </Route>
       {/* Replaced with Career Capsule - keeping both routes for backward compatibility */}
       <Route path="/career-roadmap">
-        <ProtectedRoute path="/career-roadmap" component={CareerCapsulePage} />
+        <ProtectedRoute path="/career-roadmap" component={CareerCapsuleEnhancedPage} />
       </Route>
       <Route path="/onboarding">
         <ProtectedRoute path="/onboarding" component={OnboardingPage} />
