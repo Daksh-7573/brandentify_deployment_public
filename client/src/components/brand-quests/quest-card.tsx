@@ -160,16 +160,12 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
               {muskTipContent || getHashtagTipByQuestType(questDefinition.type as QuestType)}
             </p>
             
-            {/* Display dynamic hashtag suggestions for all quests */}
+            {/* Display static hashtag suggestions for all quests */}
             {isActive && (
               <div className="mt-2">
                 <div className="text-xs font-medium text-muted-foreground mb-1">Recommended hashtags:</div>
-                <HashtagSuggestions 
-                  questType={questDefinition.type}
-                  targetAction={questDefinition.targetAction}
-                  showTitle={false}
-                  count={5}
-                  contentContext={questDefinition.title}
+                <StaticHashtagSuggestions 
+                  questType={questDefinition.type as QuestType}
                   onHashtagClick={(hashtag) => {
                     navigator.clipboard.writeText(hashtag);
                     toast({
