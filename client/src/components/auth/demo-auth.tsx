@@ -1,112 +1,68 @@
 import { useState } from "react";
-import { useContext } from "react";
-import { AuthContext } from "@/context/auth-context";
-import { useLocation } from "wouter";
-import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
+import { useAuth } from "@/context/auth-context";
 
 export function DemoAuth() {
-  const { signInWithEmail } = useContext(AuthContext);
-  const [_, setLocation] = useLocation();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  
-  // Handle demo login by creating a temporary user account
+  const { login } = useAuth();
+
   const handleDemoLogin = async () => {
     try {
-      setIsSubmitting(true);
+      setIsLoading(true);
       
-      // Create a demo user with a timestamp to make it unique
-      const timestamp = new Date().getTime();
+      // Generate a unique email for the demo user
+      const timestamp = Date.now();
       const demoEmail = `demo_${timestamp}@brandentifier.demo`;
-      const demoPassword = `demo${timestamp}`;
-      const demoName = "Demo User";
+      const demoPassword = `demo_${timestamp}`;
       
-      // First register the demo user
-      const registerResponse = await fetch("/api/users", {
+      console.log("Attempting demo login with:", { demoEmail });
+      
+      // Register a temporary demo user
+      const response = await fetch("/api/demo-login", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json"
         },
-        body: JSON.stringify({
-          name: demoName,
-          email: demoEmail,
-          password: demoPassword,
-          username: `demo_${timestamp}`,
-          profileCompleted: 40,
-          // Mark as demo account for special handling
-          isDemo: true,
-          // Skip email verification for demo accounts
-          emailVerified: true
-        }),
+        body: JSON.stringify({ email: demoEmail, password: demoPassword }),
       });
       
-      if (!registerResponse.ok) {
-        const data = await registerResponse.json();
-        throw new Error(data.message || "Demo registration failed");
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Demo login failed");
       }
       
-      const registerData = await registerResponse.json();
+      const user = await response.json();
       
-      // Immediately log in with the demo account
-      const loginResponse = await fetch("/api/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: demoEmail,
-          password: demoPassword,
-        }),
-      });
-      
-      if (!loginResponse.ok) {
-        const data = await loginResponse.json();
-        throw new Error(data.message || "Demo login failed");
-      }
-      
-      const userData = await loginResponse.json();
-      
-      // Use Auth Context to set the user
-      signInWithEmail(userData);
+      // Log the user in
+      login(user);
       
       toast({
-        title: "Demo login successful!",
-        description: "Welcome to Brandentifier. You're using a demo account.",
+        title: "Demo account created",
+        description: "You are now logged in with a demo account",
       });
-      
-      // Redirect to dashboard
-      setTimeout(() => {
-        setLocation("/dashboard");
-      }, 1000);
-      
     } catch (error: any) {
       console.error("Demo login error:", error);
       toast({
-        title: "Demo login failed",
-        description: error.message || "Failed to create demo account",
+        title: "Login failed",
+        description: error.message || "An error occurred during demo login",
         variant: "destructive",
       });
     } finally {
-      setIsSubmitting(false);
+      setIsLoading(false);
     }
   };
-  
+
   return (
     <Button
+      className="w-full"
       variant="outline"
       onClick={handleDemoLogin}
-      disabled={isSubmitting}
-      className="w-full"
+      disabled={isLoading}
     >
-      {isSubmitting ? (
-        <>
-          <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Creating Demo Account...
-        </>
-      ) : (
-        "Try Demo Account"
-      )}
+      {isLoading ? "Creating Demo Account..." : "Try Demo Account"}
     </Button>
   );
 }
