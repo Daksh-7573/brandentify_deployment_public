@@ -76,6 +76,24 @@ const questTrackers: QuestTracker[] = [
       return hashtags.length; // Return count of hashtags used
     },
     routeName: 'hashtags'
+  },
+  
+  // Nowboard opportunities engagement tracker
+  {
+    targetAction: 'engage_with_nowboard',
+    routePattern: /^\/api\/nowboard\/opportunities(?:\/.*)?$/,
+    method: 'GET',
+    progressExtractor: async () => 1, // Increment by 1 for each view/interaction
+    routeName: 'nowboard_opportunities'
+  },
+  
+  // Nowboard saved opportunities tracker 
+  {
+    targetAction: 'save_nowboard_opportunity',
+    routePattern: /^\/api\/nowboard\/opportunities\/save(?:\/.*)?$/,
+    method: 'POST',
+    progressExtractor: async () => 1, // Increment by 1 for each saved opportunity
+    routeName: 'nowboard_saved'
   }
 ];
 

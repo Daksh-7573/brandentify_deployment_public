@@ -8,7 +8,9 @@ export type QuestType =
   | 'visibility'
   | 'daily'
   | 'weekly'
-  | 'monthly';
+  | 'monthly'
+  | 'exploration'
+  | 'nowboard';
 
 export type QuestStatus = 
   | 'active'
@@ -21,7 +23,9 @@ export type BadgeType =
   | 'musk_learner'
   | 'thought_leader'
   | 'portfolio_star'
-  | 'visibility_boosted';
+  | 'visibility_boosted'
+  | 'explorer'
+  | 'opportunist';
 
 export interface QuestDefinition {
   id: number;
@@ -118,7 +122,9 @@ export const getBadgeLabel = (badgeType: BadgeType): string => {
     musk_learner: 'Musk Learner',
     thought_leader: 'Thought Leader',
     portfolio_star: 'Portfolio Star',
-    visibility_boosted: 'Visibility Boosted'
+    visibility_boosted: 'Visibility Boosted',
+    explorer: 'Opportunity Explorer',
+    opportunist: 'Career Opportunist'
   };
   return labels[badgeType] || badgeType;
 };
@@ -134,7 +140,9 @@ export const getQuestTypeIcon = (type: QuestType): string => {
     visibility: '👁️',
     daily: '⏱️',
     weekly: '📅',
-    monthly: '🗓️'
+    monthly: '🗓️',
+    exploration: '🔍',
+    nowboard: '🚀'
   };
   return icons[type] || '🎯';
 };
@@ -155,7 +163,9 @@ export const getBadgeDescription = (badgeType: BadgeType): string => {
     musk_learner: 'Awarded for implementing 10 AI suggestions',
     thought_leader: 'Awarded for receiving 25 reactions on your pulses',
     portfolio_star: 'Awarded for showcasing 5 projects in your portfolio',
-    visibility_boosted: 'Awarded for being featured 3 times'
+    visibility_boosted: 'Awarded for being featured 3 times',
+    explorer: 'Awarded for exploring career opportunities on Nowboard',
+    opportunist: 'Awarded for saving and engaging with multiple career opportunities'
   };
   return descriptions[badgeType] || 'A special achievement';
 };
