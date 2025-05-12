@@ -29,11 +29,9 @@ type AuthContextType = {
   user: AuthUser | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  isDemoMode: boolean;
   signInWithGoogle: () => Promise<void>;
   signInWithPhone: (user: User) => void; // Function for phone authentication
   signInWithEmail: (user: User) => void; // Function for email authentication
-  activateDemoMode: (userData: any) => void; // Function to activate demo mode
   signOut: () => Promise<void>;
   refreshUserData: () => Promise<void>;
 };
@@ -42,11 +40,9 @@ export const AuthContext = createContext<AuthContextType>({
   user: null,
   isAuthenticated: false,
   isLoading: true,
-  isDemoMode: false,
   signInWithGoogle: async () => {},
   signInWithPhone: () => {},
   signInWithEmail: () => {},
-  activateDemoMode: () => {},
   signOut: async () => {},
   refreshUserData: async () => {},
 });
@@ -54,7 +50,6 @@ export const AuthContext = createContext<AuthContextType>({
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true); // Set to true initially
-  const [isDemoMode, setIsDemoMode] = useState(false);
   const { toast } = useToast();
 
   // Fetch user data from our backend - used for both initial load and refreshes
