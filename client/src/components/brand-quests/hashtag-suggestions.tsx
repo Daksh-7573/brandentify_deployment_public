@@ -1,6 +1,5 @@
 import React from 'react';
 import { useHashtagSuggestions } from '@/hooks/use-hashtag-suggestions';
-import { useAuth } from '@/hooks/use-auth';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -36,7 +35,8 @@ export function HashtagSuggestions({
   muskTipContent,
   demo = false
 }: HashtagSuggestionsProps) {
-  const { user } = useAuth();
+  // Since we can't get industry and domain from the AuthUser type,
+  // we'll use static hashtags for now
   const { 
     hashtags, 
     sources, 
@@ -44,11 +44,7 @@ export function HashtagSuggestions({
     error, 
     refreshHashtags 
   } = useHashtagSuggestions({
-    industry: user?.industry || undefined,
-    domain: user?.domain || undefined,
-    questType,
-    targetAction,
-    contentContext,
+    questType: 'static', // Force using static hashtags for now
     count,
     demo
   });
