@@ -83,10 +83,12 @@ export function setupPrivacyRoutes(): Router {
    * Cookie Consent Routes
    */
   
-  // Get current cookie consent preferences
-  router.get('/cookie-consent', authenticateJWT, async (req, res) => {
+  // Get current cookie consent preferences - public endpoint for initial page load
+  router.get('/cookie-consent', async (req, res) => {
     try {
-      const consents = await privacyService.getUserConsents(req.user!.username);
+      // Use IP as anonymous identifier if user is not authenticated
+      const userId = req.user?.username || req.ip;
+      const consents = await privacyService.getUserConsents(userId);
       res.json(consents);
     } catch (error) {
       console.error('Error getting cookie consents:', error);

@@ -6018,7 +6018,7 @@ ${extractedText.substring(0, 5000)}
             
             // If recipient is connected, send them the message
             if (clients.has(recipientId) && clients.get(recipientId)?.readyState === WebSocket.OPEN) {
-              clients.get(recipientId).send(JSON.stringify({
+              clients.get(recipientId)?.send(JSON.stringify({
                 type: 'new_message',
                 senderId: data.senderId,
                 senderName: data.senderName,
@@ -6037,13 +6037,16 @@ ${extractedText.substring(0, 5000)}
     // Handle disconnection
     ws.on('close', () => {
       console.log('WebSocket client disconnected');
-      // Remove client from clients map
-      for (const [userId, client] of clients.entries()) {
-        if (client === ws) {
-          clients.delete(userId);
-          console.log(`User ${userId} disconnected from WebSocket`);
-          break;
-        }
+      // Remove client from clients map - use forEach for safer iteration
+      try {
+        clients.forEach((client, userId) => {
+          if (client === ws) {
+            clients.delete(userId);
+            console.log(`User ${userId} disconnected from WebSocket`);
+          }
+        });
+      } catch (error) {
+        console.error('Error cleaning up WebSocket connection:', error);
       }
     });
   });

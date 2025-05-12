@@ -104,20 +104,66 @@ export class PrivacyService {
   }
 
   // Get all consent preferences for a user
-  async getUserConsents(userId: string) {
+  async getUserConsents(userId: string | undefined) {
     try {
-      return await db.select()
+      // For anonymous users, return default consents
+      if (!userId) {
+        return consentCategoryEnum.enumValues.map(category => ({
+          id: 0,
+          userId: 'anonymous',
+          category,
+          status: 'pending', // Default status is pending for anonymous users
+          createdAt: new Date(),
+          lastUpdated: new Date(),
+          ipAddress: null,
+          userAgent: null
+        }));
+      }
+      
+      // For logged in users, get their stored consents
+      const consents = await db.select()
         .from(cookieConsents)
         .where(eq(cookieConsents.userId, userId));
+      
+      // If user has no consents yet, return defaults
+      if (consents.length === 0) {
+        return consentCategoryEnum.enumValues.map(category => ({
+          id: 0,
+          userId,
+          category,
+          status: 'pending', // Default status is pending until explicitly set
+          createdAt: new Date(),
+          lastUpdated: new Date(),
+          ipAddress: null,
+          userAgent: null
+        }));
+      }
+      
+      return consents;
     } catch (error) {
       console.error('Error getting user consents:', error);
-      throw error;
+      // Return default consents on error instead of throwing
+      return consentCategoryEnum.enumValues.map(category => ({
+        id: 0,
+        userId: userId || 'anonymous',
+        category,
+        status: 'pending',
+        createdAt: new Date(),
+        lastUpdated: new Date(),
+        ipAddress: null,
+        userAgent: null
+      }));
     }
   }
 
   // Check if user has consented to a specific category
-  async hasConsented(userId: string, category: typeof consentCategoryEnum.enumValues[number]): Promise<boolean> {
+  async hasConsented(userId: string | undefined, category: typeof consentCategoryEnum.enumValues[number]): Promise<boolean> {
     try {
+      // Anonymous users are considered not to have consented
+      if (!userId) {
+        return false;
+      }
+      
       const consent = await db.select()
         .from(cookieConsents)
         .where(
@@ -666,13 +712,18 @@ export class PrivacyService {
 
   // Log a privacy-related action
   async logPrivacyAction(
-    userId: string, 
+    userId: string | undefined, 
     action: string, 
     details?: any,
     ipAddress?: string,
     userAgent?: string
   ) {
     try {
+      // Skip logging for anonymous users to avoid DB errors
+      if (!userId) {
+        return true;
+      }
+      
       const logData: InsertPrivacyAuditLog = {
         userId,
         action,
@@ -681,8 +732,14 @@ export class PrivacyService {
         userAgent
       };
       
-      await db.insert(privacyAuditLogs)
-        .values(logData);
+      // Use try-catch specifically around the DB operation
+      try {
+        await db.insert(privacyAuditLogs)
+          .values(logData);
+      } catch (dbError) {
+        console.error('Database error logging privacy action:', dbError);
+        // Silently fail but return success - logging shouldn't break the app
+      }
       
       return true;
     } catch (error) {
