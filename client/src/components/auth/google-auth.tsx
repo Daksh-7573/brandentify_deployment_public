@@ -1,14 +1,25 @@
-import { Loader2, AlertTriangle } from "lucide-react";
+import { Loader2, AlertTriangle, Info, CheckCircle2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
+import { Card } from "@/components/ui/card";
 
 export function GoogleAuth() {
   const { signInWithGoogle, isLoading } = useAuth();
   const { toast } = useToast();
   const [authAttempted, setAuthAttempted] = useState(false);
+  const [authError, setAuthError] = useState<string | null>(null);
   const [isFirebaseConfigured, setIsFirebaseConfigured] = useState(true);
+  const [browserInfo, setBrowserInfo] = useState<{
+    name: string;
+    thirdPartyCookies: boolean | null;
+    isChrome: boolean;
+  }>({
+    name: "Unknown",
+    thirdPartyCookies: null,
+    isChrome: false
+  });
   
   // Check if Firebase is properly configured
   useEffect(() => {
@@ -22,18 +33,61 @@ export function GoogleAuth() {
       
       if (!isConfigured) {
         console.error("Firebase configuration is incomplete");
+      } else {
+        console.log("Firebase config:", {
+          projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+          hasApiKey: !!import.meta.env.VITE_FIREBASE_API_KEY,
+          hasAppId: !!import.meta.env.VITE_FIREBASE_APP_ID
+        });
       }
     };
     
+    // Detect browser and settings that might impact sign-in
+    const detectBrowser = () => {
+      const ua = navigator.userAgent;
+      const isChrome = ua.indexOf('Chrome') > -1 && ua.indexOf('Edge') === -1;
+      const isFirefox = ua.indexOf('Firefox') > -1;
+      const isSafari = ua.indexOf('Safari') > -1 && !isChrome;
+      const isEdge = ua.indexOf('Edg') > -1;
+      const isIE = ua.indexOf('Trident/') > -1;
+      
+      let browserName = "Unknown";
+      if (isChrome) browserName = "Chrome";
+      else if (isFirefox) browserName = "Firefox";
+      else if (isSafari) browserName = "Safari";
+      else if (isEdge) browserName = "Edge";
+      else if (isIE) browserName = "Internet Explorer";
+      
+      setBrowserInfo({
+        name: browserName,
+        thirdPartyCookies: null, // We can't reliably detect this
+        isChrome: isChrome
+      });
+    };
+    
     checkFirebaseConfig();
+    detectBrowser();
   }, []);
 
   const handleSignIn = async () => {
     setAuthAttempted(true);
+    setAuthError(null);
+    
     try {
       await signInWithGoogle();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error in Google Auth component:", error);
+      
+      // Set appropriate error message based on the error type
+      if (error.code === 'auth/internal-error') {
+        setAuthError("Third-party cookies may be disabled in your browser settings");
+      } else if (error.code === 'auth/popup-blocked') {
+        setAuthError("Sign-in popup was blocked by your browser");
+      } else if (error.code && error.message) {
+        setAuthError(`${error.code}: ${error.message}`);
+      } else {
+        setAuthError("Authentication failed. Please try again.");
+      }
     }
   };
 
@@ -81,15 +135,61 @@ export function GoogleAuth() {
         {isLoading ? "Signing in..." : "Continue with Google"}
       </Button>
       
-      {authAttempted && !isLoading && (
-        <div className="mt-2 text-xs text-gray-600">
-          <p>If you're having trouble signing in:</p>
-          <ul className="list-disc pl-5 mt-1 space-y-1">
-            <li>Ensure you have third-party cookies enabled</li>
-            <li>Try disabling any ad-blockers temporarily</li>
-            <li>Make sure you're using a modern browser</li>
-          </ul>
+      {authError && (
+        <div className="p-3 bg-red-50 border border-red-200 rounded-md text-red-800 text-sm">
+          <div className="flex items-start">
+            <AlertTriangle className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0" />
+            <div>
+              <p className="font-medium">Authentication Error</p>
+              <p>{authError}</p>
+            </div>
+          </div>
         </div>
+      )}
+      
+      {(authAttempted || authError) && !isLoading && (
+        <Card className="p-3 bg-blue-50 border-blue-200">
+          <div className="text-sm space-y-2">
+            <div className="flex items-center text-blue-800 font-medium mb-1">
+              <Info className="h-4 w-4 mr-2 flex-shrink-0" />
+              <span>Troubleshooting Tips</span>
+            </div>
+            
+            <div className="space-y-2 text-blue-700">
+              <div className="flex items-start">
+                <div className="w-5 h-5 flex items-center justify-center mr-2">1.</div>
+                <div>
+                  <strong>Enable third-party cookies</strong>
+                  <p className="text-xs">Google sign-in requires third-party cookies. Check your browser settings.</p>
+                </div>
+              </div>
+              
+              <div className="flex items-start">
+                <div className="w-5 h-5 flex items-center justify-center mr-2">2.</div>
+                <div>
+                  <strong>Disable ad-blockers</strong>
+                  <p className="text-xs">Temporarily disable any ad-blockers or privacy extensions.</p>
+                </div>
+              </div>
+              
+              <div className="flex items-start">
+                <div className="w-5 h-5 flex items-center justify-center mr-2">3.</div>
+                <div>
+                  <strong>Try Chrome browser</strong>
+                  <p className="text-xs">Google sign-in works best with Chrome {browserInfo.isChrome && <span className="text-green-600">(✓ You're using Chrome)</span>}</p>
+                </div>
+              </div>
+              
+              <div className="flex items-start">
+                <div className="w-5 h-5 flex items-center justify-center mr-2">4.</div>
+                <div>
+                  <strong>Clear browser cache</strong>
+                  <p className="text-xs">Clear your cookies and cache, then try again.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </Card>
       )}
     </div>
   );
