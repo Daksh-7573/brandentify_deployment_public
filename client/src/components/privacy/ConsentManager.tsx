@@ -214,9 +214,9 @@ const ConsentManager: React.FC = () => {
               </div>
               
               {/* Analytics Cookies */}
-              <div className="flex items-center justify-between rounded-lg border p-4">
-                <div className="space-y-0.5">
-                  <Label className="text-base">Analytics Cookies</Label>
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between rounded-lg border p-4 gap-3">
+                <div className="space-y-1">
+                  <Label className="text-base font-medium">Analytics Cookies</Label>
                   <div className="text-sm text-muted-foreground">
                     Helps us understand how you use our website.
                   </div>
@@ -224,13 +224,14 @@ const ConsentManager: React.FC = () => {
                 <Switch 
                   checked={consentPreferences.analytics}
                   onCheckedChange={() => handleToggle('analytics')}
+                  className="mt-1 sm:mt-0"
                 />
               </div>
               
               {/* Advertising Cookies */}
-              <div className="flex items-center justify-between rounded-lg border p-4">
-                <div className="space-y-0.5">
-                  <Label className="text-base">Advertising Cookies</Label>
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between rounded-lg border p-4 gap-3">
+                <div className="space-y-1">
+                  <Label className="text-base font-medium">Advertising Cookies</Label>
                   <div className="text-sm text-muted-foreground">
                     Used to deliver relevant ads and marketing campaigns.
                   </div>
@@ -238,13 +239,14 @@ const ConsentManager: React.FC = () => {
                 <Switch 
                   checked={consentPreferences.advertising}
                   onCheckedChange={() => handleToggle('advertising')}
+                  className="mt-1 sm:mt-0"
                 />
               </div>
               
               {/* Social Media Cookies */}
-              <div className="flex items-center justify-between rounded-lg border p-4">
-                <div className="space-y-0.5">
-                  <Label className="text-base">Social Media Cookies</Label>
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between rounded-lg border p-4 gap-3">
+                <div className="space-y-1">
+                  <Label className="text-base font-medium">Social Media Cookies</Label>
                   <div className="text-sm text-muted-foreground">
                     Enables sharing content on social media and integrating social features.
                   </div>
@@ -252,6 +254,7 @@ const ConsentManager: React.FC = () => {
                 <Switch 
                   checked={consentPreferences.social}
                   onCheckedChange={() => handleToggle('social')}
+                  className="mt-1 sm:mt-0"
                 />
               </div>
             </div>

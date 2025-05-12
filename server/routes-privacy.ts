@@ -94,7 +94,7 @@ export function setupPrivacyRoutes(): Router {
     }
   });
 
-  // Set cookie consent preference
+  // Set cookie consent preference for authenticated users
   router.post('/cookie-consent', authenticateJWT, async (req, res) => {
     try {
       const { category, status } = consentPreferenceSchema.parse(req.body);
@@ -113,6 +113,33 @@ export function setupPrivacyRoutes(): Router {
         res.status(400).json({ error: 'Invalid consent data', details: error.errors });
       } else {
         console.error('Error setting cookie consent:', error);
+        res.status(500).json({ error: 'Failed to set cookie consent' });
+      }
+    }
+  });
+  
+  // Set cookie consent preference for anonymous users
+  router.post('/cookie-consent/anonymous', async (req, res) => {
+    try {
+      const { category, status } = consentPreferenceSchema.parse(req.body);
+      
+      // Store in session instead of database
+      if (!req.session.cookieConsents) {
+        req.session.cookieConsents = {};
+      }
+      
+      req.session.cookieConsents[category] = status === 'granted';
+      
+      res.json({ 
+        success: true, 
+        category, 
+        status 
+      });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ error: 'Invalid consent data', details: error.errors });
+      } else {
+        console.error('Error setting anonymous cookie consent:', error);
         res.status(500).json({ error: 'Failed to set cookie consent' });
       }
     }
