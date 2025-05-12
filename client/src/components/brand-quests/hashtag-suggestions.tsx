@@ -1,6 +1,6 @@
 import React from 'react';
 import { useHashtagSuggestions } from '@/hooks/use-hashtag-suggestions';
-import { useCurrentUser } from '@/hooks/use-current-user';
+import { useAuth } from '@/hooks/use-auth';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -36,7 +36,7 @@ export function HashtagSuggestions({
   muskTipContent,
   demo = false
 }: HashtagSuggestionsProps) {
-  const { user } = useCurrentUser();
+  const { user } = useAuth();
   const { 
     hashtags, 
     sources, 
