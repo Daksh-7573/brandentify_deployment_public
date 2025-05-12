@@ -17,8 +17,6 @@ type AuthContextType = {
   user: AuthUser | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  signInWithGoogle: () => Promise<void>;
-  signInWithPhone: (user: User) => void; // Function for phone authentication
   signInWithEmail: (user: User) => void; // Function for email authentication
   signOut: () => Promise<void>;
   refreshUserData: () => Promise<void>;
@@ -28,8 +26,6 @@ export const AuthContext = createContext<AuthContextType>({
   user: null,
   isAuthenticated: false,
   isLoading: true,
-  signInWithGoogle: async () => {},
-  signInWithPhone: () => {},
   signInWithEmail: () => {},
   signOut: async () => {},
   refreshUserData: async () => {},
