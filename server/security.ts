@@ -22,6 +22,8 @@ import path from 'path';
 import fs from 'fs';
 import cors from 'express';
 import { z } from 'zod';
+import { securityMonitorMiddleware, enhancedApiProtection } from './security-monitor';
+import { endpointProtectionMiddleware, createEndpointRateLimiters } from './endpoint-protection';
 
 // Secure JWT signing key (in production, this should be in environment variables)
 const JWT_SECRET = process.env.JWT_SECRET || 'brandentifier-secure-jwt-secret-key-2025';
@@ -412,6 +414,26 @@ export function setupSecurity(app: any) {
     } else {
       next();
     }
+  });
+  
+  // 9. Real-time Security Monitoring
+  app.use(securityMonitorMiddleware);
+  
+  // 10. Enhanced API Endpoint Protection
+  app.use(enhancedApiProtection);
+  
+  // 11. More Specific API Endpoint Protection
+  app.use(endpointProtectionMiddleware);
+  
+  // 12. Set up specialized rate limiting for sensitive endpoints
+  createEndpointRateLimiters(app);
+  
+  // 13. CSP Reporting Endpoint (for collecting CSP violations)
+  app.post('/api/csp-report', (req: Request, res: Response) => {
+    if (req.body && req.body['csp-report']) {
+      console.warn('CSP Violation:', req.body['csp-report']);
+    }
+    res.status(204).end();
   });
   
   // Add security headers
