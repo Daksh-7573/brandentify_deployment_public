@@ -5,16 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useState, useEffect, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Zap, Settings, Menu, X, Home, Search, Bot, User, MapPin, FileText, Trophy, Award, Calendar, Flag, Bell, MessageSquare, Shield, LogOut } from "lucide-react";
+import { Zap, Settings, Menu, X, Home, Search, Bot, User, MapPin, FileText, Trophy, Award, Calendar, Flag, Bell, MessageSquare } from "lucide-react";
 import NotificationBell from "@/components/notifications/notification-bell";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 export default function Header() {
   const { user, isDemoMode, signOut, refreshUserData } = useAuth();
@@ -271,60 +263,40 @@ export default function Header() {
             {/* Notification Bell */}
             <NotificationBell className="hidden sm:flex" />
             
-            {/* User profile section with dropdown */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
+            {/* User profile section - combined name and avatar */}
+            <div 
+              className={`flex items-center gap-2 cursor-pointer px-3 py-1.5 rounded-lg border ${
+                isActive('/profile') 
+                  ? 'border-primary/30 bg-primary/5 shadow-sm' 
+                  : 'border-gray-100 hover:bg-gray-50 hover:border-gray-200'
+              } transition-all duration-200 group`}
+              onClick={() => setLocation('/profile')}
+            >
+              {/* User name */}
+              <span className="text-sm font-medium text-gray-800 hidden md:block">
+                {userData?.name || (user && 'displayName' in user ? user.displayName : null) || "Profile"}
+              </span>
+              
+              {/* User avatar */}
+              <div className="relative">
                 <div 
-                  className={`flex items-center gap-2 cursor-pointer px-3 py-1.5 rounded-lg border ${
-                    isActive('/profile') 
-                      ? 'border-primary/30 bg-primary/5 shadow-sm' 
-                      : 'border-gray-100 hover:bg-gray-50 hover:border-gray-200'
-                  } transition-all duration-200 group`}
+                  className="flex items-center rounded-full focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-primary/70 transition-all"
                 >
-                  {/* User name */}
-                  <span className="text-sm font-medium text-gray-800 hidden md:block">
-                    {userData?.name || (user && 'displayName' in user ? user.displayName : null) || "Profile"}
-                  </span>
-                  
-                  {/* User avatar */}
-                  <div className="relative">
-                    <div 
-                      className="flex items-center rounded-full focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-primary/70 transition-all"
-                    >
-                      <span className="sr-only">Open user menu</span>
-                      <div className="h-8 w-8 rounded-full overflow-hidden bg-primary/5 flex items-center justify-center border border-primary/10 shadow-sm group-hover:shadow-md transition-all">
-                        <img 
-                          className="h-full w-full object-cover" 
-                          src={photoURL || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"} 
-                          alt="User profile"
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.src = "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80";
-                          }}
-                        />
-                      </div>
-                    </div>
+                  <span className="sr-only">Open user menu</span>
+                  <div className="h-8 w-8 rounded-full overflow-hidden bg-primary/5 flex items-center justify-center border border-primary/10 shadow-sm group-hover:shadow-md transition-all">
+                    <img 
+                      className="h-full w-full object-cover" 
+                      src={photoURL || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"} 
+                      alt="User profile"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80";
+                      }}
+                    />
                   </div>
                 </div>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => setLocation('/profile')}>
-                  <User className="mr-2 h-4 w-4" />
-                  <span>Profile</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setLocation('/privacy-settings')}>
-                  <Shield className="mr-2 h-4 w-4" />
-                  <span>Privacy Settings</span>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => signOut()}>
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Sign out</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -468,23 +440,7 @@ export default function Header() {
                 <span>My Profile</span>
               </Button>
               
-              {/* Privacy Settings Button */}
-              <Button
-                variant="ghost"
-                size="sm"
-                className={`w-full justify-start py-2.5 text-sm font-medium rounded-md ${
-                  isActive('/privacy-settings') 
-                    ? 'text-primary bg-primary/5' 
-                    : 'text-gray-700 hover:bg-gray-50 hover:text-primary'
-                }`}
-                onClick={() => {
-                  setLocation('/privacy-settings');
-                  setIsMobileMenuOpen(false);
-                }}
-              >
-                <Shield className="h-4 w-4 mr-3 ml-0.5" />
-                <span>Privacy Settings</span>
-              </Button>
+              {/* Settings Button removed as requested */}
               
               <Button
                 variant="ghost"

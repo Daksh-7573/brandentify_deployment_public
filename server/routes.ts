@@ -18,7 +18,6 @@ import { handleMuskChat, handleResumeUpload, handlePitchDeckUpload } from "./rou
 import muskSuggestionRoutes from "./routes-musk-suggestions";
 import muskMatchRoutes from "./routes-musk-match";
 import { registerSmartConnectRoutes } from "./routes-smart-connect";
-import { setupPrivacyRoutes } from "./routes-privacy";
 import { setupShadowResumeRoutes } from "./routes-shadow-resume";
 import { setupNowboardRoutes } from "./routes-nowboard";
 import { setupCareerQuestsRoutes } from "./routes-career-quests";
@@ -98,9 +97,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Register Smart Connect routes directly
   registerSmartConnectRoutes(app, storage);
-  
-  // Register privacy routes
-  app.use('/api/privacy', setupPrivacyRoutes());
   
   // Initialize the email service
   await initEmailService();

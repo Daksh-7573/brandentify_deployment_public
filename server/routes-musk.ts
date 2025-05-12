@@ -6,11 +6,6 @@ import OpenAI from 'openai';
 import { analyzeResume } from './services/fixed-openai-service';
 import { storage } from './storage';
 import { generatePersonalizedResponse, MuskContext } from './services/musk-intelligence-system';
-import { 
-  secureMuskInteraction, 
-  secureAIResponse, 
-  MuskSecurityError 
-} from './services/musk-security-service';
 
 // Initialize global variable for resume context storage and user interaction memory
 declare global {
@@ -406,57 +401,27 @@ export const handleMuskChat = async (req: Request, res: Response) => {
       }
     }
     
-    // SECURITY: Apply security measures to the input and context
-    let sanitizedInput;
-    let sanitizedContext;
+    // Generate response using the appropriate AI model
+    const response = await generateMuskResponse(message, enrichedContext);
     
-    try {
-      // Apply all security measures to user input and context
-      const securityResult = await secureMuskInteraction(message, enrichedContext, userId);
-      sanitizedInput = securityResult.sanitizedInput;
-      sanitizedContext = securityResult.sanitizedContext;
-      
-      console.log('Security checks passed for Musk interaction');
-    } catch (error) {
-      if (error instanceof MuskSecurityError) {
-        // Return the security error message to the user
-        return res.status(403).json({
-          id: 'security-' + Date.now(),
-          message: error.message,
-          securityCode: error.securityCode,
-          timestamp: new Date()
-        });
-      }
-      // For other errors, log and continue with unsanitized input as fallback
-      console.error('Security check error:', error);
-      sanitizedInput = message;
-      sanitizedContext = enrichedContext;
-    }
-    
-    // Generate response using the appropriate AI model with sanitized inputs
-    const rawResponse = await generateMuskResponse(sanitizedInput, sanitizedContext);
-    
-    // SECURITY: Sanitize the AI response before sending to user
-    const secureResponse = secureAIResponse(rawResponse);
-    
-    // Update user interaction memory with this conversation (using sanitized values)
+    // Update user interaction memory with this conversation
     if (userId) {
       const userIdString = userId.toString();
       if (userIdString) {
-        updateUserInteractionMemory(userIdString, sanitizedInput, secureResponse, sanitizedContext);
+        updateUserInteractionMemory(userIdString, message, response, enrichedContext);
       }
     }
     
-    // Return the secured response
+    // Return the response
     return res.status(200).json({
       id: 'response-' + Date.now(),
-      message: secureResponse,
+      message: response,
       timestamp: new Date(),
       contextUsed: {
-        dataSource: sanitizedContext.dataSource || 'profile',
-        hasResumeData: !!sanitizedContext.resumeData,
-        detectedRole: sanitizedContext.resumeData?.detectedRole || null,
-        hasUserMemory: !!sanitizedContext.userMemory
+        dataSource: enrichedContext.dataSource || 'profile',
+        hasResumeData: !!enrichedContext.resumeData,
+        detectedRole: enrichedContext.resumeData?.detectedRole || null,
+        hasUserMemory: !!enrichedContext.userMemory
       }
     });
   } catch (error) {
@@ -676,47 +641,16 @@ export const handleResumeUpload = async (req: Request, res: Response) => {
       });
     }
     
-    // SECURITY: Validate file size (max 10MB)
-    const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB in bytes
-    if (resumeFile.size > MAX_FILE_SIZE) {
-      return res.status(400).json({
-        error: "File too large. Maximum file size is 10MB."
-      });
-    }
-    
-    // SECURITY: Sanitize file name to prevent directory traversal attacks
-    const sanitizedFileName = path.basename(resumeFile.name).replace(/[^a-zA-Z0-9_\-\.]/g, '_');
-    if (sanitizedFileName !== resumeFile.name) {
-      console.log(`Resume upload: Sanitized filename from "${resumeFile.name}" to "${sanitizedFileName}"`);
-      resumeFile.name = sanitizedFileName;
-    }
-    
-    // SECURITY: Create uploads directory if it doesn't exist using a secure path
-    // Use absolute path construction to prevent path traversal
-    const baseDir = process.cwd();
-    const uploadsDir = path.resolve(baseDir, 'public', 'uploads', 'resumes');
-    
-    // Verify the resolved path is within the expected directory structure
-    if (!uploadsDir.startsWith(path.resolve(baseDir, 'public', 'uploads'))) {
-      console.error(`SECURITY: Attempted path traversal - ${uploadsDir}`);
-      return res.status(400).json({ error: "Invalid file path" });
-    }
-    
-    // Create directory with secure permissions
+    // Create uploads directory if it doesn't exist
+    const uploadsDir = path.join(process.cwd(), 'public', 'uploads', 'resumes');
     if (!fs.existsSync(uploadsDir)) {
-      fs.mkdirSync(uploadsDir, { recursive: true, mode: 0o755 }); // Secure permissions
+      fs.mkdirSync(uploadsDir, { recursive: true });
     }
     
-    // Generate unique filename with original extension using cryptographically secure random values
-    const uniqueId = crypto.randomBytes(32).toString('hex'); // More entropy
+    // Generate unique filename with original extension
+    const uniqueId = crypto.randomBytes(16).toString('hex');
     const uniqueFilename = `${uniqueId}${fileExt}`;
-    const uploadPath = path.resolve(uploadsDir, uniqueFilename);
-    
-    // Final path verification
-    if (!uploadPath.startsWith(uploadsDir)) {
-      console.error(`SECURITY: Path traversal detected in file upload - ${uploadPath}`);
-      return res.status(400).json({ error: "Invalid file path" });
-    }
+    const uploadPath = path.join(uploadsDir, uniqueFilename);
     
     // Move the file to the uploads directory
     await new Promise<void>((resolve, reject) => {
@@ -782,28 +716,8 @@ export const handleResumeUpload = async (req: Request, res: Response) => {
       const industryMatch = analysisText.match(industryPattern);
       const detectedIndustry = industryMatch ? industryMatch[1] : null;
       
-      // SECURITY: Sanitize resume text to remove sensitive information before storing
-      let sanitizedResumeText = resumeText.substring(0, 5000); // Store a portion of the resume text for context
-      
-      // Use PII patterns from our security service to mask sensitive data
-      const PII_PATTERNS = [
-        // Email addresses
-        /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/,
-        // Phone numbers (various formats)
-        /\b(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}\b/,
-        // Address patterns
-        /\b\d{1,5}\s[A-Za-z\s]{1,20}\b(?:street|st|avenue|ave|road|rd|boulevard|blvd|drive|dr|court|ct|lane|ln|way|parkway|pkwy)/i,
-        // SSN/Government IDs (generic pattern)
-        /\b\d{3}[-]?\d{2}[-]?\d{4}\b/,
-      ];
-      
-      // Apply PII masking
-      for (const pattern of PII_PATTERNS) {
-        sanitizedResumeText = sanitizedResumeText.replace(pattern, '[REDACTED]');
-      }
-      
       resumeContext = {
-        resumeText: sanitizedResumeText,
+        resumeText: resumeText.substring(0, 5000), // Store a portion of the resume text for context
         detectedRole,
         skills,
         detectedIndustry,
@@ -901,47 +815,16 @@ export const handlePitchDeckUpload = async (req: Request, res: Response) => {
       });
     }
     
-    // SECURITY: Validate file size (max 20MB for pitch decks)
-    const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB in bytes
-    if (pitchDeckFile.size > MAX_FILE_SIZE) {
-      return res.status(400).json({
-        error: "File too large. Maximum file size is 20MB."
-      });
-    }
-    
-    // SECURITY: Sanitize file name to prevent directory traversal attacks
-    const sanitizedFileName = path.basename(pitchDeckFile.name).replace(/[^a-zA-Z0-9_\-\.]/g, '_');
-    if (sanitizedFileName !== pitchDeckFile.name) {
-      console.log(`Pitch deck upload: Sanitized filename from "${pitchDeckFile.name}" to "${sanitizedFileName}"`);
-      pitchDeckFile.name = sanitizedFileName;
-    }
-    
-    // SECURITY: Create uploads directory if it doesn't exist using a secure path
-    // Use absolute path construction to prevent path traversal
-    const baseDir = process.cwd();
-    const uploadsDir = path.resolve(baseDir, 'public', 'uploads', 'pitchdecks');
-    
-    // Verify the resolved path is within the expected directory structure
-    if (!uploadsDir.startsWith(path.resolve(baseDir, 'public', 'uploads'))) {
-      console.error(`SECURITY: Attempted path traversal in pitch deck upload - ${uploadsDir}`);
-      return res.status(400).json({ error: "Invalid file path" });
-    }
-    
-    // Create directory with secure permissions
+    // Create uploads directory if it doesn't exist
+    const uploadsDir = path.join(process.cwd(), 'public', 'uploads', 'pitchdecks');
     if (!fs.existsSync(uploadsDir)) {
-      fs.mkdirSync(uploadsDir, { recursive: true, mode: 0o755 }); // Secure permissions
+      fs.mkdirSync(uploadsDir, { recursive: true });
     }
     
-    // Generate unique filename with original extension using cryptographically secure random values
-    const uniqueId = crypto.randomBytes(32).toString('hex'); // More entropy
+    // Generate unique filename with original extension
+    const uniqueId = crypto.randomBytes(16).toString('hex');
     const uniqueFilename = `${uniqueId}${fileExt}`;
-    const uploadPath = path.resolve(uploadsDir, uniqueFilename);
-    
-    // Final path verification
-    if (!uploadPath.startsWith(uploadsDir)) {
-      console.error(`SECURITY: Path traversal detected in pitch deck upload - ${uploadPath}`);
-      return res.status(400).json({ error: "Invalid file path" });
-    }
+    const uploadPath = path.join(uploadsDir, uniqueFilename);
     
     // Move the file to the uploads directory
     await new Promise<void>((resolve, reject) => {
@@ -1030,45 +913,6 @@ async function analyzePitchDeck(pitchDeckText: string): Promise<string> {
     if (!process.env.OPENAI_API_KEY) {
       console.log("Using fallback responses as OpenAI API key is not set");
       return generatePitchDeckFallbackResponse();
-    }
-    
-    // SECURITY: Sanitize pitch deck text to remove sensitive information
-    // Use PII patterns from our security service to mask sensitive data
-    const PII_PATTERNS = [
-      // Email addresses
-      /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/,
-      // Phone numbers (various formats)
-      /\b(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}\b/,
-      // Address patterns
-      /\b\d{1,5}\s[A-Za-z\s]{1,20}\b(?:street|st|avenue|ave|road|rd|boulevard|blvd|drive|dr|court|ct|lane|ln|way|parkway|pkwy)/i,
-      // SSN/Government IDs (generic pattern)
-      /\b\d{3}[-]?\d{2}[-]?\d{4}\b/,
-      // API Keys and tokens (generic pattern)
-      /\b[A-Za-z0-9_\-]{20,64}\b/
-    ];
-    
-    // Apply PII masking
-    let sanitizedText = pitchDeckText;
-    for (const pattern of PII_PATTERNS) {
-      sanitizedText = sanitizedText.replace(pattern, '[REDACTED]');
-    }
-    
-    console.log("SECURITY: Sanitized pitch deck text for analysis");
-    
-    // SECURITY: Apply content moderation to check for inappropriate content
-    try {
-      // Import the moderation function from our security service
-      const { moderateContent, MuskSecurityError } = await import('./services/musk-security-service');
-      
-      await moderateContent(sanitizedText);
-      console.log("SECURITY: Content moderation passed for pitch deck");
-    } catch (error: any) {
-      if (error && error.name === 'MuskSecurityError') {
-        console.error("SECURITY: Content moderation failed for pitch deck:", error.message);
-        return `I'm unable to analyze this pitch deck as it contains content that may violate our content policy. Please ensure your pitch deck adheres to our community guidelines and try again.`;
-      }
-      // For other errors, log and continue with the analysis
-      console.error("SECURITY: Content moderation error:", error instanceof Error ? error.message : String(error));
     }
     
     const openai = new OpenAI({
