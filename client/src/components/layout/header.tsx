@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export default function Header() {
-  const { user, isDemoMode, signOut, refreshUserData } = useAuth();
+  const { user, signOut, refreshUserData } = useAuth();
   const [path, setLocation] = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [hasUnreadMessages, setHasUnreadMessages] = useState(false);
@@ -26,7 +26,7 @@ export default function Header() {
   const isActive = (routePath: string) => path === routePath;
   
   // Get the user ID for queries
-  const userId = isDemoMode ? 1 : user?.uid;
+  const userId = user?.uid;
   
   // Use TanStack Query to fetch and cache user data
   const { data: userData, isError } = useQuery({
@@ -124,11 +124,7 @@ export default function Header() {
                     Brandentifier
                   </span>
                 </div>
-                {isDemoMode && (
-                  <Badge variant="outline" className="ml-2 text-orange-500 border-orange-500">
-                    Demo Mode
-                  </Badge>
-                )}
+
               </div>
             </div>
             
