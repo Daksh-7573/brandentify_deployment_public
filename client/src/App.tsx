@@ -6,6 +6,7 @@ import { AuthProvider } from "./context/auth-context";
 import { useAuth } from "./hooks/use-auth";
 import { useEffect } from "react";
 import GlobalMuskButton from "@/components/musk/global-musk-button";
+import { DomainHelper } from "./lib/domain-helper";
 
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
