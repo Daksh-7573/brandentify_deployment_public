@@ -159,3 +159,87 @@ async function updateUserXp(userId: number, xpAmount: number, source: string): P
     throw error;
   }
 }
+
+/**
+ * Complete a quest for a user
+ * This function marks a quest as completed and awards XP and badges
+ */
+export async function completeQuest(questId: number, userId: number): Promise<any | null> {
+  try {
+    console.log(`[completeQuest] Completing quest ${questId} for user ${userId}`);
+    
+    // Get the quest and definition in a single query to reduce database calls
+    const combinedResult = await pool.query(`
+      SELECT 
+        uq.*,
+        qd.title as quest_title,
+        qd.target_count,
+        qd.xp_reward,
+        qd.badge_reward,
+        qd.musk_tip
+      FROM user_quests uq
+      JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
+      WHERE uq.id = $1 AND uq.user_id = $2 AND uq.status = 'active'
+    `, [questId, userId]);
+    
+    if (combinedResult.rows.length === 0) {
+      console.log(`[completeQuest] Quest ${questId} not found or not active for user ${userId}`);
+      return null;
+    }
+    
+    const questData = combinedResult.rows[0];
+    const xpEarned = questData.xp_reward || 0;
+    const badgeEarned = questData.badge_reward;
+    const completedAt = new Date();
+    
+    // Update the quest status to completed
+    try {
+      const updateResult = await pool.query(`
+        UPDATE user_quests
+        SET status = 'completed', 
+            completed_at = $1,
+            xp_earned = $2,
+            badge_earned = $3
+        WHERE id = $4 AND user_id = $5
+        RETURNING 
+          id,
+          user_id as "userId",
+          quest_definition_id as "questDefinitionId",
+          status,
+          progress,
+          assigned_at as "assignedAt",
+          completed_at as "completedAt",
+          xp_earned as "xpEarned",
+          badge_earned as "badgeEarned",
+          musk_response as "muskResponse",
+          week_number as "weekNumber",
+          year
+      `, ['completed', xpEarned, badgeEarned, questId, userId]);
+      
+      if (updateResult.rows.length === 0) {
+        console.log(`[completeQuest] Failed to update quest ${questId} for user ${userId}`);
+        return null;
+      }
+      
+      // If quest has XP reward, update user XP balance
+      if (xpEarned > 0) {
+        try {
+          await updateUserXp(userId, xpEarned, questData.quest_title || 'Quest completion');
+          console.log(`[completeQuest] Awarded ${xpEarned} XP to user ${userId}`);
+        } catch (xpError) {
+          console.error('[completeQuest] Error awarding XP:', xpError);
+          // Continue with quest completion even if XP update fails
+        }
+      }
+      
+      console.log(`[completeQuest] Successfully completed quest ${questId} for user ${userId}`);
+      return updateResult.rows[0];
+    } catch (updateError) {
+      console.error('[completeQuest] Error updating quest status:', updateError);
+      return null;
+    }
+  } catch (error) {
+    console.error('[completeQuest] Error in completion process:', error);
+    return null;
+  }
+}

@@ -13,6 +13,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { pool } from '../db';
 import { updateQuestProgress } from '../services/quest-progress-service';
+import { completeQuest } from '../services/quest-progress-service';
 
 // Extend Request type to include user property
 declare global {
@@ -183,7 +184,14 @@ async function processQuestProgress(userId: number, tracker: QuestTracker, req: 
       console.log(`[Quest Tracker] Updating quest ${quest.id}: ${quest.progress} → ${newProgress} (target: ${quest.targetCount})`);
       
       try {
-        await updateQuestProgress(quest.id, userId, newProgress);
+        // Update the progress
+        const updatedQuest = await updateQuestProgress(quest.id, userId, newProgress);
+        
+        // If progress reached or exceeded the target count, mark as completed
+        if (updatedQuest && newProgress >= quest.targetCount) {
+          console.log(`[Quest Tracker] Quest ${quest.id} has reached its target count. Automatically completing.`);
+          await completeQuest(quest.id, userId);
+        }
       } catch (error) {
         console.error(`[Quest Tracker] Failed to update quest ${quest.id}:`, error);
       }

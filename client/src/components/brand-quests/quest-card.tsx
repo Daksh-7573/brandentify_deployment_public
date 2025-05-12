@@ -8,24 +8,6 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { useToast } from '@/hooks/use-toast';
 import { UserQuest, QuestDefinition, QuestType, QuestStatus, getQuestTypeIcon, getQuestStatusLabel, getBadgeLabel } from '@/types/career-quest';
 import { useCompleteQuest, useUpdateQuestProgress } from '@/hooks/use-career-quests';
-import { HashtagSuggestions } from '../career-quests/hashtag-suggestions'; // Update path when we move this component
-import { StaticHashtagSuggestions } from '../career-quests/static-hashtag-suggestions'; // Update path when we move this component
-
-/**
- * Get default hashtags based on quest type
- */
-function getDefaultHashtagsByType(questType: string): string[] {
-  switch (questType) {
-    case 'pulse_creation':
-      return ['CareerGrowth', 'ProfessionalDevelopment', 'Innovation', 'LeadershipSkills', 'WorkCulture'];
-    case 'networking':
-      return ['Networking', 'CareerConnections', 'ProfessionalNetwork', 'IndustryInsights', 'MentorshipMatters'];
-    case 'visibility':
-      return ['PersonalBranding', 'ThoughtLeadership', 'IndustryTrends', 'CareerMilestones', 'ProfessionalJourney'];
-    default:
-      return ['BrandIdentity', 'SkillsBuild', 'CareerAdvice', 'WorkLifeBalance', 'FutureOfWork'];
-  }
-}
 
 interface QuestCardProps {
   quest: UserQuest;
@@ -173,19 +155,7 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
               </div>
               <p className="text-sm text-muted-foreground">{muskTipContent}</p>
               
-              {/* Display static hashtag suggestions for active quests related to content creation */}
-              {isActive && ['pulse_creation', 'networking', 'visibility'].includes(questDefinition.type) && (
-                <StaticHashtagSuggestions 
-                  hashtags={getDefaultHashtagsByType(questDefinition.type)} 
-                  onHashtagClick={(hashtag) => {
-                    navigator.clipboard.writeText(hashtag);
-                    toast({
-                      title: "Hashtag copied!",
-                      description: `${hashtag} has been copied to clipboard`
-                    });
-                  }}
-                />
-              )}
+              {/* Musk's tips already include hashtag suggestions - no need for separate component */}
             </div>
           )}
         </div>
