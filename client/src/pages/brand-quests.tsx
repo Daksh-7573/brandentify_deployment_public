@@ -9,7 +9,6 @@ import { BrandQuestDemo } from '@/components/brand-quests/BrandQuestDemo';
 import { useToast } from '@/hooks/use-toast';
 import { 
   useUserXp,
-  useXpTransactions,
   useUserWeeklyQuests,
   getCurrentWeekNumber,
   getCurrentYear
@@ -66,7 +65,6 @@ export default function BrandQuestsPage() {
   const userId = 1;
   
   const { data: userXp, isLoading: isLoadingXp } = useUserXp(userId as number);
-  const { data: xpTransactions, isLoading: isLoadingTransactions } = useXpTransactions(userId as number);
   
   if (!userId) {
     return (
@@ -125,46 +123,7 @@ export default function BrandQuestsPage() {
             
             {/* Removed standalone Hashtag Suggestions and Nowboard Suggestions as they're now integrated into quests */}
             
-            {/* XP Transactions */}
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle>XP Activity</CardTitle>
-                <CardDescription>Your recent XP earnings</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {isLoadingTransactions ? (
-                  <div className="space-y-3">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <Skeleton key={i} className="w-full h-[25px]" />
-                    ))}
-                  </div>
-                ) : !xpTransactions || xpTransactions.length === 0 ? (
-                  <div className="text-center py-4 text-muted-foreground">
-                    No XP activity yet. Complete quests to earn XP!
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {xpTransactions.slice(0, 10).map(transaction => (
-                      <div 
-                        key={transaction.id} 
-                        className="flex justify-between items-center py-2 border-b last:border-0"
-                      >
-                        <div>
-                          <div className="font-medium text-sm">{transaction.reason}</div>
-                          <div className="text-xs text-muted-foreground">
-                            {new Date(transaction.createdAt).toLocaleDateString()} at {' '}
-                            {new Date(transaction.createdAt).toLocaleTimeString()}
-                          </div>
-                        </div>
-                        <div className="text-yellow-500 dark:text-yellow-400 font-bold">
-                          +{transaction.amount} XP
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+            {/* XP Transactions section removed */}
           </div>
         </div>
       </div>
