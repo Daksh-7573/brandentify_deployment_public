@@ -70,19 +70,7 @@ async function addNowboardQuestDefinitions() {
         `INSERT INTO quest_definitions 
           (title, description, type, target_count, target_action, xp_reward, badge_reward, musk_tip, is_active, created_at, updated_at)
          VALUES
-          ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), NOW())
-         ON CONFLICT (title) DO UPDATE
-         SET 
-          description = $2,
-          type = $3,
-          target_count = $4,
-          target_action = $5,
-          xp_reward = $6,
-          badge_reward = $7,
-          musk_tip = $8,
-          is_active = $9,
-          updated_at = NOW()
-         RETURNING id`,
+          ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), NOW())`,
         [
           quest.title,
           quest.description,
