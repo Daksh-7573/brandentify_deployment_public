@@ -1,9 +1,19 @@
-import { Loader2 } from "lucide-react";
+import { Loader2, UserCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
+import { signInWithTestCredentials, isDevelopment } from "@/lib/firebase";
 
 export function GoogleAuth() {
   const { signInWithGoogle, isLoading } = useAuth();
+
+  // Direct test login function
+  const handleTestLogin = async () => {
+    try {
+      await signInWithTestCredentials();
+    } catch (error) {
+      console.error("Test login failed:", error);
+    }
+  };
 
   return (
     <div className="space-y-4">
@@ -41,6 +51,19 @@ export function GoogleAuth() {
         )}
         Continue with Google
       </Button>
+
+      {/* Only show test login in development environment */}
+      {isDevelopment && (
+        <Button
+          variant="secondary"
+          onClick={handleTestLogin}
+          disabled={isLoading}
+          className="w-full mt-2"
+        >
+          <UserCheck className="mr-2 h-4 w-4" />
+          Test Login (Dev Only)
+        </Button>
+      )}
     </div>
   );
 }
