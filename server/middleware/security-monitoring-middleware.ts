@@ -182,8 +182,8 @@ export function attackDetectionMiddleware(req: Request, res: Response, next: Nex
       headers: req.headers,
     };
     
-    // Get user if available
     // Get user ID if available
+    const userId = req.user?.id ? req.user.id.toString() : null;
     
     // Convert request data to string for pattern matching
     const dataString = JSON.stringify(requestData).toLowerCase();

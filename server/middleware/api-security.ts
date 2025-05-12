@@ -146,14 +146,14 @@ export const secureCors = (req: Request, res: Response, next: NextFunction) => {
  * Security headers middleware to add recommended security headers to all responses
  */
 export const securityHeaders = (req: Request, res: Response, next: NextFunction) => {
-  // Content Security Policy
+  // Content Security Policy - relaxed for development
   res.header('Content-Security-Policy', `
-    default-src 'self';
-    script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://unpkg.com;
-    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net;
-    img-src 'self' data: https: blob:;
-    font-src 'self' https://fonts.gstatic.com;
-    connect-src 'self' https://api.openai.com https://api.anthropic.com https://firestore.googleapis.com;
+    default-src * 'self' 'unsafe-inline' 'unsafe-eval' data: blob:;
+    script-src * 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://unpkg.com;
+    style-src * 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net;
+    img-src * 'self' data: https: blob:;
+    font-src * 'self' https://fonts.gstatic.com;
+    connect-src * 'self' https://api.openai.com https://api.anthropic.com https://firestore.googleapis.com ws: wss:;
     frame-src 'self';
     object-src 'none';
     base-uri 'self';

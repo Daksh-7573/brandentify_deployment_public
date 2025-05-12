@@ -643,6 +643,42 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsLoading(false);
     }
   };
+
+  // Function to enter demo mode with a randomized demo user
+  const enterDemoMode = () => {
+    setIsLoading(true);
+    
+    // Create a demo user with randomly generated ID
+    const demoUserId = Math.floor(1000 + Math.random() * 9000);
+    
+    const demoUser: AuthUser = {
+      uid: `demo-${demoUserId}`,
+      id: demoUserId,
+      username: `demo_user_${demoUserId}`,
+      email: `demo${demoUserId}@example.com`,
+      name: 'Demo User',
+      photoURL: 'https://ui-avatars.com/api/?name=Demo+User&background=random',
+      title: 'Career Explorer',
+      location: 'Demo City, DD',
+    };
+    
+    // Set the demo mode flag
+    setIsDemoMode(true);
+    
+    // Set the user data
+    setUser(demoUser);
+    
+    // Add a demo flag to localStorage
+    localStorage.setItem('demoMode', 'true');
+    
+    setIsLoading(false);
+    
+    // Toast notification
+    toast({
+      title: "Demo Mode Activated",
+      description: "You're now browsing in demo mode. All changes will be temporary."
+    });
+  };
   
   return (
     <AuthContext.Provider
@@ -655,7 +691,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         signInWithPhone,
         signInWithEmail,
         signOut,
-        refreshUserData
+        refreshUserData,
+        enterDemoMode
       }}
     >
       {children}
