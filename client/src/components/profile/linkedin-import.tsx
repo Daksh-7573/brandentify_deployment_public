@@ -32,8 +32,8 @@ export default function LinkedInImport() {
     setIsParsing(true);
     
     try {
-      // In demo mode, use user ID 1, otherwise try to parse the user's UID as a number
-      const userId = isDemoMode ? 1 : (user?.uid ? parseInt(user.uid) : 1);
+      // In demo mode, use user ID 1, otherwise use the user's ID
+      const userId = isDemoMode ? 1 : (user?.id || 1);
       
       const response = await apiRequest('POST', '/api/parse-linkedin', {
         userId,
@@ -99,8 +99,8 @@ export default function LinkedInImport() {
     setIsConfirming(true);
     
     try {
-      // In demo mode, use user ID 1, otherwise try to parse the user's UID as a number
-      const userId = isDemoMode ? 1 : (user?.uid ? parseInt(user.uid) : 1);
+      // In demo mode, use user ID 1, otherwise use the user's ID
+      const userId = isDemoMode ? 1 : (user?.id || 1);
       
       // Process the extracted data - add work experiences
       if (parsedData.experiences && parsedData.experiences.length > 0) {
