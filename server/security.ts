@@ -21,6 +21,7 @@ import { Request, Response, NextFunction } from 'express';
 import path from 'path';
 import fs from 'fs';
 import cors from 'express';
+import { z } from 'zod';
 
 // Secure JWT signing key (in production, this should be in environment variables)
 const JWT_SECRET = process.env.JWT_SECRET || 'brandentifier-secure-jwt-secret-key-2025';
@@ -46,6 +47,92 @@ export enum UserRole {
   USER = 'user',
   ADMIN = 'admin',
   MODERATOR = 'moderator'
+}
+
+// Extend Express Request type to include validation errors
+declare global {
+  namespace Express {
+    interface Request {
+      validationErrors?: any;
+    }
+  }
+}
+
+/**
+ * Create input validation middleware using Zod schema
+ * @param schema Schema to validate against
+ * @param requestProp Request property to validate ('body', 'query', 'params')
+ * @returns Express middleware function
+ */
+export function validateInput(schema: z.ZodType<any>, requestProp: 'body' | 'query' | 'params' = 'body') {
+  return (req: Request, res: Response, next: NextFunction) => {
+    try {
+      // In non-breaking mode, we validate but allow requests to proceed with warnings
+      const result = schema.safeParse(req[requestProp]);
+      
+      if (!result.success) {
+        // Log validation errors but don't block the request in compatibility mode
+        console.warn(`Validation error for ${req.method} ${req.path}:`, 
+          JSON.stringify(result.error.errors));
+        
+        // Add validation results to request for optional handling in routes
+        req.validationErrors = result.error.errors;
+        
+        // For now, we continue processing the request even with validation errors
+        // In the future, this can be changed to reject invalid requests
+        next();
+      } else {
+        // If validation succeeds, replace the request property with the validated data
+        req[requestProp] = result.data;
+        next();
+      }
+    } catch (error) {
+      console.error('Validation middleware error:', error);
+      next(); // Continue in compatibility mode
+    }
+  };
+}
+
+/**
+ * Input Validation Schemas
+ * These schemas define valid input shapes for different parts of the application
+ */
+export const ValidationSchemas = {
+  // User-related schemas
+  userId: z.string().min(1).max(100),
+  username: z.string().min(3).max(50).regex(/^[a-zA-Z0-9_]+$/),
+  email: z.string().email(),
+  password: z.string().min(8).max(100),
+  name: z.string().min(1).max(100).optional(),
+  phoneNumber: z.string().regex(/^\+?[0-9]{10,15}$/).optional(),
+  
+  // Content-related schemas
+  title: z.string().min(1).max(200),
+  description: z.string().max(5000).optional(),
+  industry: z.string().min(1).max(100).optional(),
+  location: z.string().min(1).max(100).optional(),
+  
+  // Generic pagination and filtering
+  pagination: z.object({
+    page: z.number().int().min(1).default(1),
+    limit: z.number().int().min(1).max(100).default(20)
+  }),
+  
+  // Search and filtering
+  searchQuery: z.string().max(200),
+  
+  // Date ranges
+  dateRange: z.object({
+    startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+    endDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional()
+  }).optional(),
+  
+  // File uploads
+  fileUpload: z.object({
+    mimetype: z.string(),
+    size: z.number().max(10 * 1024 * 1024), // 10MB max
+    originalname: z.string().max(200)
+  })
 }
 
 /**
@@ -233,10 +320,27 @@ export function csrfProtection(req: Request, res: Response, next: NextFunction) 
  * @param app Express application
  */
 export function setupSecurity(app: any) {
-  // 1. Enable helmet for secure headers (with flexible CSP to avoid breaking existing functionality)
+  // 1. Enable helmet for secure headers with a permissive but useful Content Security Policy
   app.use(
     helmet({
-      contentSecurityPolicy: false, // Disable CSP initially to prevent breaking existing functionality
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: ["'self'"],
+          scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://apis.google.com", "https://www.googletagmanager.com", "https://www.google-analytics.com"],
+          styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+          imgSrc: ["'self'", "data:", "https:", "blob:"],
+          fontSrc: ["'self'", "https://fonts.gstatic.com", "data:"],
+          connectSrc: ["'self'", "https://api.x.ai", "https://api.openai.com", "https://firestore.googleapis.com", "https://identitytoolkit.googleapis.com", "https://securetoken.googleapis.com", "wss:", "https:"],
+          frameSrc: ["'self'", "https://accounts.google.com"],
+          objectSrc: ["'none'"],
+          mediaSrc: ["'self'", "https:", "blob:"],
+          workerSrc: ["'self'", "blob:"],
+          reportTo: '/api/csp-report',
+          reportUri: '/api/csp-report',
+          upgradeInsecureRequests: [],
+        },
+        reportOnly: true // Only report violations without blocking anything for now
+      },
       crossOriginEmbedderPolicy: false, // Disable COEP to prevent breaking existing functionality
     })
   );
@@ -285,6 +389,30 @@ export function setupSecurity(app: any) {
   
   // 7. Add authentication middleware (in non-breaking mode)
   app.use(authenticate);
+
+  // 8. Apply input sanitization middleware to sensitive routes
+  // This is configured in non-breaking mode, so it will only log warnings without blocking requests
+  const sensitiveRoutes = [
+    { path: '/api/users', schema: z.object({ name: ValidationSchemas.name, email: ValidationSchemas.email.optional() }), method: 'POST' },
+    { path: '/api/auth/login', schema: z.object({ email: ValidationSchemas.email, password: ValidationSchemas.password }), method: 'POST' },
+    { path: '/api/auth/register', schema: z.object({ email: ValidationSchemas.email, password: ValidationSchemas.password, username: ValidationSchemas.username }), method: 'POST' },
+  ];
+
+  // Add route-specific validation in non-breaking mode
+  app.use((req: Request, res: Response, next: NextFunction) => {
+    // Check if the current route matches any sensitive routes requiring validation
+    const matchedRoute = sensitiveRoutes.find(route => 
+      req.path.startsWith(route.path) && 
+      (route.method === req.method || !route.method)
+    );
+
+    if (matchedRoute) {
+      // Apply validation in monitoring mode (non-breaking)
+      validateInput(matchedRoute.schema)(req, res, next);
+    } else {
+      next();
+    }
+  });
   
   // Add security headers
   app.use((req: Request, res: Response, next: NextFunction) => {
