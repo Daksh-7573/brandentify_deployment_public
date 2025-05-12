@@ -1,6 +1,6 @@
 // Import from firebase directly
 import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider, browserSessionPersistence, setPersistence } from "firebase/auth";
+import { getAuth, GoogleAuthProvider, browserLocalPersistence, setPersistence } from "firebase/auth";
 
 // Log Firebase configuration values for debugging (without exposing API keys)
 console.log("Firebase config check:", {
@@ -18,11 +18,10 @@ const isReplit = window.location.hostname.includes('.replit.app') ||
 // Get the current domain for AUTH configuration
 const currentDomain = window.location.hostname;
 
-// Configure Firebase with proper settings - optimized for Replit environment
+// Configure Firebase with Replit optimization settings
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  // For Replit environment, the authDomain must match the Firebase project domain
-  // but we tell the browser to allow cookies from this domain even in an iframe
+  // Important: For Replit we explicitly set the authDomain to the Firebase project domain
   authDomain: `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.firebaseapp.com`,
   projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
   storageBucket: `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.appspot.com`,
@@ -32,14 +31,14 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-// Initialize Firebase Auth
+// Initialize Firebase Auth with specific settings
 export const auth = getAuth(app);
 
-// Set session persistence to avoid cookie issues
-// This makes authentication state persist only for the current session
-setPersistence(auth, browserSessionPersistence)
+// Configure auth to use local persistence 
+// This avoids the need for third-party cookies in many cases
+setPersistence(auth, browserLocalPersistence)
   .then(() => {
-    console.log("Firebase auth persistence set to browserSessionPersistence");
+    console.log("Firebase auth persistence set to browserLocalPersistence for better Replit compatibility");
   })
   .catch((error) => {
     console.error("Error setting auth persistence:", error);
@@ -52,26 +51,23 @@ export const googleProvider = new GoogleAuthProvider();
 googleProvider.addScope('email');
 googleProvider.addScope('profile');
 
-// Set custom parameters to improve sign-in UX
+// Set custom parameters to optimize for Replit environment
 googleProvider.setCustomParameters({
-  // Force account selection to prevent automatic sign-in with cached credentials
-  prompt: 'select_account', 
-  // Allow sign-in across domains/iframes
-  // This is critical for Replit environment which runs in an iframe
-  auth_type: 'rerequest',
-  // Allow redirect to the current domain
+  // These parameters help bypass some third-party cookie restrictions
+  prompt: 'consent',  // Always ask for consent to improve compatibility
+  access_type: 'offline', // Request a refresh token for offline access
+  include_granted_scopes: 'true', // Include previously granted scopes
+  // Use this Replit domain as the login hint to help with redirection
   login_hint: window.location.hostname
 });
 
-// For Replit environment, add the current domain to the list of authorized domains
-// The domain must be added to Firebase Console > Authentication > Sign-in method > 
-// Authorized domains as well
+// For debugging - log current domain
 console.log(`Current auth domain is: ${currentDomain}`);
 
-// Log detailed configuration for debugging
+// Log detailed configuration
 console.log("Firebase config:", {
   projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  authDomain: firebaseConfig.authDomain, // Use the actual authDomain from config
+  authDomain: firebaseConfig.authDomain,
   hasApiKey: !!import.meta.env.VITE_FIREBASE_API_KEY,
   hasAppId: !!import.meta.env.VITE_FIREBASE_APP_ID
 });

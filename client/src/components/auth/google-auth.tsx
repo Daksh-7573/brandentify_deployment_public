@@ -110,7 +110,13 @@ export function GoogleAuth() {
       console.error("Error in Google Auth component:", error);
       
       // Set appropriate error message based on the error type
-      if (error.code === 'auth/internal-error') {
+      if (error.code === 'auth/custom-window-opened') {
+        // This is our custom code for when we've opened a new window
+        setAuthError(
+          "We've opened a new authentication window. Please sign in there and then return to this page."
+        );
+        // Do not automatically switch to email since we expect the user to complete auth in the new window
+      } else if (error.code === 'auth/internal-error') {
         // This is commonly caused by third-party cookie issues
         setAuthError(
           "Google sign-in is currently not working in this browser environment. " +
@@ -139,6 +145,13 @@ export function GoogleAuth() {
         );
       } else if (error.code === 'auth/cancelled-popup-request') {
         setAuthError("Sign-in was cancelled. Please try again.");
+      } else if (error.code === 'auth/replit-environment') {
+        setAuthError(
+          "Google authentication is challenging in the Replit environment. " +
+          "Please use email sign-in instead for a better experience."
+        );
+        // Automatically switch to email auth
+        setMode("email");
       } else if (error.code && error.message) {
         setAuthError(`${error.code}: ${error.message}`);
       } else {

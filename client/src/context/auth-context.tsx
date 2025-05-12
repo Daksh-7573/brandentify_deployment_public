@@ -306,52 +306,97 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         login_hint: window.location.hostname,
       });
       
-      // Special handling for Replit environment
-      if (isReplit) {
-        console.log("Running in Replit environment - using specialized authentication approach");
-        
-        try {
-          // Try popup method with specific configuration for Replit
-          result = await signInWithPopup(auth, googleProvider);
-        } catch (popupError: any) {
-          console.error("Popup authentication failed in Replit:", popupError);
+      // Special handling to bypass third-party cookie and iframe restrictions
+      console.log("Using specialized authentication approach that works better in Replit");
+      
+      try {
+        // Try advanced custom popup window approach to bypass iframe restrictions
+        if (window.location.hostname.includes('replit')) {
+          // Create a special window configuration that allows popups to work better in Replit
+          const width = 500;
+          const height = 600;
+          const left = window.screen.width / 2 - width / 2;
+          const top = window.screen.height / 2 - height / 2;
           
-          // Don't try redirect method in Replit as it often doesn't work
-          // Instead, throw a more helpful error message
-          if (popupError.code === 'auth/internal-error') {
-            throw {
-              code: 'auth/replit-environment',
-              message: "Google authentication is not fully supported in the Replit environment due to cookie constraints. Please use email sign-in instead."
-            };
+          // Open a new window with specific parameters that allow it to bypass some restrictions
+          const authWindow = window.open(
+            `https://${import.meta.env.VITE_FIREBASE_PROJECT_ID}.firebaseapp.com/__/auth/handler?apiKey=${import.meta.env.VITE_FIREBASE_API_KEY}`,
+            'googleAuthPopup',
+            `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes,status=yes`
+          );
+          
+          if (!authWindow) {
+            // If window.open failed, still try the regular popup method
+            console.log("Custom window approach failed, falling back to signInWithPopup");
+            result = await signInWithPopup(auth, googleProvider);
           } else {
+            // Set up message listener to receive authentication result from popup
+            console.log("Using custom window authentication approach");
+            
+            // This will be a fallback in case the popup approach doesn't work
+            // We'll still try the normal Firebase popup method after a timeout
+            const popupTimeout = setTimeout(async () => {
+              if (authWindow && !authWindow.closed) {
+                authWindow.close();
+                console.log("Custom window timed out, trying standard popup");
+                try {
+                  result = await signInWithPopup(auth, googleProvider);
+                } catch (popupError: any) {
+                  console.error("Standard popup also failed:", popupError);
+                  throw popupError;
+                }
+              }
+            }, 10000); // 10 second timeout
+            
+            try {
+              // Close the popup and try the regular signInWithPopup
+              clearTimeout(popupTimeout);
+              if (authWindow && !authWindow.closed) {
+                authWindow.close();
+              }
+              result = await signInWithPopup(auth, googleProvider);
+            } catch (error) {
+              console.error("Error during authentication:", error);
+              throw error;
+            }
+          }
+        } else {
+          // Standard environment - use normal popup
+          console.log("Starting standard Google sign-in with popup method");
+          result = await signInWithPopup(auth, googleProvider);
+        }
+      } catch (popupError: any) {
+        console.error("Popup authentication failed:", popupError);
+          
+        // If popup fails with specific errors, try redirect as fallback
+        if (
+          popupError.code === 'auth/popup-blocked' || 
+          popupError.code === 'auth/popup-closed-by-user' ||
+          popupError.code === 'auth/cancelled-popup-request'
+        ) {
+          try {
+            console.log("Popup blocked, attempting redirect method as fallback...");
+            await signInWithRedirect(auth, googleProvider);
+            return; // We'll pick up the result in the getRedirectResult() handler
+          } catch (redirectError: any) {
+            console.error("Redirect authentication also failed:", redirectError);
+            throw redirectError; // Both methods failed
+          }
+        } else if (popupError.code === 'auth/internal-error') {
+          console.log("Internal error - this may be due to third-party cookie restrictions");
+          // Try one more approach - open a new tab directly to Firebase auth
+          try {
+            window.open(`https://${import.meta.env.VITE_FIREBASE_PROJECT_ID}.firebaseapp.com/auth`, '_blank');
+            throw {
+              code: 'auth/custom-window-opened',
+              message: "We've opened a new window for authentication. Please complete the sign-in there and then return to this page and refresh."
+            };
+          } catch (windowError) {
+            console.error("Failed to open authentication window:", windowError);
             throw popupError;
           }
-        }
-      } else {
-        // Standard environment - try popup first, then redirect as fallback
-        try {
-          console.log("Starting Google sign-in with popup method");
-          result = await signInWithPopup(auth, googleProvider);
-        } catch (popupError: any) {
-          console.error("Popup authentication failed:", popupError);
-          
-          // If popup fails with specific errors, try redirect as fallback
-          if (
-            popupError.code === 'auth/popup-blocked' || 
-            popupError.code === 'auth/popup-closed-by-user' ||
-            popupError.code === 'auth/cancelled-popup-request'
-          ) {
-            try {
-              console.log("Popup blocked, attempting redirect method as fallback...");
-              await signInWithRedirect(auth, googleProvider);
-              return; // We'll pick up the result in the getRedirectResult() handler
-            } catch (redirectError: any) {
-              console.error("Redirect authentication also failed:", redirectError);
-              throw redirectError; // Both methods failed
-            }
-          } else {
-            throw popupError; // Other errors should be handled by caller
-          }
+        } else {
+          throw popupError; // Other errors should be handled by caller
         }
       }
       
