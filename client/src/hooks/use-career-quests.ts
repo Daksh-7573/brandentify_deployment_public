@@ -85,7 +85,7 @@ export const useUserWeeklyQuests = (userId: number, weekNumber: number, year: nu
     queryKey: [`/api/users/${userId}/quests/current-week`, weekNumber, year],
     queryFn: async () => {
       try {
-        // First try with current week
+        // First try with current week for this user
         const currentWeekRes = await fetch(`/api/users/${userId}/quests/current-week`);
         if (currentWeekRes.ok) {
           const contentType = currentWeekRes.headers.get('content-type');
@@ -94,28 +94,29 @@ export const useUserWeeklyQuests = (userId: number, weekNumber: number, year: nu
             // Only return ACTIVE quests for the weekly tab
             const activeQuests = quests.filter(quest => quest.status === 'active');
             if (activeQuests && activeQuests.length > 0) {
-              console.log(`Found ${activeQuests.length} active quests for current week`);
+              console.log(`Found ${activeQuests.length} active quests for current week for user ${userId}`);
               return activeQuests;
             }
           }
         }
         
-        // If no results, try with previous week (week 18) but only active quests
-        console.log('No active quests found for current week, trying week 18');
-        const prevWeekRes = await fetch(`/api/users/${userId}/quests-with-definitions`);
-        if (prevWeekRes.ok) {
-          const contentType = prevWeekRes.headers.get('content-type');
-          if (contentType && contentType.includes('application/json')) {
-            const allQuests = await prevWeekRes.json() as UserQuest[];
-            // Filter for week 18 ACTIVE quests
-            const week18ActiveQuests = allQuests.filter(q => 
-              q.weekNumber === 18 && 
-              q.year === 2025 && 
-              q.status === 'active'
-            );
-            if (week18ActiveQuests && week18ActiveQuests.length > 0) {
-              console.log(`Found ${week18ActiveQuests.length} active quests for week 18`);
-              return week18ActiveQuests;
+        // If we're not in demo mode (userId!=1) but using regular user ID and no quests found
+        if (userId !== 1) {
+          // Check if we're in demo mode by looking for localStorage
+          if (typeof window !== 'undefined' && window.localStorage.getItem('demo_user_id')) {
+            // Try with demo user ID 1 as fallback
+            console.log('No quests found for current user, trying demo user ID 1');
+            const demoRes = await fetch(`/api/users/1/quests/current-week`);
+            if (demoRes.ok) {
+              const contentType = demoRes.headers.get('content-type');
+              if (contentType && contentType.includes('application/json')) {
+                const demoQuests = await demoRes.json() as UserQuest[];
+                const activeQuests = demoQuests.filter(quest => quest.status === 'active');
+                if (activeQuests && activeQuests.length > 0) {
+                  console.log(`Found ${activeQuests.length} active quests for demo user`);
+                  return activeQuests;
+                }
+              }
             }
           }
         }

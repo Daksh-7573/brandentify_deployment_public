@@ -28,6 +28,23 @@ export default function BrandQuestsPage() {
   
   // Check for demo user ID in localStorage
   useEffect(() => {
+    // Get URL params
+    const urlParams = new URLSearchParams(window.location.search);
+    const demoParam = urlParams.get('demo');
+    
+    // If demo mode in URL, set localStorage and use demo user
+    if (demoParam === 'true') {
+      localStorage.setItem('demo_user_id', '1');
+      setEffectiveUserId(1);
+      toast({
+        title: "Demo Mode Active",
+        description: "Viewing quests for demo user ID: 1",
+        duration: 5000,
+      });
+      return;
+    }
+    
+    // If localStorage has demo user, use that
     const demoUserId = localStorage.getItem('demo_user_id');
     if (demoUserId) {
       const demoId = parseInt(demoUserId, 10);
@@ -42,7 +59,7 @@ export default function BrandQuestsPage() {
     }
   }, [user?.id, toast]);
   
-  const userId = effectiveUserId;
+  const userId = effectiveUserId || 1; // Default to 1 if undefined
   
   const { data: userXp, isLoading: isLoadingXp } = useUserXp(userId as number);
   const { data: xpTransactions, isLoading: isLoadingTransactions } = useXpTransactions(userId as number);
