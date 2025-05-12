@@ -4,9 +4,15 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { useCookieConsent } from '@/hooks/use-cookie-consent';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Separator } from '@/components/ui/separator';
+import { Toaster } from '@/components/ui/toaster';
 import { useToast } from '@/hooks/use-toast';
 
+/**
+ * Cookie Consent Test Page
+ * 
+ * This page demonstrates the cookie consent functionality for both
+ * authenticated and anonymous users, with toast notifications for user actions.
+ */
 const CookieConsentTest: React.FC = () => {
   const { toast } = useToast();
   const { 
@@ -30,10 +36,10 @@ const CookieConsentTest: React.FC = () => {
   useEffect(() => {
     const checkLocalStorage = () => {
       try {
-        const cookiePrefs = localStorage.getItem('cookie-preferences');
+        const cookiePrefs = localStorage.getItem('cookieConsent');
         const hasSetPrefs = localStorage.getItem('has-set-cookie-preferences');
         setLocalStorageContent(
-          `cookie-preferences: ${cookiePrefs || 'not set'}\n` +
+          `cookieConsent: ${cookiePrefs || 'not set'}\n` +
           `has-set-cookie-preferences: ${hasSetPrefs || 'not set'}`
         );
       } catch (e) {
@@ -67,6 +73,11 @@ const CookieConsentTest: React.FC = () => {
         authenticated: authText,
         anonymous: anonText
       });
+      
+      toast({
+        title: "API Endpoints Checked",
+        description: "Endpoint response data has been refreshed",
+      });
     } catch (error) {
       console.error('Error checking endpoints:', error);
       const errorMessage = error instanceof Error ? error.message : String(error);
@@ -74,70 +85,79 @@ const CookieConsentTest: React.FC = () => {
         authenticated: `Error: ${errorMessage}`,
         anonymous: `Error: ${errorMessage}`
       });
+      
+      toast({
+        title: "Error Checking Endpoints",
+        description: errorMessage,
+        variant: "destructive",
+      });
     }
   };
   
-  // Custom wrapped functions with toast notifications
-  const wrappedAcceptAll = async () => {
+  // Accept all cookies
+  const handleAcceptAll = async () => {
     try {
       await acceptAll();
       toast({
-        title: "Preferences updated",
-        description: "All cookie categories have been accepted.",
-        variant: "default",
+        title: "Preferences Updated",
+        description: "All cookie categories have been accepted."
       });
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
       toast({
-        title: "Error updating preferences",
-        description: error instanceof Error ? error.message : String(error),
-        variant: "destructive",
+        title: "Error",
+        description: errorMessage,
+        variant: "destructive"
       });
     }
   };
   
-  const wrappedRejectNonEssential = async () => {
+  // Reject non-essential cookies
+  const handleRejectNonEssential = async () => {
     try {
       await rejectNonEssential();
       toast({
-        title: "Preferences updated",
-        description: "Only essential cookies are accepted.",
-        variant: "default",
+        title: "Preferences Updated",
+        description: "Only essential cookies are accepted."
       });
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
       toast({
-        title: "Error updating preferences",
-        description: error instanceof Error ? error.message : String(error),
-        variant: "destructive",
+        title: "Error",
+        description: errorMessage,
+        variant: "destructive"
       });
     }
   };
   
-  const wrappedSavePreferences = async () => {
+  // Save preferences
+  const handleSavePreferences = async () => {
     try {
       await savePreferences();
       toast({
-        title: "Preferences saved",
-        description: "Your cookie preferences have been saved.",
-        variant: "default",
+        title: "Preferences Saved",
+        description: "Your cookie preferences have been saved."
       });
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
       toast({
-        title: "Error saving preferences",
-        description: error instanceof Error ? error.message : String(error),
-        variant: "destructive",
+        title: "Error",
+        description: errorMessage,
+        variant: "destructive"
       });
     }
   };
   
-  // Toggle a preference and update UI
-  const togglePreference = (category: string) => {
+  // Toggle a single preference
+  const handleTogglePreference = (category: string) => {
     if (category === 'essential') return; // Can't toggle essential
-    updatePreference(category as any, !preferences[category as keyof typeof preferences]);
+    
+    const newValue = !preferences[category as keyof typeof preferences];
+    updatePreference(category as any, newValue);
     
     toast({
-      title: "Preference updated",
-      description: `${category} cookies are now ${!preferences[category as keyof typeof preferences] ? 'accepted' : 'rejected'}.`,
-      variant: "default",
+      title: "Preference Updated",
+      description: `${category} cookies are now ${newValue ? 'accepted' : 'rejected'}.`
     });
   };
   
@@ -163,8 +183,8 @@ const CookieConsentTest: React.FC = () => {
               {Object.entries(preferences).map(([category, granted]) => (
                 <div 
                   key={category} 
-                  className="flex items-center justify-between p-2 rounded border"
-                  onClick={() => togglePreference(category)}
+                  className="flex items-center justify-between p-2 rounded border cursor-pointer"
+                  onClick={() => handleTogglePreference(category)}
                 >
                   <div>
                     <span className="font-medium">{category}</span>
@@ -207,13 +227,13 @@ const CookieConsentTest: React.FC = () => {
           </div>
         </CardContent>
         <CardFooter className="flex flex-wrap gap-2">
-          <Button onClick={wrappedAcceptAll} className="w-full sm:w-auto">
+          <Button onClick={handleAcceptAll} className="w-full sm:w-auto">
             Accept All
           </Button>
-          <Button onClick={wrappedRejectNonEssential} variant="outline" className="w-full sm:w-auto">
+          <Button onClick={handleRejectNonEssential} variant="outline" className="w-full sm:w-auto">
             Reject Non-Essential
           </Button>
-          <Button onClick={wrappedSavePreferences} variant="secondary" className="w-full sm:w-auto">
+          <Button onClick={handleSavePreferences} variant="secondary" className="w-full sm:w-auto">
             Save Preferences
           </Button>
           <Button onClick={checkApiEndpoints} variant="outline" className="w-full sm:w-auto">
