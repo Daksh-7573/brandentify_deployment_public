@@ -37,7 +37,7 @@ export default function Landing() {
               <Button 
                 variant="default" 
                 className="ml-4"
-                onClick={() => setLocation('/auth-page')}
+                onClick={() => setLocation('/auth')}
                 disabled={isLoading}
               >
                 {isLoading ? "Loading..." : "Sign in"}
