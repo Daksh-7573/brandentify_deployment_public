@@ -4,7 +4,8 @@
  * This script creates new quest definitions for interacting with Nowboard Opportunities
  */
 
-const { Pool } = require('pg');
+import pg from 'pg';
+const { Pool } = pg;
 
 // Database connection
 const pool = new Pool({
