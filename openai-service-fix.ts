@@ -7,6 +7,8 @@
 import OpenAI from "openai";
 // Import required types
 import type { WorkExperience, Education, Skill } from "./shared/schema";
+// Import AI security functions
+import { sanitizeResumeText, moderateAIResponse } from "./server/ai-security";
 
 // Create the OpenAI instance
 const openai = new OpenAI({
