@@ -6017,7 +6017,7 @@ ${extractedText.substring(0, 5000)}
             const recipientId = parseInt(data.recipientId);
             
             // If recipient is connected, send them the message
-            if (clients.has(recipientId) && clients.get(recipientId).readyState === WebSocket.OPEN) {
+            if (clients.has(recipientId) && clients.get(recipientId)?.readyState === WebSocket.OPEN) {
               clients.get(recipientId).send(JSON.stringify({
                 type: 'new_message',
                 senderId: data.senderId,
