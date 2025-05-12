@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Replit App Test Page</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    .card {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #333;
+    }
+    .success {
+      color: green;
+      font-weight: bold;
+    }
+    .error {
+      color: red;
+      font-weight: bold;
+    }
+    button {
+      background-color: #4CAF50;
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    pre {
+      background-color: #f5f5f5;
+      padding: 10px;
+      border-radius: 4px;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>Replit App Test Page</h1>
+  
+  <div class="card">
+    <h2>Basic Page Rendering Test</h2>
+    <p class="success">✓ Success: This test page is rendering correctly!</p>
+  </div>
+
+  <div class="card">
+    <h2>API Connection Test</h2>
+    <button id="testApiBtn">Test API Connection</button>
+    <div id="apiResult"></div>
+  </div>
+
+  <div class="card">
+    <h2>WebSocket Connection Test</h2>
+    <button id="testWsBtn">Test WebSocket Connection</button>
+    <div id="wsResult"></div>
+  </div>
+
+  <script>
+    // API Test
+    document.getElementById('testApiBtn').addEventListener('click', async () => {
+      const resultDiv = document.getElementById('apiResult');
+      resultDiv.innerHTML = 'Testing API connection...';
+      
+      try {
+        const response = await fetch('/api/privacy/cookie-consent');
+        const data = await response.json();
+        
+        resultDiv.innerHTML = `
+          <p class="success">✓ Success: API connection working!</p>
+          <pre>${JSON.stringify(data, null, 2)}</pre>
+        `;
+      } catch (error) {
+        resultDiv.innerHTML = `
+          <p class="error">✗ Error: ${error.message}</p>
+        `;
+      }
+    });
+
+    // WebSocket Test
+    document.getElementById('testWsBtn').addEventListener('click', () => {
+      const resultDiv = document.getElementById('wsResult');
+      resultDiv.innerHTML = 'Testing WebSocket connection...';
+      
+      try {
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const wsUrl = `${protocol}//${window.location.host}/ws`;
+        
+        const socket = new WebSocket(wsUrl);
+        
+        socket.onopen = () => {
+          resultDiv.innerHTML = `
+            <p class="success">✓ Success: WebSocket connection established!</p>
+          `;
+          
+          // Send a test message
+          socket.send(JSON.stringify({
+            type: 'test',
+            message: 'Hello WebSocket Server!'
+          }));
+        };
+        
+        socket.onmessage = (event) => {
+          const message = event.data;
+          resultDiv.innerHTML += `
+            <p>Received response: ${message}</p>
+          `;
+        };
+        
+        socket.onerror = (error) => {
+          resultDiv.innerHTML = `
+            <p class="error">✗ Error: WebSocket connection failed</p>
+          `;
+        };
+        
+        socket.onclose = () => {
+          resultDiv.innerHTML += `
+            <p>WebSocket connection closed</p>
+          `;
+        };
+      } catch (error) {
+        resultDiv.innerHTML = `
+          <p class="error">✗ Error: ${error.message}</p>
+        `;
+      }
+    });
+  </script>
+</body>
+</html>

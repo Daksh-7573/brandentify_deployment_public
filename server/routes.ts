@@ -5981,6 +5981,11 @@ ${extractedText.substring(0, 5000)}
   app.get('/hashtag-test', (req, res) => {
     res.sendFile(path.join(process.cwd(), 'test-hashtag-client.html'));
   });
+  
+  // Add route for basic connectivity test page
+  app.get('/test', (req, res) => {
+    res.sendFile(path.join(process.cwd(), 'public/test.html'));
+  });
 
   const httpServer = createServer(app);
   
@@ -6028,6 +6033,14 @@ ${extractedText.substring(0, 5000)}
               }));
             }
           }
+        } else if (data.type === 'test') {
+          // Handle test message - respond directly to the sender
+          console.log('Received test WebSocket message:', data.message);
+          ws.send(JSON.stringify({
+            type: 'test_response',
+            message: 'Test message received successfully!',
+            timestamp: new Date().toISOString()
+          }));
         }
       } catch (error) {
         console.error('Error handling WebSocket message:', error);
