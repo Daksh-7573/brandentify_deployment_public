@@ -149,23 +149,36 @@ export const secureCors = (req: Request, res: Response, next: NextFunction) => {
  * Security headers middleware to add recommended security headers to all responses
  */
 export const securityHeaders = (req: Request, res: Response, next: NextFunction) => {
-  // Temporarily disable CSP to debug blank screen issues
-  /*
-  res.header('Content-Security-Policy', `
-    default-src * 'self' 'unsafe-inline' 'unsafe-eval' data: blob:;
-    script-src * 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://unpkg.com;
-    style-src * 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net;
-    img-src * 'self' data: https: blob:;
-    font-src * 'self' https://fonts.gstatic.com;
-    connect-src * 'self' https://api.openai.com https://api.anthropic.com https://firestore.googleapis.com ws: wss:;
-    frame-src 'self';
-    object-src 'none';
-    base-uri 'self';
-    form-action 'self';
-    frame-ancestors 'self';
-    upgrade-insecure-requests;
-  `.replace(/\s+/g, ' ').trim());
-  */
+  // Enable CSP with permissive settings for testing
+  // Check if the route is one of our test pages
+  if (['/test', '/industry-test', '/minimal-react', '/simple-pulse'].includes(req.path)) {
+    // For test pages, use extremely permissive CSP
+    res.header('Content-Security-Policy', `
+      default-src * 'self' 'unsafe-inline' 'unsafe-eval' data: blob:;
+      script-src * 'self' 'unsafe-inline' 'unsafe-eval';
+      style-src * 'self' 'unsafe-inline';
+      img-src * 'self' data: https: blob:;
+      font-src * 'self';
+      connect-src * 'self' ws: wss:;
+      frame-src *;
+      object-src *;
+    `.replace(/\s+/g, ' ').trim());
+  } else {
+    // For other pages, still use permissive CSP but with some structure
+    res.header('Content-Security-Policy', `
+      default-src * 'self' 'unsafe-inline' 'unsafe-eval' data: blob:;
+      script-src * 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://unpkg.com https://randomuser.me;
+      style-src * 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net;
+      img-src * 'self' data: https: blob:;
+      font-src * 'self' https://fonts.gstatic.com;
+      connect-src * 'self' https://api.openai.com https://api.anthropic.com https://firestore.googleapis.com https://randomuser.me ws: wss:;
+      frame-src 'self';
+      object-src 'none';
+      base-uri 'self';
+      form-action 'self';
+      frame-ancestors 'self';
+    `.replace(/\s+/g, ' ').trim());
+  }
   
   // Prevent browser from MIME-sniffing a response away from the declared content-type
   res.header('X-Content-Type-Options', 'nosniff');
