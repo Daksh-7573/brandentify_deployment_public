@@ -9,9 +9,16 @@ console.log("Firebase config check:", {
   appIdLength: import.meta.env.VITE_FIREBASE_APP_ID ? import.meta.env.VITE_FIREBASE_APP_ID.length : 0
 });
 
+// Ensure we're using the correct domain for authentication
+const domainParts = window.location.hostname.split('.');
+const isReplit = domainParts.some(part => part.includes('replit'));
+
+// For Replit, we need to use the .replit.dev domain in authDomain
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.firebaseapp.com`,
+  authDomain: isReplit 
+    ? `${window.location.hostname}` // Use the current hostname
+    : `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.firebaseapp.com`, // Use Firebase default
   projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
   storageBucket: `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.appspot.com`,
   messagingSenderId: "330211556822", // Default value, update if you have the correct one

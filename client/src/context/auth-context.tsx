@@ -286,9 +286,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       googleProvider.addScope('email');
       googleProvider.addScope('profile');
       
-      // Try popup instead of redirect
-      console.log("Attempting Google sign-in with popup...");
-      const result = await signInWithPopup(auth, googleProvider);
+      // Check if we're on mobile - if so, use redirect flow which works better on mobile
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      
+      let result;
+      
+      try {
+        if (isMobile) {
+          // Use redirect method for mobile
+          console.log("Mobile detected, using redirect sign-in flow");
+          await signInWithRedirect(auth, googleProvider);
+          // Control flow will exit here until redirect completes
+          return; // We'll pick up the result in the getRedirectResult() handler
+        } else {
+          // Try popup for desktop
+          console.log("Attempting Google sign-in with popup...");
+          result = await signInWithPopup(auth, googleProvider);
+        }
+      } catch (popupError: any) {
+        // If popup fails (common on mobile), fall back to redirect
+        console.log("Popup sign-in failed, falling back to redirect:", popupError.code);
+        if (
+          popupError.code === 'auth/popup-blocked' || 
+          popupError.code === 'auth/popup-closed-by-user' ||
+          popupError.code === 'auth/cancelled-popup-request'
+        ) {
+          await signInWithRedirect(auth, googleProvider);
+          return; // We'll pick up the result in the getRedirectResult() handler
+        } else {
+          // Re-throw other errors
+          throw popupError;
+        }
+      }
       
       // If we get here, popup was successful
       console.log("Google sign-in successful:", result.user);
@@ -325,18 +354,42 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       // More informative error message
       let errorMessage = "There was a problem signing in with Google";
+      let errorDetails = ""; // Additional details for debugging
       
+      // Enhanced error handling with more specific messages
       if (error.code === 'auth/configuration-not-found') {
-        errorMessage = "Firebase authentication is not properly configured. Please check your Firebase setup in the console.";
-        console.log("Detailed error:", error);
+        errorMessage = "Firebase authentication is not properly configured.";
+        errorDetails = `Project ID: ${import.meta.env.VITE_FIREBASE_PROJECT_ID}, Domain: ${window.location.hostname}`;
+        console.log("Configuration details:", {
+          apiKey: import.meta.env.VITE_FIREBASE_API_KEY ? "Set (length: " + import.meta.env.VITE_FIREBASE_API_KEY.length + ")" : "Not set",
+          projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "Not set",
+          authDomain: window.location.hostname,
+          appId: import.meta.env.VITE_FIREBASE_APP_ID ? "Set (length: " + import.meta.env.VITE_FIREBASE_APP_ID.length + ")" : "Not set"
+        });
+      } else if (error.code === 'auth/internal-error') {
+        errorMessage = "There was an internal authentication error. Please check if third-party cookies are enabled.";
+        errorDetails = "Try enabling third-party cookies in your browser settings and ensuring you're not using any ad-blockers that might interfere with Google Sign-In.";
       } else if (error.code === 'auth/popup-blocked' || error.code === 'auth/popup-closed-by-user') {
         errorMessage = "Sign-in popup was blocked or closed. Please try again.";
+        errorDetails = "Ensure your browser allows popups for this website.";
       } else if (error.code === 'auth/unauthorized-domain') {
-        errorMessage = "This domain is not authorized for Firebase authentication. Please add it to your Firebase console under Auth > Settings > Authorized domains.";
-        console.log("Current domain:", window.location.hostname);
+        errorMessage = "This domain is not authorized for Firebase authentication.";
+        errorDetails = `Current domain "${window.location.hostname}" needs to be added to your Firebase console under Auth > Settings > Authorized domains.`;
+      } else if (error.code === 'auth/network-request-failed') {
+        errorMessage = "Network connection issue. Please check your internet connection.";
+      } else if (error.code === 'auth/timeout') {
+        errorMessage = "The authentication request timed out. Please try again.";
       } else if (error.message) {
-        errorMessage = `Error: ${error.message}`;
+        errorMessage = `Authentication error: ${error.message}`;
       }
+      
+      // Log the detailed error information for debugging
+      console.log("Auth error details:", {
+        code: error.code,
+        message: error.message,
+        details: errorDetails,
+        error
+      });
       
       toast({
         title: "Sign in failed",

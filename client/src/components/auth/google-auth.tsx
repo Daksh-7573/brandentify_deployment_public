@@ -1,17 +1,56 @@
-import { Loader2 } from "lucide-react";
+import { Loader2, AlertTriangle } from "lucide-react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
+import { useToast } from "@/hooks/use-toast";
 
 export function GoogleAuth() {
   const { signInWithGoogle, isLoading } = useAuth();
+  const { toast } = useToast();
+  const [authAttempted, setAuthAttempted] = useState(false);
+  const [isFirebaseConfigured, setIsFirebaseConfigured] = useState(true);
+  
+  // Check if Firebase is properly configured
+  useEffect(() => {
+    const checkFirebaseConfig = () => {
+      const hasProjectId = !!import.meta.env.VITE_FIREBASE_PROJECT_ID;
+      const hasApiKey = !!import.meta.env.VITE_FIREBASE_API_KEY;
+      const hasAppId = !!import.meta.env.VITE_FIREBASE_APP_ID;
+      
+      const isConfigured = hasProjectId && hasApiKey && hasAppId;
+      setIsFirebaseConfigured(isConfigured);
+      
+      if (!isConfigured) {
+        console.error("Firebase configuration is incomplete");
+      }
+    };
+    
+    checkFirebaseConfig();
+  }, []);
+
+  const handleSignIn = async () => {
+    setAuthAttempted(true);
+    try {
+      await signInWithGoogle();
+    } catch (error) {
+      console.error("Error in Google Auth component:", error);
+    }
+  };
 
   return (
     <div className="space-y-4">
+      {!isFirebaseConfigured && (
+        <div className="p-2 mb-2 bg-amber-50 border border-amber-200 rounded-md text-amber-800 text-sm flex items-center">
+          <AlertTriangle className="h-4 w-4 mr-2 flex-shrink-0" />
+          <span>Firebase configuration is incomplete. Please check your environment variables.</span>
+        </div>
+      )}
+      
       <Button
         variant="outline"
-        onClick={signInWithGoogle}
-        disabled={isLoading}
-        className="w-full"
+        onClick={handleSignIn}
+        disabled={isLoading || !isFirebaseConfigured}
+        className="w-full relative"
       >
         {isLoading ? (
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -39,8 +78,19 @@ export function GoogleAuth() {
             />
           </svg>
         )}
-        Continue with Google
+        {isLoading ? "Signing in..." : "Continue with Google"}
       </Button>
+      
+      {authAttempted && !isLoading && (
+        <div className="mt-2 text-xs text-gray-600">
+          <p>If you're having trouble signing in:</p>
+          <ul className="list-disc pl-5 mt-1 space-y-1">
+            <li>Ensure you have third-party cookies enabled</li>
+            <li>Try disabling any ad-blockers temporarily</li>
+            <li>Make sure you're using a modern browser</li>
+          </ul>
+        </div>
+      )}
     </div>
   );
 }
