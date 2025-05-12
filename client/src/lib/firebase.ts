@@ -9,21 +9,22 @@ console.log("Firebase config check:", {
   appIdLength: import.meta.env.VITE_FIREBASE_APP_ID ? import.meta.env.VITE_FIREBASE_APP_ID.length : 0
 });
 
-// Ensure we're using the correct domain for authentication
-const domainParts = window.location.hostname.split('.');
-const isReplit = domainParts.some(part => part.includes('replit'));
+// Check if running on Replit
+const isReplit = window.location.hostname.includes('.replit.app') || 
+                 window.location.hostname.includes('.repl.co') ||
+                 window.location.hostname === 'repl.it';
 
-// For Replit, we need to use the .replit.dev domain in authDomain
+// Get the current domain for AUTH configuration
+const currentDomain = window.location.hostname;
+
+// Configure Firebase with proper settings
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: isReplit 
-    ? `${window.location.hostname}` // Use the current hostname
-    : `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.firebaseapp.com`, // Use Firebase default
+  // Always use the Firebase authDomain for Google Provider to work properly
+  authDomain: `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.firebaseapp.com`,
   projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
   storageBucket: `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.appspot.com`,
-  messagingSenderId: "330211556822", // Default value, update if you have the correct one
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
-  measurementId: "G-JG24PTL5MS", // Default value, update if you have the correct one
 };
 
 // Initialize Firebase
@@ -32,9 +33,32 @@ const app = initializeApp(firebaseConfig);
 // Initialize Firebase Auth
 export const auth = getAuth(app);
 
-// Set a longer timeout for auth operations (default is 60 seconds)
-auth.settings.appVerificationDisabledForTesting = true;
-
+// Enhanced configuration for Google Sign-in
 export const googleProvider = new GoogleAuthProvider();
+
+// Add additional scopes to improve sign-in reliability
+googleProvider.addScope('email');
+googleProvider.addScope('profile');
+
+// Set custom parameters to improve sign-in UX
+googleProvider.setCustomParameters({
+  // Force account selection to prevent automatic sign-in with cached credentials
+  prompt: 'select_account', 
+  // Allow sign-in across domains/iframes
+  auth_type: 'rerequest',
+});
+
+// For Replit environment, add the current domain to the list of authorized domains
+// The domain must be added to Firebase Console > Authentication > Sign-in method > 
+// Authorized domains as well
+console.log(`Current auth domain is: ${currentDomain}`);
+
+// Log detailed configuration for debugging
+console.log("Firebase config:", {
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  authDomain: `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.firebaseapp.com`,
+  hasApiKey: !!import.meta.env.VITE_FIREBASE_API_KEY,
+  hasAppId: !!import.meta.env.VITE_FIREBASE_APP_ID
+});
 
 export default app;

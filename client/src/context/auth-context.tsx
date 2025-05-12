@@ -268,48 +268,62 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signInWithGoogle = async () => {
     setIsLoading(true);
     try {
+      // Enhanced error handling for Google Sign-in
+      
+      // Set up browser compatibility checks
+      const isChrome = navigator.userAgent.indexOf('Chrome') > -1;
+      const isFirefox = navigator.userAgent.indexOf('Firefox') > -1;
+      const isSafari = navigator.userAgent.indexOf('Safari') > -1 && !isChrome;
+      const isEdge = navigator.userAgent.indexOf('Edg') > -1;
+      const browserInfo = { isChrome, isFirefox, isSafari, isEdge };
+      
       // Log Firebase configuration for debugging
       console.log("Firebase config:", {
         projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
         authDomain: `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.firebaseapp.com`,
         hasApiKey: !!import.meta.env.VITE_FIREBASE_API_KEY,
-        hasAppId: !!import.meta.env.VITE_FIREBASE_APP_ID
+        hasAppId: !!import.meta.env.VITE_FIREBASE_APP_ID,
+        currentUrl: window.location.href,
+        browserInfo
       });
-      
-      // Add some scopes for Google auth
-      googleProvider.addScope('email');
-      googleProvider.addScope('profile');
       
       // Check if we're on mobile - if so, use redirect flow which works better on mobile
       const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
       
       let result;
       
+      // First attempt: always use redirect method for better cross-browser compatibility
       try {
-        if (isMobile) {
-          // Use redirect method for mobile
-          console.log("Mobile detected, using redirect sign-in flow");
-          await signInWithRedirect(auth, googleProvider);
-          // Control flow will exit here until redirect completes
-          return; // We'll pick up the result in the getRedirectResult() handler
-        } else {
-          // Try popup for desktop
-          console.log("Attempting Google sign-in with popup...");
-          result = await signInWithPopup(auth, googleProvider);
-        }
-      } catch (popupError: any) {
-        // If popup fails (common on mobile), fall back to redirect
-        console.log("Popup sign-in failed, falling back to redirect:", popupError.code);
+        console.log("Starting Google sign-in with redirect method");
+        
+        // Configure auth provider with more options to prevent third-party cookie issues
+        googleProvider.setCustomParameters({
+          prompt: 'select_account',
+          auth_type: 'rerequest',
+          // Include hostname in state parameter to help with cross-domain issues
+          state: encodeURIComponent(window.location.hostname)
+        });
+        
+        await signInWithRedirect(auth, googleProvider);
+        return; // We'll pick up the result in the getRedirectResult() handler
+      } catch (redirectError: any) {
+        // If redirect method fails, try popup as fallback
+        console.error("Redirect sign-in failed, attempting popup:", redirectError);
+        
+        // For specific errors, try popup method
         if (
-          popupError.code === 'auth/popup-blocked' || 
-          popupError.code === 'auth/popup-closed-by-user' ||
-          popupError.code === 'auth/cancelled-popup-request'
+          redirectError.code === 'auth/internal-error' || 
+          redirectError.code === 'auth/network-request-failed'
         ) {
-          await signInWithRedirect(auth, googleProvider);
-          return; // We'll pick up the result in the getRedirectResult() handler
+          try {
+            console.log("Attempting Google sign-in with popup method as fallback...");
+            result = await signInWithPopup(auth, googleProvider);
+          } catch (popupError: any) {
+            console.error("Popup authentication also failed:", popupError);
+            throw popupError; // Both methods failed
+          }
         } else {
-          // Re-throw other errors
-          throw popupError;
+          throw redirectError; // Other errors should be handled by caller
         }
       }
       
@@ -361,8 +375,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           appId: import.meta.env.VITE_FIREBASE_APP_ID ? "Set (length: " + import.meta.env.VITE_FIREBASE_APP_ID.length + ")" : "Not set"
         });
       } else if (error.code === 'auth/internal-error') {
-        errorMessage = "There was an internal authentication error. Please check if third-party cookies are enabled.";
-        errorDetails = "Try enabling third-party cookies in your browser settings and ensuring you're not using any ad-blockers that might interfere with Google Sign-In.";
+        errorMessage = "There was an internal authentication error. Please check browser settings below.";
+        errorDetails = "Please try one or more of these solutions:\n1. Enable third-party cookies in your browser settings\n2. Disable any ad-blockers or privacy extensions temporarily\n3. Use a different browser (Chrome recommended)\n4. Clear your browser cache and cookies";
+        
+        // Show a more helpful toast with detailed instructions
+        toast({
+          title: "Authentication Failed",
+          description: "There was an internal authentication error. Please check if third-party cookies are enabled and try disabling ad-blockers.",
+          variant: "destructive",
+          duration: 10000, // Show for longer so user can read it
+        });
       } else if (error.code === 'auth/popup-blocked' || error.code === 'auth/popup-closed-by-user') {
         errorMessage = "Sign-in popup was blocked or closed. Please try again.";
         errorDetails = "Ensure your browser allows popups for this website.";
