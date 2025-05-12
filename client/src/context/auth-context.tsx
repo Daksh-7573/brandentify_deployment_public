@@ -284,7 +284,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       const browserInfo = { isChrome, isFirefox, isSafari, isEdge, isMobile, isReplit };
       
-      // Firebase configuration is already set up in firebase.ts
+      // Log Firebase configuration for debugging
+      console.log("Firebase config:", {
+        projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+        authDomain: `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.firebaseapp.com`,
+        hasApiKey: !!import.meta.env.VITE_FIREBASE_API_KEY,
+        hasAppId: !!import.meta.env.VITE_FIREBASE_APP_ID,
+        currentUrl: window.location.href,
+        browserInfo
+      });
       
       let result;
       
@@ -299,6 +307,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
       
       // Special handling to bypass third-party cookie and iframe restrictions
+      console.log("Using specialized authentication approach that works better in Replit");
       
       try {
         // Try advanced custom popup window approach to bypass iframe restrictions
@@ -318,17 +327,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           
           if (!authWindow) {
             // If window.open failed, still try the regular popup method
-            // Fall back to standard popup method if custom window fails
+            console.log("Custom window approach failed, falling back to signInWithPopup");
             result = await signInWithPopup(auth, googleProvider);
           } else {
             // Set up message listener to receive authentication result from popup
+            console.log("Using custom window authentication approach");
             
             // This will be a fallback in case the popup approach doesn't work
             // We'll still try the normal Firebase popup method after a timeout
             const popupTimeout = setTimeout(async () => {
               if (authWindow && !authWindow.closed) {
                 authWindow.close();
-                // If custom window approach times out, try standard popup
+                console.log("Custom window timed out, trying standard popup");
                 try {
                   result = await signInWithPopup(auth, googleProvider);
                 } catch (popupError: any) {
@@ -440,8 +450,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         });
       } else if (error.code === 'auth/internal-error') {
         toast({
-          title: "Google Authentication Unavailable",
-          description: "Google login is currently unavailable in this environment. Please use the Demo Login option instead for the best experience.",
+          title: "Authentication Failed",
+          description: "There was an internal authentication error. This is likely due to browser cookie settings. Try using email authentication instead.",
           variant: "destructive",
           duration: 10000, // Show for longer so user can read it
         });
