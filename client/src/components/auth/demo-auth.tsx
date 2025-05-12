@@ -15,29 +15,42 @@ export function DemoAuth({ onDemoLogin }: DemoAuthProps) {
   const startDemoMode = async () => {
     try {
       setIsLoading(true);
-      // Create a demo user account
-      const response = await apiRequest('GET', '/api/demo-mode/login');
+      
+      console.log("Activating demo mode...");
+      
+      // Create a demo user account - note that we use POST, not GET
+      const response = await apiRequest('POST', '/api/demo-login');
       
       if (!response.ok) {
-        throw new Error("Failed to enter demo mode");
+        const errorData = await response.json().catch(() => ({}));
+        console.error("Demo login failed:", errorData);
+        throw new Error(errorData.message || "Failed to enter demo mode");
       }
       
-      const userData = await response.json();
-      console.log("Demo mode activated, user data:", userData);
+      const result = await response.json();
+      console.log("Demo mode activation result:", result);
+      
+      if (!result.success || !result.demoUser) {
+        throw new Error("Demo user data missing from response");
+      }
       
       // Call the callback with the demo user data
-      onDemoLogin(userData);
+      onDemoLogin(result.demoUser);
       
       toast({
         title: "Demo mode activated!",
         description: "You can now explore all features without creating an account",
       });
       
+      // Store demo mode flag in localStorage for persistent sessions
+      localStorage.setItem('demoMode', 'true');
+      localStorage.setItem('demoUserId', result.demoUser.id.toString());
+      
     } catch (error) {
       console.error("Demo mode error:", error);
       toast({
         title: "Demo mode error",
-        description: "Unable to activate demo mode. Please try again.",
+        description: error instanceof Error ? error.message : "Unable to activate demo mode. Please try again.",
         variant: "destructive"
       });
     } finally {

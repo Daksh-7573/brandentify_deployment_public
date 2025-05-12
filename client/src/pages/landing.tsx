@@ -1,10 +1,11 @@
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "../context/auth-context";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { useEffect } from "react";
+import { DemoAuth } from "@/components/auth/demo-auth";
 
 export default function Landing() {
-  const { enterDemoMode, isLoading, isAuthenticated } = useAuth();
+  const { activateDemoMode, isLoading, isAuthenticated } = useAuth();
   const [_, setLocation] = useLocation();
 
   // Redirect to dashboard if already authenticated - using useEffect to avoid state updates during render
@@ -26,14 +27,9 @@ export default function Landing() {
               </div>
             </div>
             <div className="flex items-center">
-              <Button 
-                variant="outline" 
-                className="ml-4"
-                onClick={enterDemoMode}
-                disabled={false} // Never disable demo mode button
-              >
-                Try Demo
-              </Button>
+              <div className="hidden sm:block">
+                <DemoAuth onDemoLogin={activateDemoMode} />
+              </div>
               <Button 
                 variant="default" 
                 className="ml-4"
@@ -72,15 +68,9 @@ export default function Landing() {
                     </Button>
                   </div>
                   <div className="mt-3 sm:mt-0 sm:ml-3">
-                    <Button 
-                      size="lg"
-                      variant="outline"
-                      className="w-full flex items-center justify-center px-8 py-3 md:py-4 md:text-lg md:px-10"
-                      onClick={enterDemoMode}
-                      disabled={false} // Never disable demo mode button
-                    >
-                      Try Demo Mode
-                    </Button>
+                    <div className="w-full">
+                      <DemoAuth onDemoLogin={activateDemoMode} />
+                    </div>
                   </div>
                 </div>
               </div>
