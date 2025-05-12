@@ -159,19 +159,3 @@ export const getBadgeDescription = (badgeType: BadgeType): string => {
   };
   return descriptions[badgeType] || 'A special achievement';
 };
-
-export const getHashtagTipByQuestType = (type: QuestType): string => {
-  const tips: Record<Partial<QuestType>, string> = {
-    pulse_creation: 'Using industry-relevant hashtags can boost your content visibility by up to 42%. Mix popular and niche tags for better reach.',
-    networking: 'Strategic hashtags help connect you with industry peers. Add industry-specific and skill-based tags to increase professional connections.',
-    visibility: 'Increase your discoverability by using trending hashtags in your field. Consistent hashtag use across platforms strengthens your personal brand.',
-    portfolio: 'Showcase your expertise with targeted hashtags related to your technical skills and industry niche.',
-    profile_update: 'Add relevant hashtags that highlight your key skills and career aspirations to help recruiters find you.',
-    learning: 'Use learning-focused hashtags to connect with others improving similar skills and build a supportive community.',
-    resume: 'Industry and role-specific hashtags help your professional documents reach the right audience when shared.',
-    daily: 'Daily engagement hashtags keep your content in regular rotation and build consistency in your professional presence.',
-    weekly: 'Weekly themed hashtags like #MondayMotivation or #FridayWins can amplify your content reach.',
-    monthly: 'Monthly hashtag challenges offer opportunities to showcase your expertise in focused campaigns.'
-  };
-  return tips[type] || 'Using relevant hashtags increases your content visibility and helps you connect with industry professionals.';
-};
