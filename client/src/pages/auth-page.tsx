@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "../context/auth-context";
 import { useLocation } from "wouter";
 import {
   Card,
@@ -15,9 +15,10 @@ import { Mail, Phone, Check } from "lucide-react";
 import { GoogleAuth } from "@/components/auth/google-auth";
 import { PhoneAuth } from "@/components/auth/phone-auth";
 import { EmailAuth } from "@/components/auth/email-auth";
+import { DemoAuth } from "@/components/auth/demo-auth";
 
 export default function AuthPage() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, activateDemoMode } = useAuth();
   const [_, setLocation] = useLocation();
   const [authMethod, setAuthMethod] = useState<"email" | "phone">("email");
 
@@ -69,12 +70,36 @@ export default function AuthPage() {
                   </div>
                   
                   <GoogleAuth />
+                  
+                  <div className="relative w-full">
+                    <div className="absolute inset-0 flex items-center">
+                      <span className="w-full border-t border-gray-300" />
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className="bg-white px-2 text-gray-500">or</span>
+                    </div>
+                  </div>
+                  
+                  <DemoAuth onDemoLogin={activateDemoMode} />
                 </div>
               </TabsContent>
 
               {/* Phone Authentication */}
               <TabsContent value="phone">
                 <PhoneAuth />
+                
+                <div className="relative w-full mt-4">
+                  <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t border-gray-300" />
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-white px-2 text-gray-500">or try demo</span>
+                  </div>
+                </div>
+                
+                <div className="mt-4">
+                  <DemoAuth onDemoLogin={activateDemoMode} />
+                </div>
               </TabsContent>
             </Tabs>
           </CardContent>
