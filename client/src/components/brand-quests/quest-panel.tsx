@@ -122,9 +122,9 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
       localStorage.setItem('demo_user_id', '1');
       // Refresh data with demo user
       refetchWeekly();
-      refetchAllQuests();
+      refetchAll();
     }
-  }, [weeklyError, weeklyQuests, isLoadingWeekly, refetchWeekly, refetchAllQuests]);
+  }, [weeklyError, weeklyQuests, isLoadingWeekly, refetchWeekly, refetchAll]);
 
   return (
     <Card className={cn("w-full", className)}>

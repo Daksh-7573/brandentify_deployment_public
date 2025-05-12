@@ -63,7 +63,8 @@ export default function BrandQuestsPage() {
     }
   }, [user?.id, toast]);
   
-  const userId = effectiveUserId || 1; // Default to 1 if undefined
+  // Always use user ID 1 for consistent quests display
+  const userId = 1;
   
   const { data: userXp, isLoading: isLoadingXp } = useUserXp(userId as number);
   const { data: xpTransactions, isLoading: isLoadingTransactions } = useXpTransactions(userId as number);
