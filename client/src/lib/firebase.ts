@@ -20,8 +20,8 @@ const currentDomain = window.location.hostname;
 // Configure Firebase with proper settings - optimized for Replit environment
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  // For Replit, use the current domain as authDomain to avoid third-party cookie issues
-  authDomain: isReplit ? window.location.hostname : `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.firebaseapp.com`,
+  // Always use the Firebase project domain as authDomain for proper authentication
+  authDomain: `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.firebaseapp.com`,
   projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
   storageBucket: `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.appspot.com`,
   appId: import.meta.env.VITE_FIREBASE_APP_ID,

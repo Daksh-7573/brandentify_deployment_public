@@ -292,38 +292,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       let result;
       
-      // First attempt: always use redirect method for better cross-browser compatibility
+      // Try popup method first as it's more reliable in the Replit environment
       try {
-        console.log("Starting Google sign-in with redirect method");
+        console.log("Starting Google sign-in with popup method");
         
         // Configure auth provider with more options to prevent third-party cookie issues
         googleProvider.setCustomParameters({
           prompt: 'select_account',
+          // Use rerequest for improved permissions handling
           auth_type: 'rerequest',
-          // Include hostname in state parameter to help with cross-domain issues
-          state: encodeURIComponent(window.location.hostname)
         });
         
-        await signInWithRedirect(auth, googleProvider);
-        return; // We'll pick up the result in the getRedirectResult() handler
-      } catch (redirectError: any) {
-        // If redirect method fails, try popup as fallback
-        console.error("Redirect sign-in failed, attempting popup:", redirectError);
+        // Always try popup first as it has better compatibility in Replit
+        result = await signInWithPopup(auth, googleProvider);
+      } catch (popupError: any) {
+        console.error("Popup authentication failed:", popupError);
         
-        // For specific errors, try popup method
+        // If popup fails with specific errors, try redirect as fallback
         if (
-          redirectError.code === 'auth/internal-error' || 
-          redirectError.code === 'auth/network-request-failed'
+          popupError.code === 'auth/popup-blocked' || 
+          popupError.code === 'auth/popup-closed-by-user' ||
+          popupError.code === 'auth/cancelled-popup-request'
         ) {
           try {
-            console.log("Attempting Google sign-in with popup method as fallback...");
-            result = await signInWithPopup(auth, googleProvider);
-          } catch (popupError: any) {
-            console.error("Popup authentication also failed:", popupError);
-            throw popupError; // Both methods failed
+            console.log("Popup blocked, attempting redirect method as fallback...");
+            await signInWithRedirect(auth, googleProvider);
+            return; // We'll pick up the result in the getRedirectResult() handler
+          } catch (redirectError: any) {
+            console.error("Redirect authentication also failed:", redirectError);
+            throw redirectError; // Both methods failed
           }
         } else {
-          throw redirectError; // Other errors should be handled by caller
+          throw popupError; // Other errors should be handled by caller
         }
       }
       
