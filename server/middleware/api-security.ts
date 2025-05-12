@@ -80,7 +80,7 @@ export const generateCsrfToken = (req: Request, res: Response, next: NextFunctio
  */
 const requestCounts: Record<string, {count: number, resetTime: number}> = {};
 
-export const rateLimit = (maxRequests = 100, timeWindowMs = 60000) => {
+export const rateLimit = (maxRequests = 1000, timeWindowMs = 60000) => {
   return (req: Request, res: Response, next: NextFunction) => {
     // Use IP address + user agent as identifier
     const identifier = `${req.ip}-${req.headers['user-agent'] || 'unknown'}`;

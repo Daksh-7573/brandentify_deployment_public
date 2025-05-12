@@ -26,7 +26,8 @@ app.use(express.urlencoded({ extended: false, limit: '10mb' }));
 // Apply security monitoring middleware
 app.use(requestMetricsMiddleware); // Track request metrics for all requests
 app.use(attackDetectionMiddleware); // Detect attack attempts
-app.use(adminActionLoggingMiddleware); // Log admin actions
+// Only apply admin action logging to admin routes, not globally
+// app.use(adminActionLoggingMiddleware);
 
 // Request timeout middleware (45 seconds)
 const requestTimeout = (req: Request, res: Response, next: NextFunction) => {
