@@ -4,12 +4,12 @@ import { ResumeDrop } from '@/components/resume-parser/ResumeDrop';
 import { ResumeMapping } from '@/components/resume-parser/ResumeMapping';
 import { useToast } from '@/hooks/use-toast';
 import Header from '@/components/layout/header';
-import { useRouter } from 'wouter';
+import { useLocation } from 'wouter';
 
 export default function ResumeParserPage() {
   const { user } = useContext(AuthContext);
   const { toast } = useToast();
-  const [, setLocation] = useRouter();
+  const [, setLocation] = useLocation();
   
   const [extractedData, setExtractedData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
