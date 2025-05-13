@@ -23,6 +23,7 @@ export function DomainAuthHelper() {
     apiKeyLength: number;
     appIdLength: number;
   } | null>(null);
+  const [configIssues, setConfigIssues] = useState<string[]>([]);
   
   const currentDomain = window.location.hostname;
   
@@ -40,22 +41,18 @@ export function DomainAuthHelper() {
   
   // Check Firebase configuration on mount
   useEffect(() => {
-    const checkFirebaseConfig = () => {
-      const viteFirebaseApiKey = import.meta.env.VITE_FIREBASE_API_KEY;
-      const viteFirebaseProjectId = import.meta.env.VITE_FIREBASE_PROJECT_ID;
-      const viteFirebaseAppId = import.meta.env.VITE_FIREBASE_APP_ID;
-      
-      const result = {
-        projectIdExists: !!viteFirebaseProjectId,
-        apiKeyLength: viteFirebaseApiKey?.length || 0,
-        appIdLength: viteFirebaseAppId?.length || 0
-      };
-      
-      console.log("Firebase config check:", result);
-      setConfigCheck(result);
-    };
+    const result = checkFirebaseConfig();
+    console.log("Firebase config check:", result);
     
-    checkFirebaseConfig();
+    // Update our local state for display
+    setConfigCheck({
+      projectIdExists: result.configDetails.projectIdExists,
+      apiKeyLength: result.configDetails.apiKeyLength,
+      appIdLength: result.configDetails.appIdLength,
+    });
+    
+    // Set the configuration issues for display
+    setConfigIssues(result.issues);
   }, []);
   
   const copyInstructions = () => {
@@ -112,6 +109,18 @@ ${domainsToAdd.map((domain, index) => `${index + 1}. ${domain}`).join('\n')}`;
                   </span>
                 </li>
               </ul>
+              
+              {/* Show any additional configuration issues */}
+              {configIssues.length > 0 && (
+                <div className="mt-3 border-t border-amber-200 pt-3">
+                  <h5 className="font-semibold text-amber-800 mb-1">Configuration Issues:</h5>
+                  <ul className="list-disc pl-5 space-y-1 text-xs text-amber-800">
+                    {configIssues.map((issue, index) => (
+                      <li key={index}>{issue}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
           )}
         
