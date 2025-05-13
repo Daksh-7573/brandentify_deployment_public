@@ -76,12 +76,27 @@ export function StaticHashtagSuggestions({
 }: StaticHashtagSuggestionsProps) {
   const { user } = useCurrentUser();
   
+  // Add debugging
+  console.log('StaticHashtagSuggestions render:', { 
+    providedHashtags: hashtags, 
+    questType, 
+    userFromHook: user,
+    industry
+  });
+  
   // Get user industry from props or current user data
   const userIndustry = industry || user?.industry || 'tech';
   
   // If questType is provided and hashtags are not, use predefined hashtags for that type
   // Also mix in industry-specific hashtags when possible
   const tagsToDisplay = useMemo(() => {
+    // Debug what we have
+    console.log('Generating tags with:', { 
+      userIndustry, 
+      questType, 
+      hasExplicitTags: hashtags && hashtags.length > 0
+    });
+    
     // If explicit hashtags are provided, use those
     if (hashtags && hashtags.length > 0) {
       return hashtags;
@@ -91,19 +106,24 @@ export function StaticHashtagSuggestions({
     let availableTags: string[] = [];
     if (questType && QUEST_TYPE_HASHTAGS[questType]) {
       availableTags = [...QUEST_TYPE_HASHTAGS[questType]];
+      console.log(`Got ${availableTags.length} tags from quest type ${questType}`);
     } else {
       // Default to pulse_creation tags if no quest type or hashtags provided
       availableTags = [...QUEST_TYPE_HASHTAGS['pulse_creation']];
+      console.log(`Using default pulse_creation tags (${availableTags.length})`);
     }
     
     // Mix in industry-specific hashtags if available
     const industryTags = INDUSTRY_HASHTAGS[userIndustry] || [];
     if (industryTags.length > 0) {
       availableTags = [...availableTags, ...industryTags];
+      console.log(`Added ${industryTags.length} industry tags for ${userIndustry}`);
     }
     
     // Randomize and limit the number of tags
-    return shuffle(availableTags).slice(0, count);
+    const finalTags = shuffle(availableTags).slice(0, count);
+    console.log('Final tags to display:', finalTags);
+    return finalTags;
   }, [hashtags, questType, userIndustry, count]);
   
   // Helper function to randomize array (Fisher-Yates shuffle)
