@@ -51,34 +51,33 @@ async function assignQuestsToUser(userId: number) {
     
     console.log(`User ${userId} exists.`);
 
-    // Get quest definitions for engagement quests
-    const engagementQuestDefinitions = await executeQuery(
+    // Get quest definitions for pulse-related quests
+    const pulseQuestDefinitions = await executeQuery(
       `SELECT * FROM quest_definitions 
-       WHERE type = 'engagement' 
-       AND target_action IN ('create_pulse', 'comment_on_pulse', 'react_to_pulse', 'add_media_to_pulse')`
+       WHERE target_action IN ('create_pulse', 'comment_on_pulse', 'react_to_pulse', 'add_media_to_pulse')`
     );
     
-    if (engagementQuestDefinitions.length === 0) {
-      console.error('No engagement quest definitions found.');
+    if (pulseQuestDefinitions.length === 0) {
+      console.error('No pulse-related quest definitions found.');
       return;
     }
 
-    console.log(`Found ${engagementQuestDefinitions.length} engagement quest definitions`);
+    console.log(`Found ${pulseQuestDefinitions.length} pulse-related quest definitions`);
     
     // Log all quest definitions for debugging
     console.log('Quest definitions found:');
-    engagementQuestDefinitions.forEach(quest => {
-      console.log(`- ID: ${quest.id}, Title: ${quest.title}, Target Action: ${quest.target_action}`);
+    pulseQuestDefinitions.forEach(quest => {
+      console.log(`- ID: ${quest.id}, Title: ${quest.title}, Type: ${quest.type}, Target Action: ${quest.target_action}`);
     });
 
     // Assign 3 quests for the current week
     const questsToAssign = [
       // Quest 1: Hashtag Hero - Create pulses with hashtags
-      engagementQuestDefinitions.find(q => q.target_action === 'create_pulse'),
+      pulseQuestDefinitions.find(q => q.target_action === 'create_pulse'),
       // Quest 2: Meaningful Commenter - Comment on pulses
-      engagementQuestDefinitions.find(q => q.target_action === 'comment_on_pulse'),
+      pulseQuestDefinitions.find(q => q.target_action === 'comment_on_pulse'),
       // Quest 3: Media Maven - Add media to pulses
-      engagementQuestDefinitions.find(q => q.target_action === 'add_media_to_pulse')
+      pulseQuestDefinitions.find(q => q.target_action === 'add_media_to_pulse')
     ].filter(q => q); // Filter out undefined quests
     
     if (questsToAssign.length === 0) {
