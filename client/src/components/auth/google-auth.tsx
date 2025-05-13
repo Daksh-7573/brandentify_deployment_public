@@ -1,51 +1,105 @@
 import { useState } from "react";
-import { Loader2 } from "lucide-react";
+import { Loader2, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import { DomainAuthHelper } from "@/components/firebase/DomainAuthHelper";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { useToast } from "@/hooks/use-toast";
 
 /**
- * Google Authentication button component with proper error handling
- * Uses a popup sign-in with redirect fallback if popup is blocked
+ * Google Authentication button component with enhanced error handling
+ * Uses a popup sign-in with redirect as primary method
  */
 export function GoogleAuth() {
   const { signInWithGoogle, isLoading } = useAuth();
   const [showFirebaseHelp, setShowFirebaseHelp] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const { toast } = useToast();
   
   const handleSignIn = async () => {
     try {
-      // Clear any previous error states
+      // Reset error states
       setShowFirebaseHelp(false);
+      setErrorMessage(null);
       
-      // Make sure we're calling the sign-in method directly from a user interaction
-      // This is important to avoid popup blocking
+      // Log the click for debugging
       console.log("User clicked Google sign-in button");
       
-      // Call the signInWithGoogle function which should handle both popup and redirect
+      // Show toast to indicate we're initiating sign-in
+      toast({
+        title: "Initiating Google Sign-in",
+        description: "Please wait while we connect to Google...",
+      });
+      
+      // Call the signInWithGoogle function with forced redirect
       await signInWithGoogle();
     } catch (error: any) {
       console.error("Google sign-in failed:", error);
       
-      // Show Firebase domain help based on specific error codes
-      if (error?.code === 'auth/unauthorized-domain' || 
-          error?.message?.includes('domain') || 
-          error?.message?.includes('unauthorized')) {
-        console.log("Showing Firebase domain configuration helper");
+      const errorCode = error?.code || '';
+      const errorMsg = error?.message || 'Unknown error occurred';
+      
+      // Domain configuration issues
+      if (errorCode === 'auth/unauthorized-domain' || 
+          errorMsg.includes('domain') || 
+          errorMsg.includes('unauthorized')) {
+        
+        console.log("Firebase domain configuration issue detected");
         setShowFirebaseHelp(true);
-      } else if (error?.code === 'auth/popup-blocked' ||
-                error?.code === 'auth/popup-closed-by-user') {
-        // Don't show Firebase help for popup issues - these are handled in the auth context
-        console.log("Popup was blocked or closed by user - handled by auth context");
-      } else {
-        // For other errors, still show the domain helper as it might be domain-related
-        console.log("Showing Firebase domain configuration helper for unknown error");
-        setShowFirebaseHelp(true);
+        setErrorMessage("Firebase domain not authorized. Please add this domain to your Firebase project.");
       }
+      // Popup issues
+      else if (errorCode === 'auth/popup-blocked') {
+        console.log("Popup was blocked by browser");
+        setErrorMessage("Pop-up was blocked by your browser. We're trying to redirect you automatically.");
+        
+        // Show a specific toast for popup blocked
+        toast({
+          title: "Pop-up Blocked",
+          description: "Please allow pop-ups or wait for the redirect to complete.",
+          variant: "destructive"
+        });
+      }
+      else if (errorCode === 'auth/popup-closed-by-user') {
+        console.log("User closed the popup");
+        setErrorMessage("You closed the sign-in window. Please try again.");
+      }
+      // Generic network or initialization issues
+      else if (errorCode === 'auth/network-request-failed' || errorMsg.includes('network')) {
+        setErrorMessage("Network error. Please check your internet connection and try again.");
+      }
+      // Firebase not initialized or configuration issues
+      else if (errorCode === 'auth/internal-error' || errorMsg.includes('initialization')) {
+        setShowFirebaseHelp(true);
+        setErrorMessage("Firebase authentication error. Please check your Firebase configuration.");
+      }
+      // Default error case
+      else {
+        console.log("Showing generic error and Firebase helper");
+        setShowFirebaseHelp(true);
+        setErrorMessage(`Authentication error: ${errorMsg}`);
+      }
+      
+      // Always log the complete error for debugging
+      console.log({
+        errorCode,
+        errorMessage: errorMsg,
+        fullError: error
+      });
     }
   };
 
   return (
     <div className="space-y-4">
+      {/* Show error message if any */}
+      {errorMessage && (
+        <Alert variant="destructive" className="mb-4">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertTitle>Authentication Error</AlertTitle>
+          <AlertDescription>{errorMessage}</AlertDescription>
+        </Alert>
+      )}
+      
       <Button
         variant="outline"
         onClick={handleSignIn}

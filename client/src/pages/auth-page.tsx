@@ -15,7 +15,6 @@ import { Mail, Phone, Check } from "lucide-react";
 import { GoogleAuth } from "@/components/auth/google-auth";
 import { PhoneAuth } from "@/components/auth/phone-auth";
 import { EmailAuth } from "@/components/auth/email-auth";
-import { DemoLogin } from "@/components/auth/demo-login";
 
 export default function AuthPage() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -70,36 +69,12 @@ export default function AuthPage() {
                   </div>
                   
                   <GoogleAuth />
-                  
-                  <div className="relative w-full">
-                    <div className="absolute inset-0 flex items-center">
-                      <span className="w-full border-t border-gray-300" />
-                    </div>
-                    <div className="relative flex justify-center text-xs uppercase">
-                      <span className="bg-white px-2 text-gray-500">use demo mode</span>
-                    </div>
-                  </div>
-                  
-                  <DemoLogin />
                 </div>
               </TabsContent>
 
               {/* Phone Authentication */}
               <TabsContent value="phone">
-                <div className="space-y-6">
-                  <PhoneAuth />
-                  
-                  <div className="relative w-full">
-                    <div className="absolute inset-0 flex items-center">
-                      <span className="w-full border-t border-gray-300" />
-                    </div>
-                    <div className="relative flex justify-center text-xs uppercase">
-                      <span className="bg-white px-2 text-gray-500">use demo mode</span>
-                    </div>
-                  </div>
-                  
-                  <DemoLogin />
-                </div>
+                <PhoneAuth />
               </TabsContent>
             </Tabs>
           </CardContent>

@@ -1,14 +1,28 @@
-import { useState } from "react";
-import { Copy, Check, AlertTriangle } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Copy, Check, AlertTriangle, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { 
+  Card, 
+  CardHeader, 
+  CardTitle, 
+  CardDescription, 
+  CardContent, 
+  CardFooter 
+} from "@/components/ui/card";
 
 /**
- * Helper component that shows instructions for adding domains to Firebase
+ * Enhanced helper component that shows detailed instructions for adding domains to Firebase
  * when authentication fails due to domain issues
  */
 export function DomainAuthHelper() {
   const [copied, setCopied] = useState(false);
+  const [configCheck, setConfigCheck] = useState<{
+    projectIdExists: boolean;
+    apiKeyLength: number;
+    appIdLength: number;
+  } | null>(null);
+  
   const currentDomain = window.location.hostname;
   
   // List of domains to add to Firebase
@@ -18,6 +32,26 @@ export function DomainAuthHelper() {
     "*.replit.dev",
     "*.replit.app"
   ];
+  
+  // Check Firebase configuration on mount
+  useEffect(() => {
+    const checkFirebaseConfig = () => {
+      const viteFirebaseApiKey = import.meta.env.VITE_FIREBASE_API_KEY;
+      const viteFirebaseProjectId = import.meta.env.VITE_FIREBASE_PROJECT_ID;
+      const viteFirebaseAppId = import.meta.env.VITE_FIREBASE_APP_ID;
+      
+      const result = {
+        projectIdExists: !!viteFirebaseProjectId,
+        apiKeyLength: viteFirebaseApiKey?.length || 0,
+        appIdLength: viteFirebaseAppId?.length || 0
+      };
+      
+      console.log("Firebase config check:", result);
+      setConfigCheck(result);
+    };
+    
+    checkFirebaseConfig();
+  }, []);
   
   const copyInstructions = () => {
     const text = `Add these domains to Firebase Auth > Settings > Authorized domains:
@@ -34,29 +68,83 @@ ${domainsToAdd.map((domain, index) => `${index + 1}. ${domain}`).join('\n')}`;
   };
 
   return (
-    <Alert variant="destructive" className="mt-4 border-red-500">
-      <AlertTriangle className="h-5 w-5" />
-      <AlertTitle className="text-lg font-bold">Firebase Setup Required</AlertTitle>
-      <AlertDescription className="mt-2">
-        <p className="mb-2">
-          This domain needs to be added to Firebase authorized domains. Add these domains
-          to your Firebase console:
-        </p>
-        <div className="bg-gray-100 dark:bg-gray-800 p-3 rounded-md my-2">
-          <ul className="list-decimal pl-5 space-y-1">
-            {domainsToAdd.map((domain, index) => (
-              <li key={index} className="font-mono text-sm">{domain}</li>
-            ))}
-          </ul>
+    <Card className="mt-6 border-red-300 shadow-md">
+      <CardHeader className="bg-red-50 dark:bg-red-950/30">
+        <div className="flex items-start gap-2">
+          <AlertTriangle className="h-5 w-5 text-red-600 mt-1" />
+          <div>
+            <CardTitle className="text-lg font-bold text-red-700">Firebase Authentication Error</CardTitle>
+            <CardDescription className="text-red-600">
+              This domain is not authorized in your Firebase project configuration
+            </CardDescription>
+          </div>
         </div>
-        <p className="text-sm mt-2">
-          Go to Firebase Console → Authentication → Settings → Authorized domains → Add domain
-        </p>
+      </CardHeader>
+      
+      <CardContent className="pt-6">
+        <div className="space-y-4">
+          {/* Config Check Results */}
+          {configCheck && (
+            <div className="mb-6 bg-amber-50 p-3 rounded-md border border-amber-200">
+              <h4 className="font-semibold text-amber-800 mb-2 flex items-center">
+                <AlertTriangle className="h-4 w-4 mr-2 text-amber-600" />
+                Firebase Configuration Check
+              </h4>
+              <ul className="space-y-1 text-sm">
+                <li className="flex items-center">
+                  <span className={configCheck.projectIdExists ? "text-green-600" : "text-red-600"}>
+                    {configCheck.projectIdExists ? "✓" : "✗"} Project ID: {configCheck.projectIdExists ? "Found" : "Missing"}
+                  </span>
+                </li>
+                <li className="flex items-center">
+                  <span className={configCheck.apiKeyLength > 30 ? "text-green-600" : "text-red-600"}>
+                    {configCheck.apiKeyLength > 30 ? "✓" : "✗"} API Key: {configCheck.apiKeyLength > 0 ? "Length: " + configCheck.apiKeyLength : "Missing"}
+                  </span>
+                </li>
+                <li className="flex items-center">
+                  <span className={configCheck.appIdLength > 20 ? "text-green-600" : "text-red-600"}>
+                    {configCheck.appIdLength > 20 ? "✓" : "✗"} App ID: {configCheck.appIdLength > 0 ? "Length: " + configCheck.appIdLength : "Missing"}
+                  </span>
+                </li>
+              </ul>
+            </div>
+          )}
+        
+          <h3 className="font-semibold text-lg">To fix this issue:</h3>
+          
+          <div className="space-y-2">
+            <p className="mb-2">
+              Add these domains to your Firebase authorized domains list:
+            </p>
+            <div className="bg-gray-50 dark:bg-gray-900 p-3 rounded-md my-2 border border-gray-200 dark:border-gray-800">
+              <ul className="list-decimal pl-5 space-y-1">
+                {domainsToAdd.map((domain, index) => (
+                  <li key={index} className="font-mono text-sm select-all">{domain}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+          
+          <div className="bg-blue-50 dark:bg-blue-950/30 p-4 rounded-md space-y-2 border border-blue-200 dark:border-blue-900">
+            <h4 className="font-semibold text-blue-800 dark:text-blue-400">Step-by-step instructions:</h4>
+            <ol className="list-decimal pl-5 space-y-2 text-sm">
+              <li>Go to the <a href="https://console.firebase.google.com/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Firebase Console</a></li>
+              <li>Select your project</li>
+              <li>In the left sidebar, click on <strong className="font-semibold">Authentication</strong></li>
+              <li>Click on the <strong className="font-semibold">Settings</strong> tab</li>
+              <li>Scroll down to <strong className="font-semibold">Authorized domains</strong></li>
+              <li>Click <strong className="font-semibold">Add domain</strong> and add each domain from the list above</li>
+              <li>After adding all domains, return to this page and try signing in again</li>
+            </ol>
+          </div>
+        </div>
+      </CardContent>
+      
+      <CardFooter className="flex justify-between border-t pt-4">
         <Button 
           onClick={copyInstructions}
-          variant="outline" 
-          size="sm"
-          className="mt-3 text-xs"
+          variant="secondary" 
+          className="text-sm"
         >
           {copied ? (
             <>
@@ -64,11 +152,19 @@ ${domainsToAdd.map((domain, index) => `${index + 1}. ${domain}`).join('\n')}`;
             </>
           ) : (
             <>
-              <Copy className="h-4 w-4 mr-1" /> Copy Instructions
+              <Copy className="h-4 w-4 mr-1" /> Copy Domains
             </>
           )}
         </Button>
-      </AlertDescription>
-    </Alert>
+        
+        <Button
+          variant="default"
+          className="text-sm"
+          onClick={() => window.open("https://console.firebase.google.com/", "_blank")}
+        >
+          <ExternalLink className="h-4 w-4 mr-1" /> Open Firebase Console
+        </Button>
+      </CardFooter>
+    </Card>
   );
 }

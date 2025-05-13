@@ -253,16 +253,41 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
   }, [user, toast]);
 
-  // Sign in with Google - tries popup first, falls back to redirect
+  // Sign in with Google - use redirect for more reliable authentication
   const signInWithGoogle = async () => {
     try {
       setIsLoading(true);
+      console.log("Starting Google sign-in flow");
       
+      // Clear any previous auth state attempts
+      localStorage.removeItem('authAttemptInProgress');
+      
+      // Mark an auth attempt in progress to help debug redirect issues
+      localStorage.setItem('authAttemptInProgress', 'true');
+      localStorage.setItem('authAttemptTime', new Date().toISOString());
+      
+      // Add custom parameters to the provider
+      googleProvider.setCustomParameters({
+        prompt: 'select_account', // Force account selection every time
+        login_hint: '' // Clear any previous login hints
+      });
+      
+      console.log("Initiating redirect auth flow");
+      
+      // Use redirect as the primary method for more reliability
+      await signInWithRedirect(auth, googleProvider);
+      
+      // The rest of the code will only execute if redirect doesn't work
+      console.warn("Redirect did not trigger navigation - this should not happen");
+      
+      // If we somehow get here (should be rare), try popup as a fallback
       try {
-        // First try popup
+        console.log("Trying popup as fallback");
         const result = await signInWithPopup(auth, googleProvider);
         
         if (result.user) {
+          console.log("Popup sign-in successful");
+          
           // Create or update user in backend
           await createOrUpdateUserInBackend(result.user);
           
@@ -278,29 +303,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           }
         }
       } catch (popupError: any) {
-        // If popup is blocked, fall back to redirect
-        if (popupError.code === AuthErrorCodes.POPUP_BLOCKED || 
-            popupError.code === 'auth/popup-blocked') {
-          
-          toast({
-            title: "Pop up blocked",
-            description: "Redirecting you to sign in page again.",
-          });
-          
-          await signInWithRedirect(auth, googleProvider);
-          return;
-        }
-        
+        console.error("Popup fallback also failed:", popupError);
         throw popupError;
       }
     } catch (error: any) {
       console.error("Google sign-in error:", error);
       
+      // Log detailed error information
+      console.error({
+        errorCode: error?.code,
+        errorMessage: error?.message,
+        fullError: error
+      });
+      
+      // Only show toast for errors that aren't handled by the GoogleAuth component
       toast({
         title: "Authentication error",
         description: "There was a problem with Google sign-in. Please try again.",
         variant: "destructive"
       });
+      
+      throw error; // Re-throw for handling in the component
     } finally {
       setIsLoading(false);
     }
