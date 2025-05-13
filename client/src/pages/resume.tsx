@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
+import { useLocation } from 'wouter';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import { Resume } from '@/types/resume';
 
@@ -19,6 +20,7 @@ import { Zap, Upload, FileText, Eye, Edit2 } from 'lucide-react';
 export default function ResumePage() {
   const { user } = useAuth();
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
   const [activeTab, setActiveTab] = useState('shadow-resume');
 
   // Fetch user data
@@ -186,10 +188,20 @@ export default function ResumePage() {
       title="Resume & CV"
       description="View and manage your professional resume"
       actions={
-        <Button onClick={handleUploadResume} className="gap-2">
-          <Upload className="h-4 w-4" />
-          <span>Upload Resume</span>
-        </Button>
+        <div className="flex gap-2">
+          <Button onClick={handleUploadResume} className="gap-2">
+            <Upload className="h-4 w-4" />
+            <span>Upload Resume</span>
+          </Button>
+          <Button 
+            onClick={() => window.location.href = '/resume-parser'} 
+            className="gap-2"
+            variant="outline"
+          >
+            <FileText className="h-4 w-4" />
+            <span>Drop & Define</span>
+          </Button>
+        </div>
       }
     >
 

@@ -2119,6 +2119,16 @@ export default function Profile() {
                   <FileText className="h-4 w-4" />
                   Resume Builder
                 </Button>
+
+                <Button 
+                  onClick={() => setLocation('/resume-parser')}
+                  id="resume-upload-btn"
+                  className="flex items-center gap-2 bg-white border border-gray-200 hover:bg-gray-50"
+                  variant="outline"
+                >
+                  <FileText className="h-4 w-4" />
+                  Drop & Define
+                </Button>
                 <div className="text-right">
                   <p className="text-sm text-gray-500">Profile Completion</p>
                   <div className="flex items-center mt-1">
