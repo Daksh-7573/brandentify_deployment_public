@@ -25,6 +25,7 @@ const authDomains = [
   'localhost',                  // Local development
   '*.replit.dev',               // Replit dev domains  
   '*.replit.app',               // Replit app domains
+  '25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev', // Specific problematic domain
 ];
 
 // Allow additional test domains in development
@@ -44,11 +45,16 @@ console.log("Firebase initialization:", {
   domains: authDomains
 });
 
+// Check if we're on the specific problematic domain
+const isOnProblemDomain = currentHostname === "25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev";
+
 // Firebase configuration
 const firebaseConfig: FirebaseOptions = {
   apiKey,
-  // Use the first domain in our list as authDomain
-  authDomain: projectId ? `${projectId}.firebaseapp.com` : currentHostname,
+  // Use Firebase's domain for auth generally, but for our problematic domain, use it directly
+  authDomain: isOnProblemDomain 
+    ? currentHostname  // Use the exact problematic domain for authDomain
+    : (projectId ? `${projectId}.firebaseapp.com` : currentHostname),
   projectId,
   storageBucket: projectId ? `${projectId}.appspot.com` : undefined,
   // These are okay as defaults since they're not sensitive and are only used for optional features
