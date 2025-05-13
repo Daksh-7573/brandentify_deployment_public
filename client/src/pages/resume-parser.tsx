@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { AuthContext } from '@/context/auth-context';
 import { ResumeDrop } from '@/components/resume-parser/ResumeDrop';
 import { ResumeMapping } from '@/components/resume-parser/ResumeMapping';
@@ -10,6 +10,19 @@ export default function ResumeParserPage() {
   const { user } = useContext(AuthContext);
   const { toast } = useToast();
   const [, setLocation] = useLocation();
+  
+  // Debug helper
+  useEffect(() => {
+    console.log("ResumeParserPage mounted");
+    console.log("User is:", user);
+    
+    // Check if components exist
+    console.log("Components check:", {
+      ResumeDrop: !!ResumeDrop,
+      ResumeMapping: !!ResumeMapping,
+      Header: !!Header
+    });
+  }, [user]);
   
   const [extractedData, setExtractedData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
