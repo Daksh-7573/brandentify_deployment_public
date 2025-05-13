@@ -23,14 +23,11 @@ export default function AuthPage() {
   const [authMethod, setAuthMethod] = useState<"email" | "phone">("email");
   const [useDemoBypass, setUseDemoBypass] = useState(false);
   
-  // Check if we're on the problematic domain that needs bypass
+  // We used to bypass Google auth on the problematic domain, but now we're properly 
+  // supporting it directly and want to use Google auth instead
   useEffect(() => {
-    const currentHostname = window.location.hostname;
-    // If we're on the problematic domain that firebase doesn't work with
-    if (currentHostname === "25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev") {
-      console.log("Detected problematic domain - enabling demo bypass");
-      setUseDemoBypass(true);
-    }
+    // Instead of automatically enabling demo mode, we now properly support Google auth on all domains
+    setUseDemoBypass(false);
   }, []);
 
   // Redirect to dashboard if already authenticated

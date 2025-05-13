@@ -11,20 +11,12 @@ export function DemoLogin() {
   const { toast } = useToast();
   const [isBypassDomain, setIsBypassDomain] = useState(false);
   
-  // Check if we're on the domain that needs special handling
+  // We no longer need special handling for any domain as we've fixed Firebase auth
   useEffect(() => {
-    const currentHostname = window.location.hostname;
-    if (currentHostname === "25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev") {
-      setIsBypassDomain(true);
-    }
+    setIsBypassDomain(false);
   }, []);
   
-  // Auto-login on the problem domain
-  useEffect(() => {
-    if (isBypassDomain) {
-      handleDemoLogin();
-    }
-  }, [isBypassDomain]);
+  // Auto-login is disabled - now users must explicitly click the demo login button
 
   const handleDemoLogin = async () => {
     try {

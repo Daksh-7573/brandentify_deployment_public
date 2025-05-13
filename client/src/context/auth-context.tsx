@@ -122,6 +122,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(true);
     console.log("AuthProvider useEffect running - checking auth state");
     
+    // Clear demo mode from localStorage to ensure Firebase auth is used
+    localStorage.removeItem('demoMode');
+    
     // First check for redirect result
     const checkRedirectResult = async () => {
       try {
