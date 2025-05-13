@@ -227,13 +227,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const createOrUpdateUserInBackend = async (firebaseUser: FirebaseUser) => {
     try {
-      // Check if user exists first
-      const response = await apiRequest('POST', '/api/users', {
+      if (!firebaseUser || !firebaseUser.uid) {
+        console.error("Invalid firebase user data:", firebaseUser);
+        return null;
+      }
+      
+      // Make sure required fields exist
+      const userData = {
         username: firebaseUser.uid,
-        email: firebaseUser.email || `${firebaseUser.uid}@example.com`,
-        name: firebaseUser.displayName,
+        email: firebaseUser.email || `firebase_${firebaseUser.uid.substring(0, 8)}@example.com`,
+        name: firebaseUser.displayName || "Firebase User",
         photoURL: firebaseUser.photoURL
-      });
+      };
+      
+      console.log("Creating/updating user with data:", userData);
+      
+      // Check if user exists first
+      const response = await apiRequest('POST', '/api/users', userData);
+      
+      if (!response.ok) {
+        const errorData = await response.text();
+        console.error(`Failed to create/update user. Status: ${response.status}`, errorData);
+        return null;
+      }
       
       return await response.json();
     } catch (error) {
@@ -304,12 +320,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         errorMessage = "Sign-in popup was blocked or closed. Please try again.";
       } else if (error.code === 'auth/unauthorized-domain') {
         const currentDomain = window.location.hostname;
-        errorMessage = `This domain "${currentDomain}" is not authorized for Firebase authentication. Please add it to your Firebase console under Auth > Settings > Authorized domains.`;
-        console.log("Current domain:", currentDomain);
+        errorMessage = `This domain "${currentDomain}" is not authorized for Firebase authentication. Please see the console for instructions.`;
         
         // Display the domain in the console in a very visible way
-        console.log("%c ⚠️ ADD THIS DOMAIN TO FIREBASE AUTHORIZED DOMAINS ⚠️ ", "background: #ff0000; color: white; font-size: 16px; font-weight: bold; padding: 4px;");
-        console.log("%c " + currentDomain + " ", "background: #ff0000; color: white; font-size: 16px; font-weight: bold; padding: 4px;");
+        console.log("%c ⚠️ FIREBASE AUTHENTICATION ERROR - UNAUTHORIZED DOMAIN ⚠️ ", "background: #ff0000; color: white; font-size: 16px; font-weight: bold; padding: 4px;");
+        console.log("%c Add these domains to Firebase Auth > Settings > Authorized domains: ", "background: #333; color: white; font-size: 14px; padding: 4px;");
+        console.log("%c 1. " + currentDomain + " ", "background: #007bff; color: white; font-size: 14px; font-weight: bold; padding: 4px;");
+        console.log("%c 2. " + currentDomain + ".replit.app ", "background: #007bff; color: white; font-size: 14px; font-weight: bold; padding: 4px;");
+        console.log("%c 3. *.replit.dev ", "background: #007bff; color: white; font-size: 14px; font-weight: bold; padding: 4px;");
+        console.log("%c 4. *.replit.app ", "background: #007bff; color: white; font-size: 14px; font-weight: bold; padding: 4px;");
       } else if (error.message) {
         errorMessage = `Error: ${error.message}`;
       }
