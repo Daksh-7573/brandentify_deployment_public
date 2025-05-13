@@ -28,25 +28,29 @@ export const useQuestDefinitions = () => {
 };
 
 // Fetch user's active quests
-export const useUserQuests = (userId: number) => {
+export const useUserQuests = (userId?: number) => {
   return useQuery({
-    queryKey: [`/api/users/${userId}/quests`],
+    queryKey: [userId ? `/api/users/${userId}/quests` : null],
     queryFn: async () => {
+      if (!userId) {
+        return [] as UserQuest[]; // Return empty array if no user ID provided
+      }
+      
       try {
         const res = await fetch(`/api/users/${userId}/quests`);
         if (!res.ok) {
           console.error('Failed to fetch user quests, status:', res.status);
-          throw new Error('Failed to fetch user quests');
+          return [] as UserQuest[]; // Return empty array on error to avoid UI crashes
         }
         const contentType = res.headers.get('content-type');
         if (!contentType || !contentType.includes('application/json')) {
           console.error('Expected JSON but got', contentType);
-          throw new Error('Unexpected response format for quests');
+          return [] as UserQuest[]; // Return empty array on error to avoid UI crashes
         }
         return res.json() as Promise<UserQuest[]>;
       } catch (error) {
         console.error('Error fetching quests:', error);
-        throw error;
+        return [] as UserQuest[]; // Return empty array on error to avoid UI crashes
       }
     },
     enabled: !!userId
@@ -80,12 +84,20 @@ export const useUserQuestsWithDefinitions = (userId: number) => {
 };
 
 // Fetch user's weekly quests
-export const useUserWeeklyQuests = (userId: number, weekNumber: number, year: number) => {
+export const useUserWeeklyQuests = (userId?: number, weekNumber?: number, year?: number) => {
+  const currentWeek = weekNumber || getCurrentWeekNumber(new Date());
+  const currentYear = year || getCurrentYear();
+  
   return useQuery({
-    queryKey: [`/api/users/${userId}/quests/current-week`, weekNumber, year],
+    queryKey: [userId ? `/api/users/${userId}/quests/current-week` : null, currentWeek, currentYear],
     queryFn: async () => {
+      // If no user ID provided, return empty array
+      if (!userId) {
+        return [] as UserQuest[];
+      }
+      
       try {
-        // First try with current week for this user
+        // Get quests for current week for this user
         const currentWeekRes = await fetch(`/api/users/${userId}/quests/current-week`);
         if (currentWeekRes.ok) {
           const contentType = currentWeekRes.headers.get('content-type');
@@ -100,13 +112,7 @@ export const useUserWeeklyQuests = (userId: number, weekNumber: number, year: nu
           }
         }
         
-        // Don't automatically fall back to demo user - if no quests are found, return empty array
-        // This allows actual user data to be shown without demo fallback
-        if (userId !== 1) {
-          console.log(`No active quests found for user ${userId} in current week`);
-        }
-        
-        console.error('Failed to fetch any active weekly quests');
+        console.log(`No active quests found for user ${userId} in current week`);
         return []; // Return empty array to avoid UI errors
       } catch (error) {
         console.error('Error fetching weekly quests:', error);
@@ -118,25 +124,57 @@ export const useUserWeeklyQuests = (userId: number, weekNumber: number, year: nu
 };
 
 // Fetch user's XP information
-export const useUserXp = (userId: number) => {
+export const useUserXp = (userId?: number) => {
   return useQuery({
-    queryKey: [`/api/users/${userId}/xp`],
+    queryKey: [userId ? `/api/users/${userId}/xp` : null],
     queryFn: async () => {
+      if (!userId) {
+        // Return default XP object if no user ID provided
+        return { 
+          total: 0,
+          level: 0,
+          nextLevelXp: 100,
+          currentLevelXp: 0,
+          progressToNextLevel: 0
+        } as UserXp;
+      }
+      
       try {
         const res = await fetch(`/api/users/${userId}/xp`);
         if (!res.ok) {
           console.error('Failed to fetch user XP, status:', res.status);
-          throw new Error('Failed to fetch user XP');
+          // Return default XP object on error
+          return { 
+            total: 0,
+            level: 0,
+            nextLevelXp: 100,
+            currentLevelXp: 0,
+            progressToNextLevel: 0
+          } as UserXp;
         }
         const contentType = res.headers.get('content-type');
         if (!contentType || !contentType.includes('application/json')) {
           console.error('Expected JSON but got', contentType);
-          throw new Error('Unexpected response format');
+          // Return default XP object on error
+          return { 
+            total: 0,
+            level: 0,
+            nextLevelXp: 100,
+            currentLevelXp: 0,
+            progressToNextLevel: 0
+          } as UserXp;
         }
         return res.json() as Promise<UserXp>;
       } catch (error) {
         console.error('Error fetching XP:', error);
-        throw error;
+        // Return default XP object on error
+        return { 
+          total: 0,
+          level: 0,
+          nextLevelXp: 100,
+          currentLevelXp: 0,
+          progressToNextLevel: 0
+        } as UserXp;
       }
     },
     enabled: !!userId
@@ -144,25 +182,29 @@ export const useUserXp = (userId: number) => {
 };
 
 // Fetch user's badges
-export const useUserBadges = (userId: number) => {
+export const useUserBadges = (userId?: number) => {
   return useQuery({
-    queryKey: [`/api/users/${userId}/badges`],
+    queryKey: [userId ? `/api/users/${userId}/badges` : null],
     queryFn: async () => {
+      if (!userId) {
+        return [] as UserBadge[]; // Return empty array if no user ID
+      }
+      
       try {
         const res = await fetch(`/api/users/${userId}/badges`);
         if (!res.ok) {
           console.error('Failed to fetch user badges, status:', res.status);
-          throw new Error('Failed to fetch user badges');
+          return [] as UserBadge[]; // Return empty array on error
         }
         const contentType = res.headers.get('content-type');
         if (!contentType || !contentType.includes('application/json')) {
           console.error('Expected JSON but got', contentType);
-          throw new Error('Unexpected response format for badges');
+          return [] as UserBadge[]; // Return empty array on error
         }
         return res.json() as Promise<UserBadge[]>;
       } catch (error) {
         console.error('Error fetching badges:', error);
-        throw error;
+        return [] as UserBadge[]; // Return empty array on error
       }
     },
     enabled: !!userId

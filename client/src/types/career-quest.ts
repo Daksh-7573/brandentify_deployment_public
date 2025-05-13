@@ -83,15 +83,22 @@ export interface UserQuest {
 }
 
 export interface UserXp {
-  id: number;
-  userId: number;
-  balance: number;
-  lifetimeEarned: number;
-  currentMonthEarned: number;
+  id?: number;
+  userId?: number;
+  balance?: number;
+  lifetimeEarned?: number;
+  currentMonthEarned?: number;
   lastEarnedAt?: string;
   lastResetAt?: string;
-  createdAt: string;
-  updatedAt: string;
+  createdAt?: string;
+  updatedAt?: string;
+  
+  // Fields used by the UI display logic
+  total: number;
+  level: number;
+  nextLevelXp: number;
+  currentLevelXp: number;
+  progressToNextLevel: number;
 }
 
 export interface UserBadge {
