@@ -85,12 +85,22 @@ try {
   // Check if we're on the problematic domain
   const isProblemDomain = hostname === "25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev";
   
-  googleProvider.setCustomParameters({
-    // Force account selection even if user is already signed in
-    prompt: 'select_account',
-    // Include all domains as authorized redirect domains
-    login_hint: ''
-  });
+  // Set custom parameters based on whether we're on the problematic domain
+  if (isProblemDomain) {
+    // For the problematic domain, specify an explicit redirect URI that matches the origin
+    googleProvider.setCustomParameters({
+      prompt: 'select_account',
+      login_hint: '',
+      redirect_uri: `${origin}/auth-callback`  // Explicitly set redirect URI for the problematic domain
+    });
+    console.log(`Special handling for problematic domain: ${hostname} with redirect_uri: ${origin}/auth-callback`);
+  } else {
+    // For all other domains, use standard settings
+    googleProvider.setCustomParameters({
+      prompt: 'select_account',
+      login_hint: ''
+    });
+  }
   
   // Enable login persistence is set at the time of signin, not here
   

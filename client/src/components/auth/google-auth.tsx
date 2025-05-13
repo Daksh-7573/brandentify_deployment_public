@@ -3,6 +3,7 @@ import { Loader2, AlertTriangle, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import { DomainAuthHelper } from "@/components/firebase/DomainAuthHelper";
+import { DomainAuthAlert } from "@/components/auth/domain-auth-alert";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { logAuthError, checkFirebaseConfig, getFriendlyAuthErrorMessage } from "@/utils/auth-diagnostics";
@@ -122,6 +123,9 @@ export function GoogleAuth() {
 
   return (
     <div className="space-y-4">
+      {/* Show domain auth alert for problematic domain */}
+      <DomainAuthAlert />
+      
       {/* Show configuration issues if any */}
       {configIssues.length > 0 && (
         <Alert variant="destructive" className="mb-4">
