@@ -1,10 +1,11 @@
-import { useState } from "react";
-import { Loader2, AlertTriangle } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Loader2, AlertTriangle, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import { DomainAuthHelper } from "@/components/firebase/DomainAuthHelper";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
+import { logAuthError, checkFirebaseConfig, getFriendlyAuthErrorMessage } from "@/utils/auth-diagnostics";
 
 /**
  * Google Authentication button component with enhanced error handling
@@ -14,16 +15,38 @@ export function GoogleAuth() {
   const { signInWithGoogle, isLoading } = useAuth();
   const [showFirebaseHelp, setShowFirebaseHelp] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [configIssues, setConfigIssues] = useState<string[]>([]);
   const { toast } = useToast();
+  
+  // Check Firebase configuration on component mount
+  useEffect(() => {
+    const config = checkFirebaseConfig();
+    if (!config.isConfigured) {
+      setConfigIssues(config.issues);
+      setShowFirebaseHelp(true);
+      console.warn("Firebase configuration issues detected:", config);
+    }
+  }, []);
   
   const handleSignIn = async () => {
     try {
       // Reset error states
       setShowFirebaseHelp(false);
       setErrorMessage(null);
+      setConfigIssues([]);
+      
+      // Check Firebase config before proceeding
+      const config = checkFirebaseConfig();
+      if (!config.isConfigured) {
+        setConfigIssues(config.issues);
+        setShowFirebaseHelp(true);
+        setErrorMessage("Firebase configuration is incomplete. Please check the application setup.");
+        console.error("Firebase configuration issues:", config);
+        return;
+      }
       
       // Log the click for debugging
-      console.log("User clicked Google sign-in button");
+      console.log("User clicked Google sign-in button with valid configuration");
       
       // Show toast to indicate we're initiating sign-in
       toast({
@@ -31,10 +54,14 @@ export function GoogleAuth() {
         description: "Please wait while we connect to Google...",
       });
       
-      // Call the signInWithGoogle function with forced redirect
+      // Call the signInWithGoogle function
       await signInWithGoogle();
     } catch (error: any) {
-      console.error("Google sign-in failed:", error);
+      // Use our diagnostic utility for comprehensive error logging
+      logAuthError(error, "GoogleAuth.handleSignIn");
+      
+      // Get user-friendly error message
+      const friendlyMessage = getFriendlyAuthErrorMessage(error);
       
       const errorCode = error?.code || '';
       const errorMsg = error?.message || 'Unknown error occurred';
@@ -77,22 +104,32 @@ export function GoogleAuth() {
       else {
         console.log("Showing generic error and Firebase helper");
         setShowFirebaseHelp(true);
-        setErrorMessage(`Authentication error: ${errorMsg}`);
+        setErrorMessage(friendlyMessage || `Authentication error: ${errorMsg}`);
       }
-      
-      // Always log the complete error for debugging
-      console.log({
-        errorCode,
-        errorMessage: errorMsg,
-        fullError: error
-      });
     }
   };
 
   return (
     <div className="space-y-4">
+      {/* Show configuration issues if any */}
+      {configIssues.length > 0 && (
+        <Alert variant="destructive" className="mb-4">
+          <AlertTriangle className="h-4 w-4 mt-0.5" />
+          <div>
+            <AlertTitle>Firebase Configuration Issues</AlertTitle>
+            <AlertDescription>
+              <ul className="list-disc pl-5 mt-2 space-y-1 text-sm">
+                {configIssues.map((issue, index) => (
+                  <li key={index}>{issue}</li>
+                ))}
+              </ul>
+            </AlertDescription>
+          </div>
+        </Alert>
+      )}
+      
       {/* Show error message if any */}
-      {errorMessage && (
+      {errorMessage && !configIssues.length && (
         <Alert variant="destructive" className="mb-4">
           <AlertTriangle className="h-4 w-4" />
           <AlertTitle>Authentication Error</AlertTitle>
@@ -103,7 +140,7 @@ export function GoogleAuth() {
       <Button
         variant="outline"
         onClick={handleSignIn}
-        disabled={isLoading}
+        disabled={isLoading || configIssues.length > 0}
         className="w-full"
       >
         {isLoading ? (
@@ -135,8 +172,33 @@ export function GoogleAuth() {
         Continue with Google
       </Button>
       
+      {/* Diagnostic info to help with debugging */}
+      <div className="text-xs text-gray-500 mt-1 text-center">
+        {navigator.onLine ? (
+          <span className="text-green-600">✓ Connected to Internet</span>
+        ) : (
+          <span className="text-red-600">✗ No Internet Connection</span>
+        )}
+        {' • '}
+        <span className="font-mono">{window.location.hostname}</span>
+      </div>
+      
       {/* Show Firebase domain helper if needed */}
       {showFirebaseHelp && <DomainAuthHelper />}
+      
+      {/* Link to test auth in Firebase */}
+      {configIssues.length === 0 && (
+        <div className="text-center mt-2">
+          <Button
+            variant="link"
+            className="text-xs text-blue-600 h-auto p-0"
+            onClick={() => window.open('https://console.firebase.google.com/project/_/authentication/providers', '_blank')}
+          >
+            <ExternalLink className="h-3 w-3 mr-1" />
+            Open Firebase Authentication Settings
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

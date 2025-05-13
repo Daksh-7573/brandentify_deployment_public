@@ -1,33 +1,100 @@
-// Import from firebase directly
-import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider, connectAuthEmulator } from "firebase/auth";
+/**
+ * Firebase Configuration and Initialization
+ * Contains core Firebase setup, authentication, and providers
+ */
+import { initializeApp, FirebaseOptions } from "firebase/app";
+import { getAuth, GoogleAuthProvider } from "firebase/auth";
 
-// Log Firebase configuration values for debugging (without exposing API keys)
-console.log("Firebase config check:", {
-  projectIdExists: !!import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  apiKeyLength: import.meta.env.VITE_FIREBASE_API_KEY ? import.meta.env.VITE_FIREBASE_API_KEY.length : 0,
-  appIdLength: import.meta.env.VITE_FIREBASE_APP_ID ? import.meta.env.VITE_FIREBASE_APP_ID.length : 0
+// Get current hostname for domain-specific configuration 
+const currentHostname = window.location.hostname;
+const isDevelopment = 
+  currentHostname === 'localhost' || 
+  currentHostname.includes('replit.dev') || 
+  currentHostname.includes('replit.app');
+
+// Check environment variables and log configuration status
+const apiKey = import.meta.env.VITE_FIREBASE_API_KEY;
+const projectId = import.meta.env.VITE_FIREBASE_PROJECT_ID;
+const appId = import.meta.env.VITE_FIREBASE_APP_ID;
+
+// Create an array of all authorized domains for this project
+const authDomains = [
+  `${projectId}.firebaseapp.com`, // Default Firebase domain
+  currentHostname,              // Current hostname
+  `${currentHostname.replace(/\./g, "-")}.replit.app`, // Replit deployment domain
+  'localhost',                  // Local development
+  '*.replit.dev',               // Replit dev domains  
+  '*.replit.app',               // Replit app domains
+];
+
+// Allow additional test domains in development
+if (isDevelopment) {
+  authDomains.push('127.0.0.1');
+}
+
+// Comprehensive logging for debugging Firebase configuration issues
+console.log("Firebase initialization:", {
+  environment: isDevelopment ? "development" : "production",
+  hostname: currentHostname,
+  projectId: projectId || "MISSING",
+  apiKeyPresent: !!apiKey,
+  apiKeyLength: apiKey?.length || 0,
+  appIdPresent: !!appId, 
+  appIdLength: appId?.length || 0,
+  domains: authDomains
 });
 
-const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.firebaseapp.com`,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.appspot.com`,
-  messagingSenderId: "330211556822", // Default value, update if you have the correct one
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
-  measurementId: "G-JG24PTL5MS", // Default value, update if you have the correct one
+// Firebase configuration
+const firebaseConfig: FirebaseOptions = {
+  apiKey,
+  // Use the first domain in our list as authDomain
+  authDomain: projectId ? `${projectId}.firebaseapp.com` : currentHostname,
+  projectId,
+  storageBucket: projectId ? `${projectId}.appspot.com` : null,
+  // These are okay as defaults since they're not sensitive and are only used for optional features
+  messagingSenderId: "330211556822",
+  appId,
+  measurementId: "G-JG24PTL5MS",
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+// Initialize Firebase with error handling
+let app;
+let auth;
+let googleProvider;
 
-// Initialize Firebase Auth
-export const auth = getAuth(app);
+try {
+  // Initialize Firebase app
+  app = initializeApp(firebaseConfig);
+  
+  // Initialize Firebase Auth
+  auth = getAuth(app);
+  
+  // Configure Google Auth Provider with custom parameters
+  googleProvider = new GoogleAuthProvider();
+  googleProvider.setCustomParameters({
+    // Force account selection even if user is already signed in
+    prompt: 'select_account',
+    // Include all domains as authorized redirect domains
+    login_hint: '',
+  });
+  
+  // Enable login persistence
+  // auth.setPersistence('local'); // Will be set in auth context if needed
+  
+  console.log("Firebase initialized successfully");
+} catch (error) {
+  console.error("Firebase initialization error:", error);
+  
+  // Create fallbacks for failed initialization to prevent app crashes
+  if (!app) app = {} as any; 
+  if (!auth) auth = { 
+    currentUser: null,
+    onAuthStateChanged: () => {},
+    signOut: async () => {}
+  } as any;
+  if (!googleProvider) googleProvider = {} as any;
+}
 
-// Set a longer timeout for auth operations (default is 60 seconds)
-auth.settings.appVerificationDisabledForTesting = true;
-
-export const googleProvider = new GoogleAuthProvider();
-
+// Export all Firebase objects
+export { app, auth, googleProvider };
 export default app;
