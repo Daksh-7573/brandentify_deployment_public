@@ -99,6 +99,10 @@ function Router() {
         const AuthDebugPage = require("@/pages/auth-debug").default;
         return <AuthDebugPage />;
       }} />
+      <Route path="/auth-popup-debug" component={() => {
+        const AuthPopupDebugPage = require("@/pages/auth-popup-debug").default;
+        return <AuthPopupDebugPage />;
+      }} />
       <Route path="/verify-email" component={EmailVerification} />
       <Route path="/quest-demo" component={QuestDemoPage} />
       <Route path="/dashboard">
