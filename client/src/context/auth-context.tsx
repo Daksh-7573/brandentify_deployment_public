@@ -264,7 +264,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
   }, [user, toast]);
 
-  // Sign in with Google - try direct redirect for problematic domains
+  // Sign in with Google - simplified to use only redirect auth
   const signInWithGoogle = async () => {
     try {
       setIsLoading(true);
@@ -277,93 +277,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem('authAttemptInProgress', 'true');
       localStorage.setItem('authAttemptTime', new Date().toISOString());
       
-      // Check if we're on the problematic domain
-      const currentHostname = window.location.hostname;
-      const isOnProblemDomain = currentHostname === "25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev";
+      console.log("Using redirect auth flow for all domains");
       
-      // Use redirect auth for the problematic domain
-      if (isOnProblemDomain) {
-        console.log("On problematic domain, using redirect auth directly");
-        await signInWithRedirect(auth, googleProvider);
-        return; // This function will resume after redirect
-      }
-      
-      console.log("Initiating popup auth flow");
-      
-      // Use popup for all other domains
-      const result = await signInWithPopup(auth, googleProvider);
-      
-      if (result && result.user) {
-        console.log("Popup sign-in successful! User:", result.user.uid);
-        
-        // Create or update user in our backend
-        console.log("Creating/updating user in backend after popup");
-        await createOrUpdateUserInBackend(result.user);
-        
-        // Then fetch the user data
-        console.log("Fetching user data after popup");
-        const userData = await fetchUserData(result.user.uid);
-        
-        if (userData) {
-          console.log("Setting user state with backend data after popup:", userData);
-          setUser(userData);
-          toast({
-            title: "Signed in successfully",
-            description: `Welcome${userData.name ? ` ${userData.name}` : ''}!`,
-          });
-        } else {
-          // If we couldn't get backend data, use Firebase data as fallback
-          console.log("Using Firebase data as fallback after popup");
-          const fallbackUser = {
-            uid: result.user.uid,
-            id: parseInt(result.user.uid.substring(0, 5), 36) || 999,
-            username: result.user.uid.substring(0, 8),
-            email: result.user.email,
-            name: result.user.displayName,
-            photoURL: result.user.photoURL
-          };
-          
-          setUser(fallbackUser);
-          toast({
-            title: "Signed in successfully",
-            description: `Welcome${fallbackUser.name ? ` ${fallbackUser.name}` : ''}!`,
-          });
-        }
-      }
+      // Always use redirect auth for simplicity and consistency
+      await signInWithRedirect(auth, googleProvider);
     } catch (error: any) {
       console.error("Google sign-in error:", error);
       
       // Log detailed error information for debugging
       logAuthError(error, "signInWithGoogle");
       
-      // Try redirect as a fallback if popup fails
-      if (error.code === 'auth/popup-blocked' || error.code === 'auth/popup-closed-by-user') {
-        try {
-          console.log("Popup blocked or closed, trying redirect as fallback");
-          toast({
-            title: "Popup was blocked",
-            description: "Trying alternative sign-in method...",
-          });
-          
-          // Try redirect instead
-          await signInWithRedirect(auth, googleProvider);
-          // Code after this line won't execute until redirect completes and user returns
-          console.log("Redirect initiated");
-        } catch (redirectError: any) {
-          console.error("Redirect fallback also failed:", redirectError);
-          logAuthError(redirectError, "signInWithGoogle.redirectFallback");
-          throw redirectError;
-        }
-      } else {
-        // Only show toast for errors that aren't handled by the GoogleAuth component
-        toast({
-          title: "Authentication error",
-          description: "There was a problem with Google sign-in. Please try again.",
-          variant: "destructive"
-        });
-        
-        throw error; // Re-throw for handling in the component
-      }
+      // Show error toast for all authentication errors
+      toast({
+        title: "Authentication error",
+        description: "There was a problem with Google sign-in. Please try again.",
+        variant: "destructive"
+      });
+      
+      throw error; // Re-throw for handling in the component
     } finally {
       setIsLoading(false);
     }

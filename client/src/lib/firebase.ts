@@ -89,9 +89,7 @@ try {
     // Force account selection even if user is already signed in
     prompt: 'select_account',
     // Include all domains as authorized redirect domains
-    login_hint: '',
-    // Set redirect URL to auth-callback for the problematic domain
-    redirect_uri: `${origin}/${isProblemDomain ? 'auth-callback' : 'auth'}`
+    login_hint: ''
   });
   
   // Enable login persistence is set at the time of signin, not here
