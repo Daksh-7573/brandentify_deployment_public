@@ -31,7 +31,7 @@ import MuskMatchPage from "@/pages/musk-match";
 import ResumePage from "@/pages/resume";
 import ResumeCV from "@/pages/resume-cv";
 import ResumeEditor from "@/pages/resume-editor";
-import ResumeParserPage from "@/pages/resume-parser";
+// Resume Parser page removed per request
 import UnifiedProfilePage from "@/pages/unified-profile";
 import FeedTestPage from "@/pages/feed-test";
 import CareerQuestsPage from "@/pages/career-quests";
@@ -44,7 +44,7 @@ import ManageServicesPage from "@/pages/manage-services";
 // TestNowboardPage import removed as it's no longer needed
 import ChatPage from "@/pages/ChatPage"; // Chat messaging feature
 import PrivacyPage from "@/pages/privacy"; // Privacy & Data Control page
-import QuestDemoPage from "@/pages/quest-demo"; // Quest Demo Page
+// Quest Demo Page removed per request
 import CookieConsentBanner from "@/components/privacy/cookie-consent-banner"; // Cookie consent banner
 // Lazy load the SharedCardPage to improve performance and show loader immediately
 import { lazy, Suspense } from "react";
@@ -104,7 +104,7 @@ function Router() {
         return <AuthPopupDebugPage />;
       }} />
       <Route path="/verify-email" component={EmailVerification} />
-      <Route path="/quest-demo" component={QuestDemoPage} />
+      {/* Quest demo route removed per request */}
       <Route path="/dashboard">
         <ProtectedRoute path="/dashboard" component={() => <Redirect to="/industry-pulse" />} />
       </Route>
@@ -165,9 +165,7 @@ function Router() {
           return <FixedResumeEditor />;
         }} />}
       </Route>
-      <Route path="/resume-parser">
-        <ProtectedRoute path="/resume-parser" component={ResumeParserPage} />
-      </Route>
+      {/* Resume parser route removed per request */}
       <Route path="/feed-test">
         <ProtectedRoute path="/feed-test" component={FeedTestPage} />
       </Route>

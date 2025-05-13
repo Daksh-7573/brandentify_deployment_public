@@ -193,14 +193,7 @@ export default function ResumePage() {
             <Upload className="h-4 w-4" />
             <span>Upload Resume</span>
           </Button>
-          <Button 
-            onClick={() => setLocation('/resume-parser')} 
-            className="gap-2"
-            variant="outline"
-          >
-            <FileText className="h-4 w-4" />
-            <span>Drop & Define</span>
-          </Button>
+          {/* "Drop & Define" button removed per request */}
         </div>
       }
     >
