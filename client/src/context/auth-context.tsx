@@ -412,7 +412,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const signInWithGoogle = async () => {
+  const signInWithGoogle = async (): Promise<void> => {
     setIsLoading(true);
     try {
       // Log Firebase configuration for debugging
@@ -427,15 +427,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       googleProvider.addScope('email');
       googleProvider.addScope('profile');
       
+      let firebaseUser: FirebaseUser | null = null;
+      
       // Try popup first, and fall back to redirect if needed
       try {
         // Use popup for sign-in as the primary method
         console.log("Attempting Google sign-in with popup...");
-        const result = await signInWithPopup(auth, googleProvider);
+        const popupResult = await signInWithPopup(auth, googleProvider);
         
         // If we get here, popup was successful
-        console.log("Google sign-in successful:", result.user);
-        return result;
+        console.log("Google sign-in successful:", popupResult.user);
+        firebaseUser = popupResult.user;
       } catch (popupError: any) {
         console.error("Popup sign-in error:", popupError);
         
@@ -459,6 +461,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           
           // This function will return without a result when using redirect
           // The redirect result will be handled in the useEffect
+          setIsLoading(false);
           return;
         }
         
@@ -466,16 +469,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         throw popupError;
       }
       
-      // The result variable might not be defined if we used redirect
-      // So we need to check for it
-      const authenticatedUser = result?.user;
-      
-      if (authenticatedUser) {
+      // Process the Firebase user from popup sign-in
+      if (firebaseUser) {
         // Create or update user in our backend
-        await createOrUpdateUserInBackend(authenticatedUser);
+        await createOrUpdateUserInBackend(firebaseUser);
         
         // Now fetch the complete user data from our backend
-        const backendUserData = await fetchUserData(result.user.uid);
+        const backendUserData = await fetchUserData(firebaseUser.uid);
         
         // If we got data from backend, use it
         if (backendUserData) {
@@ -483,18 +483,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         } else {
           // Fallback to Firebase data if backend fetch fails
           setUser({
-            uid: result.user.uid,
-            id: parseInt(result.user.uid.substring(0, 5), 36) || 999,
-            username: result.user.uid.substring(0, 8),
-            email: result.user.email,
-            name: result.user.displayName,
-            photoURL: result.user.photoURL
+            uid: firebaseUser.uid,
+            id: parseInt(firebaseUser.uid.substring(0, 5), 36) || 999,
+            username: firebaseUser.uid.substring(0, 8),
+            email: firebaseUser.email,
+            name: firebaseUser.displayName,
+            photoURL: firebaseUser.photoURL
           });
         }
         
         toast({
           title: "Successfully signed in!",
-          description: "Welcome to Brandentifier"
+          description: `Welcome${backendUserData?.name ? ` ${backendUserData.name}` : ''}!`
         });
       }
     } catch (error: any) {
