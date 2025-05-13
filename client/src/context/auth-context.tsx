@@ -286,39 +286,51 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       googleProvider.addScope('email');
       googleProvider.addScope('profile');
       
-      // Try popup instead of redirect
-      console.log("Attempting Google sign-in with popup...");
-      const result = await signInWithPopup(auth, googleProvider);
+      // Set auth persistence to LOCAL to persist user sessions
+      // await setPersistence(auth, browserLocalPersistence);
       
-      // If we get here, popup was successful
-      console.log("Google sign-in successful:", result.user);
-      
-      if (result.user) {
-        // Create or update user in our backend
-        await createOrUpdateUserInBackend(result.user);
+      // Try redirect first, with proper error handling for popup blockers
+      try {
+        console.log("Attempting Google sign-in with redirect...");
+        await signInWithRedirect(auth, googleProvider);
+        return; // This should redirect, so the function ends here
+      } catch (redirectError: any) {
+        console.error("Error with redirect sign-in, falling back to popup:", redirectError);
         
-        // Now fetch the complete user data from our backend
-        const backendUserData = await fetchUserData(result.user.uid);
+        // If redirect fails (often due to mobile issues), try popup
+        console.log("Attempting Google sign-in with popup...");
+        const result = await signInWithPopup(auth, googleProvider);
         
-        // If we got data from backend, use it
-        if (backendUserData) {
-          setUser(backendUserData);
-        } else {
-          // Fallback to Firebase data if backend fetch fails
-          setUser({
-            uid: result.user.uid,
-            id: parseInt(result.user.uid.substring(0, 5), 36) || 999,
-            username: result.user.uid.substring(0, 8),
-            email: result.user.email,
-            name: result.user.displayName,
-            photoURL: result.user.photoURL
+        // If we get here, popup was successful
+        console.log("Google sign-in successful:", result.user);
+        
+        if (result.user) {
+          // Create or update user in our backend
+          await createOrUpdateUserInBackend(result.user);
+          
+          // Now fetch the complete user data from our backend
+          const backendUserData = await fetchUserData(result.user.uid);
+          
+          // If we got data from backend, use it
+          if (backendUserData) {
+            setUser(backendUserData);
+          } else {
+            // Fallback to Firebase data if backend fetch fails
+            setUser({
+              uid: result.user.uid,
+              id: parseInt(result.user.uid.substring(0, 5), 36) || 999,
+              username: result.user.uid.substring(0, 8),
+              email: result.user.email,
+              name: result.user.displayName,
+              photoURL: result.user.photoURL
+            });
+          }
+          
+          toast({
+            title: "Successfully signed in!",
+            description: "Welcome to Brandentifier"
           });
         }
-        
-        toast({
-          title: "Successfully signed in!",
-          description: "Welcome to Brandentifier"
-        });
       }
     } catch (error: any) {
       console.error("Error signing in with Google:", error);
