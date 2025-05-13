@@ -194,7 +194,7 @@ export default function ResumePage() {
             <span>Upload Resume</span>
           </Button>
           <Button 
-            onClick={() => window.location.href = '/resume-parser'} 
+            onClick={() => setLocation('/resume-parser')} 
             className="gap-2"
             variant="outline"
           >
