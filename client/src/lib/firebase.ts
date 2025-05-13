@@ -77,11 +77,17 @@ try {
   
   // Configure Google Auth Provider with custom parameters
   googleProvider = new GoogleAuthProvider();
+  
+  // Get full origin for proper redirects
+  const origin = window.location.origin;
+  
   googleProvider.setCustomParameters({
     // Force account selection even if user is already signed in
     prompt: 'select_account',
     // Include all domains as authorized redirect domains
     login_hint: '',
+    // Set redirect URL to current origin to handle problematic domains
+    redirect_uri: `${origin}/auth`
   });
   
   // Enable login persistence is set at the time of signin, not here

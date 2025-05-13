@@ -86,6 +86,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Landing} />
+      <Route path="/auth-callback" component={AuthPage} />
       <Route path="/auth" component={AuthPage} />
       <Route path="/auth-test" component={FirebaseAuthTest} />
       <Route path="/verify-email" component={EmailVerification} />

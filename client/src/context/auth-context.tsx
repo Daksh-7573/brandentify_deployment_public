@@ -256,7 +256,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
   }, [user, toast]);
 
-  // Sign in with Google - use popup authentication as primary method
+  // Sign in with Google - try direct redirect for problematic domains
   const signInWithGoogle = async () => {
     try {
       setIsLoading(true);
@@ -269,9 +269,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem('authAttemptInProgress', 'true');
       localStorage.setItem('authAttemptTime', new Date().toISOString());
       
+      // Check if we're on the problematic domain
+      const currentHostname = window.location.hostname;
+      const isOnProblemDomain = currentHostname === "25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev";
+      
+      // Use redirect auth for the problematic domain
+      if (isOnProblemDomain) {
+        console.log("On problematic domain, using redirect auth directly");
+        await signInWithRedirect(auth, googleProvider);
+        return; // This function will resume after redirect
+      }
+      
       console.log("Initiating popup auth flow");
       
-      // Use popup as the primary method since it's more reliable for this app
+      // Use popup for all other domains
       const result = await signInWithPopup(auth, googleProvider);
       
       if (result && result.user) {
