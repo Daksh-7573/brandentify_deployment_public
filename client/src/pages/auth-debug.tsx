@@ -6,6 +6,7 @@ import { getAuth, onAuthStateChanged, signInWithRedirect, GoogleAuthProvider } f
 import { initializeApp, FirebaseApp } from 'firebase/app';
 import { AlertCircle, Check, Info, X } from 'lucide-react';
 import { logOAuthFlowDetails, logDetailedAuthError } from '@/utils/auth-error-logger';
+import { useAuth } from '@/hooks/use-auth';
 
 // Define types for our state
 interface FirebaseState {
@@ -134,47 +135,22 @@ export default function AuthDebugPage() {
     }
   }, []);
 
+  // Get the authentication context
+  const auth = useAuth();
+  
   // Handle sign in with Google
   const handleSignInWithGoogle = async () => {
     try {
       setState(prev => ({ ...prev, signInAttempted: true, error: null }));
       
-      // Initialize Firebase app with the same config
-      const firebaseConfig = {
-        apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-        authDomain: import.meta.env.VITE_FIREBASE_PROJECT_ID ? 
-          `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.firebaseapp.com` : 
-          domainInfo.hostname,
-        projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-        storageBucket: import.meta.env.VITE_FIREBASE_PROJECT_ID ? 
-          `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.appspot.com` : 
-          undefined,
-        messagingSenderId: "330211556822",
-        appId: import.meta.env.VITE_FIREBASE_APP_ID,
-      };
-      
-      // Get the app and auth instances
-      const app = initializeApp(firebaseConfig, 'debug-signin-instance');
-      const auth = getAuth(app);
-      
-      // Configure Google provider
-      const googleProvider = new GoogleAuthProvider();
-      
-      // Configure provider for the problematic domain
-      if (domainInfo.isProblemDomain) {
-        const redirectUrl = `${window.location.origin}/auth-callback`;
-        googleProvider.setCustomParameters({
-          prompt: 'select_account',
-          redirect_uri: redirectUrl
-        });
-        
-        console.log("Debug sign-in: Using custom redirect URL:", redirectUrl);
-      }
-      
-      // Attempt to sign in with Google
-      console.log("Initiating debug sign-in with Google redirect...");
+      // Store debug information
       localStorage.setItem('auth_debug_attempt_time', new Date().toISOString());
-      await signInWithRedirect(auth, googleProvider);
+      localStorage.setItem('auth_debug_source', 'auth-debug-page');
+      
+      console.log("Initiating debug sign-in with Google redirect...");
+      
+      // Use the main authentication method from auth context
+      await auth.signInWithGoogle();
       
       setState(prev => ({ ...prev, signInSuccessful: true }));
     } catch (error: any) {

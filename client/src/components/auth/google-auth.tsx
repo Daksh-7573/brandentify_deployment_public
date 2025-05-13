@@ -22,10 +22,11 @@ export function GoogleAuth() {
   // Check Firebase configuration on component mount
   useEffect(() => {
     const config = checkFirebaseConfig();
+    // We'll log issues but no longer block sign-in attempts
     if (!config.isConfigured) {
-      setConfigIssues(config.issues);
-      setShowFirebaseHelp(true);
       console.warn("Firebase configuration issues detected:", config);
+      // Only show issues but don't disable the button
+      setConfigIssues(config.issues);
     }
   }, []);
   
@@ -34,17 +35,10 @@ export function GoogleAuth() {
       // Reset error states
       setShowFirebaseHelp(false);
       setErrorMessage(null);
-      setConfigIssues([]);
       
-      // Check Firebase config before proceeding
+      // We'll log issues but no longer block sign-in attempts
       const config = checkFirebaseConfig();
-      if (!config.isConfigured) {
-        setConfigIssues(config.issues);
-        setShowFirebaseHelp(true);
-        setErrorMessage("Firebase configuration is incomplete. Please check the application setup.");
-        console.error("Firebase configuration issues:", config);
-        return;
-      }
+      console.log("Firebase configuration status:", config);
       
       // Get the current domain for diagnostic purposes
       const currentDomain = window.location.hostname;
@@ -170,7 +164,7 @@ export function GoogleAuth() {
       <Button
         variant="outline"
         onClick={handleSignIn}
-        disabled={isLoading || configIssues.length > 0}
+        disabled={isLoading}
         className="w-full"
       >
         {isLoading ? (
