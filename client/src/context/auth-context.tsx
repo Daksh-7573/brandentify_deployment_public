@@ -377,16 +377,52 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       googleProvider.addScope('email');
       googleProvider.addScope('profile');
       
-      // Use popup for sign-in
-      console.log("Attempting Google sign-in with popup...");
-      const result = await signInWithPopup(auth, googleProvider);
+      // Try popup first, and fall back to redirect if needed
+      try {
+        // Use popup for sign-in as the primary method
+        console.log("Attempting Google sign-in with popup...");
+        const result = await signInWithPopup(auth, googleProvider);
+        
+        // If we get here, popup was successful
+        console.log("Google sign-in successful:", result.user);
+        return result;
+      } catch (popupError: any) {
+        console.error("Popup sign-in error:", popupError);
+        
+        // Specifically check for popup blocked error
+        if (popupError.code === 'auth/popup-blocked' || 
+            popupError.code === 'auth/popup-closed-by-user' ||
+            popupError.message?.includes('popup')) {
+          
+          console.log("Popup was blocked or closed, trying redirect method...");
+          toast({
+            title: "Popup blocked",
+            description: "Redirecting you to Google sign-in page instead...",
+            duration: 3000
+          });
+          
+          // Wait a moment to show the toast
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          
+          // Use redirect method as fallback
+          await signInWithRedirect(auth, googleProvider);
+          
+          // This function will return without a result when using redirect
+          // The redirect result will be handled in the useEffect
+          return;
+        }
+        
+        // For other errors, just rethrow
+        throw popupError;
+      }
       
-      // If we get here, popup was successful
-      console.log("Google sign-in successful:", result.user);
+      // The result variable might not be defined if we used redirect
+      // So we need to check for it
+      const authenticatedUser = result?.user;
       
-      if (result.user) {
+      if (authenticatedUser) {
         // Create or update user in our backend
-        await createOrUpdateUserInBackend(result.user);
+        await createOrUpdateUserInBackend(authenticatedUser);
         
         // Now fetch the complete user data from our backend
         const backendUserData = await fetchUserData(result.user.uid);
