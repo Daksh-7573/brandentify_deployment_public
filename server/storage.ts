@@ -8873,6 +8873,8 @@ export const storage = {
   getUserByEmail: (email: string) => dbStorage.getUserByEmail(email),
   getUserByUsername: (username: string) => dbStorage.getUserByUsername(username),
   getUserByPhoneNumber: (phoneNumber: string) => dbStorage.getUserByPhoneNumber(phoneNumber),
+  createUser: (user: InsertUser) => dbStorage.createUser(user),
+  updateUser: (id: number, userData: Partial<User>) => dbStorage.updateUser(id, userData),
   
   // Work Experience methods
   getWorkExperiencesByUserId: (userId: number) => dbStorage.getWorkExperiencesByUserId(userId),
