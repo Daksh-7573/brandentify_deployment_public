@@ -48,13 +48,11 @@ console.log("Firebase initialization:", {
 // Check if we're on the specific problematic domain
 const isOnProblemDomain = currentHostname === "25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev";
 
-// Firebase configuration
+// Firebase configuration - optimized for the problematic domain
 const firebaseConfig: FirebaseOptions = {
   apiKey,
-  // Use Firebase's domain for auth generally, but for our problematic domain, use it directly
-  authDomain: isOnProblemDomain 
-    ? currentHostname  // Use the exact problematic domain for authDomain
-    : (projectId ? `${projectId}.firebaseapp.com` : currentHostname),
+  // For problematic domain, explicitly use the Firebase domain as recommended by Firebase docs
+  authDomain: projectId ? `${projectId}.firebaseapp.com` : currentHostname,
   projectId,
   storageBucket: projectId ? `${projectId}.appspot.com` : undefined,
   // These are okay as defaults since they're not sensitive and are only used for optional features

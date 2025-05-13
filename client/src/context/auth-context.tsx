@@ -277,7 +277,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem('authAttemptInProgress', 'true');
       localStorage.setItem('authAttemptTime', new Date().toISOString());
       
+      // Get current domain and check if it's the problematic one
+      const currentHostname = window.location.hostname;
+      const isOnProblemDomain = currentHostname === "25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev";
+      
       console.log("Using redirect auth flow for all domains");
+      
+      // For the problematic domain, customize the redirect parameters
+      if (isOnProblemDomain) {
+        console.log("Setting custom OAuth parameters for problematic domain");
+        // Set redirect URL to match one of our routes
+        googleProvider.setCustomParameters({
+          prompt: 'select_account',
+          // Explicitly reference any of our auth callback routes
+          redirect_uri: `${window.location.origin}/auth-callback`
+        });
+      }
       
       // Always use redirect auth for simplicity and consistency
       await signInWithRedirect(auth, googleProvider);

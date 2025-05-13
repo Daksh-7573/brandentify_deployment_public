@@ -9,6 +9,7 @@ import GlobalMuskButton from "@/components/musk/global-musk-button";
 import { DomainHelper } from "./lib/domain-helper";
 import { DomainAuthHelper } from "@/components/firebase/DomainAuthHelper";
 import AuthCallback from "@/pages/auth-callback";
+import CatchAllAuthHandler from "@/routes/CatchAllAuthHandler";
 
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
@@ -87,7 +88,11 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Landing} />
+      {/* Add multiple routes to catch all possible auth callback paths */}
       <Route path="/auth-callback" component={AuthCallback} />
+      <Route path="/__/auth/handler" component={AuthCallback} />
+      <Route path="/_/auth/callback" component={AuthCallback} />
+      <Route path="/auth/callback" component={AuthCallback} />
       <Route path="/auth" component={AuthPage} />
       <Route path="/auth-test" component={FirebaseAuthTest} />
       <Route path="/verify-email" component={EmailVerification} />
@@ -225,6 +230,28 @@ function Router() {
         )}
       </Route>
       {/* Brand of the Day is now integrated into Nowboard panel */}
+      
+      {/* Add catch-all route for handling any Google Auth redirects with common Firebase paths */}
+      <Route path="/__/auth/handler">
+        <CatchAllAuthHandler />
+      </Route>
+      <Route path="/_/auth/*">
+        <CatchAllAuthHandler />
+      </Route>
+      <Route path="/auth/callback/*">
+        <CatchAllAuthHandler />
+      </Route>
+      <Route path="/oauth/callback/*">
+        <CatchAllAuthHandler />
+      </Route>
+      <Route path="/auth-callback/*">
+        <CatchAllAuthHandler />
+      </Route>
+      <Route path="/signin-callback">
+        <CatchAllAuthHandler />
+      </Route>
+      
+      {/* Default 404 route */}
       <Route component={NotFound} />
     </Switch>
   );
