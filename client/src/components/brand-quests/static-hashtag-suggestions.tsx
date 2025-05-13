@@ -62,6 +62,22 @@ const INDUSTRY_HASHTAGS: Record<string, string[]> = {
   'creative': ['creative', 'creativecareer', 'contentcreation', 'creativeindustry', 'artwork', 'design', 'mediaproduction']
 };
 
+// Trending hashtags by category (used as fallback)
+const TRENDING_HASHTAGS: Record<string, string[]> = {
+  'general': [
+    'careergoals', 'professionaldevelopment', 'careertips', 'growthmindset', 'learningjourney',
+    'worklifebalance', 'productivityhacks', 'careersuccess', 'leadershipskills', 'networking'
+  ],
+  'engagement': [
+    'thoughtleadership', 'openforfeedback', 'shareyourthoughts', 'industryinsights', 'askmeaquestion',
+    'discussiontime', 'collaborationwanted', 'connectandgrow', 'teamworkmakesthedreamwork'
+  ],
+  'personal_growth': [
+    'selfimprovement', 'personaldevelopment', 'continuouslearning', 'goalcrushing', 'personalbranding',
+    'levelingup', 'skillbuilding', 'mentorshipmoment', 'growthmindset', 'knowledgesharing'
+  ]
+};
+
 /**
  * A simpler version of HashtagSuggestions that takes static hashtags without making API calls
  * Useful for contexts where we already have the hashtags and don't want to fetch them
@@ -76,27 +92,15 @@ export function StaticHashtagSuggestions({
 }: StaticHashtagSuggestionsProps) {
   const { user } = useCurrentUser();
   
-  // Add debugging
-  console.log('StaticHashtagSuggestions render:', { 
-    providedHashtags: hashtags, 
-    questType, 
-    userFromHook: user,
-    industry
-  });
+  // Account for demo mode - check localStorage directly
+  const isInDemoMode = localStorage.getItem('demo_user_id') !== null;
   
-  // Get user industry from props or current user data
-  const userIndustry = industry || user?.industry || 'tech';
+  // Get user industry from props, current user data, or fallback to a demo industry in demo mode
+  const userIndustry = industry || (isInDemoMode ? 'tech' : user?.industry) || 'tech';
   
   // If questType is provided and hashtags are not, use predefined hashtags for that type
   // Also mix in industry-specific hashtags when possible
   const tagsToDisplay = useMemo(() => {
-    // Debug what we have
-    console.log('Generating tags with:', { 
-      userIndustry, 
-      questType, 
-      hasExplicitTags: hashtags && hashtags.length > 0
-    });
-    
     // If explicit hashtags are provided, use those
     if (hashtags && hashtags.length > 0) {
       return hashtags;
@@ -106,24 +110,36 @@ export function StaticHashtagSuggestions({
     let availableTags: string[] = [];
     if (questType && QUEST_TYPE_HASHTAGS[questType]) {
       availableTags = [...QUEST_TYPE_HASHTAGS[questType]];
-      console.log(`Got ${availableTags.length} tags from quest type ${questType}`);
     } else {
       // Default to pulse_creation tags if no quest type or hashtags provided
       availableTags = [...QUEST_TYPE_HASHTAGS['pulse_creation']];
-      console.log(`Using default pulse_creation tags (${availableTags.length})`);
     }
     
     // Mix in industry-specific hashtags if available
     const industryTags = INDUSTRY_HASHTAGS[userIndustry] || [];
     if (industryTags.length > 0) {
       availableTags = [...availableTags, ...industryTags];
-      console.log(`Added ${industryTags.length} industry tags for ${userIndustry}`);
     }
     
+    // Mix in trending hashtags for variety
+    const generalTrending = TRENDING_HASHTAGS['general'] || [];
+    const engagementTrending = TRENDING_HASHTAGS['engagement'] || [];
+    
+    // Combine all sources with proper weighting (more from quest type and industry)
+    const combinedTags = [
+      ...availableTags,                   // Quest-specific (weight: 2)
+      ...industryTags,                    // Industry-specific (weight: 2)
+      ...generalTrending.slice(0, 3),     // General trending (weight: 1)
+      ...engagementTrending.slice(0, 2)   // Engagement trending (weight: 1)
+    ];
+    
+    // Remove duplicates using a more TypeScript-friendly approach
+    const uniqueTags = combinedTags.filter((tag, index) => {
+      return combinedTags.indexOf(tag) === index;
+    });
+    
     // Randomize and limit the number of tags
-    const finalTags = shuffle(availableTags).slice(0, count);
-    console.log('Final tags to display:', finalTags);
-    return finalTags;
+    return shuffle(uniqueTags).slice(0, count);
   }, [hashtags, questType, userIndustry, count]);
   
   // Helper function to randomize array (Fisher-Yates shuffle)

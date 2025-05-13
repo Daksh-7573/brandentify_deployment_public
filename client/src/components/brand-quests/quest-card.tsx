@@ -157,13 +157,16 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
               <p className="text-sm text-muted-foreground">{muskTipContent}</p>
               
               {/* Add StaticHashtagSuggestions component for pulse creation quests */}
-              {questDefinition.type === 'pulse_creation' && (
+              {(questDefinition.type === 'pulse_creation' || 
+                questDefinition.targetAction === 'create_pulse' || 
+                (questDefinition.description && questDefinition.description.toLowerCase().includes('pulse'))) && (
                 <div className="mt-3">
                   <div className="text-sm font-medium text-muted-foreground mb-2">
                     <span className="mr-1">💡</span> Musk's hashtag suggestions:
                   </div>
                   <StaticHashtagSuggestions 
-                    questType={questDefinition.type}
+                    questType="pulse_creation"
+                    count={7}
                     onHashtagClick={(hashtag) => {
                       navigator.clipboard.writeText(hashtag);
                       toast({
