@@ -87,13 +87,20 @@ async function assignQuestsToUser(userId: number) {
 
     console.log(`Preparing to assign ${questsToAssign.length} quests to user ${userId}`);
 
-    // Create XP record for user if it doesn't exist
-    await executeQuery(
-      `INSERT INTO user_xp (user_id, balance, lifetime_earned, current_month_earned) 
-       VALUES ($1, 0, 0, 0) 
-       ON CONFLICT (user_id) DO NOTHING`,
+    // Check if XP record for user exists
+    const existingXpRecord = await executeQuery(
+      `SELECT * FROM user_xp WHERE user_id = $1`,
       [userId]
     );
+    
+    // Create XP record if it doesn't exist
+    if (existingXpRecord.length === 0) {
+      await executeQuery(
+        `INSERT INTO user_xp (user_id, balance, lifetime_earned, current_month_earned) 
+         VALUES ($1, 0, 0, 0)`,
+        [userId]
+      );
+    }
     
     console.log(`Ensured XP record exists for user ${userId}`);
 
@@ -104,7 +111,7 @@ async function assignQuestsToUser(userId: number) {
       // Check if user already has this quest for the current week
       const existingQuest = await executeQuery(
         `SELECT * FROM user_quests 
-         WHERE user_id = $1 AND quest_definition_id = $2 AND week = $3 AND year = $4`,
+         WHERE user_id = $1 AND quest_definition_id = $2 AND week_number = $3 AND year = $4`,
         [userId, questDef.id, currentWeek, currentYear]
       );
       
@@ -116,19 +123,17 @@ async function assignQuestsToUser(userId: number) {
       // Insert the quest
       await executeQuery(
         `INSERT INTO user_quests (
-           user_id, quest_definition_id, status, progress, week, year, 
-           current_progress, target_count, deadline
+           user_id, quest_definition_id, status, progress, week_number, year, 
+           xp_earned, badge_earned
          ) VALUES (
-           $1, $2, 'active', 0, $3, $4, $5, $6, 
-           (NOW() + INTERVAL '7 days')::timestamp
+           $1, $2, 'active', 0, $3, $4, $5, NULL
          )`,
         [
           userId, 
           questDef.id, 
           currentWeek, 
           currentYear, 
-          0, // current_progress
-          questDef.target_count || 3 // default target count if not specified
+          questDef.xp_reward || 50 // Default XP reward if not specified
         ]
       );
       
