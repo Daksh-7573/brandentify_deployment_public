@@ -27,6 +27,7 @@ import MuskMatchPage from "@/pages/musk-match";
 import ResumePage from "@/pages/resume";
 import ResumeCV from "@/pages/resume-cv";
 import ResumeEditor from "@/pages/resume-editor";
+import ResumeParserPage from "@/pages/resume-parser";
 import UnifiedProfilePage from "@/pages/unified-profile";
 import FeedTestPage from "@/pages/feed-test";
 import CareerQuestsPage from "@/pages/career-quests";
@@ -145,6 +146,9 @@ function Router() {
           const FixedResumeEditor = require('@/pages/resume-editor-fixed').default;
           return <FixedResumeEditor />;
         }} />}
+      </Route>
+      <Route path="/resume-parser">
+        <ProtectedRoute path="/resume-parser" component={ResumeParserPage} />
       </Route>
       <Route path="/feed-test">
         <ProtectedRoute path="/feed-test" component={FeedTestPage} />
