@@ -9,10 +9,11 @@ import {
   User as FirebaseUser,
   AuthErrorCodes
 } from "firebase/auth";
-import { auth } from "../lib/firebase";
+import { auth, googleProvider } from "@/lib/firebase";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { User } from "@shared/schema";
+import { logAuthError, checkFirebaseConfig } from "@/utils/auth-diagnostics";
 
 // Define our auth user type
 type AuthUser = {
@@ -58,7 +59,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [isDemoMode, setIsDemoMode] = useState(false);
   const { toast } = useToast();
-  const googleProvider = new GoogleAuthProvider();
 
   // Fetch user data from our backend
   const fetchUserData = async (userId: string | number): Promise<AuthUser | null> => {
@@ -266,11 +266,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem('authAttemptInProgress', 'true');
       localStorage.setItem('authAttemptTime', new Date().toISOString());
       
-      // Add custom parameters to the provider
-      googleProvider.setCustomParameters({
-        prompt: 'select_account', // Force account selection every time
-        login_hint: '' // Clear any previous login hints
-      });
+      // Add custom parameters to the provider (already set in firebase.ts)
+      // No need to set again
       
       console.log("Initiating redirect auth flow");
       

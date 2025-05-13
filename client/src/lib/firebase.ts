@@ -50,7 +50,7 @@ const firebaseConfig: FirebaseOptions = {
   // Use the first domain in our list as authDomain
   authDomain: projectId ? `${projectId}.firebaseapp.com` : currentHostname,
   projectId,
-  storageBucket: projectId ? `${projectId}.appspot.com` : null,
+  storageBucket: projectId ? `${projectId}.appspot.com` : undefined,
   // These are okay as defaults since they're not sensitive and are only used for optional features
   messagingSenderId: "330211556822",
   appId,
@@ -78,8 +78,7 @@ try {
     login_hint: '',
   });
   
-  // Enable login persistence
-  // auth.setPersistence('local'); // Will be set in auth context if needed
+  // Enable login persistence is set at the time of signin, not here
   
   console.log("Firebase initialized successfully");
 } catch (error) {

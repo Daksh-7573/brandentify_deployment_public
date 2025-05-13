@@ -10,6 +10,7 @@ import {
   CardContent, 
   CardFooter 
 } from "@/components/ui/card";
+import { checkFirebaseConfig } from "@/utils/auth-diagnostics";
 
 /**
  * Enhanced helper component that shows detailed instructions for adding domains to Firebase
@@ -25,10 +26,14 @@ export function DomainAuthHelper() {
   
   const currentDomain = window.location.hostname;
   
-  // List of domains to add to Firebase
+  // List of domains to add to Firebase (matches the list in firebase.ts)
   const domainsToAdd = [
     currentDomain,
-    `${currentDomain}.replit.app`,
+    // Handle Replit deployment domains
+    `${currentDomain.replace(/\./g, "-")}.replit.app`,
+    // Include standard Firebase and development domains
+    "localhost",
+    "127.0.0.1",
     "*.replit.dev",
     "*.replit.app"
   ];
