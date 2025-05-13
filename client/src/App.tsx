@@ -22,6 +22,7 @@ import AuthPage from "@/pages/auth-page";
 import EmailVerification from "@/pages/email-verification";
 import NewsSourcesPage from "@/pages/news-sources";
 import Radar from "@/pages/radar";
+import FirebaseAuthTest from "@/pages/auth-test";
 import SmartConnectPage from "@/pages/smart-connect";
 import MuskMatchPage from "@/pages/musk-match";
 import ResumePage from "@/pages/resume";
@@ -85,6 +86,7 @@ function Router() {
     <Switch>
       <Route path="/" component={Landing} />
       <Route path="/auth" component={AuthPage} />
+      <Route path="/auth-test" component={FirebaseAuthTest} />
       <Route path="/verify-email" component={EmailVerification} />
       <Route path="/quest-demo" component={QuestDemoPage} />
       <Route path="/dashboard">
