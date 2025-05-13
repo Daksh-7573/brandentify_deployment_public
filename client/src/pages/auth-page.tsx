@@ -15,11 +15,23 @@ import { Mail, Phone, Check } from "lucide-react";
 import { GoogleAuth } from "@/components/auth/google-auth";
 import { PhoneAuth } from "@/components/auth/phone-auth";
 import { EmailAuth } from "@/components/auth/email-auth";
+import { DemoLogin } from "@/components/auth/demo-login";
 
 export default function AuthPage() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, signInWithPhone } = useAuth();
   const [_, setLocation] = useLocation();
   const [authMethod, setAuthMethod] = useState<"email" | "phone">("email");
+  const [useDemoBypass, setUseDemoBypass] = useState(false);
+  
+  // Check if we're on the problematic domain that needs bypass
+  useEffect(() => {
+    const currentHostname = window.location.hostname;
+    // If we're on the problematic domain that firebase doesn't work with
+    if (currentHostname === "25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev") {
+      console.log("Detected problematic domain - enabling demo bypass");
+      setUseDemoBypass(true);
+    }
+  }, []);
 
   // Redirect to dashboard if already authenticated
   useEffect(() => {
@@ -57,38 +69,58 @@ export default function AuthPage() {
               {/* Email Authentication */}
               <TabsContent value="email">
                 <div className="space-y-6">
-                  <EmailAuth />
-                  
-                  <div className="relative w-full">
-                    <div className="absolute inset-0 flex items-center">
-                      <span className="w-full border-t border-gray-300" />
-                    </div>
-                    <div className="relative flex justify-center text-xs uppercase">
-                      <span className="bg-white px-2 text-gray-500">or</span>
-                    </div>
-                  </div>
-                  
-                  <GoogleAuth />
-                  
-                  <div className="mt-6 pt-4 border-t border-gray-200">
-                    <div className="flex flex-col gap-2">
-                      <p className="text-xs text-gray-500 text-center">Having trouble with Google login?</p>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="w-full text-sm border-blue-300 hover:bg-blue-50"
-                        onClick={() => window.location.href = '/auth-test'}
-                      >
-                        Try Firebase Authentication Test Page
-                      </Button>
-                    </div>
-                  </div>
+                  {useDemoBypass ? (
+                    <>
+                      <div className="bg-blue-50 px-3 py-2 rounded-lg mb-4 text-sm text-blue-700">
+                        Using direct demo login for this domain
+                      </div>
+                      <DemoLogin />
+                    </>
+                  ) : (
+                    <>
+                      <EmailAuth />
+                      
+                      <div className="relative w-full">
+                        <div className="absolute inset-0 flex items-center">
+                          <span className="w-full border-t border-gray-300" />
+                        </div>
+                        <div className="relative flex justify-center text-xs uppercase">
+                          <span className="bg-white px-2 text-gray-500">or</span>
+                        </div>
+                      </div>
+                      
+                      <GoogleAuth />
+                      
+                      <div className="mt-6 pt-4 border-t border-gray-200">
+                        <div className="flex flex-col gap-2">
+                          <p className="text-xs text-gray-500 text-center">Having trouble with Google login?</p>
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="w-full text-sm border-blue-300 hover:bg-blue-50"
+                            onClick={() => window.location.href = '/auth-test'}
+                          >
+                            Try Firebase Authentication Test Page
+                          </Button>
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
               </TabsContent>
 
               {/* Phone Authentication */}
               <TabsContent value="phone">
-                <PhoneAuth />
+                {useDemoBypass ? (
+                  <>
+                    <div className="bg-blue-50 px-3 py-2 rounded-lg mb-4 text-sm text-blue-700">
+                      Using direct demo login for this domain
+                    </div>
+                    <DemoLogin />
+                  </>
+                ) : (
+                  <PhoneAuth />
+                )}
               </TabsContent>
             </Tabs>
           </CardContent>

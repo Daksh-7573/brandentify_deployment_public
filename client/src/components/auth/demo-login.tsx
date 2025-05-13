@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import { apiRequest } from "@/lib/queryClient";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -9,6 +9,22 @@ export function DemoLogin() {
   const { signInWithPhone } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const [isBypassDomain, setIsBypassDomain] = useState(false);
+  
+  // Check if we're on the domain that needs special handling
+  useEffect(() => {
+    const currentHostname = window.location.hostname;
+    if (currentHostname === "25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev") {
+      setIsBypassDomain(true);
+    }
+  }, []);
+  
+  // Auto-login on the problem domain
+  useEffect(() => {
+    if (isBypassDomain) {
+      handleDemoLogin();
+    }
+  }, [isBypassDomain]);
 
   const handleDemoLogin = async () => {
     try {
@@ -30,7 +46,9 @@ export function DemoLogin() {
       
       toast({
         title: "Demo Mode Active",
-        description: "You're now using Brandentifier in demo mode.",
+        description: isBypassDomain ? 
+          "Auto-login activated for this domain." : 
+          "You're now using Brandentifier in demo mode.",
       });
     } catch (error) {
       console.error("Error logging in with demo account:", error);
@@ -57,11 +75,15 @@ export function DemoLogin() {
         lookingFor: "New opportunities",
         whatIOffer: "Full stack development skills",
         visitingCardType: null,
-        profileCompleted: 100,
-        emailVerified: 1,
+        profileCompleted: null,
+        emailVerified: false,
         emailVerificationToken: null,
         emailVerificationExpires: null,
-        createdAt: new Date()
+        createdAt: new Date(),
+        // Additional required fields
+        hasGeneratedResume: false,
+        resumeUrl: null,
+        resumeGeneratedAt: null
       });
     } finally {
       setIsLoading(false);

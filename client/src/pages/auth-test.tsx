@@ -156,7 +156,7 @@ export default function FirebaseAuthTest() {
       let errorMessage = 'Authentication failed';
       
       if (error.code === 'auth/unauthorized-domain') {
-        errorMessage = 'This domain is not authorized in your Firebase project. Add it to the authorized domains list in the Firebase console.';
+        errorMessage = 'Authentication error. Please try again later.';
       } else if (error.code === 'auth/popup-closed-by-user') {
         errorMessage = 'Sign-in popup was closed before completing authentication.';
       } else if (error.code === 'auth/popup-blocked') {
@@ -242,10 +242,7 @@ export default function FirebaseAuthTest() {
                 <div>Current Domain:</div>
                 <div>{window.location.hostname}</div>
                 
-                <div>Domain Valid:</div>
-                <div className={domainAuth.isValid ? "text-green-600" : "text-red-600"}>
-                  {domainAuth.isValid ? "Yes" : "No - Needs Authorization"} 
-                </div>
+                {/* Domain validation status removed per user request */}
               </div>
             </div>
           )}
