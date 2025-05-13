@@ -30,6 +30,13 @@ export default function BrandQuestsPage() {
   
   // Check for demo user ID in localStorage
   useEffect(() => {
+    // If user is logged in, clear any demo mode and use real user ID
+    if (user && user.id) {
+      localStorage.removeItem('demo_user_id');
+      setEffectiveUserId(user.id);
+      return;
+    }
+    
     // Get URL params
     const urlParams = new URLSearchParams(window.location.search);
     const demoParam = urlParams.get('demo');
@@ -57,14 +64,14 @@ export default function BrandQuestsPage() {
         duration: 5000,
       });
     } else {
-      setEffectiveUserId(user?.id);
+      setEffectiveUserId(user?.id || null);
     }
   }, [user?.id, toast]);
   
-  // Always use user ID 1 for consistent quests display
-  const userId = 1;
+  // Use the effective user ID (logged-in user or demo user)
+  const userId = effectiveUserId || (user?.id || 1);
   
-  const { data: userXp, isLoading: isLoadingXp } = useUserXp(userId as number);
+  const { data: userXp, isLoading: isLoadingXp } = useUserXp(userId);
   
   if (!userId) {
     return (
