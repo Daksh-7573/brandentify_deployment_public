@@ -10,11 +10,15 @@ import { setupPrivacyRoutes } from "./privacy-compliance";
 import { aiSecurityMiddleware } from "./ai-security";
 import { securityMonitoringMiddleware } from "./security-monitoring";
 import securityDashboardRoutes from "./security-dashboard";
+import { firebaseAuthRedirectHandler } from "./firebase-auth-handler";
 
 const app = express();
 // Increase body size limit to handle file uploads (10MB)
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: false, limit: '10mb' }));
+
+// Firebase Auth Handler - detect and handle Firebase auth redirects early in the middleware stack
+app.use(firebaseAuthRedirectHandler);
 
 // Request timeout middleware (45 seconds)
 const requestTimeout = (req: Request, res: Response, next: NextFunction) => {

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Firebase Authentication Callback Handler</title>
+  <script>
+    // This file handles the Firebase Authentication callback
+    // It will detect when it's loaded with Firebase auth parameters
+    // and redirect to our app's auth callback handler
+    (function() {
+      // Parse URL parameters
+      const urlParams = new URLSearchParams(window.location.search);
+      
+      // Store the full URL and params for debugging
+      try {
+        localStorage.setItem('firebase_callback_debug_url', window.location.href);
+        localStorage.setItem('firebase_callback_debug_time', new Date().toISOString());
+      } catch (e) {
+        console.error('Could not save debug info to localStorage:', e);
+      }
+      
+      // Log the URL for debugging
+      console.log('Firebase auth callback loaded at:', window.location.href);
+      
+      // Construct the redirect URL to our auth callback handler
+      const appOrigin = window.location.origin;
+      const redirectTarget = `${appOrigin}/auth-callback${window.location.search}`;
+      
+      console.log('Redirecting to app handler:', redirectTarget);
+      
+      // Perform the redirect
+      window.location.href = redirectTarget;
+    })();
+  </script>
+</head>
+<body>
+  <h1>Firebase Authentication Callback Handler</h1>
+  <p>Please wait while we process your authentication...</p>
+  <p>If you are not redirected automatically, <a href="/auth-callback">click here</a>.</p>
+  
+  <script>
+    // Display some debug info on the page
+    document.body.innerHTML += `
+      <div style="margin-top: 20px; padding: 10px; border: 1px solid #ccc; font-family: monospace; font-size: 12px;">
+        <p>Current URL: ${window.location.href}</p>
+        <p>Hostname: ${window.location.hostname}</p>
+        <p>Timestamp: ${new Date().toISOString()}</p>
+      </div>
+    `;
+  </script>
+</body>
+</html>
