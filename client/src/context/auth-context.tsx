@@ -86,40 +86,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  // Simplified useEffect that doesn't check for redirects
   useEffect(() => {
-    // Check for redirect result
-    getRedirectResult(auth)
-      .then((result) => {
-        if (result) {
-          // User signed in after redirect
-          toast({
-            title: "Successfully signed in!",
-            description: "Welcome to Brandentifier"
-          });
-        }
-      })
-      .catch((error: any) => {
-        console.error("Error getting redirect result:", error);
-        
-        // More informative error message
-        let errorMessage = "There was a problem signing in with Google";
-        
-        if (error.code === 'auth/configuration-not-found') {
-          errorMessage = "Firebase authentication is not properly configured. Please check your Firebase setup in the console.";
-          console.log("Firebase auth domain:", `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.firebaseapp.com`);
-          console.log("Current domain:", window.location.hostname);
-        } else if (error.code === 'auth/unauthorized-domain') {
-          errorMessage = "This domain is not authorized for Firebase authentication. Please add it to your Firebase console under Auth > Settings > Authorized domains.";
-        } else if (error.message) {
-          errorMessage = `Error: ${error.message}`;
-        }
-        
-        toast({
-          title: "Sign in failed",
-          description: errorMessage,
-          variant: "destructive"
-        });
-      });
+    // We're now using popup method exclusively, 
+    // so we don't need to check for redirect results
+    console.log("Auth provider mounted");
       
     // Remove any demo mode flags if they exist
     localStorage.removeItem('demoMode');
@@ -286,51 +257,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       googleProvider.addScope('email');
       googleProvider.addScope('profile');
       
-      // Set auth persistence to LOCAL to persist user sessions
-      // await setPersistence(auth, browserLocalPersistence);
+      // Use popup for sign-in
+      console.log("Attempting Google sign-in with popup...");
+      const result = await signInWithPopup(auth, googleProvider);
       
-      // Try redirect first, with proper error handling for popup blockers
-      try {
-        console.log("Attempting Google sign-in with redirect...");
-        await signInWithRedirect(auth, googleProvider);
-        return; // This should redirect, so the function ends here
-      } catch (redirectError: any) {
-        console.error("Error with redirect sign-in, falling back to popup:", redirectError);
+      // If we get here, popup was successful
+      console.log("Google sign-in successful:", result.user);
+      
+      if (result.user) {
+        // Create or update user in our backend
+        await createOrUpdateUserInBackend(result.user);
         
-        // If redirect fails (often due to mobile issues), try popup
-        console.log("Attempting Google sign-in with popup...");
-        const result = await signInWithPopup(auth, googleProvider);
+        // Now fetch the complete user data from our backend
+        const backendUserData = await fetchUserData(result.user.uid);
         
-        // If we get here, popup was successful
-        console.log("Google sign-in successful:", result.user);
-        
-        if (result.user) {
-          // Create or update user in our backend
-          await createOrUpdateUserInBackend(result.user);
-          
-          // Now fetch the complete user data from our backend
-          const backendUserData = await fetchUserData(result.user.uid);
-          
-          // If we got data from backend, use it
-          if (backendUserData) {
-            setUser(backendUserData);
-          } else {
-            // Fallback to Firebase data if backend fetch fails
-            setUser({
-              uid: result.user.uid,
-              id: parseInt(result.user.uid.substring(0, 5), 36) || 999,
-              username: result.user.uid.substring(0, 8),
-              email: result.user.email,
-              name: result.user.displayName,
-              photoURL: result.user.photoURL
-            });
-          }
-          
-          toast({
-            title: "Successfully signed in!",
-            description: "Welcome to Brandentifier"
+        // If we got data from backend, use it
+        if (backendUserData) {
+          setUser(backendUserData);
+        } else {
+          // Fallback to Firebase data if backend fetch fails
+          setUser({
+            uid: result.user.uid,
+            id: parseInt(result.user.uid.substring(0, 5), 36) || 999,
+            username: result.user.uid.substring(0, 8),
+            email: result.user.email,
+            name: result.user.displayName,
+            photoURL: result.user.photoURL
           });
         }
+        
+        toast({
+          title: "Successfully signed in!",
+          description: "Welcome to Brandentifier"
+        });
       }
     } catch (error: any) {
       console.error("Error signing in with Google:", error);

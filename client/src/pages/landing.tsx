@@ -99,10 +99,17 @@ export default function Landing() {
                 <div className="mt-4 text-center lg:text-left">
                   <Button 
                     variant="ghost"
-                    className="text-green-600 hover:text-green-700 hover:bg-green-50 border border-green-200"
+                    className="text-green-600 hover:text-green-700 hover:bg-green-50 border border-green-200 mr-2"
                     onClick={() => setLocation('/quest-demo')}
                   >
                     Try Brand Quests Demo →
+                  </Button>
+                  <Button 
+                    variant="ghost"
+                    className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 border border-blue-200"
+                    onClick={() => setLocation('/resume-parser')}
+                  >
+                    Test Resume Parser →
                   </Button>
                 </div>
               </div>
