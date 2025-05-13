@@ -28,6 +28,7 @@ import messagingRoutes from "./routes-messaging";
 import enhancedUserRoutes from "./routes-enhanced-user";
 import whatIOfferRoutes from "./routes-what-i-offer";
 import profileServicesRoutes from "./routes-services-sync";
+import resumeParserRoutes from "./resume-routes";
 import nowboardRecommendationsRoutes from "./routes-nowboard-recommendations";
 import { resumeTestRoutes } from "./routes-resume-test";
 import { routesMigrateWorkExperiences } from "./routes-migrate-work-experiences";
@@ -5400,6 +5401,10 @@ ${extractedText.substring(0, 5000)}
   
   // Profile Services Sync routes for unified services and whatIOffer handling
   app.use(profileServicesRoutes);
+  
+  // Resume parser routes for Drop & Define feature
+  app.use('/api', resumeParserRoutes);
+  console.log("Resume parser routes loaded");
   
   // Comprehensive user profile routes for efficient data fetching
   const profileRouter = userProfileRoutes();
