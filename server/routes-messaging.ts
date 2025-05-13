@@ -275,10 +275,41 @@ router.delete("/messages/:id", async (req, res) => {
  */
 router.get("/unread/count", async (req, res) => {
   try {
-    const userId = Number(req.query.userId);
+    const userIdParam = req.query.userId as string;
     
-    if (isNaN(userId)) {
-      return res.status(400).json({ error: "Invalid user ID" });
+    // First check if this is a Firebase UID (string) or a numeric ID
+    const isFirebaseUid = /^[A-Za-z0-9]{20,}$/.test(userIdParam);
+    let userId: number;
+    
+    if (isFirebaseUid) {
+      // If this is a Firebase UID, try to find the user in the database
+      console.log(`[GET /messaging/unread/count] Looking up user with Firebase UID: ${userIdParam}`);
+      
+      try {
+        // Look up the user by the Firebase UID which is stored as the username
+        const storage = (await import('./storage')).storage;
+        const user = await storage.getUserByUsername(userIdParam);
+        
+        if (!user) {
+          console.log(`[GET /messaging/unread/count] No user found with Firebase UID: ${userIdParam}`);
+          // Return 0 count rather than error for better UX
+          return res.json({ count: 0 });
+        }
+        
+        // Use the numeric user ID from the database
+        userId = user.id;
+        console.log(`[GET /messaging/unread/count] Found user with ID: ${userId} for Firebase UID: ${userIdParam}`);
+      } catch (lookupError) {
+        console.error('Error looking up user by Firebase UID:', lookupError);
+        // Return 0 count rather than error for better UX
+        return res.json({ count: 0 });
+      }
+    } else {
+      // If this is a numeric ID, parse it
+      userId = Number(userIdParam);
+      if (isNaN(userId)) {
+        return res.status(400).json({ error: "Invalid user ID" });
+      }
     }
     
     const result = await messageService.getTotalUnreadMessageCount(userId);
