@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { initializeApp } from 'firebase/app';
+import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from 'firebase/auth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,7 +9,7 @@ import { checkDomainAuthorization, getFirebaseSetupInstructions } from '@/lib/fi
 
 /**
  * A standalone test page for Firebase Google authentication
- * This is completely isolated from the rest of the app to debug authentication issues
+ * This page uses the existing Firebase instance if available
  */
 export default function FirebaseAuthTest() {
   const [user, setUser] = useState<any>(null);
@@ -18,7 +18,7 @@ export default function FirebaseAuthTest() {
   const [authInitialized, setAuthInitialized] = useState(false);
   const [configDetails, setConfigDetails] = useState<any>({ checked: false });
   
-  // Initialize Firebase in isolation within this component
+  // Use existing Firebase instance or create a new one
   useEffect(() => {
     try {
       // Check if Firebase config exists
@@ -39,36 +39,55 @@ export default function FirebaseAuthTest() {
       
       if (!apiKey || !projectId || !appId) {
         setError('Missing Firebase configuration. Check your environment variables.');
+        setAuthInitialized(true);
         return;
       }
       
-      // Create Firebase config
-      const firebaseConfig = {
-        apiKey,
-        authDomain: `${projectId}.firebaseapp.com`,
-        projectId,
-        storageBucket: `${projectId}.appspot.com`,
-        messagingSenderId: "330211556822", // Default value
-        appId,
-      };
+      // Get existing Firebase app or initialize a new one
+      let app;
+      let auth;
       
-      // Initialize Firebase
-      const app = initializeApp(firebaseConfig);
-      const auth = getAuth(app);
-      
-      // Set up auth state listener
-      const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-        if (firebaseUser) {
-          console.log('[Auth Test] User signed in:', firebaseUser);
-          setUser(firebaseUser);
+      try {
+        // Try to get the existing Firebase app instance
+        if (getApps().length > 0) {
+          console.log('[Auth Test] Using existing Firebase app');
+          app = getApp();
+          auth = getAuth(app);
         } else {
-          console.log('[Auth Test] User signed out');
-          setUser(null);
+          // If no Firebase app exists, create a new one
+          console.log('[Auth Test] Creating new Firebase app');
+          const firebaseConfig = {
+            apiKey,
+            authDomain: `${projectId}.firebaseapp.com`,
+            projectId,
+            storageBucket: `${projectId}.appspot.com`,
+            messagingSenderId: "330211556822", // Default value
+            appId,
+          };
+          
+          app = initializeApp(firebaseConfig);
+          auth = getAuth(app);
         }
+        
+        // Set up auth state listener
+        const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+          if (firebaseUser) {
+            console.log('[Auth Test] User signed in:', firebaseUser);
+            setUser(firebaseUser);
+          } else {
+            console.log('[Auth Test] User signed out');
+            setUser(null);
+          }
+          setAuthInitialized(true);
+        });
+        
+        return () => unsubscribe();
+      } catch (initError) {
+        console.error('[Auth Test] Error with Firebase app:', initError);
+        setError('Firebase app error: ' + (initError as any).message);
         setAuthInitialized(true);
-      });
-      
-      return () => unsubscribe();
+        throw initError;
+      }
     } catch (error) {
       console.error('[Auth Test] Error initializing Firebase:', error);
       setError('Failed to initialize Firebase: ' + (error as any).message);
@@ -81,35 +100,47 @@ export default function FirebaseAuthTest() {
       setLoading(true);
       setError(null);
       
-      // Re-check Firebase config directly
-      const apiKey = import.meta.env.VITE_FIREBASE_API_KEY;
-      const projectId = import.meta.env.VITE_FIREBASE_PROJECT_ID;
-      const appId = import.meta.env.VITE_FIREBASE_APP_ID;
+      // Get existing Firebase app and auth instance
+      let auth;
       
-      if (!apiKey || !projectId || !appId) {
-        setError('Missing Firebase configuration. Check environment variables.');
-        return;
+      if (getApps().length > 0) {
+        console.log('[Auth Test] Using existing Firebase app for sign-in');
+        const app = getApp();
+        auth = getAuth(app);
+      } else {
+        // We should never reach here since we already tried to get the app in useEffect
+        const apiKey = import.meta.env.VITE_FIREBASE_API_KEY;
+        const projectId = import.meta.env.VITE_FIREBASE_PROJECT_ID;
+        const appId = import.meta.env.VITE_FIREBASE_APP_ID;
+        
+        if (!apiKey || !projectId || !appId) {
+          setError('Missing Firebase configuration. Check environment variables.');
+          return;
+        }
+        
+        console.log('[Auth Test] Creating new Firebase app for sign-in');
+        const firebaseConfig = {
+          apiKey,
+          authDomain: `${projectId}.firebaseapp.com`,
+          projectId,
+          storageBucket: `${projectId}.appspot.com`,
+          messagingSenderId: "330211556822", 
+          appId,
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        auth = getAuth(app);
       }
-      
-      // Create Firebase config
-      const firebaseConfig = {
-        apiKey,
-        authDomain: `${projectId}.firebaseapp.com`,
-        projectId,
-        storageBucket: `${projectId}.appspot.com`,
-        messagingSenderId: "330211556822", // Default value
-        appId,
-      };
-      
-      // Initialize Firebase (even if already done)
-      const app = initializeApp(firebaseConfig, 'auth-test-instance');
-      const auth = getAuth(app);
       
       // Create Google provider
       const googleProvider = new GoogleAuthProvider();
       googleProvider.setCustomParameters({
         prompt: 'select_account'
       });
+      
+      // Before attempting sign-in, show domain info
+      const domainInfo = checkDomainAuthorization();
+      console.log('[Auth Test] Domain authorization check:', domainInfo);
       
       // Run popup authentication
       console.log('[Auth Test] Starting Google sign-in popup');
@@ -145,9 +176,21 @@ export default function FirebaseAuthTest() {
   const handleSignOut = async () => {
     try {
       setLoading(true);
-      const auth = getAuth();
-      await auth.signOut();
-      setUser(null);
+      
+      // Get existing Firebase auth
+      if (getApps().length > 0) {
+        const app = getApp();
+        const auth = getAuth(app);
+        console.log('[Auth Test] Signing out from existing Firebase app');
+        await auth.signOut();
+        setUser(null);
+      } else {
+        // Fall back to default auth - should never happen
+        console.log('[Auth Test] No Firebase app found, using default auth');
+        const auth = getAuth();
+        await auth.signOut();
+        setUser(null);
+      }
     } catch (error) {
       console.error('[Auth Test] Sign-out error:', error);
       setError('Error signing out: ' + (error as any).message);
@@ -209,7 +252,7 @@ export default function FirebaseAuthTest() {
           
           {/* Domain Authorization Instructions */}
           {!domainAuth.isValid && (
-            <Alert variant="warning" className="bg-amber-50 border-amber-200">
+            <Alert className="bg-amber-50 border-amber-200">
               <Info className="h-4 w-4 text-amber-600" />
               <AlertTitle className="text-amber-800">Domain Authorization Required</AlertTitle>
               <AlertDescription className="text-amber-700 mt-2">

@@ -7,6 +7,7 @@ import { useAuth } from "./hooks/use-auth";
 import { useEffect } from "react";
 import GlobalMuskButton from "@/components/musk/global-musk-button";
 import { DomainHelper } from "./lib/domain-helper";
+import { DomainAuthHelper } from "@/components/firebase/DomainAuthHelper";
 
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
@@ -249,6 +250,7 @@ function App() {
           <Router />
           <GlobalMuskButton />
           <DomainHelper />
+          <DomainAuthHelper />
           <Toaster />
           {/* Cookie Consent Banner - shown based on user's consent status */}
           <CookieConsentBanner />
