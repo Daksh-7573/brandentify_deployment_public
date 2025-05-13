@@ -45,8 +45,9 @@ export function GoogleAuth() {
         return;
       }
       
-      // Log the click for debugging
-      console.log("User clicked Google sign-in button with valid configuration");
+      // Get the current domain for diagnostic purposes
+      const currentDomain = window.location.hostname;
+      console.log(`User clicked Google sign-in button on domain: ${currentDomain}`);
       
       // Show toast to indicate we're initiating sign-in
       toast({
@@ -54,8 +55,10 @@ export function GoogleAuth() {
         description: "Please wait while we connect to Google...",
       });
       
-      // Call the signInWithGoogle function
+      // Call the signInWithGoogle function - now uses popup first for more reliability
       await signInWithGoogle();
+      
+      console.log("Google sign-in completed successfully");
     } catch (error: any) {
       // Use our diagnostic utility for comprehensive error logging
       logAuthError(error, "GoogleAuth.handleSignIn");
@@ -66,24 +69,32 @@ export function GoogleAuth() {
       const errorCode = error?.code || '';
       const errorMsg = error?.message || 'Unknown error occurred';
       
-      // Domain configuration issues
+      console.log(`Google auth error: ${errorCode} - ${errorMsg}`);
+      
+      // Domain configuration issues - most likely root cause of redirect loop
       if (errorCode === 'auth/unauthorized-domain' || 
           errorMsg.includes('domain') || 
           errorMsg.includes('unauthorized')) {
         
-        console.log("Firebase domain configuration issue detected");
+        console.log("Firebase domain configuration issue detected - showing domain helper");
         setShowFirebaseHelp(true);
-        setErrorMessage("Firebase domain not authorized. Please add this domain to your Firebase project.");
-      }
-      // Popup issues
-      else if (errorCode === 'auth/popup-blocked') {
-        console.log("Popup was blocked by browser");
-        setErrorMessage("Pop-up was blocked by your browser. We're trying to redirect you automatically.");
+        setErrorMessage("This domain is not authorized in Firebase. Please add it to your Firebase project's Authorized Domains list.");
         
-        // Show a specific toast for popup blocked
+        // Show a specific toast with clearer instructions
+        toast({
+          title: "Domain Not Authorized",
+          description: "Your domain needs to be added to Firebase. See instructions below.",
+          variant: "destructive"
+        });
+      }
+      // Popup issues - should fall back to redirect automatically
+      else if (errorCode === 'auth/popup-blocked') {
+        console.log("Popup was blocked by browser - should try redirect automatically");
+        setErrorMessage("Pop-up was blocked by your browser. The app is trying to redirect you automatically instead.");
+        
         toast({
           title: "Pop-up Blocked",
-          description: "Please allow pop-ups or wait for the redirect to complete.",
+          description: "Trying alternative sign-in method automatically...",
           variant: "destructive"
         });
       }
