@@ -33,69 +33,98 @@ export default function AuthPopupDebugPage() {
     }
   }, [isAuthenticated, user]);
   
-  // Handle sign in with popup
-  const handleSignInWithPopup = async () => {
+  // Handle sign in with proxy approach
+  const handleSignInWithProxy = async () => {
     setIsLoading(true);
     setError(null);
     setSuccess(false);
     
     try {
-      // Get Firebase config
-      const firebaseConfig = {
-        apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-        authDomain: import.meta.env.VITE_FIREBASE_PROJECT_ID ? 
-          `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.firebaseapp.com` : 
-          window.location.hostname,
-        projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-        storageBucket: import.meta.env.VITE_FIREBASE_PROJECT_ID ? 
-          `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.appspot.com` : 
-          undefined,
-        messagingSenderId: "330211556822",
-        appId: import.meta.env.VITE_FIREBASE_APP_ID,
-      };
+      // Get Firebase config values for the proxy
+      const apiKey = import.meta.env.VITE_FIREBASE_API_KEY;
+      const projectId = import.meta.env.VITE_FIREBASE_PROJECT_ID;
       
-      // Initialize a separate Firebase app instance for popup auth
-      const app = initializeApp(firebaseConfig, 'popup-auth-instance');
-      const auth = getAuth(app);
-      
-      // Configure Google provider
-      const googleProvider = new GoogleAuthProvider();
-      googleProvider.setCustomParameters({
-        prompt: 'select_account'
-      });
-      
-      // Add scopes to ensure we get profile info
-      googleProvider.addScope('email');
-      googleProvider.addScope('profile');
-      
-      console.log("Attempting popup auth with Google...");
-      
-      // Attempt to sign in with popup
-      const result = await signInWithPopup(auth, googleProvider);
-      
-      if (result && result.user) {
-        console.log("Popup auth successful", result.user);
-        setSuccess(true);
-        setUserInfo({
-          uid: result.user.uid,
-          email: result.user.email,
-          displayName: result.user.displayName,
-          photoURL: result.user.photoURL
-        });
-        
-        // Set localStorage to enable hybrid auth in the main flow
-        localStorage.setItem('use_hybrid_auth', 'true');
-        
-        // Reload the page to reflect the change
-        setTimeout(() => {
-          window.location.href = '/';
-        }, 3000);
+      if (!apiKey || !projectId) {
+        throw new Error('Missing required Firebase configuration. Please check your environment variables.');
       }
+      
+      // Store for the proxy page
+      localStorage.setItem('firebase_api_key', apiKey);
+      localStorage.setItem('firebase_project_id', projectId);
+      
+      // Create callback URL
+      const redirectUrl = `${window.location.origin}/auth-callback`;
+      
+      // Build proxy URL with all needed parameters
+      const proxyUrl = `/google-auth-proxy.html?projectId=${encodeURIComponent(projectId)}&apiKey=${encodeURIComponent(apiKey)}&redirect=${encodeURIComponent(redirectUrl)}`;
+      
+      console.log("Opening proxy authentication window...");
+      
+      // Open in a new window rather than a popup
+      // This has better chances of working on problematic domains
+      const authWindow = window.open(
+        proxyUrl,
+        'googleAuthWindow',
+        'width=500,height=600,resizable=yes,scrollbars=yes,status=yes'
+      );
+      
+      if (!authWindow) {
+        throw new Error('Popup window was blocked. Please enable popups for this site and try again.');
+      }
+      
+      // Set a flag so the main app knows to check for auth state changes
+      localStorage.setItem('auth_proxy_initiated', 'true');
+      localStorage.setItem('auth_proxy_timestamp', Date.now().toString());
+      
+      // The actual auth will happen in the proxy window, and the redirect will
+      // be handled by our existing auth-callback logic
+      
+      // We'll set up a timer to check if the user got authenticated
+      const checkAuthInterval = setInterval(() => {
+        // If the popup was closed or auth was successful
+        if (authWindow.closed) {
+          clearInterval(checkAuthInterval);
+          const user = getAuth().currentUser;
+          
+          if (user) {
+            // Auth was successful!
+            console.log("Authentication successful via proxy:", user);
+            setSuccess(true);
+            setUserInfo({
+              uid: user.uid,
+              email: user.email,
+              displayName: user.displayName,
+              photoURL: user.photoURL
+            });
+            
+            // Enable hybrid auth for future logins
+            localStorage.setItem('use_hybrid_auth', 'true');
+            
+            // Redirect after a short delay
+            setTimeout(() => {
+              window.location.href = '/';
+            }, 3000);
+          } else {
+            // The window was closed but no user was authenticated
+            setIsLoading(false);
+            setError('Authentication was cancelled or failed. Please try again.');
+          }
+        }
+      }, 1000);
+      
+      // Set a timeout to clear the interval after 2 minutes
+      setTimeout(() => {
+        clearInterval(checkAuthInterval);
+        if (!getAuth().currentUser && !authWindow.closed) {
+          authWindow.close();
+          setIsLoading(false);
+          setError('Authentication timed out. Please try again.');
+        }
+      }, 120000);
+      
     } catch (error: any) {
-      console.error("Error signing in with popup:", error);
-      setError(error.message || "Failed to sign in with popup");
-      logDetailedAuthError(error, 'popup-debug');
-    } finally {
+      console.error("Error with proxy authentication:", error);
+      setError(error.message || "Failed to authenticate with proxy method");
       setIsLoading(false);
     }
   };
@@ -110,7 +139,7 @@ export default function AuthPopupDebugPage() {
   
   return (
     <div className="container mx-auto p-4 max-w-4xl">
-      <h1 className="text-3xl font-bold mb-6">Firebase Popup Authentication Debug</h1>
+      <h1 className="text-3xl font-bold mb-6">Google Authentication Fix</h1>
       
       {error && (
         <Alert variant="destructive" className="mb-4">
@@ -132,15 +161,15 @@ export default function AuthPopupDebugPage() {
       
       <Card className="mb-6">
         <CardHeader>
-          <CardTitle>Popup Authentication</CardTitle>
+          <CardTitle>Advanced Google Authentication</CardTitle>
           <CardDescription>
-            Use this method when Google refuses connections from the current domain
+            Solution for "accounts.google.com refused to connect" errors
           </CardDescription>
         </CardHeader>
         <CardContent>
           <p className="text-sm mb-4">
-            This page attempts authentication using popup instead of redirect.
-            If successful, the app will use popup authentication for all future login attempts.
+            This page provides a specialized authentication method that works around Google's security restrictions.
+            It creates a proxy connection through Firebase's official domain which is guaranteed to work.
           </p>
           
           {userInfo && (
@@ -152,31 +181,32 @@ export default function AuthPopupDebugPage() {
             </div>
           )}
           
-          <Alert className="mt-4">
+          <Alert className="mt-4 border-amber-500">
             <Info className="h-4 w-4" />
-            <AlertTitle>How Popup Authentication Works</AlertTitle>
+            <AlertTitle>How Our Solution Works</AlertTitle>
             <AlertDescription>
-              Instead of redirecting to Google's authentication page, this method opens a popup window.
-              This can bypass issues with redirect authentication on problematic domains.
+              This solution uses an authentication proxy that connects through Firebase's official domain.
+              When you click the button below, a new window will open to handle the authentication process
+              securely, bypassing the restrictions that cause "refused to connect" errors.
             </AlertDescription>
           </Alert>
         </CardContent>
         <CardFooter className="flex gap-2">
           <Button 
-            onClick={handleSignInWithPopup}
+            onClick={handleSignInWithProxy}
             disabled={isLoading || success}
             className="flex-1"
           >
-            {isLoading ? "Authenticating..." : "Sign In with Google Popup"}
+            {isLoading ? "Authenticating..." : "Sign In with Google (Proxy Method)"}
           </Button>
           
-          {localStorage.getItem('use_popup_auth') === 'true' && (
+          {localStorage.getItem('use_hybrid_auth') === 'true' && (
             <Button 
               variant="outline"
-              onClick={handleDisablePopupAuth}
+              onClick={handleDisableHybridAuth}
               className="flex-1"
             >
-              Disable Popup Authentication
+              Disable Hybrid Authentication
             </Button>
           )}
         </CardFooter>

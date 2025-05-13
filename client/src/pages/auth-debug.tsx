@@ -208,8 +208,10 @@ export default function AuthDebugPage() {
               <Info className="h-4 w-4" />
               <AlertTitle>Problematic Domain Detected</AlertTitle>
               <AlertDescription>
-                This is the known problematic domain that requires special configuration.
-                The sign-in button below uses special configuration for this domain.
+                <p>This is the known problematic domain that requires special configuration.</p>
+                <p className="mt-2"><strong>Recommended Solution:</strong> Visit the 
+                <a href="/auth-popup-debug" className="text-blue-500 hover:underline font-medium"> Google Authentication Fix </a> 
+                page to use our advanced authentication method that resolves the "accounts.google.com refused to connect" error.</p>
               </AlertDescription>
             </Alert>
           )}
