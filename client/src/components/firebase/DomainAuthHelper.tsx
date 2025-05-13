@@ -1,17 +1,17 @@
-import React, { useState } from 'react';
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { useState } from "react";
+import { Copy, Check, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Copy as CopyIcon, AlertCircle as AlertCircleIcon, CheckCircle as CheckCircleIcon } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 /**
- * Component to help users add the current domain to Firebase authorized domains
- * This appears when the auth/unauthorized-domain error is encountered
+ * Helper component that shows instructions for adding domains to Firebase
+ * when authentication fails due to domain issues
  */
-export const DomainAuthHelper: React.FC = () => {
+export function DomainAuthHelper() {
   const [copied, setCopied] = useState(false);
   const currentDomain = window.location.hostname;
   
-  // List of domains that need to be added to Firebase auth
+  // List of domains to add to Firebase
   const domainsToAdd = [
     currentDomain,
     `${currentDomain}.replit.app`,
@@ -32,14 +32,14 @@ ${domainsToAdd.map((domain, index) => `${index + 1}. ${domain}`).join('\n')}`;
         console.error('Failed to copy text: ', err);
       });
   };
-  
+
   return (
     <Alert variant="destructive" className="mt-4 border-red-500">
-      <AlertCircleIcon className="h-5 w-5" />
-      <AlertTitle className="text-lg font-bold">Firebase Authorization Required</AlertTitle>
+      <AlertTriangle className="h-5 w-5" />
+      <AlertTitle className="text-lg font-bold">Firebase Setup Required</AlertTitle>
       <AlertDescription className="mt-2">
         <p className="mb-2">
-          This domain is not authorized for Firebase authentication. You need to add the following domains
+          This domain needs to be added to Firebase authorized domains. Add these domains
           to your Firebase console:
         </p>
         <div className="bg-gray-100 dark:bg-gray-800 p-3 rounded-md my-2">
@@ -60,17 +60,15 @@ ${domainsToAdd.map((domain, index) => `${index + 1}. ${domain}`).join('\n')}`;
         >
           {copied ? (
             <>
-              <CheckCircleIcon className="h-4 w-4 mr-1" /> Copied!
+              <Check className="h-4 w-4 mr-1" /> Copied!
             </>
           ) : (
             <>
-              <CopyIcon className="h-4 w-4 mr-1" /> Copy Instructions
+              <Copy className="h-4 w-4 mr-1" /> Copy Instructions
             </>
           )}
         </Button>
       </AlertDescription>
     </Alert>
   );
-};
-
-export default DomainAuthHelper;
+}

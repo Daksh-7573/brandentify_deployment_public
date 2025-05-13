@@ -86,11 +86,61 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Simplified useEffect that doesn't check for redirects
+  // Enhanced useEffect that checks for redirects
   useEffect(() => {
-    // We're now using popup method exclusively, 
-    // so we don't need to check for redirect results
     console.log("Auth provider mounted");
+    
+    // Check if the user was redirected back from Google auth
+    const checkRedirectResult = async () => {
+      try {
+        console.log("Checking for redirect result...");
+        const result = await getRedirectResult(auth);
+        
+        if (result) {
+          console.log("Redirect result found:", result.user);
+          // Process the user from redirect result
+          if (result.user) {
+            // Create or update user in our backend
+            await createOrUpdateUserInBackend(result.user);
+            
+            // Then fetch the complete user data from our backend
+            const backendUserData = await fetchUserData(result.user.uid);
+            
+            // If we got data from backend, use it
+            if (backendUserData) {
+              setUser(backendUserData);
+            } else {
+              // Fallback to Firebase data if backend fetch fails
+              setUser({
+                uid: result.user.uid,
+                id: parseInt(result.user.uid.substring(0, 5), 36) || 999,
+                username: result.user.uid.substring(0, 8),
+                email: result.user.email,
+                name: result.user.displayName,
+                photoURL: result.user.photoURL
+              });
+            }
+            
+            toast({
+              title: "Signed in successfully",
+              description: `Welcome${backendUserData?.name ? ` ${backendUserData.name}` : ''}!`,
+            });
+          }
+        } else {
+          console.log("No redirect result found");
+        }
+      } catch (error) {
+        console.error("Error checking redirect result:", error);
+        toast({
+          title: "Authentication error",
+          description: "There was a problem with the Google sign-in process",
+          variant: "destructive"
+        });
+      }
+    };
+    
+    // Call the function to check for redirect results
+    checkRedirectResult();
       
     // Remove any demo mode flags if they exist
     localStorage.removeItem('demoMode');
