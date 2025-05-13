@@ -8,6 +8,7 @@ import { useEffect } from "react";
 import GlobalMuskButton from "@/components/musk/global-musk-button";
 import { DomainHelper } from "./lib/domain-helper";
 import { DomainAuthHelper } from "@/components/firebase/DomainAuthHelper";
+import AuthCallback from "@/pages/auth-callback";
 
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
@@ -86,7 +87,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Landing} />
-      <Route path="/auth-callback" component={AuthPage} />
+      <Route path="/auth-callback" component={AuthCallback} />
       <Route path="/auth" component={AuthPage} />
       <Route path="/auth-test" component={FirebaseAuthTest} />
       <Route path="/verify-email" component={EmailVerification} />

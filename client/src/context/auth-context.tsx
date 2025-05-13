@@ -125,6 +125,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Clear demo mode from localStorage to ensure Firebase auth is used
     localStorage.removeItem('demoMode');
     
+    // Check if we're on the problematic domain
+    const currentHostname = window.location.hostname;
+    const isOnProblemDomain = currentHostname === "25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev";
+    
+    if (isOnProblemDomain) {
+      console.log("On problematic domain, ensuring correct auth handling");
+    }
+    
     // First check for redirect result
     const checkRedirectResult = async () => {
       try {

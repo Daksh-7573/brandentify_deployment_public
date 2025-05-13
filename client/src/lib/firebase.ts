@@ -78,16 +78,20 @@ try {
   // Configure Google Auth Provider with custom parameters
   googleProvider = new GoogleAuthProvider();
   
-  // Get full origin for proper redirects
+  // Get full origin and hostname for proper redirects
   const origin = window.location.origin;
+  const hostname = window.location.hostname;
+  
+  // Check if we're on the problematic domain
+  const isProblemDomain = hostname === "25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev";
   
   googleProvider.setCustomParameters({
     // Force account selection even if user is already signed in
     prompt: 'select_account',
     // Include all domains as authorized redirect domains
     login_hint: '',
-    // Set redirect URL to current origin to handle problematic domains
-    redirect_uri: `${origin}/auth`
+    // Set redirect URL to auth-callback for the problematic domain
+    redirect_uri: `${origin}/${isProblemDomain ? 'auth-callback' : 'auth'}`
   });
   
   // Enable login persistence is set at the time of signin, not here
