@@ -135,25 +135,10 @@ export function GoogleAuth() {
       {/* Show domain auth alert for problematic domain */}
       <DomainAuthAlert />
       
-      {/* Show configuration issues if any */}
-      {configIssues.length > 0 && (
-        <Alert variant="destructive" className="mb-4">
-          <AlertTriangle className="h-4 w-4 mt-0.5" />
-          <div>
-            <AlertTitle>Firebase Configuration Issues</AlertTitle>
-            <AlertDescription>
-              <ul className="list-disc pl-5 mt-2 space-y-1 text-sm">
-                {configIssues.map((issue, index) => (
-                  <li key={index}>{issue}</li>
-                ))}
-              </ul>
-            </AlertDescription>
-          </div>
-        </Alert>
-      )}
+      {/* Firebase Configuration Issues alert has been removed per user request */}
       
       {/* Show error message if any */}
-      {errorMessage && !configIssues.length && (
+      {errorMessage && (
         <Alert variant="destructive" className="mb-4">
           <AlertTriangle className="h-4 w-4" />
           <AlertTitle>Authentication Error</AlertTitle>

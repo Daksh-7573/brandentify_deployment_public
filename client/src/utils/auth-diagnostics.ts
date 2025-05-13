@@ -155,11 +155,8 @@ export function checkFirebaseConfig() {
   // Start collecting issues
   const issues: string[] = [];
   
-  if (isProblemDomain) {
-    console.log('RECOMMENDATION: This domain requires special handling for Firebase auth.');
-    console.log('Make sure to add this domain to Firebase Console > Authentication > Settings > Authorized domains');
-    issues.push(`Domain "${hostname}" needs to be added to authorized domains in Firebase Console`);
-  }
+  // We're no longer showing warnings about problematic domains
+  // as we have a specialized auth solution via auth-popup-debug.tsx
   
   // Check browser features needed for Firebase
   const hasLocalStorage = typeof localStorage !== 'undefined';
