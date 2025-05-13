@@ -169,13 +169,9 @@ function Router() {
       <Route path="/feed-test">
         <ProtectedRoute path="/feed-test" component={FeedTestPage} />
       </Route>
-      {/* Brand Quests (new name) - Special implementation to support demo mode */}
+      {/* Brand Quests - All demo mode functionality removed */}
       <Route path="/brand-quests">
-        {() => {
-          // Check if we're in demo mode
-          const demoMode = localStorage.getItem('demo_user_id') !== null;
-          return demoMode ? <BrandQuestsPage /> : <ProtectedRoute path="/brand-quests" component={BrandQuestsPage} />;
-        }}
+        <ProtectedRoute path="/brand-quests" component={BrandQuestsPage} />
       </Route>
       
       {/* Legacy route - keeping for backward compatibility */}

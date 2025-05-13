@@ -5,7 +5,7 @@ import { QuestPanel } from '@/components/brand-quests/quest-panel';
 import { BadgeDisplay } from '@/components/brand-quests/badge-display';
 import { XpProgressBar } from '@/components/brand-quests/xp-progress-bar';
 // Removed HashtagSuggestions and NowboardSuggestions as they're now integrated into quests
-import { BrandQuestDemo } from '@/components/brand-quests/BrandQuestDemo';
+// BrandQuestDemo import removed per request
 import { useToast } from '@/hooks/use-toast';
 import { 
   useUserXp,
@@ -25,51 +25,10 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 export default function BrandQuestsPage() {
   const { user } = useContext(AuthContext);
-  const [effectiveUserId, setEffectiveUserId] = useState<number | undefined>(undefined);
   const { toast } = useToast();
   
-  // Check for demo user ID in localStorage
-  useEffect(() => {
-    // If user is logged in, clear any demo mode and use real user ID
-    if (user && user.id) {
-      localStorage.removeItem('demo_user_id');
-      setEffectiveUserId(user.id);
-      return;
-    }
-    
-    // Get URL params
-    const urlParams = new URLSearchParams(window.location.search);
-    const demoParam = urlParams.get('demo');
-    
-    // If demo mode in URL, set localStorage and use demo user
-    if (demoParam === 'true') {
-      localStorage.setItem('demo_user_id', '1');
-      setEffectiveUserId(1);
-      toast({
-        title: "Demo Mode Active",
-        description: "Viewing quests for demo user ID: 1",
-        duration: 5000,
-      });
-      return;
-    }
-    
-    // If localStorage has demo user, use that
-    const demoUserId = localStorage.getItem('demo_user_id');
-    if (demoUserId) {
-      const demoId = parseInt(demoUserId, 10);
-      setEffectiveUserId(demoId);
-      toast({
-        title: "Demo Mode Active",
-        description: `Viewing quests for demo user ID: ${demoId}`,
-        duration: 5000,
-      });
-    } else {
-      setEffectiveUserId(user?.id || null);
-    }
-  }, [user?.id, toast]);
-  
-  // Use the effective user ID (logged-in user or demo user)
-  const userId = effectiveUserId || user?.id;
+  // Use actual user ID from authentication
+  const userId = user?.id;
   
   const { data: userXp, isLoading: isLoadingXp } = useUserXp(userId);
   
@@ -78,7 +37,7 @@ export default function BrandQuestsPage() {
       <div className="max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="text-center">
           <h1 className="text-3xl font-bold mb-4">Brand Quests</h1>
-          <p className="text-muted-foreground">Please log in to view your brand quests or use the demo launcher.</p>
+          <p className="text-muted-foreground">Please log in to view your brand quests.</p>
         </div>
       </div>
     );
