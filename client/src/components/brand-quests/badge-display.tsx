@@ -9,7 +9,7 @@ import { useUserBadges } from '@/hooks/use-career-quests';
 import { cn } from '@/lib/utils';
 
 interface BadgeDisplayProps {
-  userId: number;
+  userId?: number;
   limit?: number;
   compact?: boolean;
   className?: string;
@@ -22,7 +22,9 @@ const BADGE_ICONS: Record<BadgeType, string> = {
   musk_learner: '🧠',
   thought_leader: '💭',
   portfolio_star: '⭐',
-  visibility_boosted: '👁️'
+  visibility_boosted: '👁️',
+  explorer: '🔍',
+  opportunist: '💼'
 };
 
 const BADGE_COLORS: Record<BadgeType, string> = {
@@ -31,7 +33,9 @@ const BADGE_COLORS: Record<BadgeType, string> = {
   musk_learner: 'bg-purple-100 text-purple-800 dark:bg-purple-800/20 dark:text-purple-300',
   thought_leader: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-800/20 dark:text-yellow-300',
   portfolio_star: 'bg-pink-100 text-pink-800 dark:bg-pink-800/20 dark:text-pink-300',
-  visibility_boosted: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-800/20 dark:text-indigo-300'
+  visibility_boosted: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-800/20 dark:text-indigo-300',
+  explorer: 'bg-amber-100 text-amber-800 dark:bg-amber-800/20 dark:text-amber-300',
+  opportunist: 'bg-teal-100 text-teal-800 dark:bg-teal-800/20 dark:text-teal-300'
 };
 
 export function BadgeDisplay({ userId, limit, compact = false, className }: BadgeDisplayProps) {

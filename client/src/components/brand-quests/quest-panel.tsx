@@ -14,7 +14,7 @@ import { QuestCard } from './quest-card';
 import { cn } from '@/lib/utils';
 
 interface QuestPanelProps {
-  userId: number;
+  userId?: number;
   className?: string;
 }
 
