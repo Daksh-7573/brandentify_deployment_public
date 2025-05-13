@@ -8,7 +8,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { useToast } from '@/hooks/use-toast';
 import { UserQuest, QuestDefinition, QuestType, QuestStatus, getQuestTypeIcon, getQuestStatusLabel, getBadgeLabel } from '@/types/career-quest';
 import { useCompleteQuest, useUpdateQuestProgress } from '@/hooks/use-career-quests';
-import { HashtagSuggestions } from '@/components/career-quests/hashtag-suggestions';
+import { StaticHashtagSuggestions } from '@/components/brand-quests/static-hashtag-suggestions';
 
 interface QuestCardProps {
   quest: UserQuest;
@@ -156,13 +156,14 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
               </div>
               <p className="text-sm text-muted-foreground">{muskTipContent}</p>
               
-              {/* Add HashtagSuggestions component for pulse creation quests */}
+              {/* Add StaticHashtagSuggestions component for pulse creation quests */}
               {questDefinition.type === 'pulse_creation' && (
-                <div className="mt-2">
-                  <HashtagSuggestions 
+                <div className="mt-3">
+                  <div className="text-sm font-medium text-muted-foreground mb-2">
+                    <span className="mr-1">💡</span> Musk's hashtag suggestions:
+                  </div>
+                  <StaticHashtagSuggestions 
                     questType={questDefinition.type}
-                    targetAction={questDefinition.targetAction}
-                    count={5}
                     onHashtagClick={(hashtag) => {
                       navigator.clipboard.writeText(hashtag);
                       toast({
