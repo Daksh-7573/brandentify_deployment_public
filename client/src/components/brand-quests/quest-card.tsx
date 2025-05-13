@@ -181,27 +181,23 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
           )}
         </div>
       </CardContent>
-      <CardFooter className="pt-1 flex justify-between">
-        <div className="w-full flex justify-end">
+      <CardFooter className="pt-1 flex flex-col">
+        {/* Quest progress info badge */}
+        <div className="w-full flex justify-between items-center mb-1">
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button 
-                  variant={
-                    isComplete ? "secondary" : 
-                    isExpired ? "destructive" : 
-                    "default"
-                  }
-                  size="sm"
-                  className="w-full"
-                  disabled={!isActive || updateProgressMutation.isPending}
-                >
+                <div className={`text-xs rounded px-2 py-1 ${
+                  isComplete ? "bg-green-100 text-green-800" : 
+                  isExpired ? "bg-red-100 text-red-800" : 
+                  "bg-blue-100 text-blue-800"
+                }`}>
                   {isComplete 
                     ? `Completed on ${new Date(quest.completedAt || '').toLocaleDateString()}`
                     : isExpired 
                       ? `Missed ${questDefinition.xpReward} XP`
-                      : `Auto-tracking progress (${quest.progress}/${questDefinition.targetCount})`}
-                </Button>
+                      : `Auto-tracking: ${quest.progress}/${questDefinition.targetCount} completed`}
+                </div>
               </TooltipTrigger>
               <TooltipContent>
                 {isComplete && quest.xpEarned 
@@ -214,6 +210,13 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
+          
+          {/* Show XP reward for active or expired quests */}
+          {!isComplete && (
+            <span className="text-xs font-semibold">
+              {isExpired ? 'Missed ' : 'Reward: '}{questDefinition.xpReward} XP
+            </span>
+          )}
         </div>
       </CardFooter>
       
