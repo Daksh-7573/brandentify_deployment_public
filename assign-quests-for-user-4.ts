@@ -2,12 +2,7 @@
  * Script to assign quests to user ID 4 (the Google login user)
  */
 
-import { Pool } from 'pg';
-
-// Database connection
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-});
+import { pool } from './server/db';
 
 async function executeQuery(query: string, params: any[] = []) {
   const client = await pool.connect();
@@ -59,8 +54,8 @@ async function assignQuestsToUser(userId: number) {
     // Get quest definitions for engagement quests
     const engagementQuestDefinitions = await executeQuery(
       `SELECT * FROM quest_definitions 
-       WHERE category = 'engagement' 
-       AND action_type IN ('create_pulse', 'comment_on_pulse', 'react_to_pulse', 'add_media_to_pulse')`
+       WHERE type = 'engagement' 
+       AND target_action IN ('create_pulse', 'comment_on_pulse', 'react_to_pulse', 'add_media_to_pulse')`
     );
     
     if (engagementQuestDefinitions.length === 0) {
@@ -73,17 +68,17 @@ async function assignQuestsToUser(userId: number) {
     // Log all quest definitions for debugging
     console.log('Quest definitions found:');
     engagementQuestDefinitions.forEach(quest => {
-      console.log(`- ID: ${quest.id}, Title: ${quest.title}, Action Type: ${quest.action_type}`);
+      console.log(`- ID: ${quest.id}, Title: ${quest.title}, Target Action: ${quest.target_action}`);
     });
 
     // Assign 3 quests for the current week
     const questsToAssign = [
       // Quest 1: Hashtag Hero - Create pulses with hashtags
-      engagementQuestDefinitions.find(q => q.action_type === 'create_pulse'),
+      engagementQuestDefinitions.find(q => q.target_action === 'create_pulse'),
       // Quest 2: Meaningful Commenter - Comment on pulses
-      engagementQuestDefinitions.find(q => q.action_type === 'comment_on_pulse'),
+      engagementQuestDefinitions.find(q => q.target_action === 'comment_on_pulse'),
       // Quest 3: Media Maven - Add media to pulses
-      engagementQuestDefinitions.find(q => q.action_type === 'add_media_to_pulse')
+      engagementQuestDefinitions.find(q => q.target_action === 'add_media_to_pulse')
     ].filter(q => q); // Filter out undefined quests
     
     if (questsToAssign.length === 0) {
