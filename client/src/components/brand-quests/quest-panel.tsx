@@ -54,7 +54,7 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
       console.log('Error fetching weekly quests:', weeklyError);
       toast({
         title: 'Error fetching weekly quests',
-        description: "We'll try to recover your data. You can also try using demo mode.",
+        description: "We're having trouble loading your quests. Please try again later.",
         variant: 'destructive',
       });
     }
@@ -63,7 +63,7 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
       console.log('Error fetching all quests:', allError);
       toast({
         title: 'Error fetching quests',
-        description: "We'll try to recover your data. You can also try using demo mode.",
+        description: "We're having trouble loading your quests. Please try again later.",
         variant: 'destructive',
       });
     }
@@ -115,11 +115,10 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
     );
   };
   
-  // Only suggest demo mode on significant errors, don't auto-enable it
+  // Log errors for debugging purposes
   useEffect(() => {
     if (weeklyError && !isLoadingWeekly) {
-      // Just log the error, don't automatically switch to demo mode
-      console.log('Error loading quests, but not auto-switching to demo mode');
+      console.log('Error loading quests:', weeklyError);
     }
   }, [weeklyError, isLoadingWeekly]);
 

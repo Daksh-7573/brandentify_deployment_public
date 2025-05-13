@@ -58,25 +58,29 @@ export const useUserQuests = (userId?: number) => {
 };
 
 // Fetch user's active quests with full quest definitions
-export const useUserQuestsWithDefinitions = (userId: number) => {
+export const useUserQuestsWithDefinitions = (userId?: number) => {
   return useQuery({
-    queryKey: [`/api/users/${userId}/quests-with-definitions`],
+    queryKey: [userId ? `/api/users/${userId}/quests-with-definitions` : null],
     queryFn: async () => {
+      if (!userId) {
+        return [] as UserQuest[]; // Return empty array if no user ID
+      }
+      
       try {
         const res = await fetch(`/api/users/${userId}/quests-with-definitions`);
         if (!res.ok) {
           console.error('Failed to fetch quests with definitions, status:', res.status);
-          throw new Error('Failed to fetch user quests with definitions');
+          return [] as UserQuest[]; // Return empty array on error
         }
         const contentType = res.headers.get('content-type');
         if (!contentType || !contentType.includes('application/json')) {
           console.error('Expected JSON but got', contentType);
-          throw new Error('Unexpected response format for quests with definitions');
+          return [] as UserQuest[]; // Return empty array on error
         }
         return res.json() as Promise<UserQuest[]>;
       } catch (error) {
         console.error('Error fetching quests with definitions:', error);
-        throw error;
+        return [] as UserQuest[]; // Return empty array on error
       }
     },
     enabled: !!userId

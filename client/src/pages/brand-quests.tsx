@@ -66,9 +66,9 @@ export default function BrandQuestsPage() {
                   <Skeleton className="w-full h-[50px]" />
                 ) : userXp ? (
                   <XpProgressBar 
-                    balance={userXp.balance}
-                    monthlyEarned={userXp.currentMonthEarned}
-                    lifetimeEarned={userXp.lifetimeEarned}
+                    balance={userXp.balance || 0}
+                    monthlyEarned={userXp.currentMonthEarned || 0}
+                    lifetimeEarned={userXp.lifetimeEarned || 0}
                   />
                 ) : (
                   <div className="text-center py-4 text-muted-foreground">
