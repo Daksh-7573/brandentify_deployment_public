@@ -8,16 +8,7 @@ export default function Landing() {
   const { isLoading, isAuthenticated } = useAuth();
   const { toast } = useToast();
   
-  // Create our own demo mode function since it's not in the auth context
-  const enterDemoMode = () => {
-    localStorage.setItem('demo_user_id', '1');
-    toast({
-      title: "Demo Mode Activated",
-      description: "You are now browsing in demo mode.",
-      duration: 3000,
-    });
-    window.location.href = '/industry-pulse?demo=true';
-  };
+  // Demo mode function removed as per request
   const [_, setLocation] = useLocation();
 
   // Redirect to dashboard if already authenticated - using useEffect to avoid state updates during render
@@ -39,14 +30,7 @@ export default function Landing() {
               </div>
             </div>
             <div className="flex items-center">
-              <Button 
-                variant="outline" 
-                className="ml-4"
-                onClick={enterDemoMode}
-                disabled={false} // Never disable demo mode button
-              >
-                Try Demo
-              </Button>
+              {/* Demo button removed as per request */}
               <Button 
                 variant="default" 
                 className="ml-4"
@@ -84,34 +68,9 @@ export default function Landing() {
                       Sign up now
                     </Button>
                   </div>
-                  <div className="mt-3 sm:mt-0 sm:ml-3">
-                    <Button 
-                      size="lg"
-                      variant="outline"
-                      className="w-full flex items-center justify-center px-8 py-3 md:py-4 md:text-lg md:px-10"
-                      onClick={enterDemoMode}
-                      disabled={false} // Never disable demo mode button
-                    >
-                      Try Demo Mode
-                    </Button>
-                  </div>
+                  {/* "Try Demo Mode" button removed per request */}
                 </div>
-                <div className="mt-4 text-center lg:text-left">
-                  <Button 
-                    variant="ghost"
-                    className="text-green-600 hover:text-green-700 hover:bg-green-50 border border-green-200 mr-2"
-                    onClick={() => setLocation('/quest-demo')}
-                  >
-                    Try Brand Quests Demo →
-                  </Button>
-                  <Button 
-                    variant="ghost"
-                    className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 border border-blue-200"
-                    onClick={() => setLocation('/resume-parser')}
-                  >
-                    Test Resume Parser →
-                  </Button>
-                </div>
+                {/* "Try Brand Quests Demo" and "Test Resume Parser" buttons removed per request */}
               </div>
             </main>
           </div>
