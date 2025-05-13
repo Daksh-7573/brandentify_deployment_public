@@ -32,8 +32,13 @@ export function GoogleAuth() {
           error?.message?.includes('unauthorized')) {
         console.log("Showing Firebase domain configuration helper");
         setShowFirebaseHelp(true);
+      } else if (error?.code === 'auth/popup-blocked' ||
+                error?.code === 'auth/popup-closed-by-user') {
+        // Don't show Firebase help for popup issues - these are handled in the auth context
+        console.log("Popup was blocked or closed by user - handled by auth context");
       } else {
         // For other errors, still show the domain helper as it might be domain-related
+        console.log("Showing Firebase domain configuration helper for unknown error");
         setShowFirebaseHelp(true);
       }
     }

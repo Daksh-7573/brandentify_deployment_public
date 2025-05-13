@@ -9,11 +9,12 @@ import {
   User as FirebaseUser,
   AuthErrorCodes
 } from "firebase/auth";
-import { auth, googleProvider } from "../lib/firebase";
+import { auth } from "../lib/firebase";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { User } from "@shared/schema";
 
+// Define our auth user type
 type AuthUser = {
   uid: string;
   id: number;
@@ -25,18 +26,20 @@ type AuthUser = {
   location?: string;
 };
 
+// Define our auth context type
 type AuthContextType = {
   user: AuthUser | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   isDemoMode: boolean;
   signInWithGoogle: () => Promise<void>;
-  signInWithPhone: (user: User) => void; // Function for phone authentication
-  signInWithEmail: (user: User) => void; // Function for email authentication
+  signInWithPhone: (user: User) => void;
+  signInWithEmail: (user: User) => void;
   signOut: () => Promise<void>;
   refreshUserData: () => Promise<void>;
 };
 
+// Create the auth context with default values
 export const AuthContext = createContext<AuthContextType>({
   user: null,
   isAuthenticated: false,
@@ -49,14 +52,16 @@ export const AuthContext = createContext<AuthContextType>({
   refreshUserData: async () => {},
 });
 
+// Create the provider component
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
-  const [isLoading, setIsLoading] = useState(true); // Set to true initially
+  const [isLoading, setIsLoading] = useState(true);
   const [isDemoMode, setIsDemoMode] = useState(false);
   const { toast } = useToast();
+  const googleProvider = new GoogleAuthProvider();
 
-  // Fetch user data from our backend - used for both initial load and refreshes
-  const fetchUserData = async (userId: string | number) => {
+  // Fetch user data from our backend
+  const fetchUserData = async (userId: string | number): Promise<AuthUser | null> => {
     try {
       console.log(`Fetching user data for user ID: ${userId}`);
       const response = await apiRequest('GET', `/api/users/${userId}`);
@@ -69,7 +74,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const userData = await response.json();
       console.log('Backend user data:', userData);
       
-      // Create a user with data from our backend
       return {
         uid: userId.toString(),
         id: userData.id,
@@ -86,32 +90,65 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Enhanced useEffect for handling auth state changes and redirect results
+  // Create or update a user in our backend
+  const createOrUpdateUserInBackend = async (firebaseUser: FirebaseUser) => {
+    try {
+      // Make sure required fields exist
+      const userData = {
+        username: firebaseUser.uid, // Use Firebase UID as username for consistency
+        email: firebaseUser.email || `firebase_${firebaseUser.uid.substring(0, 8)}@example.com`,
+        name: firebaseUser.displayName || "Firebase User",
+        photoURL: firebaseUser.photoURL,
+      };
+      
+      // Create the user
+      const response = await apiRequest('POST', '/api/users', userData);
+      
+      // If the user was created, return the user data from the backend
+      if (response.ok) {
+        return await response.json();
+      }
+      
+      // If we get here, just fetch the user data instead
+      return await fetchUserData(firebaseUser.uid);
+    } catch (error) {
+      console.error("Error in createOrUpdateUserInBackend:", error);
+      return null;
+    }
+  };
+
+  // Check for authentication on mount and when redirect result is available
   useEffect(() => {
-    console.log("Auth provider mounted");
-    let unsubscribe: () => void;
+    setIsLoading(true);
+    console.log("AuthProvider useEffect running - checking auth state");
     
-    // First, check for redirect result immediately
+    // First check for redirect result
     const checkRedirectResult = async () => {
       try {
-        console.log("Checking for redirect result...");
+        console.log("Checking for redirect result from Google auth");
         const result = await getRedirectResult(auth);
         
         if (result && result.user) {
-          console.log("Redirect result found:", result.user);
+          console.log("REDIRECT result found! User:", result.user);
           
           // Create or update user in our backend
+          console.log("Creating/updating user in backend after redirect");
           await createOrUpdateUserInBackend(result.user);
           
-          // Then fetch the complete user data from our backend
-          const backendUserData = await fetchUserData(result.user.uid);
+          // Then fetch the user data
+          console.log("Fetching user data after redirect");
+          const userData = await fetchUserData(result.user.uid);
           
-          // If we got data from backend, use it
-          if (backendUserData) {
-            setUser(backendUserData);
-            console.log("User signed in via redirect with backend data:", backendUserData);
+          if (userData) {
+            console.log("Setting user state with backend data after redirect:", userData);
+            setUser(userData);
+            toast({
+              title: "Signed in successfully via redirect",
+              description: `Welcome${userData.name ? ` ${userData.name}` : ''}!`,
+            });
           } else {
-            // Fallback to Firebase data if backend fetch fails
+            // If we couldn't get backend data, use Firebase data as fallback
+            console.log("Using Firebase data as fallback after redirect");
             const fallbackUser = {
               uid: result.user.uid,
               id: parseInt(result.user.uid.substring(0, 5), 36) || 999,
@@ -122,446 +159,146 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             };
             
             setUser(fallbackUser);
-            console.log("User signed in via redirect with fallback data:", fallbackUser);
+            toast({
+              title: "Signed in successfully via redirect",
+              description: `Welcome${fallbackUser.name ? ` ${fallbackUser.name}` : ''}!`,
+            });
           }
           
-          toast({
-            title: "Signed in successfully via redirect",
-            description: `Welcome${backendUserData?.name ? ` ${backendUserData.name}` : ''}!`,
-          });
+          // Important: Return early to avoid the auth state listener processing the same user
+          setIsLoading(false);
+          return true;
         } else {
           console.log("No redirect result found");
+          return false;
         }
       } catch (error) {
         console.error("Error checking redirect result:", error);
         toast({
           title: "Authentication error",
-          description: "There was a problem with the Google sign-in process",
+          description: "Error processing Google redirect. Please try again.",
           variant: "destructive"
         });
-      } finally {
-        // Always set loading to false after redirect check
-        setIsLoading(false);
+        return false;
       }
     };
     
-    // Call redirect check function first
-    checkRedirectResult();
-    
-    // Remove any demo mode flags if they exist
-    localStorage.removeItem('demoMode');
-    
-    // Then set up auth state listener for general auth state changes
-    unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      console.log("Auth state changed:", firebaseUser);
+    // Check for redirect result and then set up auth state listener
+    checkRedirectResult().then((redirectHandled) => {
+      console.log("Redirect check completed, handled:", redirectHandled);
       
-      if (firebaseUser) {
-        // User is signed in
-        try {
-          // First check if we already have a user set to avoid duplicate processing
-          if (!user || user.uid !== firebaseUser.uid) {
-            console.log("Auth state changed with new user, updating state");
-            
-            // Get the backend user
-            const backendUserData = await fetchUserData(firebaseUser.uid);
-            
-            if (backendUserData) {
-              // If we got data from backend, use it
-              setUser(backendUserData);
-            } else {
-              // If the user exists in Firebase but not in our backend,
-              // try to create them first
-              await createOrUpdateUserInBackend(firebaseUser);
+      // If redirect was handled, we don't need to process the auth state again
+      if (redirectHandled) return;
+      
+      // Set up auth state listener
+      console.log("Setting up auth state listener");
+      const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+        console.log("Auth state changed:", firebaseUser ? "User signed in" : "User signed out");
+        
+        if (firebaseUser) {
+          // User is signed in
+          try {
+            // Only update if we don't already have this user
+            if (!user || user.uid !== firebaseUser.uid) {
+              console.log("New user detected in auth state, updating:", firebaseUser.uid);
               
-              // Try fetching user data again
-              const createdUserData = await fetchUserData(firebaseUser.uid);
+              // Get user data from backend
+              const userData = await fetchUserData(firebaseUser.uid);
               
-              if (createdUserData) {
-                setUser(createdUserData);
+              if (userData) {
+                console.log("Setting user state with backend data:", userData);
+                setUser(userData);
               } else {
-                // Fallback to minimal Firebase data if backend fails
-                setUser({
-                  uid: firebaseUser.uid,
-                  id: parseInt(firebaseUser.uid.substring(0, 5), 36) || 999,
-                  username: firebaseUser.uid.substring(0, 8),
-                  email: firebaseUser.email,
-                  name: firebaseUser.displayName,
-                  photoURL: firebaseUser.photoURL
-                });
-              }
-            }
-          }
-        } catch (error: any) {
-          console.error("Error in auth state change handler:", error);
-          
-          // Special handling for network errors with Firebase
-          if (error.code === AuthErrorCodes.NETWORK_REQUEST_FAILED || 
-              error.message?.includes('network') || 
-              error.message?.includes('Failed to fetch')) {
-            console.log("Network error detected during auth. Using cache if available.");
-          }
-        }
-      } else {
-        // User is signed out
-        if (user) {
-          console.log("User signed out, clearing state");
-          setUser(null);
-        }
-      }
-      
-      // Finish loading regardless of result
-      setIsLoading(false);
-    });
-    
-    // Clean up the listener when the component unmounts
-    return () => {
-      console.log("Cleaning up auth state listener");
-      unsubscribe();
-    };
-            const cachedUserData = localStorage.getItem('userDataCache');
-            if (cachedUserData) {
-              try {
-                const parsedUserData = JSON.parse(cachedUserData);
-                setUser(parsedUserData);
-                console.log("Using cached user data:", parsedUserData);
+                // If not found, create the user first
+                console.log("User not found in backend, creating...");
+                await createOrUpdateUserInBackend(firebaseUser);
                 
-                // Don't show an error toast in this case as we've recovered
-                toast({
-                  title: "Using offline mode",
-                  description: "You appear to be offline. Some features may be limited.",
-                });
-                setIsLoading(false);
-                return;
-              } catch (cacheError) {
-                console.error("Error parsing cached user data:", cacheError);
+                // Try fetching user data again
+                console.log("Fetching newly created user data");
+                const newUserData = await fetchUserData(firebaseUser.uid);
+                
+                if (newUserData) {
+                  console.log("Setting user state with new backend data:", newUserData);
+                  setUser(newUserData);
+                } else {
+                  // Last resort - use Firebase data
+                  console.log("Using Firebase data as last resort");
+                  setUser({
+                    uid: firebaseUser.uid,
+                    id: parseInt(firebaseUser.uid.substring(0, 5), 36) || 999,
+                    username: firebaseUser.uid.substring(0, 8),
+                    email: firebaseUser.email,
+                    name: firebaseUser.displayName,
+                    photoURL: firebaseUser.photoURL
+                  });
+                }
               }
             }
+          } catch (error) {
+            console.error("Error in auth state change handler:", error);
           }
-          
-          // Fallback to basic Firebase data
-          setUser({
-            uid: firebaseUser.uid,
-            id: parseInt(firebaseUser.uid.substring(0, 5), 36) || 999,
-            username: firebaseUser.uid.substring(0, 8),
-            email: firebaseUser.email,
-            name: firebaseUser.displayName,
-            photoURL: firebaseUser.photoURL
-          });
-        }
-        
-        // Cache current user data for offline use
-        try {
+        } else {
+          // User is signed out
           if (user) {
-            localStorage.setItem('userDataCache', JSON.stringify(user));
-            localStorage.setItem('userDataCacheTimestamp', Date.now().toString());
+            console.log("User signed out, clearing state");
+            setUser(null);
           }
-        } catch (cacheError) {
-          console.error("Error caching user data:", cacheError);
         }
-      } else {
-        console.log("Auth state changed: User signed out");
         
-        // Clear user state
-        setUser(null);
-        
-        // Clear user data cache
-        localStorage.removeItem('userDataCache');
-        localStorage.removeItem('userDataCacheTimestamp');
-        
-        // Clear all query cache to prevent stale data
-        queryClient.clear();
-      }
-      
-      setIsLoading(false);
-    }, (error) => {
-      // Error handling for auth state observer
-      console.error("Firebase auth state observer error:", error);
-      
-      // Don't set loading to false if this is a network error
-      // as we might still recover with cached data
-      if (!(error as any).code || (error as any).code !== AuthErrorCodes.NETWORK_REQUEST_FAILED) {
         setIsLoading(false);
-      }
+      });
       
-      // Check for cached user data
+      // Ensure we clean up the auth state listener
+      return () => unsubscribe();
+    });
+  }, [user, toast]);
+
+  // Sign in with Google - tries popup first, falls back to redirect
+  const signInWithGoogle = async () => {
+    try {
+      setIsLoading(true);
+      
       try {
-        const cachedUserData = localStorage.getItem('userDataCache');
-        if (cachedUserData) {
-          const parsedUserData = JSON.parse(cachedUserData);
-          const cacheAge = Date.now() - parseInt(localStorage.getItem('userDataCacheTimestamp') || '0');
+        // First try popup
+        const result = await signInWithPopup(auth, googleProvider);
+        
+        if (result.user) {
+          // Create or update user in backend
+          await createOrUpdateUserInBackend(result.user);
           
-          // Use cached data if it's less than 24 hours old
-          if (cacheAge < 1000 * 60 * 60 * 24) {
-            setUser(parsedUserData);
-            console.log("Using cached user data after auth error:", parsedUserData);
-            
+          // Fetch user data
+          const userData = await fetchUserData(result.user.uid);
+          
+          if (userData) {
+            setUser(userData);
             toast({
-              title: "Using cached data",
-              description: "Having trouble connecting to authentication servers. Using cached data.",
+              title: "Signed in successfully",
+              description: `Welcome${userData.name ? ` ${userData.name}` : ''}!`,
             });
           }
         }
-      } catch (cacheError) {
-        console.error("Error recovering with cached user data:", cacheError);
-      }
-      
-      setIsLoading(false);
-    });
-
-    return () => unsubscribe();
-  }, [toast]);
-
-  const createOrUpdateUserInBackend = async (firebaseUser: FirebaseUser) => {
-    try {
-      if (!firebaseUser || !firebaseUser.uid) {
-        console.error("Invalid firebase user data:", firebaseUser);
-        return null;
-      }
-      
-      // Log Firebase configuration for debugging
-      console.log("Firebase config check:", {
-        projectIdExists: !!import.meta.env.VITE_FIREBASE_PROJECT_ID,
-        apiKeyLength: import.meta.env.VITE_FIREBASE_API_KEY?.length || 0,
-        appIdLength: import.meta.env.VITE_FIREBASE_APP_ID?.length || 0
-      });
-      
-      // Show domain setup info in a user-friendly way
-      console.log("%c ⚠️ FIREBASE DOMAIN SETUP INFORMATION ⚠️ ", "background: #ff0000; color: white; font-size: 16px; font-weight: bold; padding: 4px;");
-      console.log("%c Add these domains to Firebase Auth > Settings > Authorized domains: ", "background: #333; color: white; font-size: 14px; padding: 4px;");
-      console.log("%c 1. " + window.location.hostname + " ", "background: #007bff; color: white; font-size: 14px; font-weight: bold; padding: 4px;");
-      console.log("%c 2. " + window.location.hostname + ".replit.app ", "background: #007bff; color: white; font-size: 14px; font-weight: bold; padding: 4px;");
-      console.log("%c 3. *.replit.dev ", "background: #007bff; color: white; font-size: 14px; font-weight: bold; padding: 4px;");
-      console.log("%c 4. *.replit.app ", "background: #007bff; color: white; font-size: 14px; font-weight: bold; padding: 4px;");
-      
-      // First check if user exists by email
-      if (firebaseUser.email) {
-        try {
-          // First, try to look up this user by email directly via API call
-          const checkEmailResponse = await apiRequest('GET', `/api/users/by-email/${encodeURIComponent(firebaseUser.email)}`);
-          
-          if (checkEmailResponse.ok) {
-            const existingUser = await checkEmailResponse.json();
-            console.log("User with matching email found:", existingUser);
-            return existingUser;
-          }
-        } catch (emailLookupError) {
-          console.error("Error checking existing user by email:", emailLookupError);
-          // Continue with user creation attempt
-        }
-      }
-      
-      // Generate a unique username from the user's email or display name or ID
-      let username = '';
-      if (firebaseUser.email) {
-        // Extract username from email and make sure it's clean and unique
-        username = firebaseUser.email.split('@')[0];
-        username = username.replace(/[^a-zA-Z0-9_]/g, '') + '_' + Math.floor(Math.random() * 1000);
-      } else if (firebaseUser.displayName) {
-        // Use display name (lowercase, no spaces) with random suffix
-        username = firebaseUser.displayName.toLowerCase().replace(/\s+/g, '_') + 
-                  '_' + Math.floor(Math.random() * 1000);
-      } else {
-        // Use UID with timestamp as last resort 
-        username = `firebase_${firebaseUser.uid.substring(0, 8)}_${Date.now() % 10000}`;
-      }
-      
-      // Make sure required fields exist
-      const userData = {
-        username: username,
-        email: firebaseUser.email || `firebase_${firebaseUser.uid.substring(0, 8)}@example.com`,
-        name: firebaseUser.displayName || "Firebase User",
-        photoURL: firebaseUser.photoURL,
-        firebase_uid: firebaseUser.uid,  // Store Firebase UID to help with lookups
-      };
-      
-      console.log("Attempting to create/update user with data:", userData);
-      
-      let maxRetries = 3;
-      let retryDelay = 300; // ms
-      let attemptCount = 0;
-      
-      // Try to create user with retries
-      while (attemptCount < maxRetries) {
-        attemptCount++;
-        try {
-          console.log(`User creation attempt ${attemptCount}/${maxRetries}`);
-          const response = await apiRequest('POST', '/api/users', userData);
-          
-          if (!response.ok) {
-            const errorText = await response.text();
-            console.error(`Failed to create/update user. Status: ${response.status}`, errorText);
-            
-            // If user already exists, just fetch the user data
-            if (response.status === 400 && errorText.includes("Email already registered")) {
-              console.log("User already exists based on error message");
-              return await fetchUserData(firebaseUser.uid);
-            }
-            
-            // If this wasn't the last retry, wait and try again
-            if (attemptCount < maxRetries) {
-              console.log(`Waiting ${retryDelay}ms before retry ${attemptCount+1}...`);
-              await new Promise(r => setTimeout(r, retryDelay));
-              retryDelay *= 2; // Exponential backoff
-              continue;
-            }
-            
-            // Check if we should try to fetch user data anyway
-            if (firebaseUser.email) {
-              console.log("Final attempt - trying to fetch user by Firebase ID");
-              const fallbackUser = await fetchUserData(firebaseUser.uid);
-              if (fallbackUser) return fallbackUser;
-            }
-            
-            return null;
-          }
-          
-          // Success! Return the created/updated user
-          const createdUser = await response.json();
-          console.log("User successfully created/updated:", createdUser);
-          return createdUser;
-        } catch (error) {
-          console.error(`Error creating/updating user (attempt ${attemptCount}/${maxRetries}):`, error);
-          
-          // If this wasn't the last retry, wait and try again
-          if (attemptCount < maxRetries) {
-            console.log(`Waiting ${retryDelay}ms before retry ${attemptCount+1}...`);
-            await new Promise(r => setTimeout(r, retryDelay));
-            retryDelay *= 2; // Exponential backoff
-            continue;
-          }
-          
-          // Check if we should try to fetch user data anyway
-          if (firebaseUser.email) {
-            console.log("Final attempt - trying to fetch user by Firebase ID");
-            const fallbackUser = await fetchUserData(firebaseUser.uid);
-            if (fallbackUser) return fallbackUser;
-          }
-          
-          return null;
-        }
-      }
-      
-      return null;
-    } catch (error) {
-      console.error("Error in createOrUpdateUserInBackend:", error);
-      return null;
-    }
-  };
-
-  const signInWithGoogle = async (): Promise<void> => {
-    setIsLoading(true);
-    try {
-      // Log Firebase configuration for debugging
-      console.log("Firebase config:", {
-        projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-        authDomain: `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.firebaseapp.com`,
-        hasApiKey: !!import.meta.env.VITE_FIREBASE_API_KEY,
-        hasAppId: !!import.meta.env.VITE_FIREBASE_APP_ID
-      });
-      
-      // Add some scopes for Google auth
-      googleProvider.addScope('email');
-      googleProvider.addScope('profile');
-      
-      let firebaseUser: FirebaseUser | null = null;
-      
-      // Try popup first, and fall back to redirect if needed
-      try {
-        // Use popup for sign-in as the primary method
-        console.log("Attempting Google sign-in with popup...");
-        const popupResult = await signInWithPopup(auth, googleProvider);
-        
-        // If we get here, popup was successful
-        console.log("Google sign-in successful:", popupResult.user);
-        firebaseUser = popupResult.user;
       } catch (popupError: any) {
-        console.error("Popup sign-in error:", popupError);
-        
-        // Specifically check for popup blocked error
-        if (popupError.code === 'auth/popup-blocked' || 
-            popupError.code === 'auth/popup-closed-by-user' ||
-            popupError.message?.includes('popup')) {
+        // If popup is blocked, fall back to redirect
+        if (popupError.code === AuthErrorCodes.POPUP_BLOCKED || 
+            popupError.code === 'auth/popup-blocked') {
           
-          console.log("Popup was blocked or closed, trying redirect method...");
           toast({
-            title: "Popup blocked",
-            description: "Redirecting you to Google sign-in page instead...",
-            duration: 3000
+            title: "Pop up blocked",
+            description: "Redirecting you to sign in page again.",
           });
           
-          // Wait a moment to show the toast
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          
-          // Use redirect method as fallback
           await signInWithRedirect(auth, googleProvider);
-          
-          // This function will return without a result when using redirect
-          // The redirect result will be handled in the useEffect
-          setIsLoading(false);
           return;
         }
         
-        // For other errors, just rethrow
         throw popupError;
       }
-      
-      // Process the Firebase user from popup sign-in
-      if (firebaseUser) {
-        // Create or update user in our backend
-        await createOrUpdateUserInBackend(firebaseUser);
-        
-        // Now fetch the complete user data from our backend
-        const backendUserData = await fetchUserData(firebaseUser.uid);
-        
-        // If we got data from backend, use it
-        if (backendUserData) {
-          setUser(backendUserData);
-        } else {
-          // Fallback to Firebase data if backend fetch fails
-          setUser({
-            uid: firebaseUser.uid,
-            id: parseInt(firebaseUser.uid.substring(0, 5), 36) || 999,
-            username: firebaseUser.uid.substring(0, 8),
-            email: firebaseUser.email,
-            name: firebaseUser.displayName,
-            photoURL: firebaseUser.photoURL
-          });
-        }
-        
-        toast({
-          title: "Successfully signed in!",
-          description: `Welcome${backendUserData?.name ? ` ${backendUserData.name}` : ''}!`
-        });
-      }
     } catch (error: any) {
-      console.error("Error signing in with Google:", error);
-      
-      // More informative error message
-      let errorMessage = "There was a problem signing in with Google";
-      
-      if (error.code === 'auth/configuration-not-found') {
-        errorMessage = "Firebase authentication is not properly configured. Please check your Firebase setup in the console.";
-        console.log("Detailed error:", error);
-      } else if (error.code === 'auth/popup-blocked' || error.code === 'auth/popup-closed-by-user') {
-        errorMessage = "Sign-in popup was blocked or closed. Please try again.";
-      } else if (error.code === 'auth/unauthorized-domain') {
-        const currentDomain = window.location.hostname;
-        errorMessage = `This domain "${currentDomain}" is not authorized for Firebase authentication. Please see the console for instructions.`;
-        
-        // Display the domain in the console in a very visible way
-        console.log("%c ⚠️ FIREBASE AUTHENTICATION ERROR - UNAUTHORIZED DOMAIN ⚠️ ", "background: #ff0000; color: white; font-size: 16px; font-weight: bold; padding: 4px;");
-        console.log("%c Add these domains to Firebase Auth > Settings > Authorized domains: ", "background: #333; color: white; font-size: 14px; padding: 4px;");
-        console.log("%c 1. " + currentDomain + " ", "background: #007bff; color: white; font-size: 14px; font-weight: bold; padding: 4px;");
-        console.log("%c 2. " + currentDomain + ".replit.app ", "background: #007bff; color: white; font-size: 14px; font-weight: bold; padding: 4px;");
-        console.log("%c 3. *.replit.dev ", "background: #007bff; color: white; font-size: 14px; font-weight: bold; padding: 4px;");
-        console.log("%c 4. *.replit.app ", "background: #007bff; color: white; font-size: 14px; font-weight: bold; padding: 4px;");
-      } else if (error.message) {
-        errorMessage = `Error: ${error.message}`;
-      }
+      console.error("Google sign-in error:", error);
       
       toast({
-        title: "Sign in failed",
-        description: errorMessage,
+        title: "Authentication error",
+        description: "There was a problem with Google sign-in. Please try again.",
         variant: "destructive"
       });
     } finally {
@@ -569,300 +306,101 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Phone auth implementation
+  // Demo mode sign in
   const signInWithPhone = (userData: User) => {
-    setIsLoading(true);
+    setUser({
+      uid: userData.id.toString(),
+      id: userData.id,
+      username: userData.username,
+      email: userData.email,
+      name: userData.name,
+      photoURL: userData.photoURL,
+      title: userData.title || undefined,
+      location: userData.location || undefined
+    });
     
-    try {
-      // Convert database user to our AuthUser type
-      setUser({
-        uid: userData.id.toString(),
-        id: userData.id,
-        username: userData.username || userData.id.toString().substring(0, 8),
-        email: userData.email,
-        name: userData.name,
-        photoURL: userData.photoURL,
-        title: userData.title || undefined,
-        location: userData.location || undefined
-      });
-      
-      toast({
-        title: "Phone verified successfully",
-        description: "Welcome to Brandentifier"
-      });
-    } catch (error) {
-      console.error("Error signing in with phone:", error);
-      toast({
-        title: "Sign in failed",
-        description: "There was a problem signing in with phone verification",
-        variant: "destructive"
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    setIsDemoMode(true);
+    localStorage.setItem('demoMode', 'true');
+    
+    toast({
+      title: "Demo mode activated",
+      description: `Welcome ${userData.name || 'to the demo'}!`,
+    });
   };
-  
-  // Email auth implementation
+
+  // Email authentication
   const signInWithEmail = (userData: User) => {
-    setIsLoading(true);
+    setUser({
+      uid: userData.id.toString(),
+      id: userData.id,
+      username: userData.username,
+      email: userData.email,
+      name: userData.name,
+      photoURL: userData.photoURL,
+      title: userData.title || undefined,
+      location: userData.location || undefined
+    });
     
-    try {
-      console.log("signInWithEmail received userData:", userData);
-      
-      if (!userData || !userData.id) {
-        throw new Error("Invalid user data received");
-      }
-      
-      // Convert database user to our AuthUser type
-      setUser({
-        uid: userData.id.toString(),
-        id: userData.id,
-        username: userData.username || userData.id.toString().substring(0, 8),
-        email: userData.email,
-        name: userData.name,
-        photoURL: userData.photoURL,
-        title: userData.title || undefined,
-        location: userData.location || undefined
-      });
-      
-      toast({
-        title: "Login successful",
-        description: "Welcome to Brandentifier"
-      });
-    } catch (error) {
-      console.error("Error signing in with email:", error);
-      toast({
-        title: "Sign in failed",
-        description: "There was a problem signing in with email and password",
-        variant: "destructive"
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    toast({
+      title: "Signed in with email",
+      description: `Welcome ${userData.name || ''}!`,
+    });
   };
-  
+
+  // Sign out
   const signOut = async () => {
     try {
-      // Clear user state explicitly before Firebase signout
+      setIsLoading(true);
+      
+      // Only sign out from Firebase if not in demo mode
+      if (!isDemoMode) {
+        await firebaseSignOut(auth);
+      }
+      
+      // Clear demo mode
+      setIsDemoMode(false);
+      localStorage.removeItem('demoMode');
+      
+      // Clear user
       setUser(null);
       
-      // Clear query client cache
+      // Clear query cache
       queryClient.clear();
       
-      // Then sign out from Firebase
-      await firebaseSignOut(auth);
-      
-      // Add a brief delay to allow state updates to propagate
-      setTimeout(() => {
-        // Force a page reload to ensure all auth state is cleared
-        window.location.href = "/";
-      }, 100);
-      
       toast({
-        title: "Signed out successfully"
+        title: "Signed out",
+        description: "You have been successfully signed out.",
       });
     } catch (error) {
       console.error("Error signing out:", error);
       toast({
-        title: "Sign out failed",
-        description: "There was a problem signing out",
-        variant: "destructive"
-      });
-    }
-  };
-
-  // Add the refreshUserData function to update user profile data
-  const refreshUserData = async () => {
-    // Get the user ID
-    const userId = user?.uid;
-    
-    if (!userId) {
-      console.log("Cannot refresh user data: No user ID available");
-      return;
-    }
-    
-    setIsLoading(true);
-    
-    try {
-      console.log("Refreshing user data with ID:", userId);
-      
-      // Invalidate the user data query to ensure fresh data on next fetch - using consistent array format
-      queryClient.invalidateQueries({ queryKey: ['/api/users', userId] });
-      
-      // Fetch latest user data from the backend
-      const updatedUser = await fetchUserData(userId);
-      if (updatedUser) {
-        setUser(updatedUser);
-        console.log("Updated user state with fresh data:", updatedUser);
-      }
-      
-      // Also invalidate other related queries for the profile components using consistent array format
-      console.log("Refreshing profile data queries");
-      queryClient.invalidateQueries({ queryKey: ['/api/users', userId, 'resume'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/users', userId, 'experiences'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/users', userId, 'educations'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/users', userId, 'skills'] });
-      
-      // Manually fetch ALL data directly using fetch API to bypass any caching
-      try {
-        console.log("Manually fetching all profile data using direct API requests");
-        
-        // First, let's try to get the user's profile data directly
-        try {
-          const userResponse = await fetch(`/api/users/${userId}`, {
-            method: 'GET',
-            headers: { 'Cache-Control': 'no-cache, no-store' }
-          });
-          
-          // If the user is found, update the cache
-          if (userResponse.ok) {
-            const userData = await userResponse.json();
-            console.log(`Successfully fetched user data:`, userData);
-            
-            // Update the user data cache with consistent array format
-            queryClient.setQueryData(['/api/users', userId], userData);
-          } else {
-            console.error(`Failed to fetch user data for ID ${userId}:`, userResponse.statusText);
-          }
-        } catch (userFetchError) {
-          console.error("Error fetching user profile data:", userFetchError);
-        }
-        
-        // For other data, we need to make sure we're using the correct user ID
-        // We need the numeric ID for backend queries
-        const backendUserId = user?.id || (parseInt(userId.toString().substring(0, 5), 36) || 999);
-        
-        // Fetch resume data
-        try {
-          const resumeResponse = await fetch(`/api/users/${backendUserId}/resume`, {
-            method: 'GET',
-            headers: { 'Cache-Control': 'no-cache, no-store' }
-          });
-          
-          if (resumeResponse.ok) {
-            const resumeData = await resumeResponse.json();
-            console.log(`Successfully fetched resume data:`, resumeData);
-            queryClient.setQueryData(['/api/users', backendUserId, 'resume'], resumeData);
-          }
-        } catch (resumeFetchError) {
-          console.error("Error fetching resume data:", resumeFetchError);
-        }
-        
-        // Fetch experiences data
-        try {
-          const expResponse = await fetch(`/api/users/${backendUserId}/experiences`, {
-            method: 'GET',
-            headers: { 'Cache-Control': 'no-cache, no-store' }
-          });
-          
-          if (expResponse.ok) {
-            const expData = await expResponse.json();
-            console.log(`Successfully fetched experiences data:`, expData);
-            queryClient.setQueryData(['/api/users', backendUserId, 'experiences'], expData);
-          }
-        } catch (expFetchError) {
-          console.error("Error fetching experiences data:", expFetchError);
-        }
-        
-        // Fetch educations data
-        try {
-          const eduResponse = await fetch(`/api/users/${backendUserId}/educations`, {
-            method: 'GET',
-            headers: { 'Cache-Control': 'no-cache, no-store' }
-          });
-          
-          if (eduResponse.ok) {
-            const eduData = await eduResponse.json();
-            console.log(`Successfully fetched educations data:`, eduData);
-            queryClient.setQueryData(['/api/users', backendUserId, 'educations'], eduData);
-          }
-        } catch (eduFetchError) {
-          console.error("Error fetching educations data:", eduFetchError);
-        }
-        
-        // Fetch skills data
-        try {
-          const skillsResponse = await fetch(`/api/users/${backendUserId}/skills`, {
-            method: 'GET',
-            headers: { 'Cache-Control': 'no-cache, no-store' }
-          });
-          
-          if (skillsResponse.ok) {
-            const skillsData = await skillsResponse.json();
-            console.log(`Successfully fetched skills data:`, skillsData);
-            queryClient.setQueryData(['/api/users', backendUserId, 'skills'], skillsData);
-          }
-        } catch (skillsFetchError) {
-          console.error("Error fetching skills data:", skillsFetchError);
-        }
-        
-        // Fetch portfolios
-        try {
-          const portfoliosResponse = await fetch(`/api/users/${backendUserId}/portfolio`, {
-            method: 'GET',
-            headers: { 'Cache-Control': 'no-cache, no-store' }
-          });
-          
-          if (portfoliosResponse.ok) {
-            const portfoliosData = await portfoliosResponse.json();
-            console.log(`Successfully fetched portfolio data:`, portfoliosData);
-            queryClient.setQueryData(['/api/users', backendUserId, 'portfolio'], portfoliosData);
-          }
-        } catch (portfoliosFetchError) {
-          console.error("Error fetching portfolio data:", portfoliosFetchError);
-        }
-        
-        // Fetch projects
-        try {
-          const projectsResponse = await fetch(`/api/users/${backendUserId}/projects`, {
-            method: 'GET',
-            headers: { 'Cache-Control': 'no-cache, no-store' }
-          });
-          
-          if (projectsResponse.ok) {
-            const projectsData = await projectsResponse.json();
-            console.log(`Successfully fetched projects data:`, projectsData);
-            queryClient.setQueryData(['/api/users', backendUserId, 'projects'], projectsData);
-          }
-        } catch (projectsFetchError) {
-          console.error("Error fetching projects data:", projectsFetchError);
-        }
-        
-        // Fetch services
-        try {
-          const servicesResponse = await fetch(`/api/users/${backendUserId}/services`, {
-            method: 'GET',
-            headers: { 'Cache-Control': 'no-cache, no-store' }
-          });
-          
-          if (servicesResponse.ok) {
-            const servicesData = await servicesResponse.json();
-            console.log(`Successfully fetched services data:`, servicesData);
-            queryClient.setQueryData(['/api/users', backendUserId, 'services'], servicesData);
-          }
-        } catch (servicesFetchError) {
-          console.error("Error fetching services data:", servicesFetchError);
-        }
-      } catch (error) {
-        console.error("Error manually refreshing data:", error);
-      }
-      
-      toast({
-        title: "Profile refreshed",
-        description: "Your profile data has been refreshed"
-      });
-    } catch (error) {
-      console.error("Error refreshing user data:", error);
-      toast({
-        title: "Refresh failed",
-        description: "Failed to refresh your profile data",
+        title: "Error signing out",
+        description: "There was a problem signing out. Please try again.",
         variant: "destructive"
       });
     } finally {
       setIsLoading(false);
     }
   };
-  
+
+  // Refresh user data
+  const refreshUserData = async () => {
+    if (!user) return;
+    
+    try {
+      setIsLoading(true);
+      const refreshedData = await fetchUserData(user.uid);
+      
+      if (refreshedData) {
+        setUser(refreshedData);
+      }
+    } catch (error) {
+      console.error("Error refreshing user data:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -874,7 +412,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         signInWithPhone,
         signInWithEmail,
         signOut,
-        refreshUserData
+        refreshUserData,
       }}
     >
       {children}
@@ -882,10 +420,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 }
 
+// Custom hook for using the auth context
 export function useAuth() {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
+  return useContext(AuthContext);
 }
