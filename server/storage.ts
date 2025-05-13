@@ -8878,12 +8878,40 @@ export const storage = {
   
   // Work Experience methods
   getWorkExperiencesByUserId: (userId: number) => dbStorage.getWorkExperiencesByUserId(userId),
+  createWorkExperience: (experience: InsertWorkExperience) => dbStorage.createWorkExperience(experience),
+  updateWorkExperience: (id: number, experience: Partial<WorkExperience>) => dbStorage.updateWorkExperience(id, experience),
+  deleteWorkExperience: (id: number) => dbStorage.deleteWorkExperience(id),
+  
+  // Resume parsing methods for work experience
+  addWorkExperience: (experience: InsertWorkExperience) => dbStorage.createWorkExperience(experience),
   
   // Skills methods
   getSkillsByUserId: (userId: number) => dbStorage.getSkillsByUserId(userId),
+  createSkill: (skill: InsertSkill) => dbStorage.createSkill(skill),
+  updateSkill: (id: number, skill: Partial<Skill>) => dbStorage.updateSkill(id, skill),
+  deleteSkill: (id: number) => dbStorage.deleteSkill(id),
+  
+  // Resume parsing methods for skills
+  addSkill: (skill: InsertSkill) => dbStorage.createSkill(skill),
   
   // Education methods
   getEducationsByUserId: (userId: number) => dbStorage.getEducationsByUserId(userId),
+  createEducation: (education: InsertEducation) => dbStorage.createEducation(education),
+  updateEducation: (id: number, education: Partial<Education>) => dbStorage.updateEducation(id, education),
+  deleteEducation: (id: number) => dbStorage.deleteEducation(id),
+  
+  // Resume parsing methods for education
+  addEducation: (education: InsertEducation) => dbStorage.createEducation(education),
+  
+  // Project methods
+  getProjectsByUserId: (userId: number) => dbStorage.getProjectsByUserId(userId),
+  getProjectById: (id: number) => dbStorage.getProjectById(id),
+  createProject: (project: InsertProject) => dbStorage.createProject(project),
+  updateProject: (id: number, project: Partial<Project>) => dbStorage.updateProject(id, project),
+  deleteProject: (id: number) => dbStorage.deleteProject(id),
+  
+  // Resume parsing methods for projects
+  addProject: (project: InsertProject) => dbStorage.createProject(project),
   
   // Career Goal methods
   getCareerGoalsByUserId: (userId: number) => dbStorage.getCareerGoalsByUserId(userId),
