@@ -83,8 +83,8 @@ export default function AuthPopupDebugPage() {
           photoURL: result.user.photoURL
         });
         
-        // Set localStorage to enable popup auth in the main flow
-        localStorage.setItem('use_popup_auth', 'true');
+        // Set localStorage to enable hybrid auth in the main flow
+        localStorage.setItem('use_hybrid_auth', 'true');
         
         // Reload the page to reflect the change
         setTimeout(() => {
@@ -100,9 +100,9 @@ export default function AuthPopupDebugPage() {
     }
   };
   
-  const handleDisablePopupAuth = () => {
-    localStorage.removeItem('use_popup_auth');
-    alert('Popup authentication has been disabled. The app will now use redirect authentication again.');
+  const handleDisableHybridAuth = () => {
+    localStorage.removeItem('use_hybrid_auth');
+    alert('Hybrid authentication has been disabled. The app will now use redirect authentication only.');
     
     // Reload the page to reflect the change
     window.location.reload();

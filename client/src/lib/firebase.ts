@@ -48,11 +48,12 @@ console.log("Firebase initialization:", {
 // Check if we're on the specific problematic domain
 const isOnProblemDomain = currentHostname === "25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev";
 
-// Firebase configuration - optimized for the problematic domain
+// Firebase configuration - using more compatible setup for problematic domains
 const firebaseConfig: FirebaseOptions = {
   apiKey,
-  // For problematic domain, explicitly use the Firebase domain as recommended by Firebase docs
-  authDomain: projectId ? `${projectId}.firebaseapp.com` : currentHostname,
+  // CRITICAL FIX: Always use the Firebase domain for authDomain, especially for problematic Replit domains
+  // This ensures that the OAuth flow uses the official Firebase domain which is always allowed
+  authDomain: `${projectId}.firebaseapp.com`,
   projectId,
   storageBucket: projectId ? `${projectId}.appspot.com` : undefined,
   // These are okay as defaults since they're not sensitive and are only used for optional features
@@ -80,25 +81,18 @@ try {
   const origin = window.location.origin;
   const hostname = window.location.hostname;
   
-  // Check if we're on the problematic domain
-  const isProblemDomain = hostname === "25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev";
+  // IMPORTANT: Use minimal parameters for ALL domains to avoid OAuth errors
+  // The "redirect_uri" parameter causes issues with Google's OAuth flow
+  // Let Firebase handle the redirect_uri internally
+  googleProvider.setCustomParameters({
+    prompt: 'select_account'
+  });
   
-  // Set custom parameters based on whether we're on the problematic domain
-  if (isProblemDomain) {
-    // For the problematic domain, specify an explicit redirect URI that matches the origin
-    googleProvider.setCustomParameters({
-      prompt: 'select_account',
-      login_hint: '',
-      redirect_uri: `${origin}/auth-callback`  // Explicitly set redirect URI for the problematic domain
-    });
-    console.log(`Special handling for problematic domain: ${hostname} with redirect_uri: ${origin}/auth-callback`);
-  } else {
-    // For all other domains, use standard settings
-    googleProvider.setCustomParameters({
-      prompt: 'select_account',
-      login_hint: ''
-    });
-  }
+  // Add OAuth scopes to ensure we get the right profile data
+  googleProvider.addScope('email');
+  googleProvider.addScope('profile');
+  
+  console.log("Using simplified Google auth configuration for maximum compatibility");
   
   // Enable login persistence is set at the time of signin, not here
   

@@ -288,45 +288,47 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Reset the provider to get a clean state
       const freshProvider = new GoogleAuthProvider();
       
-      // Always set some basic params
-      freshProvider.setCustomParameters({
-        prompt: 'select_account',
-      });
-      
-      // Store the current URL for better debugging
+      // SIMPLIFIED APPROACH: Use minimal settings for maximum compatibility
+      // Store the current URL for better debugging only
       localStorage.setItem('auth_redirect_origin', currentOrigin);
       localStorage.setItem('auth_redirect_hostname', currentHostname);
       
-      // For the problematic domain, add even more specific parameters
-      if (isOnProblemDomain) {
-        console.log("Setting enhanced parameters for problematic domain");
-        
-        // Create our auth-callback URL
-        const callbackUrl = `${currentOrigin}/auth-callback`;
-        localStorage.setItem('auth_callback_url', callbackUrl);
-        
-        console.log("Using explicit redirect_uri:", callbackUrl);
-        
-        freshProvider.addScope('profile');
-        freshProvider.addScope('email');
-        
-        // Try setting the redirect_uri directly
+      // Use the provider from firebase.ts with no additional customizations
+      // This ensures we're using the providers that are already configured correctly
+      console.log("Using simplified authentication approach with default Firebase provider");
+      
+      // Always ensure we get these scopes for both methods
+      freshProvider.addScope('profile');
+      freshProvider.addScope('email');
+      
+      // Check if we're using a hybrid approach (try popup first, fallback to redirect)
+      const useHybridAuth = localStorage.getItem('use_hybrid_auth') === 'true';
+      
+      if (useHybridAuth) {
+        console.log("Using hybrid authentication (popup with redirect fallback)");
         try {
-          freshProvider.setCustomParameters({
-            prompt: 'select_account',
-            redirect_uri: callbackUrl,
-            login_hint: ''
-          });
-        } catch (err) {
-          console.warn("Failed to set redirect_uri parameter, will try alternative approach:", err);
+          // Try popup first as it's more reliable on problematic domains
+          console.log("Attempting popup authentication...");
+          const result = await signInWithPopup(auth, freshProvider);
+          console.log("Popup authentication successful");
+          
+          // If we get here, popup worked, create the user
+          if (result.user) {
+            const userData = await createOrUpdateUserInBackend(result.user);
+            setUser(userData);
+            return; // Exit the function as we're done
+          }
+        } catch (popupError) {
+          console.warn("Popup authentication failed, falling back to redirect:", popupError);
+          // Continue to redirect flow
         }
       }
       
-      // Log what we're doing
+      // Proceed with standard redirect flow
       console.log("Proceeding with redirect sign-in using configured provider");
       
-      // Always use redirect auth for simplicity and consistency
-      // Use our fresh provider with custom parameters
+      // Using fresh provider with minimal configuration
+      // Let Firebase handle the redirect_uri internally
       await signInWithRedirect(auth, freshProvider);
       
       // Note: We don't expect to reach this code as the redirect should happen immediately
