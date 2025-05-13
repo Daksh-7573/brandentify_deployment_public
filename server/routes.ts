@@ -111,6 +111,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       console.log("[POST /users] Request body:", req.body);
       
+      // First check if user with this email already exists - regardless of validation
+      if (req.body.email) {
+        try {
+          console.log("[POST /users] Checking if email exists:", req.body.email);
+          const existingUserByEmail = await storage.getUserByEmail(req.body.email);
+          if (existingUserByEmail) {
+            console.log("[POST /users] User with email already exists, returning:", existingUserByEmail);
+            return res.status(200).json(existingUserByEmail);
+          }
+        } catch (emailCheckError) {
+          console.log("[POST /users] Error checking existing email:", emailCheckError);
+          // Continue with user creation even if email check fails
+        }
+      }
+      
       // Special handling for Firebase auth users
       const isFirebaseUser = req.body.email && 
         (req.body.email.includes("@gmail.com") || 
@@ -118,16 +133,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       let userData_withVerificationFlag: any;
       
-      // Add validation logging
+      // Try validation first
       try {
         const userData = insertUserSchema.parse(req.body);
-        
-        // Check if email is already registered
-        const existingUser = await storage.getUserByEmail(userData.email);
-        if (existingUser) {
-          console.log("[POST /users] User with email already exists:", userData.email);
-          return res.status(200).json(existingUser); // Changed to 200 to avoid error in Firebase flow
-        }
         
         // Create the user with emailVerified explicitly set to false
         userData_withVerificationFlag = {
@@ -139,9 +147,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
         if (isFirebaseUser) {
           console.log("[POST /users] Firebase user validation failed:", validationError);
           
+          // Create a unique username if none provided
+          let username = req.body.username;
+          if (!username) {
+            // Extract username from email or generate random
+            if (req.body.email) {
+              const emailParts = req.body.email.split('@');
+              if (emailParts.length > 0) {
+                username = `${emailParts[0]}_${Math.floor(Math.random() * 1000)}`;
+              } else {
+                username = `user_${Math.floor(Math.random() * 10000)}`;
+              }
+            } else {
+              username = `firebase_user_${Date.now()}`;
+            }
+          }
+          
           // Create a fixed version of the data
           const fixedUserData = {
-            username: req.body.username || `firebase_user_${Date.now()}`,
+            username: username,
             email: req.body.email || `firebase_${Date.now()}@example.com`,
             name: req.body.name || "Firebase User",
             photoURL: req.body.photoURL || null,
@@ -151,12 +175,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
           console.log("[POST /users] Using fixed user data:", fixedUserData);
           
           // Check if a user with this username already exists
-          if (fixedUserData.username) {
-            const existingUser = await storage.getUserByUsername(fixedUserData.username);
+          try {
+            console.log("[db.getUserByUsername] Looking up user with username:", username);
+            const existingUser = await storage.getUserByUsername(username);
             if (existingUser) {
-              console.log("[POST /users] User with username already exists:", fixedUserData.username);
+              console.log("[POST /users] User with username already exists:", username);
               return res.status(200).json(existingUser);
             }
+          } catch (usernameCheckError) {
+            console.log("[POST /users] Error checking existing username:", usernameCheckError);
+            // Continue with user creation even if username check fails
           }
           
           // Create with fixed data
@@ -171,6 +199,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
         throw new Error("User data validation failed");
       }
       
+      // Final check for existing users by email
+      try {
+        if (userData_withVerificationFlag.email) {
+          const existingUser = await storage.getUserByEmail(userData_withVerificationFlag.email);
+          if (existingUser) {
+            console.log("[POST /users] Final check: User with email already exists:", userData_withVerificationFlag.email);
+            return res.status(200).json(existingUser);
+          }
+        }
+      } catch (finalEmailCheckError) {
+        console.log("[POST /users] Error in final email check:", finalEmailCheckError);
+      }
+      
+      console.log("[POST /users] Creating user with data:", userData_withVerificationFlag);
       const user = await storage.createUser(userData_withVerificationFlag);
       
       // Generate a random verification token
@@ -246,6 +288,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.json(user);
     } catch (error) {
       console.error("Error fetching user by username:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+  
+  // Get user by email route - specifically for Firebase auth
+  apiRouter.get("/users/by-email/:email", async (req: Request, res: Response) => {
+    try {
+      const { email } = req.params;
+      console.log(`[GET /users/by-email/:email] Looking up user with email: ${email}`);
+      
+      // Look up user by email
+      const user = await storage.getUserByEmail(email);
+      
+      if (!user) {
+        console.log(`[GET /users/by-email/:email] No user found with email: ${email}`);
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      console.log(`[GET /users/by-email/:email] Found user with email:`, user);
+      return res.json(user);
+    } catch (error) {
+      console.error("Error fetching user by email:", error);
       res.status(500).json({ message: "Internal server error" });
     }
   });

@@ -247,44 +247,115 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.log("%c 3. *.replit.dev ", "background: #007bff; color: white; font-size: 14px; font-weight: bold; padding: 4px;");
       console.log("%c 4. *.replit.app ", "background: #007bff; color: white; font-size: 14px; font-weight: bold; padding: 4px;");
       
-      // Make sure required fields exist
-      const userData = {
-        username: firebaseUser.uid,
-        email: firebaseUser.email || `firebase_${firebaseUser.uid.substring(0, 8)}@example.com`,
-        name: firebaseUser.displayName || "Firebase User",
-        photoURL: firebaseUser.photoURL
-      };
-      
-      // Validate username to make sure it's not undefined (this was causing the issue)
-      if (!userData.username) {
-        console.error("Username is undefined, using fallback");
-        userData.username = `firebase_user_${Date.now()}`;
+      // First check if user exists by email
+      if (firebaseUser.email) {
+        try {
+          // First, try to look up this user by email directly via API call
+          const checkEmailResponse = await apiRequest('GET', `/api/users/by-email/${encodeURIComponent(firebaseUser.email)}`);
+          
+          if (checkEmailResponse.ok) {
+            const existingUser = await checkEmailResponse.json();
+            console.log("User with matching email found:", existingUser);
+            return existingUser;
+          }
+        } catch (emailLookupError) {
+          console.error("Error checking existing user by email:", emailLookupError);
+          // Continue with user creation attempt
+        }
       }
       
-      console.log("Creating/updating user with data:", userData);
+      // Generate a unique username from the user's email or display name or ID
+      let username = '';
+      if (firebaseUser.email) {
+        // Extract username from email and make sure it's clean and unique
+        username = firebaseUser.email.split('@')[0];
+        username = username.replace(/[^a-zA-Z0-9_]/g, '') + '_' + Math.floor(Math.random() * 1000);
+      } else if (firebaseUser.displayName) {
+        // Use display name (lowercase, no spaces) with random suffix
+        username = firebaseUser.displayName.toLowerCase().replace(/\s+/g, '_') + 
+                  '_' + Math.floor(Math.random() * 1000);
+      } else {
+        // Use UID with timestamp as last resort 
+        username = `firebase_${firebaseUser.uid.substring(0, 8)}_${Date.now() % 10000}`;
+      }
       
-      // Check if user exists first
-      try {
-        const response = await apiRequest('POST', '/api/users', userData);
-        
-        if (!response.ok) {
-          const errorData = await response.text();
-          console.error(`Failed to create/update user. Status: ${response.status}`, errorData);
+      // Make sure required fields exist
+      const userData = {
+        username: username,
+        email: firebaseUser.email || `firebase_${firebaseUser.uid.substring(0, 8)}@example.com`,
+        name: firebaseUser.displayName || "Firebase User",
+        photoURL: firebaseUser.photoURL,
+        firebase_uid: firebaseUser.uid,  // Store Firebase UID to help with lookups
+      };
+      
+      console.log("Attempting to create/update user with data:", userData);
+      
+      let maxRetries = 3;
+      let retryDelay = 300; // ms
+      let attemptCount = 0;
+      
+      // Try to create user with retries
+      while (attemptCount < maxRetries) {
+        attemptCount++;
+        try {
+          console.log(`User creation attempt ${attemptCount}/${maxRetries}`);
+          const response = await apiRequest('POST', '/api/users', userData);
           
-          // If the user already exists, just fetch the user data
-          if (response.status === 400 && errorData.includes("Email already registered")) {
-            console.log("User already exists, fetching user data");
-            return await fetchUserData(firebaseUser.uid);
+          if (!response.ok) {
+            const errorText = await response.text();
+            console.error(`Failed to create/update user. Status: ${response.status}`, errorText);
+            
+            // If user already exists, just fetch the user data
+            if (response.status === 400 && errorText.includes("Email already registered")) {
+              console.log("User already exists based on error message");
+              return await fetchUserData(firebaseUser.uid);
+            }
+            
+            // If this wasn't the last retry, wait and try again
+            if (attemptCount < maxRetries) {
+              console.log(`Waiting ${retryDelay}ms before retry ${attemptCount+1}...`);
+              await new Promise(r => setTimeout(r, retryDelay));
+              retryDelay *= 2; // Exponential backoff
+              continue;
+            }
+            
+            // Check if we should try to fetch user data anyway
+            if (firebaseUser.email) {
+              console.log("Final attempt - trying to fetch user by Firebase ID");
+              const fallbackUser = await fetchUserData(firebaseUser.uid);
+              if (fallbackUser) return fallbackUser;
+            }
+            
+            return null;
+          }
+          
+          // Success! Return the created/updated user
+          const createdUser = await response.json();
+          console.log("User successfully created/updated:", createdUser);
+          return createdUser;
+        } catch (error) {
+          console.error(`Error creating/updating user (attempt ${attemptCount}/${maxRetries}):`, error);
+          
+          // If this wasn't the last retry, wait and try again
+          if (attemptCount < maxRetries) {
+            console.log(`Waiting ${retryDelay}ms before retry ${attemptCount+1}...`);
+            await new Promise(r => setTimeout(r, retryDelay));
+            retryDelay *= 2; // Exponential backoff
+            continue;
+          }
+          
+          // Check if we should try to fetch user data anyway
+          if (firebaseUser.email) {
+            console.log("Final attempt - trying to fetch user by Firebase ID");
+            const fallbackUser = await fetchUserData(firebaseUser.uid);
+            if (fallbackUser) return fallbackUser;
           }
           
           return null;
         }
-        
-        return await response.json();
-      } catch (error) {
-        console.error("Error creating/updating user:", error);
-        return null;
       }
+      
+      return null;
     } catch (error) {
       console.error("Error in createOrUpdateUserInBackend:", error);
       return null;
