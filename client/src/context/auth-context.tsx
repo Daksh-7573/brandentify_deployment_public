@@ -86,46 +86,49 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Enhanced useEffect that checks for redirects
+  // Enhanced useEffect for handling auth state changes and redirect results
   useEffect(() => {
     console.log("Auth provider mounted");
+    let unsubscribe: () => void;
     
-    // Check if the user was redirected back from Google auth
+    // First, check for redirect result immediately
     const checkRedirectResult = async () => {
       try {
         console.log("Checking for redirect result...");
         const result = await getRedirectResult(auth);
         
-        if (result) {
+        if (result && result.user) {
           console.log("Redirect result found:", result.user);
-          // Process the user from redirect result
-          if (result.user) {
-            // Create or update user in our backend
-            await createOrUpdateUserInBackend(result.user);
+          
+          // Create or update user in our backend
+          await createOrUpdateUserInBackend(result.user);
+          
+          // Then fetch the complete user data from our backend
+          const backendUserData = await fetchUserData(result.user.uid);
+          
+          // If we got data from backend, use it
+          if (backendUserData) {
+            setUser(backendUserData);
+            console.log("User signed in via redirect with backend data:", backendUserData);
+          } else {
+            // Fallback to Firebase data if backend fetch fails
+            const fallbackUser = {
+              uid: result.user.uid,
+              id: parseInt(result.user.uid.substring(0, 5), 36) || 999,
+              username: result.user.uid.substring(0, 8),
+              email: result.user.email,
+              name: result.user.displayName,
+              photoURL: result.user.photoURL
+            };
             
-            // Then fetch the complete user data from our backend
-            const backendUserData = await fetchUserData(result.user.uid);
-            
-            // If we got data from backend, use it
-            if (backendUserData) {
-              setUser(backendUserData);
-            } else {
-              // Fallback to Firebase data if backend fetch fails
-              setUser({
-                uid: result.user.uid,
-                id: parseInt(result.user.uid.substring(0, 5), 36) || 999,
-                username: result.user.uid.substring(0, 8),
-                email: result.user.email,
-                name: result.user.displayName,
-                photoURL: result.user.photoURL
-              });
-            }
-            
-            toast({
-              title: "Signed in successfully",
-              description: `Welcome${backendUserData?.name ? ` ${backendUserData.name}` : ''}!`,
-            });
+            setUser(fallbackUser);
+            console.log("User signed in via redirect with fallback data:", fallbackUser);
           }
+          
+          toast({
+            title: "Signed in successfully via redirect",
+            description: `Welcome${backendUserData?.name ? ` ${backendUserData.name}` : ''}!`,
+          });
         } else {
           console.log("No redirect result found");
         }
@@ -136,52 +139,85 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           description: "There was a problem with the Google sign-in process",
           variant: "destructive"
         });
+      } finally {
+        // Always set loading to false after redirect check
+        setIsLoading(false);
       }
     };
     
-    // Call the function to check for redirect results
+    // Call redirect check function first
     checkRedirectResult();
-      
+    
     // Remove any demo mode flags if they exist
     localStorage.removeItem('demoMode');
-      
-    // Listen for auth state changes with enhanced error handling
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      setIsLoading(true);
+    
+    // Then set up auth state listener for general auth state changes
+    unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      console.log("Auth state changed:", firebaseUser);
       
       if (firebaseUser) {
+        // User is signed in
         try {
-          // First create or update the user in our backend
-          await createOrUpdateUserInBackend(firebaseUser);
-          
-          // Then fetch the complete user data from our backend to get 
-          // the latest profile picture and other information
-          const backendUserData = await fetchUserData(firebaseUser.uid);
-          
-          // If we got data from backend, use it
-          if (backendUserData) {
-            setUser(backendUserData);
-          } else {
-            // Fallback to Firebase data if backend fetch fails
-            setUser({
-              uid: firebaseUser.uid,
-              id: parseInt(firebaseUser.uid.substring(0, 5), 36) || 999,
-              username: firebaseUser.uid.substring(0, 8),
-              email: firebaseUser.email,
-              name: firebaseUser.displayName,
-              photoURL: firebaseUser.photoURL
-            });
+          // First check if we already have a user set to avoid duplicate processing
+          if (!user || user.uid !== firebaseUser.uid) {
+            console.log("Auth state changed with new user, updating state");
+            
+            // Get the backend user
+            const backendUserData = await fetchUserData(firebaseUser.uid);
+            
+            if (backendUserData) {
+              // If we got data from backend, use it
+              setUser(backendUserData);
+            } else {
+              // If the user exists in Firebase but not in our backend,
+              // try to create them first
+              await createOrUpdateUserInBackend(firebaseUser);
+              
+              // Try fetching user data again
+              const createdUserData = await fetchUserData(firebaseUser.uid);
+              
+              if (createdUserData) {
+                setUser(createdUserData);
+              } else {
+                // Fallback to minimal Firebase data if backend fails
+                setUser({
+                  uid: firebaseUser.uid,
+                  id: parseInt(firebaseUser.uid.substring(0, 5), 36) || 999,
+                  username: firebaseUser.uid.substring(0, 8),
+                  email: firebaseUser.email,
+                  name: firebaseUser.displayName,
+                  photoURL: firebaseUser.photoURL
+                });
+              }
+            }
           }
         } catch (error: any) {
-          console.error("Error during authentication flow:", error);
+          console.error("Error in auth state change handler:", error);
           
           // Special handling for network errors with Firebase
           if (error.code === AuthErrorCodes.NETWORK_REQUEST_FAILED || 
               error.message?.includes('network') || 
               error.message?.includes('Failed to fetch')) {
             console.log("Network error detected during auth. Using cache if available.");
-            
-            // Look for cached user data in localStorage
+          }
+        }
+      } else {
+        // User is signed out
+        if (user) {
+          console.log("User signed out, clearing state");
+          setUser(null);
+        }
+      }
+      
+      // Finish loading regardless of result
+      setIsLoading(false);
+    });
+    
+    // Clean up the listener when the component unmounts
+    return () => {
+      console.log("Cleaning up auth state listener");
+      unsubscribe();
+    };
             const cachedUserData = localStorage.getItem('userDataCache');
             if (cachedUserData) {
               try {
