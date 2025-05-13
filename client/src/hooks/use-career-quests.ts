@@ -100,25 +100,10 @@ export const useUserWeeklyQuests = (userId: number, weekNumber: number, year: nu
           }
         }
         
-        // If we're not in demo mode (userId!=1) but using regular user ID and no quests found
+        // Don't automatically fall back to demo user - if no quests are found, return empty array
+        // This allows actual user data to be shown without demo fallback
         if (userId !== 1) {
-          // Check if we're in demo mode by looking for localStorage
-          if (typeof window !== 'undefined' && window.localStorage.getItem('demo_user_id')) {
-            // Try with demo user ID 1 as fallback
-            console.log('No quests found for current user, trying demo user ID 1');
-            const demoRes = await fetch(`/api/users/1/quests/current-week`);
-            if (demoRes.ok) {
-              const contentType = demoRes.headers.get('content-type');
-              if (contentType && contentType.includes('application/json')) {
-                const demoQuests = await demoRes.json() as UserQuest[];
-                const activeQuests = demoQuests.filter(quest => quest.status === 'active');
-                if (activeQuests && activeQuests.length > 0) {
-                  console.log(`Found ${activeQuests.length} active quests for demo user`);
-                  return activeQuests;
-                }
-              }
-            }
-          }
+          console.log(`No active quests found for user ${userId} in current week`);
         }
         
         console.error('Failed to fetch any active weekly quests');

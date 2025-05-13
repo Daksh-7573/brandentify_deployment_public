@@ -115,16 +115,13 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
     );
   };
   
-  // Always enable demo mode if no quests are found
+  // Only suggest demo mode on significant errors, don't auto-enable it
   useEffect(() => {
-    if ((weeklyError || !weeklyQuests || weeklyQuests.length === 0) && !isLoadingWeekly) {
-      // Set demo user ID to 1, we know demo user exists from create-demo-user-and-quests.ts
-      localStorage.setItem('demo_user_id', '1');
-      // Refresh data with demo user
-      refetchWeekly();
-      refetchAll();
+    if (weeklyError && !isLoadingWeekly) {
+      // Just log the error, don't automatically switch to demo mode
+      console.log('Error loading quests, but not auto-switching to demo mode');
     }
-  }, [weeklyError, weeklyQuests, isLoadingWeekly, refetchWeekly, refetchAll]);
+  }, [weeklyError, isLoadingWeekly]);
 
   return (
     <Card className={cn("w-full", className)}>

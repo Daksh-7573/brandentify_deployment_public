@@ -69,7 +69,7 @@ export default function BrandQuestsPage() {
   }, [user?.id, toast]);
   
   // Use the effective user ID (logged-in user or demo user)
-  const userId = effectiveUserId || (user?.id || 1);
+  const userId = effectiveUserId || user?.id;
   
   const { data: userXp, isLoading: isLoadingXp } = useUserXp(userId);
   
