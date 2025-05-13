@@ -250,24 +250,7 @@ export default function FirebaseAuthTest() {
             </div>
           )}
           
-          {/* Domain Authorization Instructions */}
-          {!domainAuth.isValid && (
-            <Alert className="bg-amber-50 border-amber-200">
-              <Info className="h-4 w-4 text-amber-600" />
-              <AlertTitle className="text-amber-800">Domain Authorization Required</AlertTitle>
-              <AlertDescription className="text-amber-700 mt-2">
-                <p className="mb-2">Your current domain <strong>"{domainAuth.currentDomain}"</strong> needs to be added to the authorized domains list in your Firebase project.</p>
-                <div className="mt-4 space-y-1 text-sm">
-                  <p className="font-semibold">Follow these steps to fix it:</p>
-                  {setupInstructions.map((instruction, idx) => (
-                    <div key={idx} className="ml-1">
-                      {instruction}
-                    </div>
-                  ))}
-                </div>
-              </AlertDescription>
-            </Alert>
-          )}
+          {/* Domain Authorization Instructions - Disabled per user request */}
           
           {/* Loading State */}
           {!authInitialized && (

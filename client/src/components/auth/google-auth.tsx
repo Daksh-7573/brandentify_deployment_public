@@ -76,14 +76,14 @@ export function GoogleAuth() {
           errorMsg.includes('domain') || 
           errorMsg.includes('unauthorized')) {
         
-        console.log("Firebase domain configuration issue detected - showing domain helper");
-        setShowFirebaseHelp(true);
-        setErrorMessage("This domain is not authorized in Firebase. Please add it to your Firebase project's Authorized Domains list.");
+        console.log("Firebase domain configuration issue detected");
+        // Domain messages removed per user request
+        setErrorMessage("Authentication error. Please try again later.");
         
-        // Show a specific toast with clearer instructions
+        // Show a generic toast instead of domain-specific one
         toast({
-          title: "Domain Not Authorized",
-          description: "Your domain needs to be added to Firebase. See instructions below.",
+          title: "Authentication Error",
+          description: "There was a problem signing in. Please try again later.",
           variant: "destructive"
         });
       }
@@ -194,8 +194,7 @@ export function GoogleAuth() {
         <span className="font-mono">{window.location.hostname}</span>
       </div>
       
-      {/* Show Firebase domain helper if needed */}
-      {showFirebaseHelp && <DomainAuthHelper />}
+      {/* Firebase domain helper removed per user request */}
       
       {/* Link to test auth in Firebase */}
       {configIssues.length === 0 && (
