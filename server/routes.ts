@@ -109,19 +109,67 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // User routes
   apiRouter.post("/users", async (req: Request, res: Response) => {
     try {
-      const userData = insertUserSchema.parse(req.body);
+      console.log("[POST /users] Request body:", req.body);
       
-      // Check if email is already registered
-      const existingUser = await storage.getUserByEmail(userData.email);
-      if (existingUser) {
-        return res.status(400).json({ message: "Email already registered" });
+      // Special handling for Firebase auth users
+      const isFirebaseUser = req.body.email && 
+        (req.body.email.includes("@gmail.com") || 
+        req.body.email.includes("firebase_"));
+      
+      let userData_withVerificationFlag: any;
+      
+      // Add validation logging
+      try {
+        const userData = insertUserSchema.parse(req.body);
+        
+        // Check if email is already registered
+        const existingUser = await storage.getUserByEmail(userData.email);
+        if (existingUser) {
+          console.log("[POST /users] User with email already exists:", userData.email);
+          return res.status(200).json(existingUser); // Changed to 200 to avoid error in Firebase flow
+        }
+        
+        // Create the user with emailVerified explicitly set to false
+        userData_withVerificationFlag = {
+          ...userData,
+          emailVerified: false
+        };
+      } catch (validationError) {
+        // If it's a Firebase user with validation errors, try to be more permissive
+        if (isFirebaseUser) {
+          console.log("[POST /users] Firebase user validation failed:", validationError);
+          
+          // Create a fixed version of the data
+          const fixedUserData = {
+            username: req.body.username || `firebase_user_${Date.now()}`,
+            email: req.body.email || `firebase_${Date.now()}@example.com`,
+            name: req.body.name || "Firebase User",
+            photoURL: req.body.photoURL || null,
+            emailVerified: false
+          };
+          
+          console.log("[POST /users] Using fixed user data:", fixedUserData);
+          
+          // Check if a user with this username already exists
+          if (fixedUserData.username) {
+            const existingUser = await storage.getUserByUsername(fixedUserData.username);
+            if (existingUser) {
+              console.log("[POST /users] User with username already exists:", fixedUserData.username);
+              return res.status(200).json(existingUser);
+            }
+          }
+          
+          // Create with fixed data
+          userData_withVerificationFlag = fixedUserData;
+        } else {
+          // For non-Firebase users, maintain strict validation
+          throw validationError;
+        }
       }
       
-      // Create the user with emailVerified explicitly set to false
-      const userData_withVerificationFlag = {
-        ...userData,
-        emailVerified: false
-      };
+      if (!userData_withVerificationFlag) {
+        throw new Error("User data validation failed");
+      }
       
       const user = await storage.createUser(userData_withVerificationFlag);
       

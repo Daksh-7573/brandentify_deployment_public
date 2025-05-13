@@ -232,6 +232,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return null;
       }
       
+      // Log Firebase configuration for debugging
+      console.log("Firebase config check:", {
+        projectIdExists: !!import.meta.env.VITE_FIREBASE_PROJECT_ID,
+        apiKeyLength: import.meta.env.VITE_FIREBASE_API_KEY?.length || 0,
+        appIdLength: import.meta.env.VITE_FIREBASE_APP_ID?.length || 0
+      });
+      
+      // Show domain setup info in a user-friendly way
+      console.log("%c ⚠️ FIREBASE DOMAIN SETUP INFORMATION ⚠️ ", "background: #ff0000; color: white; font-size: 16px; font-weight: bold; padding: 4px;");
+      console.log("%c Add these domains to Firebase Auth > Settings > Authorized domains: ", "background: #333; color: white; font-size: 14px; padding: 4px;");
+      console.log("%c 1. " + window.location.hostname + " ", "background: #007bff; color: white; font-size: 14px; font-weight: bold; padding: 4px;");
+      console.log("%c 2. " + window.location.hostname + ".replit.app ", "background: #007bff; color: white; font-size: 14px; font-weight: bold; padding: 4px;");
+      console.log("%c 3. *.replit.dev ", "background: #007bff; color: white; font-size: 14px; font-weight: bold; padding: 4px;");
+      console.log("%c 4. *.replit.app ", "background: #007bff; color: white; font-size: 14px; font-weight: bold; padding: 4px;");
+      
       // Make sure required fields exist
       const userData = {
         username: firebaseUser.uid,
@@ -240,20 +255,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         photoURL: firebaseUser.photoURL
       };
       
+      // Validate username to make sure it's not undefined (this was causing the issue)
+      if (!userData.username) {
+        console.error("Username is undefined, using fallback");
+        userData.username = `firebase_user_${Date.now()}`;
+      }
+      
       console.log("Creating/updating user with data:", userData);
       
       // Check if user exists first
-      const response = await apiRequest('POST', '/api/users', userData);
-      
-      if (!response.ok) {
-        const errorData = await response.text();
-        console.error(`Failed to create/update user. Status: ${response.status}`, errorData);
+      try {
+        const response = await apiRequest('POST', '/api/users', userData);
+        
+        if (!response.ok) {
+          const errorData = await response.text();
+          console.error(`Failed to create/update user. Status: ${response.status}`, errorData);
+          
+          // If the user already exists, just fetch the user data
+          if (response.status === 400 && errorData.includes("Email already registered")) {
+            console.log("User already exists, fetching user data");
+            return await fetchUserData(firebaseUser.uid);
+          }
+          
+          return null;
+        }
+        
+        return await response.json();
+      } catch (error) {
+        console.error("Error creating/updating user:", error);
         return null;
       }
-      
-      return await response.json();
     } catch (error) {
-      console.error("Error creating/updating user:", error);
+      console.error("Error in createOrUpdateUserInBackend:", error);
       return null;
     }
   };
