@@ -48,7 +48,22 @@ export function GoogleAuth() {
       
       // Get the current domain for diagnostic purposes
       const currentDomain = window.location.hostname;
+      const isProblemDomain = currentDomain === "25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev";
       console.log(`User clicked Google sign-in button on domain: ${currentDomain}`);
+      
+      // For the problematic domain, suggest using the preview URL instead
+      if (isProblemDomain) {
+        const usePreviewUrl = window.confirm(
+          "Authentication may not work correctly on this direct URL. Would you like to use the Replit preview URL instead, where authentication works reliably?"
+        );
+        
+        if (usePreviewUrl) {
+          // Store this in sessionStorage so we know the user was redirected for auth
+          sessionStorage.setItem('auth_redirect_from_problem_domain', 'true');
+          window.location.href = window.location.origin;
+          return;
+        }
+      }
       
       // Show toast to indicate we're initiating sign-in
       toast({
@@ -56,7 +71,7 @@ export function GoogleAuth() {
         description: "Please wait while we connect to Google...",
       });
       
-      // Call the signInWithGoogle function - now uses popup first for more reliability
+      // Call the signInWithGoogle function
       await signInWithGoogle();
       
       console.log("Google sign-in completed successfully");
