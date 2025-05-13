@@ -155,7 +155,23 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
               </div>
               <p className="text-sm text-muted-foreground">{muskTipContent}</p>
               
-              {/* Musk's tips already include hashtag suggestions - no need for separate component */}
+              {/* Add HashtagSuggestions component for pulse creation quests */}
+              {questDefinition.type === 'pulse_creation' && (
+                <div className="mt-2">
+                  <HashtagSuggestions 
+                    questType={questDefinition.type}
+                    targetAction={questDefinition.targetAction}
+                    count={5}
+                    onHashtagClick={(hashtag) => {
+                      navigator.clipboard.writeText(hashtag);
+                      toast({
+                        title: "Hashtag copied",
+                        description: `#${hashtag} copied to clipboard`
+                      });
+                    }}
+                  />
+                </div>
+              )}
             </div>
           )}
         </div>
