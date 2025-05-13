@@ -1,191 +1,142 @@
 /**
- * Firebase Authentication Diagnostics Utility
+ * Firebase Authentication Diagnostics
  * 
- * This module provides detailed logging and diagnostic functions
- * to help troubleshoot Firebase authentication issues.
+ * This utility module provides diagnostic functions to help troubleshoot
+ * Firebase authentication issues in different environments.
  */
 
-import { FirebaseError } from "firebase/app";
-
-// Common Firebase auth error codes with friendly descriptions
-const AUTH_ERROR_CODES: Record<string, string> = {
-  "auth/user-disabled": "This user account has been disabled by an administrator.",
-  "auth/user-not-found": "No account found with this email address.",
-  "auth/wrong-password": "The password is invalid.",
-  "auth/email-already-in-use": "This email address is already in use.",
-  "auth/weak-password": "The password is too weak.",
-  "auth/invalid-email": "The email address is not valid.",
-  "auth/account-exists-with-different-credential": "An account already exists with the same email address but different sign-in credentials.",
-  "auth/invalid-credential": "The authentication credential is malformed or has expired.",
-  "auth/operation-not-allowed": "This operation is not allowed. Enable the sign-in method in the Firebase console.",
-  "auth/popup-blocked": "The authentication popup was blocked by the browser.",
-  "auth/popup-closed-by-user": "The authentication popup was closed before the operation completed.",
-  "auth/unauthorized-domain": "This domain is not authorized for OAuth operations.",
-  "auth/network-request-failed": "A network error occurred. Check your internet connection.",
-  "auth/too-many-requests": "Too many unsuccessful login attempts. Try again later.",
-  "auth/internal-error": "An internal authentication error occurred.",
-  "auth/requires-recent-login": "This operation requires re-authentication. Please log in again.",
-};
-
-// Log detailed information about Firebase auth errors
-export function logAuthError(error: FirebaseError | Error | unknown, source: string = "auth"): void {
-  if (!error) {
-    console.error("[Auth Diagnostics] No error provided");
-    return;
-  }
-
-  const isFirebaseError = error instanceof FirebaseError || (error as any)?.code?.startsWith("auth/");
+// Function to log authentication errors with details
+export function logAuthError(error: any, location: string = 'unknown') {
+  console.error(`=== FIREBASE AUTH ERROR (${location}) ===`);
   
-  const errorDetails: Record<string, any> = {
-    timestamp: new Date().toISOString(),
-    source,
-    type: isFirebaseError ? "FirebaseError" : error instanceof Error ? "Error" : typeof error,
-  };
-
-  // Extract Firebase specific error details
-  if (isFirebaseError) {
-    const firebaseError = error as FirebaseError;
-    const errorCode = firebaseError.code || "unknown";
+  // Basic error details
+  console.error('Error object:', error);
+  
+  // Check for Firebase specific error properties
+  if (error.code) {
+    console.error('Firebase error code:', error.code);
     
-    errorDetails.code = errorCode;
-    errorDetails.message = firebaseError.message;
-    errorDetails.friendlyMessage = AUTH_ERROR_CODES[errorCode] || firebaseError.message;
-    
-    if (firebaseError.customData) {
-      errorDetails.customData = firebaseError.customData;
+    // Add specific advice for common error codes
+    switch(error.code) {
+      case 'auth/popup-blocked':
+        console.error('ADVICE: The authentication popup was blocked by the browser. Try using redirect authentication instead.');
+        break;
+      case 'auth/popup-closed-by-user':
+        console.error('ADVICE: The user closed the popup without completing authentication. No action needed.');
+        break;
+      case 'auth/cancelled-popup-request':
+        console.error('ADVICE: The authentication popup request was cancelled, possibly by opening another popup.');
+        break;
+      case 'auth/unauthorized-domain':
+        console.error('ADVICE: This domain is not authorized in Firebase Console. Add it to the authorized domains list.');
+        console.error('Current hostname:', window.location.hostname);
+        break;
+      case 'auth/operation-not-allowed':
+        console.error('ADVICE: The authentication provider is not enabled in Firebase Console.');
+        break;
+      case 'auth/user-disabled':
+        console.error('ADVICE: The user account has been disabled by an administrator.');
+        break;
+      case 'auth/user-token-expired':
+        console.error('ADVICE: The user\'s credential has expired. The user needs to sign in again.');
+        break;
+      case 'auth/web-storage-unsupported':
+        console.error('ADVICE: The browser does not support web storage or it is disabled. Enable cookies/local storage.');
+        break;
+      default:
+        console.error('No specific advice available for this error code.');
     }
-  } else if (error instanceof Error) {
-    errorDetails.name = error.name;
-    errorDetails.message = error.message;
-    errorDetails.stack = error.stack;
-  } else {
-    errorDetails.error = error;
   }
-
-  // Add environment diagnostics
-  errorDetails.environment = {
-    userAgent: navigator.userAgent,
-    language: navigator.language,
-    cookiesEnabled: navigator.cookieEnabled,
-    onLine: navigator.onLine,
-    windowSize: {
-      width: window.innerWidth,
-      height: window.innerHeight,
-    },
-    hostname: window.location.hostname,
-    pathname: window.location.pathname,
-    hasLocalStorage: !!window.localStorage,
-    hasSessionStorage: !!window.sessionStorage,
-    timestamp: new Date().toISOString(),
-  };
-
-  // Check Firebase configuration in environment
-  errorDetails.firebaseConfig = {
-    apiKeyExists: !!import.meta.env.VITE_FIREBASE_API_KEY,
-    apiKeyLength: import.meta.env.VITE_FIREBASE_API_KEY?.length || 0,
-    projectIdExists: !!import.meta.env.VITE_FIREBASE_PROJECT_ID,
-    appIdExists: !!import.meta.env.VITE_FIREBASE_APP_ID,
-    appIdLength: import.meta.env.VITE_FIREBASE_APP_ID?.length || 0,
-  };
-
-  // Add any current auth attempt info from localStorage
+  
+  if (error.message) {
+    console.error('Error message:', error.message);
+  }
+  
+  if (error.customData) {
+    console.error('Custom data:', error.customData);
+  }
+  
+  // Log the current URL
+  console.error('Current URL:', window.location.href);
+  
+  // Log local storage status to check for potential issues
   try {
-    errorDetails.authAttempt = {
-      inProgress: localStorage.getItem("authAttemptInProgress"),
-      time: localStorage.getItem("authAttemptTime"),
-      elapsed: localStorage.getItem("authAttemptTime") 
-        ? Math.round((Date.now() - new Date(localStorage.getItem("authAttemptTime") || "").getTime()) / 1000) + "s"
-        : "n/a"
-    };
+    const testKey = '_firebase_auth_test';
+    localStorage.setItem(testKey, '1');
+    const testValue = localStorage.getItem(testKey);
+    localStorage.removeItem(testKey);
+    
+    console.error('Local storage working:', testValue === '1');
   } catch (e) {
-    errorDetails.authAttempt = "Error reading localStorage";
-  }
-
-  // Create log prefix to make logs easier to filter
-  const prefix = isFirebaseError 
-    ? `[Auth Error ${errorDetails.code}]` 
-    : `[Auth Diagnostic Error]`;
-
-  // Log the full detailed diagnostic info
-  console.error(prefix, errorDetails);
-
-  // Log user-friendly message separately for easier reading
-  if (isFirebaseError && AUTH_ERROR_CODES[errorDetails.code]) {
-    console.warn(`${prefix} ${AUTH_ERROR_CODES[errorDetails.code]}`);
-  }
-
-  // Clear the auth attempt info if this was a completed attempt
-  if (isFirebaseError && (
-    errorDetails.code === 'auth/popup-closed-by-user' || 
-    errorDetails.code === 'auth/cancelled-popup-request' ||
-    errorDetails.code === 'auth/timeout')) {
-    try {
-      localStorage.removeItem("authAttemptInProgress");
-      localStorage.removeItem("authAttemptTime");
-    } catch (e) {
-      // Ignore localStorage errors
-    }
+    console.error('Local storage not available:', e);
   }
 }
 
-// Check if Firebase is properly configured
-export function checkFirebaseConfig(): {
-  isConfigured: boolean;
-  issues: string[];
-  configDetails: Record<string, any>;
-} {
-  const issues: string[] = [];
-  
+// Function to check Firebase configuration
+export function checkFirebaseConfig() {
+  // Check environment variables
   const apiKey = import.meta.env.VITE_FIREBASE_API_KEY;
   const projectId = import.meta.env.VITE_FIREBASE_PROJECT_ID;
   const appId = import.meta.env.VITE_FIREBASE_APP_ID;
   
-  if (!apiKey) issues.push("Missing Firebase API Key");
-  else if (apiKey.length < 30) issues.push("Firebase API Key appears to be invalid (too short)");
+  console.log('=== FIREBASE CONFIG CHECK ===');
+  console.log('API Key exists:', Boolean(apiKey));
+  console.log('Project ID exists:', Boolean(projectId));
+  console.log('App ID exists:', Boolean(appId));
   
-  if (!projectId) issues.push("Missing Firebase Project ID");
+  // Check if we're in a domain that might need special handling
+  const hostname = window.location.hostname;
+  const isProblemDomain = hostname === "25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev";
+  const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
+  const isReplitDomain = hostname.includes('replit');
   
-  if (!appId) issues.push("Missing Firebase App ID");
-  else if (appId.length < 20) issues.push("Firebase App ID appears to be invalid (too short)");
+  console.log('Domain analysis:');
+  console.log('- Current hostname:', hostname);
+  console.log('- Is problematic domain:', isProblemDomain);
+  console.log('- Is localhost:', isLocalhost);
+  console.log('- Is Replit domain:', isReplitDomain);
   
-  const configDetails = {
-    apiKeyExists: !!apiKey,
-    apiKeyLength: apiKey?.length || 0,
-    projectIdExists: !!projectId,
-    projectId: projectId || "undefined",
-    appIdExists: !!appId,
-    appIdLength: appId?.length || 0,
-    authDomain: projectId ? `${projectId}.firebaseapp.com` : "undefined",
-  };
+  if (isProblemDomain) {
+    console.log('RECOMMENDATION: This domain requires special handling for Firebase auth.');
+    console.log('Make sure to add this domain to Firebase Console > Authentication > Settings > Authorized domains');
+  }
+  
+  // Check browser features needed for Firebase
+  const hasLocalStorage = typeof localStorage !== 'undefined';
+  const hasSessionStorage = typeof sessionStorage !== 'undefined';
+  const hasIndexedDB = typeof indexedDB !== 'undefined';
+  
+  console.log('Browser feature support:');
+  console.log('- LocalStorage:', hasLocalStorage);
+  console.log('- SessionStorage:', hasSessionStorage);
+  console.log('- IndexedDB:', hasIndexedDB);
+  
+  // Overall assessment
+  const hasRequiredEnvVars = apiKey && projectId && appId;
+  const hasRequiredBrowserFeatures = hasLocalStorage && hasSessionStorage;
+  
+  console.log('Overall assessment:');
+  console.log('- Required environment variables:', hasRequiredEnvVars ? 'PRESENT' : 'MISSING');
+  console.log('- Required browser features:', hasRequiredBrowserFeatures ? 'SUPPORTED' : 'NOT SUPPORTED');
+  
+  if (!hasRequiredEnvVars) {
+    console.error('CRITICAL: Firebase environment variables are missing. Authentication will not work!');
+  }
+  
+  if (!hasRequiredBrowserFeatures) {
+    console.error('CRITICAL: Required browser features are not available. Authentication will not work!');
+  }
   
   return {
-    isConfigured: issues.length === 0,
-    issues,
-    configDetails
+    hasRequiredEnvVars,
+    hasRequiredBrowserFeatures,
+    isProblemDomain,
+    isReplitDomain
   };
 }
 
-// Get a user-friendly error message for Firebase auth errors
-export function getFriendlyAuthErrorMessage(error: FirebaseError | Error | unknown): string {
-  if (!error) return "An unknown authentication error occurred";
-  
-  if (error instanceof FirebaseError || (error as any)?.code?.startsWith("auth/")) {
-    const errorCode = (error as FirebaseError).code || "unknown";
-    return AUTH_ERROR_CODES[errorCode] || (error as FirebaseError).message || "An authentication error occurred";
-  }
-  
-  if (error instanceof Error) {
-    // Check for common network-related errors
-    if (error.message.includes("network") || error.message.includes("connection")) {
-      return "A network error occurred. Please check your internet connection and try again.";
-    }
-    
-    if (error.message.includes("timeout")) {
-      return "The authentication request timed out. Please try again.";
-    }
-    
-    return error.message;
-  }
-  
-  return "An unexpected authentication error occurred";
-}
+// Export a default object for convenience
+export default {
+  logAuthError,
+  checkFirebaseConfig
+};

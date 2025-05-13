@@ -95,6 +95,10 @@ function Router() {
       <Route path="/auth/callback" component={AuthCallback} />
       <Route path="/auth" component={AuthPage} />
       <Route path="/auth-test" component={FirebaseAuthTest} />
+      <Route path="/auth-debug" component={() => {
+        const AuthDebugPage = require("@/pages/auth-debug").default;
+        return <AuthDebugPage />;
+      }} />
       <Route path="/verify-email" component={EmailVerification} />
       <Route path="/quest-demo" component={QuestDemoPage} />
       <Route path="/dashboard">

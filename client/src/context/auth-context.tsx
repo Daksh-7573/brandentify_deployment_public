@@ -13,6 +13,7 @@ import { auth, googleProvider } from "@/lib/firebase";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { User } from "@shared/schema";
+import { logDetailedAuthError } from "@/utils/auth-error-logger";
 import { logAuthError, checkFirebaseConfig } from "@/utils/auth-diagnostics";
 
 // Define our auth user type
@@ -277,25 +278,59 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem('authAttemptInProgress', 'true');
       localStorage.setItem('authAttemptTime', new Date().toISOString());
       
-      // Get current domain and check if it's the problematic one
+      // Get current domain info
       const currentHostname = window.location.hostname;
+      const currentOrigin = window.location.origin;
       const isOnProblemDomain = currentHostname === "25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev";
       
-      console.log("Using redirect auth flow for all domains");
+      console.log("Using redirect auth flow with these parameters:");
       
-      // For the problematic domain, customize the redirect parameters
+      // Reset the provider to get a clean state
+      const freshProvider = new GoogleAuthProvider();
+      
+      // Always set some basic params
+      freshProvider.setCustomParameters({
+        prompt: 'select_account',
+      });
+      
+      // Store the current URL for better debugging
+      localStorage.setItem('auth_redirect_origin', currentOrigin);
+      localStorage.setItem('auth_redirect_hostname', currentHostname);
+      
+      // For the problematic domain, add even more specific parameters
       if (isOnProblemDomain) {
-        console.log("Setting custom OAuth parameters for problematic domain");
-        // Set redirect URL to match one of our routes
-        googleProvider.setCustomParameters({
-          prompt: 'select_account',
-          // Explicitly reference any of our auth callback routes
-          redirect_uri: `${window.location.origin}/auth-callback`
-        });
+        console.log("Setting enhanced parameters for problematic domain");
+        
+        // Create our auth-callback URL
+        const callbackUrl = `${currentOrigin}/auth-callback`;
+        localStorage.setItem('auth_callback_url', callbackUrl);
+        
+        console.log("Using explicit redirect_uri:", callbackUrl);
+        
+        freshProvider.addScope('profile');
+        freshProvider.addScope('email');
+        
+        // Try setting the redirect_uri directly
+        try {
+          freshProvider.setCustomParameters({
+            prompt: 'select_account',
+            redirect_uri: callbackUrl,
+            login_hint: ''
+          });
+        } catch (err) {
+          console.warn("Failed to set redirect_uri parameter, will try alternative approach:", err);
+        }
       }
       
+      // Log what we're doing
+      console.log("Proceeding with redirect sign-in using configured provider");
+      
       // Always use redirect auth for simplicity and consistency
-      await signInWithRedirect(auth, googleProvider);
+      // Use our fresh provider with custom parameters
+      await signInWithRedirect(auth, freshProvider);
+      
+      // Note: We don't expect to reach this code as the redirect should happen immediately
+      console.log("Redirect initiated");
     } catch (error: any) {
       console.error("Google sign-in error:", error);
       
