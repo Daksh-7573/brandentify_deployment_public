@@ -88,19 +88,7 @@ export default function AuthPage() {
                       
                       <GoogleAuth />
                       
-                      <div className="mt-6 pt-4 border-t border-gray-200">
-                        <div className="flex flex-col gap-2">
-                          <p className="text-xs text-gray-500 text-center">Having trouble with Google login?</p>
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
-                            className="w-full text-sm border-blue-300 hover:bg-blue-50"
-                            onClick={() => window.location.href = '/auth-test'}
-                          >
-                            Try Firebase Authentication Test Page
-                          </Button>
-                        </div>
-                      </div>
+                      {/* Removed Firebase Authentication Test Page section */}
                     </>
                   )}
                 </div>
