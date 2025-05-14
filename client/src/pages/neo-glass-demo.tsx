@@ -50,7 +50,6 @@ export default function NeoGlassDemoPage() {
               </NeoGlassButton>
             </div>
           </NeoGlassCard>
-          >
           {/* Header Card */}
           <NeoGlassCard 
             className="flex flex-col items-center justify-center p-10 text-center relative overflow-visible"
