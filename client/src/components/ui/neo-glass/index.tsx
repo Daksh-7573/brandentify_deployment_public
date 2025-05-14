@@ -156,11 +156,13 @@ export const NeoGlassAvatar: React.FC<NeoGlassAvatarProps> = ({
 interface NeoGlassInputProps extends InputHTMLAttributes<HTMLInputElement> {
   className?: string;
   label?: string;
+  icon?: ReactNode;
 }
 
 export const NeoGlassInput: React.FC<NeoGlassInputProps> = ({
   className,
   label,
+  icon,
   ...props
 }) => {
   return (
@@ -170,10 +172,21 @@ export const NeoGlassInput: React.FC<NeoGlassInputProps> = ({
           {label}
         </label>
       )}
-      <input
-        className={cn('neo-glass-input', className)}
-        {...props}
-      />
+      <div className="relative">
+        {icon && (
+          <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/60">
+            {icon}
+          </div>
+        )}
+        <input
+          className={cn(
+            'neo-glass-input', 
+            icon ? 'pl-10' : 'pl-4',
+            className
+          )}
+          {...props}
+        />
+      </div>
     </div>
   );
 };

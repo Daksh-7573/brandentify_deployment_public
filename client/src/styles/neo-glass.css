@@ -502,6 +502,42 @@
   color: rgba(255, 255, 255, 0.5);
 }
 
+/* Search input style */
+.neo-glass-input[placeholder*="Search"] {
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 1rem;
+  padding-left: 2.5rem;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Music player related styles */
+.neo-player-card {
+  border-radius: 24px;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.neo-album-card {
+  transition: all 0.3s ease;
+  border-radius: 12px;
+}
+
+.neo-album-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-right-bottom-intense), var(--glow-primary);
+}
+
+/* Category button */
+.neo-category-button {
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 10px;
+  padding: 6px 12px;
+  transition: all 0.2s ease;
+}
+
+.neo-category-button:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
 /* Musk chat component */
 .neo-glass-musk {
   position: relative;
