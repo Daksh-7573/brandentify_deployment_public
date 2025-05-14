@@ -4,12 +4,12 @@
  */
 
 :root {
-  --glass-bg: rgba(255, 255, 255, 0.15);
-  --glass-border: rgba(255, 255, 255, 0.4);
-  --glass-highlight: rgba(255, 255, 255, 0.6);
-  --glass-shadow: rgba(0, 0, 0, 0.1);
-  --glass-shadow-intense: rgba(0, 0, 0, 0.2);
-  --glass-blur: 12px;
+  --glass-bg: rgba(255, 255, 255, 0.25);
+  --glass-border: rgba(255, 255, 255, 0.5);
+  --glass-highlight: rgba(255, 255, 255, 0.7);
+  --glass-shadow: rgba(0, 0, 0, 0.15);
+  --glass-shadow-intense: rgba(0, 0, 0, 0.25);
+  --glass-blur: 18px;
   --gradient-bg: linear-gradient(135deg, #0b4d89 0%, #0a3a66 100%);
   
   /* Card gradients */
@@ -23,7 +23,7 @@
   --gradient-teal: linear-gradient(135deg, #44bec7 0%, #0b8b93 100%);
   
   /* Frost effect */
-  --frost-texture: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0.2 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  --frost-texture: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0.4 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
   
   /* Backgrounds */
   --white-room-bg: url('/backgrounds/white-room-bg.svg');
@@ -145,7 +145,8 @@
   -webkit-backdrop-filter: blur(var(--glass-blur));
   border-radius: 16px;
   border: 1px solid var(--glass-border);
-  box-shadow: var(--shadow-right-bottom);
+  /* Enhanced frosty shadow */
+  box-shadow: 4px 4px 20px var(--glass-shadow), 0 8px 32px 0 rgba(31, 38, 135, 0.2);
   transition: var(--transition-default);
   overflow: hidden;
   position: relative;
@@ -175,7 +176,7 @@
   bottom: -10%;
   background-image: var(--frost-texture);
   background-size: 200% 200%;
-  opacity: 0.04;
+  opacity: 0.15;
   border-radius: 16px;
   pointer-events: none;
   mix-blend-mode: overlay;
