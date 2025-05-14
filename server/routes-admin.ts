@@ -853,4 +853,112 @@ router.delete('/content/:id', verifyAdminAuth, checkPermission('manage_content')
   }
 });
 
+// Public content API - no auth required for testing purposes
+router.get('/public/content', async (req: Request, res: Response) => {
+  try {
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 20;
+    const offset = (page - 1) * limit;
+    const search = req.query.search as string || '';
+    const type = req.query.type as string || '';
+    const status = req.query.status as string || 'published'; // Default to published for public API
+    
+    // Build query filters
+    let whereConditions = [];
+    
+    // Public API should only show published content
+    whereConditions.push(eq(content.status, 'published'));
+    
+    if (search) {
+      whereConditions.push(
+        or(
+          like(content.title, `%${search}%`),
+          like(content.slug, `%${search}%`),
+          like(content.body, `%${search}%`)
+        )
+      );
+    }
+    
+    if (type && contentTypes.includes(type as any)) {
+      whereConditions.push(eq(content.type, type));
+    }
+    
+    // Set up final where clause
+    const whereClause = whereConditions.length > 0 
+      ? and(...whereConditions) 
+      : undefined;
+    
+    // Get content with pagination and filters
+    const contentItems = await db.select({
+      id: content.id,
+      title: content.title,
+      slug: content.slug,
+      type: content.type,
+      excerpt: content.excerpt,
+      featuredImage: content.featuredImage,
+      authorId: content.authorId,
+      publishedAt: content.publishedAt,
+      createdAt: content.createdAt,
+      updatedAt: content.updatedAt
+    })
+    .from(content)
+    .where(whereClause)
+    .limit(limit)
+    .offset(offset)
+    .orderBy(desc(content.createdAt));
+    
+    // Get total count for pagination
+    const countResult = await db.select({ count: sql`COUNT(*)` }).from(content)
+      .where(whereClause);
+    
+    const totalItems = parseInt(countResult[0].count as any);
+    
+    // Get author information for each content item
+    const contentWithAuthors = await Promise.all(contentItems.map(async (item) => {
+      const author = await storage.getUser(item.authorId);
+      return {
+        ...item,
+        author: author ? {
+          id: author.id,
+          name: author.name,
+          username: author.username,
+          photoURL: author.photoURL
+        } : null
+      };
+    }));
+    
+    // Get tags for each content item
+    const contentWithDetails = await Promise.all(contentWithAuthors.map(async (item) => {
+      const tags = await db.select({
+        tag: contentTags.tag
+      })
+      .from(contentTags)
+      .where(eq(contentTags.contentId, item.id));
+      
+      return {
+        ...item,
+        tags: tags.map(t => t.tag)
+      };
+    }));
+    
+    // Return content with pagination
+    res.json({
+      content: contentWithDetails,
+      pagination: {
+        total: totalItems,
+        page,
+        limit,
+        totalPages: Math.ceil(totalItems / limit)
+      },
+      filters: {
+        types: contentTypes,
+        statuses: contentStatusTypes
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching public content:', error);
+    res.status(500).json({ message: 'Server error fetching content' });
+  }
+});
+
 export default router;
