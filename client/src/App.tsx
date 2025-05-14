@@ -189,6 +189,9 @@ function Router() {
       <Route path="/feed-test">
         <ProtectedRoute path="/feed-test" component={FeedTestPage} />
       </Route>
+      <Route path="/neo-glass-demo">
+        <ProtectedRoute path="/neo-glass-demo" component={NeoGlassDemoPage} />
+      </Route>
       {/* Brand Quests - All demo mode functionality removed */}
       <Route path="/brand-quests">
         <ProtectedRoute path="/brand-quests" component={BrandQuestsPage} />

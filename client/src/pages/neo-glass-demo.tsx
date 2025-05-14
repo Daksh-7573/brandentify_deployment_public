@@ -163,7 +163,7 @@ export default function NeoGlassDemoPage() {
                   <Heart className="w-4 h-4" />
                 </NeoGlassButton>
                 
-                <NeoGlassButton size="sm">
+                <NeoGlassButton className="text-sm py-1 px-3">
                   Next Tip
                 </NeoGlassButton>
               </div>
