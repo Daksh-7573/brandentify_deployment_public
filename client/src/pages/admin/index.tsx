@@ -67,85 +67,98 @@ export default function AdminDashboard() {
     }).format(date);
   };
   
+  // Create a content for the overview tab
+  const OverviewContent = () => (
+    <div className="space-y-6">
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {statsCards.map((card, index) => (
+          <Card key={index}>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium">{card.title}</CardTitle>
+              <div className={`p-2 rounded-full ${card.color}`}>
+                {card.icon}
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold">
+                {card.value.toLocaleString()}
+              </div>
+              <p className="text-xs text-muted-foreground pt-1">
+                {card.description}
+              </p>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+      
+      {/* Recent Activity */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Recent Admin Activity</CardTitle>
+          <CardDescription>Latest actions performed by administrators</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {mockActivity.map((activity) => (
+              <div key={activity.id} className="flex items-start space-x-4 p-2 hover:bg-muted/50 rounded-md">
+                <div className="p-2 rounded-full bg-primary/10 text-primary">
+                  <FileText className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="font-medium">{activity.action}</p>
+                  {activity.details && (
+                    <p className="text-sm text-muted-foreground">{activity.details}</p>
+                  )}
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {formatDate(activity.timestamp)}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+  
+  // Create a content for the activity log tab
+  const ActivityLogContent = () => (
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle>Full Activity Log</CardTitle>
+          <CardDescription>Complete history of administrative actions</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p className="text-muted-foreground text-center py-6">
+            Full activity log will be implemented here
+          </p>
+        </CardContent>
+      </Card>
+    </div>
+  );
+  
   return (
     <div className="p-6 space-y-6">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-2 md:space-y-0">
         <h1 className="text-2xl font-bold">Admin Dashboard</h1>
-        <div>
-          <Tabs value={tab} onValueChange={setTab} className="w-full">
-            <TabsList>
-              <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="activity">Activity Log</TabsTrigger>
-            </TabsList>
-          </Tabs>
-        </div>
       </div>
       
-      <TabsContent value="overview" className="space-y-6">
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {statsCards.map((card, index) => (
-            <Card key={index}>
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">{card.title}</CardTitle>
-                <div className={`p-2 rounded-full ${card.color}`}>
-                  {card.icon}
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold">
-                  {card.value.toLocaleString()}
-                </div>
-                <p className="text-xs text-muted-foreground pt-1">
-                  {card.description}
-                </p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+      <Tabs value={tab} onValueChange={setTab} className="w-full">
+        <TabsList className="mb-4">
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="activity">Activity Log</TabsTrigger>
+        </TabsList>
         
-        {/* Recent Activity */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Admin Activity</CardTitle>
-            <CardDescription>Latest actions performed by administrators</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {mockActivity.map((activity) => (
-                <div key={activity.id} className="flex items-start space-x-4 p-2 hover:bg-muted/50 rounded-md">
-                  <div className="p-2 rounded-full bg-primary/10 text-primary">
-                    <FileText className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <p className="font-medium">{activity.action}</p>
-                    {activity.details && (
-                      <p className="text-sm text-muted-foreground">{activity.details}</p>
-                    )}
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {formatDate(activity.timestamp)}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </TabsContent>
-      
-      <TabsContent value="activity" className="space-y-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Full Activity Log</CardTitle>
-            <CardDescription>Complete history of administrative actions</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground text-center py-6">
-              Full activity log will be implemented here
-            </p>
-          </CardContent>
-        </Card>
-      </TabsContent>
+        <TabsContent value="overview">
+          <OverviewContent />
+        </TabsContent>
+        
+        <TabsContent value="activity">
+          <ActivityLogContent />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
