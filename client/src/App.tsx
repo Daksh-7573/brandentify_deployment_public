@@ -46,6 +46,7 @@ import ChatPage from "@/pages/ChatPage"; // Chat messaging feature
 import PrivacyPage from "@/pages/privacy"; // Privacy & Data Control page
 // Quest Demo Page removed per request
 import CookieConsentBanner from "@/components/privacy/cookie-consent-banner"; // Cookie consent banner
+import DirectUsersPage from "@/pages/direct-users"; // Direct access to users (debugging)
 // Lazy load the SharedCardPage to improve performance and show loader immediately
 import { lazy, Suspense } from "react";
 const SharedCardPage = lazy(() => import("@/pages/shared-card"));
@@ -211,6 +212,9 @@ function Router() {
       <Route path="/privacy">
         <ProtectedRoute path="/privacy" component={PrivacyPage} />
       </Route>
+      
+      {/* Direct access to users for debugging */}
+      <Route path="/direct-users" component={DirectUsersPage} />
       {/* Unified Profile Page with comprehensive data fetching */}
       <Route path="/unified-profile">
         <ProtectedRoute path="/unified-profile" component={UnifiedProfilePage} />

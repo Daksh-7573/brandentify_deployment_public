@@ -47,6 +47,7 @@ import addProjectUpdateRoutes from "./routes-project-update";
 import careerCapsuleRoutes from "./routes-career-capsule";
 import { setupPersonalizedHashtagRoutes } from "./routes-personalized-hashtags";
 import notificationRoutes from "./routes-notifications";
+import directAccessRoutes from "./routes-direct-access";
 import { 
   handleSmartConnect, 
   handleCareerRecommendations, 
@@ -6092,6 +6093,10 @@ ${extractedText.substring(0, 5000)}
   // Register admin routes
   apiRouter.use('/admin', adminRoutes);
   console.log("Admin routes loaded");
+  
+  // Register direct access routes (for debugging)
+  apiRouter.use('/direct', directAccessRoutes);
+  console.log("Direct access routes loaded");
 
   app.use("/api", apiRouter);
 
