@@ -282,13 +282,13 @@ export default function AdminUsers() {
                                 </div>
                                 <SheetFooter>
                                   <div className="flex space-x-2">
-                                    <Button variant="outline">
+                                    <Button variant="outline" onClick={() => toast({ title: "Admin Role", description: "This feature will be available soon" })}>
                                       <Shield className="h-4 w-4 mr-2" />
                                       Make Admin
                                     </Button>
-                                    <Button variant="destructive">
+                                    <Button variant="destructive" onClick={() => handleDeleteUser(user.id)}>
                                       <UserMinus className="h-4 w-4 mr-2" />
-                                      Suspend
+                                      Delete
                                     </Button>
                                   </div>
                                 </SheetFooter>
@@ -303,7 +303,7 @@ export default function AdminUsers() {
                               <DropdownMenuContent align="end">
                                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem>
+                                <DropdownMenuItem onSelect={() => toast({ title: "Admin Role", description: "This feature will be available soon" })}>
                                   <Shield className="h-4 w-4 mr-2" />
                                   Make Admin
                                 </DropdownMenuItem>
