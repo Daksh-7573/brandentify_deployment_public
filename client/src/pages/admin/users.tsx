@@ -354,6 +354,5 @@ export default function AdminUsers() {
           </CardContent>
         </Card>
       </div>
-    </AdminLayout>
   );
 }

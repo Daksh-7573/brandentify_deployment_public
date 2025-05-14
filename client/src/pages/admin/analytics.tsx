@@ -1,5 +1,4 @@
 import { useState } from "react";
-import AdminLayout from "./layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -67,7 +66,6 @@ export default function AnalyticsPage() {
   const [timeRange, setTimeRange] = useState("7days");
   
   return (
-    <AdminLayout>
       <div className="p-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
           <div>
@@ -562,6 +560,5 @@ export default function AnalyticsPage() {
           </TabsContent>
         </Tabs>
       </div>
-    </AdminLayout>
   );
 }
