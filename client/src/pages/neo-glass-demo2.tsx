@@ -173,12 +173,12 @@ export default function NeoGlassDemo2Page() {
             {/* Content grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {albums.map(album => (
-                <NeoGlassCard key={album.id} className="overflow-hidden relative group">
+                <NeoGlassCard key={album.id} className="overflow-hidden relative group shadow-lg" glow="primary">
                   <div className="aspect-square relative overflow-hidden">
                     <img 
                       src={album.cover} 
                       alt={album.title} 
-                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-3">
                       <div>
@@ -188,9 +188,9 @@ export default function NeoGlassDemo2Page() {
                     </div>
                     
                     {/* Play overlay */}
-                    <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                      <div className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                        <NeoGlassButton variant="primary" isIcon>
+                    <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
+                      <div className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 neo-glass-float">
+                        <NeoGlassButton variant="primary" isIcon className="shadow-xl">
                           <PlayCircle className="w-12 h-12" />
                         </NeoGlassButton>
                       </div>
@@ -204,10 +204,10 @@ export default function NeoGlassDemo2Page() {
         
         {/* Right sidebar */}
         <div className="w-64 pt-6 pl-2 pr-4">
-          <NeoGlassCard className="p-4 rounded-2xl mb-4">
+          <NeoGlassCard className="p-4 rounded-2xl mb-4" glow="secondary">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="neo-glass-text font-medium">Categories</h3>
-              <ChevronDown className="w-4 h-4 text-white/70" />
+              <h3 className="neo-glass-text font-medium text-lg">Categories</h3>
+              <ChevronDown className="w-4 h-4 text-white/70 cursor-pointer hover:text-white transition-colors" />
             </div>
             
             <div className="space-y-2">
@@ -215,10 +215,10 @@ export default function NeoGlassDemo2Page() {
                 <div 
                   key={category}
                   onClick={() => setCurrentCategory(category)}
-                  className={`px-2 py-1.5 rounded-lg cursor-pointer transition-colors duration-200 ${
+                  className={`px-3 py-2 rounded-lg cursor-pointer transition-all duration-300 ${
                     currentCategory === category 
-                      ? 'bg-white/20 neo-glass-text' 
-                      : 'neo-glass-text-muted hover:bg-white/10'
+                      ? 'bg-white/20 neo-glass-text font-medium shadow-md translate-x-1' 
+                      : 'neo-glass-text-muted hover:bg-white/10 hover:translate-x-1'
                   }`}
                 >
                   {category}
@@ -227,17 +227,20 @@ export default function NeoGlassDemo2Page() {
             </div>
           </NeoGlassCard>
           
-          <NeoGlassCard className="p-4 rounded-2xl">
+          <NeoGlassCard className="p-4 rounded-2xl" glow="tertiary">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="neo-glass-text font-medium">Recent Activity</h3>
-              <ChevronDown className="w-4 h-4 text-white/70" />
+              <h3 className="neo-glass-text font-medium text-lg">Recent Activity</h3>
+              <ChevronDown className="w-4 h-4 text-white/70 cursor-pointer hover:text-white transition-colors" />
             </div>
             
             <div className="space-y-3">
               {albums.slice(0, 4).map(album => (
-                <div key={album.id} className="flex gap-3 items-center">
-                  <div className="w-9 h-9 rounded-md overflow-hidden flex-shrink-0">
-                    <img src={album.cover} alt={album.title} className="w-full h-full object-cover" />
+                <div 
+                  key={album.id} 
+                  className="flex gap-3 items-center p-2 rounded-lg hover:bg-white/10 transition-all duration-300 cursor-pointer hover:translate-x-1"
+                >
+                  <div className="w-10 h-10 rounded-md overflow-hidden flex-shrink-0 shadow-md">
+                    <img src={album.cover} alt={album.title} className="w-full h-full object-cover transition-transform duration-300 hover:scale-110" />
                   </div>
                   <div className="flex-1">
                     <h4 className="neo-glass-text text-sm font-medium truncate">{album.title}</h4>
@@ -252,9 +255,9 @@ export default function NeoGlassDemo2Page() {
       
       {/* Bottom player bar */}
       <div className="fixed bottom-0 left-0 right-0 z-20">
-        <NeoGlassCard className="mx-auto max-w-6xl m-4 rounded-full p-2 flex items-center justify-between">
-          <div className="flex items-center gap-2 pl-2">
-            <div className="w-10 h-10 rounded-md overflow-hidden">
+        <NeoGlassCard className="mx-auto max-w-6xl m-4 rounded-full p-3 flex items-center justify-between" glow="primary">
+          <div className="flex items-center gap-3 pl-3">
+            <div className="w-12 h-12 rounded-md overflow-hidden shadow-lg">
               <img 
                 src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=300&h=300" 
                 alt={currentPlaying.title}
@@ -267,26 +270,28 @@ export default function NeoGlassDemo2Page() {
             </div>
           </div>
           
-          <div className="flex items-center gap-3">
-            <SkipBack className="w-5 h-5 text-white/70 cursor-pointer hover:text-white transition-colors" />
-            {isPlaying ? (
-              <PauseCircle 
-                className="w-8 h-8 text-white cursor-pointer hover:text-white/90 transition-colors" 
-                onClick={() => setIsPlaying(false)}
-              />
-            ) : (
-              <PlayCircle 
-                className="w-8 h-8 text-white cursor-pointer hover:text-white/90 transition-colors" 
-                onClick={() => setIsPlaying(true)}
-              />
-            )}
-            <SkipForward className="w-5 h-5 text-white/70 cursor-pointer hover:text-white transition-colors" />
+          <div className="flex items-center gap-4">
+            <SkipBack className="w-6 h-6 text-white/70 cursor-pointer hover:text-white transition-colors transform hover:scale-110" />
+            <div className="relative neo-glass-float">
+              {isPlaying ? (
+                <PauseCircle 
+                  className="w-10 h-10 text-white cursor-pointer hover:text-white/90 transition-colors transform hover:scale-110" 
+                  onClick={() => setIsPlaying(false)}
+                />
+              ) : (
+                <PlayCircle 
+                  className="w-10 h-10 text-white cursor-pointer hover:text-white/90 transition-colors transform hover:scale-110" 
+                  onClick={() => setIsPlaying(true)}
+                />
+              )}
+            </div>
+            <SkipForward className="w-6 h-6 text-white/70 cursor-pointer hover:text-white transition-colors transform hover:scale-110" />
           </div>
           
-          <div className="flex items-center gap-2 pr-3">
-            <MessageSquare className="w-5 h-5 text-white/60 cursor-pointer hover:text-white/80 transition-colors" />
-            <LayoutList className="w-5 h-5 text-white/60 cursor-pointer hover:text-white/80 transition-colors" />
-            <Volume2 className="w-5 h-5 text-white/60 cursor-pointer hover:text-white/80 transition-colors" />
+          <div className="flex items-center gap-3 pr-4">
+            <MessageSquare className="w-5 h-5 text-white/60 cursor-pointer hover:text-white/80 transition-colors transform hover:scale-110" />
+            <LayoutList className="w-5 h-5 text-white/60 cursor-pointer hover:text-white/80 transition-colors transform hover:scale-110" />
+            <Volume2 className="w-5 h-5 text-white/60 cursor-pointer hover:text-white/80 transition-colors transform hover:scale-110" />
           </div>
         </NeoGlassCard>
       </div>
