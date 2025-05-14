@@ -1,16 +1,22 @@
 {
-  "variant": "tint",
-  "primary": "#AEE6E6",
+  "variant": "vibrant",
+  "primary": "#8A7CFF",
   "appearance": "light",
-  "radius": 1.2,
+  "radius": 1.5,
   "colors": {
-    "secondary": "#FFD6C0",
-    "tertiary": "#E4D7FA",
-    "background": "#F7F9FC",
-    "card": "#F2EDF8",
-    "text": "#2B2E33",
-    "textSecondary": "#70757B",
-    "success": "#B7E4C7",
-    "warning": "#FFB3AB"
+    "secondary": "#FF7CED",
+    "tertiary": "#7CE3FF",
+    "background": "#E0E9FF",
+    "card": "rgba(255, 255, 255, 0.25)",
+    "text": "#FFFFFF",
+    "textSecondary": "rgba(255, 255, 255, 0.8)",
+    "success": "#7CFFB6",
+    "warning": "#FF9D7C",
+    "accent1": "#F877FF",
+    "accent2": "#77C9FF",
+    "glassBackground": "rgba(255, 255, 255, 0.15)",
+    "glassBorder": "rgba(255, 255, 255, 0.4)",
+    "glassHighlight": "rgba(255, 255, 255, 0.6)",
+    "glassShadow": "rgba(0, 0, 0, 0.1)"
   }
 }

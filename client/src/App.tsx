@@ -49,6 +49,7 @@ import CookieConsentBanner from "@/components/privacy/cookie-consent-banner"; //
 import DirectUsersPage from "@/pages/direct-users"; // Direct access to users (debugging)
 import DirectContentPage from "@/pages/direct-content"; // Direct access to content items (debugging)
 import DirectContentManagementPage from "@/pages/direct-content-management"; // Direct content management (debugging)
+import NeoGlassDemoPage from "@/pages/neo-glass-demo"; // Neo-Glass UI demo page
 // Lazy load the SharedCardPage to improve performance and show loader immediately
 import { lazy, Suspense } from "react";
 const SharedCardPage = lazy(() => import("@/pages/shared-card"));

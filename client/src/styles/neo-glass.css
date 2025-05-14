@@ -1,0 +1,311 @@
+/**
+ * Neo-Glass UI Styles
+ * Inspired by modern glassmorphism design trends
+ */
+
+:root {
+  --glass-bg: rgba(255, 255, 255, 0.15);
+  --glass-border: rgba(255, 255, 255, 0.4);
+  --glass-highlight: rgba(255, 255, 255, 0.6);
+  --glass-shadow: rgba(0, 0, 0, 0.1);
+  --glass-shadow-intense: rgba(0, 0, 0, 0.2);
+  --glass-blur: 12px;
+  --gradient-bg: linear-gradient(135deg, #a9c9ff 0%, #c1a9ff 100%);
+  --gradient-purple: linear-gradient(135deg, #a77bf2 0%, #8d65f5 100%);
+  --gradient-pink: linear-gradient(135deg, #f28bb2 0%, #f565c6 100%);
+  --gradient-blue: linear-gradient(135deg, #7bbff2 0%, #65c8f5 100%);
+  --glow-primary: 0 0 15px rgba(138, 124, 255, 0.5);
+  --glow-secondary: 0 0 15px rgba(255, 124, 237, 0.5);
+  --glow-tertiary: 0 0 15px rgba(124, 227, 255, 0.5);
+  --transition-default: all 0.3s ease;
+}
+
+/* Gradient background for page */
+.neo-page-bg {
+  background-image: var(--gradient-bg);
+  min-height: 100vh;
+  position: relative;
+}
+
+/* Basic glass card */
+.neo-glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border-radius: 16px;
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 4px 20px var(--glass-shadow);
+  transition: var(--transition-default);
+  overflow: hidden;
+  position: relative;
+}
+
+.neo-glass-card:hover {
+  box-shadow: 0 8px 25px var(--glass-shadow-intense);
+  transform: translateY(-2px);
+}
+
+/* Glass card with highlight */
+.neo-glass-card.highlight {
+  border: 1px solid var(--glass-highlight);
+  box-shadow: 0 4px 20px var(--glass-shadow), 0 0 10px var(--glass-highlight);
+}
+
+/* Different sized cards */
+.neo-glass-card.sm {
+  padding: 12px;
+}
+
+.neo-glass-card.md {
+  padding: 16px;
+}
+
+.neo-glass-card.lg {
+  padding: 24px;
+}
+
+/* Glow borders */
+.neo-glass-card.primary-glow {
+  box-shadow: 0 4px 20px var(--glass-shadow), var(--glow-primary);
+}
+
+.neo-glass-card.secondary-glow {
+  box-shadow: 0 4px 20px var(--glass-shadow), var(--glow-secondary);
+}
+
+.neo-glass-card.tertiary-glow {
+  box-shadow: 0 4px 20px var(--glass-shadow), var(--glow-tertiary);
+}
+
+/* Neo Glass Buttons */
+.neo-glass-button {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border-radius: 50px;
+  border: 1px solid var(--glass-border);
+  color: white;
+  padding: 10px 24px;
+  font-weight: 500;
+  box-shadow: 0 4px 15px var(--glass-shadow);
+  transition: var(--transition-default);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.neo-glass-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px var(--glass-shadow-intense);
+}
+
+.neo-glass-button.primary {
+  background-image: var(--gradient-purple);
+  box-shadow: 0 4px 15px var(--glass-shadow), var(--glow-primary);
+}
+
+.neo-glass-button.secondary {
+  background-image: var(--gradient-pink);
+  box-shadow: 0 4px 15px var(--glass-shadow), var(--glow-secondary);
+}
+
+.neo-glass-button.tertiary {
+  background-image: var(--gradient-blue);
+  box-shadow: 0 4px 15px var(--glass-shadow), var(--glow-tertiary);
+}
+
+/* Icon button */
+.neo-glass-icon-button {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+/* Switch/Toggle component */
+.neo-glass-switch {
+  position: relative;
+  width: 60px;
+  height: 30px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border-radius: 30px;
+  border: 1px solid var(--glass-border);
+  cursor: pointer;
+  transition: var(--transition-default);
+}
+
+.neo-glass-switch::after {
+  content: '';
+  position: absolute;
+  left: 3px;
+  top: 3px;
+  width: 24px;
+  height: 24px;
+  background: white;
+  border-radius: 50%;
+  transition: var(--transition-default);
+}
+
+.neo-glass-switch.active {
+  background-image: var(--gradient-purple);
+}
+
+.neo-glass-switch.active::after {
+  left: calc(100% - 27px);
+}
+
+/* Progress bar */
+.neo-glass-progress {
+  width: 100%;
+  height: 10px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border-radius: 5px;
+  border: 1px solid var(--glass-border);
+  overflow: hidden;
+}
+
+.neo-glass-progress-bar {
+  height: 100%;
+  background-image: var(--gradient-purple);
+  transition: width 0.8s ease;
+  box-shadow: var(--glow-primary);
+}
+
+/* Profile avatar */
+.neo-glass-avatar {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 2px solid var(--glass-highlight);
+  box-shadow: 0 4px 15px var(--glass-shadow);
+}
+
+/* Text styles */
+.neo-glass-text {
+  color: white;
+  text-shadow: 0 2px 4px var(--glass-shadow);
+}
+
+.neo-glass-text-muted {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Special visual effects */
+.neo-glass-sparkle {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  background-image: url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M8 0L10.472 5.528L16 8L10.472 10.472L8 16L5.528 10.472L0 8L5.528 5.528L8 0Z' fill='white'/%3E%3C/svg%3E");
+  opacity: 0.7;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(5deg);
+  }
+}
+
+/* Heart icon */
+.neo-glass-heart {
+  color: #ff7cbb;
+  filter: drop-shadow(0 0 5px rgba(255, 124, 187, 0.5));
+  transition: var(--transition-default);
+}
+
+.neo-glass-heart:hover {
+  transform: scale(1.2);
+}
+
+/* Tooltip/badge */
+.neo-glass-badge {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border-radius: 12px;
+  border: 1px solid var(--glass-border);
+  padding: 4px 10px;
+  color: white;
+  font-size: 12px;
+  box-shadow: 0 2px 8px var(--glass-shadow);
+}
+
+/* Form inputs */
+.neo-glass-input {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border-radius: 12px;
+  border: 1px solid var(--glass-border);
+  padding: 10px 16px;
+  color: white;
+  width: 100%;
+  transition: var(--transition-default);
+}
+
+.neo-glass-input:focus {
+  border-color: var(--glass-highlight);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
+  outline: none;
+}
+
+.neo-glass-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Musk chat component */
+.neo-glass-musk {
+  position: relative;
+}
+
+.neo-glass-musk-bubble {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border-radius: 20px;
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 4px 15px var(--glass-shadow), var(--glow-primary);
+  padding: 12px 20px;
+  max-width: 80%;
+  margin-bottom: 10px;
+  position: relative;
+}
+
+.neo-glass-musk-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 20px;
+  width: 15px;
+  height: 15px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border-left: 1px solid var(--glass-border);
+  border-bottom: 1px solid var(--glass-border);
+  transform: rotate(-45deg);
+}
+
+/* Floating elements */
+.neo-glass-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.neo-glass-float-slow {
+  animation: float 8s ease-in-out infinite;
+}
+
+.neo-glass-float-fast {
+  animation: float 4s ease-in-out infinite;
+}
