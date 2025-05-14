@@ -1,5 +1,4 @@
 import { useState } from "react";
-import AdminLayout from "./layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -220,7 +219,6 @@ export default function ContentManagementPage() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
 
   return (
-    <AdminLayout>
       <div className="p-6">
         <div className="flex justify-between items-center mb-6">
           <div>
@@ -772,6 +770,5 @@ export default function ContentManagementPage() {
           </CardFooter>
         </Card>
       </div>
-    </AdminLayout>
   );
 }

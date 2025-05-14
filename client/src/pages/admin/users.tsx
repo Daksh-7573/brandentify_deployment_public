@@ -1,5 +1,4 @@
 import { useState } from "react";
-import AdminLayout from "./layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
@@ -140,7 +139,6 @@ export default function AdminUsers() {
   };
   
   return (
-    <AdminLayout>
       <div className="p-6 space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
           <h1 className="text-2xl font-bold">User Management</h1>
