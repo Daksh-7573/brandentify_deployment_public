@@ -277,17 +277,25 @@ function Router() {
           return <AdminUsersWithLayout />;
         }} />
       </Route>
-      {/* Temporarily removing Content Management page and redirecting to direct-content-management */}
+      {/* Content Management page using our direct API approach */}
       <Route path="/admin/content">
-        {() => {
-          const [_, navigate] = useLocation();
-          useEffect(() => {
-            navigate("/direct-content-management");
-          }, [navigate]);
-          return <div className="flex items-center justify-center min-h-screen">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-          </div>;
-        }}
+        <ProtectedRoute path="/admin/content" component={() => {
+          const AdminLayout = lazy(() => import("@/pages/admin/layout"));
+          const AdminContentNew = lazy(() => import("@/pages/admin/content-new"));
+          const AdminCheck = lazy(() => import("@/middleware/admin-check").then(mod => ({ default: mod.AdminCheck })));
+          
+          const AdminContentWithLayout = () => (
+            <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>}>
+              <AdminCheck>
+                <AdminLayout>
+                  <AdminContentNew />
+                </AdminLayout>
+              </AdminCheck>
+            </Suspense>
+          );
+          
+          return <AdminContentWithLayout />;
+        }} />
       </Route>
       <Route path="/admin/analytics">
         <ProtectedRoute path="/admin/analytics" component={() => {
