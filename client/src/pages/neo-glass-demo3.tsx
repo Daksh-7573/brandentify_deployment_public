@@ -51,7 +51,7 @@ interface Playlist {
 }
 
 export default function NeoGlassDemo3Page() {
-  const [backgroundStyle, setBackgroundStyle] = useState<'gradient' | 'white-room' | 'mixed' | 'guitar' | 'dark-room'>('dark-room');
+  const [backgroundStyle, setBackgroundStyle] = useState<'gradient' | 'white-room' | 'mixed' | 'guitar'>('guitar');
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentSongIndex, setCurrentSongIndex] = useState(1);
   const [volume, setVolume] = useState(70);
@@ -517,13 +517,6 @@ export default function NeoGlassDemo3Page() {
             className="py-1 px-2 text-xs"
           >
             Guitar
-          </NeoGlassButton>
-          <NeoGlassButton 
-            variant={backgroundStyle === 'dark-room' ? 'primary' : undefined}
-            onClick={() => setBackgroundStyle('dark-room')}
-            className="py-1 px-2 text-xs"
-          >
-            Dark Room
           </NeoGlassButton>
         </NeoGlassCard>
       </div>
