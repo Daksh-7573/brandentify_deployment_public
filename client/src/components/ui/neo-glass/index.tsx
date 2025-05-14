@@ -156,13 +156,11 @@ export const NeoGlassAvatar: React.FC<NeoGlassAvatarProps> = ({
 interface NeoGlassInputProps extends InputHTMLAttributes<HTMLInputElement> {
   className?: string;
   label?: string;
-  icon?: ReactNode;
 }
 
 export const NeoGlassInput: React.FC<NeoGlassInputProps> = ({
   className,
   label,
-  icon,
   ...props
 }) => {
   return (
@@ -172,21 +170,10 @@ export const NeoGlassInput: React.FC<NeoGlassInputProps> = ({
           {label}
         </label>
       )}
-      <div className="relative">
-        {icon && (
-          <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/60">
-            {icon}
-          </div>
-        )}
-        <input
-          className={cn(
-            'neo-glass-input', 
-            icon ? 'pl-10' : 'pl-4',
-            className
-          )}
-          {...props}
-        />
-      </div>
+      <input
+        className={cn('neo-glass-input', className)}
+        {...props}
+      />
     </div>
   );
 };
@@ -252,7 +239,7 @@ export const NeoGlassSparkle: React.FC<NeoGlassSparkleProps> = ({
 interface NeoPageContainerProps {
   children: ReactNode;
   className?: string;
-  background?: 'gradient' | 'white-room' | 'mixed' | 'guitar' | 'black-room';
+  background?: 'gradient' | 'white-room' | 'mixed';
 }
 
 export const NeoPageContainer: React.FC<NeoPageContainerProps> = ({
@@ -263,8 +250,6 @@ export const NeoPageContainer: React.FC<NeoPageContainerProps> = ({
   const bgClass = 
     background === 'white-room' ? 'neo-white-room-bg' :
     background === 'mixed' ? 'neo-mixed-bg' : 
-    background === 'guitar' ? 'neo-guitar-bg' :
-    background === 'black-room' ? 'neo-black-room-bg' :
     'neo-page-bg';
     
   return (
