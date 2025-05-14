@@ -10,22 +10,34 @@ import { Textarea } from "@/components/ui/textarea";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { BellRing, FileText, MessageSquare, Trash2, User, Edit, Plus, Eye, MoreHorizontal, Filter, AlertCircle, Loader2 } from "lucide-react";
+import { BellRing, FileText, MessageSquare, Trash2, User, Edit, Plus, Eye, MoreHorizontal, Filter, AlertCircle, Loader2, Image as ImageIcon, Tag } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { Skeleton } from "@/components/ui/skeleton";
 
-// Types for content items
+// Types for content items and author
+interface Author {
+  id: number;
+  name: string;
+  username: string;
+  photoURL: string | null;
+}
+
 interface ContentItem {
   id: number;
   title: string;
-  type: "post" | "article" | "pulse";
-  author: string;
+  slug: string;
+  type: "article" | "post" | "pulse" | "announcement";
+  excerpt: string;
+  featuredImage: string;
+  authorId: number;
+  author: Author;
   status: "published" | "draft" | "archived";
+  publishedAt: string | null;
   createdAt: string;
   updatedAt: string;
-  featured: boolean;
+  tags: string[];
 }
 
 // Fetch content data from API instead of using mock data
@@ -37,24 +49,24 @@ export default function ContentManagementPage() {
   const [isEditing, setIsEditing] = useState(false);
   const queryClient = useQueryClient();
   
-  // Fetch content data from API
+  // Fetch content data from API (using public endpoint for testing)
   const { 
     data: contentData, 
     isLoading: contentLoading, 
     error: contentError 
   } = useQuery({
-    queryKey: ['/api/admin/content'],
-    queryFn: () => apiRequest('/api/admin/content')
+    queryKey: ['/api/admin/public/content'],
+    queryFn: () => apiRequest('/api/admin/public/content')
   });
   
   // Use real data when available
-  const content = contentData?.data || [];
+  const content = contentData?.content || [];
   
   // Filter content based on selected type and search query
   const filteredContent = content.filter(item => {
     const matchesFilter = filter === "all" || item.type === filter || item.status === filter;
     const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          item.author.toLowerCase().includes(searchQuery.toLowerCase());
+                          (item.author?.name && item.author.name.toLowerCase().includes(searchQuery.toLowerCase()));
     return matchesFilter && matchesSearch;
   });
   
