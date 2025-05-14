@@ -63,8 +63,13 @@ export default function AnalyticsNewPage() {
         try {
           data = JSON.parse(responseText);
           console.log('Analytics data received:', data);
-          setAnalyticsData(data);
-          setError(null);
+          if (data && data.status === "success") {
+            setAnalyticsData(data); // Store the full response with both status and data
+            setError(null);
+          } else {
+            console.error('Received invalid data format:', data);
+            throw new Error('Invalid data format received from server');
+          }
         } catch (parseError) {
           console.error('Error parsing JSON response:', parseError);
           throw new Error('Invalid JSON response from server');
@@ -84,11 +89,19 @@ export default function AnalyticsNewPage() {
   const data = analyticsData?.data || {
     totalUsers: 0,
     newUsers: 0,
+    totalContent: 0,
+    totalQuests: 0,
     activeUsers: 0,
     completedProfiles: 0,
-    userGrowth: [],
-    contentTypes: [],
-    recentActivity: []
+    userGrowth: [] as { date: string; count: number }[],
+    contentTypes: [] as { type: string; count: number }[],
+    recentActivity: [] as {
+      id: number;
+      type: string;
+      user: { id: number; name: string };
+      timestamp: string;
+      details: string;
+    }[]
   };
   
   // Calculate retention rate if possible
@@ -362,7 +375,7 @@ export default function AnalyticsNewPage() {
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie
-                        data={analyticsData.contentTypes}
+                        data={data.contentTypes}
                         cx="50%"
                         cy="50%"
                         labelLine={false}
@@ -372,7 +385,7 @@ export default function AnalyticsNewPage() {
                         dataKey="count"
                         nameKey="type"
                       >
-                        {analyticsData.contentTypes.map((entry, index) => (
+                        {data.contentTypes.map((entry, index) => (
                           <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                         ))}
                       </Pie>
@@ -443,7 +456,7 @@ export default function AnalyticsNewPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-6">
-                  {analyticsData.recentActivity.map((activity) => (
+                  {data.recentActivity.map((activity) => (
                     <div key={activity.id} className="flex items-start space-x-4">
                       <div className={`rounded-full w-10 h-10 flex items-center justify-center 
                         ${activity.type === 'user_registration' ? 'bg-green-100 text-green-700' : ''}
@@ -525,11 +538,11 @@ export default function AnalyticsNewPage() {
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart
                       data={[
-                        { month: 'Jan', mau: Math.floor(analyticsData.totalUsers * 0.5) },
-                        { month: 'Feb', mau: Math.floor(analyticsData.totalUsers * 0.55) },
-                        { month: 'Mar', mau: Math.floor(analyticsData.totalUsers * 0.6) },
-                        { month: 'Apr', mau: Math.floor(analyticsData.totalUsers * 0.65) },
-                        { month: 'May', mau: analyticsData.activeUsers }
+                        { month: 'Jan', mau: Math.floor(data.totalUsers * 0.5) },
+                        { month: 'Feb', mau: Math.floor(data.totalUsers * 0.55) },
+                        { month: 'Mar', mau: Math.floor(data.totalUsers * 0.6) },
+                        { month: 'Apr', mau: Math.floor(data.totalUsers * 0.65) },
+                        { month: 'May', mau: data.activeUsers }
                       ]}
                     >
                       <CartesianGrid strokeDasharray="3 3" />
@@ -558,11 +571,11 @@ export default function AnalyticsNewPage() {
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart
                       data={[
-                        { name: 'Resume Builder', views: analyticsData.totalUsers * 2, engagement: 42, shares: 15 },
-                        { name: 'Career Capsule', views: analyticsData.totalUsers * 1.5, engagement: 38, shares: 10 },
-                        { name: 'Mentorship', views: analyticsData.totalUsers * 1.2, engagement: 35, shares: 8 },
-                        { name: 'Quests', views: analyticsData.totalUsers * 1.8, engagement: 32, shares: 12 },
-                        { name: 'Shadow Resume', views: analyticsData.totalUsers * 1.0, engagement: 30, shares: 5 }
+                        { name: 'Resume Builder', views: data.totalUsers * 2, engagement: 42, shares: 15 },
+                        { name: 'Career Capsule', views: data.totalUsers * 1.5, engagement: 38, shares: 10 },
+                        { name: 'Mentorship', views: data.totalUsers * 1.2, engagement: 35, shares: 8 },
+                        { name: 'Quests', views: data.totalUsers * 1.8, engagement: 32, shares: 12 },
+                        { name: 'Shadow Resume', views: data.totalUsers * 1.0, engagement: 30, shares: 5 }
                       ]}
                       margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
                     >
