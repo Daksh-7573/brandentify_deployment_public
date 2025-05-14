@@ -12,7 +12,6 @@ import { Switch } from "@/components/ui/switch";
 import { BellRing, FileText, MessageSquare, Trash2, User, Edit, Plus, Eye, MoreHorizontal, Filter, AlertCircle, Loader2, Image as ImageIcon, Tag } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
 import { Skeleton } from "@/components/ui/skeleton";
 
 // Types for content items and author
@@ -89,17 +88,27 @@ export default function ContentManagementPage() {
   
   // Delete content item mutation
   const deleteMutation = useMutation({
-    mutationFn: (id: number) => apiRequest(`/api/admin/content/${id}`, { method: 'DELETE' }),
+    mutationFn: async (id: number) => {
+      const response = await fetch(`/api/admin/content/${id}`, { 
+        method: 'DELETE'
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to delete content');
+      }
+      
+      return response.json();
+    },
     onSuccess: () => {
       // Invalidate and refetch content data
-      queryClient.invalidateQueries({ queryKey: ['/api/admin/content'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/public/content'] });
       toast({
         title: "Content Deleted",
         description: "The content has been successfully removed.",
         variant: "default"
       });
     },
-    onError: (error) => {
+    onError: (error: Error) => {
       console.error("Error deleting content:", error);
       toast({
         title: "Error",
@@ -116,14 +125,24 @@ export default function ContentManagementPage() {
   
   // Edit content item mutation
   const editMutation = useMutation({
-    mutationFn: (data: Partial<ContentItem>) => 
-      apiRequest(`/api/admin/content/${data.id}`, { 
+    mutationFn: async (data: Partial<ContentItem>) => {
+      const response = await fetch(`/api/admin/content/${data.id}`, {
         method: 'PUT',
-        body: JSON.stringify(data) 
-      }),
+        headers: {
+          'Content-Type': 'application/json',
+        }, 
+        body: JSON.stringify(data)
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to update content');
+      }
+      
+      return response.json();
+    },
     onSuccess: () => {
       // Invalidate and refetch content data
-      queryClient.invalidateQueries({ queryKey: ['/api/admin/content'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/public/content'] });
       setIsEditing(false);
       setCurrentItem(null);
       toast({
@@ -172,21 +191,31 @@ export default function ContentManagementPage() {
   
   // Create new content mutation
   const createMutation = useMutation({
-    mutationFn: (data: Omit<ContentItem, 'id' | 'createdAt' | 'updatedAt'>) => 
-      apiRequest('/api/admin/content', { 
+    mutationFn: async (data: Omit<ContentItem, 'id' | 'createdAt' | 'updatedAt'>) => {
+      const response = await fetch('/api/admin/content', {
         method: 'POST',
-        body: JSON.stringify(data) 
-      }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to create content');
+      }
+      
+      return response.json();
+    },
     onSuccess: () => {
       // Invalidate and refetch content data
-      queryClient.invalidateQueries({ queryKey: ['/api/admin/content'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/public/content'] });
       toast({
         title: "Content Created",
         description: "New content has been created successfully.",
         variant: "default"
       });
     },
-    onError: (error) => {
+    onError: (error: Error) => {
       console.error("Error creating content:", error);
       toast({
         title: "Error",
