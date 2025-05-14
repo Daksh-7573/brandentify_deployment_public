@@ -44,17 +44,16 @@ router.get('/', async (req: Request, res: Response) => {
     
     // Get active users (logged in within last 30 days)
     // Since we don't track last login time directly, we'll use a proxy:
-    // Users who have created content, completed quests, or added work experience in the last 30 days
+    // Users who have created content or completed quests in the last 30 days
     
     // Instead of a complex join, we'll use a direct SQL query
+    // Note: work_experiences doesn't have a created_at column, so we'll only use pulses and user_quests
     const activeUsersQuery = `
       SELECT COUNT(DISTINCT user_id) as active_users
       FROM (
         SELECT user_id FROM pulses WHERE created_at >= $1
         UNION
         SELECT user_id FROM user_quests WHERE completed_at >= $1
-        UNION
-        SELECT user_id FROM work_experiences WHERE created_at >= $1
       ) as active_users_data
     `;
     
@@ -190,11 +189,15 @@ router.get('/', async (req: Request, res: Response) => {
     
     // If we have no data, add placeholder recent activity
     if (recentActivity.length === 0) {
-      // Query the most recent user
-      const [recentUser] = await db.select()
-        .from(users)
-        .orderBy(desc(users.createdAt))
-        .limit(1);
+      // Query the most recent user using direct SQL for consistency
+      const recentUserQuery = `
+        SELECT id, name 
+        FROM users 
+        ORDER BY created_at DESC 
+        LIMIT 1
+      `;
+      const recentUserResult = await pool.query(recentUserQuery);
+      const recentUser = recentUserResult.rows[0];
         
       if (recentUser) {
         recentActivity.push({
