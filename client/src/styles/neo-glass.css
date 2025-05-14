@@ -28,6 +28,7 @@
   /* Backgrounds */
   --white-room-bg: url('/backgrounds/white-room-bg.svg');
   --blue-guitar-bg: url('/images/blue-guitar-bg.jpg');
+  --black-room-bg: url('/images/modern-black-room.jpg');
   
   --glow-primary: 0 0 15px rgba(32, 129, 226, 0.5);
   --glow-secondary: 0 0 15px rgba(75, 207, 251, 0.5);
@@ -112,6 +113,28 @@
   right: 0;
   bottom: 0;
   background: linear-gradient(135deg, rgba(11, 77, 137, 0.7) 0%, rgba(7, 35, 65, 0.8) 100%);
+  pointer-events: none;
+}
+
+/* Black modern room background */
+.neo-black-room-bg {
+  background-image: var(--black-room-bg);
+  background-size: cover;
+  background-position: center;
+  min-height: 100vh;
+  position: relative;
+  background-attachment: fixed;
+}
+
+/* Add a subtle dark gradient overlay */
+.neo-black-room-bg::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.2) 100%);
   pointer-events: none;
 }
 
