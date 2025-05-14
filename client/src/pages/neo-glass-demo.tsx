@@ -49,6 +49,12 @@ export default function NeoGlassDemoPage() {
                 Mixed
               </NeoGlassButton>
             </div>
+            <div className="ml-0 md:ml-auto mt-3 md:mt-0">
+              <a href="/neo-glass-demo-spotify" className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-[#1DB954] to-[#4eff64] text-black font-medium text-sm">
+                <Sparkles className="w-4 h-4 mr-2" />
+                View Spotify-style Demo
+              </a>
+            </div>
           </NeoGlassCard>
           {/* Header Card */}
           <NeoGlassCard 
