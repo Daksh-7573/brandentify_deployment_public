@@ -24,10 +24,15 @@ router.get('/', async (req: Request, res: Response) => {
     const oneMonthAgo = new Date();
     oneMonthAgo.setDate(oneMonthAgo.getDate() - 30);
     
-    const [newUsersResult] = await db.select({ count: count() })
-      .from(users)
-      .where(gte(users.createdAt, oneMonthAgo));
-    const newUsers = newUsersResult?.count || 0;
+    // Use direct SQL query for consistency with column naming
+    const newUsersQuery = `
+      SELECT COUNT(*) as count
+      FROM users
+      WHERE created_at >= $1
+    `;
+    
+    const newUsersResult = await pool.query(newUsersQuery, [oneMonthAgo]);
+    const newUsers = parseInt(newUsersResult.rows[0]?.count) || 0;
     
     // Get total content (pulses) count
     const [totalContentResult] = await db.select({ count: count() }).from(pulses);
@@ -57,10 +62,14 @@ router.get('/', async (req: Request, res: Response) => {
     const activeUsers = activeUsersResult.rows[0]?.active_users || 0;
     
     // Get users with completed profiles (we'll define this as users with work experience added)
-    const [completedProfilesResult] = await db.select({ count: count() })
-      .from(users)
-      .innerJoin(workExperiences, eq(users.id, workExperiences.userId));
-    const completedProfiles = completedProfilesResult?.count || 0;
+    const completedProfilesQuery = `
+      SELECT COUNT(DISTINCT u.id) as count
+      FROM users u
+      INNER JOIN work_experiences we ON u.id = we.user_id
+    `;
+    
+    const completedProfilesResult = await pool.query(completedProfilesQuery);
+    const completedProfiles = parseInt(completedProfilesResult.rows[0]?.count) || 0;
     
     // Get user growth over the last 7 days - using the correct column name
     const userGrowthQuery = `
