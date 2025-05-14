@@ -145,10 +145,11 @@ export default function ContentManagementPage() {
     const formData = {
       id: currentItem.id,
       title: (document.querySelector('input[name="title"]') as HTMLInputElement)?.value,
-      type: (document.querySelector('select[name="type"]') as HTMLSelectElement)?.value as "article" | "post" | "pulse",
+      slug: (document.querySelector('input[name="slug"]') as HTMLInputElement)?.value,
+      type: (document.querySelector('select[name="type"]') as HTMLSelectElement)?.value as "article" | "post" | "pulse" | "announcement",
       status: (document.querySelector('select[name="status"]') as HTMLSelectElement)?.value as "published" | "draft" | "archived",
-      author: (document.querySelector('input[name="author"]') as HTMLInputElement)?.value,
-      featured: (document.querySelector('input[name="featured"]') as HTMLInputElement)?.checked
+      excerpt: (document.querySelector('textarea[name="excerpt"]') as HTMLTextAreaElement)?.value,
+      featuredImage: (document.querySelector('input[name="featuredImage"]') as HTMLInputElement)?.value
     };
     
     editMutation.mutate(formData);
@@ -424,18 +425,45 @@ export default function ContentManagementPage() {
                       <tr key={item.id} className="border-b hover:bg-muted/50">
                         <td className="py-3 px-4">
                           <div className="font-medium">{item.title}</div>
-                          {item.featured && <Badge className="mt-1">Featured</Badge>}
+                          <div className="text-xs text-muted-foreground">{item.slug}</div>
                         </td>
                         <td className="py-3 px-4">
-                          <Badge variant={item.type === 'article' ? 'default' : 
-                                          item.type === 'post' ? 'secondary' : 'outline'}>
+                          <Badge variant="secondary" className="font-normal">
+                            {item.type === "article" ? <FileText size={12} className="mr-1" /> : 
+                             item.type === "post" ? <MessageSquare size={12} className="mr-1" /> : 
+                             item.type === "pulse" ? <BellRing size={12} className="mr-1" /> :
+                             <AlertCircle size={12} className="mr-1" />}
                             {item.type.charAt(0).toUpperCase() + item.type.slice(1)}
                           </Badge>
+                          {item.tags && item.tags.length > 0 && (
+                            <div className="flex flex-wrap gap-1 mt-1">
+                              {item.tags.slice(0, 2).map((tag, index) => (
+                                <Badge key={index} variant="outline" className="text-xs">
+                                  {tag}
+                                </Badge>
+                              ))}
+                              {item.tags.length > 2 && (
+                                <Badge variant="outline" className="text-xs">
+                                  +{item.tags.length - 2} more
+                                </Badge>
+                              )}
+                            </div>
+                          )}
                         </td>
-                        <td className="py-3 px-4">{item.author}</td>
                         <td className="py-3 px-4">
-                          <Badge variant={item.status === 'published' ? 'success' : 
-                                         item.status === 'draft' ? 'outline' : 'destructive'}>
+                          <div className="flex items-center">
+                            <User size={14} className="mr-1 text-muted-foreground" />
+                            {item.author?.name || 'Unknown'}
+                          </div>
+                        </td>
+                        <td className="py-3 px-4">
+                          <Badge 
+                            variant={
+                              item.status === "published" ? "default" : 
+                              item.status === "draft" ? "outline" : 
+                              "secondary"
+                            }
+                          >
                             {item.status.charAt(0).toUpperCase() + item.status.slice(1)}
                           </Badge>
                         </td>
@@ -518,37 +546,79 @@ export default function ContentManagementPage() {
                                   </div>
                                   
                                   <div className="space-y-2">
-                                    <Label>Author</Label>
+                                    <Label>Slug</Label>
                                     {isEditing ? (
-                                      <Input defaultValue={currentItem.author} />
+                                      <Input 
+                                        name="slug"
+                                        defaultValue={currentItem.slug} 
+                                      />
                                     ) : (
-                                      <div className="p-2 border rounded-md">{currentItem.author}</div>
+                                      <div className="p-2 border rounded-md">{currentItem.slug}</div>
                                     )}
                                   </div>
-                                  
+
                                   <div className="space-y-2">
-                                    <div className="flex justify-between">
-                                      <Label>Featured Content</Label>
-                                      {isEditing ? (
-                                        <Switch defaultChecked={currentItem.featured} />
-                                      ) : (
-                                        <Badge variant={currentItem.featured ? "default" : "outline"}>
-                                          {currentItem.featured ? "Featured" : "Not Featured"}
-                                        </Badge>
-                                      )}
+                                    <Label>Author</Label>
+                                    <div className="p-2 border rounded-md">
+                                      {currentItem.author?.name || 'Unknown'} 
+                                      {currentItem.author?.username && 
+                                        <span className="text-xs text-muted-foreground ml-2">(@{currentItem.author.username})</span>
+                                      }
                                     </div>
                                   </div>
                                   
                                   <div className="space-y-2">
-                                    <Label>Content Body</Label>
+                                    <Label>Tags</Label>
+                                    <div className="p-2 border rounded-md">
+                                      <div className="flex flex-wrap gap-2">
+                                        {currentItem.tags && currentItem.tags.length > 0 ? (
+                                          currentItem.tags.map((tag, index) => (
+                                            <Badge key={index} variant="secondary">
+                                              <Tag size={12} className="mr-1" />
+                                              {tag}
+                                            </Badge>
+                                          ))
+                                        ) : (
+                                          <div className="text-sm text-muted-foreground">No tags</div>
+                                        )}
+                                      </div>
+                                    </div>
+                                  </div>
+                                  
+                                  <div className="space-y-2">
+                                    <Label>Excerpt</Label>
                                     {isEditing ? (
                                       <Textarea 
-                                        defaultValue="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam in dui mauris. Vivamus hendrerit arcu sed erat molestie vehicula."
-                                        className="min-h-[150px]"
+                                        name="excerpt"
+                                        defaultValue={currentItem.excerpt} 
                                       />
                                     ) : (
-                                      <div className="p-2 border rounded-md min-h-[150px] text-muted-foreground">
-                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam in dui mauris. Vivamus hendrerit arcu sed erat molestie vehicula.
+                                      <div className="p-2 border rounded-md">
+                                        {currentItem.excerpt || 'No excerpt available'}
+                                      </div>
+                                    )}
+                                  </div>
+                                  
+                                  <div className="space-y-2">
+                                    <Label>Featured Image</Label>
+                                    {isEditing ? (
+                                      <Input 
+                                        name="featuredImage"
+                                        defaultValue={currentItem.featuredImage} 
+                                      />
+                                    ) : (
+                                      <div className="border rounded-md overflow-hidden">
+                                        {currentItem.featuredImage ? (
+                                          <img 
+                                            src={currentItem.featuredImage} 
+                                            alt={currentItem.title}
+                                            className="w-full h-40 object-cover"
+                                          />
+                                        ) : (
+                                          <div className="flex items-center justify-center h-40 bg-muted">
+                                            <ImageIcon className="h-10 w-10 text-muted-foreground" />
+                                          </div>
+                                        )}
                                       </div>
                                     )}
                                   </div>
