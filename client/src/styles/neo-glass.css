@@ -176,7 +176,7 @@
   bottom: -10%;
   background-image: var(--frost-texture);
   background-size: 200% 200%;
-  opacity: 0.3;
+  opacity: 0.5;
   border-radius: 16px;
   pointer-events: none;
   mix-blend-mode: overlay;
@@ -195,7 +195,7 @@
 }
 
 .neo-glass-card:hover::after {
-  opacity: 0.4;
+  opacity: 0.6;
   animation: frost-shimmer 4s ease infinite;
   background-size: 180% 180%;
 }
@@ -682,20 +682,20 @@
 @keyframes frost-shimmer {
   0% {
     background-position: 0% 0%;
-    opacity: 0.3;
+    opacity: 0.5;
   }
   25% {
-    opacity: 0.5;
+    opacity: 0.7;
   }
   50% {
     background-position: 100% 100%;
-    opacity: 0.4;
+    opacity: 0.6;
   }
   75% {
-    opacity: 0.5;
+    opacity: 0.7;
   }
   100% {
     background-position: 0% 0%;
-    opacity: 0.3;
+    opacity: 0.5;
   }
 }
