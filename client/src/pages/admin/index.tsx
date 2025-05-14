@@ -1,62 +1,66 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Users, FileText, TrendingUp } from "lucide-react";
+import { Users, FileText, TrendingUp, AlertCircle } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
+import { useQuery } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import { Skeleton } from "@/components/ui/skeleton";
 
-// Simplified AdminDashboard that doesn't rely on actual backend API endpoints
-// This will fix the issue with the admin dashboard not loading
+// AdminDashboard connected to real backend API endpoints
 export default function AdminDashboard() {
   const { user } = useAuth();
   const [tab, setTab] = React.useState("overview");
   
-  // Mock data that doesn't rely on real API calls
-  const mockStats = {
-    totalUsers: 120,
-    newUsersToday: 8,
-    activeAdmins: 1,
+  // Fetch dashboard stats from API
+  const { data: statsData, isLoading: statsLoading, error: statsError } = useQuery({
+    queryKey: ['/api/admin/stats/dashboard'],
+    queryFn: () => apiRequest('/api/admin/stats/dashboard')
+  });
+  
+  // Fetch recent activity from API
+  const { data: activityData, isLoading: activityLoading, error: activityError } = useQuery({
+    queryKey: ['/api/admin/activity/recent'],
+    queryFn: () => apiRequest('/api/admin/activity/recent')
+  });
+  
+  // Use real data when available, fallback to default values when loading
+  const stats = statsData?.data || {
+    totalUsers: 0,
+    newUsersToday: 0,
+    activeAdmins: 0,
   };
   
-  // Stats cards data with mock values
+  // Stats cards data with real values
   const statsCards = [
     {
       title: "Total Users",
-      value: mockStats.totalUsers,
+      value: stats.totalUsers,
       icon: <Users className="h-5 w-5 text-blue-500" />,
       description: "Registered users on the platform",
       color: "bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400",
+      loading: statsLoading
     },
     {
       title: "New Users Today",
-      value: mockStats.newUsersToday,
+      value: stats.newUsersToday,
       icon: <TrendingUp className="h-5 w-5 text-green-500" />,
       description: "Joined in the last 24 hours",
       color: "bg-green-50 text-green-600 dark:bg-green-900/20 dark:text-green-400",
+      loading: statsLoading
     },
     {
       title: "Active Admins",
-      value: mockStats.activeAdmins,
+      value: stats.activeAdmins,
       icon: <Users className="h-5 w-5 text-purple-500" />,
       description: "Administrators with active accounts",
       color: "bg-purple-50 text-purple-600 dark:bg-purple-900/20 dark:text-purple-400",
+      loading: statsLoading
     }
   ];
   
-  // Recent mock activity data
-  const mockActivity = [
-    {
-      id: 1,
-      action: "User Login",
-      details: `Admin ${user?.name || 'User'} logged in`,
-      timestamp: new Date().toISOString()
-    },
-    {
-      id: 2,
-      action: "Dashboard View",
-      details: "Viewed admin dashboard",
-      timestamp: new Date().toISOString()
-    }
-  ];
+  // Use real activity data when available
+  const activity = activityData?.data || [];
   
   // Format date for display
   const formatDate = (dateString: string) => {
@@ -100,22 +104,48 @@ export default function AdminDashboard() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {mockActivity.map((activity) => (
-              <div key={activity.id} className="flex items-start space-x-4 p-2 hover:bg-muted/50 rounded-md">
-                <div className="p-2 rounded-full bg-primary/10 text-primary">
-                  <FileText className="h-5 w-5" />
+            {activityLoading ? (
+              // Show skeleton loaders while loading
+              Array.from({ length: 3 }).map((_, index) => (
+                <div key={index} className="flex items-start space-x-4 p-2">
+                  <div className="p-2 rounded-full">
+                    <Skeleton className="h-5 w-5 rounded-full" />
+                  </div>
+                  <div className="w-full">
+                    <Skeleton className="h-5 w-32 mb-2" />
+                    <Skeleton className="h-4 w-full mb-1" />
+                    <Skeleton className="h-3 w-24" />
+                  </div>
                 </div>
-                <div>
-                  <p className="font-medium">{activity.action}</p>
-                  {activity.details && (
-                    <p className="text-sm text-muted-foreground">{activity.details}</p>
-                  )}
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {formatDate(activity.timestamp)}
-                  </p>
-                </div>
+              ))
+            ) : activityError ? (
+              // Show error state
+              <div className="flex items-center justify-center py-6 text-red-500">
+                <AlertCircle className="h-5 w-5 mr-2" />
+                <p>Error loading activity data</p>
               </div>
-            ))}
+            ) : activity.length === 0 ? (
+              // Show empty state
+              <p className="text-muted-foreground text-center py-6">No recent activity to display</p>
+            ) : (
+              // Show actual activity data
+              activity.map((item) => (
+                <div key={item.id} className="flex items-start space-x-4 p-2 hover:bg-muted/50 rounded-md">
+                  <div className="p-2 rounded-full bg-primary/10 text-primary">
+                    <FileText className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <p className="font-medium">{item.action}</p>
+                    {item.details && (
+                      <p className="text-sm text-muted-foreground">{item.details}</p>
+                    )}
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {formatDate(item.timestamp)}
+                    </p>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </CardContent>
       </Card>
