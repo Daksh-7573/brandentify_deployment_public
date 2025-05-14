@@ -88,12 +88,20 @@ router.post('/logout', verifyAdminAuth, async (req: AdminSessionRequest, res: Re
 });
 
 // Admin User Management
-router.get('/users', verifyAdminAuth, checkPermission('view_users'), async (req, res) => {
+router.get('/users', verifyAdminAuth, checkPermission('view_users'), async (req: AdminSessionRequest, res: Response) => {
   try {
+    console.log('Admin users route accessed - Session:', JSON.stringify({
+      hasSession: !!req.session,
+      hasAdminUser: req.session && !!req.session.adminUser,
+      adminUser: req.session?.adminUser 
+    }));
+    
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 20;
     const offset = (page - 1) * limit;
     const search = req.query.search as string || '';
+    
+    console.log('Admin users route - Query params:', { page, limit, offset, search });
     
     // Get users with pagination and search
     const query = search
@@ -104,19 +112,24 @@ router.get('/users', verifyAdminAuth, checkPermission('view_users'), async (req,
         )
       : undefined;
     
+    console.log('Admin users route - About to execute db query for users');
+    
     const userList = await db.select().from(users)
       .where(query)
       .limit(limit)
       .offset(offset)
       .orderBy(desc(users.createdAt));
     
+    console.log(`Admin users route - Found ${userList.length} users`);
+    
     // Get total count for pagination
     const countResult = await db.select({ count: db.fn.count() }).from(users)
       .where(query);
     
     const totalUsers = parseInt(countResult[0].count as string);
+    console.log('Admin users route - Total users:', totalUsers);
     
-    res.json({
+    const response = {
       users: userList,
       pagination: {
         total: totalUsers,
@@ -124,10 +137,14 @@ router.get('/users', verifyAdminAuth, checkPermission('view_users'), async (req,
         limit,
         totalPages: Math.ceil(totalUsers / limit)
       }
-    });
+    };
+    
+    console.log('Admin users route - Sending response data');
+    res.json(response);
     
     // Log this activity
     await logAdminActivity(req, 'view_users', `Viewed user list page ${page}`);
+    console.log('Admin users route - Logged activity');
   } catch (error) {
     console.error('Error fetching admin users:', error);
     res.status(500).json({ message: 'Server error fetching users' });
