@@ -45,11 +45,11 @@ router.get('/', async (req: Request, res: Response) => {
     const activeUsersQuery = `
       SELECT COUNT(DISTINCT user_id) as active_users
       FROM (
-        SELECT user_id FROM pulses WHERE created_at >= $1
+        SELECT user_id FROM pulses WHERE "createdAt" >= $1
         UNION
-        SELECT user_id FROM user_quests WHERE completed_at >= $1
+        SELECT user_id FROM user_quests WHERE "completedAt" >= $1
         UNION
-        SELECT user_id FROM work_experiences WHERE created_at >= $1
+        SELECT user_id FROM work_experiences WHERE "createdAt" >= $1
       ) as active_users_data
     `;
     
@@ -62,13 +62,13 @@ router.get('/', async (req: Request, res: Response) => {
       .innerJoin(workExperiences, eq(users.id, workExperiences.userId));
     const completedProfiles = completedProfilesResult?.count || 0;
     
-    // Get user growth over the last 7 days
+    // Get user growth over the last 7 days - using the correct column name
     const userGrowthQuery = `
-      SELECT date_trunc('day', created_at) as date, count(*) as count
+      SELECT date_trunc('day', "createdAt") as date, count(*) as count
       FROM users
-      WHERE created_at >= date_trunc('day', NOW() - INTERVAL '7 days')
-      GROUP BY date_trunc('day', created_at)
-      ORDER BY date_trunc('day', created_at)
+      WHERE "createdAt" >= date_trunc('day', NOW() - INTERVAL '7 days')
+      GROUP BY date_trunc('day', "createdAt")
+      ORDER BY date_trunc('day', "createdAt")
     `;
     
     const userGrowthResult = await pool.query(userGrowthQuery);
@@ -127,10 +127,10 @@ router.get('/', async (req: Request, res: Response) => {
           'user_registration' as activity_type,
           u.id as user_id,
           u.name as user_name,
-          u.created_at as timestamp,
+          u."createdAt" as timestamp,
           'New user registered' as details
         FROM users u
-        ORDER BY u.created_at DESC
+        ORDER BY u."createdAt" DESC
         LIMIT 5
       )
       UNION ALL
@@ -140,11 +140,11 @@ router.get('/', async (req: Request, res: Response) => {
           'content_creation' as activity_type,
           p.user_id as user_id,
           u.name as user_name,
-          p.created_at as timestamp,
+          p."createdAt" as timestamp,
           'Created new ' || p.type || ': ' || p.title as details
         FROM pulses p
         JOIN users u ON p.user_id = u.id
-        ORDER BY p.created_at DESC
+        ORDER BY p."createdAt" DESC
         LIMIT 5
       )
       UNION ALL
@@ -154,11 +154,11 @@ router.get('/', async (req: Request, res: Response) => {
           'comment' as activity_type,
           pc.user_id as user_id,
           u.name as user_name,
-          pc.created_at as timestamp,
+          pc."createdAt" as timestamp,
           'Commented on a pulse' as details
         FROM pulse_comments pc
         JOIN users u ON pc.user_id = u.id
-        ORDER BY pc.created_at DESC
+        ORDER BY pc."createdAt" DESC
         LIMIT 5
       )
       ORDER BY timestamp DESC
