@@ -1,9 +1,19 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { db } from './db';
 import { users } from '@shared/schema';
-import { adminRoles, adminUsers, adminPermissions, adminActivityLog } from '@shared/admin-schema';
+import { 
+  adminRoles, 
+  adminUsers, 
+  adminPermissions, 
+  adminActivityLog, 
+  content, 
+  contentTags, 
+  ContentSchema,
+  contentTypes,
+  contentStatusTypes
+} from '@shared/admin-schema';
 import { verifyAdminAuth, checkPermission, logAdminActivity, loadAdminUserData } from './middleware/admin-auth';
-import { eq, and, desc, like, or } from 'drizzle-orm';
+import { eq, and, desc, like, or, isNull, sql } from 'drizzle-orm';
 import { storage } from './storage';
 
 // Import the AdminSessionRequest interface
@@ -483,6 +493,363 @@ router.get('/stats', verifyAdminAuth, async (req, res) => {
   } catch (error) {
     console.error('Error fetching admin stats:', error);
     res.status(500).json({ message: 'Server error fetching admin stats' });
+  }
+});
+
+// Content Management Routes
+// Get all content items with pagination and filtering
+router.get('/content', verifyAdminAuth, checkPermission('view_content'), async (req: AdminSessionRequest, res: Response) => {
+  try {
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 20;
+    const offset = (page - 1) * limit;
+    const search = req.query.search as string || '';
+    const type = req.query.type as string || '';
+    const status = req.query.status as string || '';
+    
+    // Build query filters
+    let whereConditions = [];
+    
+    if (search) {
+      whereConditions.push(
+        or(
+          like(content.title, `%${search}%`),
+          like(content.slug, `%${search}%`),
+          like(content.body, `%${search}%`)
+        )
+      );
+    }
+    
+    if (type && contentTypes.includes(type as any)) {
+      whereConditions.push(eq(content.type, type));
+    }
+    
+    if (status && contentStatusTypes.includes(status as any)) {
+      whereConditions.push(eq(content.status, status));
+    }
+    
+    // Set up final where clause
+    const whereClause = whereConditions.length > 0 
+      ? and(...whereConditions) 
+      : undefined;
+    
+    // Get content with pagination and filters
+    const contentItems = await db.select({
+      id: content.id,
+      title: content.title,
+      slug: content.slug,
+      type: content.type,
+      status: content.status,
+      excerpt: content.excerpt,
+      featuredImage: content.featuredImage,
+      authorId: content.authorId,
+      publishedAt: content.publishedAt,
+      createdAt: content.createdAt,
+      updatedAt: content.updatedAt
+    })
+    .from(content)
+    .where(whereClause)
+    .limit(limit)
+    .offset(offset)
+    .orderBy(desc(content.createdAt));
+    
+    // Get total count for pagination
+    const countResult = await db.select({ count: sql`COUNT(*)` }).from(content)
+      .where(whereClause);
+    
+    const totalItems = parseInt(countResult[0].count as any);
+    
+    // Get author information for each content item
+    const contentWithAuthors = await Promise.all(contentItems.map(async (item) => {
+      const author = await storage.getUser(item.authorId);
+      return {
+        ...item,
+        author: author ? {
+          id: author.id,
+          name: author.name,
+          username: author.username,
+          photoURL: author.photoURL
+        } : null
+      };
+    }));
+    
+    // Get tags for each content item
+    const contentWithDetails = await Promise.all(contentWithAuthors.map(async (item) => {
+      const tags = await db.select({
+        tag: contentTags.tag
+      })
+      .from(contentTags)
+      .where(eq(contentTags.contentId, item.id));
+      
+      return {
+        ...item,
+        tags: tags.map(t => t.tag)
+      };
+    }));
+    
+    // Log activity
+    await logAdminActivity(req, 'view_content_list', `Viewed content list (page ${page})`);
+    
+    // Return content with pagination
+    res.json({
+      content: contentWithDetails,
+      pagination: {
+        total: totalItems,
+        page,
+        limit,
+        totalPages: Math.ceil(totalItems / limit)
+      },
+      filters: {
+        types: contentTypes,
+        statuses: contentStatusTypes
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching content:', error);
+    res.status(500).json({ message: 'Server error fetching content' });
+  }
+});
+
+// Get single content item by ID
+router.get('/content/:id', verifyAdminAuth, checkPermission('view_content'), async (req: AdminSessionRequest, res: Response) => {
+  try {
+    const contentId = parseInt(req.params.id);
+    
+    if (isNaN(contentId)) {
+      return res.status(400).json({ message: 'Invalid content ID' });
+    }
+    
+    // Get content item
+    const [contentItem] = await db.select()
+      .from(content)
+      .where(eq(content.id, contentId))
+      .limit(1);
+    
+    if (!contentItem) {
+      return res.status(404).json({ message: 'Content not found' });
+    }
+    
+    // Get author
+    const author = await storage.getUser(contentItem.authorId);
+    
+    // Get tags
+    const tags = await db.select({
+      tag: contentTags.tag
+    })
+    .from(contentTags)
+    .where(eq(contentTags.contentId, contentId));
+    
+    // Log activity
+    await logAdminActivity(req, 'view_content_detail', `Viewed content item '${contentItem.title}' (ID: ${contentId})`);
+    
+    // Return content with details
+    res.json({
+      content: {
+        ...contentItem,
+        author: author ? {
+          id: author.id,
+          name: author.name,
+          username: author.username,
+          photoURL: author.photoURL
+        } : null,
+        tags: tags.map(t => t.tag)
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching content item:', error);
+    res.status(500).json({ message: 'Server error fetching content item' });
+  }
+});
+
+// Create new content
+router.post('/content', verifyAdminAuth, checkPermission('manage_content'), async (req: AdminSessionRequest, res: Response) => {
+  try {
+    const contentData = req.body;
+    
+    // Validate content data
+    const validationResult = ContentSchema.safeParse(contentData);
+    
+    if (!validationResult.success) {
+      return res.status(400).json({ 
+        message: 'Invalid content data', 
+        errors: validationResult.error.errors 
+      });
+    }
+    
+    const { tags, ...validContentData } = validationResult.data;
+    
+    // Set author to current admin user if not provided
+    if (!validContentData.authorId) {
+      validContentData.authorId = req.session.adminUser?.userId;
+    }
+    
+    // Set published date if status is published
+    if (validContentData.status === 'published' && !validContentData.publishedAt) {
+      validContentData.publishedAt = new Date();
+    }
+    
+    // Create content
+    const [newContent] = await db.insert(content)
+      .values(validContentData)
+      .returning();
+    
+    // Create tags if provided
+    if (tags && tags.length > 0) {
+      await db.insert(contentTags)
+        .values(
+          tags.map(tag => ({
+            contentId: newContent.id,
+            tag
+          }))
+        );
+    }
+    
+    // Log activity
+    await logAdminActivity(
+      req, 
+      'create_content', 
+      `Created new ${validContentData.type} '${validContentData.title}' (ID: ${newContent.id})`
+    );
+    
+    res.status(201).json({
+      message: 'Content created successfully',
+      content: {
+        ...newContent,
+        tags: tags || []
+      }
+    });
+  } catch (error) {
+    console.error('Error creating content:', error);
+    res.status(500).json({ message: 'Server error creating content' });
+  }
+});
+
+// Update content
+router.put('/content/:id', verifyAdminAuth, checkPermission('manage_content'), async (req: AdminSessionRequest, res: Response) => {
+  try {
+    const contentId = parseInt(req.params.id);
+    const contentData = req.body;
+    
+    if (isNaN(contentId)) {
+      return res.status(400).json({ message: 'Invalid content ID' });
+    }
+    
+    // Validate content data
+    const validationResult = ContentSchema.safeParse(contentData);
+    
+    if (!validationResult.success) {
+      return res.status(400).json({ 
+        message: 'Invalid content data', 
+        errors: validationResult.error.errors 
+      });
+    }
+    
+    const { tags, ...validContentData } = validationResult.data;
+    
+    // Check if content exists
+    const existingContent = await db.select()
+      .from(content)
+      .where(eq(content.id, contentId))
+      .limit(1);
+    
+    if (existingContent.length === 0) {
+      return res.status(404).json({ message: 'Content not found' });
+    }
+    
+    // Set published date if status is being changed to published
+    if (validContentData.status === 'published' && 
+        existingContent[0].status !== 'published' && 
+        !validContentData.publishedAt) {
+      validContentData.publishedAt = new Date();
+    }
+    
+    // Update content
+    const [updatedContent] = await db.update(content)
+      .set({
+        ...validContentData,
+        updatedAt: new Date()
+      })
+      .where(eq(content.id, contentId))
+      .returning();
+    
+    // Update tags if provided
+    if (tags !== undefined) {
+      // Delete existing tags
+      await db.delete(contentTags)
+        .where(eq(contentTags.contentId, contentId));
+      
+      // Insert new tags
+      if (tags.length > 0) {
+        await db.insert(contentTags)
+          .values(
+            tags.map(tag => ({
+              contentId,
+              tag
+            }))
+          );
+      }
+    }
+    
+    // Log activity
+    await logAdminActivity(
+      req, 
+      'update_content', 
+      `Updated ${updatedContent.type} '${updatedContent.title}' (ID: ${contentId})`
+    );
+    
+    res.json({
+      message: 'Content updated successfully',
+      content: {
+        ...updatedContent,
+        tags: tags || []
+      }
+    });
+  } catch (error) {
+    console.error('Error updating content:', error);
+    res.status(500).json({ message: 'Server error updating content' });
+  }
+});
+
+// Delete content
+router.delete('/content/:id', verifyAdminAuth, checkPermission('manage_content'), async (req: AdminSessionRequest, res: Response) => {
+  try {
+    const contentId = parseInt(req.params.id);
+    
+    if (isNaN(contentId)) {
+      return res.status(400).json({ message: 'Invalid content ID' });
+    }
+    
+    // Get content before deletion for logging
+    const [contentItem] = await db.select()
+      .from(content)
+      .where(eq(content.id, contentId))
+      .limit(1);
+    
+    if (!contentItem) {
+      return res.status(404).json({ message: 'Content not found' });
+    }
+    
+    // Delete tags first (due to foreign key constraints)
+    await db.delete(contentTags)
+      .where(eq(contentTags.contentId, contentId));
+    
+    // Delete content
+    await db.delete(content)
+      .where(eq(content.id, contentId));
+    
+    // Log activity
+    await logAdminActivity(
+      req, 
+      'delete_content', 
+      `Deleted ${contentItem.type} '${contentItem.title}' (ID: ${contentId})`
+    );
+    
+    res.json({
+      message: 'Content deleted successfully'
+    });
+  } catch (error) {
+    console.error('Error deleting content:', error);
+    res.status(500).json({ message: 'Server error deleting content' });
   }
 });
 

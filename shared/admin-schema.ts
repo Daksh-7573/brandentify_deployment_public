@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, boolean, integer, varchar, primaryKey } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, boolean, integer, varchar, primaryKey, json } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 import { users } from "./schema";
@@ -89,4 +89,75 @@ export const AdminUserSchema = z.object({
   userId: z.number(),
   roleId: z.number(),
   isActive: z.boolean().default(true),
+});
+
+// Content types
+export const contentTypes = [
+  'article',
+  'post',
+  'pulse',
+  'announcement'
+] as const;
+
+// Content status types
+export const contentStatusTypes = [
+  'draft',
+  'published',
+  'archived'
+] as const;
+
+// Content table
+export const content = pgTable('content', {
+  id: integer('id').primaryKey(),
+  title: varchar('title', { length: 255 }).notNull(),
+  slug: varchar('slug', { length: 255 }).notNull().unique(),
+  type: varchar('type', { length: 50 }).notNull().$type<typeof contentTypes[number]>(),
+  status: varchar('status', { length: 20 }).notNull().$type<typeof contentStatusTypes[number]>().default('draft'),
+  body: text('body'),
+  excerpt: text('excerpt'),
+  featuredImage: varchar('featured_image', { length: 255 }),
+  metadata: json('metadata'),
+  authorId: integer('author_id').notNull().references(() => users.id),
+  publishedAt: timestamp('published_at'),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow()
+});
+
+// Content tags table
+export const contentTags = pgTable('content_tags', {
+  id: integer('id').primaryKey(),
+  contentId: integer('content_id').notNull().references(() => content.id),
+  tag: varchar('tag', { length: 50 }).notNull(),
+  createdAt: timestamp('created_at').defaultNow()
+}, (table) => {
+  return {
+    contentTagsKey: primaryKey({ columns: [table.contentId, table.tag] })
+  };
+});
+
+// Types for content tables
+export type Content = typeof content.$inferSelect;
+export type InsertContent = typeof content.$inferInsert;
+export type ContentTag = typeof contentTags.$inferSelect;
+export type InsertContentTag = typeof contentTags.$inferInsert;
+
+// Insert schemas for validation
+export const insertContentSchema = createInsertSchema(content);
+export const insertContentTagSchema = createInsertSchema(contentTags);
+
+// Custom schemas for API requests
+export const ContentSchema = z.object({
+  id: z.number().optional(),
+  title: z.string().min(3, "Title must be at least 3 characters"),
+  slug: z.string().min(3, "Slug must be at least 3 characters")
+    .regex(/^[a-z0-9-]+$/, "Slug must only contain lowercase letters, numbers, and hyphens"),
+  type: z.enum(contentTypes),
+  status: z.enum(contentStatusTypes).default('draft'),
+  body: z.string().optional(),
+  excerpt: z.string().optional(),
+  featuredImage: z.string().url("Feature image must be a valid URL").optional(),
+  metadata: z.record(z.any()).optional(),
+  authorId: z.number(),
+  publishedAt: z.date().optional(),
+  tags: z.array(z.string()).optional()
 });
