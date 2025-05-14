@@ -12,7 +12,8 @@ import {
   Menu, 
   X, 
   Shield, 
-  ChevronDown 
+  ChevronDown,
+  Database 
 } from "lucide-react";
 import { 
   Sheet, 

@@ -222,30 +222,40 @@ function Router() {
       {/* Admin Panel Routes - Using lazy loading */}
       <Route path="/admin">
         <ProtectedRoute path="/admin" component={() => {
+          const AdminLayout = lazy(() => import("@/pages/admin/layout"));
           const AdminDashboard = lazy(() => import("@/pages/admin/index"));
           const AdminCheck = lazy(() => import("@/middleware/admin-check").then(mod => ({ default: mod.AdminCheck })));
           
-          return (
+          const AdminDashboardWithLayout = () => (
             <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>}>
               <AdminCheck>
-                <AdminDashboard />
+                <AdminLayout>
+                  <AdminDashboard />
+                </AdminLayout>
               </AdminCheck>
             </Suspense>
           );
+          
+          return <AdminDashboardWithLayout />;
         }} />
       </Route>
       <Route path="/admin/users">
         <ProtectedRoute path="/admin/users" component={() => {
+          const AdminLayout = lazy(() => import("@/pages/admin/layout"));
           const AdminUsers = lazy(() => import("@/pages/admin/users"));
           const AdminCheck = lazy(() => import("@/middleware/admin-check").then(mod => ({ default: mod.AdminCheck })));
           
-          return (
+          const AdminUsersWithLayout = () => (
             <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>}>
               <AdminCheck>
-                <AdminUsers />
+                <AdminLayout>
+                  <AdminUsers />
+                </AdminLayout>
               </AdminCheck>
             </Suspense>
           );
+          
+          return <AdminUsersWithLayout />;
         }} />
       </Route>
       <Route path="/admin/content">
