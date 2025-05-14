@@ -48,15 +48,25 @@ export default function AnalyticsNewPage() {
         setLoading(true);
         console.log('Fetching analytics data from direct API endpoint');
         
-        // Use the new dedicated analytics endpoint
+        // Use the new dedicated analytics endpoint - ensuring we use the correct path
         const response = await fetch('/api/analytics-data');
         
         if (!response.ok) {
           throw new Error(`Failed to fetch analytics data: ${response.status}`);
         }
         
+        console.log('Response status:', response.status);
+        console.log('Content type:', response.headers.get('content-type'));
+        
+        // Check content type before processing
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('text/html')) {
+          console.error('Received HTML response instead of JSON');
+          throw new Error('Server returned HTML instead of JSON data');
+        }
+        
         const responseText = await response.text();
-        console.log('Raw response:', responseText);
+        console.log('Raw response text length:', responseText.length);
         
         // Check if response starts with HTML (common issue with middleware)
         if (responseText.trim().startsWith('<!DOCTYPE html>') || 
