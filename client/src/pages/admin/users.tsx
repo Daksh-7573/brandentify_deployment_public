@@ -49,35 +49,25 @@ interface User {
   createdAt: string;
 }
 
+interface UsersResponse {
+  users: User[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
+
 export default function AdminUsers() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [limit] = useState(10);
   const { toast } = useToast();
   
-  // Function to fetch users with pagination and search
-  const fetchUsers = async () => {
-    const response = await fetch(
-      `/api/admin/users?page=${page}&limit=${limit}&search=${search}`,
-      {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      }
-    );
-    
-    if (!response.ok) {
-      throw new Error("Failed to fetch users");
-    }
-    
-    return response.json();
-  };
-  
   // Query for users
-  const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ["/api/admin/users", page, limit, search],
-    queryFn: fetchUsers
+  const { data, isLoading, error, refetch } = useQuery<UsersResponse>({
+    queryKey: [`/api/admin/users?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`]
   });
   
   // Format date for display
@@ -110,16 +100,7 @@ export default function AdminUsers() {
   // Handle user deletion
   const handleDeleteUser = async (userId: number) => {
     try {
-      const response = await fetch(`/api/admin/users/${userId}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-      
-      if (!response.ok) {
-        throw new Error("Failed to delete user");
-      }
+      await apiRequest('DELETE', `/api/admin/users/${userId}`);
       
       toast({
         title: "User Deleted",
