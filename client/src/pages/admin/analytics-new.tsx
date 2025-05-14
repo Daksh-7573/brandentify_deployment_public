@@ -16,21 +16,24 @@ import {
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#A28AFD'];
 
 interface AnalyticsData {
-  totalUsers: number;
-  newUsers: number;
-  totalContent: number;
-  totalQuests: number;
-  activeUsers: number;
-  completedProfiles: number;
-  userGrowth: { date: string; count: number }[];
-  contentTypes: { type: string; count: number }[];
-  recentActivity: {
-    id: number;
-    type: string;
-    user: { id: number; name: string };
-    timestamp: string;
-    details: string;
-  }[];
+  status: string;
+  data: {
+    totalUsers: number;
+    newUsers: number;
+    totalContent: number;
+    totalQuests: number;
+    activeUsers: number;
+    completedProfiles: number;
+    userGrowth: { date: string; count: number }[];
+    contentTypes: { type: string; count: number }[];
+    recentActivity: {
+      id: number;
+      type: string;
+      user: { id: number; name: string };
+      timestamp: string;
+      details: string;
+    }[];
+  };
 }
 
 export default function AnalyticsNewPage() {
@@ -45,6 +48,7 @@ export default function AnalyticsNewPage() {
         setLoading(true);
         console.log('Fetching analytics data from direct API endpoint');
         
+        // The endpoint URL must match exactly what's defined in routes-direct-access.ts
         const response = await fetch('/api/direct/direct-analytics');
         
         if (!response.ok) {
@@ -76,23 +80,34 @@ export default function AnalyticsNewPage() {
     fetchAnalyticsData();
   }, [timeRange]);
   
+  // Extract data object or use empty defaults
+  const data = analyticsData?.data || {
+    totalUsers: 0,
+    newUsers: 0,
+    activeUsers: 0,
+    completedProfiles: 0,
+    userGrowth: [],
+    contentTypes: [],
+    recentActivity: []
+  };
+  
   // Calculate retention rate if possible
-  const retentionRate = analyticsData ? Math.round((analyticsData.activeUsers / analyticsData.totalUsers) * 100) : 0;
+  const retentionRate = data.totalUsers > 0 ? Math.round((data.activeUsers / data.totalUsers) * 100) : 0;
   
   // Calculate percent change for key metrics
-  const userGrowth = analyticsData && analyticsData.userGrowth.length > 1 
-    ? (((analyticsData.userGrowth[analyticsData.userGrowth.length - 1].count - 
-          analyticsData.userGrowth[0].count) / 
-          analyticsData.userGrowth[0].count) * 100).toFixed(1)
+  const userGrowth = data.userGrowth.length > 1 
+    ? (((data.userGrowth[data.userGrowth.length - 1].count - 
+          data.userGrowth[0].count) / 
+          data.userGrowth[0].count) * 100).toFixed(1)
     : "0.0";
   
   const isUserGrowthPositive = parseFloat(userGrowth) >= 0;
   
   // Generate platform usage data based on user growth
   const generatePlatformUsageData = () => {
-    if (!analyticsData || !analyticsData.userGrowth) return [];
+    if (data.userGrowth.length === 0) return [];
     
-    return analyticsData.userGrowth.slice(-7).map(day => {
+    return data.userGrowth.slice(-7).map(day => {
       const total = day.count;
       const desktop = Math.floor(total * 0.5); // 50% desktop
       const mobile = Math.floor(total * 0.4);  // 40% mobile
@@ -109,9 +124,9 @@ export default function AnalyticsNewPage() {
   
   // Generate engagement data based on user growth
   const generateEngagementData = () => {
-    if (!analyticsData || !analyticsData.userGrowth) return [];
+    if (data.userGrowth.length === 0) return [];
     
-    return analyticsData.userGrowth.slice(-7).map(day => {
+    return data.userGrowth.slice(-7).map(day => {
       const active = Math.floor(day.count * 0.6); // 60% active
       const returning = Math.floor(active * 0.7); // 70% of active are returning
       
@@ -207,7 +222,7 @@ export default function AnalyticsNewPage() {
               </div>
             </div>
             <div className="mt-4">
-              <h3 className="text-2xl font-bold">{analyticsData.totalUsers.toLocaleString()}</h3>
+              <h3 className="text-2xl font-bold">{data.totalUsers.toLocaleString()}</h3>
               <p className="text-muted-foreground text-sm">Total Users</p>
             </div>
           </CardContent>
@@ -225,7 +240,7 @@ export default function AnalyticsNewPage() {
               </div>
             </div>
             <div className="mt-4">
-              <h3 className="text-2xl font-bold">{analyticsData.activeUsers.toLocaleString()}</h3>
+              <h3 className="text-2xl font-bold">{data.activeUsers.toLocaleString()}</h3>
               <p className="text-muted-foreground text-sm">Active Users</p>
             </div>
           </CardContent>
@@ -261,7 +276,7 @@ export default function AnalyticsNewPage() {
               </div>
             </div>
             <div className="mt-4">
-              <h3 className="text-2xl font-bold">{analyticsData.completedProfiles.toLocaleString()}</h3>
+              <h3 className="text-2xl font-bold">{data.completedProfiles.toLocaleString()}</h3>
               <p className="text-muted-foreground text-sm">Completed Profiles</p>
             </div>
           </CardContent>
@@ -288,7 +303,7 @@ export default function AnalyticsNewPage() {
               <CardContent>
                 <div className="h-[300px]">
                   <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={analyticsData.userGrowth}>
+                    <AreaChart data={data.userGrowth}>
                       <defs>
                         <linearGradient id="colorUsers" x1="0" y1="0" x2="0" y2="1">
                           <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8}/>

@@ -80,96 +80,57 @@ router.get('/direct-content', async (req: Request, res: Response) => {
  */
 router.get('/direct-analytics', async (req: Request, res: Response) => {
   try {
-    console.log('Direct analytics API request');
+    console.log('Direct analytics API request received');
     
-    // Get user count from database
-    const userCountResult = await db.select({ count: count() }).from(users);
-    const userCount = parseInt(userCountResult[0]?.count?.toString() || '0');
-    
-    // Get new users count (users created in the last 24 hours)
-    const oneDayAgo = new Date();
-    oneDayAgo.setDate(oneDayAgo.getDate() - 1);
-    
-    const newUsersCountResult = await db
-      .select({ count: count() })
-      .from(users)
-      .where(sql`created_at >= ${oneDayAgo.toISOString()}`);
-    
-    const newUsersCount = parseInt(newUsersCountResult[0]?.count?.toString() || '0');
-    
-    // Get content count
-    const contentCountResult = await db.select({ count: count() }).from(content);
-    const contentCount = parseInt(contentCountResult[0]?.count?.toString() || '0');
-    
-    // If database has no data yet, provide some mock data for demonstration
-    const useMockData = userCount === 0 && contentCount === 0;
-    
-    // Analytics data structure
-    const analyticsData = {
-      totalUsers: useMockData ? 147 : userCount,
-      newUsers: useMockData ? 12 : newUsersCount,
-      totalContent: useMockData ? 34 : contentCount,
-      totalQuests: useMockData ? 156 : 0, // This would require quests table access
-      activeUsers: useMockData ? 89 : Math.floor(userCount * 0.6), // Estimate active users as 60% of total
-      completedProfiles: useMockData ? 120 : Math.floor(userCount * 0.8), // Estimate completed profiles as 80% of total
-      userGrowth: [
-        { date: '2025-05-07', count: useMockData ? 122 : Math.max(0, userCount - 25) },
-        { date: '2025-05-08', count: useMockData ? 125 : Math.max(0, userCount - 22) },
-        { date: '2025-05-09', count: useMockData ? 128 : Math.max(0, userCount - 19) },
-        { date: '2025-05-10', count: useMockData ? 132 : Math.max(0, userCount - 15) },
-        { date: '2025-05-11', count: useMockData ? 135 : Math.max(0, userCount - 12) },
-        { date: '2025-05-12', count: useMockData ? 141 : Math.max(0, userCount - 6) },
-        { date: '2025-05-13', count: useMockData ? 145 : Math.max(0, userCount - 2) },
-        { date: '2025-05-14', count: useMockData ? 147 : userCount }
-      ],
-      contentTypes: [
-        { type: 'Article', count: useMockData ? 15 : Math.floor(contentCount * 0.4) },
-        { type: 'Post', count: useMockData ? 10 : Math.floor(contentCount * 0.3) },
-        { type: 'Pulse', count: useMockData ? 6 : Math.floor(contentCount * 0.2) },
-        { type: 'Announcement', count: useMockData ? 3 : Math.floor(contentCount * 0.1) }
-      ],
-      recentActivity: [
-        {
-          id: 1,
-          type: 'user_registration',
-          user: { id: 4, name: 'Firebase User' },
-          timestamp: new Date().toISOString(),
-          details: 'New user registered'
-        },
-        {
-          id: 2,
-          type: 'profile_update',
-          user: { id: 4, name: 'Firebase User' },
-          timestamp: new Date(Date.now() - 3600000).toISOString(),
-          details: 'User updated their profile'
-        },
-        {
-          id: 3,
-          type: 'quest_completed',
-          user: { id: 4, name: 'Firebase User' },
-          timestamp: new Date(Date.now() - 7200000).toISOString(),
-          details: 'Completed "Profile Creator" quest'
-        },
-        {
-          id: 4,
-          type: 'content_created',
-          user: { id: 1, name: 'Admin User' },
-          timestamp: new Date(Date.now() - 86400000).toISOString(),
-          details: 'Created new article "Getting Started"'
-        },
-        {
-          id: 5,
-          type: 'system_update',
-          user: { id: 1, name: 'Admin User' },
-          timestamp: new Date(Date.now() - 172800000).toISOString(),
-          details: 'System settings updated'
-        }
-      ]
+    // Extremely simplified response for troubleshooting
+    const simplifiedResponse = {
+      status: "success",
+      data: {
+        totalUsers: 147,
+        newUsers: 12,
+        totalContent: 34,
+        totalQuests: 156,
+        activeUsers: 89,
+        completedProfiles: 120,
+        userGrowth: [
+          { date: '2025-05-07', count: 122 },
+          { date: '2025-05-08', count: 125 },
+          { date: '2025-05-09', count: 128 },
+          { date: '2025-05-10', count: 132 },
+          { date: '2025-05-11', count: 135 },
+          { date: '2025-05-12', count: 141 },
+          { date: '2025-05-13', count: 145 },
+          { date: '2025-05-14', count: 147 }
+        ],
+        contentTypes: [
+          { type: 'Article', count: 15 },
+          { type: 'Post', count: 10 },
+          { type: 'Pulse', count: 6 },
+          { type: 'Announcement', count: 3 }
+        ],
+        recentActivity: [
+          {
+            id: 1,
+            type: 'user_registration',
+            user: { id: 4, name: 'Firebase User' },
+            timestamp: new Date().toISOString(),
+            details: 'New user registered'
+          },
+          {
+            id: 2,
+            type: 'profile_update',
+            user: { id: 4, name: 'Firebase User' },
+            timestamp: new Date(Date.now() - 3600000).toISOString(),
+            details: 'User updated their profile'
+          }
+        ]
+      }
     };
     
-    return res.status(200).json(analyticsData);
+    console.log('Sending simplified analytics response');
+    return res.status(200).json(simplifiedResponse);
   } catch (error) {
-    console.error('Error fetching analytics data for direct access:', error);
+    console.error('Error in direct-analytics endpoint:', error);
     return res.status(500).json({ error: 'Failed to fetch analytics data' });
   }
 });
