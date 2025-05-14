@@ -108,6 +108,37 @@ export default function AdminUsers() {
     }
   };
   
+  // Handle user deletion
+  const handleDeleteUser = async (userId: number) => {
+    try {
+      const response = await fetch(`/api/admin/users/${userId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error("Failed to delete user");
+      }
+      
+      toast({
+        title: "User Deleted",
+        description: "User has been successfully deleted"
+      });
+      
+      // Refresh users list
+      refetch();
+    } catch (error) {
+      console.error("Delete error:", error);
+      toast({
+        title: "Delete Failed",
+        description: "There was an error deleting the user",
+        variant: "destructive"
+      });
+    }
+  };
+  
   return (
     <AdminLayout>
       <div className="p-6 space-y-6">
@@ -276,9 +307,9 @@ export default function AdminUsers() {
                                   <Shield className="h-4 w-4 mr-2" />
                                   Make Admin
                                 </DropdownMenuItem>
-                                <DropdownMenuItem>
+                                <DropdownMenuItem onSelect={() => handleDeleteUser(user.id)}>
                                   <X className="h-4 w-4 mr-2" />
-                                  Suspend Account
+                                  Delete Account
                                 </DropdownMenuItem>
                               </DropdownMenuContent>
                             </DropdownMenu>
