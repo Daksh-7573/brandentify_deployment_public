@@ -51,10 +51,20 @@ export default function AnalyticsNewPage() {
           throw new Error(`Failed to fetch analytics data: ${response.status}`);
         }
         
-        const data = await response.json();
-        console.log('Analytics data received:', data);
-        setAnalyticsData(data);
-        setError(null);
+        const responseText = await response.text();
+        console.log('Raw response:', responseText);
+        
+        // Parse the text response manually
+        let data;
+        try {
+          data = JSON.parse(responseText);
+          console.log('Analytics data received:', data);
+          setAnalyticsData(data);
+          setError(null);
+        } catch (parseError) {
+          console.error('Error parsing JSON response:', parseError);
+          throw new Error('Invalid JSON response from server');
+        }
       } catch (err) {
         console.error('Error fetching analytics data:', err);
         setError('Failed to load analytics data. Please try again later.');
