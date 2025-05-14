@@ -28,6 +28,7 @@ import messagingRoutes from "./routes-messaging";
 import enhancedUserRoutes from "./routes-enhanced-user";
 import whatIOfferRoutes from "./routes-what-i-offer";
 import profileServicesRoutes from "./routes-services-sync";
+import adminRoutes from "./routes-admin";
 import resumeParserRoutes from "./resume-routes";
 import nowboardRecommendationsRoutes from "./routes-nowboard-recommendations";
 import { resumeTestRoutes } from "./routes-resume-test";
