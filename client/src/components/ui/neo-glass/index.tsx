@@ -235,18 +235,25 @@ export const NeoGlassSparkle: React.FC<NeoGlassSparkleProps> = ({
   );
 };
 
-// Container with gradient background
+// Container with background
 interface NeoPageContainerProps {
   children: ReactNode;
   className?: string;
+  background?: 'gradient' | 'white-room' | 'mixed';
 }
 
 export const NeoPageContainer: React.FC<NeoPageContainerProps> = ({
   children,
   className,
+  background = 'gradient'
 }) => {
+  const bgClass = 
+    background === 'white-room' ? 'neo-white-room-bg' :
+    background === 'mixed' ? 'neo-mixed-bg' : 
+    'neo-page-bg';
+    
   return (
-    <div className={cn('neo-page-bg', className)}>
+    <div className={cn(bgClass, className)}>
       {children}
     </div>
   );

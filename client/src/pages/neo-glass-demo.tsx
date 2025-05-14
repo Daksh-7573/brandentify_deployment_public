@@ -11,17 +11,46 @@ import {
   NeoGlassSparkle
 } from '@/components/ui/neo-glass';
 import NeoGlassMuskAI from '@/components/musk/neo-glass-musk';
-import { Heart, Star, Sparkles, Image, LayoutGrid, MessageSquare, Bell } from 'lucide-react';
+import { Heart, Star, Sparkles, Image, LayoutGrid, MessageSquare, Bell, Monitor, PenSquare, Home } from 'lucide-react';
 
 export default function NeoGlassDemoPage() {
   const [switchOn, setSwitchOn] = useState(false);
+  const [backgroundStyle, setBackgroundStyle] = useState<'gradient' | 'white-room' | 'mixed'>('gradient');
   
   const placeholderImage = 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80';
   
   return (
-    <NeoPageContainer className="p-6 md:p-12">
+    <NeoPageContainer background={backgroundStyle} className="p-6 md:p-12">
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col gap-12">
+          {/* Background Selector */}
+          <NeoGlassCard className="p-4 flex flex-col md:flex-row items-center justify-center gap-3">
+            <span className="neo-glass-text font-medium">Background Style:</span>
+            <div className="flex gap-2">
+              <NeoGlassButton 
+                variant={backgroundStyle === 'gradient' ? 'primary' : undefined}
+                onClick={() => setBackgroundStyle('gradient')}
+              >
+                <Monitor className="w-4 h-4 mr-2" />
+                Gradient
+              </NeoGlassButton>
+              <NeoGlassButton 
+                variant={backgroundStyle === 'white-room' ? 'primary' : undefined}
+                onClick={() => setBackgroundStyle('white-room')}
+              >
+                <Home className="w-4 h-4 mr-2" />
+                White Room
+              </NeoGlassButton>
+              <NeoGlassButton 
+                variant={backgroundStyle === 'mixed' ? 'primary' : undefined}
+                onClick={() => setBackgroundStyle('mixed')}
+              >
+                <PenSquare className="w-4 h-4 mr-2" />
+                Mixed
+              </NeoGlassButton>
+            </div>
+          </NeoGlassCard>
+          >
           {/* Header Card */}
           <NeoGlassCard 
             className="flex flex-col items-center justify-center p-10 text-center relative overflow-visible"

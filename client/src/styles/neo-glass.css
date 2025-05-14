@@ -25,6 +25,9 @@
   /* Frost effect */
   --frost-texture: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0.2 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
   
+  /* Backgrounds */
+  --white-room-bg: url('@assets/backgrounds/white-room-bg.svg');
+  
   --glow-primary: 0 0 15px rgba(138, 124, 255, 0.5);
   --glow-secondary: 0 0 15px rgba(255, 124, 237, 0.5);
   --glow-tertiary: 0 0 15px rgba(124, 227, 255, 0.5);
@@ -40,6 +43,27 @@
   background-image: var(--gradient-bg);
   min-height: 100vh;
   position: relative;
+}
+
+/* White room background for page */
+.neo-white-room-bg {
+  background-image: var(--white-room-bg);
+  background-size: cover;
+  background-position: center;
+  min-height: 100vh;
+  position: relative;
+  background-attachment: fixed;
+}
+
+/* Mixed background with gradient overlay */
+.neo-mixed-bg {
+  background-image: var(--white-room-bg), var(--gradient-bg);
+  background-size: cover, cover;
+  background-position: center, center;
+  background-blend-mode: overlay;
+  min-height: 100vh;
+  position: relative;
+  background-attachment: fixed;
 }
 
 /* Basic glass card */
