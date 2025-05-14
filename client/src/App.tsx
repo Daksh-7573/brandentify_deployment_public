@@ -312,7 +312,7 @@ function Router() {
             </Suspense>
           );
           
-          const AnalyticsDashboard = lazy(() => import("@/pages/admin/analytics"));
+          const AnalyticsDashboard = lazy(() => import("@/pages/admin/analytics-new"));
           
           return <AdminAnalytics />;
         }} />
