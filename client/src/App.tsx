@@ -223,9 +223,13 @@ function Router() {
       <Route path="/admin">
         <ProtectedRoute path="/admin" component={() => {
           const AdminDashboard = lazy(() => import("@/pages/admin/index"));
+          const AdminCheck = lazy(() => import("@/middleware/admin-check").then(mod => ({ default: mod.AdminCheck })));
+          
           return (
             <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>}>
-              <AdminDashboard />
+              <AdminCheck>
+                <AdminDashboard />
+              </AdminCheck>
             </Suspense>
           );
         }} />
@@ -233,9 +237,13 @@ function Router() {
       <Route path="/admin/users">
         <ProtectedRoute path="/admin/users" component={() => {
           const AdminUsers = lazy(() => import("@/pages/admin/users"));
+          const AdminCheck = lazy(() => import("@/middleware/admin-check").then(mod => ({ default: mod.AdminCheck })));
+          
           return (
             <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>}>
-              <AdminUsers />
+              <AdminCheck>
+                <AdminUsers />
+              </AdminCheck>
             </Suspense>
           );
         }} />
@@ -243,12 +251,15 @@ function Router() {
       <Route path="/admin/content">
         <ProtectedRoute path="/admin/content" component={() => {
           const AdminLayout = lazy(() => import("@/pages/admin/layout"));
+          const AdminCheck = lazy(() => import("@/middleware/admin-check").then(mod => ({ default: mod.AdminCheck })));
           
           const AdminContent = () => (
             <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>}>
-              <AdminLayout>
-                <ContentManagement />
-              </AdminLayout>
+              <AdminCheck>
+                <AdminLayout>
+                  <ContentManagement />
+                </AdminLayout>
+              </AdminCheck>
             </Suspense>
           );
           
