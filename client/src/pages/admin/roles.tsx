@@ -1,5 +1,4 @@
 import { useState } from "react";
-import AdminLayout from "./layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -263,7 +262,6 @@ export default function RolesPage() {
   };
   
   return (
-    <AdminLayout>
       <div className="p-6">
         <div className="flex justify-between items-center mb-6">
           <div>
@@ -706,6 +704,5 @@ export default function RolesPage() {
           </Card>
         </div>
       </div>
-    </AdminLayout>
   );
 }

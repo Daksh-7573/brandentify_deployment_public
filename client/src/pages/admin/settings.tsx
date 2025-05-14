@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Slider } from "@/components/ui/slider";
 import { toast } from "@/hooks/use-toast";
@@ -138,7 +139,6 @@ export default function SettingsPage() {
   };
   
   return (
-    <AdminLayout>
       <div className="p-6">
         <div className="flex justify-between items-center mb-6">
           <div>
@@ -792,6 +792,5 @@ export default function SettingsPage() {
           </TabsContent>
         </Tabs>
       </div>
-    </AdminLayout>
   );
 }
