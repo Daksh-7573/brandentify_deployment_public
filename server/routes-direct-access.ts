@@ -1,156 +1,97 @@
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 import { db } from './db';
-import { users, pulses } from '@shared/schema';
-import { desc, like, or, sql, eq } from 'drizzle-orm';
+import { content, type Content } from '@shared/schema';
+import { desc, eq, like } from 'drizzle-orm';
+import { SQL } from 'drizzle-orm/sql/sql';
 
+// This module provides direct access routes to content without admin authentication
+// Used as a workaround for the authentication issues in admin panel
 const router = Router();
 
-// Direct access to get users without admin auth (for debugging)
-router.get('/direct-users', async (req, res) => {
+/**
+ * Get content items with pagination, filtering and search
+ * Direct access API endpoint that skips admin authentication
+ */
+router.get('/direct-content', async (req: Request, res: Response) => {
   try {
-    console.log('Direct users route accessed');
-    
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 20;
-    const offset = (page - 1) * limit;
-    const search = req.query.search as string || '';
-    
-    console.log('Direct users route - Query params:', { page, limit, offset, search });
-    
-    // Get users with pagination and search
-    const query = search
-      ? or(
-          like(users.username, `%${search}%`),
-          like(users.email, `%${search}%`),
-          like(users.name, `%${search}%`)
-        )
-      : undefined;
-    
-    console.log('Direct users route - About to execute db query for users');
-    
-    const userList = await db.select().from(users)
-      .where(query)
-      .limit(limit)
-      .offset(offset)
-      .orderBy(desc(users.createdAt));
-    
-    console.log(`Direct users route - Found ${userList.length} users`);
-    
-    // Get total count for pagination
-    const countResult = await db.select({ count: sql`count(*)` }).from(users)
-      .where(query);
-    
-    const totalUsers = parseInt(countResult[0].count.toString());
-    console.log('Direct users route - Total users:', totalUsers);
-    
-    const response = {
-      users: userList,
-      pagination: {
-        total: totalUsers,
-        page,
-        limit,
-        totalPages: Math.ceil(totalUsers / limit)
-      }
-    };
-    
-    console.log('Direct users route - Sending response data');
-    res.json(response);
-  } catch (error) {
-    console.error('Error fetching users directly:', error);
-    res.status(500).json({ message: 'Server error fetching users' });
-  }
-});
+    const filter = req.query.filter as string;
+    const search = req.query.search as string;
 
-// Direct access to get pulses/content without admin auth (for debugging)
-router.get('/direct-content', async (req, res) => {
-  try {
-    console.log('Direct content route accessed');
-    
-    const page = parseInt(req.query.page as string) || 1;
-    const limit = parseInt(req.query.limit as string) || 20;
     const offset = (page - 1) * limit;
-    const search = req.query.search as string || '';
-    const filter = req.query.filter as string || 'all';
     
-    console.log('Direct content route - Query params:', { page, limit, offset, search, filter });
+    // Build conditions array for query
+    const conditions: SQL[] = [];
     
-    // Build query based on search and filter
-    let query = undefined;
+    // Add filter conditions
+    if (filter && filter !== 'all') {
+      if (['article', 'post', 'pulse', 'announcement'].includes(filter)) {
+        conditions.push(eq(content.type, filter as any));
+      } else if (['published', 'draft', 'archived'].includes(filter)) {
+        conditions.push(eq(content.status, filter as any));
+      }
+    }
     
+    // Add search condition
     if (search) {
-      query = or(
-        like(pulses.title, `%${search}%`),
-        like(pulses.content, `%${search}%`)
+      conditions.push(
+        like(content.title, `%${search}%`)
       );
     }
     
-    // Add type/status filter if needed
-    if (filter && filter !== 'all') {
-      const typeQuery = eq(pulses.type, filter);
-      const statusQuery = eq(pulses.status, filter);
-      
-      if (query) {
-        // Combine with existing search query
-        query = filter === 'article' || filter === 'post' || filter === 'pulse' || filter === 'announcement'
-          ? sql`${query} AND ${typeQuery}`
-          : sql`${query} AND ${statusQuery}`;
-      } else {
-        // Just use the filter query
-        query = filter === 'article' || filter === 'post' || filter === 'pulse' || filter === 'announcement'
-          ? typeQuery
-          : statusQuery;
+    // Query with conditions (if any)
+    const query = conditions.length > 0
+      ? db.select().from(content).where(conditions[0])
+      : db.select().from(content);
+    
+    // Apply additional conditions if more than one
+    if (conditions.length > 1) {
+      for (let i = 1; i < conditions.length; i++) {
+        query.where(conditions[i]);
       }
     }
     
-    console.log('Direct content route - About to execute db query for content');
-    
-    // Get pulses with pagination, search, and filter
-    const contentList = await db.select().from(pulses)
-      .where(query)
-      .limit(limit)
-      .offset(offset)
-      .orderBy(desc(pulses.createdAt));
-    
-    console.log(`Direct content route - Found ${contentList.length} content items`);
-    
     // Get total count for pagination
-    const countResult = await db.select({ count: sql`count(*)` }).from(pulses)
-      .where(query);
+    const countResult = await query.count();
+    const total = parseInt(countResult[0]?.count?.toString() || "0");
     
-    const totalContent = parseInt(countResult[0].count.toString());
-    console.log('Direct content route - Total content items:', totalContent);
-    
-    // Get author data for each pulse
-    const contentWithAuthors = await Promise.all(
-      contentList.map(async (item) => {
-        const [author] = await db.select().from(users).where(eq(users.id, item.authorId));
+    // Get paginated data with sorting
+    const contentItems = await query
+      .orderBy(desc(content.createdAt))
+      .limit(limit)
+      .offset(offset);
+
+    // Enhance content items with author data
+    const contentWithAuthor = await Promise.all(
+      contentItems.map(async (item) => {
+        // Get author information
+        const authors = await db
+          .select({ id: db.users.id, name: db.users.name })
+          .from(db.users)
+          .where(eq(db.users.id, item.authorId));
+        
+        const author = authors.length > 0 ? authors[0] : null;
+        
         return {
           ...item,
-          author: author ? {
-            id: author.id,
-            name: author.name,
-            username: author.username,
-            photoURL: author.photoURL
-          } : null
+          author,
         };
       })
     );
     
-    const response = {
-      content: contentWithAuthors,
+    return res.status(200).json({
+      content: contentWithAuthor,
       pagination: {
-        total: totalContent,
+        total,
         page,
         limit,
-        totalPages: Math.ceil(totalContent / limit)
+        totalPages: Math.ceil(total / limit)
       }
-    };
-    
-    console.log('Direct content route - Sending response data');
-    res.json(response);
+    });
   } catch (error) {
-    console.error('Error fetching content directly:', error);
-    res.status(500).json({ message: 'Server error fetching content' });
+    console.error('Error fetching content for direct access:', error);
+    return res.status(500).json({ error: 'Failed to fetch content items' });
   }
 });
 

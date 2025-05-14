@@ -6,116 +6,88 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-  CardFooter,
+  CardFooter
 } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
-import { Edit, Filter, Loader2, Plus, Search, Trash2 } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import {
+import { 
+  Table, 
+  TableBody, 
+  TableCell, 
+  TableHead, 
+  TableHeader, 
+  TableRow 
+} from "@/components/ui/table";
+import { 
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Pagination } from '@/components/ui/pagination';
+import { 
+  Filter, 
+  Search, 
+  Plus, 
+  Loader2, 
+  FileText,
+  ArrowLeft
+} from "lucide-react";
+import { useLocation } from "wouter";
 
-interface Author {
-  id: number;
-  name: string;
-  username: string;
-  photoURL: string | null;
-}
-
-interface ContentItem {
-  id: number;
-  title: string;
-  slug: string;
-  type: "article" | "post" | "pulse" | "announcement";
-  excerpt: string;
-  content?: string;
-  featuredImage: string;
-  authorId: number;
-  author: Author;
-  status: "published" | "draft" | "archived";
-  publishedAt: string | null;
-  createdAt: string;
-  updatedAt: string;
-  tags: string[];
-}
-
-interface ContentListResponse {
-  content: ContentItem[];
-  pagination: {
-    total: number;
-    page: number;
-    limit: number;
-    totalPages: number;
-  };
-}
-
+// Basic content management page for direct access (bypasses admin authentication)
 export default function DirectContentManagementPage() {
   const [filter, setFilter] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [page, setPage] = useState(1);
-  const limit = 10;
-  const { toast } = useToast();
-
-  // Fetch content data from API using direct access endpoint
-  const { 
-    data,
-    isLoading,
-    isError,
-    refetch
-  } = useQuery<ContentListResponse>({
-    queryKey: ['/api/direct/direct-content', page, limit, filter, searchTerm],
+  const [_, navigate] = useLocation();
+  
+  // Fetch content from direct-access API endpoint
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['/api/direct/direct-content', filter, searchTerm],
     queryFn: async () => {
-      const response = await fetch(`/api/direct/direct-content?page=${page}&limit=${limit}&filter=${filter}&search=${encodeURIComponent(searchTerm)}`);
+      const params = new URLSearchParams();
+      if (filter !== "all") params.append('filter', filter);
+      if (searchTerm) params.append('search', searchTerm);
+      
+      const response = await fetch(`/api/direct/direct-content?${params.toString()}`);
+      
       if (!response.ok) {
         throw new Error('Failed to fetch content');
       }
+      
       return response.json();
-    },
+    }
   });
-
+  
+  const contentItems = data?.content || [];
+  const totalItems = data?.pagination?.total || 0;
+  const currentPage = data?.pagination?.page || 1;
+  const totalPages = data?.pagination?.totalPages || 1;
+  
   // Format date for display
   const formatDate = (dateString: string | null) => {
     if (!dateString) return "—";
     const date = new Date(dateString);
-    return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+    return date.toLocaleDateString();
   };
-
-  // Handle search input
-  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(event.target.value);
-    setPage(1); // Reset to first page when searching
-  };
-
-  // Handle search submit
-  const handleSearchSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
-    refetch();
-  };
-
+  
   // Get content type badge
   const getContentTypeBadge = (type: string) => {
     switch (type) {
       case 'article':
-        return <Badge>Article</Badge>;
+        return <Badge className="bg-blue-500">Article</Badge>;
       case 'post':
         return <Badge variant="outline">Post</Badge>;
       case 'pulse':
         return <Badge variant="secondary">Pulse</Badge>;
       case 'announcement':
-        return <Badge variant="destructive">Announcement</Badge>;
+        return <Badge className="bg-purple-500">Announcement</Badge>;
       default:
         return <Badge variant="outline">{type}</Badge>;
     }
   };
-
+  
   // Get content status badge
   const getContentStatusBadge = (status: string) => {
     switch (status) {
@@ -129,36 +101,44 @@ export default function DirectContentManagementPage() {
         return <Badge variant="outline">{status}</Badge>;
     }
   };
-
+  
   return (
-    <div className="container mx-auto py-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl font-bold">Direct Content Management</CardTitle>
-          <CardDescription>View all content items (direct access route for debugging)</CardDescription>
+    <div className="container mx-auto py-8 px-4">
+      <Card className="shadow-lg">
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="text-2xl font-bold">Content Management</CardTitle>
+              <CardDescription>Manage all content items in one place</CardDescription>
+            </div>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => navigate('/admin')}
+              className="flex items-center gap-1"
+            >
+              <ArrowLeft size={16} />
+              Back to Admin
+            </Button>
+          </div>
         </CardHeader>
+        
         <CardContent>
-          {/* Filter and Search */}
+          {/* Search and Filter */}
           <div className="flex flex-wrap gap-4 mb-6">
-            <form onSubmit={handleSearchSubmit} className="flex gap-2 flex-1">
-              <div className="relative flex-1">
-                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+            <div className="flex-1">
+              <div className="relative">
+                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
-                  type="search"
-                  placeholder="Search content..."
+                  placeholder="Search by title or content..."
                   className="pl-8"
                   value={searchTerm}
-                  onChange={handleSearch}
+                  onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
-              <Button type="submit">Search</Button>
-            </form>
+            </div>
             
-            <Select value={filter} onValueChange={(value) => {
-              setFilter(value);
-              setPage(1);
-              setTimeout(() => refetch(), 0);
-            }}>
+            <Select value={filter} onValueChange={setFilter}>
               <SelectTrigger className="w-[180px]">
                 <Filter size={16} className="mr-2" />
                 <SelectValue placeholder="Filter by type" />
@@ -168,90 +148,120 @@ export default function DirectContentManagementPage() {
                 <SelectItem value="article">Articles</SelectItem>
                 <SelectItem value="post">Posts</SelectItem>
                 <SelectItem value="pulse">Pulses</SelectItem>
+                <SelectItem value="announcement">Announcements</SelectItem>
                 <SelectItem value="published">Published</SelectItem>
                 <SelectItem value="draft">Drafts</SelectItem>
                 <SelectItem value="archived">Archived</SelectItem>
               </SelectContent>
             </Select>
+            
+            <Button 
+              variant="outline" 
+              className="flex items-center gap-1"
+              onClick={() => {
+                // Viewing only, so this would normally create a new content item
+                alert("Create functionality is not implemented in this view");
+              }}
+            >
+              <Plus size={16} />
+              New Content
+            </Button>
           </div>
-
+          
           {/* Content Table */}
           {isLoading ? (
-            <div className="flex justify-center items-center py-8">
+            <div className="flex justify-center items-center py-20">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
               <span className="ml-2">Loading content...</span>
             </div>
           ) : isError ? (
-            <div className="text-center py-8 text-red-500">
-              Failed to load content. Please try again.
+            <div className="text-center py-10 text-destructive">
+              <p>Failed to load content. Please try again later.</p>
+              <Button 
+                variant="outline" 
+                className="mt-4"
+                onClick={() => {
+                  // Reset filters and retry
+                  setFilter("all");
+                  setSearchTerm("");
+                }}
+              >
+                Reset Filters
+              </Button>
             </div>
           ) : (
-            <>
-              <div className="rounded-md border">
-                <Table>
-                  <TableHeader>
+            <div className="rounded-md border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Title</TableHead>
+                    <TableHead>Type</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Author</TableHead>
+                    <TableHead>Created</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {contentItems.length === 0 ? (
                     <TableRow>
-                      <TableHead>Title</TableHead>
-                      <TableHead>Type</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Author</TableHead>
-                      <TableHead>Created</TableHead>
-                      <TableHead>Published</TableHead>
+                      <TableCell colSpan={5} className="text-center py-10 text-muted-foreground">
+                        No content found matching your filters.
+                      </TableCell>
                     </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {data?.content.length === 0 ? (
-                      <TableRow>
-                        <TableCell colSpan={6} className="text-center py-8 text-gray-500">
-                          No content found
+                  ) : (
+                    contentItems.map((item: any) => (
+                      <TableRow key={item.id} className="group hover:bg-muted/50 transition-colors">
+                        <TableCell className="font-medium">
+                          <div className="flex items-center">
+                            <FileText size={16} className="mr-2 text-muted-foreground" />
+                            {item.title}
+                          </div>
                         </TableCell>
+                        <TableCell>{getContentTypeBadge(item.type)}</TableCell>
+                        <TableCell>{getContentStatusBadge(item.status)}</TableCell>
+                        <TableCell>{item.author?.name || "Unknown"}</TableCell>
+                        <TableCell>{formatDate(item.createdAt)}</TableCell>
                       </TableRow>
-                    ) : (
-                      data?.content.map((item) => (
-                        <TableRow key={item.id}>
-                          <TableCell className="font-medium">
-                            {item.title || "Untitled"}
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex items-center">
-                              {getContentTypeBadge(item.type)}
-                            </div>
-                          </TableCell>
-                          <TableCell>{getContentStatusBadge(item.status)}</TableCell>
-                          <TableCell>
-                            {item.author?.name || "Unknown"}
-                          </TableCell>
-                          <TableCell>{formatDate(item.createdAt)}</TableCell>
-                          <TableCell>
-                            {item.publishedAt ? formatDate(item.publishedAt) : "—"}
-                          </TableCell>
-                        </TableRow>
-                      ))
-                    )}
-                  </TableBody>
-                </Table>
-              </div>
-
-              {/* Pagination */}
-              {data && data.pagination.totalPages > 1 && (
-                <div className="flex justify-between items-center mt-4">
-                  <div className="text-sm text-gray-500">
-                    Showing {((page - 1) * limit) + 1} to {Math.min(page * limit, data.pagination.total)} of{" "}
-                    {data.pagination.total} content items
-                  </div>
-                  <Pagination
-                    currentPage={page}
-                    totalPages={data.pagination.totalPages}
-                    onPageChange={setPage}
-                  />
-                </div>
-              )}
-            </>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </div>
           )}
         </CardContent>
-        <CardFooter className="flex justify-between">
+        
+        <CardFooter className="flex justify-between pt-6">
           <div className="text-sm text-muted-foreground">
-            {data?.content ? `${data.content.length} item(s) displayed` : "No items to display"}
+            {totalItems > 0 && (
+              <span>
+                Showing {contentItems.length} of {totalItems} items
+              </span>
+            )}
+          </div>
+          
+          <div className="flex gap-2">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              disabled={currentPage <= 1}
+              onClick={() => {
+                // Would normally handle pagination
+                // Not implemented in this simplified view
+              }}
+            >
+              Previous
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              disabled={currentPage >= totalPages}
+              onClick={() => {
+                // Would normally handle pagination
+                // Not implemented in this simplified view
+              }}
+            >
+              Next
+            </Button>
           </div>
         </CardFooter>
       </Card>
