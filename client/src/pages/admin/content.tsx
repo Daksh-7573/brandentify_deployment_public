@@ -230,6 +230,12 @@ export default function ContentManagementPage() {
                   <Input id="newTitle" name="newTitle" required />
                 </div>
                 
+                <div className="space-y-2">
+                  <Label htmlFor="newSlug">Slug</Label>
+                  <Input id="newSlug" name="newSlug" required placeholder="content-url-slug" />
+                  <p className="text-xs text-muted-foreground">URL-friendly version of the title (e.g., "my-article-title")</p>
+                </div>
+                
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="newType">Type</Label>
@@ -238,9 +244,30 @@ export default function ContentManagementPage() {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="article">Article</SelectItem>
-                        <SelectItem value="post">Post</SelectItem>
-                        <SelectItem value="pulse">Pulse</SelectItem>
+                        <SelectItem value="article">
+                          <div className="flex items-center">
+                            <FileText size={14} className="mr-2" />
+                            Article
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="post">
+                          <div className="flex items-center">
+                            <MessageSquare size={14} className="mr-2" />
+                            Post
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="pulse">
+                          <div className="flex items-center">
+                            <BellRing size={14} className="mr-2" />
+                            Pulse
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="announcement">
+                          <div className="flex items-center">
+                            <AlertCircle size={14} className="mr-2" />
+                            Announcement
+                          </div>
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -261,21 +288,32 @@ export default function ContentManagementPage() {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="newAuthor">Author</Label>
-                  <Input id="newAuthor" name="newAuthor" required />
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="newFeatured">Featured Content</Label>
-                  <Switch id="newFeatured" name="newFeatured" />
+                  <Label htmlFor="newAuthorId">Author ID</Label>
+                  <Input id="newAuthorId" name="newAuthorId" type="number" required placeholder="1" />
+                  <p className="text-xs text-muted-foreground">User ID of the content author</p>
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="newBody">Content Body</Label>
+                  <Label htmlFor="newTags">Tags</Label>
+                  <Input id="newTags" name="newTags" placeholder="tag1, tag2, tag3" />
+                  <p className="text-xs text-muted-foreground">Comma-separated list of tags</p>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="newExcerpt">Excerpt</Label>
                   <Textarea 
-                    id="newBody"
-                    name="newBody"
-                    className="min-h-[150px]"
+                    id="newExcerpt"
+                    name="newExcerpt"
+                    placeholder="Brief summary of the content..."
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="newFeaturedImage">Featured Image URL</Label>
+                  <Input 
+                    id="newFeaturedImage"
+                    name="newFeaturedImage"
+                    placeholder="https://example.com/image.jpg"
                   />
                 </div>
                 
