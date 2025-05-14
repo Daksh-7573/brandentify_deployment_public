@@ -141,6 +141,15 @@ export default function ContentManagementPage() {
   const handleEditSave = () => {
     if (!currentItem) return;
     
+    // Get tags input (if we had a tags editor in the form)
+    const tagsInput = document.querySelector('input[name="tags"]') as HTMLInputElement;
+    let tags = currentItem.tags;
+    
+    // If we have a tags input with a value, parse it into an array
+    if (tagsInput?.value) {
+      tags = tagsInput.value.split(',').map(tag => tag.trim()).filter(tag => tag !== '');
+    }
+    
     // Get form data from the form elements
     const formData = {
       id: currentItem.id,
@@ -149,7 +158,8 @@ export default function ContentManagementPage() {
       type: (document.querySelector('select[name="type"]') as HTMLSelectElement)?.value as "article" | "post" | "pulse" | "announcement",
       status: (document.querySelector('select[name="status"]') as HTMLSelectElement)?.value as "published" | "draft" | "archived",
       excerpt: (document.querySelector('textarea[name="excerpt"]') as HTMLTextAreaElement)?.value,
-      featuredImage: (document.querySelector('input[name="featuredImage"]') as HTMLInputElement)?.value
+      featuredImage: (document.querySelector('input[name="featuredImage"]') as HTMLInputElement)?.value,
+      tags: tags
     };
     
     editMutation.mutate(formData);
@@ -186,16 +196,24 @@ export default function ContentManagementPage() {
     event.preventDefault();
     const form = event.target as HTMLFormElement;
     
+    // Get tags as an array from comma-separated string
+    const tagsString = (form.querySelector('input[name="newTags"]') as HTMLInputElement)?.value || '';
+    const tags = tagsString.split(',').map(tag => tag.trim()).filter(tag => tag !== '');
+    
     const newContent = {
       title: (form.querySelector('input[name="newTitle"]') as HTMLInputElement)?.value,
-      type: (form.querySelector('select[name="newType"]') as HTMLSelectElement)?.value as "article" | "post" | "pulse",
-      author: (form.querySelector('input[name="newAuthor"]') as HTMLInputElement)?.value,
+      slug: (form.querySelector('input[name="newSlug"]') as HTMLInputElement)?.value,
+      type: (form.querySelector('select[name="newType"]') as HTMLSelectElement)?.value as "article" | "post" | "pulse" | "announcement",
+      authorId: parseInt((form.querySelector('input[name="newAuthorId"]') as HTMLInputElement)?.value || "1"),
       status: (form.querySelector('select[name="newStatus"]') as HTMLSelectElement)?.value as "published" | "draft" | "archived",
-      featured: (form.querySelector('input[name="newFeatured"]') as HTMLInputElement)?.checked
+      excerpt: (form.querySelector('textarea[name="newExcerpt"]') as HTMLTextAreaElement)?.value,
+      featuredImage: (form.querySelector('input[name="newFeaturedImage"]') as HTMLInputElement)?.value,
+      tags: tags
     };
     
     createMutation.mutate(newContent);
     form.reset();
+    setIsCreateDialogOpen(false);
   };
   
   // Create content dialog state
@@ -607,20 +625,28 @@ export default function ContentManagementPage() {
                                   
                                   <div className="space-y-2">
                                     <Label>Tags</Label>
-                                    <div className="p-2 border rounded-md">
-                                      <div className="flex flex-wrap gap-2">
-                                        {currentItem.tags && currentItem.tags.length > 0 ? (
-                                          currentItem.tags.map((tag, index) => (
-                                            <Badge key={index} variant="secondary">
-                                              <Tag size={12} className="mr-1" />
-                                              {tag}
-                                            </Badge>
-                                          ))
-                                        ) : (
-                                          <div className="text-sm text-muted-foreground">No tags</div>
-                                        )}
+                                    {isEditing ? (
+                                      <Input 
+                                        name="tags"
+                                        defaultValue={currentItem.tags ? currentItem.tags.join(', ') : ''}
+                                        placeholder="tag1, tag2, tag3"
+                                      />
+                                    ) : (
+                                      <div className="p-2 border rounded-md">
+                                        <div className="flex flex-wrap gap-2">
+                                          {currentItem.tags && currentItem.tags.length > 0 ? (
+                                            currentItem.tags.map((tag, index) => (
+                                              <Badge key={index} variant="secondary">
+                                                <Tag size={12} className="mr-1" />
+                                                {tag}
+                                              </Badge>
+                                            ))
+                                          ) : (
+                                            <div className="text-sm text-muted-foreground">No tags</div>
+                                          )}
+                                        </div>
                                       </div>
-                                    </div>
+                                    )}
                                   </div>
                                   
                                   <div className="space-y-2">
