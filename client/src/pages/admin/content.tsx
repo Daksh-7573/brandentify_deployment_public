@@ -10,8 +10,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { BellRing, FileText, MessageSquare, Trash2, User, Edit, Plus, Eye, MoreHorizontal, Filter } from "lucide-react";
+import { BellRing, FileText, MessageSquare, Trash2, User, Edit, Plus, Eye, MoreHorizontal, Filter, AlertCircle, Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // Types for content items
 interface ContentItem {
@@ -25,66 +28,27 @@ interface ContentItem {
   featured: boolean;
 }
 
-// Mock data for demonstration
-const mockContent: ContentItem[] = [
-  {
-    id: 1,
-    title: "Introduction to Brandentifier",
-    type: "article",
-    author: "Admin User",
-    status: "published",
-    createdAt: "2025-05-12T09:30:00Z",
-    updatedAt: "2025-05-12T10:45:00Z",
-    featured: true
-  },
-  {
-    id: 2,
-    title: "New UI Features Released",
-    type: "post",
-    author: "Marketing Team",
-    status: "published",
-    createdAt: "2025-05-11T14:22:00Z",
-    updatedAt: "2025-05-11T15:30:00Z",
-    featured: false
-  },
-  {
-    id: 3,
-    title: "Upcoming Webinar Announcement",
-    type: "pulse",
-    author: "Events Manager",
-    status: "draft",
-    createdAt: "2025-05-10T11:15:00Z",
-    updatedAt: "2025-05-10T11:15:00Z",
-    featured: false
-  },
-  {
-    id: 4,
-    title: "Career Growth Strategies",
-    type: "article",
-    author: "Career Expert",
-    status: "published",
-    createdAt: "2025-05-09T08:45:00Z",
-    updatedAt: "2025-05-09T16:20:00Z",
-    featured: true
-  },
-  {
-    id: 5,
-    title: "Platform Maintenance Notice",
-    type: "post",
-    author: "System Admin",
-    status: "archived",
-    createdAt: "2025-05-08T17:30:00Z",
-    updatedAt: "2025-05-08T18:15:00Z",
-    featured: false
-  }
-];
+// Fetch content data from API instead of using mock data
 
 export default function ContentManagementPage() {
-  const [content, setContent] = useState<ContentItem[]>(mockContent);
   const [filter, setFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [currentItem, setCurrentItem] = useState<ContentItem | null>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const queryClient = useQueryClient();
+  
+  // Fetch content data from API
+  const { 
+    data: contentData, 
+    isLoading: contentLoading, 
+    error: contentError 
+  } = useQuery({
+    queryKey: ['/api/admin/content'],
+    queryFn: () => apiRequest('/api/admin/content')
+  });
+  
+  // Use real data when available
+  const content = contentData?.data || [];
   
   // Filter content based on selected type and search query
   const filteredContent = content.filter(item => {
@@ -106,27 +70,124 @@ export default function ContentManagementPage() {
     });
   };
   
-  // Delete content item
+  // Delete content item mutation
+  const deleteMutation = useMutation({
+    mutationFn: (id: number) => apiRequest(`/api/admin/content/${id}`, { method: 'DELETE' }),
+    onSuccess: () => {
+      // Invalidate and refetch content data
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/content'] });
+      toast({
+        title: "Content Deleted",
+        description: "The content has been successfully removed.",
+        variant: "default"
+      });
+    },
+    onError: (error) => {
+      console.error("Error deleting content:", error);
+      toast({
+        title: "Error",
+        description: "Failed to delete content. Please try again.",
+        variant: "destructive"
+      });
+    }
+  });
+  
+  // Handle delete content
   const handleDelete = (id: number) => {
-    // In a real implementation, this would make an API call
-    setContent(prevContent => prevContent.filter(item => item.id !== id));
-    toast({
-      title: "Content Deleted",
-      description: "The content has been successfully removed.",
-      variant: "default"
-    });
+    deleteMutation.mutate(id);
   };
   
-  // Edit content item (in a real implementation, this would update the item)
+  // Edit content item mutation
+  const editMutation = useMutation({
+    mutationFn: (data: Partial<ContentItem>) => 
+      apiRequest(`/api/admin/content/${data.id}`, { 
+        method: 'PUT',
+        body: JSON.stringify(data) 
+      }),
+    onSuccess: () => {
+      // Invalidate and refetch content data
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/content'] });
+      setIsEditing(false);
+      setCurrentItem(null);
+      toast({
+        title: "Changes Saved",
+        description: "Content has been updated successfully.",
+        variant: "default"
+      });
+    },
+    onError: (error) => {
+      console.error("Error updating content:", error);
+      toast({
+        title: "Error",
+        description: "Failed to update content. Please try again.",
+        variant: "destructive"
+      });
+    }
+  });
+
+  // Handle edit content form submission
   const handleEditSave = () => {
-    setIsEditing(false);
-    toast({
-      title: "Changes Saved",
-      description: "Content has been updated successfully.",
-      variant: "default"
-    });
+    if (!currentItem) return;
+    
+    // Get form data from the form elements
+    const formData = {
+      id: currentItem.id,
+      title: (document.querySelector('input[name="title"]') as HTMLInputElement)?.value,
+      type: (document.querySelector('select[name="type"]') as HTMLSelectElement)?.value as "article" | "post" | "pulse",
+      status: (document.querySelector('select[name="status"]') as HTMLSelectElement)?.value as "published" | "draft" | "archived",
+      author: (document.querySelector('input[name="author"]') as HTMLInputElement)?.value,
+      featured: (document.querySelector('input[name="featured"]') as HTMLInputElement)?.checked
+    };
+    
+    editMutation.mutate(formData);
   };
   
+  // Create new content mutation
+  const createMutation = useMutation({
+    mutationFn: (data: Omit<ContentItem, 'id' | 'createdAt' | 'updatedAt'>) => 
+      apiRequest('/api/admin/content', { 
+        method: 'POST',
+        body: JSON.stringify(data) 
+      }),
+    onSuccess: () => {
+      // Invalidate and refetch content data
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/content'] });
+      toast({
+        title: "Content Created",
+        description: "New content has been created successfully.",
+        variant: "default"
+      });
+    },
+    onError: (error) => {
+      console.error("Error creating content:", error);
+      toast({
+        title: "Error",
+        description: "Failed to create content. Please try again.",
+        variant: "destructive"
+      });
+    }
+  });
+
+  // Handle create content form submission
+  const handleCreateContent = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const form = event.target as HTMLFormElement;
+    
+    const newContent = {
+      title: (form.querySelector('input[name="newTitle"]') as HTMLInputElement)?.value,
+      type: (form.querySelector('select[name="newType"]') as HTMLSelectElement)?.value as "article" | "post" | "pulse",
+      author: (form.querySelector('input[name="newAuthor"]') as HTMLInputElement)?.value,
+      status: (form.querySelector('select[name="newStatus"]') as HTMLSelectElement)?.value as "published" | "draft" | "archived",
+      featured: (form.querySelector('input[name="newFeatured"]') as HTMLInputElement)?.checked
+    };
+    
+    createMutation.mutate(newContent);
+    form.reset();
+  };
+  
+  // Create content dialog state
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+
   return (
     <AdminLayout>
       <div className="p-6">
@@ -135,10 +196,99 @@ export default function ContentManagementPage() {
             <h1 className="text-2xl font-bold">Content Management</h1>
             <p className="text-muted-foreground">Manage all content across the platform</p>
           </div>
-          <Button className="flex items-center gap-2">
-            <Plus size={16} />
-            Create New Content
-          </Button>
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button className="flex items-center gap-2" onClick={() => setIsCreateDialogOpen(true)}>
+                <Plus size={16} />
+                Create New Content
+              </Button>
+            </SheetTrigger>
+            <SheetContent className="sm:max-w-xl">
+              <SheetHeader>
+                <SheetTitle>Create New Content</SheetTitle>
+                <SheetDescription>
+                  Add a new content item to the platform.
+                </SheetDescription>
+              </SheetHeader>
+              
+              <form onSubmit={handleCreateContent} className="mt-6 space-y-6">
+                <div className="space-y-2">
+                  <Label htmlFor="newTitle">Title</Label>
+                  <Input id="newTitle" name="newTitle" required />
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="newType">Type</Label>
+                    <Select name="newType" defaultValue="article">
+                      <SelectTrigger id="newType">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="article">Article</SelectItem>
+                        <SelectItem value="post">Post</SelectItem>
+                        <SelectItem value="pulse">Pulse</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="newStatus">Status</Label>
+                    <Select name="newStatus" defaultValue="draft">
+                      <SelectTrigger id="newStatus">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="published">Published</SelectItem>
+                        <SelectItem value="draft">Draft</SelectItem>
+                        <SelectItem value="archived">Archived</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="newAuthor">Author</Label>
+                  <Input id="newAuthor" name="newAuthor" required />
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="newFeatured">Featured Content</Label>
+                  <Switch id="newFeatured" name="newFeatured" />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="newBody">Content Body</Label>
+                  <Textarea 
+                    id="newBody"
+                    name="newBody"
+                    className="min-h-[150px]"
+                  />
+                </div>
+                
+                <div className="flex justify-end gap-2 pt-4">
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    onClick={() => setIsCreateDialogOpen(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button 
+                    type="submit" 
+                    disabled={createMutation.isPending}
+                  >
+                    {createMutation.isPending ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Creating...
+                      </>
+                    ) : "Create Content"}
+                  </Button>
+                </div>
+              </form>
+            </SheetContent>
+          </Sheet>
         </div>
         
         <Card className="mb-6">
@@ -181,7 +331,13 @@ export default function ContentManagementPage() {
           <CardHeader>
             <CardTitle>Content Items</CardTitle>
             <CardDescription>
-              {filteredContent.length} items found
+              {contentLoading ? (
+                <Skeleton className="h-4 w-24" />
+              ) : contentError ? (
+                "Error loading items"
+              ) : (
+                `${filteredContent.length} items found`
+              )}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -198,44 +354,98 @@ export default function ContentManagementPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredContent.map((item) => (
-                    <tr key={item.id} className="border-b hover:bg-muted/50">
-                      <td className="py-3 px-4">
-                        <div className="font-medium">{item.title}</div>
-                        {item.featured && <Badge className="mt-1">Featured</Badge>}
+                  {contentLoading ? (
+                    // Loading skeleton
+                    Array.from({length: 5}).map((_, index) => (
+                      <tr key={index} className="border-b">
+                        <td className="py-3 px-4">
+                          <Skeleton className="h-6 w-36" />
+                        </td>
+                        <td className="py-3 px-4">
+                          <Skeleton className="h-6 w-20" />
+                        </td>
+                        <td className="py-3 px-4">
+                          <Skeleton className="h-6 w-24" />
+                        </td>
+                        <td className="py-3 px-4">
+                          <Skeleton className="h-6 w-20" />
+                        </td>
+                        <td className="py-3 px-4">
+                          <Skeleton className="h-6 w-32" />
+                        </td>
+                        <td className="py-3 px-4 text-right">
+                          <div className="flex justify-end gap-2">
+                            <Skeleton className="h-8 w-8 rounded-md" />
+                            <Skeleton className="h-8 w-8 rounded-md" />
+                            <Skeleton className="h-8 w-8 rounded-md" />
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  ) : contentError ? (
+                    // Error state
+                    <tr>
+                      <td colSpan={6} className="py-8 text-center">
+                        <div className="flex flex-col items-center justify-center text-destructive">
+                          <AlertCircle size={24} className="mb-2" />
+                          <p>Error loading content. Please try again.</p>
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="mt-2"
+                            onClick={() => queryClient.invalidateQueries({queryKey: ['/api/admin/content']})}>
+                            Retry
+                          </Button>
+                        </div>
                       </td>
-                      <td className="py-3 px-4">
-                        <Badge variant={item.type === 'article' ? 'default' : 
-                                        item.type === 'post' ? 'secondary' : 'outline'}>
-                          {item.type.charAt(0).toUpperCase() + item.type.slice(1)}
-                        </Badge>
+                    </tr>
+                  ) : filteredContent.length === 0 ? (
+                    // Empty state
+                    <tr>
+                      <td colSpan={6} className="py-8 text-center">
+                        <p className="text-muted-foreground">No content items found matching your filters.</p>
                       </td>
-                      <td className="py-3 px-4">{item.author}</td>
-                      <td className="py-3 px-4">
-                        <Badge variant={item.status === 'published' ? 'success' : 
-                                       item.status === 'draft' ? 'outline' : 'destructive'}>
-                          {item.status.charAt(0).toUpperCase() + item.status.slice(1)}
-                        </Badge>
-                      </td>
-                      <td className="py-3 px-4 text-muted-foreground">
-                        {formatDate(item.updatedAt)}
-                      </td>
-                      <td className="py-3 px-4 text-right">
-                        <div className="flex justify-end gap-2">
-                          <Sheet>
-                            <SheetTrigger asChild>
-                              <Button 
-                                size="sm" 
-                                variant="ghost" 
-                                onClick={() => {
-                                  setCurrentItem(item);
-                                  setIsEditing(false);
-                                }}
-                              >
-                                <Eye size={16} />
-                                <span className="sr-only">View</span>
-                              </Button>
-                            </SheetTrigger>
+                    </tr>
+                  ) : (
+                    // Content loaded successfully
+                    filteredContent.map((item) => (
+                      <tr key={item.id} className="border-b hover:bg-muted/50">
+                        <td className="py-3 px-4">
+                          <div className="font-medium">{item.title}</div>
+                          {item.featured && <Badge className="mt-1">Featured</Badge>}
+                        </td>
+                        <td className="py-3 px-4">
+                          <Badge variant={item.type === 'article' ? 'default' : 
+                                          item.type === 'post' ? 'secondary' : 'outline'}>
+                            {item.type.charAt(0).toUpperCase() + item.type.slice(1)}
+                          </Badge>
+                        </td>
+                        <td className="py-3 px-4">{item.author}</td>
+                        <td className="py-3 px-4">
+                          <Badge variant={item.status === 'published' ? 'success' : 
+                                         item.status === 'draft' ? 'outline' : 'destructive'}>
+                            {item.status.charAt(0).toUpperCase() + item.status.slice(1)}
+                          </Badge>
+                        </td>
+                        <td className="py-3 px-4 text-muted-foreground">
+                          {formatDate(item.updatedAt)}
+                        </td>
+                        <td className="py-3 px-4 text-right">
+                          <div className="flex justify-end gap-2">
+                            <Sheet>
+                              <SheetTrigger asChild>
+                                <Button 
+                                  size="sm" 
+                                  variant="ghost" 
+                                  onClick={() => {
+                                    setCurrentItem(item);
+                                    setIsEditing(false);
+                                  }}
+                                >
+                                  <Eye size={16} />
+                                  <span className="sr-only">View</span>
+                                </Button>
+                              </SheetTrigger>
                             <SheetContent className="sm:max-w-xl">
                               <SheetHeader>
                                 <SheetTitle>{isEditing ? "Edit Content" : "Content Details"}</SheetTitle>
