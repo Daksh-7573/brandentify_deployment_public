@@ -22,6 +22,9 @@
   --gradient-pink: linear-gradient(135deg, #f28bb2 0%, #f565c6 100%);
   --gradient-blue: linear-gradient(135deg, #7bbff2 0%, #65c8f5 100%);
   
+  /* Frost effect */
+  --frost-texture: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0.2 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  
   --glow-primary: 0 0 15px rgba(138, 124, 255, 0.5);
   --glow-secondary: 0 0 15px rgba(255, 124, 237, 0.5);
   --glow-tertiary: 0 0 15px rgba(124, 227, 255, 0.5);
@@ -66,6 +69,23 @@
   z-index: -1;
 }
 
+/* Add frost texture effect to all cards */
+.neo-glass-card::after {
+  content: '';
+  position: absolute;
+  top: -10%;
+  left: -10%;
+  right: -10%;
+  bottom: -10%;
+  background-image: var(--frost-texture);
+  background-size: 200% 200%;
+  opacity: 0.04;
+  border-radius: 16px;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+  transition: var(--transition-default);
+}
+
 .neo-glass-card:hover {
   box-shadow: var(--shadow-right-bottom-intense);
   transform: translateY(-2px);
@@ -74,6 +94,11 @@
 .neo-glass-card:hover::before {
   opacity: 0.3;
   animation: pulse 2s infinite;
+}
+
+.neo-glass-card:hover::after {
+  opacity: 0.09;
+  animation: frost-shimmer 4s ease infinite;
 }
 
 /* Glass card with highlight */
@@ -174,6 +199,24 @@
   border-radius: 50px;
 }
 
+/* Frost effect for buttons */
+.neo-glass-button::after {
+  content: '';
+  position: absolute;
+  top: -10%;
+  left: -10%;
+  right: -10%;
+  bottom: -10%;
+  background-image: var(--frost-texture);
+  background-size: 200% 200%;
+  opacity: 0.03;
+  border-radius: 50px;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+  transition: var(--transition-default);
+  z-index: -1;
+}
+
 .neo-glass-button:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-right-bottom-intense);
@@ -182,6 +225,11 @@
 .neo-glass-button:hover::before {
   opacity: 0.3;
   animation: pulse 2s infinite;
+}
+
+.neo-glass-button:hover::after {
+  opacity: 0.08;
+  animation: frost-shimmer 3s ease infinite;
 }
 
 .neo-glass-button.primary {
@@ -322,6 +370,27 @@
   }
   50% {
     opacity: 0.5;
+  }
+}
+
+@keyframes frost-shimmer {
+  0% {
+    background-position: 0% 0%;
+    opacity: 0.09;
+  }
+  25% {
+    opacity: 0.12;
+  }
+  50% {
+    background-position: 100% 100%;
+    opacity: 0.09;
+  }
+  75% {
+    opacity: 0.06;
+  }
+  100% {
+    background-position: 0% 0%;
+    opacity: 0.09;
   }
 }
 
