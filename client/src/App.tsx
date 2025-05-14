@@ -104,8 +104,12 @@ function Router() {
         );
       }} />
       <Route path="/auth-popup-debug" component={() => {
-        const AuthPopupDebugPage = require("@/pages/auth-popup-debug").default;
-        return <AuthPopupDebugPage />;
+        const AuthPopupDebugPage = lazy(() => import("@/pages/auth-popup-debug"));
+        return (
+          <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>}>
+            <AuthPopupDebugPage />
+          </Suspense>
+        );
       }} />
       <Route path="/verify-email" component={EmailVerification} />
       {/* Quest demo route removed per request */}
@@ -243,13 +247,12 @@ function Router() {
           const AdminContent = () => (
             <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>}>
               <AdminLayout>
-                <div className="p-6">
-                  <h1 className="text-2xl font-bold">Content Management</h1>
-                  <p className="text-muted-foreground mt-2">This page is under development.</p>
-                </div>
+                <ContentManagement />
               </AdminLayout>
             </Suspense>
           );
+          
+          const ContentManagement = lazy(() => import("@/pages/admin/content"));
           
           return <AdminContent />;
         }} />
@@ -261,13 +264,12 @@ function Router() {
           const AdminAnalytics = () => (
             <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>}>
               <AdminLayout>
-                <div className="p-6">
-                  <h1 className="text-2xl font-bold">Analytics</h1>
-                  <p className="text-muted-foreground mt-2">This page is under development.</p>
-                </div>
+                <AnalyticsDashboard />
               </AdminLayout>
             </Suspense>
           );
+          
+          const AnalyticsDashboard = lazy(() => import("@/pages/admin/analytics"));
           
           return <AdminAnalytics />;
         }} />
@@ -279,13 +281,12 @@ function Router() {
           const AdminSettings = () => (
             <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>}>
               <AdminLayout>
-                <div className="p-6">
-                  <h1 className="text-2xl font-bold">Settings</h1>
-                  <p className="text-muted-foreground mt-2">This page is under development.</p>
-                </div>
+                <SettingsPage />
               </AdminLayout>
             </Suspense>
           );
+          
+          const SettingsPage = lazy(() => import("@/pages/admin/settings"));
           
           return <AdminSettings />;
         }} />
@@ -297,13 +298,12 @@ function Router() {
           const AdminRoles = () => (
             <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>}>
               <AdminLayout>
-                <div className="p-6">
-                  <h1 className="text-2xl font-bold">Roles & Permissions</h1>
-                  <p className="text-muted-foreground mt-2">This page is under development.</p>
-                </div>
+                <RolesManagement />
               </AdminLayout>
             </Suspense>
           );
+          
+          const RolesManagement = lazy(() => import("@/pages/admin/roles"));
           
           return <AdminRoles />;
         }} />
