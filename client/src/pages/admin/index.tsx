@@ -32,42 +32,21 @@ export default function AdminDashboard() {
 
   // Fetch dashboard stats from API
   const { data: statsData, isLoading: statsLoading, error: statsError } = useQuery<DashboardStats>({
-    queryKey: ['/api/admin/stats'],
-    queryFn: async () => {
-      try {
-        // Real data from the backend
-        const response = await apiRequest<DashboardStats>('/api/admin/stats');
-        console.log("Stats response:", response);
-        return response;
-      } catch (error) {
-        console.error("Error fetching dashboard stats:", error);
-        throw error;
-      }
-    }
+    queryKey: ['/api/admin/stats']
   });
   
   // Fetch recent activity from API
-  const { data: activityData, isLoading: activityLoading, error: activityError } = useQuery<ActivityItem[]>({
-    queryKey: ['/api/admin/activity-log'],
-    queryFn: async () => {
-      try {
-        // Fetch recent activity logs from the real API
-        const response = await apiRequest('/api/admin/activity-log?limit=5');
-        console.log("Activity response:", response);
-        
-        // Map the response to match our ActivityItem interface
-        return response.logs?.map((log: any) => ({
-          id: log.id,
-          action: log.actionType,
-          details: log.details,
-          timestamp: log.createdAt
-        })) || [];
-      } catch (error) {
-        console.error("Error fetching activity data:", error);
-        throw error;
-      }
-    }
+  const { data: activityData, isLoading: activityLoading, error: activityError } = useQuery<any>({
+    queryKey: ['/api/admin/activity-log?limit=5']
   });
+  
+  // Transform activity data to match our expected format
+  const transformedActivityData: ActivityItem[] = activityData?.logs?.map((log: any) => ({
+    id: log.id,
+    action: log.actionType,
+    details: log.details,
+    timestamp: log.createdAt
+  })) || [];
   
   // Use real data when available, fallback to default values when loading
   const stats = statsData || {
@@ -104,8 +83,8 @@ export default function AdminDashboard() {
     }
   ];
   
-  // Use real activity data when available
-  const activity = activityData || [];
+  // Use transformed activity data
+  const activity = transformedActivityData;
   
   // Format date for display
   const formatDate = (dateString: string) => {
