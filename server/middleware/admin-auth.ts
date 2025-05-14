@@ -4,9 +4,9 @@ import { adminUsers, adminRoles, adminPermissions, adminActivityLog } from '@sha
 import { eq, and } from 'drizzle-orm';
 import { users } from '@shared/schema';
 
-// Types for the middleware
-declare module 'express-session' {
-  interface SessionData {
+// Define a custom interface for the request with the admin user
+interface AdminSessionRequest extends Request {
+  session: {
     adminUser?: {
       id: number;
       userId: number;
@@ -14,13 +14,14 @@ declare module 'express-session' {
       roleName: string;
       permissions: string[];
     };
-  }
+    [key: string]: any;
+  };
 }
 
 /**
  * Middleware to verify if user is authenticated as admin
  */
-export const verifyAdminAuth = async (req: Request, res: Response, next: NextFunction) => {
+export const verifyAdminAuth = async (req: AdminSessionRequest, res: Response, next: NextFunction) => {
   try {
     // Check if admin is logged in via session
     if (!req.session.adminUser) {
@@ -28,17 +29,14 @@ export const verifyAdminAuth = async (req: Request, res: Response, next: NextFun
     }
     
     // Verify admin still exists and is active
-    const adminUser = await db.query.adminUsers.findFirst({
-      where: and(
+    const users = await db.select().from(adminUsers)
+      .where(and(
         eq(adminUsers.id, req.session.adminUser.id),
         eq(adminUsers.isActive, true)
-      ),
-      with: {
-        role: true
-      }
-    });
+      ))
+      .limit(1);
     
-    if (!adminUser) {
+    if (users.length === 0) {
       req.session.adminUser = undefined;
       return res.status(401).json({ message: 'Admin account no longer active' });
     }
@@ -55,7 +53,7 @@ export const verifyAdminAuth = async (req: Request, res: Response, next: NextFun
  * Middleware to check if admin has required permission
  */
 export const checkPermission = (requiredPermission: string) => {
-  return async (req: Request, res: Response, next: NextFunction) => {
+  return async (req: AdminSessionRequest, res: Response, next: NextFunction) => {
     try {
       // First check admin authentication
       if (!req.session.adminUser) {
@@ -84,10 +82,11 @@ export const checkPermission = (requiredPermission: string) => {
 /**
  * Helper to log admin activity
  */
-export const logAdminActivity = async (req: Request, action: string, details: string = '') => {
+export const logAdminActivity = async (req: AdminSessionRequest, action: string, details: string = '') => {
   try {
     if (req.session.adminUser) {
       await db.insert(adminActivityLog).values({
+        id: await db.select({ nextval: db.sql`nextval('admin_activity_log_id_seq')` }).then(result => result[0].nextval as number),
         adminUserId: req.session.adminUser.id,
         action,
         details,
@@ -103,37 +102,41 @@ export const logAdminActivity = async (req: Request, action: string, details: st
 /**
  * Load admin user data into session
  */
-export const loadAdminUserData = async (userId: number, req: Request): Promise<boolean> => {
+export const loadAdminUserData = async (userId: number, req: AdminSessionRequest): Promise<boolean> => {
   try {
     // Check if user is an admin
-    const adminUser = await db.query.adminUsers.findFirst({
-      where: and(
+    const adminUserResults = await db.select().from(adminUsers)
+      .where(and(
         eq(adminUsers.userId, userId),
         eq(adminUsers.isActive, true)
-      ),
-      with: {
-        role: true
-      }
-    });
+      ))
+      .limit(1);
     
-    if (!adminUser) {
+    if (adminUserResults.length === 0) {
+      return false;
+    }
+    
+    const adminUser = adminUserResults[0];
+    
+    // Get role information
+    const roles = await db.select().from(adminRoles)
+      .where(eq(adminRoles.id, adminUser.roleId))
+      .limit(1);
+    
+    if (roles.length === 0) {
       return false;
     }
     
     // Get permissions for the admin's role
-    const permissions = await db.query.adminPermissions.findMany({
-      where: eq(adminPermissions.roleId, adminUser.roleId),
-      columns: {
-        permissionType: true
-      }
-    });
+    const permissions = await db.select().from(adminPermissions)
+      .where(eq(adminPermissions.roleId, adminUser.roleId));
     
     // Store in session
     req.session.adminUser = {
       id: adminUser.id,
       userId: adminUser.userId,
       roleId: adminUser.roleId,
-      roleName: adminUser.role.name,
+      roleName: roles[0].name,
       permissions: permissions.map(p => p.permissionType)
     };
     

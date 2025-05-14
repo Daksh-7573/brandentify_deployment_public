@@ -1,10 +1,11 @@
 import { pgTable, text, timestamp, boolean, integer, varchar, primaryKey } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
+import { users } from "./schema";
 
 // Admin roles table
 export const adminRoles = pgTable('admin_roles', {
-  id: integer('id').primaryKey({ autoIncrement: true }),
+  id: integer('id').primaryKey(),
   name: varchar('name', { length: 50 }).notNull(),
   description: text('description'),
   createdAt: timestamp('created_at').defaultNow(),
@@ -24,7 +25,7 @@ export const permissionTypes = [
 
 // Admin permissions table
 export const adminPermissions = pgTable('admin_permissions', {
-  id: integer('id').primaryKey({ autoIncrement: true }),
+  id: integer('id').primaryKey(),
   roleId: integer('role_id').notNull().references(() => adminRoles.id),
   permissionType: varchar('permission_type', { length: 50 }).notNull().$type<typeof permissionTypes[number]>(),
   createdAt: timestamp('created_at').defaultNow(),
@@ -37,8 +38,8 @@ export const adminPermissions = pgTable('admin_permissions', {
 
 // Admin users table
 export const adminUsers = pgTable('admin_users', {
-  id: integer('id').primaryKey({ autoIncrement: true }),
-  userId: integer('user_id').notNull().references(() => adminRoles.id),
+  id: integer('id').primaryKey(),
+  userId: integer('user_id').notNull().references(() => users.id),
   roleId: integer('role_id').notNull().references(() => adminRoles.id),
   isActive: boolean('is_active').notNull().default(true),
   createdAt: timestamp('created_at').defaultNow(),
@@ -47,7 +48,7 @@ export const adminUsers = pgTable('admin_users', {
 
 // Activity log for admin actions
 export const adminActivityLog = pgTable('admin_activity_log', {
-  id: integer('id').primaryKey({ autoIncrement: true }),
+  id: integer('id').primaryKey(),
   adminUserId: integer('admin_user_id').notNull().references(() => adminUsers.id),
   action: text('action').notNull(),
   details: text('details'),

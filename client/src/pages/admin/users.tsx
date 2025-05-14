@@ -58,8 +58,14 @@ export default function AdminUsers() {
   
   // Function to fetch users with pagination and search
   const fetchUsers = async () => {
-    const response = await apiRequest(
-      `/api/admin/users?page=${page}&limit=${limit}&search=${search}`
+    const response = await fetch(
+      `/api/admin/users?page=${page}&limit=${limit}&search=${search}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
     );
     
     if (!response.ok) {
@@ -72,7 +78,7 @@ export default function AdminUsers() {
   // Query for users
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["/api/admin/users", page, limit, search],
-    queryFn: fetchUsers,
+    queryFn: fetchUsers
   });
   
   // Format date for display

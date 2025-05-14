@@ -31,12 +31,17 @@ export default function AdminDashboard() {
   const { data: stats, isLoading, error } = useQuery({
     queryKey: ["/api/admin/stats"],
     queryFn: async () => {
-      const response = await apiRequest("/api/admin/stats");
+      const response = await fetch("/api/admin/stats", {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
       if (!response.ok) {
         throw new Error("Failed to fetch admin stats");
       }
       return response.json();
-    },
+    }
   });
   
   // Stats cards data

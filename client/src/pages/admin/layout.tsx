@@ -74,14 +74,20 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     const checkAdminAccess = async () => {
       try {
         setIsLoading(true);
-        const response = await apiRequest('/api/admin/stats', {
-          method: 'GET'
+        const response = await fetch('/api/admin/stats', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
+          }
         });
         
         if (response.ok) {
           // User has admin access
-          const sessionData = await apiRequest('/api/admin/session', {
-            method: 'GET'
+          const sessionData = await fetch('/api/admin/session', {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json'
+            }
           });
           
           if (sessionData.ok) {
@@ -111,8 +117,11 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   // Handle logout
   const handleLogout = async () => {
     try {
-      await apiRequest('/api/admin/logout', {
-        method: 'POST'
+      await fetch('/api/admin/logout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
       });
       
       toast({
