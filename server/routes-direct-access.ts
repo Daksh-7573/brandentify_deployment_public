@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { db } from './db';
-import { content, type Content } from '@shared/schema';
+import { content, type Content } from '@shared/admin-schema';
 import { desc, eq, like } from 'drizzle-orm';
 import { SQL } from 'drizzle-orm/sql/sql';
 
