@@ -48,6 +48,7 @@ import careerCapsuleRoutes from "./routes-career-capsule";
 import { setupPersonalizedHashtagRoutes } from "./routes-personalized-hashtags";
 import notificationRoutes from "./routes-notifications";
 import directAccessRoutes from "./routes-direct-access";
+import directAnalyticsRoutes from "./routes-direct-analytics";
 import { 
   handleSmartConnect, 
   handleCareerRecommendations, 
@@ -6097,6 +6098,10 @@ ${extractedText.substring(0, 5000)}
   // Register direct access routes (for debugging)
   apiRouter.use('/direct', directAccessRoutes);
   console.log("Direct access routes loaded");
+  
+  // Register dedicated analytics endpoint
+  apiRouter.use('/analytics-data', directAnalyticsRoutes);
+  console.log("Direct analytics endpoint loaded");
 
   app.use("/api", apiRouter);
 

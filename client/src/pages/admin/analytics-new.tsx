@@ -48,8 +48,8 @@ export default function AnalyticsNewPage() {
         setLoading(true);
         console.log('Fetching analytics data from direct API endpoint');
         
-        // The endpoint URL must match exactly what's defined in routes-direct-access.ts
-        const response = await fetch('/api/direct/direct-analytics');
+        // Use the new dedicated analytics endpoint
+        const response = await fetch('/api/analytics-data');
         
         if (!response.ok) {
           throw new Error(`Failed to fetch analytics data: ${response.status}`);
@@ -58,11 +58,19 @@ export default function AnalyticsNewPage() {
         const responseText = await response.text();
         console.log('Raw response:', responseText);
         
-        // Parse the text response manually
+        // Check if response starts with HTML (common issue with middleware)
+        if (responseText.trim().startsWith('<!DOCTYPE html>') || 
+            responseText.trim().startsWith('<html>')) {
+          console.error('Received HTML instead of JSON - API route issue');
+          throw new Error('Server returned HTML instead of JSON data');
+        }
+        
+        // Parse the text response
         let data;
         try {
           data = JSON.parse(responseText);
           console.log('Analytics data received:', data);
+          
           if (data && data.status === "success") {
             setAnalyticsData(data); // Store the full response with both status and data
             setError(null);
@@ -72,6 +80,7 @@ export default function AnalyticsNewPage() {
           }
         } catch (parseError) {
           console.error('Error parsing JSON response:', parseError);
+          console.error('Raw response content:', responseText.substring(0, 200) + '...');
           throw new Error('Invalid JSON response from server');
         }
       } catch (err) {
