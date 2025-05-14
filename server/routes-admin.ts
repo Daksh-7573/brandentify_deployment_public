@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import { db } from './db';
 import { users } from '@shared/schema';
 import { adminRoles, adminUsers, adminPermissions, adminActivityLog } from '@shared/admin-schema';
@@ -6,10 +6,24 @@ import { verifyAdminAuth, checkPermission, logAdminActivity, loadAdminUserData }
 import { eq, and, desc, like, or } from 'drizzle-orm';
 import { storage } from './storage';
 
+// Import the AdminSessionRequest interface
+interface AdminSessionRequest extends Request {
+  session: {
+    adminUser?: {
+      id: number;
+      userId: number;
+      roleId: number;
+      roleName: string;
+      permissions: string[];
+    };
+    [key: string]: any;
+  };
+};
+
 const router = Router();
 
 // Admin Authentication
-router.post('/login', async (req, res) => {
+router.post('/login', async (req: AdminSessionRequest, res: Response) => {
   try {
     const { username, password } = req.body;
     
@@ -48,7 +62,7 @@ router.post('/login', async (req, res) => {
   }
 });
 
-router.post('/logout', verifyAdminAuth, async (req, res) => {
+router.post('/logout', verifyAdminAuth, async (req: AdminSessionRequest, res: Response) => {
   try {
     // Log the logout action
     await logAdminActivity(req, 'admin_logout', 'Admin logout');

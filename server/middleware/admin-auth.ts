@@ -85,8 +85,8 @@ export const checkPermission = (requiredPermission: string) => {
 export const logAdminActivity = async (req: AdminSessionRequest, action: string, details: string = '') => {
   try {
     if (req.session.adminUser) {
+      // Insert activity log with auto-incrementing ID
       await db.insert(adminActivityLog).values({
-        id: await db.select({ nextval: db.sql`nextval('admin_activity_log_id_seq')` }).then(result => result[0].nextval as number),
         adminUserId: req.session.adminUser.id,
         action,
         details,
