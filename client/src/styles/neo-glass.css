@@ -4,12 +4,12 @@
  */
 
 :root {
-  --glass-bg: rgba(255, 255, 255, 0.25);
-  --glass-border: rgba(255, 255, 255, 0.5);
-  --glass-highlight: rgba(255, 255, 255, 0.7);
-  --glass-shadow: rgba(0, 0, 0, 0.15);
-  --glass-shadow-intense: rgba(0, 0, 0, 0.25);
-  --glass-blur: 18px;
+  --glass-bg: rgba(255, 255, 255, 0.5);
+  --glass-border: rgba(255, 255, 255, 0.6);
+  --glass-highlight: rgba(255, 255, 255, 0.8);
+  --glass-shadow: rgba(0, 0, 0, 0.2);
+  --glass-shadow-intense: rgba(0, 0, 0, 0.3);
+  --glass-blur: 24px;
   --gradient-bg: linear-gradient(135deg, #0b4d89 0%, #0a3a66 100%);
   
   /* Card gradients */
@@ -176,7 +176,7 @@
   bottom: -10%;
   background-image: var(--frost-texture);
   background-size: 200% 200%;
-  opacity: 0.15;
+  opacity: 0.3;
   border-radius: 16px;
   pointer-events: none;
   mix-blend-mode: overlay;
@@ -195,7 +195,7 @@
 }
 
 .neo-glass-card:hover::after {
-  opacity: 0.2;
+  opacity: 0.4;
   animation: frost-shimmer 4s ease infinite;
   background-size: 180% 180%;
 }
@@ -682,20 +682,20 @@
 @keyframes frost-shimmer {
   0% {
     background-position: 0% 0%;
-    opacity: 0.15;
+    opacity: 0.3;
   }
   25% {
-    opacity: 0.25;
+    opacity: 0.5;
   }
   50% {
     background-position: 100% 100%;
-    opacity: 0.2;
+    opacity: 0.4;
   }
   75% {
-    opacity: 0.25;
+    opacity: 0.5;
   }
   100% {
     background-position: 0% 0%;
-    opacity: 0.15;
+    opacity: 0.3;
   }
 }
