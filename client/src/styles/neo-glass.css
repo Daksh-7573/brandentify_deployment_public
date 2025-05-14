@@ -10,32 +10,39 @@
   --glass-shadow: rgba(0, 0, 0, 0.1);
   --glass-shadow-intense: rgba(0, 0, 0, 0.2);
   --glass-blur: 12px;
-  --gradient-bg: linear-gradient(135deg, #a9c9ff 0%, #c1a9ff 100%);
+  --gradient-bg: linear-gradient(135deg, #0b4d89 0%, #0a3a66 100%);
   
   /* Card gradients */
-  --gradient-card-purple: linear-gradient(135deg, rgba(170, 124, 255, 0.5) 0%, rgba(133, 93, 245, 0.5) 100%);
-  --gradient-card-pink: linear-gradient(135deg, rgba(255, 124, 237, 0.5) 0%, rgba(242, 93, 196, 0.5) 100%);
-  --gradient-card-blue: linear-gradient(135deg, rgba(124, 227, 255, 0.5) 0%, rgba(93, 175, 242, 0.5) 100%);
+  --gradient-card-blue: linear-gradient(135deg, rgba(32, 129, 226, 0.5) 0%, rgba(11, 77, 137, 0.5) 100%);
+  --gradient-card-cyan: linear-gradient(135deg, rgba(75, 207, 251, 0.5) 0%, rgba(11, 163, 217, 0.5) 100%);
+  --gradient-card-teal: linear-gradient(135deg, rgba(68, 190, 199, 0.5) 0%, rgba(11, 139, 147, 0.5) 100%);
   
   /* Button gradients */
-  --gradient-purple: linear-gradient(135deg, #a77bf2 0%, #8d65f5 100%);
-  --gradient-pink: linear-gradient(135deg, #f28bb2 0%, #f565c6 100%);
-  --gradient-blue: linear-gradient(135deg, #7bbff2 0%, #65c8f5 100%);
+  --gradient-blue: linear-gradient(135deg, #2081e2 0%, #0b4d89 100%);
+  --gradient-cyan: linear-gradient(135deg, #4bcffb 0%, #0ba3d9 100%);
+  --gradient-teal: linear-gradient(135deg, #44bec7 0%, #0b8b93 100%);
   
   /* Frost effect */
   --frost-texture: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0.2 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
   
   /* Backgrounds */
   --white-room-bg: url('/backgrounds/white-room-bg.svg');
+  --blue-guitar-bg: url('/images/blue-guitar-bg.jpg');
   
-  --glow-primary: 0 0 15px rgba(138, 124, 255, 0.5);
-  --glow-secondary: 0 0 15px rgba(255, 124, 237, 0.5);
-  --glow-tertiary: 0 0 15px rgba(124, 227, 255, 0.5);
+  --glow-primary: 0 0 15px rgba(32, 129, 226, 0.5);
+  --glow-secondary: 0 0 15px rgba(75, 207, 251, 0.5);
+  --glow-tertiary: 0 0 15px rgba(68, 190, 199, 0.5);
   --transition-default: all 0.3s ease;
   
   /* Directional shadow (right and bottom only) */
   --shadow-right-bottom: 4px 4px 20px var(--glass-shadow);
   --shadow-right-bottom-intense: 6px 6px 25px var(--glass-shadow-intense);
+  
+  /* Aliases for easier refactoring */
+  --gradient-card-purple: var(--gradient-card-blue);
+  --gradient-card-pink: var(--gradient-card-cyan);
+  --gradient-purple: var(--gradient-blue);
+  --gradient-pink: var(--gradient-cyan);
 }
 
 /* Gradient background for page */
@@ -72,7 +79,7 @@
   /* Mix gradient with white room features */
   background-image: 
     /* Gradient overlay */
-    linear-gradient(135deg, rgba(169, 201, 255, 0.4) 0%, rgba(193, 169, 255, 0.4) 100%),
+    linear-gradient(135deg, rgba(32, 129, 226, 0.4) 0%, rgba(11, 77, 137, 0.4) 100%),
     /* Floor line */
     linear-gradient(to bottom, transparent 60%, rgba(249,250,255,0.5) 60%),
     /* Wall panels */
@@ -84,6 +91,28 @@
   background-size: 100% 100%, 100% 100%, 100% 100%, 40% 40%, 40% 40%;
   background-position: 0 0, 0 0, 0 0, 0 0, 100% 0;
   background-attachment: fixed;
+}
+
+/* Blue guitar background */
+.neo-guitar-bg {
+  background-image: var(--blue-guitar-bg);
+  background-size: cover;
+  background-position: center;
+  min-height: 100vh;
+  position: relative;
+  background-attachment: fixed;
+}
+
+/* Add a blue gradient overlay to darken and enhance the image */
+.neo-guitar-bg::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(11, 77, 137, 0.7) 0%, rgba(7, 35, 65, 0.8) 100%);
+  pointer-events: none;
 }
 
 /* Basic glass card */
