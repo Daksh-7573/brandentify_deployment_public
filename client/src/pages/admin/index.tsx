@@ -32,57 +32,39 @@ export default function AdminDashboard() {
 
   // Fetch dashboard stats from API
   const { data: statsData, isLoading: statsLoading, error: statsError } = useQuery<DashboardStats>({
-    queryKey: ['/api/admin/stats/dashboard'],
+    queryKey: ['/api/admin/stats'],
     queryFn: async () => {
       try {
-        // Mock data for dashboard stats (since API might not be ready)
-        // In a real scenario, this would come from the backend
-        return {
-          totalUsers: 158,
-          newUsersToday: 12,
-          activeAdmins: 3
-        };
+        // Real data from the backend
+        const response = await apiRequest<DashboardStats>('/api/admin/stats');
+        console.log("Stats response:", response);
+        return response;
       } catch (error) {
         console.error("Error fetching dashboard stats:", error);
-        return {
-          totalUsers: 0,
-          newUsersToday: 0,
-          activeAdmins: 0
-        };
+        throw error;
       }
     }
   });
   
   // Fetch recent activity from API
   const { data: activityData, isLoading: activityLoading, error: activityError } = useQuery<ActivityItem[]>({
-    queryKey: ['/api/admin/activity/recent'],
+    queryKey: ['/api/admin/activity-log'],
     queryFn: async () => {
       try {
-        // Mock data for recent activity (since API might not be ready)
-        // In a real scenario, this would come from the backend
-        return [
-          {
-            id: 1,
-            action: "User account created",
-            details: "New user registered with email user@example.com",
-            timestamp: new Date().toISOString()
-          },
-          {
-            id: 2,
-            action: "Content updated",
-            details: "Article 'Getting Started with AI' was edited",
-            timestamp: new Date(Date.now() - 3600000).toISOString() // 1 hour ago
-          },
-          {
-            id: 3,
-            action: "Settings changed",
-            details: "System email configuration updated",
-            timestamp: new Date(Date.now() - 7200000).toISOString() // 2 hours ago
-          }
-        ];
+        // Fetch recent activity logs from the real API
+        const response = await apiRequest('/api/admin/activity-log?limit=5');
+        console.log("Activity response:", response);
+        
+        // Map the response to match our ActivityItem interface
+        return response.logs?.map((log: any) => ({
+          id: log.id,
+          action: log.actionType,
+          details: log.details,
+          timestamp: log.createdAt
+        })) || [];
       } catch (error) {
         console.error("Error fetching activity data:", error);
-        return [];
+        throw error;
       }
     }
   });
