@@ -71,6 +71,11 @@
   transform: translateY(-2px);
 }
 
+.neo-glass-card:hover::before {
+  opacity: 0.3;
+  animation: pulse 2s infinite;
+}
+
 /* Glass card with highlight */
 .neo-glass-card.highlight {
   border: 1px solid var(--glass-highlight);
@@ -100,6 +105,11 @@
   opacity: 0.25;
 }
 
+.neo-glass-card.primary-glow:hover::before {
+  opacity: 0.4;
+  animation: pulse 2s infinite;
+}
+
 .neo-glass-card.secondary-glow {
   box-shadow: var(--shadow-right-bottom), var(--glow-secondary);
 }
@@ -109,6 +119,11 @@
   opacity: 0.25;
 }
 
+.neo-glass-card.secondary-glow:hover::before {
+  opacity: 0.4;
+  animation: pulse 2s infinite;
+}
+
 .neo-glass-card.tertiary-glow {
   box-shadow: var(--shadow-right-bottom), var(--glow-tertiary);
 }
@@ -116,6 +131,11 @@
 .neo-glass-card.tertiary-glow::before {
   background-image: var(--gradient-card-blue);
   opacity: 0.25;
+}
+
+.neo-glass-card.tertiary-glow:hover::before {
+  opacity: 0.4;
+  animation: pulse 2s infinite;
 }
 
 /* Neo Glass Buttons */
@@ -160,7 +180,8 @@
 }
 
 .neo-glass-button:hover::before {
-  opacity: 0.15;
+  opacity: 0.3;
+  animation: pulse 2s infinite;
 }
 
 .neo-glass-button.primary {
@@ -292,6 +313,15 @@
   }
   50% {
     transform: translateY(-10px) rotate(5deg);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.5;
   }
 }
 
