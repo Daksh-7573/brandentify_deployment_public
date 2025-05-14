@@ -117,7 +117,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     },
     { 
       path: "/admin/content", 
-      label: "Content", 
+      label: "Content Management", 
       icon: <FileText className="h-5 w-5" />,
       permission: "view_content"
     },
@@ -129,7 +129,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     },
     { 
       path: "/admin/settings", 
-      label: "Settings", 
+      label: "System Settings", 
       icon: <Settings className="h-5 w-5" />,
       permission: "manage_settings"
     },
@@ -138,6 +138,12 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       label: "Roles & Permissions", 
       icon: <Shield className="h-5 w-5" />,
       permission: "manage_users"
+    },
+    { 
+      path: "/admin/database", 
+      label: "Database Management", 
+      icon: <Database className="h-5 w-5" />,
+      permission: "full_access"
     },
   ];
   
@@ -176,22 +182,21 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           {filteredLinks.map((link) => {
             const isActive = currentPath === link.path;
             return (
-              <Link 
-                key={link.path} 
-                href={link.path}
-                onClick={() => setCurrentPath(link.path)}
+              <div 
+                key={link.path}
+                onClick={() => {
+                  setCurrentPath(link.path);
+                  navigate(link.path);
+                }}
+                className={`flex items-center space-x-3 px-3 py-2 rounded-md text-sm cursor-pointer ${
+                  isActive 
+                    ? 'bg-primary/10 text-primary font-medium' 
+                    : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                }`}
               >
-                <a 
-                  className={`flex items-center space-x-3 px-3 py-2 rounded-md text-sm ${
-                    isActive 
-                      ? 'bg-primary/10 text-primary font-medium' 
-                      : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                  }`}
-                >
-                  {link.icon}
-                  <span>{link.label}</span>
-                </a>
-              </Link>
+                {link.icon}
+                <span>{link.label}</span>
+              </div>
             );
           })}
         </nav>
@@ -270,21 +275,20 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               const isActive = currentPath === link.path;
               return (
                 <SheetClose key={link.path} asChild>
-                  <Link 
-                    href={link.path}
-                    onClick={() => setCurrentPath(link.path)}
+                  <div 
+                    onClick={() => {
+                      setCurrentPath(link.path);
+                      navigate(link.path);
+                    }}
+                    className={`flex items-center space-x-3 px-3 py-2 rounded-md text-sm cursor-pointer ${
+                      isActive 
+                        ? 'bg-primary/10 text-primary font-medium' 
+                        : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                    }`}
                   >
-                    <a 
-                      className={`flex items-center space-x-3 px-3 py-2 rounded-md text-sm ${
-                        isActive 
-                          ? 'bg-primary/10 text-primary font-medium' 
-                          : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                      }`}
-                    >
-                      {link.icon}
-                      <span>{link.label}</span>
-                    </a>
-                  </Link>
+                    {link.icon}
+                    <span>{link.label}</span>
+                  </div>
                 </SheetClose>
               );
             })}
