@@ -1,4 +1,4 @@
-import { Switch, Route, useLocation, Redirect } from "wouter";
+import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -54,8 +54,8 @@ import { lazy, Suspense } from "react";
 const SharedCardPage = lazy(() => import("@/pages/shared-card"));
 // Brand of the Day is now integrated into Nowboard
 
-// Redirect component to handle page redirects
-const Redirect = ({ to }: { to: string }) => {
+// Custom redirect component to handle page redirects
+const PageRedirect = ({ to }: { to: string }) => {
   const [_, navigate] = useLocation();
   
   useEffect(() => {
@@ -271,7 +271,15 @@ function Router() {
       </Route>
       {/* Temporarily removing Content Management page and redirecting to direct-content-management */}
       <Route path="/admin/content">
-        <Redirect to="/direct-content-management" />
+        {() => {
+          const [_, navigate] = useLocation();
+          useEffect(() => {
+            navigate("/direct-content-management");
+          }, [navigate]);
+          return <div className="flex items-center justify-center min-h-screen">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+          </div>;
+        }}
       </Route>
       <Route path="/admin/analytics">
         <ProtectedRoute path="/admin/analytics" component={() => {
