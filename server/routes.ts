@@ -6088,6 +6088,10 @@ ${extractedText.substring(0, 5000)}
   }
   
   console.log("Career Capsule routes loaded");
+  
+  // Register admin routes
+  apiRouter.use('/admin', adminRoutes);
+  console.log("Admin routes loaded");
 
   app.use("/api", apiRouter);
 
