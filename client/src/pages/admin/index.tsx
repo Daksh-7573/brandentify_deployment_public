@@ -2,8 +2,7 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
-  Users, FileText, TrendingUp, AlertCircle, Settings, Shield, 
-  BarChart, BookOpen, MessageSquare, Bell, UserCog, Database
+  Users, TrendingUp, AlertCircle, FileText
 } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
 import { useQuery } from "@tanstack/react-query";
@@ -135,83 +134,11 @@ export default function AdminDashboard() {
     }).format(date);
   };
   
-  // Admin quick links data
-  const adminLinks = [
-    {
-      title: "User Management",
-      description: "Manage user accounts and permissions",
-      icon: <Users className="h-5 w-5 text-indigo-500" />,
-      path: "/admin/users",
-      color: "bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20 dark:text-indigo-400"
-    },
-    {
-      title: "Content Management",
-      description: "Manage articles, posts and pulses",
-      icon: <FileText className="h-5 w-5 text-emerald-500" />,
-      path: "/admin/content",
-      color: "bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400"
-    },
-    {
-      title: "Analytics Dashboard",
-      description: "View platform usage and statistics",
-      icon: <BarChart className="h-5 w-5 text-amber-500" />,
-      path: "/admin/analytics",
-      color: "bg-amber-50 text-amber-600 dark:bg-amber-900/20 dark:text-amber-400"
-    },
-    {
-      title: "System Settings",
-      description: "Configure application settings",
-      icon: <Settings className="h-5 w-5 text-rose-500" />,
-      path: "/admin/settings",
-      color: "bg-rose-50 text-rose-600 dark:bg-rose-900/20 dark:text-rose-400"
-    },
-    {
-      title: "Role Management",
-      description: "Control access and permissions",
-      icon: <Shield className="h-5 w-5 text-cyan-500" />,
-      path: "/admin/roles",
-      color: "bg-cyan-50 text-cyan-600 dark:bg-cyan-900/20 dark:text-cyan-400"
-    },
-    {
-      title: "Database Management",
-      description: "Manage database tables and records",
-      icon: <Database className="h-5 w-5 text-violet-500" />,
-      path: "/admin/database",
-      color: "bg-violet-50 text-violet-600 dark:bg-violet-900/20 dark:text-violet-400"
-    }
-  ];
+  // No need for admin links since we have the sidebar
 
   // Create a content for the overview tab
   const OverviewContent = () => (
     <div className="space-y-6">
-      {/* Admin Quick Links */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Admin Quick Links</CardTitle>
-          <CardDescription>Access all admin functionality from here</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {adminLinks.map((link, index) => (
-              <Link key={index} href={link.path}>
-                <Button 
-                  variant="outline" 
-                  className="w-full h-auto p-4 justify-start flex flex-col items-start text-left space-y-2 hover:bg-accent"
-                >
-                  <div className={`self-start p-2 rounded-full ${link.color}`}>
-                    {link.icon}
-                  </div>
-                  <div>
-                    <p className="font-medium">{link.title}</p>
-                    <p className="text-xs text-muted-foreground">{link.description}</p>
-                  </div>
-                </Button>
-              </Link>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {statsCards.map((card, index) => (
