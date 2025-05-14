@@ -184,8 +184,9 @@
 }
 
 .neo-glass-card:hover {
-  box-shadow: var(--shadow-right-bottom-intense);
-  transform: translateY(-2px);
+  box-shadow: var(--shadow-right-bottom-intense), 0 12px 36px 0 rgba(31, 38, 135, 0.3);
+  transform: translateY(-3px);
+  border-color: var(--glass-highlight);
 }
 
 .neo-glass-card:hover::before {
@@ -194,8 +195,9 @@
 }
 
 .neo-glass-card:hover::after {
-  opacity: 0.09;
+  opacity: 0.2;
   animation: frost-shimmer 4s ease infinite;
+  background-size: 180% 180%;
 }
 
 /* Glass card with highlight */
