@@ -1,4 +1,4 @@
-import { Switch, Route, useLocation } from "wouter";
+import { Switch, Route, useLocation, Redirect } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -269,26 +269,9 @@ function Router() {
           return <AdminUsersWithLayout />;
         }} />
       </Route>
+      {/* Temporarily removing Content Management page and redirecting to direct-content-management */}
       <Route path="/admin/content">
-        <ProtectedRoute path="/admin/content" component={() => {
-          const AdminLayout = lazy(() => import("@/pages/admin/layout"));
-          const AdminCheck = lazy(() => import("@/middleware/admin-check").then(mod => ({ default: mod.AdminCheck })));
-          
-          const AdminContent = () => (
-            <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>}>
-              <AdminCheck>
-                <AdminLayout>
-                  <ContentManagement />
-                </AdminLayout>
-              </AdminCheck>
-            </Suspense>
-          );
-          
-          // Use direct content page instead to avoid syntax errors
-          const ContentManagement = lazy(() => import("@/pages/admin/content-direct"));
-          
-          return <AdminContent />;
-        }} />
+        <Redirect to="/direct-content-management" />
       </Route>
       <Route path="/admin/analytics">
         <ProtectedRoute path="/admin/analytics" component={() => {

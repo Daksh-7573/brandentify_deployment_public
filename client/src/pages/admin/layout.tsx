@@ -117,7 +117,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       permission: "view_users"
     },
     { 
-      path: "/admin/content", 
+      path: "/direct-content-management", 
       label: "Content Management", 
       icon: <FileText className="h-5 w-5" />,
       permission: "view_content"
