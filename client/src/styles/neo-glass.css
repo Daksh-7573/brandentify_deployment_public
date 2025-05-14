@@ -50,6 +50,7 @@
   transition: var(--transition-default);
   overflow: hidden;
   position: relative;
+  z-index: 1;
 }
 
 /* Add subtle gradient background to all cards */
@@ -64,11 +65,16 @@
   opacity: 0.15;
   border-radius: 16px;
   z-index: -1;
+  transition: opacity 0.3s ease;
 }
 
 .neo-glass-card:hover {
   box-shadow: var(--shadow-right-bottom-intense);
   transform: translateY(-2px);
+}
+
+.neo-glass-card:hover::before {
+  opacity: 0.25;
 }
 
 /* Glass card with highlight */
@@ -100,6 +106,10 @@
   opacity: 0.25;
 }
 
+.neo-glass-card.primary-glow:hover::before {
+  opacity: 0.35;
+}
+
 .neo-glass-card.secondary-glow {
   box-shadow: var(--shadow-right-bottom), var(--glow-secondary);
 }
@@ -109,6 +119,10 @@
   opacity: 0.25;
 }
 
+.neo-glass-card.secondary-glow:hover::before {
+  opacity: 0.35;
+}
+
 .neo-glass-card.tertiary-glow {
   box-shadow: var(--shadow-right-bottom), var(--glow-tertiary);
 }
@@ -116,6 +130,10 @@
 .neo-glass-card.tertiary-glow::before {
   background-image: var(--gradient-card-blue);
   opacity: 0.25;
+}
+
+.neo-glass-card.tertiary-glow:hover::before {
+  opacity: 0.35;
 }
 
 /* Neo Glass Buttons */
