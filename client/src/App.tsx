@@ -210,6 +210,77 @@ function Router() {
       <Route path="/unified-profile/:userId">
         {(params) => <ProtectedRoute path="/unified-profile/:userId" component={() => <UnifiedProfilePage />} />}
       </Route>
+      
+      {/* Admin Panel Routes */}
+      <Route path="/admin">
+        <ProtectedRoute path="/admin" component={() => {
+          const AdminDashboard = require("@/pages/admin/index").default;
+          return <AdminDashboard />;
+        }} />
+      </Route>
+      <Route path="/admin/users">
+        <ProtectedRoute path="/admin/users" component={() => {
+          const AdminUsers = require("@/pages/admin/users").default;
+          return <AdminUsers />;
+        }} />
+      </Route>
+      <Route path="/admin/content">
+        <ProtectedRoute path="/admin/content" component={() => {
+          const AdminContent = () => (
+            <AdminLayout>
+              <div className="p-6">
+                <h1 className="text-2xl font-bold">Content Management</h1>
+                <p className="text-muted-foreground mt-2">This page is under development.</p>
+              </div>
+            </AdminLayout>
+          );
+          const AdminLayout = require("@/pages/admin/layout").default;
+          return <AdminContent />;
+        }} />
+      </Route>
+      <Route path="/admin/analytics">
+        <ProtectedRoute path="/admin/analytics" component={() => {
+          const AdminAnalytics = () => (
+            <AdminLayout>
+              <div className="p-6">
+                <h1 className="text-2xl font-bold">Analytics</h1>
+                <p className="text-muted-foreground mt-2">This page is under development.</p>
+              </div>
+            </AdminLayout>
+          );
+          const AdminLayout = require("@/pages/admin/layout").default;
+          return <AdminAnalytics />;
+        }} />
+      </Route>
+      <Route path="/admin/settings">
+        <ProtectedRoute path="/admin/settings" component={() => {
+          const AdminSettings = () => (
+            <AdminLayout>
+              <div className="p-6">
+                <h1 className="text-2xl font-bold">Settings</h1>
+                <p className="text-muted-foreground mt-2">This page is under development.</p>
+              </div>
+            </AdminLayout>
+          );
+          const AdminLayout = require("@/pages/admin/layout").default;
+          return <AdminSettings />;
+        }} />
+      </Route>
+      <Route path="/admin/roles">
+        <ProtectedRoute path="/admin/roles" component={() => {
+          const AdminRoles = () => (
+            <AdminLayout>
+              <div className="p-6">
+                <h1 className="text-2xl font-bold">Roles & Permissions</h1>
+                <p className="text-muted-foreground mt-2">This page is under development.</p>
+              </div>
+            </AdminLayout>
+          );
+          const AdminLayout = require("@/pages/admin/layout").default;
+          return <AdminRoles />;
+        }} />
+      </Route>
+      
       {/* Shared Quantum Card View route */}
       <Route path="/profile/card/:userId">
         {(params) => (
