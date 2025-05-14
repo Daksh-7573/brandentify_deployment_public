@@ -47,22 +47,42 @@
 
 /* White room background for page */
 .neo-white-room-bg {
-  background-image: var(--white-room-bg);
-  background-size: cover;
-  background-position: center;
+  background: linear-gradient(135deg, #FFFFFF 0%, #F0F4FF 100%);
   min-height: 100vh;
   position: relative;
   background-attachment: fixed;
+  /* Add white room features with CSS */
+  background-image: 
+    /* Floor line */
+    linear-gradient(to bottom, transparent 60%, #F9FAFF 60%),
+    /* Wall panels */
+    radial-gradient(ellipse at center, rgba(255,255,255,0.7) 0%, rgba(240,244,255,0.1) 70%),
+    /* Subtle grid */
+    linear-gradient(to right, rgba(240,244,255,0.5) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(240,244,255,0.5) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 50px 50px, 50px 50px;
+  background-position: 0 0, 0 0, 0 0, 0 0;
 }
 
 /* Mixed background with gradient overlay */
 .neo-mixed-bg {
-  background-image: var(--white-room-bg), var(--gradient-bg);
-  background-size: cover, cover;
-  background-position: center, center;
-  background-blend-mode: overlay;
+  background: linear-gradient(135deg, #FFFFFF 0%, #F0F4FF 100%);
   min-height: 100vh;
   position: relative;
+  /* Mix gradient with white room features */
+  background-image: 
+    /* Gradient overlay */
+    linear-gradient(135deg, rgba(169, 201, 255, 0.4) 0%, rgba(193, 169, 255, 0.4) 100%),
+    /* Floor line */
+    linear-gradient(to bottom, transparent 60%, rgba(249,250,255,0.5) 60%),
+    /* Wall panels */
+    radial-gradient(ellipse at center, rgba(255,255,255,0.3) 0%, rgba(240,244,255,0.1) 70%),
+    /* Corner lights */
+    radial-gradient(circle at 0% 0%, rgba(255,255,255,0.8) 0%, transparent 20%),
+    radial-gradient(circle at 100% 0%, rgba(255,255,255,0.8) 0%, transparent 20%);
+  background-blend-mode: overlay, normal, normal, screen, screen;
+  background-size: 100% 100%, 100% 100%, 100% 100%, 40% 40%, 40% 40%;
+  background-position: 0 0, 0 0, 0 0, 0 0, 100% 0;
   background-attachment: fixed;
 }
 
