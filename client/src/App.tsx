@@ -220,6 +220,8 @@ function Router() {
       
       {/* Direct access to content for debugging */}
       <Route path="/direct-content" component={DirectContentPage} />
+      {/* Direct access to content management for debugging */}
+      <Route path="/direct-content-management" component={DirectContentManagementPage} />
       {/* Unified Profile Page with comprehensive data fetching */}
       <Route path="/unified-profile">
         <ProtectedRoute path="/unified-profile" component={UnifiedProfilePage} />
