@@ -96,8 +96,12 @@ function Router() {
       <Route path="/auth" component={AuthPage} />
       <Route path="/auth-test" component={FirebaseAuthTest} />
       <Route path="/auth-debug" component={() => {
-        const AuthDebugPage = require("@/pages/auth-debug").default;
-        return <AuthDebugPage />;
+        const AuthDebugPage = lazy(() => import("@/pages/auth-debug"));
+        return (
+          <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>}>
+            <AuthDebugPage />
+          </Suspense>
+        );
       }} />
       <Route path="/auth-popup-debug" component={() => {
         const AuthPopupDebugPage = require("@/pages/auth-popup-debug").default;
@@ -211,72 +215,96 @@ function Router() {
         {(params) => <ProtectedRoute path="/unified-profile/:userId" component={() => <UnifiedProfilePage />} />}
       </Route>
       
-      {/* Admin Panel Routes */}
+      {/* Admin Panel Routes - Using lazy loading */}
       <Route path="/admin">
         <ProtectedRoute path="/admin" component={() => {
-          const AdminDashboard = require("@/pages/admin/index").default;
-          return <AdminDashboard />;
+          const AdminDashboard = lazy(() => import("@/pages/admin/index"));
+          return (
+            <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>}>
+              <AdminDashboard />
+            </Suspense>
+          );
         }} />
       </Route>
       <Route path="/admin/users">
         <ProtectedRoute path="/admin/users" component={() => {
-          const AdminUsers = require("@/pages/admin/users").default;
-          return <AdminUsers />;
+          const AdminUsers = lazy(() => import("@/pages/admin/users"));
+          return (
+            <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>}>
+              <AdminUsers />
+            </Suspense>
+          );
         }} />
       </Route>
       <Route path="/admin/content">
         <ProtectedRoute path="/admin/content" component={() => {
+          const AdminLayout = lazy(() => import("@/pages/admin/layout"));
+          
           const AdminContent = () => (
-            <AdminLayout>
-              <div className="p-6">
-                <h1 className="text-2xl font-bold">Content Management</h1>
-                <p className="text-muted-foreground mt-2">This page is under development.</p>
-              </div>
-            </AdminLayout>
+            <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>}>
+              <AdminLayout>
+                <div className="p-6">
+                  <h1 className="text-2xl font-bold">Content Management</h1>
+                  <p className="text-muted-foreground mt-2">This page is under development.</p>
+                </div>
+              </AdminLayout>
+            </Suspense>
           );
-          const AdminLayout = require("@/pages/admin/layout").default;
+          
           return <AdminContent />;
         }} />
       </Route>
       <Route path="/admin/analytics">
         <ProtectedRoute path="/admin/analytics" component={() => {
+          const AdminLayout = lazy(() => import("@/pages/admin/layout"));
+          
           const AdminAnalytics = () => (
-            <AdminLayout>
-              <div className="p-6">
-                <h1 className="text-2xl font-bold">Analytics</h1>
-                <p className="text-muted-foreground mt-2">This page is under development.</p>
-              </div>
-            </AdminLayout>
+            <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>}>
+              <AdminLayout>
+                <div className="p-6">
+                  <h1 className="text-2xl font-bold">Analytics</h1>
+                  <p className="text-muted-foreground mt-2">This page is under development.</p>
+                </div>
+              </AdminLayout>
+            </Suspense>
           );
-          const AdminLayout = require("@/pages/admin/layout").default;
+          
           return <AdminAnalytics />;
         }} />
       </Route>
       <Route path="/admin/settings">
         <ProtectedRoute path="/admin/settings" component={() => {
+          const AdminLayout = lazy(() => import("@/pages/admin/layout"));
+          
           const AdminSettings = () => (
-            <AdminLayout>
-              <div className="p-6">
-                <h1 className="text-2xl font-bold">Settings</h1>
-                <p className="text-muted-foreground mt-2">This page is under development.</p>
-              </div>
-            </AdminLayout>
+            <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>}>
+              <AdminLayout>
+                <div className="p-6">
+                  <h1 className="text-2xl font-bold">Settings</h1>
+                  <p className="text-muted-foreground mt-2">This page is under development.</p>
+                </div>
+              </AdminLayout>
+            </Suspense>
           );
-          const AdminLayout = require("@/pages/admin/layout").default;
+          
           return <AdminSettings />;
         }} />
       </Route>
       <Route path="/admin/roles">
         <ProtectedRoute path="/admin/roles" component={() => {
+          const AdminLayout = lazy(() => import("@/pages/admin/layout"));
+          
           const AdminRoles = () => (
-            <AdminLayout>
-              <div className="p-6">
-                <h1 className="text-2xl font-bold">Roles & Permissions</h1>
-                <p className="text-muted-foreground mt-2">This page is under development.</p>
-              </div>
-            </AdminLayout>
+            <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>}>
+              <AdminLayout>
+                <div className="p-6">
+                  <h1 className="text-2xl font-bold">Roles & Permissions</h1>
+                  <p className="text-muted-foreground mt-2">This page is under development.</p>
+                </div>
+              </AdminLayout>
+            </Suspense>
           );
-          const AdminLayout = require("@/pages/admin/layout").default;
+          
           return <AdminRoles />;
         }} />
       </Route>
