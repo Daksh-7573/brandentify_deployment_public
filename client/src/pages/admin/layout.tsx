@@ -129,6 +129,12 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       permission: "view_analytics"
     },
     { 
+      path: "/admin/analytics-new", 
+      label: "Analytics (New)", 
+      icon: <BarChart2 className="h-5 w-5" />,
+      permission: "view_analytics"
+    },
+    { 
       path: "/admin/settings", 
       label: "System Settings", 
       icon: <Settings className="h-5 w-5" />,

@@ -317,6 +317,27 @@ function Router() {
           return <AdminAnalytics />;
         }} />
       </Route>
+      {/* Additional route for direct access to analytics-new for debugging */}
+      <Route path="/admin/analytics-new">
+        <ProtectedRoute path="/admin/analytics-new" component={() => {
+          const AdminLayout = lazy(() => import("@/pages/admin/layout"));
+          const AdminCheck = lazy(() => import("@/middleware/admin-check").then(mod => ({ default: mod.AdminCheck })));
+          
+          const AdminAnalytics = () => (
+            <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>}>
+              <AdminCheck>
+                <AdminLayout>
+                  <AnalyticsDashboard />
+                </AdminLayout>
+              </AdminCheck>
+            </Suspense>
+          );
+          
+          const AnalyticsDashboard = lazy(() => import("@/pages/admin/analytics-new"));
+          
+          return <AdminAnalytics />;
+        }} />
+      </Route>
       <Route path="/admin/settings">
         <ProtectedRoute path="/admin/settings" component={() => {
           const AdminLayout = lazy(() => import("@/pages/admin/layout"));
