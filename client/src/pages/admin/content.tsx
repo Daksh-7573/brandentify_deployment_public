@@ -55,7 +55,13 @@ export default function ContentManagementPage() {
     error: contentError 
   } = useQuery({
     queryKey: ['/api/admin/public/content'],
-    queryFn: () => apiRequest('/api/admin/public/content')
+    queryFn: async () => {
+      const response = await fetch('/api/admin/public/content');
+      if (!response.ok) {
+        throw new Error('Failed to fetch content');
+      }
+      return response.json();
+    }
   });
   
   // Use real data when available
