@@ -48,6 +48,7 @@ import PrivacyPage from "@/pages/privacy"; // Privacy & Data Control page
 import CookieConsentBanner from "@/components/privacy/cookie-consent-banner"; // Cookie consent banner
 import DirectUsersPage from "@/pages/direct-users"; // Direct access to users (debugging)
 import DirectContentPage from "@/pages/direct-content"; // Direct access to content items (debugging)
+import DirectContentManagementPage from "@/pages/direct-content-management"; // Direct content management (debugging)
 // Lazy load the SharedCardPage to improve performance and show loader immediately
 import { lazy, Suspense } from "react";
 const SharedCardPage = lazy(() => import("@/pages/shared-card"));
@@ -281,7 +282,8 @@ function Router() {
             </Suspense>
           );
           
-          const ContentManagement = lazy(() => import("@/pages/admin/content"));
+          // Use direct content page instead to avoid syntax errors
+          const ContentManagement = lazy(() => import("@/pages/admin/content-direct"));
           
           return <AdminContent />;
         }} />
