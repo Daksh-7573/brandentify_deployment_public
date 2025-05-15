@@ -44,6 +44,7 @@ export interface IndustryComboboxProps {
   width?: string;
   triggerClassName?: string;
   contentClassName?: string;
+  useDarkMode?: boolean;
 }
 
 export function IndustryCombobox({
@@ -54,7 +55,8 @@ export function IndustryCombobox({
   disabled = false,
   width = "w-full",
   triggerClassName,
-  contentClassName
+  contentClassName,
+  useDarkMode = false
 }: IndustryComboboxProps) {
   const [open, setOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
@@ -111,35 +113,59 @@ export function IndustryCombobox({
             "justify-between", 
             width, 
             className,
-            triggerClassName || "border-blue-100 focus:border-blue-300 focus-visible:ring-blue-500"
+            useDarkMode 
+              ? "bg-[rgba(18,18,18,0.95)] text-white border-white/20 hover:bg-white/10 focus:bg-[rgba(18,18,18,0.95)]" 
+              : "border-blue-100 focus:border-blue-300 focus-visible:ring-blue-500",
+            triggerClassName
           )}
           disabled={disabled}
           onClick={() => setOpen(true)}
         >
           {displayValue 
             ? displayValue 
-            : <span className="text-muted-foreground">{placeholder}</span>
+            : <span className={cn(
+                "text-muted-foreground",
+                useDarkMode && "text-gray-400"
+              )}>{placeholder}</span>
           }
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          <ChevronsUpDown className={cn(
+            "ml-2 h-4 w-4 shrink-0 opacity-50",
+            useDarkMode && "text-white"
+          )} />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className={cn("p-0", width, contentClassName)}>
-        <Command shouldFilter={false}>
+      <PopoverContent className={cn(
+        "p-0", 
+        width, 
+        useDarkMode ? "bg-[rgba(30,30,30,0.95)] border-white/20" : "",
+        contentClassName
+      )}>
+        <Command shouldFilter={false} className={useDarkMode ? "bg-transparent" : ""}>
           <CommandInput 
             placeholder="Search industries or type to add new..." 
             onValueChange={setSearchValue}
             value={searchValue}
-            className="h-9 border-blue-100 focus-visible:ring-blue-500"
+            className={cn(
+              "h-9",
+              useDarkMode
+                ? "bg-[rgba(18,18,18,0.95)] text-white border-white/20 focus:border-white/40 placeholder:text-gray-400"
+                : "border-blue-100 focus-visible:ring-blue-500"
+            )}
             onKeyDown={handleKeyDown}
           />
-          <CommandList>
+          <CommandList className={useDarkMode ? "text-white" : ""}>
             {filteredIndustries.length === 0 && (
-              <CommandEmpty>
+              <CommandEmpty className={useDarkMode ? "text-white" : ""}>
                 No industries found
                 {searchValue && (
                   <Button
                     variant="ghost"
-                    className="mt-2 w-full justify-start text-left text-blue-600 hover:text-blue-800 hover:bg-blue-50"
+                    className={cn(
+                      "mt-2 w-full justify-start text-left",
+                      useDarkMode
+                        ? "text-white hover:text-white hover:bg-white/10"
+                        : "text-blue-600 hover:text-blue-800 hover:bg-blue-50"
+                    )}
                     onClick={() => {
                       onChange(searchValue);
                       setOpen(false);
@@ -154,7 +180,12 @@ export function IndustryCombobox({
               {filteredIndustries.map(industry => (
                 <div 
                   key={industry}
-                  className="px-2 py-1.5 text-sm cursor-pointer hover:bg-blue-50 flex items-center"
+                  className={cn(
+                    "px-2 py-1.5 text-sm cursor-pointer flex items-center",
+                    useDarkMode
+                      ? "text-white hover:bg-white/10"
+                      : "hover:bg-blue-50"
+                  )}
                   onClick={() => {
                     onChange(industry);
                     setOpen(false);
@@ -163,7 +194,11 @@ export function IndustryCombobox({
                   <Check
                     className={cn(
                       "mr-2 h-4 w-4",
-                      value === industry ? "opacity-100 text-blue-600" : "opacity-0"
+                      value === industry 
+                        ? useDarkMode
+                          ? "opacity-100 text-white"
+                          : "opacity-100 text-blue-600" 
+                        : "opacity-0"
                     )}
                   />
                   {industry}
