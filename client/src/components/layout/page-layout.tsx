@@ -21,7 +21,7 @@ export function PageLayout({
   return (
     <div className="flex min-h-screen w-full flex-col">
       <Header />
-      <div className="mt-16">
+      <div className="mt-14"> {/* Reduced top margin to avoid gap */}
         <PageHeader 
           heading={title}
           description={description}
