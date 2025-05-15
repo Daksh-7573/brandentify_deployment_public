@@ -597,11 +597,11 @@ const Radar = () => {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="job-title">Job Title</Label>
+                  <Label htmlFor="job-title" className="text-white">Job Title</Label>
                   <div className="relative">
                     <input
                       id="job-title"
-                      className="w-full px-3 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                      className="w-full px-3 py-2 border border-white/20 bg-[rgba(18,18,18,0.95)] rounded-md text-white text-sm focus:outline-none focus:ring-1 focus:ring-white/30 placeholder:text-white/50"
                       placeholder="e.g. Software Engineer"
                       value={jobTitleFilter}
                       onChange={(e) => setJobTitleFilter(e.target.value)}
@@ -610,18 +610,18 @@ const Radar = () => {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="industry">Industry</Label>
+                  <Label htmlFor="industry" className="text-white">Industry</Label>
                   <Select
                     value={industryFilter}
                     onValueChange={setIndustryFilter}
                   >
-                    <SelectTrigger id="industry" className="w-full">
+                    <SelectTrigger id="industry" className="w-full bg-[rgba(18,18,18,0.95)] text-white border-white/20">
                       <SelectValue placeholder="Select an industry" />
                     </SelectTrigger>
-                    <SelectContent className="max-h-80">
-                      <SelectItem value="all">All Industries</SelectItem>
+                    <SelectContent className="max-h-80 bg-[rgba(18,18,18,0.95)] text-white border-white/20">
+                      <SelectItem value="all" className="focus:bg-white/10 focus:text-white">All Industries</SelectItem>
                       {INDUSTRIES.map((industry) => (
-                        <SelectItem key={industry} value={industry}>
+                        <SelectItem key={industry} value={industry} className="focus:bg-white/10 focus:text-white">
                           {industry}
                         </SelectItem>
                       ))}
@@ -630,18 +630,18 @@ const Radar = () => {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="looking-for">Looking For</Label>
+                  <Label htmlFor="looking-for" className="text-white">Looking For</Label>
                   <Select
                     value={lookingForFilter}
                     onValueChange={setLookingForFilter}
                   >
-                    <SelectTrigger id="looking-for" className="w-full">
+                    <SelectTrigger id="looking-for" className="w-full bg-[rgba(18,18,18,0.95)] text-white border-white/20">
                       <SelectValue placeholder="Select what you're looking for" />
                     </SelectTrigger>
-                    <SelectContent className="max-h-80">
-                      <SelectItem value="all">All Categories</SelectItem>
+                    <SelectContent className="max-h-80 bg-[rgba(18,18,18,0.95)] text-white border-white/20">
+                      <SelectItem value="all" className="focus:bg-white/10 focus:text-white">All Categories</SelectItem>
                       {LOOKING_FOR_CATEGORIES.map((category) => (
-                        <SelectItem key={category.value} value={category.value}>
+                        <SelectItem key={category.value} value={category.value} className="focus:bg-white/10 focus:text-white">
                           {category.label}
                         </SelectItem>
                       ))}
@@ -651,20 +651,20 @@ const Radar = () => {
               </div>
               
               <div className="flex-1 space-y-4">
-                <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                  <h4 className="text-sm font-medium mb-2">Your Location Status</h4>
+                <div className="p-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-lg">
+                  <h4 className="text-sm font-medium mb-2 text-white">Your Location Status</h4>
                   <div className="flex items-center">
                     <div className={`h-2.5 w-2.5 rounded-full mr-2 ${
                       locationStatus === 'granted' ? 'bg-green-500' : 
                       locationStatus === 'denied' ? 'bg-red-500' : 'bg-amber-500'
                     }`} />
-                    <span className="text-sm text-gray-500">
+                    <span className="text-sm text-white/70">
                       {locationStatus === 'granted' ? 'Location access granted' : 
                        locationStatus === 'denied' ? 'Location access denied' : 'Pending location access'}
                     </span>
                   </div>
                   {coordinates && (
-                    <p className="text-xs text-gray-500 mt-2">
+                    <p className="text-xs text-white/70 mt-2">
                       Current coordinates: {coordinates.lat.toFixed(6)}, {coordinates.lng.toFixed(6)}
                     </p>
                   )}
@@ -672,7 +672,7 @@ const Radar = () => {
                 
                 <Button 
                   variant="outline" 
-                  className="w-full"
+                  className="w-full bg-white/10 text-white hover:bg-white/20 border border-white/20"
                   onClick={handleRefreshLocation}
                   disabled={locationStatus !== 'granted' || updateGeoLocationMutation.isPending}
                 >
