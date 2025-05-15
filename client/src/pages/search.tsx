@@ -730,28 +730,28 @@ const SearchPage = () => {
               {/* Pulses Results */}
               <TabsContent value="pulses">
                 {!submittedQuery ? (
-                  <div className="text-center py-12">
-                    <MessageSquare className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                    <h3 className="text-lg font-medium">Search for pulses</h3>
-                    <p className="text-gray-500 mt-2">
+                  <div className="text-center py-12 border border-white/10 rounded-lg bg-gray-900/60 backdrop-blur-md shadow-xl">
+                    <MessageSquare className="mx-auto h-12 w-12 text-white/70 mb-4" />
+                    <h3 className="text-lg font-medium text-white">Search for pulses</h3>
+                    <p className="text-gray-300 mt-2">
                       Discover polls, media shares, and projects from professionals
                     </p>
                   </div>
                 ) : isLoading ? (
                   <div className="space-y-4">
                     {[1, 2, 3].map((i) => (
-                      <Card key={i}>
+                      <Card key={i} className="bg-gray-900/60 backdrop-blur-md border border-white/10 shadow-xl">
                         <CardContent className="py-4">
                           <div className="flex items-center gap-3 mb-3">
-                            <Skeleton className="h-10 w-10 rounded-full" />
+                            <Skeleton className="h-10 w-10 rounded-full bg-white/10" />
                             <div className="space-y-1">
-                              <Skeleton className="h-4 w-32" />
-                              <Skeleton className="h-3 w-24" />
+                              <Skeleton className="h-4 w-32 bg-white/10" />
+                              <Skeleton className="h-3 w-24 bg-white/10" />
                             </div>
                           </div>
-                          <Skeleton className="h-4 w-full mb-3" />
-                          <Skeleton className="h-4 w-full mb-3" />
-                          <Skeleton className="h-4 w-3/4" />
+                          <Skeleton className="h-4 w-full mb-3 bg-white/10" />
+                          <Skeleton className="h-4 w-full mb-3 bg-white/10" />
+                          <Skeleton className="h-4 w-3/4 bg-white/10" />
                         </CardContent>
                       </Card>
                     ))}
@@ -769,22 +769,22 @@ const SearchPage = () => {
                         photoURL: string | null;
                       };
                     }) => (
-                      <Card key={pulse.id} className="hover:border-primary/40 transition-colors cursor-pointer">
+                      <Card key={pulse.id} className="bg-gray-900/60 backdrop-blur-md border border-white/10 shadow-xl hover:border-white/30 transition-colors cursor-pointer">
                         <CardContent className="p-4">
                           <div className="flex items-center gap-3 mb-3">
                             <Avatar>
                               <AvatarImage src={pulse.user.photoURL || undefined} />
-                              <AvatarFallback>{getInitials(pulse.user.name)}</AvatarFallback>
+                              <AvatarFallback className="bg-white/20 text-white">{getInitials(pulse.user.name)}</AvatarFallback>
                             </Avatar>
                             <div>
-                              <h3 className="font-medium">{pulse.user.name}</h3>
-                              <p className="text-sm text-gray-500">
+                              <h3 className="font-medium text-white">{pulse.user.name}</h3>
+                              <p className="text-sm text-gray-300">
                                 {formatDistanceToNow(new Date(pulse.createdAt), { addSuffix: true })}
                               </p>
                             </div>
                           </div>
-                          <h4 className="font-medium mb-2">{pulse.title}</h4>
-                          <p className="text-gray-600 mb-3 line-clamp-2">{pulse.content}</p>
+                          <h4 className="font-medium mb-2 text-white">{pulse.title}</h4>
+                          <p className="text-gray-300 mb-3 line-clamp-2">{pulse.content}</p>
                           <div className="flex">
                             <Badge variant={
                               pulse.type === "poll" ? "secondary" : 
@@ -822,21 +822,21 @@ const SearchPage = () => {
                 ) : isLoading ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {[1, 2, 3, 4, 5, 6].map((i) => (
-                      <Card key={i} className="overflow-hidden rounded-xl shadow-lg border-0">
-                        <div className="bg-gradient-to-br from-gray-200 via-gray-100 to-gray-50 h-28 relative overflow-hidden">
-                          <div className="absolute bottom-0 left-0 w-20 h-20 bg-gray-200 rounded-full -mb-10 -ml-10 blur-xl"></div>
-                          <div className="absolute top-0 right-0 w-20 h-20 bg-gray-200 rounded-full -mt-10 -mr-10 blur-xl"></div>
+                      <Card key={i} className="overflow-hidden rounded-xl shadow-xl border border-white/10 bg-gray-900/60 backdrop-blur-md">
+                        <div className="bg-gradient-to-br from-white/15 via-white/10 to-white/5 h-28 relative overflow-hidden">
+                          <div className="absolute bottom-0 left-0 w-20 h-20 bg-white/10 rounded-full -mb-10 -ml-10 blur-xl"></div>
+                          <div className="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full -mt-10 -mr-10 blur-xl"></div>
                         </div>
                         <div className="px-6 pb-6 relative">
                           <div className="flex justify-center -mt-12 mb-4">
-                            <Skeleton className="h-24 w-24 rounded-full border-4 border-white" />
+                            <Skeleton className="h-24 w-24 rounded-full border-4 border-white/20 bg-white/10" />
                           </div>
                           <div className="text-center space-y-3">
-                            <Skeleton className="h-5 w-36 mx-auto rounded-md" />
-                            <Skeleton className="h-4 w-28 mx-auto rounded-md" />
-                            <Skeleton className="h-3 w-44 mx-auto rounded-md" />
+                            <Skeleton className="h-5 w-36 mx-auto rounded-md bg-white/10" />
+                            <Skeleton className="h-4 w-28 mx-auto rounded-md bg-white/10" />
+                            <Skeleton className="h-3 w-44 mx-auto rounded-md bg-white/10" />
                             <div className="py-2 mt-2">
-                              <Skeleton className="h-9 w-28 mx-auto rounded-full" />
+                              <Skeleton className="h-9 w-28 mx-auto rounded-full bg-white/10" />
                             </div>
                           </div>
                         </div>
@@ -918,10 +918,10 @@ const SearchPage = () => {
                 ) : isLoading ? (
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-                      <Card key={i}>
+                      <Card key={i} className="bg-gray-900/60 backdrop-blur-md border border-white/10 shadow-xl">
                         <CardContent className="p-4">
-                          <Skeleton className="h-6 w-24 mb-2" />
-                          <Skeleton className="h-4 w-16" />
+                          <Skeleton className="h-6 w-24 mb-2 bg-white/10" />
+                          <Skeleton className="h-4 w-16 bg-white/10" />
                         </CardContent>
                       </Card>
                     ))}
