@@ -1,14 +1,17 @@
 import React from 'react';
 import { ChatProvider } from '@/contexts/ChatContext';
 import Chat from '@/components/messaging/Chat';
-import { Loader2, MessageSquare } from 'lucide-react';
+import { Loader2, MessageSquare, Home, Search, MapPin, Trophy, Flag, Shield, Zap, MessageCircle, Settings, BellRing, User } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/use-auth';
+import { useLocation } from 'wouter';
+import Header from '@/components/layout/header';
 import '../styles/neo-glass-spotify.css';
 
 const ChatPage: React.FC = () => {
   // Get current user data from the auth context
   const { user, isLoading: authLoading } = useAuth();
+  const [, setLocation] = useLocation();
   
   // Get current user ID (from auth context or localStorage as fallback)
   const userId = user?.uid || Number(localStorage.getItem('userId')) || 0;
@@ -63,10 +66,26 @@ const ChatPage: React.FC = () => {
 
   return (
     <div className="neo-spotify-container">
-      <div className="neo-spotify-wrapper">
-        <ChatProvider userId={userId}>
-          <Chat userId={userId} />
-        </ChatProvider>
+      {/* Top Navigation Bar */}
+      <Header />
+      
+      {/* Page Heading */}
+      <div className="pt-20 pb-6 px-4 md:px-8">
+        <div className="max-w-7xl mx-auto">
+          <h1 className="text-3xl font-bold text-spotify-white mb-2">Messages</h1>
+          <p className="text-spotify-light-gray">Connect with professionals in your network</p>
+        </div>
+      </div>
+      
+      {/* Main Content Area with Background Card */}
+      <div className="max-w-7xl mx-auto px-4 md:px-8">
+        <div className="bg-spotify-glass-bg backdrop-filter backdrop-blur-[15px] border border-spotify-glass-border rounded-xl shadow-lg overflow-hidden">
+          <div className="neo-spotify-wrapper p-4">
+            <ChatProvider userId={userId}>
+              <Chat userId={userId} />
+            </ChatProvider>
+          </div>
+        </div>
       </div>
     </div>
   );
