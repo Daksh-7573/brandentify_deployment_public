@@ -14,7 +14,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { calculateOverallProfileCompletion } from "@/lib/profile-utils";
 import { useState, useEffect } from "react";
-import { Camera, FileText, Edit, Loader2 } from "lucide-react";
+import { Camera, FileText, Edit, Loader2, FolderIcon } from "lucide-react";
 import PersonalInfoIcon from "@/components/icons/personal-info-icon";
 import { useProfilePicture } from "@/hooks/use-profile-picture";
 import { ProfilePictureDialog } from "@/components/profile/profile-picture-dialog";
@@ -271,12 +271,14 @@ export default function ProfileNeo() {
   // If loading, show skeleton
   if (isUserDataLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black">
+      <div className="flex h-screen flex-col">
         <Header />
-        <div className="pt-16">
-          <NeoGlassLayout className="mt-3 mx-6">
-            <ProfilePageSkeleton />
-          </NeoGlassLayout>
+        <div className="flex flex-1 overflow-hidden pt-16">
+          <div className="flex-1 overflow-auto">
+            <NeoGlassLayout className="mt-3 mx-6">
+              <ProfilePageSkeleton />
+            </NeoGlassLayout>
+          </div>
         </div>
       </div>
     );
@@ -301,256 +303,226 @@ export default function ProfileNeo() {
   };
   
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black">
-      {/* Top Navigation */}
+    <div className="flex h-screen flex-col">
       <Header />
-
-      {/* Main Content */}
-      <div className="pt-16"> {/* Padding for fixed header */}
-        <NeoGlassLayout className="mt-3 mx-6">
-          {/* Profile Header */}
-          <div className="mb-8">
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between">
-              <div>
-                <h1 className="text-3xl font-bold tracking-tight text-white">Profile</h1>
-                <p className="text-white/80 mt-1">
-                  Manage your professional information and career details
-                </p>
-              </div>
-              <div className="flex items-center gap-4 mt-4 md:mt-0">
-                <button 
-                  onClick={() => {
-                    // Create a loading state in the button
-                    const btn = document.getElementById('portfolio-btn');
-                    if (btn) {
-                      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
-                      btn.classList.add('opacity-80');
-                    }
-                    
-                    // Pre-create empty portfolio in the background
-                    fetch('/api/portfolios', {
-                      method: 'POST',
-                      headers: {
-                        'Content-Type': 'application/json',
-                      },
-                      body: JSON.stringify({
-                        userId: userData?.id,
-                        layout: 'professional',
-                        isPublished: false,
-                        publicUrl: null
-                      })
-                    }).catch(err => console.log("Portfolio creation attempted - ignoring error if already exists"));
-                    
-                    // Redirect to portfolio edit page
-                    setLocation('/portfolio/edit');
-                  }}
-                  id="portfolio-btn"
-                  className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-[#e0e0e0] to-[#ffffff] text-black font-medium text-sm transition-all duration-200 hover:shadow-lg hover:scale-105"
-                >
-                  Portfolio
-                </button>
-                <button 
-                  onClick={() => setLocation('/career-capsule')}
-                  className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-[#e0e0e0] to-[#ffffff] text-black font-medium text-sm transition-all duration-200 hover:shadow-lg hover:scale-105"
-                >
-                  <FileText className="w-4 h-4 mr-2" />
-                  Career Capsule
-                </button>
+      <div className="flex flex-1 overflow-hidden pt-16"> {/* Added padding-top for fixed header */}
+        {/* Main content area */}
+        <div className="flex-1 overflow-auto">
+          <NeoGlassLayout className="mt-3 mx-6"> {/* Matching Industry Pulse layout with reduced top margin */}
+            {/* Profile Header */}
+            <div className="mb-8">
+              <div className="flex flex-col md:flex-row items-start md:items-center justify-between">
+                <div>
+                  <h1 className="text-3xl font-bold tracking-tight text-white">Profile</h1>
+                  <p className="text-white/80 mt-1">
+                    Manage your professional information and career details
+                  </p>
+                </div>
+                <div className="flex items-center gap-4 mt-4 md:mt-0">
+                  <button 
+                    onClick={() => {
+                      // Create a loading state in the button
+                      const btn = document.getElementById('portfolio-btn');
+                      if (btn) {
+                        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+                        btn.classList.add('opacity-80');
+                      }
+                      
+                      // Pre-create empty portfolio in the background
+                      fetch('/api/portfolios', {
+                        method: 'POST',
+                        headers: {
+                          'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                          userId: userData?.id,
+                          layout: 'professional',
+                          isPublished: false,
+                          publicUrl: null
+                        })
+                      }).catch(err => console.log("Portfolio creation attempted - ignoring error if already exists"));
+                      
+                      // Redirect to portfolio edit page
+                      setLocation('/portfolio/edit');
+                    }}
+                    id="portfolio-btn"
+                    className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-[#e0e0e0] to-[#ffffff] text-black font-medium text-sm transition-all duration-200 hover:shadow-lg hover:scale-105"
+                  >
+                    Portfolio
+                  </button>
+                  <button 
+                    onClick={() => setLocation('/career-capsule')}
+                    className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-[#e0e0e0] to-[#ffffff] text-black font-medium text-sm transition-all duration-200 hover:shadow-lg hover:scale-105"
+                  >
+                    <FileText className="w-4 h-4 mr-2" />
+                    Career Capsule
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-          
-          {/* Personal Info Section */}
-          <NeoGlassSection className="mb-6">
-            <div className="p-4">
-              <div className="flex flex-col md:flex-row gap-6">
-                {/* Profile Image */}
-                <div className="flex-shrink-0 flex flex-col items-center">
-                  <div className="relative group">
-                    <div className="w-32 h-32 rounded-full overflow-hidden border-2 border-white/20 bg-black/30 backdrop-blur-md">
-                      <img 
-                        src={profilePictureUrl || "https://api.dicebear.com/7.x/initials/svg?seed=" + userData?.name} 
-                        alt={userData?.name || "Profile"} 
-                        className="w-full h-full object-cover"
-                      />
-                      {isUploading && (
-                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/50 text-white">
-                          <div className="w-16 h-4 bg-gray-700 rounded-full overflow-hidden">
-                            <div 
-                              className="h-full bg-white" 
-                              style={{ width: `${uploadProgress}%` }}
-                            ></div>
+            
+            {/* Personal Info Section */}
+            <NeoGlassSection className="mb-6">
+              <div className="p-4">
+                <div className="flex flex-col md:flex-row gap-6">
+                  {/* Profile Image */}
+                  <div className="flex-shrink-0 flex flex-col items-center">
+                    <div className="relative group">
+                      <div className="w-32 h-32 rounded-full overflow-hidden border-2 border-white/20 bg-black/30 backdrop-blur-md">
+                        <img 
+                          src={profilePictureUrl || "https://api.dicebear.com/7.x/initials/svg?seed=" + userData?.name} 
+                          alt={userData?.name || "Profile"} 
+                          className="w-full h-full object-cover"
+                        />
+                        {isUploading && (
+                          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/50 text-white">
+                            <div className="w-16 h-4 bg-gray-700 rounded-full overflow-hidden">
+                              <div 
+                                className="h-full bg-white" 
+                                style={{ width: `${uploadProgress}%` }}
+                              ></div>
+                            </div>
+                            <span className="text-xs mt-1">{uploadProgress}%</span>
                           </div>
-                          <span className="text-xs mt-1">{uploadProgress}%</span>
-                        </div>
-                      )}
+                        )}
+                      </div>
+                      <button 
+                        onClick={openProfilePictureDialog}
+                        className="absolute bottom-1 right-1 p-2 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm text-white hover:bg-white/20 transition-all"
+                      >
+                        <Camera className="h-4 w-4" />
+                      </button>
                     </div>
-                    <button 
-                      onClick={openProfilePictureDialog}
-                      className="absolute bottom-1 right-1 p-2 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm text-white hover:bg-white/20 transition-all"
-                    >
-                      <Camera className="h-4 w-4" />
-                    </button>
+                    
+                    <div className="text-center mt-4">
+                      <h2 className="text-xl font-bold text-white">{userData?.name}</h2>
+                      <p className="text-white/80 text-sm">{userData?.title || "Add your job title"}</p>
+                      <p className="text-white/60 text-xs mt-1">{userData?.location || "Add your location"}</p>
+                    </div>
                   </div>
                   
-                  <div className="text-center mt-4">
-                    <h2 className="text-xl font-bold text-white">{userData?.name}</h2>
-                    <p className="text-white/80 text-sm">{userData?.title || "Add your job title"}</p>
-                    <p className="text-white/60 text-xs mt-1">{userData?.location || "Add your location"}</p>
-                  </div>
-                </div>
-                
-                {/* Profile Info & Stats */}
-                <div className="flex-1">
-                  <div className="space-y-4">
-                    {/* About Me */}
-                    <div>
-                      <div className="flex items-center justify-between mb-2">
-                        <h3 className="text-lg font-medium text-white">About Me</h3>
-                        <button
-                          onClick={() => setShowEditAboutDialog(true)}
-                          className="text-white/60 hover:text-white transition-colors"
-                        >
-                          <Edit className="h-4 w-4" />
-                        </button>
-                      </div>
-                      <p className="text-white/80 text-sm">
-                        {userData?.about || "Add a professional summary to introduce yourself to other professionals."}
-                      </p>
-                    </div>
-                    
-                    {/* Industry & Domain */}
-                    <div>
-                      <div className="flex items-center justify-between mb-2">
-                        <h3 className="text-lg font-medium text-white">Industry & Domain</h3>
-                        <button
-                          onClick={() => setShowIndustryDialog(true)}
-                          className="text-white/60 hover:text-white transition-colors"
-                        >
-                          <Edit className="h-4 w-4" />
-                        </button>
-                      </div>
-                      <div className="flex flex-wrap gap-2">
-                        {userData?.industry ? (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-white/10 text-white">
-                            {userData.industry}
-                          </span>
-                        ) : null}
-                        
-                        {userData?.domain ? (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-white/10 text-white">
-                            {userData.domain}
-                          </span>
-                        ) : null}
-                        
-                        {!userData?.industry && !userData?.domain && (
-                          <span className="text-white/60 text-sm">Add your industry and domain specialization</span>
-                        )}
-                      </div>
-                    </div>
-                    
-                    {/* Looking For */}
-                    <div>
-                      <div className="flex items-center justify-between mb-2">
-                        <h3 className="text-lg font-medium text-white">I am looking for</h3>
-                        <button
-                          onClick={() => setShowLookingForDialog(true)}
-                          className="text-white/60 hover:text-white transition-colors"
-                        >
-                          <Edit className="h-4 w-4" />
-                        </button>
-                      </div>
+                  {/* Profile Info & Stats */}
+                  <div className="flex-1">
+                    <div className="space-y-4">
+                      {/* About Me */}
                       <div>
-                        {userData?.lookingFor ? (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-white/10 text-white">
-                            {lookingForLabel}
-                          </span>
-                        ) : (
-                          <span className="text-white/60 text-sm">Specify what you're looking for in your professional journey</span>
-                        )}
+                        <div className="flex items-center justify-between mb-2">
+                          <h3 className="text-lg font-medium text-white">About Me</h3>
+                          <button
+                            onClick={() => setShowEditAboutDialog(true)}
+                            className="text-white/60 hover:text-white transition-colors"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </button>
+                        </div>
+                        <p className="text-white/80 text-sm">
+                          {userData?.about || "Add a professional summary to introduce yourself to other professionals."}
+                        </p>
                       </div>
-                    </div>
-                    
-                    {/* Profile Completion */}
-                    <div>
-                      <h3 className="text-sm font-medium text-white mb-2">Profile Completion</h3>
-                      <div className="w-full bg-white/10 rounded-full h-2.5">
-                        <div className="bg-gradient-to-r from-[#e0e0e0] to-[#ffffff] h-2.5 rounded-full transition-all" style={{ width: `${profileCompletion}%` }}></div>
+                      
+                      {/* Industry & Domain */}
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <h3 className="text-lg font-medium text-white">Industry & Domain</h3>
+                          <button
+                            onClick={() => setShowIndustryDialog(true)}
+                            className="text-white/60 hover:text-white transition-colors"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </button>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {userData?.industry ? (
+                            <span className="px-2 py-1 text-xs rounded-full bg-white/10 border border-white/20 text-white">
+                              {userData.industry}
+                            </span>
+                          ) : null}
+                          
+                          {userData?.domain ? (
+                            <span className="px-2 py-1 text-xs rounded-full bg-white/10 border border-white/20 text-white">
+                              {userData.domain}
+                            </span>
+                          ) : null}
+                          
+                          {!userData?.industry && !userData?.domain && (
+                            <span className="text-white/60 text-sm">
+                              Add your industry and specialization to improve connections.
+                            </span>
+                          )}
+                        </div>
                       </div>
-                      <p className="text-white/60 text-xs mt-1">{profileCompletion}% Complete</p>
+                      
+                      {/* Looking For */}
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <h3 className="text-lg font-medium text-white">I am looking for</h3>
+                          <button
+                            onClick={() => setShowLookingForDialog(true)}
+                            className="text-white/60 hover:text-white transition-colors"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </button>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {userData?.lookingFor ? (
+                            <span className="px-2 py-1 text-xs rounded-full bg-white/10 border border-white/20 text-white">
+                              {lookingForLabel}
+                            </span>
+                          ) : (
+                            <span className="text-white/60 text-sm">
+                              Specify what you're looking for to help others connect with you.
+                            </span>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </NeoGlassSection>
-          
-          {/* Career Experience Section */}
-          <NeoGlassSection className="mb-6">
-            <div className="p-4">
-              <WorkExperience 
-                userFirebaseId={user.uid} 
-                userNumericId={userData?.id}
-              />
-            </div>
-          </NeoGlassSection>
-          
-          {/* Skills Section */}
-          <NeoGlassSection className="mb-6">
-            <div className="p-4">
-              <Skills 
-                userFirebaseId={user.uid} 
-                userNumericId={userData?.id}
-              />
-            </div>
-          </NeoGlassSection>
-          
-          {/* Education Section */}
-          <NeoGlassSection className="mb-6">
-            <div className="p-4">
-              <Education 
-                userFirebaseId={user.uid} 
-                userNumericId={userData?.id}
-              />
-            </div>
-          </NeoGlassSection>
-          
-          {/* Projects Section */}
-          <NeoGlassSection className="mb-6">
-            <div className="p-4">
-              <Projects 
-                userFirebaseId={user.uid} 
-                userNumericId={userData?.id}
-              />
-            </div>
-          </NeoGlassSection>
-          
-          {/* Services Section */}
-          <NeoGlassSection className="mb-6">
-            <div className="p-4">
-              <Services 
-                userFirebaseId={user.uid} 
-                userNumericId={userData?.id}
-              />
-            </div>
-          </NeoGlassSection>
-          
-          {/* Account Actions */}
-          <NeoGlassSection>
-            <div className="p-4">
-              <h3 className="text-lg font-medium text-white mb-4">Account Actions</h3>
-              <div className="flex flex-wrap gap-4">
-                <button
-                  onClick={() => signOut()}
-                  className="inline-flex items-center px-4 py-2 rounded-full bg-white/10 border border-white/20 text-white font-medium text-sm transition-all duration-200 hover:bg-white/20"
-                >
-                  <i className="fas fa-sign-out-alt mr-2"></i>
-                  Sign Out
-                </button>
+            </NeoGlassSection>
+            
+            {/* Work Experience */}
+            <NeoGlassSection className="mb-6">
+              <WorkExperience userFirebaseId={user.uid} userNumericId={userData?.id} />
+            </NeoGlassSection>
+            
+            {/* Education */}
+            <NeoGlassSection className="mb-6">
+              <Education userFirebaseId={user.uid} userNumericId={userData?.id} />
+            </NeoGlassSection>
+            
+            {/* Skills */}
+            <NeoGlassSection className="mb-6">
+              <Skills userFirebaseId={user.uid} userNumericId={userData?.id} />
+            </NeoGlassSection>
+            
+            {/* Projects */}
+            <NeoGlassSection className="mb-6">
+              <Projects userFirebaseId={user.uid} userNumericId={userData?.id} />
+            </NeoGlassSection>
+            
+            {/* Services */}
+            <NeoGlassSection className="mb-6">
+              <Services userFirebaseId={user.uid} userNumericId={userData?.id} />
+            </NeoGlassSection>
+            
+            {/* Account Actions */}
+            <NeoGlassSection className="mb-6">
+              <div className="p-4">
+                <h3 className="text-lg font-medium text-white mb-4">Account Actions</h3>
+                <div className="flex flex-wrap gap-4">
+                  <button
+                    onClick={() => signOut()}
+                    className="inline-flex items-center px-4 py-2 rounded-full bg-white/10 border border-white/20 text-white font-medium text-sm transition-all duration-200 hover:bg-white/20"
+                  >
+                    <i className="fas fa-sign-out-alt mr-2"></i>
+                    Sign Out
+                  </button>
+                </div>
               </div>
-            </div>
-          </NeoGlassSection>
-        </NeoGlassLayout>
+            </NeoGlassSection>
+          </NeoGlassLayout>
+        </div>
       </div>
       
       {/* Edit About Me Dialog */}
@@ -567,11 +539,11 @@ export default function ProfileNeo() {
                 value={aboutMe || ""}
                 onChange={(e) => setAboutMe(e.target.value)}
                 placeholder="Write a short professional summary..."
-                className="bg-black/80 border-white/20 text-white placeholder:text-white/50 focus:border-white/40"
-                rows={5}
+                className="bg-black/80 border-white/20 text-white resize-none h-32"
               />
               <p className="text-xs text-white/60">
-                Add a concise professional summary that highlights your expertise and career focus.
+                Share your professional background, expertise, and what motivates you. 
+                This helps others understand your career focus.
               </p>
             </div>
           </div>
@@ -604,63 +576,60 @@ export default function ProfileNeo() {
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label className="text-white">I am currently looking for</Label>
-              <Select 
+              <Label htmlFor="lookingFor" className="text-white">I am looking for</Label>
+              <Select
                 value={selectedLookingFor || ""}
                 onValueChange={setSelectedLookingFor}
               >
                 <SelectTrigger className="bg-black/80 border-white/20 text-white">
                   <SelectValue placeholder="Select what you're looking for" />
                 </SelectTrigger>
-                <SelectContent className="bg-black/90 border-white/20 text-white">
+                <SelectContent className="bg-black/90 border-white/20 text-white max-h-80">
                   <SelectGroup>
                     <SelectLabel className="text-white/60">Career & Job Seeking</SelectLabel>
-                    {LOOKING_FOR_CATEGORIES.filter(cat => cat.value.includes('job') || 
-                                                         cat.value.includes('intern') || 
-                                                         cat.value.includes('mentor')).map(cat => (
-                      <SelectItem key={cat.value} value={cat.value} className="text-white hover:bg-white/10">
-                        {cat.label}
+                    {LOOKING_FOR_CATEGORIES.slice(0, 6).map(category => (
+                      <SelectItem key={category.value} value={category.value} className="text-white hover:bg-white/10">
+                        {category.label}
                       </SelectItem>
                     ))}
                   </SelectGroup>
-                  <SelectSeparator />
+                  
+                  <SelectSeparator className="bg-white/10" />
+                  
                   <SelectGroup>
                     <SelectLabel className="text-white/60">Business & Investment</SelectLabel>
-                    {LOOKING_FOR_CATEGORIES.filter(cat => cat.value.includes('investor') || 
-                                                         cat.value.includes('startup') || 
-                                                         cat.value.includes('founder') || 
-                                                         cat.value.includes('partner') || 
-                                                         cat.value.includes('advisor')).map(cat => (
-                      <SelectItem key={cat.value} value={cat.value} className="text-white hover:bg-white/10">
-                        {cat.label}
+                    {LOOKING_FOR_CATEGORIES.slice(6, 12).map(category => (
+                      <SelectItem key={category.value} value={category.value} className="text-white hover:bg-white/10">
+                        {category.label}
                       </SelectItem>
                     ))}
                   </SelectGroup>
-                  <SelectSeparator />
+                  
+                  <SelectSeparator className="bg-white/10" />
+                  
                   <SelectGroup>
                     <SelectLabel className="text-white/60">Learning & Networking</SelectLabel>
-                    {LOOKING_FOR_CATEGORIES.filter(cat => cat.value.includes('trainer') || 
-                                                         cat.value.includes('learner') || 
-                                                         cat.value.includes('study') || 
-                                                         cat.value.includes('expert')).map(cat => (
-                      <SelectItem key={cat.value} value={cat.value} className="text-white hover:bg-white/10">
-                        {cat.label}
+                    {LOOKING_FOR_CATEGORIES.slice(12, 17).map(category => (
+                      <SelectItem key={category.value} value={category.value} className="text-white hover:bg-white/10">
+                        {category.label}
                       </SelectItem>
                     ))}
                   </SelectGroup>
-                  <SelectSeparator />
+                  
+                  <SelectSeparator className="bg-white/10" />
+                  
                   <SelectGroup>
-                    <SelectLabel className="text-white/60">Freelance</SelectLabel>
-                    {LOOKING_FOR_CATEGORIES.filter(cat => cat.value.includes('freelance')).map(cat => (
-                      <SelectItem key={cat.value} value={cat.value} className="text-white hover:bg-white/10">
-                        {cat.label}
+                    <SelectLabel className="text-white/60">Freelance & Side Hustle</SelectLabel>
+                    {LOOKING_FOR_CATEGORIES.slice(17).map(category => (
+                      <SelectItem key={category.value} value={category.value} className="text-white hover:bg-white/10">
+                        {category.label}
                       </SelectItem>
                     ))}
                   </SelectGroup>
                 </SelectContent>
               </Select>
               <p className="text-xs text-white/60">
-                This helps others understand what you're currently seeking in your professional journey.
+                This helps others understand what you're seeking and improves matching for networking opportunities.
               </p>
             </div>
           </div>
@@ -685,7 +654,7 @@ export default function ProfileNeo() {
         </DialogContent>
       </Dialog>
       
-      {/* Industry Dialog */}
+      {/* Industry and Domain Dialog */}
       <Dialog open={showIndustryDialog} onOpenChange={setShowIndustryDialog}>
         <DialogContent className="neo-glass-card border-0 max-w-md">
           <DialogHeader>
@@ -759,8 +728,6 @@ export default function ProfileNeo() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      
-      {/* Profile Picture Dialog will be opened via the hook */}
     </div>
   );
 }
