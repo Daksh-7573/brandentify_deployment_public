@@ -638,12 +638,13 @@ const SearchPage = () => {
   return (
     <div className="flex h-screen flex-col">
       <Header />
-      <div className="flex flex-1 overflow-hidden pt-16"> {/* Added padding-top for fixed header */}
+      <div className="flex flex-1 overflow-hidden pt-16" style={{ backgroundImage: 'url("/assets/interior-background-of-a-cozy-dark-living-room-ai-generated-photo.jpg")', backgroundSize: 'cover', backgroundPosition: 'center' }}>
         <div className="flex-1 overflow-auto w-full">
           <div className="max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="bg-gray-900/60 backdrop-blur-md border border-white/10 rounded-xl shadow-2xl p-6 mb-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Discover & Connect</h1>
-          <p className="text-gray-600">Find content, professionals, and networking opportunities in one place</p>
+          <h1 className="text-3xl font-bold mb-2 text-white">Discover & Connect</h1>
+          <p className="text-gray-300">Find content, professionals, and networking opportunities in one place</p>
         </div>
 
         {/* Main Tabs: Search vs Smart Connect */}
@@ -1374,6 +1375,7 @@ const SearchPage = () => {
             </div>
           </TabsContent>
         </Tabs>
+            </div>
           </div>
         </div>
       </div>
