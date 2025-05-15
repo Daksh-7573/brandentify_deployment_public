@@ -677,7 +677,7 @@ const SearchPage = () => {
                 <input
                   type="search"
                   placeholder="Search pulses, profiles, or hashtags..."
-                  className="w-full rounded-md pl-10 py-2 bg-gray-800/80 border border-gray-700/50 shadow-sm focus:outline-none focus:ring-1 focus:ring-white/20 focus:border-white/40 placeholder:text-gray-400 text-white transition-all"
+                  className="w-full rounded-md pl-10 py-2 bg-gray-800/90 border border-white/10 shadow-sm focus:outline-none focus:ring-1 focus:ring-white/20 focus:border-white/30 placeholder:text-gray-400 text-white transition-all backdrop-blur-md"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
@@ -1084,10 +1084,10 @@ const SearchPage = () => {
                             value={formData.domain}
                             onValueChange={(value) => setFormData({...formData, domain: value})}
                           >
-                            <SelectTrigger className="w-full bg-gray-800/80 border-gray-700/50 text-white focus:ring-white/20">
+                            <SelectTrigger className="w-full bg-gray-800/90 border-white/10 text-white focus:ring-white/20 focus:border-white/30 backdrop-blur-md">
                               <SelectValue placeholder="Select domain expertise" />
                             </SelectTrigger>
-                            <SelectContent className="bg-gray-800 border-gray-700/50 text-white">
+                            <SelectContent className="bg-gray-900/95 border-white/10 text-white backdrop-blur-md">
                               {domains.map(domain => (
                                 <SelectItem key={domain} value={domain}>
                                   {domain}
@@ -1105,7 +1105,7 @@ const SearchPage = () => {
                           value={formData.location}
                           onChange={handleInputChange}
                           placeholder="City, Country"
-                          className="w-full bg-gray-800/80 border-gray-700/50 text-white focus:ring-white/20 focus:border-white/40 placeholder:text-gray-400"
+                          className="w-full bg-gray-800/90 border-white/10 text-white focus:ring-white/20 focus:border-white/30 backdrop-blur-md placeholder:text-gray-400"
                         />
                       </div>
 
