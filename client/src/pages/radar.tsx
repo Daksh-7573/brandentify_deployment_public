@@ -721,7 +721,7 @@ const Radar = () => {
               ) : filteredNearbyUsers && filteredNearbyUsers.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="col-span-2 mb-2">
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-white/70">
                       Showing {filteredNearbyUsers.length} of {nearbyUsersData.length} nearby professionals
                       {(jobTitleFilter || industryFilter || lookingForFilter) && ' with your filters'}
                     </p>
