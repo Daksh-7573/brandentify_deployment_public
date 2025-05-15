@@ -957,50 +957,50 @@ export default function Projects() {
   };
 
   return (
-    <Card className="flex-1">
-      <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle>Project Showcase</CardTitle>
+    <NeoGlassSection title="Project Showcase" className="flex-1">
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex-1"></div>
         <div className="flex items-center gap-2">
-          <Button onClick={handleAdd} variant="outline" size="sm" className="h-8 gap-1">
+          <Button onClick={handleAdd} variant="secondary" size="sm" className="h-8 gap-1 bg-slate-800/60 text-white hover:bg-slate-700/70">
             <Plus className="w-4 h-4" />
             Add Project
           </Button>
         </div>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          {isLoading ? (
-            <div className="flex items-center justify-center h-40">
-              <div className="flex flex-col items-center">
-                <Loader2 className="w-6 h-6 text-primary animate-spin mb-2" />
-                <p className="text-sm text-muted-foreground">Loading your project showcase...</p>
-              </div>
+      </div>
+      
+      <div className="space-y-4">
+        {isLoading ? (
+          <div className="flex items-center justify-center h-40">
+            <div className="flex flex-col items-center">
+              <Loader2 className="w-6 h-6 text-white animate-spin mb-2" />
+              <p className="text-sm text-slate-300">Loading your project showcase...</p>
             </div>
-          ) : displayProjects && displayProjects.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {displayProjects.map((project) => (
-                <div key={project.id} className="border rounded-lg overflow-hidden shadow-sm group relative">
-                  {/* Project Thumbnail */}
-                  <div className="relative w-full aspect-square bg-muted flex items-center justify-center overflow-hidden">
-                    {project.thumbnailUrl ? (
-                      <img 
-                        src={
-                          project.thumbnailUrl.startsWith('/uploads/') 
-                            ? project.thumbnailUrl 
-                            : project.thumbnailUrl
-                        }
-                        alt={project.title} 
-                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
-                        onError={(e) => {
-                          console.error("Thumbnail image failed to load");
-                          (e.target as HTMLImageElement).style.display = 'none';
-                        }}
-                      />
-                    ) : project.mediaUrls && (
-                      (Array.isArray(project.mediaUrls) && project.mediaUrls.length > 0) || 
-                      (typeof project.mediaUrls === 'string' && 
-                       (project.mediaUrls.indexOf('http') >= 0 || 
-                        project.mediaUrls.indexOf('[') === 0))) ? (
+          </div>
+        ) : displayProjects && displayProjects.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {displayProjects.map((project) => (
+              <div key={project.id} className="bg-slate-800/60 backdrop-blur-md border border-white/5 rounded-lg overflow-hidden shadow-lg group relative">
+                {/* Project Thumbnail */}
+                <div className="relative w-full aspect-square bg-slate-900/70 flex items-center justify-center overflow-hidden">
+                  {project.thumbnailUrl ? (
+                    <img 
+                      src={
+                        project.thumbnailUrl.startsWith('/uploads/') 
+                          ? project.thumbnailUrl 
+                          : project.thumbnailUrl
+                      }
+                      alt={project.title} 
+                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
+                      onError={(e) => {
+                        console.error("Thumbnail image failed to load");
+                        (e.target as HTMLImageElement).style.display = 'none';
+                      }}
+                    />
+                  ) : project.mediaUrls && (
+                    (Array.isArray(project.mediaUrls) && project.mediaUrls.length > 0) || 
+                    (typeof project.mediaUrls === 'string' && 
+                     (project.mediaUrls.indexOf('http') >= 0 || 
+                      project.mediaUrls.indexOf('[') === 0))) ? (
                       <>
                         <img 
                           src={
@@ -1119,20 +1119,20 @@ export default function Projects() {
               ))}
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center h-40 p-6 text-center border rounded-lg border-dashed">
-              <FolderKanban className="w-10 h-10 mb-4 text-muted-foreground" />
-              <h3 className="text-lg font-medium mb-1">No projects yet</h3>
-              <p className="text-sm text-muted-foreground mb-4">
+            <div className="flex flex-col items-center justify-center h-40 p-6 text-center border border-white/5 rounded-lg bg-slate-800/40 backdrop-blur-md">
+              <FolderKanban className="w-10 h-10 mb-4 text-slate-300" />
+              <h3 className="text-lg font-medium mb-1 text-white">No projects yet</h3>
+              <p className="text-sm text-slate-300 mb-4">
                 Create your first project showcase to highlight your work
               </p>
-              <Button onClick={handleAdd} className="gap-1">
+              <Button onClick={handleAdd} className="gap-1 bg-slate-800/60 text-white hover:bg-slate-700/70">
                 <Plus className="w-4 h-4" />
                 Add New Project
               </Button>
             </div>
           )}
         </div>
-      </CardContent>
+      
       
       {/* Add Project Modal */}
       <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
@@ -2717,6 +2717,6 @@ export default function Projects() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </Card>
+    </NeoGlassSection>
   );
 }

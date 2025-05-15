@@ -23,9 +23,16 @@ export function NeoGlassLayout({ children, className = '' }: NeoGlassLayoutProps
  * NeoGlassSection component
  * Creates a section within the main Neo-Glass layout
  */
-export function NeoGlassSection({ children, className = '' }: NeoGlassLayoutProps) {
+interface NeoGlassSectionProps extends NeoGlassLayoutProps {
+  title?: string;
+}
+
+export function NeoGlassSection({ children, className = '', title }: NeoGlassSectionProps) {
   return (
     <div className={`neo-glass-card rounded-lg p-4 mb-6 ${className}`}>
+      {title && (
+        <h2 className="text-xl font-semibold mb-4 text-white">{title}</h2>
+      )}
       {children}
     </div>
   );
