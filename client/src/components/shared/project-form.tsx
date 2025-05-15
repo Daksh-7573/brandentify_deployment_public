@@ -53,6 +53,8 @@ interface ProjectFormProps {
   onCancel?: () => void;
   existingProject?: Project | null;
   closeModal?: () => void; // Optional function to close parent modal
+  useDarkMode?: boolean; // Flag to enable dark mode styling
+  className?: string; // Additional class name for form fields
 }
 
 interface MediaErrors {
@@ -64,7 +66,9 @@ export default function ProjectForm({
   onSuccess, 
   onCancel, 
   existingProject,
-  closeModal
+  closeModal,
+  useDarkMode = false,
+  className = ''
 }: ProjectFormProps) {
   const { user, isDemoMode } = useAuth();
   const userId = isDemoMode ? 1 : (user?.id || user?.uid || 0);
@@ -426,9 +430,22 @@ export default function ProjectForm({
   return (
     <div className="space-y-6">
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="details">Project Details</TabsTrigger>
-          <TabsTrigger value="media">Media & Attachments</TabsTrigger>
+        <TabsList className={cn(
+          "grid w-full grid-cols-2",
+          useDarkMode ? "bg-[rgba(30,30,30,0.7)] text-white border-white/10" : ""
+        )}>
+          <TabsTrigger 
+            value="details" 
+            className={useDarkMode ? "data-[state=active]:bg-[#1DB954] data-[state=active]:text-black" : ""}
+          >
+            Project Details
+          </TabsTrigger>
+          <TabsTrigger 
+            value="media"
+            className={useDarkMode ? "data-[state=active]:bg-[#1DB954] data-[state=active]:text-black" : ""}
+          >
+            Media & Attachments
+          </TabsTrigger>
         </TabsList>
         
         <Form {...projectForm}>
@@ -439,11 +456,18 @@ export default function ProjectForm({
                 name="title"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Title</FormLabel>
+                    <FormLabel className={useDarkMode ? "text-white" : ""}>Title</FormLabel>
                     <FormControl>
-                      <Input placeholder="Project title" {...field} />
+                      <Input 
+                        placeholder="Project title" 
+                        {...field} 
+                        className={cn(
+                          className,
+                          useDarkMode ? "neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20" : ""
+                        )}
+                      />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className={useDarkMode ? "text-red-400" : ""} />
                   </FormItem>
                 )}
               />
@@ -453,16 +477,20 @@ export default function ProjectForm({
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Description</FormLabel>
+                    <FormLabel className={useDarkMode ? "text-white" : ""}>Description</FormLabel>
                     <FormControl>
                       <Textarea
                         placeholder="Describe your project"
-                        className="min-h-[120px]"
+                        className={cn(
+                          "min-h-[120px]",
+                          className,
+                          useDarkMode ? "neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20" : ""
+                        )}
                         {...field}
                         value={field.value || ''}
                       />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className={useDarkMode ? "text-red-400" : ""} />
                   </FormItem>
                 )}
               />
@@ -473,11 +501,19 @@ export default function ProjectForm({
                   name="category"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Category</FormLabel>
+                      <FormLabel className={useDarkMode ? "text-white" : ""}>Category</FormLabel>
                       <FormControl>
-                        <Input placeholder="e.g., Web Development" {...field} value={field.value || ''} />
+                        <Input 
+                          placeholder="e.g., Web Development" 
+                          {...field} 
+                          value={field.value || ''} 
+                          className={cn(
+                            className,
+                            useDarkMode ? "neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20" : ""
+                          )}
+                        />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className={useDarkMode ? "text-red-400" : ""} />
                     </FormItem>
                   )}
                 />
@@ -487,14 +523,16 @@ export default function ProjectForm({
                   name="industry"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Industry</FormLabel>
+                      <FormLabel className={useDarkMode ? "text-white" : ""}>Industry</FormLabel>
                       <FormControl>
                         <IndustryCombobox
                           value={field.value || ''}
                           onChange={field.onChange}
+                          triggerClassName={useDarkMode ? "neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20" : ""}
+                          contentClassName={useDarkMode ? "bg-[rgba(18,18,18,0.95)] text-white border-white/20" : ""}
                         />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className={useDarkMode ? "text-red-400" : ""} />
                     </FormItem>
                   )}
                 />
@@ -506,11 +544,18 @@ export default function ProjectForm({
                   name="startDate"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Start Date</FormLabel>
+                      <FormLabel className={useDarkMode ? "text-white" : ""}>Start Date</FormLabel>
                       <FormControl>
-                        <Input type="date" {...field} />
+                        <Input 
+                          type="date" 
+                          {...field}
+                          className={cn(
+                            className,
+                            useDarkMode ? "neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20" : ""
+                          )}
+                        />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className={useDarkMode ? "text-red-400" : ""} />
                     </FormItem>
                   )}
                 />
@@ -520,15 +565,19 @@ export default function ProjectForm({
                   name="projectUrl"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Project URL</FormLabel>
+                      <FormLabel className={useDarkMode ? "text-white" : ""}>Project URL</FormLabel>
                       <FormControl>
                         <Input 
                           placeholder="https://example.com" 
                           {...field}
                           value={field.value || ''}
+                          className={cn(
+                            className,
+                            useDarkMode ? "neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20" : ""
+                          )}
                         />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className={useDarkMode ? "text-red-400" : ""} />
                     </FormItem>
                   )}
                 />
