@@ -11,7 +11,7 @@
   --spotify-neon-green: #4eff64;
   
   /* Glass effect */
-  --spotify-glass-bg: rgba(18, 18, 18, 0.7);
+  --spotify-glass-bg: rgba(18, 18, 18, 0.6);
   --spotify-glass-border: rgba(255, 255, 255, 0.1);
   --spotify-glass-highlight: rgba(255, 255, 255, 0.1);
   --spotify-glass-shadow: rgba(0, 0, 0, 0.5);
