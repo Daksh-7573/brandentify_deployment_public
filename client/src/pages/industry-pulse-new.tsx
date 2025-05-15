@@ -271,11 +271,14 @@ function PulseReactions({ pulse }: PulseReactionsProps) {
           <TooltipTrigger asChild>
             <button 
               disabled={isLoading}
-              className="text-gray-400 hover:text-white hover:bg-gray-600/30 hover:scale-110 hover:shadow-md rounded-md px-2 py-1 text-sm flex items-center gap-1.5 transition-all duration-200 disabled:opacity-50"
+              className="relative text-gray-400 hover:text-white hover:bg-gray-600/30 hover:scale-110 hover:shadow-md rounded-md px-2 py-1 text-sm flex items-center gap-1.5 transition-all duration-200 disabled:opacity-50 overflow-hidden group"
               onClick={() => handleReaction("insightful")}
             >
-              <Flame className={`h-4 w-4 transition-all duration-200 ${hasInsightfulReaction ? "text-white fill-white scale-110" : ""}`} />
-              {formatCount(pulse.insightfulCount || 0)}
+              <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-all duration-700 ease-in-out" style={{ transform: 'skewX(-45deg)' }}></span>
+              <span className="relative z-10 flex items-center gap-1.5">
+                <Flame className={`h-4 w-4 transition-all duration-200 ${hasInsightfulReaction ? "text-white fill-white scale-110" : ""}`} />
+                {formatCount(pulse.insightfulCount || 0)}
+              </span>
             </button>
           </TooltipTrigger>
           <TooltipContent>
@@ -293,11 +296,14 @@ function PulseReactions({ pulse }: PulseReactionsProps) {
           <TooltipTrigger asChild>
             <button 
               disabled={isLoading}
-              className="text-gray-400 hover:text-white hover:bg-gray-600/30 hover:scale-110 hover:shadow-md rounded-md px-2 py-1 text-sm flex items-center gap-1.5 transition-all duration-200 disabled:opacity-50"
+              className="relative text-gray-400 hover:text-white hover:bg-gray-600/30 hover:scale-110 hover:shadow-md rounded-md px-2 py-1 text-sm flex items-center gap-1.5 transition-all duration-200 disabled:opacity-50 overflow-hidden group"
               onClick={() => handleReaction("misinformed")}
             >
-              <AlertTriangle className={`h-4 w-4 transition-all duration-200 ${hasMisinformedReaction ? "text-white fill-white/30 scale-110" : ""}`} />
-              {formatCount(pulse.misinformedCount || 0)}
+              <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-all duration-700 ease-in-out" style={{ transform: 'skewX(-45deg)' }}></span>
+              <span className="relative z-10 flex items-center gap-1.5">
+                <AlertTriangle className={`h-4 w-4 transition-all duration-200 ${hasMisinformedReaction ? "text-white fill-white/30 scale-110" : ""}`} />
+                {formatCount(pulse.misinformedCount || 0)}
+              </span>
             </button>
           </TooltipTrigger>
           <TooltipContent>
@@ -353,17 +359,22 @@ function PulseReactions({ pulse }: PulseReactionsProps) {
           <DialogFooter>
             <button 
               onClick={() => setIsShareDialogOpen(false)}
-              className="flex items-center px-3 py-1.5 rounded-md bg-gray-800/80 text-white/80 text-sm border border-gray-700/50 hover:bg-gray-700/50 hover:scale-110 hover:shadow-md hover:border-white/10 transition-all duration-200"
+              className="relative flex items-center px-3 py-1.5 rounded-md bg-gray-800/80 text-white/80 text-sm border border-gray-700/50 hover:bg-gray-700/50 hover:scale-110 hover:shadow-md hover:border-white/10 transition-all duration-200 overflow-hidden group"
+              style={{ position: 'relative' }}
             >
-              Cancel
+              <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-all duration-1000 ease-in-out" style={{ transform: 'skewX(-45deg)' }}></span>
+              <span className="relative z-10">Cancel</span>
             </button>
             <button 
               onClick={handleShareSubmit} 
               disabled={isLoading}
-              className="flex items-center px-3 py-1.5 rounded-md bg-gradient-to-r from-white/80 to-white/90 text-black font-medium text-sm disabled:opacity-50 hover:shadow-md hover:scale-110 hover:from-white/90 hover:to-white transition-all duration-200"
+              className="relative flex items-center px-3 py-1.5 rounded-md bg-gradient-to-r from-white/80 to-white/90 text-black font-medium text-sm disabled:opacity-50 hover:shadow-md hover:scale-110 hover:from-white/90 hover:to-white transition-all duration-200 overflow-hidden group"
             >
-              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Share
+              <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/70 to-transparent -translate-x-full group-hover:translate-x-full transition-all duration-1000 ease-in-out" style={{ transform: 'skewX(-45deg)' }}></span>
+              <span className="relative z-10 flex items-center">
+                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Share
+              </span>
             </button>
           </DialogFooter>
         </DialogContent>
