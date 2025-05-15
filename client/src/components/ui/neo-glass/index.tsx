@@ -326,6 +326,21 @@ export const NeoGlassDivider = ({ className = '' }: NeoGlassDividerProps) => {
   );
 };
 
+// Section component for content sections
+interface NeoGlassSectionProps {
+  children: ReactNode;
+  className?: string;
+  style?: React.CSSProperties;
+}
+
+export const NeoGlassSection = ({ children, className = '', style }: NeoGlassSectionProps) => {
+  return (
+    <div className={`neo-glass-panel p-6 mb-6 rounded-xl border border-white/5 backdrop-blur-md bg-gray-900/60 ${className}`} style={style}>
+      {children}
+    </div>
+  );
+};
+
 // Badge component
 interface NeoGlassBadgeProps {
   children: ReactNode;

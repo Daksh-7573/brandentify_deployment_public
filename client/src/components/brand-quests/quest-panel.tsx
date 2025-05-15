@@ -1,6 +1,4 @@
 import { useEffect, useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
@@ -123,48 +121,54 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
   }, [weeklyError, isLoadingWeekly]);
 
   return (
-    <Card className={cn("w-full", className)}>
-      <CardHeader className="pb-2">
-        <CardTitle className="text-2xl">Brand Quests</CardTitle>
-      </CardHeader>
-      <CardContent>
-        {isLoadingWeekly ? (
-          <div className="space-y-3">
-            <Skeleton className="h-24 w-full rounded-md" />
-            <Skeleton className="h-24 w-full rounded-md" />
-            <Skeleton className="h-24 w-full rounded-md" />
-          </div>
-        ) : (
-          <Tabs defaultValue="weekly" value={tabValue} onValueChange={setTabValue}>
-            <TabsList className="grid grid-cols-3 mb-4">
-              <TabsTrigger value="weekly">Weekly ({weeklyQuests?.length || 0})</TabsTrigger>
-              <TabsTrigger value="completed">Completed ({completedQuests.length})</TabsTrigger>
-              <TabsTrigger value="expired">Missed ({expiredQuests.length})</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="weekly" className="space-y-4">
-              <div className="text-sm text-muted-foreground mb-2">
-                Week {currentWeek}, {currentYear} - Weekly quests refresh every Monday
-              </div>
-              {renderQuestsList(weeklyQuests, isLoadingWeekly)}
-            </TabsContent>
-            
-            <TabsContent value="expired" className="space-y-4">
-              <div className="text-sm text-muted-foreground mb-2">
-                Quests that expired without completion - missed XP opportunities
-              </div>
-              {renderQuestsList(expiredQuests, isLoadingAll)}
-            </TabsContent>
-            
-            <TabsContent value="completed" className="space-y-4">
-              <div className="text-sm text-muted-foreground mb-2">
-                Completed quests that earned you XP rewards
-              </div>
-              {renderQuestsList(completedQuests, isLoadingAll)}
-            </TabsContent>
-          </Tabs>
-        )}
-      </CardContent>
-    </Card>
+    <div className={cn("w-full", className)}>
+      <div className="mb-4">
+        <h2 className="text-xl font-semibold text-white">Brand Quests</h2>
+        <p className="text-white/70 text-sm">Complete quests to increase your influence</p>
+      </div>
+      
+      {isLoadingWeekly ? (
+        <div className="space-y-3">
+          <Skeleton className="h-24 w-full rounded-md bg-gray-800/60" />
+          <Skeleton className="h-24 w-full rounded-md bg-gray-800/60" />
+          <Skeleton className="h-24 w-full rounded-md bg-gray-800/60" />
+        </div>
+      ) : (
+        <Tabs defaultValue="weekly" value={tabValue} onValueChange={setTabValue}>
+          <TabsList className="grid grid-cols-3 mb-4 neo-glass-tabs bg-gray-900/40 border border-white/5">
+            <TabsTrigger value="weekly" className="text-white hover:text-gray-200">
+              Weekly ({weeklyQuests?.length || 0})
+            </TabsTrigger>
+            <TabsTrigger value="completed" className="text-white hover:text-gray-200">
+              Completed ({completedQuests.length})
+            </TabsTrigger>
+            <TabsTrigger value="expired" className="text-white hover:text-gray-200">
+              Missed ({expiredQuests.length})
+            </TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="weekly" className="space-y-4">
+            <div className="text-sm text-white/70 mb-2">
+              Week {currentWeek}, {currentYear} - Weekly quests refresh every Monday
+            </div>
+            {renderQuestsList(weeklyQuests, isLoadingWeekly)}
+          </TabsContent>
+          
+          <TabsContent value="expired" className="space-y-4">
+            <div className="text-sm text-white/70 mb-2">
+              Quests that expired without completion - missed XP opportunities
+            </div>
+            {renderQuestsList(expiredQuests, isLoadingAll)}
+          </TabsContent>
+          
+          <TabsContent value="completed" className="space-y-4">
+            <div className="text-sm text-white/70 mb-2">
+              Completed quests that earned you XP rewards
+            </div>
+            {renderQuestsList(completedQuests, isLoadingAll)}
+          </TabsContent>
+        </Tabs>
+      )}
+    </div>
   );
 }

@@ -112,56 +112,56 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
     quest.muskResponse;
   
   return (
-    <Card className="w-full shadow-md transition-all hover:shadow-lg">
-      <CardHeader className="pb-2">
+    <div className="w-full bg-gray-900/60 backdrop-blur-md border border-white/5 rounded-xl p-5 shadow-md transition-all hover:shadow-lg hover:bg-gray-900/70">
+      <div className="pb-2">
         <div className="flex justify-between items-start">
           <div className="flex-1">
             <div className="flex items-center gap-2">
-              <span className="text-xl">{getQuestTypeIcon(questDefinition.type)}</span>
-              <CardTitle className="text-lg">{questDefinition.title}</CardTitle>
+              <span className="text-xl text-white">{getQuestTypeIcon(questDefinition.type)}</span>
+              <h3 className="text-lg font-semibold text-white">{questDefinition.title}</h3>
             </div>
             {questDefinition.badgeReward && (
-              <Badge variant="outline" className="ml-7 mt-1">
+              <Badge variant="outline" className="ml-7 mt-1 bg-gray-800/80 text-white border-white/10">
                 Award: {getBadgeLabel(questDefinition.badgeReward)}
               </Badge>
             )}
           </div>
           <Badge 
-            variant={
-              isComplete ? "default" : 
-              isExpired ? "destructive" : 
-              "secondary"
+            className={
+              isComplete ? "bg-white/20 text-white hover:bg-white/30" : 
+              isExpired ? "bg-red-500/20 text-white border-red-500/20 hover:bg-red-500/30" : 
+              "bg-blue-500/20 text-white border-blue-500/20 hover:bg-blue-500/30"
             }
           >
             {getQuestStatusLabel(quest.status)}
           </Badge>
         </div>
-        <CardDescription className="ml-7 mt-1">
+        <p className="ml-7 mt-1 text-white/70 text-sm">
           {questDefinition.description}
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
+        </p>
+      </div>
+      <div className="py-3">
         <div className="space-y-2">
-          <div className="flex justify-between text-sm text-muted-foreground mb-1">
+          <div className="flex justify-between text-sm text-white/60 mb-1">
             <span>Progress: {quest.progress} / {questDefinition.targetCount}</span>
             <span>+{questDefinition.xpReward} XP</span>
           </div>
-          <Progress value={progressPercentage} className="h-2" />
+          <Progress value={progressPercentage} className="h-2 bg-gray-800/60" />
           
           {muskTipContent && (
-            <div className="mt-3 bg-muted/50 p-3 rounded-md border border-muted">
-              <div className="flex items-center gap-2 text-sm font-medium mb-1">
+            <div className="mt-3 bg-gray-800/40 p-3 rounded-md border border-white/5">
+              <div className="flex items-center gap-2 text-sm font-medium mb-1 text-white">
                 <span>⚡</span>
                 <span>Musk's Tip</span>
               </div>
-              <p className="text-sm text-muted-foreground">{muskTipContent}</p>
+              <p className="text-sm text-white/70">{muskTipContent}</p>
               
               {/* Add StaticHashtagSuggestions component for pulse creation quests */}
               {(questDefinition.type === 'pulse_creation' || 
                 questDefinition.targetAction === 'create_pulse' || 
                 (questDefinition.description && questDefinition.description.toLowerCase().includes('pulse'))) && (
                 <div className="mt-3">
-                  <div className="text-sm font-medium text-muted-foreground mb-2">
+                  <div className="text-sm font-medium text-white/70 mb-2">
                     <span className="mr-1">💡</span> Musk's hashtag suggestions:
                   </div>
                   <StaticHashtagSuggestions 
@@ -180,17 +180,17 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
             </div>
           )}
         </div>
-      </CardContent>
-      <CardFooter className="pt-1 flex flex-col">
+      </div>
+      <div className="pt-3 flex flex-col border-t border-white/5">
         {/* Quest progress info badge */}
-        <div className="w-full flex justify-between items-center mb-1">
+        <div className="w-full flex justify-between items-center">
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
                 <div className={`text-xs rounded px-2 py-1 ${
-                  isComplete ? "bg-green-100 text-green-800" : 
-                  isExpired ? "bg-red-100 text-red-800" : 
-                  "bg-blue-100 text-blue-800"
+                  isComplete ? "bg-white/10 text-white" : 
+                  isExpired ? "bg-red-500/10 text-white" : 
+                  "bg-blue-500/10 text-white"
                 }`}>
                   {isComplete 
                     ? `Completed on ${new Date(quest.completedAt || '').toLocaleDateString()}`
@@ -199,7 +199,7 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
                       : `Auto-tracking: ${quest.progress}/${questDefinition.targetCount} completed`}
                 </div>
               </TooltipTrigger>
-              <TooltipContent>
+              <TooltipContent className="bg-gray-900/90 text-white border-white/10">
                 {isComplete && quest.xpEarned 
                   ? `You earned ${quest.xpEarned} XP and ${quest.badgeEarned ? `the ${getBadgeLabel(quest.badgeEarned)} badge` : 'no badge'}`
                   : isComplete 
@@ -213,12 +213,12 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
           
           {/* Show XP reward for active or expired quests */}
           {!isComplete && (
-            <span className="text-xs font-semibold">
+            <span className="text-xs font-semibold text-white/80">
               {isExpired ? 'Missed ' : 'Reward: '}{questDefinition.xpReward} XP
             </span>
           )}
         </div>
-      </CardFooter>
+      </div>
       
       {/* Confirmation Dialog for Completion */}
       <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>

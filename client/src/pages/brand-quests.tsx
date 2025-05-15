@@ -22,6 +22,8 @@ import {
 } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
+import { NeoGlassLayout } from '@/components/layout/neo-glass-layout';
+import { NeoGlassSection } from '@/components/ui/neo-glass/index';
 
 export default function BrandQuestsPage() {
   const { user } = useContext(AuthContext);
@@ -46,53 +48,55 @@ export default function BrandQuestsPage() {
   return (
     <>
       <Header />
-      <div className="max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 mt-16">
-        <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold">Brand Quests</h1>
-          <p className="text-muted-foreground">Complete quests to earn XP and badges</p>
-        </div>
-        
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Main content - Quests */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* XP Summary */}
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle>Your Brand Growth</CardTitle>
-                <CardDescription>Track your professional development</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {isLoadingXp ? (
-                  <Skeleton className="w-full h-[50px]" />
-                ) : userXp ? (
-                  <XpProgressBar 
-                    balance={userXp.balance || 0}
-                    monthlyEarned={userXp.currentMonthEarned || 0}
-                    lifetimeEarned={userXp.lifetimeEarned || 0}
-                  />
-                ) : (
-                  <div className="text-center py-4 text-muted-foreground">
-                    No XP data available
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-            
-            {/* Quests Panel */}
-            <QuestPanel userId={userId} />
+      <NeoGlassLayout className="mt-3 mx-6">
+        <div className="flex-1 max-w-4xl">
+          <div className="mb-6 flex justify-between items-center">
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight text-white">Brand Quests</h1>
+              <p className="text-white/80 mt-1">
+                Complete quests to earn XP and badges for your professional growth
+              </p>
+            </div>
           </div>
+
+          <NeoGlassSection className="mb-6">
+            <div className="mb-4">
+              <h2 className="text-xl font-semibold text-white">Your Brand Growth</h2>
+              <p className="text-white/70 text-sm">Track your professional development progress</p>
+            </div>
+            {isLoadingXp ? (
+              <Skeleton className="w-full h-[50px] bg-gray-800/60" />
+            ) : userXp ? (
+              <XpProgressBar 
+                balance={userXp.balance || 0}
+                monthlyEarned={userXp.currentMonthEarned || 0}
+                lifetimeEarned={userXp.lifetimeEarned || 0}
+              />
+            ) : (
+              <div className="text-center py-4 text-white/60">
+                No XP data available
+              </div>
+            )}
+          </NeoGlassSection>
           
-          {/* Sidebar - Badges and transactions */}
-          <div className="space-y-6">
-            {/* Badges */}
-            <BadgeDisplay userId={userId} />
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Main content - Quests */}
+            <div className="lg:col-span-2">
+              {/* Quests Panel */}
+              <NeoGlassSection>
+                <QuestPanel userId={userId} />
+              </NeoGlassSection>
+            </div>
             
-            {/* Removed standalone Hashtag Suggestions and Nowboard Suggestions as they're now integrated into quests */}
-            
-            {/* XP Transactions section removed */}
+            {/* Sidebar - Badges */}
+            <div>
+              <NeoGlassSection>
+                <BadgeDisplay userId={userId} />
+              </NeoGlassSection>
+            </div>
           </div>
         </div>
-      </div>
+      </NeoGlassLayout>
     </>
   );
 }
