@@ -461,7 +461,7 @@ export default function CareerCapsulePage() {
                 type="button" 
                 variant="outline" 
                 onClick={() => setShowCreateDialog(false)}
-                className="neo-glass-button secondary"
+                className="neo-glass-button-outline"
               >
                 Cancel
               </Button>
@@ -679,9 +679,9 @@ export default function CareerCapsulePage() {
                                         <span className="text-gray-300">{completedTasks} of {totalTasks} tasks completed</span>
                                         <span className="font-medium text-white">{progressPercentage}%</span>
                                       </div>
-                                      <div className="w-full bg-gray-800/50 h-2 rounded-full overflow-hidden mb-3 backdrop-blur-sm">
+                                      <div className="w-full bg-gray-800/50 h-2 rounded-full overflow-hidden mb-3 backdrop-blur-sm border border-gray-700/30">
                                         <div 
-                                          className="h-full bg-white/30 transition-all duration-500 ease-in-out" 
+                                          className="h-full bg-gradient-to-r from-white/20 to-white/40 transition-all duration-500 ease-in-out" 
                                           style={{ width: `${progressPercentage}%` }}
                                         />
                                       </div>
@@ -716,7 +716,7 @@ export default function CareerCapsulePage() {
                                   return (
                                     <div 
                                       key={task.id} 
-                                      className={`bg-gray-800/30 backdrop-blur-[5px] p-3 rounded-lg transition-all duration-300 ${
+                                      className={`bg-gray-800/30 backdrop-blur-[5px] p-3 rounded-lg transition-all duration-300 border border-gray-700/40 ${
                                         isBeingToggled ? 'scale-[1.02] shadow-md' : ''
                                       } ${
                                         task.isCompleted ? 'border-l-2 border-green-500/50' : ''
@@ -727,8 +727,8 @@ export default function CareerCapsulePage() {
                                           <Button 
                                             size="icon" 
                                             variant="ghost" 
-                                            className={`h-6 w-6 rounded-full transition-colors ${
-                                              task.isCompleted ? 'text-green-400' : 'text-gray-300'
+                                            className={`h-6 w-6 rounded-full transition-colors backdrop-blur-[3px] ${
+                                              task.isCompleted ? 'text-green-400 bg-green-500/5' : 'text-gray-300 hover:bg-gray-700/30'
                                             } ${
                                               isBeingToggled ? 'bg-gray-700/50' : ''
                                             }`}
