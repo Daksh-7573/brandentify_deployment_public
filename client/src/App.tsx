@@ -157,6 +157,9 @@ function Router() {
       <Route path="/create-pulse">
         <ProtectedRoute path="/create-pulse" component={CreatePulsePage} />
       </Route>
+      <Route path="/create-pulse-new">
+        <ProtectedRoute path="/create-pulse-new" component={CreatePulsePage} />
+      </Route>
       <Route path="/industry-pulse">
         <ProtectedRoute path="/industry-pulse" component={IndustryPulsePage} />
       </Route>
