@@ -460,7 +460,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         
         // Fetch the complete user data from backend
         console.log("Fetching user data from backend");
-        const userData = await fetchUserData(result.user.uid);
+        
+        // Check for Google provider data to get email
+        const googleProvider = result.user.providerData?.find(provider => 
+          provider.providerId === "google.com"
+        );
+        const userEmail = googleProvider?.email || result.user.email;
+        
+        console.log(`Fetching user data with Google email if available: ${userEmail || 'not available'}`);
+        const userData = await fetchUserData(result.user.uid, userEmail);
         
         if (userData) {
           // Set the user in state if we got valid data
@@ -622,7 +630,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     
     try {
       setIsLoading(true);
-      const refreshedData = await fetchUserData(user.uid);
+      
+      // Include email in the refresh request to help with Google auth
+      const refreshedData = await fetchUserData(user.uid, user.email || undefined);
       
       if (refreshedData) {
         setUser(refreshedData);
