@@ -153,8 +153,8 @@ interface NearbyUser {
 
 // Placeholder component for when location access is still pending
 const LocationPending = () => (
-  <div className="flex flex-col items-center justify-center py-10 space-y-4">
-    <div className="rounded-full bg-white/10 p-3 border border-white/20">
+  <div className="flex flex-col items-center justify-center py-10 space-y-4 bg-black/30 backdrop-blur-md rounded-xl border border-white/10 shadow-lg">
+    <div className="rounded-full bg-white/10 p-3 border border-white/20 backdrop-blur-sm shadow-lg">
       <MapPin className="h-8 w-8 text-white" />
     </div>
     <h3 className="text-xl font-medium text-white">Location Access Required</h3>
@@ -165,7 +165,7 @@ const LocationPending = () => (
     <Button 
       variant="outline" 
       onClick={() => window.location.reload()}
-      className="bg-white/10 text-white hover:bg-white/20 border border-white/20"
+      className="bg-white/10 text-white hover:bg-white/20 border border-white/20 backdrop-blur-md shadow-md"
     >
       <RefreshCw className="mr-2 h-4 w-4" />
       Retry
@@ -175,8 +175,8 @@ const LocationPending = () => (
 
 // Placeholder component for when no nearby users are found
 const NoNearbyUsers = () => (
-  <div className="flex flex-col items-center justify-center py-10 space-y-4">
-    <div className="rounded-full bg-white/10 p-3 border border-white/20">
+  <div className="flex flex-col items-center justify-center py-10 space-y-4 bg-black/30 backdrop-blur-md rounded-xl border border-white/10 shadow-lg">
+    <div className="rounded-full bg-white/10 p-3 border border-white/20 backdrop-blur-sm shadow-lg">
       <Users className="h-8 w-8 text-white" />
     </div>
     <h3 className="text-xl font-medium text-white">No Professionals Nearby</h3>
@@ -579,7 +579,7 @@ const Radar = () => {
                           <Button 
                             variant="outline" 
                             size="sm"
-                            className="border-white/20 bg-white/10 text-white hover:bg-white/20"
+                            className="border-white/20 bg-white/10 text-white hover:bg-white/20 backdrop-blur-md shadow-md"
                             onClick={() => {
                         if (userData.title) setJobTitleFilter(userData.title);
                         if (userData.industry) setIndustryFilter(userData.industry);
