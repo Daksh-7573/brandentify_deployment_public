@@ -601,10 +601,11 @@ const Radar = () => {
                   <div className="relative">
                     <input
                       id="job-title"
-                      className="w-full h-10 px-3 py-2 border border-white/20 bg-[rgba(18,18,18,0.95)] backdrop-blur-md rounded-md text-white text-sm focus:outline-none focus:ring-1 focus:ring-white/30 placeholder:text-white/50 shadow-md transition-all hover:border-white/30"
+                      className="w-full h-10 px-3 py-2 border border-white/20 bg-[rgba(18,18,18,0.95)] backdrop-blur-md rounded-md text-white text-sm focus:outline-none focus:ring-1 focus:ring-white/30 placeholder:text-white/50 shadow-md transition-all hover:border-white/30 neo-glass-input"
                       placeholder="e.g. Software Engineer"
                       value={jobTitleFilter}
                       onChange={(e) => setJobTitleFilter(e.target.value)}
+                      style={{background: "rgba(18,18,18,0.95)"}}
                     />
                   </div>
                 </div>
