@@ -309,9 +309,9 @@ const NeoGlassSpotifyDemo = () => {
       
       <div className="neo-demo-nav">
         <Link href="/neo-glass-demo">
-          <a className="neo-demo-link">
+          <span className="neo-demo-link">
             Back to Demo 1
-          </a>
+          </span>
         </Link>
       </div>
     </div>
