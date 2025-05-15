@@ -91,9 +91,9 @@ const Chat: React.FC<{ userId: number }> = ({ userId }) => {
   const otherUser = currentConversation?.participants?.find(p => p.userId !== userId);
 
   return (
-    <div className="flex flex-col md:flex-row gap-6 h-full">
-      {/* Left sidebar */}
-      <div className="md:w-1/4 h-full">
+    <div className="flex flex-col md:flex-row gap-4 h-full">
+      {/* Left sidebar - Hidden on mobile when a conversation is selected */}
+      <div className={`${currentConversation ? 'hidden md:block' : 'block'} md:w-1/4 lg:w-1/5 xl:w-1/6 h-full`}>
         <div className="neo-spotify-sidebar h-full">
           <div className="sidebar-top">
             <div className="user-profile">
@@ -134,8 +134,8 @@ const Chat: React.FC<{ userId: number }> = ({ userId }) => {
         </div>
       </div>
       
-      {/* Main chat area */}
-      <div className="flex-1 h-full">
+      {/* Main chat area - Full width on mobile when a conversation is selected */}
+      <div className={`${currentConversation ? 'block' : 'hidden md:block'} flex-1 h-full`}>
         <div className="neo-spotify-main h-full">
           {currentConversation ? (
             <>

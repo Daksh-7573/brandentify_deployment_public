@@ -72,7 +72,7 @@ const MessageInput: React.FC = () => {
 
   return (
     <div className="w-full relative">
-      <div className="flex items-end gap-2 relative">
+      <div className="flex items-end gap-1 sm:gap-2 relative">
         <div className="flex-1 relative">
           <textarea
             ref={textareaRef}
@@ -81,22 +81,22 @@ const MessageInput: React.FC = () => {
             onKeyDown={handleKeyDown}
             placeholder="Type your message..."
             className={cn(
-              "resize-none py-3 px-4 pr-12 min-h-[50px] max-h-[150px] overflow-y-auto w-full",
-              "rounded-full bg-spotify-gray/40 text-spotify-white",
-              "border-spotify-glass-border focus:border-spotify-light-gray/30",
+              "resize-none py-2 sm:py-3 px-3 sm:px-4 pr-10 sm:pr-12 min-h-[45px] sm:min-h-[50px] max-h-[120px] sm:max-h-[150px] overflow-y-auto w-full",
+              "rounded-full bg-spotify-glass-bg text-spotify-white text-sm sm:text-base",
+              "border border-spotify-glass-border focus:border-spotify-light-gray/30",
               "focus:outline-none focus:ring-1 focus:ring-spotify-light-gray/30",
               "placeholder:text-spotify-light-gray/60"
             )}
             disabled={!currentConversation || !isConnected}
           />
           
-          <div className="absolute right-3 bottom-3 flex items-center">
+          <div className="absolute right-3 bottom-2 sm:bottom-3 flex items-center">
             <button
               type="button"
               className="text-spotify-light-gray hover:text-spotify-white transition-colors"
               disabled={!currentConversation || !isConnected}
             >
-              <Smile className="h-5 w-5" />
+              <Smile className="h-4 w-4 sm:h-5 sm:w-5" />
             </button>
           </div>
         </div>
@@ -104,18 +104,18 @@ const MessageInput: React.FC = () => {
         <div className="flex items-center">
           <button
             type="button"
-            className="w-8 h-8 flex items-center justify-center rounded-full text-spotify-light-gray hover:text-spotify-white hidden md:flex mx-1"
+            className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full text-spotify-light-gray hover:text-spotify-white hidden md:flex mx-1"
             disabled={!currentConversation || !isConnected}
           >
-            <Paperclip className="h-4 w-4" />
+            <Paperclip className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
           </button>
           
           <button
             type="button"
-            className="w-8 h-8 flex items-center justify-center rounded-full text-spotify-light-gray hover:text-spotify-white hidden md:flex mx-1"
+            className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full text-spotify-light-gray hover:text-spotify-white hidden md:flex mx-1"
             disabled={!currentConversation || !isConnected}
           >
-            <Image className="h-4 w-4" />
+            <Image className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
           </button>
           
           <button 
@@ -123,16 +123,16 @@ const MessageInput: React.FC = () => {
             onClick={handleSubmit}
             disabled={!message.trim() || !currentConversation || isSubmitting || !isConnected}
             className={cn(
-              "h-10 w-10 rounded-full bg-spotify-green text-spotify-black",
+              "h-9 w-9 sm:h-10 sm:w-10 rounded-full bg-spotify-white text-spotify-black",
               "flex items-center justify-center ml-1",
               "hover:scale-105 transition-transform",
               !message.trim() && "opacity-70"
             )}
           >
             {isSubmitting ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
+              <Loader2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 animate-spin" />
             ) : (
-              <Send className="h-4 w-4" />
+              <Send className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             )}
           </button>
         </div>
