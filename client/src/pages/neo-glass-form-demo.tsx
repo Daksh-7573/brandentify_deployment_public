@@ -102,6 +102,7 @@ const NeoGlassFormDemo = () => {
                   onChange={handleChange}
                   placeholder="Enter your full name"
                   className="neo-glass-input"
+                  style={{ backgroundColor: 'rgba(18, 18, 18, 0.7)', color: 'var(--neo-white)' }}
                   required
                 />
               </div>
@@ -125,6 +126,7 @@ const NeoGlassFormDemo = () => {
                   onChange={handleChange}
                   placeholder="your.email@example.com"
                   className="neo-glass-input"
+                  style={{ backgroundColor: 'rgba(18, 18, 18, 0.7)', color: 'var(--neo-white)' }}
                   required
                 />
               </div>
@@ -148,6 +150,7 @@ const NeoGlassFormDemo = () => {
                   onChange={handleChange}
                   placeholder="••••••••"
                   className="neo-glass-input"
+                  style={{ backgroundColor: 'rgba(18, 18, 18, 0.7)', color: 'var(--neo-white)' }}
                   required
                 />
               </div>
@@ -170,7 +173,12 @@ const NeoGlassFormDemo = () => {
                   onChange={handleChange}
                   placeholder="Tell us about yourself..."
                   className="neo-glass-input"
-                  style={{ minHeight: '100px', resize: 'vertical' }}
+                  style={{ 
+                    minHeight: '100px', 
+                    resize: 'vertical',
+                    backgroundColor: 'rgba(18, 18, 18, 0.7)', 
+                    color: 'var(--neo-white)' 
+                  }}
                 ></textarea>
               </div>
               
