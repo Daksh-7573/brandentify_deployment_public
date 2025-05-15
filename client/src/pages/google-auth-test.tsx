@@ -5,8 +5,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
-import { NeoGlassLayout } from '@/components/layout/neo-glass-layout';
-import { NeoGlassSection } from '@/components/layout/neo-glass-section';
+import { NeoGlassLayout, NeoGlassSection } from '@/components/layout/neo-glass-layout';
 import { InfoIcon, CheckCircle, AlertCircle, LogOut, LogIn, RefreshCw } from 'lucide-react';
 import { getAuth, signOut } from 'firebase/auth';
 

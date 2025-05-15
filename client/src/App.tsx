@@ -27,6 +27,7 @@ import EmailVerification from "@/pages/email-verification";
 import NewsSourcesPage from "@/pages/news-sources";
 import Radar from "@/pages/radar";
 import FirebaseAuthTest from "@/pages/auth-test";
+import GoogleAuthTest from "@/pages/google-auth-test";
 import SmartConnectPage from "@/pages/smart-connect";
 import MuskMatchPage from "@/pages/musk-match";
 import ResumePage from "@/pages/resume";
@@ -104,6 +105,7 @@ function Router() {
       <Route path="/auth/callback" component={AuthCallback} />
       <Route path="/auth" component={AuthPage} />
       <Route path="/auth-test" component={FirebaseAuthTest} />
+      <Route path="/google-auth-test" component={GoogleAuthTest} />
       <Route path="/auth-debug" component={() => {
         const AuthDebugPage = lazy(() => import("@/pages/auth-debug"));
         return (
