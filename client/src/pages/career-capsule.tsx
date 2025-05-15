@@ -307,9 +307,9 @@ export default function CareerCapsulePage() {
         </div>
         
         {isLoading ? (
-          <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-          </div>
+          <NeoGlassSection className="flex items-center justify-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div>
+          </NeoGlassSection>
         ) : goals ? (
           <div className="career-capsule-grid" style={{ 
             display: 'grid', 
@@ -377,16 +377,16 @@ export default function CareerCapsulePage() {
 
       {/* Dialog for Create Goal */}
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-        <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto neo-glass-modal">
           <DialogHeader>
-            <DialogTitle>Create New Career Goal</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-white">Create New Career Goal</DialogTitle>
+            <DialogDescription className="text-gray-300">
               Set your career goals with a 1-5 year timeframe and get AI-generated milestones.
             </DialogDescription>
           </DialogHeader>
           <form className="flex flex-col gap-5 py-4" onSubmit={handleSubmit}>
             <div className="space-y-2">
-              <label htmlFor="goal-title" className="text-sm font-medium">
+              <label htmlFor="goal-title" className="text-sm font-medium text-white">
                 Goal Title
               </label>
               <input
@@ -394,19 +394,19 @@ export default function CareerCapsulePage() {
                 value={goalTitle}
                 onChange={(e) => setGoalTitle(e.target.value)}
                 placeholder="e.g. Become a Product Manager"
-                className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                className="neo-glass-input w-full h-10 rounded-md"
               />
             </div>
             
             <div className="space-y-2">
-              <label htmlFor="goal-type" className="text-sm font-medium">
+              <label htmlFor="goal-type" className="text-sm font-medium text-white">
                 Goal Type
               </label>
               <select
                 id="goal-type"
                 value={goalType}
                 onChange={(e) => setGoalType(e.target.value as GoalType)}
-                className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                className="neo-glass-input w-full h-10 rounded-md"
               >
                 <option value="position_change">Position Change</option>
                 <option value="skill_acquisition">Skill Acquisition</option>
@@ -420,14 +420,14 @@ export default function CareerCapsulePage() {
             </div>
             
             <div className="space-y-2">
-              <label htmlFor="timeframe" className="text-sm font-medium">
+              <label htmlFor="timeframe" className="text-sm font-medium text-white">
                 Timeframe (years)
               </label>
               <select
                 id="timeframe"
                 value={timeframe}
                 onChange={(e) => setTimeframe(e.target.value)}
-                className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                className="neo-glass-input w-full h-10 rounded-md"
               >
                 <option value="1">1 year</option>
                 <option value="2">2 years</option>
@@ -438,7 +438,7 @@ export default function CareerCapsulePage() {
             </div>
             
             <div className="space-y-2">
-              <label htmlFor="description" className="text-sm font-medium">
+              <label htmlFor="description" className="text-sm font-medium text-white">
                 Description
               </label>
               <textarea
@@ -446,19 +446,30 @@ export default function CareerCapsulePage() {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Describe your career goal in detail..."
-                className="w-full min-h-[80px] rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                className="neo-glass-input w-full min-h-[80px] rounded-md"
               />
             </div>
             
-            <div className="mt-2 bg-muted/20 p-3 rounded-md">
-              <p className="text-sm text-muted-foreground">
-                <span className="font-medium text-primary">Note:</span> AI milestones will be automatically generated for your goal based on its type and timeframe.
+            <div className="mt-2 p-3 rounded-md neo-glass-highlight">
+              <p className="text-sm text-white">
+                <span className="font-medium text-white">Note:</span> AI milestones will be automatically generated for your goal based on its type and timeframe.
               </p>
             </div>
             
             <DialogFooter className="flex space-x-2 justify-end pt-4">
-              <Button type="button" variant="outline" onClick={() => setShowCreateDialog(false)}>Cancel</Button>
-              <Button type="submit" disabled={isSubmitting}>
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={() => setShowCreateDialog(false)}
+                className="neo-glass-button secondary"
+              >
+                Cancel
+              </Button>
+              <Button 
+                type="submit" 
+                disabled={isSubmitting}
+                className="neo-glass-button"
+              >
                 {isSubmitting ? "Creating..." : "Create Goal"}
               </Button>
             </DialogFooter>
@@ -468,23 +479,23 @@ export default function CareerCapsulePage() {
       
       {/* Success Dialog after goal and milestone creation */}
       <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
-        <DialogContent className="sm:max-w-[500px]">
+        <DialogContent className="sm:max-w-[500px] neo-glass-modal">
           <DialogHeader>
-            <DialogTitle className="flex items-center text-primary">
+            <DialogTitle className="flex items-center text-white">
               <CheckCircle className="mr-2 h-6 w-6" />
               Career Goal Created Successfully
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-gray-300">
               Musk AI has crafted a personalized roadmap for your career goal.
             </DialogDescription>
           </DialogHeader>
           
           <div className="py-6">
-            <div className="bg-muted/30 p-4 rounded-md mb-4">
-              <h3 className="font-medium mb-2">What happens next?</h3>
-              <ul className="space-y-2 text-sm">
+            <div className="neo-glass-highlight p-4 rounded-md mb-4">
+              <h3 className="font-medium mb-2 text-white">What happens next?</h3>
+              <ul className="space-y-2 text-sm text-gray-200">
                 <li className="flex items-start">
-                  <CheckCircle2 className="mr-2 h-4 w-4 text-primary mt-0.5" />
+                  <CheckCircle2 className="mr-2 h-4 w-4 text-white mt-0.5" />
                   <span>Your goal has been added to your Career Capsule</span>
                 </li>
                 <li className="flex items-start">
