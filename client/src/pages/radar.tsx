@@ -553,22 +553,22 @@ const Radar = () => {
                           checked={visibleInRadar}
                           onCheckedChange={handleVisibilityToggle}
                           disabled={updateVisibilityMutation.isPending}
-                          className="neo-glass-switch data-[state=checked]:bg-white/60 data-[state=unchecked]:bg-white/20"
+                          className="neo-glass-switch data-[state=checked]:bg-white/60 data-[state=unchecked]:bg-white/20 shadow-md border border-white/10 backdrop-blur-md"
                         />
                       </div>
                       
                       <div className="space-y-2">
                         <Label htmlFor="radius" className="text-white">Search radius</Label>
                         <Select value={radius} onValueChange={handleRadiusChange}>
-                          <SelectTrigger id="radius" className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20">
+                          <SelectTrigger id="radius" className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30">
                             <SelectValue placeholder="Select radius" />
                           </SelectTrigger>
                           <SelectContent className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-lg shadow-black/10">
-                            <SelectItem value="1">1 km</SelectItem>
-                            <SelectItem value="5">5 km</SelectItem>
-                            <SelectItem value="10">10 km</SelectItem>
-                            <SelectItem value="25">25 km</SelectItem>
-                            <SelectItem value="50">50 km</SelectItem>
+                            <SelectItem value="1" className="hover:bg-white/10 focus:bg-white/10">1 km</SelectItem>
+                            <SelectItem value="5" className="hover:bg-white/10 focus:bg-white/10">5 km</SelectItem>
+                            <SelectItem value="10" className="hover:bg-white/10 focus:bg-white/10">10 km</SelectItem>
+                            <SelectItem value="25" className="hover:bg-white/10 focus:bg-white/10">25 km</SelectItem>
+                            <SelectItem value="50" className="hover:bg-white/10 focus:bg-white/10">50 km</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -579,7 +579,7 @@ const Radar = () => {
                           <Button 
                             variant="outline" 
                             size="sm"
-                            className="border-white/20 bg-white/10 text-white hover:bg-white/20 backdrop-blur-md shadow-md"
+                            className="border-white/20 bg-white/10 text-white hover:bg-white/20 backdrop-blur-md shadow-md transition-all hover:scale-105"
                             onClick={() => {
                         if (userData.title) setJobTitleFilter(userData.title);
                         if (userData.industry) setIndustryFilter(userData.industry);
