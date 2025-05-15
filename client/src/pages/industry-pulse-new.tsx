@@ -1002,12 +1002,15 @@ function SmartRefreshBanner({ hasNewContent, onRefresh, isPremiumContent = false
   
   return (
     <button 
-      className={`w-full py-3 px-4 rounded-lg border backdrop-blur-sm flex items-center justify-center gap-2 mb-4 hover:bg-gray-800/50 hover:scale-[1.02] hover:shadow-lg transition-all duration-200 ${bannerClasses}`}
+      className={`relative w-full py-3 px-4 rounded-lg border backdrop-blur-sm flex items-center justify-center gap-2 mb-4 hover:bg-gray-800/50 hover:scale-[1.02] hover:shadow-lg transition-all duration-200 overflow-hidden group ${bannerClasses}`}
       onClick={onRefresh}
     >
-      <RefreshCw className={`h-4 w-4 ${iconClasses} animate-pulse`} />
-      <span className="font-medium">
-        {isPremiumContent ? 'Musk has updated your feed' : 'New posts available'}
+      <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-all duration-1000 ease-in-out" style={{ transform: 'skewX(-45deg)' }}></span>
+      <span className="relative z-10 flex items-center gap-2">
+        <RefreshCw className={`h-4 w-4 ${iconClasses} animate-pulse`} />
+        <span className="font-medium">
+          {isPremiumContent ? 'Musk has updated your feed' : 'New posts available'}
+        </span>
       </span>
     </button>
   );
