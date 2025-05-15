@@ -258,6 +258,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const existingUser = await storage.getUserByEmail(userData_withVerificationFlag.email);
           if (existingUser) {
             console.log("[POST /users] Final check: User with email already exists:", userData_withVerificationFlag.email);
+            
+            // For Google users, update the existing user with better profile data
+            if (isGoogleUser && req.body.isGoogleAccount) {
+              console.log("[POST /users] Updating existing user with Google profile data (email check)");
+              
+              // Only update fields that are provided and better than what we have
+              const updateData: any = {};
+              
+              // Use display name from Google when available
+              if (req.body.displayName && (!existingUser.name || existingUser.name === "Firebase User")) {
+                updateData.name = req.body.displayName;
+              }
+              
+              // Use Google photo URL if available and existing one is null
+              if (req.body.photoURL && !existingUser.photoURL) {
+                updateData.photoURL = req.body.photoURL;
+              }
+              
+              // Only update if we have changes to make
+              if (Object.keys(updateData).length > 0) {
+                try {
+                  console.log("[POST /users] Updating user with Google data (email check):", updateData);
+                  const updatedUser = await storage.updateUser(existingUser.id, updateData);
+                  return res.status(200).json(updatedUser);
+                } catch (updateError) {
+                  console.error("[POST /users] Failed to update user with Google data (email check):", updateError);
+                }
+              }
+            }
+            
             return res.status(200).json(existingUser);
           }
         }

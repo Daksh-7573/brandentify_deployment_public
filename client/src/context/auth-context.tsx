@@ -68,8 +68,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const isGoogleIdentifier = typeof userId === 'string' && 
         (userId.includes('@') && userId.split('@')[1].includes('.'));
       const isFirebaseUid = typeof userId === 'string' && userId.length > 20;
+      const isGoogleEmail = userEmail && userEmail.includes('@gmail.com');
       
       console.log(`Fetching user data for user ${isGoogleIdentifier ? 'email' : (isFirebaseUid ? 'Firebase UID' : 'ID')}: ${userId}`);
+      console.log(`Google authentication detected: ${isGoogleEmail}`);
       
       // Include email as query parameter if provided, to help with Google authentication
       let url = `/api/users/${userId}`;
@@ -97,6 +99,52 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           const userData = await retryResponse.json();
           console.log('Backend user data (found with email parameter):', userData);
           
+          // If the user has a generic "Firebase User" name but we're using a Google account, try to update
+          if (isGoogleEmail && userData.name === "Firebase User") {
+            console.log("Found Firebase User for Google account - will attempt to update with Google profile data");
+            
+            try {
+              // Get the current Firebase user
+              const currentUser = auth.currentUser;
+              if (currentUser) {
+                // Try to get Google provider data
+                const googleProvider = currentUser.providerData?.find(provider => 
+                  provider.providerId === "google.com"
+                );
+                
+                if (googleProvider && googleProvider.displayName) {
+                  console.log("Updating user with Google display name:", googleProvider.displayName);
+                  
+                  // Update the user with Google profile data
+                  const updateResponse = await apiRequest('PUT', `/api/users/${userData.id}`, {
+                    name: googleProvider.displayName,
+                    photoURL: googleProvider.photoURL || currentUser.photoURL
+                  });
+                  
+                  if (updateResponse.ok) {
+                    const updatedUser = await updateResponse.json();
+                    console.log("User updated with Google data:", updatedUser);
+                    
+                    // Return the updated user data
+                    return {
+                      uid: userId.toString(),
+                      id: updatedUser.id,
+                      username: updatedUser.username,
+                      email: updatedUser.email,
+                      name: updatedUser.name,
+                      photoURL: updatedUser.photoURL || null,
+                      title: updatedUser.title,
+                      location: updatedUser.location
+                    };
+                  }
+                }
+              }
+            } catch (updateError) {
+              console.error("Error updating user with Google data:", updateError);
+              // Continue with original data if update fails
+            }
+          }
+          
           return {
             uid: userId.toString(),
             id: userData.id,
@@ -114,6 +162,52 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       const userData = await response.json();
       console.log('Backend user data:', userData);
+      
+      // If the user has a generic "Firebase User" name but we're using a Google account, try to update
+      if (isGoogleEmail && userData.name === "Firebase User") {
+        console.log("Found Firebase User for Google account - will attempt to update with Google profile data");
+        
+        try {
+          // Get the current Firebase user
+          const currentUser = auth.currentUser;
+          if (currentUser) {
+            // Try to get Google provider data
+            const googleProvider = currentUser.providerData?.find(provider => 
+              provider.providerId === "google.com"
+            );
+            
+            if (googleProvider && googleProvider.displayName) {
+              console.log("Updating user with Google display name:", googleProvider.displayName);
+              
+              // Update the user with Google profile data
+              const updateResponse = await apiRequest('PUT', `/api/users/${userData.id}`, {
+                name: googleProvider.displayName,
+                photoURL: googleProvider.photoURL || currentUser.photoURL
+              });
+              
+              if (updateResponse.ok) {
+                const updatedUser = await updateResponse.json();
+                console.log("User updated with Google data:", updatedUser);
+                
+                // Return the updated user data
+                return {
+                  uid: userId.toString(),
+                  id: updatedUser.id,
+                  username: updatedUser.username,
+                  email: updatedUser.email,
+                  name: updatedUser.name,
+                  photoURL: updatedUser.photoURL || null,
+                  title: updatedUser.title,
+                  location: updatedUser.location
+                };
+              }
+            }
+          }
+        } catch (updateError) {
+          console.error("Error updating user with Google data:", updateError);
+          // Continue with original data if update fails
+        }
+      }
       
       return {
         uid: userId.toString(),
