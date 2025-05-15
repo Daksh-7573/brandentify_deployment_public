@@ -325,7 +325,7 @@ export default function CareerCapsulePage() {
                     <div className="flex justify-between items-start mb-3">
                       <h3 className="text-xl font-semibold text-white">{goal.title}</h3>
                       <Badge 
-                        className={getStatusColor(goal.status || "not_started")}
+                        className={`${getStatusColor(goal.status || "not_started")} neo-glass-badge`}
                       >
                         {goal.status === "in_progress" ? "In Progress" : 
                          goal.status === "completed" ? "Completed" : 
@@ -359,7 +359,7 @@ export default function CareerCapsulePage() {
               ))
             ) : (
               <div className="col-span-full text-center py-8">
-                <p className="text-muted-foreground">No career goals found. Create your first career goal to get started.</p>
+                <p className="text-gray-300">No career goals found. Create your first career goal to get started.</p>
               </div>
             )}
           </div>
