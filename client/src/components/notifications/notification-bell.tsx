@@ -83,7 +83,7 @@ export function NotificationBell({ className = '' }: NotificationBellProps) {
         </Button>
       </PopoverTrigger>
       <PopoverContent 
-        className="w-[350px] p-0 mr-4 bg-spotify-glass-bg border border-spotify-glass-border backdrop-blur-md shadow-spotify-glass" 
+        className="w-[350px] p-0 mr-4 bg-spotify-glass-bg border-0 backdrop-blur-md shadow-spotify-glass" 
         align="end"
       >
         <NotificationList 

@@ -112,7 +112,7 @@ export default function NotificationList({
   
   return (
     <div className="max-h-[450px] overflow-hidden flex flex-col text-spotify-white">
-      <div className="flex items-center justify-between p-3 border-b border-spotify-glass-border">
+      <div className="flex items-center justify-between p-3 border-b border-gray-800/20">
         <h3 className="font-semibold text-base text-spotify-white">Notifications</h3>
         <Button 
           variant="ghost" 
@@ -131,17 +131,17 @@ export default function NotificationList({
         value={activeTab} 
         onValueChange={(value) => setActiveTab(value as 'all' | 'unread')}
       >
-        <div className="border-b border-spotify-glass-border px-2">
+        <div className="border-b border-gray-800/20 px-2">
           <TabsList className="grid grid-cols-2 h-10 bg-spotify-glass-highlight">
             <TabsTrigger 
               value="all" 
-              className="text-sm data-[state=active]:bg-spotify-glass-bg data-[state=active]:text-spotify-white"
+              className="text-sm data-[state=active]:bg-spotify-glass-bg data-[state=active]:text-spotify-white border-0"
             >
               All
             </TabsTrigger>
             <TabsTrigger 
               value="unread" 
-              className="text-sm data-[state=active]:bg-spotify-glass-bg data-[state=active]:text-spotify-white"
+              className="text-sm data-[state=active]:bg-spotify-glass-bg data-[state=active]:text-spotify-white border-0"
             >
               Unread
             </TabsTrigger>
@@ -166,7 +166,7 @@ export default function NotificationList({
               filteredNotifications.map((notification) => (
                 <div 
                   key={notification.id} 
-                  className={`p-3 border-b border-spotify-glass-border last:border-0 hover:bg-spotify-glass-highlight transition-colors ${
+                  className={`p-3 border-b border-gray-800/20 last:border-0 hover:bg-spotify-glass-highlight transition-colors ${
                     !notification.isRead ? 'bg-spotify-glass-highlight/40' : ''
                   }`}
                 >
@@ -242,7 +242,7 @@ export default function NotificationList({
               filteredNotifications.map((notification) => (
                 <div 
                   key={notification.id} 
-                  className="p-3 border-b border-spotify-glass-border last:border-0 hover:bg-spotify-glass-highlight transition-colors bg-spotify-glass-highlight/40"
+                  className="p-3 border-b border-gray-800/20 last:border-0 hover:bg-spotify-glass-highlight transition-colors bg-spotify-glass-highlight/40"
                 >
                   <div className="flex items-start gap-3">
                     <div className="mt-0.5">
