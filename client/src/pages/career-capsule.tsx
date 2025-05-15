@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Loader2, CheckCircle, CheckCircle2 } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { queryClient } from "@/lib/queryClient";
+import { NeoGlassSection } from "@/components/layout/neo-glass-layout";
 
 // Utility function to format dates
 const formatDate = (dateString: string) => {
@@ -296,8 +297,13 @@ export default function CareerCapsulePage() {
     <PageLayout title="Career Capsule">
       <div className="max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold">Career Capsule</h1>
-          <Button onClick={() => setShowCreateDialog(true)}>Create New Goal</Button>
+          <h1 className="text-3xl font-bold text-white">Career Capsule</h1>
+          <Button 
+            onClick={() => setShowCreateDialog(true)}
+            className="neo-glass-button"
+          >
+            Create New Goal
+          </Button>
         </div>
         
         {isLoading ? (
@@ -314,10 +320,10 @@ export default function CareerCapsulePage() {
             {/* Display all goals as an array - our backend now always returns an array */}
             {Array.isArray(goals) && goals.length > 0 ? (
               goals.map((goal: CareerGoal) => (
-                <Card key={goal.id} className="shadow-md hover:shadow-lg transition-shadow">
-                  <CardHeader className="pb-2">
-                    <div className="flex justify-between items-start">
-                      <CardTitle className="text-xl">{goal.title}</CardTitle>
+                <NeoGlassSection key={goal.id} className="hover:transform hover:translate-y-[-5px] transition-all duration-300">
+                  <div className="p-4">
+                    <div className="flex justify-between items-start mb-3">
+                      <h3 className="text-xl font-semibold text-white">{goal.title}</h3>
                       <Badge 
                         className={getStatusColor(goal.status || "not_started")}
                       >
@@ -326,32 +332,30 @@ export default function CareerCapsulePage() {
                          goal.status === "abandoned" ? "Abandoned" : "Not Started"}
                       </Badge>
                     </div>
-                    <CardDescription>
+                    <div className="text-gray-300 mb-3">
                       <div className="flex flex-col gap-1 mt-1">
                         <span className="text-sm">{getGoalTypeText(goal.goalType as GoalType)}</span>
                         <span className="text-sm">Target: {formatDate(String(goal.targetDate || ""))}</span>
                       </div>
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="pb-2">
+                    </div>
                     <div className="mb-3">
                       <Progress value={goal.progress || 0} className="h-2" />
-                      <span className="text-xs text-muted-foreground mt-1 block">
+                      <span className="text-xs text-gray-400 mt-1 block">
                         {goal.progress || 0}% complete
                       </span>
                     </div>
-                    <p className="line-clamp-2 text-sm">{goal.description || "No description provided"}</p>
-                  </CardContent>
-                  <CardFooter>
-                    <Button 
-                      variant="outline" 
-                      className="w-full" 
-                      onClick={() => handleViewDetails(goal.id)}
-                    >
-                      View Details
-                    </Button>
-                  </CardFooter>
-                </Card>
+                    <p className="line-clamp-2 text-sm text-gray-300 mb-4">{goal.description || "No description provided"}</p>
+                    <div className="pt-2 border-t border-gray-700">
+                      <Button 
+                        variant="outline" 
+                        className="w-full neo-glass-button" 
+                        onClick={() => handleViewDetails(goal.id)}
+                      >
+                        View Details
+                      </Button>
+                    </div>
+                  </div>
+                </NeoGlassSection>
               ))
             ) : (
               <div className="col-span-full text-center py-8">
@@ -360,14 +364,14 @@ export default function CareerCapsulePage() {
             )}
           </div>
         ) : (
-          <div className="text-center space-y-4 py-16 bg-muted/20 rounded-lg">
-            <h2 className="text-xl font-semibold text-gray-700">No career goals yet</h2>
-            <p className="text-muted-foreground max-w-md mx-auto">
+          <NeoGlassSection className="text-center space-y-4 py-16">
+            <h2 className="text-xl font-semibold text-white">No career goals yet</h2>
+            <p className="text-gray-300 max-w-md mx-auto">
               Set 1-5 year career goals and get AI-generated milestones to help you achieve them.
               Track your progress and stay focused on your career development journey.
             </p>
-            <Button className="mt-4" onClick={() => setShowCreateDialog(true)}>Get Started</Button>
-          </div>
+            <Button className="mt-6 neo-glass-button" onClick={() => setShowCreateDialog(true)}>Get Started</Button>
+          </NeoGlassSection>
         )}
       </div>
 
