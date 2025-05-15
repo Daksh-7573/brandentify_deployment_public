@@ -595,6 +595,7 @@
 .neo-glass-switch[data-state="checked"] {
   background-color: rgba(255, 255, 255, 0.6);
   border-color: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
 }
 
 .neo-glass-switch[data-state="checked"]::after {

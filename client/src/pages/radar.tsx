@@ -553,17 +553,17 @@ const Radar = () => {
                           checked={visibleInRadar}
                           onCheckedChange={handleVisibilityToggle}
                           disabled={updateVisibilityMutation.isPending}
-                          className="data-[state=checked]:bg-white/60 data-[state=unchecked]:bg-white/20 border-white/20"
+                          className="neo-glass-switch data-[state=checked]:bg-white/60 data-[state=unchecked]:bg-white/20"
                         />
                       </div>
                       
                       <div className="space-y-2">
                         <Label htmlFor="radius" className="text-white">Search radius</Label>
                         <Select value={radius} onValueChange={handleRadiusChange}>
-                          <SelectTrigger id="radius" className="bg-[rgba(18,18,18,0.95)] text-white border-white/20">
+                          <SelectTrigger id="radius" className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20">
                             <SelectValue placeholder="Select radius" />
                           </SelectTrigger>
-                          <SelectContent className="bg-[rgba(18,18,18,0.95)] text-white border-white/20">
+                          <SelectContent className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-lg shadow-black/10">
                             <SelectItem value="1">1 km</SelectItem>
                             <SelectItem value="5">5 km</SelectItem>
                             <SelectItem value="10">10 km</SelectItem>
@@ -601,7 +601,7 @@ const Radar = () => {
                   <div className="relative">
                     <input
                       id="job-title"
-                      className="w-full px-3 py-2 border border-white/20 bg-[rgba(18,18,18,0.95)] rounded-md text-white text-sm focus:outline-none focus:ring-1 focus:ring-white/30 placeholder:text-white/50"
+                      className="w-full px-3 py-2 border border-white/20 bg-[rgba(18,18,18,0.95)] backdrop-blur-md rounded-md text-white text-sm focus:outline-none focus:ring-1 focus:ring-white/30 placeholder:text-white/50"
                       placeholder="e.g. Software Engineer"
                       value={jobTitleFilter}
                       onChange={(e) => setJobTitleFilter(e.target.value)}
@@ -615,10 +615,10 @@ const Radar = () => {
                     value={industryFilter}
                     onValueChange={setIndustryFilter}
                   >
-                    <SelectTrigger id="industry" className="w-full bg-[rgba(18,18,18,0.95)] text-white border-white/20">
+                    <SelectTrigger id="industry" className="w-full bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20">
                       <SelectValue placeholder="Select an industry" />
                     </SelectTrigger>
-                    <SelectContent className="max-h-80 bg-[rgba(18,18,18,0.95)] text-white border-white/20">
+                    <SelectContent className="max-h-80 bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-lg shadow-black/10">
                       <SelectItem value="all" className="focus:bg-white/10 focus:text-white">All Industries</SelectItem>
                       {INDUSTRIES.map((industry) => (
                         <SelectItem key={industry} value={industry} className="focus:bg-white/10 focus:text-white">
@@ -635,10 +635,10 @@ const Radar = () => {
                     value={lookingForFilter}
                     onValueChange={setLookingForFilter}
                   >
-                    <SelectTrigger id="looking-for" className="w-full bg-[rgba(18,18,18,0.95)] text-white border-white/20">
+                    <SelectTrigger id="looking-for" className="w-full bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20">
                       <SelectValue placeholder="Select what you're looking for" />
                     </SelectTrigger>
-                    <SelectContent className="max-h-80 bg-[rgba(18,18,18,0.95)] text-white border-white/20">
+                    <SelectContent className="max-h-80 bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-lg shadow-black/10">
                       <SelectItem value="all" className="focus:bg-white/10 focus:text-white">All Categories</SelectItem>
                       {LOOKING_FOR_CATEGORIES.map((category) => (
                         <SelectItem key={category.value} value={category.value} className="focus:bg-white/10 focus:text-white">
