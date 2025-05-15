@@ -64,11 +64,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Fetch user data from our backend
   const fetchUserData = async (userId: string | number): Promise<AuthUser | null> => {
     try {
-      console.log(`Fetching user data for user ID: ${userId}`);
+      // If userId is a Google email username (doesn't contain Firebase UID pattern), 
+      // try to fetch by username
+      const isGoogleIdentifier = typeof userId === 'string' && 
+        userId.includes('@') && userId.split('@')[1].includes('.');
+        
+      console.log(`Fetching user data for user ${isGoogleIdentifier ? 'email' : 'ID'}: ${userId}`);
+      
+      // First try direct fetch by ID
       const response = await apiRequest('GET', `/api/users/${userId}`);
       
       if (response.status === 404) {
-        console.log('User not found in backend');
+        console.log('User not found in backend by direct ID lookup');
         return null;
       }
       
@@ -94,21 +101,45 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Create or update a user in our backend
   const createOrUpdateUserInBackend = async (firebaseUser: FirebaseUser) => {
     try {
-      console.log("Creating/updating user with Google profile:", {
+      // Check if we're logging in with a Google provider
+      const isGoogleProvider = firebaseUser.providerData && 
+        firebaseUser.providerData.some(provider => provider.providerId === "google.com");
+      
+      console.log(`Creating/updating user with ${isGoogleProvider ? 'Google' : 'Firebase'} profile:`, {
         uid: firebaseUser.uid,
         email: firebaseUser.email,
         displayName: firebaseUser.displayName,
-        photoURL: firebaseUser.photoURL
+        photoURL: firebaseUser.photoURL,
+        providerData: firebaseUser.providerData
       });
       
-      // Make sure required fields exist and use all available Google profile data
+      // If we have Google provider data, get the first Google provider
+      const googleProvider = isGoogleProvider ? 
+        firebaseUser.providerData.find(provider => provider.providerId === "google.com") : null;
+      
+      // Make sure required fields exist and use Google provider data when possible
       const userData = {
-        username: firebaseUser.uid, // Use Firebase UID as username for consistency
-        email: firebaseUser.email || `firebase_${firebaseUser.uid.substring(0, 8)}@example.com`,
-        name: firebaseUser.displayName || "Google User",
-        photoURL: firebaseUser.photoURL,
-        // Include provider data for more detail
-        provider: "google",
+        // Use the Google email as username when available, fallback to UID for non-Google accounts
+        username: isGoogleProvider && googleProvider?.email ? 
+          googleProvider.email.split('@')[0] : firebaseUser.uid,
+        
+        // Use Google email when available
+        email: isGoogleProvider && googleProvider?.email ? 
+          googleProvider.email : 
+          (firebaseUser.email || `firebase_${firebaseUser.uid.substring(0, 8)}@example.com`),
+        
+        // Use Google display name when available
+        name: isGoogleProvider && googleProvider?.displayName ? 
+          googleProvider.displayName : 
+          (firebaseUser.displayName || "Firebase User"),
+        
+        // Use Google photo when available
+        photoURL: isGoogleProvider && googleProvider?.photoURL ? 
+          googleProvider.photoURL : 
+          firebaseUser.photoURL,
+        
+        // Include provider data
+        provider: isGoogleProvider ? "google.com" : firebaseUser.providerId || "firebase",
         emailVerified: firebaseUser.emailVerified || false,
       };
       
@@ -291,13 +322,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               } else {
                 // Last resort - use Firebase data
                 console.warn("Could not get user data from backend, using Firebase data as last resort");
+                
+                // Check for Google provider data
+                const isGoogleProvider = firebaseUser.providerData && 
+                  firebaseUser.providerData.some(provider => provider.providerId === "google.com");
+                
+                const googleProvider = isGoogleProvider ? 
+                  firebaseUser.providerData.find(provider => provider.providerId === "google.com") : null;
+                
                 const fallbackUser = {
                   uid: firebaseUser.uid,
                   id: parseInt(firebaseUser.uid.substring(0, 5), 36) || 999,
-                  username: firebaseUser.uid.substring(0, 8),
-                  email: firebaseUser.email,
-                  name: firebaseUser.displayName,
-                  photoURL: firebaseUser.photoURL
+                  username: googleProvider?.email?.split('@')[0] || firebaseUser.uid.substring(0, 8),
+                  email: googleProvider?.email || firebaseUser.email,
+                  name: googleProvider?.displayName || firebaseUser.displayName,
+                  photoURL: googleProvider?.photoURL || firebaseUser.photoURL
                 };
                 
                 setUser(fallbackUser);
@@ -376,14 +415,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           // If we couldn't get user data from backend, use a minimal representation
           console.warn("Could not get user data from backend after authentication");
           
-          // Create a fallback user with minimal data
+          // Check for Google provider data
+          const isGoogleProvider = result.user.providerData && 
+            result.user.providerData.some(provider => provider.providerId === "google.com");
+          
+          const googleProvider = isGoogleProvider ? 
+            result.user.providerData.find(provider => provider.providerId === "google.com") : null;
+            
+          // Create a fallback user with Google data when available
           const fallbackUser = {
             uid: result.user.uid,
             id: parseInt(result.user.uid.substring(0, 5), 36) || 999,
-            username: result.user.uid,
-            email: result.user.email,
-            name: result.user.displayName,
-            photoURL: result.user.photoURL
+            username: googleProvider?.email?.split('@')[0] || result.user.uid,
+            email: googleProvider?.email || result.user.email,
+            name: googleProvider?.displayName || result.user.displayName,
+            photoURL: googleProvider?.photoURL || result.user.photoURL
           };
           
           setUser(fallbackUser);
