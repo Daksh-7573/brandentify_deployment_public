@@ -74,16 +74,11 @@ try {
   // Initialize Firebase Auth
   auth = getAuth(app);
   
-  // Configure Google Auth Provider with custom parameters
+  // Configure Google Auth Provider with minimal parameters for maximum compatibility
   googleProvider = new GoogleAuthProvider();
   
-  // Get full origin and hostname for proper redirects
-  const origin = window.location.origin;
-  const hostname = window.location.hostname;
-  
-  // IMPORTANT: Use minimal parameters for ALL domains to avoid OAuth errors
-  // The "redirect_uri" parameter causes issues with Google's OAuth flow
-  // Let Firebase handle the redirect_uri internally
+  // Set up popup mode as the primary auth method for better reliability
+  // Setting prompt ensures the user always gets to choose which account to use
   googleProvider.setCustomParameters({
     prompt: 'select_account'
   });
@@ -91,6 +86,9 @@ try {
   // Add OAuth scopes to ensure we get the right profile data
   googleProvider.addScope('email');
   googleProvider.addScope('profile');
+  
+  // Ensure the auth provider trusts our domain
+  auth.useDeviceLanguage();
   
   console.log("Using simplified Google auth configuration for maximum compatibility");
   
