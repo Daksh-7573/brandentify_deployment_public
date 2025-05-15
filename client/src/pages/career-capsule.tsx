@@ -8,7 +8,7 @@ import { toast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, CheckCircle, CheckCircle2 } from "lucide-react";
+import { Loader2, CheckCircle, CheckCircle2, AlertTriangle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { queryClient } from "@/lib/queryClient";
 import { NeoGlassSection } from "@/components/layout/neo-glass-layout";
@@ -789,43 +789,53 @@ export default function CareerCapsulePage() {
               {/* Progress Log section removed as requested */}
             </div>
           ) : (
-            <p className="text-center py-4">Failed to load goal details.</p>
+            <p className="text-center py-4 text-gray-300">Failed to load goal details.</p>
           )}
           
           <DialogFooter className="flex justify-between items-center">
             <div className="flex gap-2">
               <Button 
                 variant="destructive" 
+                className="hover:bg-red-700/70 border-red-700/30 bg-red-800/30 text-red-200"
                 onClick={() => handleOpenDeleteDialog(selectedGoalId || 0)}
               >
                 Delete Career Capsule
               </Button>
             </div>
-            <Button onClick={() => setShowDetailsDialog(false)}>Close</Button>
+            <Button 
+              onClick={() => setShowDetailsDialog(false)}
+              className="neo-glass-button"
+            >
+              Close
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-[425px] neo-glass-modal">
           <DialogHeader>
-            <DialogTitle>Delete Career Capsule</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-white">Delete Career Capsule</DialogTitle>
+            <DialogDescription className="text-gray-300">
               Are you sure you want to delete this career capsule? This action cannot be undone, and all associated milestones and skills will be permanently removed.
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <Alert variant="destructive">
-              <AlertTitle>Warning</AlertTitle>
-              <AlertDescription>
+            <div className="p-4 border border-red-600/40 bg-red-500/10 rounded-lg">
+              <h4 className="font-medium flex items-center text-red-300">
+                <AlertTriangle className="mr-2 h-4 w-4" />
+                Warning
+              </h4>
+              <p className="text-sm text-gray-300 mt-1">
                 Deleting this career capsule will remove all your progress tracking for this goal.
-              </AlertDescription>
-            </Alert>
+              </p>
+            </div>
           </div>
           <DialogFooter className="flex gap-2 justify-end">
             <Button 
               variant="outline" 
+              className="neo-glass-button-outline"
               onClick={() => {
                 setShowDeleteDialog(false);
                 setCapsuleToDelete(null);
@@ -836,6 +846,7 @@ export default function CareerCapsulePage() {
             </Button>
             <Button 
               variant="destructive" 
+              className="hover:bg-red-700/70 border-red-700/30 bg-red-800/30 text-red-200"
               onClick={handleDeleteCapsule}
               disabled={isDeleting}
             >
