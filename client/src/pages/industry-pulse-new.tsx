@@ -352,14 +352,14 @@ function PulseReactions({ pulse }: PulseReactionsProps) {
           <DialogFooter>
             <button 
               onClick={() => setIsShareDialogOpen(false)}
-              className="flex items-center px-3 py-1.5 rounded-md bg-gray-800/80 text-white/80 text-sm border border-gray-700/50 hover:bg-gray-700/70 transition-colors"
+              className="flex items-center px-3 py-1.5 rounded-md bg-gray-800/80 text-white/80 text-sm border border-gray-700/50 hover:bg-gray-700/70 hover:scale-105 hover:shadow-md transition-all duration-200"
             >
               Cancel
             </button>
             <button 
               onClick={handleShareSubmit} 
               disabled={isLoading}
-              className="flex items-center px-3 py-1.5 rounded-md bg-gradient-to-r from-[#e0e0e0] to-[#ffffff] text-black font-medium text-sm disabled:opacity-50"
+              className="flex items-center px-3 py-1.5 rounded-md bg-gradient-to-r from-[#e0e0e0] to-[#ffffff] text-black font-medium text-sm disabled:opacity-50 hover:shadow-md hover:scale-105 transition-all duration-200"
             >
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Share
@@ -474,7 +474,7 @@ function PollVoting({ pulse }: PollVotingProps) {
         <span>Poll Options</span>
       </div>
       
-      <div className="rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-4 bg-gradient-to-b from-purple-50/30 to-purple-50/10">
+      <div className="rounded-lg shadow-sm hover:shadow-md transition-all duration-300 p-4 bg-gradient-to-b from-gray-800/30 to-gray-900/20">
         {pulse.pollOptions.map((option, index) => (
           <div key={index} className="space-y-1 mb-3 last:mb-0">
             <div className="flex items-center justify-between">
@@ -483,11 +483,11 @@ function PollVoting({ pulse }: PollVotingProps) {
                   type="button"
                   variant="outline"
                   size="sm"
-                  className={`h-8 ${userVote === index ? 'bg-purple-100 border-purple-300 text-purple-700' : ''} transition-all duration-300`}
+                  className={`h-8 ${userVote === index ? 'bg-gray-200/80 border-white/20 text-white' : ''} transition-all duration-200 hover:scale-105 hover:shadow-md`}
                   onClick={() => handleVote(index)}
                   disabled={isLoading}
                 >
-                  {userVote === index && <Check className="h-3 w-3 mr-1 text-purple-600" />}
+                  {userVote === index && <Check className="h-3 w-3 mr-1 text-white" />}
                   {option}
                 </Button>
                 
@@ -506,9 +506,9 @@ function PollVoting({ pulse }: PollVotingProps) {
             </div>
             
             {userVote !== null && (
-              <div className="h-2 bg-purple-100 rounded-full overflow-hidden">
+              <div className="h-2 bg-gray-700/30 rounded-full overflow-hidden">
                 <div 
-                  className="h-full bg-purple-500 transition-all duration-500 ease-in-out"
+                  className="h-full bg-white/70 transition-all duration-500 ease-in-out"
                   style={{ 
                     width: `${totalVotes > 0 ? (voteCounts[index] || 0) / totalVotes * 100 : 0}%` 
                   }} 
