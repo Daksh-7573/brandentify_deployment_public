@@ -601,7 +601,7 @@ const Radar = () => {
                   <div className="relative">
                     <input
                       id="job-title"
-                      className="w-full px-3 py-2 border border-white/20 bg-[rgba(18,18,18,0.95)] backdrop-blur-md rounded-md text-white text-sm focus:outline-none focus:ring-1 focus:ring-white/30 placeholder:text-white/50"
+                      className="w-full px-3 py-2 border border-white/20 bg-[rgba(18,18,18,0.95)] backdrop-blur-md rounded-md text-white text-sm focus:outline-none focus:ring-1 focus:ring-white/30 placeholder:text-white/50 shadow-md transition-all focus:border-white/30"
                       placeholder="e.g. Software Engineer"
                       value={jobTitleFilter}
                       onChange={(e) => setJobTitleFilter(e.target.value)}
@@ -615,13 +615,13 @@ const Radar = () => {
                     value={industryFilter}
                     onValueChange={setIndustryFilter}
                   >
-                    <SelectTrigger id="industry" className="w-full bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20">
+                    <SelectTrigger id="industry" className="w-full bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30">
                       <SelectValue placeholder="Select an industry" />
                     </SelectTrigger>
                     <SelectContent className="max-h-80 bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-lg shadow-black/10">
-                      <SelectItem value="all" className="focus:bg-white/10 focus:text-white">All Industries</SelectItem>
+                      <SelectItem value="all" className="focus:bg-white/10 focus:text-white hover:bg-white/10">All Industries</SelectItem>
                       {INDUSTRIES.map((industry) => (
-                        <SelectItem key={industry} value={industry} className="focus:bg-white/10 focus:text-white">
+                        <SelectItem key={industry} value={industry} className="focus:bg-white/10 focus:text-white hover:bg-white/10">
                           {industry}
                         </SelectItem>
                       ))}
@@ -635,13 +635,13 @@ const Radar = () => {
                     value={lookingForFilter}
                     onValueChange={setLookingForFilter}
                   >
-                    <SelectTrigger id="looking-for" className="w-full bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20">
+                    <SelectTrigger id="looking-for" className="w-full bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30">
                       <SelectValue placeholder="Select what you're looking for" />
                     </SelectTrigger>
                     <SelectContent className="max-h-80 bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-lg shadow-black/10">
-                      <SelectItem value="all" className="focus:bg-white/10 focus:text-white">All Categories</SelectItem>
+                      <SelectItem value="all" className="focus:bg-white/10 focus:text-white hover:bg-white/10">All Categories</SelectItem>
                       {LOOKING_FOR_CATEGORIES.map((category) => (
-                        <SelectItem key={category.value} value={category.value} className="focus:bg-white/10 focus:text-white">
+                        <SelectItem key={category.value} value={category.value} className="focus:bg-white/10 focus:text-white hover:bg-white/10">
                           {category.label}
                         </SelectItem>
                       ))}
