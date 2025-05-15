@@ -317,16 +317,16 @@ function PulseReactions({ pulse }: PulseReactionsProps) {
             {formatCount(pulse.shareCount || 0)}
           </button>
         </DialogTrigger>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md bg-gray-900/80 backdrop-blur-sm border-gray-700/50">
           <DialogHeader>
-            <DialogTitle>Share this pulse</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-white">Share this pulse</DialogTitle>
+            <DialogDescription className="text-gray-300">
               Share this pulse with another user in your network.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="recipient">Recipient</Label>
+              <Label htmlFor="recipient" className="text-gray-300">Recipient</Label>
               <select 
                 id="recipient" 
                 className="w-full rounded-md border border-input bg-gray-800/80 text-white p-2 focus:ring-1 focus:ring-white/20 outline-none"
@@ -340,26 +340,27 @@ function PulseReactions({ pulse }: PulseReactionsProps) {
               </select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="message">Message (optional)</Label>
+              <Label htmlFor="message" className="text-gray-300">Message (optional)</Label>
               <Input
                 id="message"
                 placeholder="Add a message..."
                 value={shareMessage}
                 onChange={(e) => setShareMessage(e.target.value)}
+                className="bg-gray-800/80 text-white border-gray-700/50 focus:ring-white/10 focus:border-white/20 placeholder:text-gray-400"
               />
             </div>
           </div>
           <DialogFooter>
             <button 
               onClick={() => setIsShareDialogOpen(false)}
-              className="flex items-center px-3 py-1.5 rounded-md bg-gray-800/80 text-white/80 text-sm border border-gray-700/50 hover:bg-gray-700/70 hover:scale-110 hover:shadow-md transition-all duration-200"
+              className="flex items-center px-3 py-1.5 rounded-md bg-gray-800/80 text-white/80 text-sm border border-gray-700/50 hover:bg-gray-700/50 hover:scale-110 hover:shadow-md hover:border-white/10 transition-all duration-200"
             >
               Cancel
             </button>
             <button 
               onClick={handleShareSubmit} 
               disabled={isLoading}
-              className="flex items-center px-3 py-1.5 rounded-md bg-gradient-to-r from-[#e0e0e0] to-[#ffffff] text-black font-medium text-sm disabled:opacity-50 hover:shadow-md hover:scale-110 transition-all duration-200"
+              className="flex items-center px-3 py-1.5 rounded-md bg-gradient-to-r from-white/80 to-white/90 text-black font-medium text-sm disabled:opacity-50 hover:shadow-md hover:scale-110 hover:from-white/90 hover:to-white transition-all duration-200"
             >
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Share
