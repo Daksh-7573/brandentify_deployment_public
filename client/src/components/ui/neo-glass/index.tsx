@@ -37,11 +37,20 @@ interface NeoGlassCardProps {
   children: ReactNode;
   className?: string;
   style?: React.CSSProperties;
+  glow?: 'primary' | 'secondary' | 'none';
 }
 
-export const NeoGlassCard = ({ children, className = '', style }: NeoGlassCardProps) => {
+export const NeoGlassCard = ({ 
+  children, 
+  className = '', 
+  style,
+  glow = 'none'
+}: NeoGlassCardProps) => {
+  const glowClass = glow === 'primary' ? 'shadow-[0_0_15px_rgba(30,215,96,0.3)]' : 
+                   glow === 'secondary' ? 'shadow-[0_0_15px_rgba(80,100,255,0.3)]' : '';
+                   
   return (
-    <div className={`neo-glass-card ${className}`} style={style}>
+    <div className={`neo-glass-card ${glowClass} ${className}`} style={style}>
       {children}
     </div>
   );
@@ -52,9 +61,11 @@ interface NeoGlassButtonProps {
   children: ReactNode;
   onClick?: () => void;
   className?: string;
-  variant?: 'primary' | 'secondary';
+  variant?: 'primary' | 'secondary' | 'tertiary';
   type?: 'button' | 'submit' | 'reset';
   disabled?: boolean;
+  isIcon?: boolean;
+  glow?: 'primary' | 'secondary' | 'none';
 }
 
 export const NeoGlassButton = ({ 
@@ -63,14 +74,26 @@ export const NeoGlassButton = ({
   className = '', 
   variant = 'primary',
   type = 'button',
-  disabled = false
+  disabled = false,
+  isIcon = false,
+  glow = 'none'
 }: NeoGlassButtonProps) => {
-  const variantClass = variant === 'secondary' ? 'secondary' : '';
+  let variantClass = '';
+  
+  if (variant === 'secondary') {
+    variantClass = 'secondary';
+  } else if (variant === 'tertiary') {
+    variantClass = 'bg-black/20 hover:bg-black/30 text-white border border-white/10';
+  }
+  
+  const iconClass = isIcon ? 'p-2 flex items-center justify-center' : '';
+  const glowClass = glow === 'primary' ? 'shadow-[0_0_15px_rgba(30,215,96,0.5)]' : 
+                   glow === 'secondary' ? 'shadow-[0_0_15px_rgba(80,100,255,0.5)]' : '';
   
   return (
     <button
       type={type}
-      className={`neo-glass-button ${variantClass} ${className}`}
+      className={`neo-glass-button ${variantClass} ${iconClass} ${glowClass} ${className}`}
       onClick={onClick}
       disabled={disabled}
     >
@@ -390,5 +413,46 @@ export const NeoGlassModal = ({
         {children}
       </div>
     </div>
+  );
+};
+
+// Musk AI-specific components
+interface NeoGlassMuskBubbleProps {
+  message: string;
+  className?: string;
+}
+
+export const NeoGlassMuskBubble = ({ message, className = '' }: NeoGlassMuskBubbleProps) => {
+  return (
+    <div className={`bg-primary/20 backdrop-blur-sm py-2 px-3 rounded-xl max-w-[80%] ${className}`}>
+      <p className="text-white text-sm">{message}</p>
+    </div>
+  );
+};
+
+interface NeoGlassSparkleProps {
+  top?: string;
+  left?: string;
+  delay?: number;
+  className?: string;
+}
+
+export const NeoGlassSparkle = ({ 
+  top = '0', 
+  left = '0',
+  delay = 0,
+  className = '' 
+}: NeoGlassSparkleProps) => {
+  const animationDelay = `${delay}s`;
+  
+  return (
+    <div 
+      className={`absolute w-3 h-3 rounded-full bg-white/60 blur-[1px] animate-pulse ${className}`}
+      style={{ 
+        top, 
+        left,
+        animationDelay
+      }}
+    />
   );
 };
