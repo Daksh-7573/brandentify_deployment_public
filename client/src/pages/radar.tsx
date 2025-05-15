@@ -744,21 +744,21 @@ const Radar = () => {
         
         {/* User Quantum Card dialog */}
         <Dialog open={cardOpen} onOpenChange={setCardOpen}>
-          <DialogContent className="sm:max-w-md">
+          <DialogContent className="sm:max-w-md bg-black/90 backdrop-blur-lg border border-white/20 text-white">
             <DialogHeader>
-              <DialogTitle>
+              <DialogTitle className="text-white">
                 {selectedUser?.name || 'Professional'}'s Quantum Card
               </DialogTitle>
-              <DialogDescription>
+              <DialogDescription className="text-white/70">
                 Connect with this professional to grow your network.
               </DialogDescription>
             </DialogHeader>
             
             {selectedUser && (
               <Tabs defaultValue="card" className="w-full">
-                <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="card">Quantum Card</TabsTrigger>
-                  <TabsTrigger value="actions">Actions</TabsTrigger>
+                <TabsList className="grid w-full grid-cols-2 bg-white/10 p-1">
+                  <TabsTrigger value="card" className="data-[state=active]:bg-white/20 text-white data-[state=active]:text-white">Quantum Card</TabsTrigger>
+                  <TabsTrigger value="actions" className="data-[state=active]:bg-white/20 text-white data-[state=active]:text-white">Actions</TabsTrigger>
                 </TabsList>
                 
                 <TabsContent value="card" className="flex justify-center p-2">
@@ -767,25 +767,28 @@ const Radar = () => {
                 
                 <TabsContent value="actions" className="space-y-4 py-4">
                   <div className="grid grid-cols-2 gap-4">
-                    <Button variant="outline" asChild>
+                    <Button variant="outline" asChild 
+                      className="bg-white/10 text-white hover:bg-white/20 border border-white/20">
                       <Link to={`/profile/${selectedUser.username}`}>
                         <UserCheck className="mr-2 h-4 w-4" />
                         View Profile
                       </Link>
                     </Button>
                     
-                    <Button variant="outline">
+                    <Button variant="outline" 
+                      className="bg-white/10 text-white hover:bg-white/20 border border-white/20">
                       <MessageSquare className="mr-2 h-4 w-4" />
                       Message
                     </Button>
                     
-                    <Button variant="outline">
+                    <Button variant="outline" 
+                      className="bg-white/10 text-white hover:bg-white/20 border border-white/20">
                       <UserPlus className="mr-2 h-4 w-4" />
                       Connect
                     </Button>
                   </div>
                   
-                  <div className="text-xs text-gray-500 flex items-center mt-4">
+                  <div className="text-xs text-white/70 flex items-center mt-4">
                     <MapPin className="h-3 w-3 mr-1" />
                     {selectedUser.distance.toFixed(1)} km away
                   </div>
@@ -796,9 +799,10 @@ const Radar = () => {
             <DialogFooter className="flex flex-col sm:flex-row sm:justify-between sm:space-x-2">
               <Button 
                 type="button" 
-                variant="ghost" 
+                variant="outline" 
                 size="sm"
                 onClick={() => setCardOpen(false)}
+                className="bg-white/10 text-white hover:bg-white/20 border border-white/20"
               >
                 Close
               </Button>
