@@ -744,7 +744,7 @@ const Radar = () => {
         
         {/* User Quantum Card dialog */}
         <Dialog open={cardOpen} onOpenChange={setCardOpen}>
-          <DialogContent className="sm:max-w-md bg-black/90 backdrop-blur-lg border border-white/20 text-white">
+          <DialogContent className="sm:max-w-md bg-black/80 backdrop-blur-lg border border-white/20 text-white shadow-lg shadow-black/30">
             <DialogHeader>
               <DialogTitle className="text-white">
                 {selectedUser?.name || 'Professional'}'s Quantum Card
@@ -756,19 +756,19 @@ const Radar = () => {
             
             {selectedUser && (
               <Tabs defaultValue="card" className="w-full">
-                <TabsList className="grid w-full grid-cols-2 bg-white/10 p-1">
-                  <TabsTrigger value="card" className="data-[state=active]:bg-white/20 text-white data-[state=active]:text-white">Quantum Card</TabsTrigger>
-                  <TabsTrigger value="actions" className="data-[state=active]:bg-white/20 text-white data-[state=active]:text-white">Actions</TabsTrigger>
+                <TabsList className="grid w-full grid-cols-2 bg-white/10 p-1 rounded-md border border-white/10 backdrop-blur-md">
+                  <TabsTrigger value="card" className="data-[state=active]:bg-white/20 text-white data-[state=active]:text-white data-[state=active]:shadow-md data-[state=active]:backdrop-blur-md rounded-md">Quantum Card</TabsTrigger>
+                  <TabsTrigger value="actions" className="data-[state=active]:bg-white/20 text-white data-[state=active]:text-white data-[state=active]:shadow-md data-[state=active]:backdrop-blur-md rounded-md">Actions</TabsTrigger>
                 </TabsList>
                 
-                <TabsContent value="card" className="flex justify-center p-2">
+                <TabsContent value="card" className="flex justify-center p-2 mt-2">
                   {renderUserQuantumCard()}
                 </TabsContent>
                 
-                <TabsContent value="actions" className="space-y-4 py-4">
+                <TabsContent value="actions" className="space-y-4 py-4 mt-2">
                   <div className="grid grid-cols-2 gap-4">
                     <Button variant="outline" asChild 
-                      className="bg-white/10 text-white hover:bg-white/20 border border-white/20">
+                      className="bg-white/10 text-white hover:bg-white/20 border border-white/20 backdrop-blur-md shadow-md transition-all hover:scale-105">
                       <Link to={`/profile/${selectedUser.username}`}>
                         <UserCheck className="mr-2 h-4 w-4" />
                         View Profile
@@ -776,13 +776,13 @@ const Radar = () => {
                     </Button>
                     
                     <Button variant="outline" 
-                      className="bg-white/10 text-white hover:bg-white/20 border border-white/20">
+                      className="bg-white/10 text-white hover:bg-white/20 border border-white/20 backdrop-blur-md shadow-md transition-all hover:scale-105">
                       <MessageSquare className="mr-2 h-4 w-4" />
                       Message
                     </Button>
                     
                     <Button variant="outline" 
-                      className="bg-white/10 text-white hover:bg-white/20 border border-white/20">
+                      className="bg-white/10 text-white hover:bg-white/20 border border-white/20 backdrop-blur-md shadow-md transition-all hover:scale-105">
                       <UserPlus className="mr-2 h-4 w-4" />
                       Connect
                     </Button>
@@ -802,7 +802,7 @@ const Radar = () => {
                 variant="outline" 
                 size="sm"
                 onClick={() => setCardOpen(false)}
-                className="bg-white/10 text-white hover:bg-white/20 border border-white/20"
+                className="bg-white/10 text-white hover:bg-white/20 border border-white/20 backdrop-blur-md shadow-md transition-all hover:scale-105"
               >
                 Close
               </Button>
