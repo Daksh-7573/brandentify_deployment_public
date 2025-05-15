@@ -553,7 +553,7 @@ const Radar = () => {
                           checked={visibleInRadar}
                           onCheckedChange={handleVisibilityToggle}
                           disabled={updateVisibilityMutation.isPending}
-                          className="neo-glass-switch"
+                          className="data-[state=checked]:bg-white/60 data-[state=unchecked]:bg-white/20 border-white/20"
                         />
                       </div>
                       
