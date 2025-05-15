@@ -698,7 +698,7 @@ const Radar = () => {
                 size="sm" 
                 onClick={() => refetchNearby()}
                 disabled={isLoadingNearby}
-                className="bg-white/10 text-white hover:bg-white/20 border border-white/20"
+                className="bg-white/10 text-white hover:bg-white/20 border border-white/20 backdrop-blur-md shadow-md"
               >
                 {isLoadingNearby ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
