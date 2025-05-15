@@ -580,25 +580,25 @@ const SearchPage = () => {
     return (
       <Card 
         key={tag.id} 
-        className="overflow-hidden rounded-xl border-0 shadow-md hover:shadow-lg transition-all duration-300 group"
+        className="overflow-hidden rounded-xl bg-gray-900/60 backdrop-blur-md border border-white/10 shadow-xl hover:shadow-2xl hover:border-white/20 transition-all duration-300 group"
       >
         <CardContent className="p-5 relative">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full -mt-12 -mr-12 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <div className="absolute top-0 right-0 w-24 h-24 bg-white/5 rounded-full -mt-12 -mr-12 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-lg font-medium group-hover:text-primary transition-colors">
-                <span className="text-primary font-semibold">#</span>{tag.name}
+              <h3 className="text-lg font-medium text-white group-hover:text-white/90 transition-colors">
+                <span className="text-white/80 font-semibold">#</span>{tag.name}
               </h3>
-              <p className="text-gray-500 text-sm mt-1">
+              <p className="text-gray-300 text-sm mt-1">
                 {tag.count} {tag.count === 1 ? 'post' : 'posts'}
               </p>
             </div>
             {userId ? (
               <button
-                className={`min-w-[110px] px-4 py-1.5 rounded-full transition-all duration-300 shadow-sm font-medium text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 ${
+                className={`min-w-[110px] px-4 py-1.5 rounded-full transition-all duration-300 shadow-sm font-medium text-sm focus:outline-none focus:ring-2 focus:ring-white/20 ${
                   isFollowing 
-                    ? 'text-primary bg-white border border-primary/30 hover:bg-primary/5 hover:shadow-md' 
-                    : 'bg-primary text-white hover:bg-primary/90 hover:shadow-md'
+                    ? 'text-white bg-gray-800/80 border border-white/20 hover:bg-gray-700/80 hover:shadow-md' 
+                    : 'bg-white/20 text-white hover:bg-white/30 hover:shadow-md'
                 }`}
                 onClick={handleFollowToggle}
                 disabled={isLoading}
@@ -606,7 +606,7 @@ const SearchPage = () => {
                 <span className="relative flex items-center justify-center">
                   {isLoading ? (
                     <div className="flex items-center">
-                      <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full mr-2" />
+                      <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2" />
                       <span>{isFollowing ? 'Unfollowing...' : 'Following...'}</span>
                     </div>
                   ) : (
@@ -625,8 +625,8 @@ const SearchPage = () => {
                 </span>
               </button>
             ) : (
-              <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors duration-300">
-                <Hash className="h-5 w-5 text-primary" />
+              <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-colors duration-300">
+                <Hash className="h-5 w-5 text-white" />
               </div>
             )}
           </div>
@@ -684,7 +684,7 @@ const SearchPage = () => {
               </div>
               <button 
                 type="submit"
-                className="px-5 py-2 rounded-md bg-gradient-to-r from-white/80 to-white/90 text-black hover:shadow-md hover:scale-105 hover:from-white/90 hover:to-white focus:outline-none focus:ring-1 focus:ring-white/20 shadow-sm font-medium transition-all min-w-[100px]"
+                className="px-5 py-2 rounded-md bg-white/20 text-white hover:bg-white/30 hover:shadow-md focus:outline-none focus:ring-1 focus:ring-white/20 shadow-sm font-medium transition-all min-w-[100px]"
                 disabled={isLoading}
               >
                 {isLoading ? (
@@ -703,10 +703,10 @@ const SearchPage = () => {
 
             {/* Search Category Tabs */}
             <Tabs defaultValue={activeCategory === "smart-connect" ? "pulses" : activeCategory} onValueChange={handleTabChange}>
-              <TabsList className="mb-6 bg-gray-800/60 rounded-full p-1 border border-gray-700/40 shadow-sm">
+              <TabsList className="mb-6 bg-gray-900/60 backdrop-blur-md rounded-full p-1 border border-white/10 shadow-md">
                 <TabsTrigger 
                   value="pulses" 
-                  className="flex items-center gap-1.5 py-2 px-4 rounded-full text-gray-300 hover:text-white data-[state=active]:bg-gradient-to-r data-[state=active]:from-white/10 data-[state=active]:to-white/20 data-[state=active]:text-white data-[state=active]:shadow-sm data-[state=active]:border-white/10 transition-all"
+                  className="flex items-center gap-1.5 py-2 px-4 rounded-full text-gray-300 hover:text-white data-[state=active]:bg-white/20 data-[state=active]:text-white data-[state=active]:shadow-sm transition-all"
                 >
                   <MessageSquare size={16} />
                   <span>Pulses</span>
