@@ -1,260 +1,394 @@
-/**
- * Neo-Glass UI Component Library
- * Based on modern glassmorphism design principles
- */
+import React, { ReactNode } from 'react';
+import '../../../styles/neo-glass-main.css';
 
-import React, { ReactNode, ButtonHTMLAttributes, InputHTMLAttributes } from 'react';
-import { cn } from '@/lib/utils';
-import '../../../styles/neo-glass.css';
-
-interface NeoGlassCardProps {
+// Base container component with background
+interface NeoGlassContainerProps {
   children: ReactNode;
   className?: string;
-  size?: 'sm' | 'md' | 'lg';
-  glow?: 'primary' | 'secondary' | 'tertiary' | 'none';
-  highlight?: boolean;
 }
 
-export const NeoGlassCard: React.FC<NeoGlassCardProps> = ({
-  children,
-  className,
-  size = 'md',
-  glow = 'none',
-  highlight = false,
-}) => {
+export const NeoGlassContainer = ({ children, className = '' }: NeoGlassContainerProps) => {
   return (
-    <div
-      className={cn(
-        'neo-glass-card',
-        size && `${size}`,
-        glow !== 'none' && `${glow}-glow`,
-        highlight && 'highlight',
-        className
-      )}
-    >
+    <div className={`neo-glass-container ${className}`}>
+      <div className="neo-glass-content">
+        {children}
+      </div>
+    </div>
+  );
+};
+
+// Panel component
+interface NeoGlassPanelProps {
+  children: ReactNode;
+  className?: string;
+  style?: React.CSSProperties;
+}
+
+export const NeoGlassPanel = ({ children, className = '', style }: NeoGlassPanelProps) => {
+  return (
+    <div className={`neo-glass-panel ${className}`} style={style}>
       {children}
     </div>
   );
 };
 
-interface NeoGlassButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+// Card component
+interface NeoGlassCardProps {
   children: ReactNode;
   className?: string;
-  variant?: 'primary' | 'secondary' | 'tertiary' | 'default';
-  isIcon?: boolean;
+  style?: React.CSSProperties;
 }
 
-export const NeoGlassButton: React.FC<NeoGlassButtonProps> = ({
-  children,
-  className,
-  variant = 'default',
-  isIcon = false,
-  ...props
-}) => {
+export const NeoGlassCard = ({ children, className = '', style }: NeoGlassCardProps) => {
+  return (
+    <div className={`neo-glass-card ${className}`} style={style}>
+      {children}
+    </div>
+  );
+};
+
+// Button component
+interface NeoGlassButtonProps {
+  children: ReactNode;
+  onClick?: () => void;
+  className?: string;
+  variant?: 'primary' | 'secondary';
+  type?: 'button' | 'submit' | 'reset';
+  disabled?: boolean;
+}
+
+export const NeoGlassButton = ({ 
+  children, 
+  onClick, 
+  className = '', 
+  variant = 'primary',
+  type = 'button',
+  disabled = false
+}: NeoGlassButtonProps) => {
+  const variantClass = variant === 'secondary' ? 'secondary' : '';
+  
   return (
     <button
-      className={cn(
-        'neo-glass-button',
-        variant !== 'default' && variant,
-        isIcon && 'neo-glass-icon-button',
-        className
-      )}
-      {...props}
+      type={type}
+      className={`neo-glass-button ${variantClass} ${className}`}
+      onClick={onClick}
+      disabled={disabled}
     >
       {children}
     </button>
   );
 };
 
-interface NeoGlassSwitchProps {
-  checked: boolean;
-  onChange: () => void;
+// Input component
+interface NeoGlassInputProps {
+  type?: string;
+  placeholder?: string;
+  value?: string;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   className?: string;
-  label?: string;
+  name?: string;
+  id?: string;
+  required?: boolean;
+  disabled?: boolean;
 }
 
-export const NeoGlassSwitch: React.FC<NeoGlassSwitchProps> = ({
-  checked,
-  onChange,
-  className,
-  label
-}) => {
+export const NeoGlassInput = ({ 
+  type = 'text', 
+  placeholder, 
+  value, 
+  onChange, 
+  className = '',
+  name,
+  id,
+  required = false,
+  disabled = false
+}: NeoGlassInputProps) => {
   return (
-    <div className="flex items-center gap-2">
-      <div
-        className={cn(
-          'neo-glass-switch',
-          checked && 'active',
-          className
-        )}
-        onClick={onChange}
-        role="switch"
-        aria-checked={checked}
-      />
-      {label && <span className="neo-glass-text-muted text-sm">{label}</span>}
+    <input
+      type={type}
+      placeholder={placeholder}
+      value={value}
+      onChange={onChange}
+      className={`neo-glass-input ${className}`}
+      name={name}
+      id={id}
+      required={required}
+      disabled={disabled}
+    />
+  );
+};
+
+// Select component
+interface NeoGlassSelectProps {
+  children: ReactNode;
+  value?: string;
+  onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  className?: string;
+  name?: string;
+  id?: string;
+  required?: boolean;
+  disabled?: boolean;
+}
+
+export const NeoGlassSelect = ({ 
+  children, 
+  value, 
+  onChange, 
+  className = '',
+  name,
+  id,
+  required = false,
+  disabled = false
+}: NeoGlassSelectProps) => {
+  return (
+    <select
+      value={value}
+      onChange={onChange}
+      className={`neo-glass-input ${className}`}
+      name={name}
+      id={id}
+      required={required}
+      disabled={disabled}
+    >
+      {children}
+    </select>
+  );
+};
+
+// Textarea component
+interface NeoGlassTextareaProps {
+  placeholder?: string;
+  value?: string;
+  onChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  className?: string;
+  name?: string;
+  id?: string;
+  required?: boolean;
+  disabled?: boolean;
+  rows?: number;
+}
+
+export const NeoGlassTextarea = ({ 
+  placeholder, 
+  value, 
+  onChange, 
+  className = '',
+  name,
+  id,
+  required = false,
+  disabled = false,
+  rows = 4
+}: NeoGlassTextareaProps) => {
+  return (
+    <textarea
+      placeholder={placeholder}
+      value={value}
+      onChange={onChange}
+      className={`neo-glass-input ${className}`}
+      name={name}
+      id={id}
+      required={required}
+      disabled={disabled}
+      rows={rows}
+    />
+  );
+};
+
+// Label component
+interface NeoGlassLabelProps {
+  children: ReactNode;
+  htmlFor?: string;
+  className?: string;
+}
+
+export const NeoGlassLabel = ({ children, htmlFor, className = '' }: NeoGlassLabelProps) => {
+  return (
+    <label htmlFor={htmlFor} className={`block text-white mb-2 ${className}`}>
+      {children}
+    </label>
+  );
+};
+
+// Form group component (label + input/select/textarea)
+interface NeoGlassFormGroupProps {
+  children: ReactNode;
+  className?: string;
+}
+
+export const NeoGlassFormGroup = ({ children, className = '' }: NeoGlassFormGroupProps) => {
+  return (
+    <div className={`mb-4 ${className}`}>
+      {children}
     </div>
   );
 };
 
-interface NeoGlassProgressProps {
-  value: number;
+// Form component
+interface NeoGlassFormProps {
+  children: ReactNode;
+  onSubmit?: (e: React.FormEvent) => void;
   className?: string;
-  showLabel?: boolean;
 }
 
-export const NeoGlassProgress: React.FC<NeoGlassProgressProps> = ({
-  value,
-  className,
-  showLabel = false
-}) => {
-  const clampedValue = Math.max(0, Math.min(100, value));
+export const NeoGlassForm = ({ children, onSubmit, className = '' }: NeoGlassFormProps) => {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (onSubmit) {
+      onSubmit(e);
+    }
+  };
   
   return (
-    <div className="w-full">
-      <div className={cn('neo-glass-progress', className)}>
-        <div 
-          className="neo-glass-progress-bar" 
-          style={{ width: `${clampedValue}%` }}
-        />
-      </div>
-      {showLabel && (
-        <div className="flex justify-end mt-1">
-          <span className="neo-glass-text-muted text-xs">{clampedValue}%</span>
-        </div>
-      )}
-    </div>
+    <form onSubmit={handleSubmit} className={className}>
+      {children}
+    </form>
   );
 };
 
+// Header component
+interface NeoGlassHeaderProps {
+  children: ReactNode;
+  className?: string;
+}
+
+export const NeoGlassHeader = ({ children, className = '' }: NeoGlassHeaderProps) => {
+  return (
+    <header className={`neo-glass-header p-4 ${className}`}>
+      {children}
+    </header>
+  );
+};
+
+// Sidebar component
+interface NeoGlassSidebarProps {
+  children: ReactNode;
+  className?: string;
+}
+
+export const NeoGlassSidebar = ({ children, className = '' }: NeoGlassSidebarProps) => {
+  return (
+    <aside className={`neo-glass-sidebar p-4 ${className}`}>
+      {children}
+    </aside>
+  );
+};
+
+// Avatar component
 interface NeoGlassAvatarProps {
-  src: string;
+  src?: string;
   alt: string;
-  size?: number;
   className?: string;
 }
 
-export const NeoGlassAvatar: React.FC<NeoGlassAvatarProps> = ({
-  src,
-  alt,
-  size = 64,
-  className
-}) => {
+export const NeoGlassAvatar = ({ src, alt, className = '' }: NeoGlassAvatarProps) => {
   return (
-    <div 
-      className={cn('neo-glass-avatar', className)}
-      style={{ width: size, height: size }}
-    >
-      <img 
-        src={src} 
-        alt={alt}
-        className="w-full h-full object-cover"
-      />
-    </div>
-  );
-};
-
-interface NeoGlassInputProps extends InputHTMLAttributes<HTMLInputElement> {
-  className?: string;
-  label?: string;
-}
-
-export const NeoGlassInput: React.FC<NeoGlassInputProps> = ({
-  className,
-  label,
-  ...props
-}) => {
-  return (
-    <div className="w-full">
-      {label && (
-        <label className="block neo-glass-text-muted mb-1 text-sm">
-          {label}
-        </label>
+    <div className={`neo-glass-avatar ${className}`}>
+      {src ? (
+        <img src={src} alt={alt} />
+      ) : (
+        <span>{alt.charAt(0).toUpperCase()}</span>
       )}
-      <input
-        className={cn('neo-glass-input', className)}
-        {...props}
-      />
     </div>
   );
 };
 
+// Divider component
+interface NeoGlassDividerProps {
+  className?: string;
+}
+
+export const NeoGlassDivider = ({ className = '' }: NeoGlassDividerProps) => {
+  return (
+    <div className={`neo-glass-divider ${className}`} />
+  );
+};
+
+// Badge component
 interface NeoGlassBadgeProps {
   children: ReactNode;
   className?: string;
 }
 
-export const NeoGlassBadge: React.FC<NeoGlassBadgeProps> = ({
-  children,
-  className,
-}) => {
+export const NeoGlassBadge = ({ children, className = '' }: NeoGlassBadgeProps) => {
   return (
-    <span className={cn('neo-glass-badge', className)}>
+    <span className={`neo-glass-badge ${className}`}>
       {children}
     </span>
   );
 };
 
-interface NeoGlassMuskBubbleProps {
-  message: string;
+// Tabs component
+interface NeoGlassTabsProps {
+  children: ReactNode;
   className?: string;
 }
 
-export const NeoGlassMuskBubble: React.FC<NeoGlassMuskBubbleProps> = ({
-  message,
-  className,
-}) => {
+export const NeoGlassTabs = ({ children, className = '' }: NeoGlassTabsProps) => {
   return (
-    <div className={cn('neo-glass-musk-bubble', className)}>
-      {message}
+    <div className={`neo-glass-tabs ${className}`}>
+      {children}
     </div>
   );
 };
 
-interface NeoGlassSparkleProps {
-  top?: string;
-  left?: string;
-  delay?: number;
+// Tab component
+interface NeoGlassTabProps {
+  children: ReactNode;
+  active?: boolean;
+  onClick?: () => void;
   className?: string;
 }
 
-export const NeoGlassSparkle: React.FC<NeoGlassSparkleProps> = ({
-  top = '0',
-  left = '0',
-  delay = 0,
-  className,
-}) => {
+export const NeoGlassTab = ({ 
+  children, 
+  active = false, 
+  onClick, 
+  className = '' 
+}: NeoGlassTabProps) => {
+  const activeClass = active ? 'active' : '';
+  
   return (
     <div 
-      className={cn('neo-glass-sparkle', className)}
-      style={{ 
-        top, 
-        left, 
-        animationDelay: `${delay}s`
-      }}
-    />
+      className={`neo-glass-tab ${activeClass} ${className}`}
+      onClick={onClick}
+    >
+      {children}
+    </div>
   );
 };
 
-// Container with background
-interface NeoPageContainerProps {
+// Modal component
+interface NeoGlassModalProps {
   children: ReactNode;
+  isOpen: boolean;
+  onClose: () => void;
+  title: string;
   className?: string;
-  background?: 'gradient' | 'white-room' | 'mixed';
 }
 
-export const NeoPageContainer: React.FC<NeoPageContainerProps> = ({
-  children,
-  className,
-  background = 'gradient'
-}) => {
-  const bgClass = 
-    background === 'white-room' ? 'neo-white-room-bg' :
-    background === 'mixed' ? 'neo-mixed-bg' : 
-    'neo-page-bg';
-    
+export const NeoGlassModal = ({ 
+  children, 
+  isOpen, 
+  onClose, 
+  title, 
+  className = '' 
+}: NeoGlassModalProps) => {
+  if (!isOpen) return null;
+  
   return (
-    <div className={cn(bgClass, className)}>
-      {children}
+    <div className="neo-glass-modal-backdrop" onClick={onClose}>
+      <div 
+        className={`neo-glass-modal ${className}`}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="neo-glass-modal-header">
+          <h2 className="neo-glass-modal-title">{title}</h2>
+          <button className="neo-glass-modal-close" onClick={onClose}>
+            &times;
+          </button>
+        </div>
+        {children}
+      </div>
     </div>
   );
 };

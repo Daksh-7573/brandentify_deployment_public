@@ -1,0 +1,530 @@
+/* Neo-Glass UI Theme for Main Platform
+ * A sophisticated, frosted glass UI with 60% opacity panels (40% transparent)
+ * and dark form fields
+ */
+
+:root {
+  /* Core colors */
+  --neo-black: #121212;
+  --neo-dark-gray: #181818;
+  --neo-gray: #282828;
+  --neo-light-gray: #b3b3b3;
+  --neo-white: #ffffff;
+  --neo-primary: #1DB954;      /* Spotify green as default primary */
+  --neo-primary-bright: #1ED760;
+  --neo-primary-glow: #4eff64;
+  
+  /* Glass effect */
+  --neo-glass-bg: rgba(18, 18, 18, 0.6);  /* 60% opacity (40% transparent) */
+  --neo-glass-border: rgba(255, 255, 255, 0.1);
+  --neo-glass-highlight: rgba(255, 255, 255, 0.1);
+  --neo-glass-shadow: rgba(0, 0, 0, 0.5);
+  
+  /* Frost effect */
+  --neo-frost-texture: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0.3 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  
+  /* Blur values */
+  --neo-blur-large: 15px;
+  --neo-blur-medium: 10px;
+  --neo-blur-small: 5px;
+}
+
+/* Global styles */
+body.neo-glass-theme {
+  background-color: var(--neo-black);
+  color: var(--neo-white);
+  font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Main container with background */
+.neo-glass-container {
+  min-height: 100vh;
+  position: relative;
+  padding: 1rem;
+  overflow: hidden;
+  background-image: url('/assets/dark-living-room.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.neo-glass-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.5)),
+    radial-gradient(circle at 10% 30%, rgba(30, 215, 96, 0.25) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(60, 130, 255, 0.2) 0%, transparent 50%);
+  z-index: 0;
+  opacity: 0.8;
+  pointer-events: none;
+}
+
+/* Main content container */
+.neo-glass-content {
+  position: relative;
+  z-index: 1;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+/* Standard glass panel */
+.neo-glass-panel {
+  background: var(--neo-glass-bg) !important;
+  border-radius: 1rem;
+  backdrop-filter: blur(var(--neo-blur-large));
+  -webkit-backdrop-filter: blur(var(--neo-blur-large));
+  box-shadow: 0 4px 12px var(--neo-glass-shadow), 0 0 30px rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--neo-glass-border);
+  overflow: hidden;
+  position: relative;
+}
+
+.neo-glass-panel::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: var(--neo-frost-texture);
+  opacity: 0.3;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.neo-glass-panel > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* Card variant - lighter than panels */
+.neo-glass-card {
+  background: rgba(40, 40, 40, 0.5);
+  border: 1px solid var(--neo-glass-border);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4), 0 0 20px rgba(0, 0, 0, 0.2);
+  border-radius: 0.5rem;
+  position: relative;
+  backdrop-filter: blur(var(--neo-blur-medium));
+  -webkit-backdrop-filter: blur(var(--neo-blur-medium));
+  overflow: hidden;
+  padding: 1.5rem;
+}
+
+.neo-glass-card::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: var(--neo-frost-texture);
+  opacity: 0.3;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.neo-glass-card > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* Highlight panel (for features, CTAs, etc.) */
+.neo-glass-highlight {
+  background: linear-gradient(to bottom, var(--neo-primary) 0%, rgba(30, 215, 96, 0.5) 100%);
+  padding: 1.5rem;
+  color: var(--neo-black);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 
+    0 0 0 1px rgba(30, 215, 96, 0.5),
+    0 0 15px rgba(30, 215, 96, 0.3);
+  border-radius: 1rem;
+}
+
+.neo-glass-highlight::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--neo-frost-texture);
+  opacity: 0.1;
+  pointer-events: none;
+}
+
+/* Form elements */
+.neo-glass-input,
+input.neo-glass-input,
+textarea.neo-glass-input,
+select.neo-glass-input {
+  background: rgba(18, 18, 18, 0.95) !important;
+  background-color: rgba(18, 18, 18, 0.95) !important;
+  border: 1px solid var(--neo-glass-border) !important;
+  color: var(--neo-white) !important;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  backdrop-filter: blur(var(--neo-blur-small));
+  -webkit-backdrop-filter: blur(var(--neo-blur-small));
+  width: 100%;
+  transition: all 0.2s;
+}
+
+.neo-glass-input:focus,
+input.neo-glass-input:focus,
+textarea.neo-glass-input:focus,
+select.neo-glass-input:focus {
+  outline: none !important;
+  border-color: var(--neo-primary) !important;
+  box-shadow: 0 0 0 2px rgba(30, 215, 96, 0.3) !important;
+}
+
+/* Dropdown styling */
+select.neo-glass-input {
+  background: rgba(18, 18, 18, 0.95) !important;
+  background-color: rgba(18, 18, 18, 0.95) !important;
+  color: var(--neo-white) !important;
+  appearance: none;
+  padding-right: 2.5rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat !important;
+  background-position: right 0.7rem center !important;
+  background-size: 1rem !important;
+}
+
+select.neo-glass-input option {
+  background-color: rgba(18, 18, 18, 0.95) !important;
+  color: var(--neo-white) !important;
+}
+
+/* Button styles */
+.neo-glass-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 2rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: var(--neo-primary);
+  color: var(--neo-black);
+}
+
+.neo-glass-button:hover {
+  transform: scale(1.05);
+  background: var(--neo-primary-bright);
+}
+
+.neo-glass-button.secondary {
+  background: rgba(40, 40, 40, 0.5);
+  color: var(--neo-white);
+  border: 1px solid var(--neo-glass-border);
+  backdrop-filter: blur(var(--neo-blur-small));
+  -webkit-backdrop-filter: blur(var(--neo-blur-small));
+}
+
+.neo-glass-button.secondary:hover {
+  background: rgba(60, 60, 60, 0.6);
+}
+
+/* Navigation styles */
+.neo-glass-nav {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+  border-bottom: 1px solid var(--neo-glass-border);
+}
+
+.neo-glass-nav-item {
+  color: var(--neo-light-gray);
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.neo-glass-nav-item:hover {
+  color: var(--neo-white);
+  background: rgba(40, 40, 40, 0.5);
+}
+
+.neo-glass-nav-item.active {
+  color: var(--neo-white);
+  background: rgba(30, 215, 96, 0.2);
+}
+
+/* Header and sidebar */
+.neo-glass-header, 
+.neo-glass-sidebar {
+  background: var(--neo-glass-bg) !important;
+  backdrop-filter: blur(var(--neo-blur-large));
+  -webkit-backdrop-filter: blur(var(--neo-blur-large));
+  border: 1px solid var(--neo-glass-border);
+  position: relative;
+}
+
+.neo-glass-header::after, 
+.neo-glass-sidebar::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: var(--neo-frost-texture);
+  opacity: 0.3;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.neo-glass-header > *, 
+.neo-glass-sidebar > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* Avatar */
+.neo-glass-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--neo-gray);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--neo-glass-border);
+}
+
+.neo-glass-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Dividers */
+.neo-glass-divider {
+  height: 1px;
+  background: var(--neo-glass-border);
+  margin: 1rem 0;
+}
+
+/* Badges */
+.neo-glass-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background: rgba(30, 215, 96, 0.2);
+  color: var(--neo-primary-bright);
+  border: 1px solid rgba(30, 215, 96, 0.4);
+}
+
+/* Tables */
+.neo-glass-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.neo-glass-table thead tr {
+  background: rgba(40, 40, 40, 0.7);
+}
+
+.neo-glass-table th {
+  text-align: left;
+  padding: 1rem;
+  font-weight: 600;
+  border-bottom: 1px solid var(--neo-glass-border);
+}
+
+.neo-glass-table td {
+  padding: 1rem;
+  border-bottom: 1px solid var(--neo-glass-border);
+}
+
+.neo-glass-table tbody tr {
+  background: rgba(40, 40, 40, 0.4);
+  transition: all 0.2s;
+}
+
+.neo-glass-table tbody tr:hover {
+  background: rgba(40, 40, 40, 0.6);
+}
+
+/* Checkbox and radio */
+.neo-glass-checkbox,
+.neo-glass-radio {
+  appearance: none;
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 1px solid var(--neo-glass-border);
+  background: rgba(18, 18, 18, 0.95);
+  position: relative;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.neo-glass-checkbox {
+  border-radius: 0.25rem;
+}
+
+.neo-glass-radio {
+  border-radius: 50%;
+}
+
+.neo-glass-checkbox:checked,
+.neo-glass-radio:checked {
+  background-color: var(--neo-primary);
+  border-color: var(--neo-primary);
+}
+
+.neo-glass-checkbox:checked::after {
+  content: "✓";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--neo-black);
+  font-size: 0.75rem;
+  font-weight: bold;
+}
+
+.neo-glass-radio:checked::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--neo-black);
+}
+
+/* Tabs */
+.neo-glass-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--neo-glass-border);
+  margin-bottom: 1rem;
+}
+
+.neo-glass-tab {
+  padding: 0.75rem 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.neo-glass-tab:hover {
+  color: var(--neo-white);
+}
+
+.neo-glass-tab.active {
+  color: var(--neo-primary);
+}
+
+.neo-glass-tab.active::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--neo-primary);
+}
+
+/* Modals */
+.neo-glass-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(var(--neo-blur-medium));
+  -webkit-backdrop-filter: blur(var(--neo-blur-medium));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.neo-glass-modal {
+  background: var(--neo-glass-bg);
+  border-radius: 1rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+  border: 1px solid var(--neo-glass-border);
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  padding: 1.5rem;
+  backdrop-filter: blur(var(--neo-blur-large));
+  -webkit-backdrop-filter: blur(var(--neo-blur-large));
+}
+
+.neo-glass-modal::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: var(--neo-frost-texture);
+  opacity: 0.3;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.neo-glass-modal > * {
+  position: relative;
+  z-index: 2;
+}
+
+.neo-glass-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.neo-glass-modal-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.neo-glass-modal-close {
+  background: transparent;
+  border: none;
+  color: var(--neo-light-gray);
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.neo-glass-modal-close:hover {
+  color: var(--neo-white);
+}
+
+/* Responsive utilities */
+@media (max-width: 768px) {
+  .neo-glass-panel {
+    padding: 1rem;
+  }
+  
+  .neo-glass-modal {
+    width: 90%;
+  }
+}
