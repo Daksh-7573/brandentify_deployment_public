@@ -588,14 +588,17 @@ export default function ProjectForm({
               {/* Project Images Section */}
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
-                  <Label className="text-base">Project Images</Label>
-                  <div className="text-sm text-muted-foreground">Max 10 images</div>
+                  <Label className={cn("text-base", useDarkMode ? "text-white" : "")}>Project Images</Label>
+                  <div className={cn("text-sm", useDarkMode ? "text-gray-300" : "text-muted-foreground")}>Max 10 images</div>
                 </div>
                 
                 {/* Information about thumbnails */}
-                <div className="bg-muted/50 p-3 rounded-md text-sm space-y-1">
-                  <p className="font-medium">About Thumbnails:</p>
-                  <p className="text-muted-foreground">
+                <div className={cn(
+                  "p-3 rounded-md text-sm space-y-1",
+                  useDarkMode ? "bg-[rgba(30,30,30,0.7)] border border-white/10" : "bg-muted/50"
+                )}>
+                  <p className={cn("font-medium", useDarkMode ? "text-white" : "")}>About Thumbnails:</p>
+                  <p className={useDarkMode ? "text-gray-300" : "text-muted-foreground"}>
                     Select one image as your project thumbnail by clicking the star icon. This image will be the main preview shown in your profile.
                   </p>
                 </div>
@@ -608,9 +611,13 @@ export default function ProjectForm({
                       accept="image/*"
                       multiple
                       onChange={handleImagesSelected}
+                      className={cn(
+                        className,
+                        useDarkMode ? "neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 file:bg-[#1DB954] file:text-black file:hover:bg-[#1DB954]/90" : ""
+                      )}
                     />
                     {mediaErrors?.images && (
-                      <p className="text-sm text-destructive">{mediaErrors.images}</p>
+                      <p className={cn("text-sm", useDarkMode ? "text-red-400" : "text-destructive")}>{mediaErrors.images}</p>
                     )}
                   </div>
                   
@@ -618,9 +625,12 @@ export default function ProjectForm({
                   {projectImages.length > 0 && (
                     <div className="space-y-3">
                       <div className="flex items-center">
-                        <div className="text-sm font-medium">New Images</div>
+                        <div className={cn("text-sm font-medium", useDarkMode ? "text-white" : "")}>New Images</div>
                         {projectImages.length > 0 && 0 <= featuredImageIndex && featuredImageIndex < 1000 && (
-                          <div className="ml-2 bg-primary/10 text-primary text-xs px-2 py-0.5 rounded-full">
+                          <div className={cn(
+                            "ml-2 text-xs px-2 py-0.5 rounded-full",
+                            useDarkMode ? "bg-[#1DB954]/20 text-[#1DB954]" : "bg-primary/10 text-primary"
+                          )}>
                             Thumbnail selected from new images
                           </div>
                         )}
@@ -628,7 +638,12 @@ export default function ProjectForm({
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         {projectImages.map((file, index) => (
                           <div key={`new-${index}`} className="relative group">
-                            <div className={`border rounded-md overflow-hidden aspect-square ${featuredImageIndex === index ? 'ring-2 ring-primary' : ''}`}>
+                            <div className={cn(
+                              "border rounded-md overflow-hidden aspect-square",
+                              featuredImageIndex === index 
+                                ? useDarkMode ? "ring-2 ring-[#1DB954] border-[#1DB954]/40" : "ring-2 ring-primary" 
+                                : useDarkMode ? "border-white/20" : "",
+                            )}>
                               <img
                                 src={URL.createObjectURL(file)}
                                 alt={`Preview ${index + 1}`}
@@ -638,9 +653,12 @@ export default function ProjectForm({
                             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-2 transition-opacity">
                               <Button
                                 type="button"
-                                variant="destructive"
+                                variant={useDarkMode ? "outline" : "destructive"}
                                 size="icon"
-                                className="h-8 w-8"
+                                className={cn(
+                                  "h-8 w-8",
+                                  useDarkMode ? "bg-black/60 border-white/20 text-white hover:bg-red-900/80" : ""
+                                )}
                                 onClick={() => removeProjectImage(index)}
                                 title="Remove image"
                               >
@@ -736,8 +754,8 @@ export default function ProjectForm({
               {/* Project Video Section */}
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
-                  <Label className="text-base">Project Video</Label>
-                  <div className="text-sm text-muted-foreground">Optional (~2.5 min max)</div>
+                  <Label className={cn("text-base", useDarkMode ? "text-white" : "")}>Project Video</Label>
+                  <div className={cn("text-sm", useDarkMode ? "text-gray-300" : "text-muted-foreground")}>Optional (~2.5 min max)</div>
                 </div>
                 
                 <div className="grid grid-cols-1 gap-4">
@@ -747,9 +765,13 @@ export default function ProjectForm({
                       type="file"
                       accept="video/*"
                       onChange={handleVideoSelected}
+                      className={cn(
+                        className,
+                        useDarkMode ? "neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 file:bg-[#1DB954] file:text-black file:hover:bg-[#1DB954]/90" : ""
+                      )}
                     />
                     {mediaErrors?.video && (
-                      <p className="text-sm text-destructive">{mediaErrors.video}</p>
+                      <p className={cn("text-sm", useDarkMode ? "text-red-400" : "text-destructive")}>{mediaErrors.video}</p>
                     )}
                   </div>
                   
@@ -757,18 +779,22 @@ export default function ProjectForm({
                   {projectVideo && (
                     <div className="space-y-2">
                       <div className="flex justify-between items-center">
-                        <div className="text-sm font-medium">Selected Video:</div>
+                        <div className={cn("text-sm font-medium", useDarkMode ? "text-white" : "")}>Selected Video:</div>
                         <Button
                           type="button"
-                          variant="destructive"
+                          variant={useDarkMode ? "outline" : "destructive"}
                           size="sm"
                           onClick={removeProjectVideo}
+                          className={useDarkMode ? "bg-black/60 border-white/20 text-white hover:bg-red-900/80" : ""}
                         >
                           Remove
                         </Button>
                       </div>
-                      <div className="border rounded-md p-2 flex items-center gap-2 bg-muted">
-                        <Video className="h-5 w-5" />
+                      <div className={cn(
+                        "border rounded-md p-2 flex items-center gap-2",
+                        useDarkMode ? "bg-[rgba(30,30,30,0.7)] border-white/10 text-white" : "bg-muted"
+                      )}>
+                        <Video className={cn("h-5 w-5", useDarkMode ? "text-[#1DB954]" : "")} />
                         <span className="text-sm truncate">{projectVideo.name}</span>
                       </div>
                     </div>
@@ -783,11 +809,15 @@ export default function ProjectForm({
                   type="button" 
                   variant="outline" 
                   onClick={onCancel}
+                  className={useDarkMode ? "bg-black/60 border-white/20 text-white hover:bg-[rgba(30,30,30,0.7)]" : ""}
                 >
                   Cancel
                 </Button>
               )}
-              <Button type="submit">
+              <Button 
+                type="submit"
+                className={useDarkMode ? "bg-[#1DB954] text-black hover:bg-[#1DB954]/90" : ""}
+              >
                 {existingProject ? "Update Project" : "Create Project"}
               </Button>
             </div>
