@@ -77,14 +77,16 @@ const ChatPage: React.FC = () => {
         </div>
       </div>
       
-      {/* Main Content Area with Background Card */}
-      <div className="max-w-7xl mx-auto px-4 md:px-8">
-        <div className="bg-spotify-glass-bg backdrop-filter backdrop-blur-[15px] border border-spotify-glass-border rounded-xl shadow-lg overflow-hidden">
-          <div className="neo-spotify-wrapper p-4">
-            <ChatProvider userId={userId}>
-              <Chat userId={userId} />
-            </ChatProvider>
-          </div>
+      {/* Main Content Area with Neo-Glass Layout - matches Industry Pulse page */}
+      <div className="flex flex-1 overflow-hidden pt-4"> 
+        <div className="flex-1 overflow-auto">
+          <NeoGlassLayout className="mt-3 mx-6">
+            <div className="flex-1 max-w-7xl mx-auto">
+              <ChatProvider userId={userId}>
+                <Chat userId={userId} />
+              </ChatProvider>
+            </div>
+          </NeoGlassLayout>
         </div>
       </div>
     </div>
