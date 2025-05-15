@@ -271,14 +271,11 @@ function PulseReactions({ pulse }: PulseReactionsProps) {
           <TooltipTrigger asChild>
             <button 
               disabled={isLoading}
-              className="relative text-gray-400 hover:text-white hover:bg-gray-600/30 hover:scale-110 hover:shadow-md rounded-md px-2 py-1 text-sm flex items-center gap-1.5 transition-all duration-200 disabled:opacity-50 overflow-hidden group"
+              className="text-gray-400 hover:text-white hover:bg-gray-600/30 hover:scale-110 hover:shadow-md rounded-md px-2 py-1 text-sm flex items-center gap-1.5 transition-all duration-200 disabled:opacity-50"
               onClick={() => handleReaction("insightful")}
             >
-              <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-all duration-700 ease-in-out" style={{ transform: 'skewX(-45deg)' }}></span>
-              <span className="relative z-10 flex items-center gap-1.5">
-                <Flame className={`h-4 w-4 transition-all duration-200 ${hasInsightfulReaction ? "text-white fill-white scale-110" : ""}`} />
-                {formatCount(pulse.insightfulCount || 0)}
-              </span>
+              <Flame className={`h-4 w-4 transition-all duration-200 ${hasInsightfulReaction ? "text-white fill-white scale-110" : ""}`} />
+              {formatCount(pulse.insightfulCount || 0)}
             </button>
           </TooltipTrigger>
           <TooltipContent>
@@ -296,14 +293,11 @@ function PulseReactions({ pulse }: PulseReactionsProps) {
           <TooltipTrigger asChild>
             <button 
               disabled={isLoading}
-              className="relative text-gray-400 hover:text-white hover:bg-gray-600/30 hover:scale-110 hover:shadow-md rounded-md px-2 py-1 text-sm flex items-center gap-1.5 transition-all duration-200 disabled:opacity-50 overflow-hidden group"
+              className="text-gray-400 hover:text-white hover:bg-gray-600/30 hover:scale-110 hover:shadow-md rounded-md px-2 py-1 text-sm flex items-center gap-1.5 transition-all duration-200 disabled:opacity-50"
               onClick={() => handleReaction("misinformed")}
             >
-              <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-all duration-700 ease-in-out" style={{ transform: 'skewX(-45deg)' }}></span>
-              <span className="relative z-10 flex items-center gap-1.5">
-                <AlertTriangle className={`h-4 w-4 transition-all duration-200 ${hasMisinformedReaction ? "text-white fill-white/30 scale-110" : ""}`} />
-                {formatCount(pulse.misinformedCount || 0)}
-              </span>
+              <AlertTriangle className={`h-4 w-4 transition-all duration-200 ${hasMisinformedReaction ? "text-white fill-white/30 scale-110" : ""}`} />
+              {formatCount(pulse.misinformedCount || 0)}
             </button>
           </TooltipTrigger>
           <TooltipContent>
@@ -318,12 +312,9 @@ function PulseReactions({ pulse }: PulseReactionsProps) {
       {/* Share Button */}
       <Dialog open={isShareDialogOpen} onOpenChange={setIsShareDialogOpen}>
         <DialogTrigger asChild>
-          <button className="relative text-gray-400 hover:text-white hover:bg-gray-600/30 hover:scale-110 hover:shadow-md rounded-md px-2 py-1 text-sm flex items-center gap-1.5 transition-all duration-200 overflow-hidden group">
-            <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-all duration-700 ease-in-out" style={{ transform: 'skewX(-45deg)' }}></span>
-            <span className="relative z-10 flex items-center gap-1.5">
-              <Share className={`h-4 w-4 transition-all duration-200 ${isShareDialogOpen ? "text-white scale-110" : ""}`} />
-              {formatCount(pulse.shareCount || 0)}
-            </span>
+          <button className="text-gray-400 hover:text-white hover:bg-gray-600/30 hover:scale-110 hover:shadow-md rounded-md px-2 py-1 text-sm flex items-center gap-1.5 transition-all duration-200">
+            <Share className={`h-4 w-4 transition-all duration-200 ${isShareDialogOpen ? "text-white scale-110" : ""}`} />
+            {formatCount(pulse.shareCount || 0)}
           </button>
         </DialogTrigger>
         <DialogContent className="max-w-md bg-gray-900/80 backdrop-blur-sm border-gray-700/50">
@@ -362,22 +353,17 @@ function PulseReactions({ pulse }: PulseReactionsProps) {
           <DialogFooter>
             <button 
               onClick={() => setIsShareDialogOpen(false)}
-              className="relative flex items-center px-3 py-1.5 rounded-md bg-gray-800/80 text-white/80 text-sm border border-gray-700/50 hover:bg-gray-700/50 hover:scale-110 hover:shadow-md hover:border-white/10 transition-all duration-200 overflow-hidden group"
-              style={{ position: 'relative' }}
+              className="flex items-center px-3 py-1.5 rounded-md bg-gray-800/80 text-white/80 text-sm border border-gray-700/50 hover:bg-gray-700/50 hover:scale-110 hover:shadow-md hover:border-white/10 transition-all duration-200"
             >
-              <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-all duration-1000 ease-in-out" style={{ transform: 'skewX(-45deg)' }}></span>
-              <span className="relative z-10">Cancel</span>
+              Cancel
             </button>
             <button 
               onClick={handleShareSubmit} 
               disabled={isLoading}
-              className="relative flex items-center px-3 py-1.5 rounded-md bg-gradient-to-r from-white/80 to-white/90 text-black font-medium text-sm disabled:opacity-50 hover:shadow-md hover:scale-110 hover:from-white/90 hover:to-white transition-all duration-200 overflow-hidden group"
+              className="flex items-center px-3 py-1.5 rounded-md bg-gradient-to-r from-white/80 to-white/90 text-black font-medium text-sm disabled:opacity-50 hover:shadow-md hover:scale-110 hover:from-white/90 hover:to-white transition-all duration-200"
             >
-              <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/70 to-transparent -translate-x-full group-hover:translate-x-full transition-all duration-1000 ease-in-out" style={{ transform: 'skewX(-45deg)' }}></span>
-              <span className="relative z-10 flex items-center">
-                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Share
-              </span>
+              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Share
             </button>
           </DialogFooter>
         </DialogContent>
@@ -385,13 +371,10 @@ function PulseReactions({ pulse }: PulseReactionsProps) {
       
       {/* Comments Button */}
       <button 
-        className="relative text-gray-400 hover:text-white hover:bg-gray-600/30 hover:scale-110 hover:shadow-md rounded-md px-2 py-1 text-sm flex items-center gap-1.5 transition-all duration-200 overflow-hidden group"
+        className="text-gray-400 hover:text-white hover:bg-gray-600/30 hover:scale-110 hover:shadow-md rounded-md px-2 py-1 text-sm flex items-center gap-1.5 transition-all duration-200"
       >
-        <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-all duration-700 ease-in-out" style={{ transform: 'skewX(-45deg)' }}></span>
-        <span className="relative z-10 flex items-center gap-1.5">
-          <MessageSquare className="h-4 w-4" />
-          {formatCount(pulse.comments || 0)}
-        </span>
+        <MessageSquare className="h-4 w-4" />
+        {formatCount(pulse.comments || 0)}
       </button>
     </div>
   );
@@ -501,15 +484,12 @@ function PollVoting({ pulse }: PollVotingProps) {
                   type="button"
                   variant="outline"
                   size="sm"
-                  className={`relative h-8 overflow-hidden group ${userVote === index ? 'bg-gray-200/80 border-white/20 text-white' : ''} transition-all duration-200 hover:scale-110 hover:shadow-md`}
+                  className={`h-8 ${userVote === index ? 'bg-gray-200/80 border-white/20 text-white' : ''} transition-all duration-200 hover:scale-110 hover:shadow-md`}
                   onClick={() => handleVote(index)}
                   disabled={isLoading}
                 >
-                  <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-all duration-700 ease-in-out" style={{ transform: 'skewX(-45deg)' }}></span>
-                  <span className="relative z-10 flex items-center">
-                    {userVote === index && <Check className="h-3 w-3 mr-1 text-white" />}
-                    {option}
-                  </span>
+                  {userVote === index && <Check className="h-3 w-3 mr-1 text-white" />}
+                  {option}
                 </Button>
                 
                 {userVote !== null && (
@@ -1005,15 +985,12 @@ function SmartRefreshBanner({ hasNewContent, onRefresh, isPremiumContent = false
   
   return (
     <button 
-      className={`relative w-full py-3 px-4 rounded-lg border backdrop-blur-sm flex items-center justify-center gap-2 mb-4 hover:bg-gray-800/50 hover:scale-[1.02] hover:shadow-lg transition-all duration-200 overflow-hidden group ${bannerClasses}`}
+      className={`w-full py-3 px-4 rounded-lg border backdrop-blur-sm flex items-center justify-center gap-2 mb-4 hover:bg-gray-800/50 hover:scale-[1.02] hover:shadow-lg transition-all duration-200 ${bannerClasses}`}
       onClick={onRefresh}
     >
-      <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-all duration-1000 ease-in-out" style={{ transform: 'skewX(-45deg)' }}></span>
-      <span className="relative z-10 flex items-center gap-2">
-        <RefreshCw className={`h-4 w-4 ${iconClasses} animate-pulse`} />
-        <span className="font-medium">
-          {isPremiumContent ? 'Musk has updated your feed' : 'New posts available'}
-        </span>
+      <RefreshCw className={`h-4 w-4 ${iconClasses} animate-pulse`} />
+      <span className="font-medium">
+        {isPremiumContent ? 'Musk has updated your feed' : 'New posts available'}
       </span>
     </button>
   );
@@ -1101,23 +1078,20 @@ export default function IndustryPulsePage() {
                 </div>
                 <button 
                   onClick={() => setLocation("/create-pulse")} 
-                  className="relative inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-[#e0e0e0] to-[#ffffff] text-black font-medium text-sm transition-all duration-200 hover:shadow-lg hover:scale-105 overflow-hidden group"
+                  className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-[#e0e0e0] to-[#ffffff] text-black font-medium text-sm transition-all duration-200 hover:shadow-lg hover:scale-105"
                 >
-                  <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/70 to-transparent -translate-x-full group-hover:translate-x-full transition-all duration-700 ease-in-out" style={{ transform: 'skewX(-45deg)' }}></span>
-                  <span className="relative z-10 flex items-center">
-                    <MessageSquare className="w-4 h-4 mr-2" />
-                    Create Pulse
-                  </span>
+                  <MessageSquare className="w-4 h-4 mr-2" />
+                  Create Pulse
                 </button>
               </div>
               
               <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab}>
                 <TabsList className="mb-6 neo-glass-tabs">
-                  <TabsTrigger value="all" className="text-white hover:text-gray-200 hover:bg-gray-600/30 transition-colors duration-200">All</TabsTrigger>
-                  <TabsTrigger value="media-pulse" className="text-white hover:text-gray-200 hover:bg-gray-600/30 transition-colors duration-200">Media</TabsTrigger>
-                  <TabsTrigger value="poll" className="text-white hover:text-gray-200 hover:bg-gray-600/30 transition-colors duration-200">Polls</TabsTrigger>
-                  <TabsTrigger value="project" className="text-white hover:text-gray-200 hover:bg-gray-600/30 transition-colors duration-200">Projects</TabsTrigger>
-                  <TabsTrigger value="musk-news" className="text-white hover:text-gray-200 hover:bg-gray-600/30 transition-colors duration-200">
+                  <TabsTrigger value="all" className="text-white hover:text-gray-200">All</TabsTrigger>
+                  <TabsTrigger value="media-pulse" className="text-white hover:text-gray-200">Media</TabsTrigger>
+                  <TabsTrigger value="poll" className="text-white hover:text-gray-200">Polls</TabsTrigger>
+                  <TabsTrigger value="project" className="text-white hover:text-gray-200">Projects</TabsTrigger>
+                  <TabsTrigger value="musk-news" className="text-white hover:text-gray-200">
                     Musk ⚡
                   </TabsTrigger>
                 </TabsList>
