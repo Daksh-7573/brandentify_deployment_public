@@ -193,6 +193,7 @@ export default function Services() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isEditWhatIOfferDialogOpen, setEditWhatIOfferDialogOpen] = useState(false);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
   
   const handleCreate = (formData: any) => {
@@ -421,7 +422,7 @@ export default function Services() {
         </div>
       </div>
 
-      {/* Edit Dialog */}
+      {/* Edit Service Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="sm:max-w-[525px] max-h-[88vh] overflow-y-auto">
           <DialogHeader>
@@ -438,6 +439,75 @@ export default function Services() {
               existingServicesCount={services.length}
             />
           )}
+        </DialogContent>
+      </Dialog>
+      
+      {/* Edit General Description Dialog */}
+      <Dialog open={isEditWhatIOfferDialogOpen} onOpenChange={setEditWhatIOfferDialogOpen}>
+        <DialogContent className="sm:max-w-[525px] max-h-[88vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Edit General Description</DialogTitle>
+            <DialogDescription>
+              Describe your overall professional services and expertise.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 pt-4">
+            <div className="grid w-full gap-1.5">
+              <label htmlFor="whatIOffer" className="text-sm font-medium leading-none">
+                Professional Offering Description
+              </label>
+              <textarea
+                id="whatIOffer"
+                placeholder="Describe the professional services you offer..."
+                className="min-h-32 flex w-full rounded-md border border-input bg-slate-800/80 px-3 py-2 text-sm text-white shadow-sm placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
+                defaultValue={whatIOffer}
+                onChange={(e) => setWhatIOffer(e.target.value)}
+              />
+              <p className="text-xs text-slate-400 mt-1">
+                Describe your professional expertise, the kind of services you offer, and what clients can expect when working with you.
+              </p>
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button 
+                type="button" 
+                variant="outline"
+                onClick={() => setEditWhatIOfferDialogOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button 
+                type="button"
+                onClick={() => {
+                  if (userNumericId) {
+                    // Update the user profile with the new whatIOffer value
+                    updateService({
+                      id: 0, // Not used for this update, but required by the API
+                      data: {
+                        userId: userNumericId,
+                        whatIOffer: whatIOffer
+                      }
+                    });
+                    setEditWhatIOfferDialogOpen(false);
+                    
+                    // Force refresh after update
+                    setTimeout(() => {
+                      fetchServicesData();
+                    }, 1000);
+                  }
+                }}
+                disabled={isPendingUpdate}
+              >
+                {isPendingUpdate ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  "Save"
+                )}
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
 
