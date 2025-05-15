@@ -649,10 +649,10 @@ const SearchPage = () => {
 
         {/* Main Tabs: Search vs Smart Connect */}
         <Tabs defaultValue={activeCategory === "smart-connect" ? "smart-connect" : "search"} className="mb-6">
-          <TabsList className="w-full border-b border-gray-700/50 shadow-md rounded-lg overflow-hidden">
+          <TabsList className="w-full border border-white/10 shadow-md rounded-lg overflow-hidden bg-gray-900/60 backdrop-blur-md">
             <TabsTrigger 
               value="search" 
-              className="flex items-center justify-center gap-2 flex-1 py-4 text-gray-300 data-[state=active]:bg-gradient-to-b data-[state=active]:from-white/15 data-[state=active]:to-white/5 data-[state=active]:shadow-sm data-[state=active]:border-b-2 data-[state=active]:border-white/70 data-[state=active]:text-white transition-all"
+              className="flex items-center justify-center gap-2 flex-1 py-4 text-gray-300 hover:text-white data-[state=active]:bg-white/10 data-[state=active]:shadow-sm data-[state=active]:border-b-2 data-[state=active]:border-white/40 data-[state=active]:text-white transition-all"
               onClick={() => activeCategory !== "pulses" && setActiveCategory("pulses")}
             >
               <SearchIcon size={18} />
@@ -660,7 +660,7 @@ const SearchPage = () => {
             </TabsTrigger>
             <TabsTrigger 
               value="smart-connect" 
-              className="flex items-center justify-center gap-2 flex-1 py-4 text-gray-300 data-[state=active]:bg-gradient-to-b data-[state=active]:from-white/15 data-[state=active]:to-white/5 data-[state=active]:shadow-sm data-[state=active]:border-b-2 data-[state=active]:border-white/70 data-[state=active]:text-white transition-all"
+              className="flex items-center justify-center gap-2 flex-1 py-4 text-gray-300 hover:text-white data-[state=active]:bg-white/10 data-[state=active]:shadow-sm data-[state=active]:border-b-2 data-[state=active]:border-white/40 data-[state=active]:text-white transition-all"
               onClick={() => activeCategory !== "smart-connect" && setActiveCategory("smart-connect")}
             >
               <UserPlus size={18} />
@@ -713,14 +713,14 @@ const SearchPage = () => {
                 </TabsTrigger>
                 <TabsTrigger 
                   value="profiles" 
-                  className="flex items-center gap-1.5 py-2 px-4 rounded-full text-gray-300 hover:text-white data-[state=active]:bg-gradient-to-r data-[state=active]:from-white/10 data-[state=active]:to-white/20 data-[state=active]:text-white data-[state=active]:shadow-sm data-[state=active]:border-white/10 transition-all"
+                  className="flex items-center gap-1.5 py-2 px-4 rounded-full text-gray-300 hover:text-white data-[state=active]:bg-white/20 data-[state=active]:text-white data-[state=active]:shadow-sm transition-all"
                 >
                   <Users size={16} />
                   <span>Profiles</span>
                 </TabsTrigger>
                 <TabsTrigger 
                   value="hashtags" 
-                  className="flex items-center gap-1.5 py-2 px-4 rounded-full text-gray-300 hover:text-white data-[state=active]:bg-gradient-to-r data-[state=active]:from-white/10 data-[state=active]:to-white/20 data-[state=active]:text-white data-[state=active]:shadow-sm data-[state=active]:border-white/10 transition-all"
+                  className="flex items-center gap-1.5 py-2 px-4 rounded-full text-gray-300 hover:text-white data-[state=active]:bg-white/20 data-[state=active]:text-white data-[state=active]:shadow-sm transition-all"
                 >
                   <Hash size={16} />
                   <span>Hashtags</span>
@@ -1111,12 +1111,12 @@ const SearchPage = () => {
 
                       <button 
                         type="submit" 
-                        className="w-full mt-6 px-5 py-2.5 rounded-full bg-gradient-to-r from-white/80 to-white/90 text-black hover:shadow-md hover:scale-105 hover:from-white/90 hover:to-white focus:outline-none focus:ring-1 focus:ring-white/20 shadow-sm font-medium transition-all disabled:opacity-70 disabled:cursor-not-allowed"
+                        className="w-full mt-6 px-5 py-2.5 rounded-full bg-white/20 text-white hover:bg-white/30 hover:shadow-md focus:outline-none focus:ring-1 focus:ring-white/20 shadow-sm font-medium transition-all disabled:opacity-70 disabled:cursor-not-allowed"
                         disabled={matchMutation.isPending}
                       >
                         {matchMutation.isPending ? (
                           <span className="flex items-center justify-center">
-                            <div className="animate-spin h-4 w-4 border-2 border-black border-t-transparent rounded-full mr-2" />
+                            <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2" />
                             <span>Finding matches...</span>
                           </span>
                         ) : (
@@ -1298,11 +1298,11 @@ const SearchPage = () => {
                                   </div>
                                   <Progress 
                                     value={match.matchPercentage} 
-                                    className="w-16 h-16 rounded-full [&>div]:bg-primary [&>div]:rounded-full" 
+                                    className="w-16 h-16 rounded-full [&>div]:bg-white/60 [&>div]:rounded-full" 
                                   />
                                 </div>
                                 <button 
-                                  className="mt-2 w-full px-4 py-1.5 rounded-full bg-primary text-white hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-sm font-medium transition-all text-sm flex items-center justify-center"
+                                  className="mt-2 w-full px-4 py-1.5 rounded-full bg-white/20 text-white hover:bg-white/30 focus:outline-none focus:ring-2 focus:ring-white/20 shadow-sm font-medium transition-all text-sm flex items-center justify-center"
                                   onClick={() => setLocation(`/profile/${match.id}`)}
                                 >
                                   <Plus className="h-3.5 w-3.5 mr-1" />
