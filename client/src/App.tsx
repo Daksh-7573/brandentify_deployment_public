@@ -15,6 +15,7 @@ import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
 import Dashboard from "@/pages/dashboard";
 import Profile from "@/pages/profile";
+import ProfileNeo from "@/pages/profile-neo";
 import PublicProfile from "@/pages/public-profile";
 import PersonalDetailsPage from "@/pages/personal-details";
 import PortfolioBuilder from "@/pages/portfolio-builder";
@@ -133,7 +134,7 @@ function Router() {
         }} />
       </Route>
       <Route path="/profile">
-        <ProtectedRoute path="/profile" component={Profile} />
+        <ProtectedRoute path="/profile" component={ProfileNeo} />
       </Route>
       <Route path="/personal-details">
         <ProtectedRoute path="/personal-details" component={PersonalDetailsPage} />
