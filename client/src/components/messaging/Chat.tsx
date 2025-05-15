@@ -91,8 +91,9 @@ const Chat: React.FC<{ userId: number }> = ({ userId }) => {
   const otherUser = currentConversation?.participants?.find(p => p.userId !== userId);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 h-full">
-      <div className="md:col-span-1 h-full">
+    <div className="flex flex-col md:flex-row gap-6 h-full">
+      {/* Left sidebar */}
+      <div className="md:w-1/4 h-full">
         <div className="neo-spotify-sidebar h-full">
           <div className="sidebar-top">
             <div className="user-profile">
@@ -133,7 +134,8 @@ const Chat: React.FC<{ userId: number }> = ({ userId }) => {
         </div>
       </div>
       
-      <div className="md:col-span-3 h-full">
+      {/* Main chat area */}
+      <div className="flex-1 h-full">
         <div className="neo-spotify-main h-full">
           {currentConversation ? (
             <>
@@ -195,7 +197,7 @@ const Chat: React.FC<{ userId: number }> = ({ userId }) => {
                 </p>
                 <button 
                   onClick={() => setIsNewConversationModalOpen(true)}
-                  className="px-6 py-3 rounded-full bg-spotify-green text-spotify-black hover:scale-105 transition-transform font-medium"
+                  className="px-6 py-3 rounded-full bg-spotify-white text-spotify-black hover:scale-105 transition-transform font-medium"
                 >
                   Find professionals
                   <ChevronRight className="ml-1 h-4 w-4 inline-block" />

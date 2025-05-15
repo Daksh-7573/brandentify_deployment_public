@@ -6,6 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/use-auth';
 import { useLocation } from 'wouter';
 import Header from '@/components/layout/header';
+import { NeoGlassLayout } from '@/components/layout/neo-glass-layout';
 import '../styles/neo-glass-spotify.css';
 
 const ChatPage: React.FC = () => {
