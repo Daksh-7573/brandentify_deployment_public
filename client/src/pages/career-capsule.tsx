@@ -307,8 +307,9 @@ export default function CareerCapsulePage() {
         </div>
         
         {isLoading ? (
-          <NeoGlassSection className="flex items-center justify-center h-64">
+          <NeoGlassSection className="flex flex-col items-center justify-center h-64 space-y-4">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div>
+            <p className="text-gray-300">Loading career goals...</p>
           </NeoGlassSection>
         ) : goals ? (
           <div className="career-capsule-grid" style={{ 
@@ -546,8 +547,9 @@ export default function CareerCapsulePage() {
           </DialogHeader>
           
           {isLoadingDetails ? (
-            <div className="flex items-center justify-center h-40">
+            <div className="flex flex-col items-center justify-center h-40 space-y-3">
               <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-white"></div>
+              <p className="text-gray-300 text-sm">Loading goal details...</p>
             </div>
           ) : goalDetails ? (
             <div className="space-y-6 py-4">
@@ -605,7 +607,7 @@ export default function CareerCapsulePage() {
                 </div>
                 
                 {generateMilestones.isPending && (
-                  <div className="mb-3 p-3 rounded-lg neo-glass-highlight">
+                  <div className="mb-3 p-4 rounded-lg neo-glass-loading">
                     <div className="flex items-center text-white font-medium mb-1">
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       Musk AI is generating your career milestones
