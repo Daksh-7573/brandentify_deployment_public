@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { AlertCircle, BarChart, Video, Image, FileCode, Loader2, X, Award, Rocket, BadgeCheck, Wrench, Bell, Zap, Briefcase } from "lucide-react";
+import { AlertCircle, BarChart, Video, Image, FileCode, Loader2, X, Award, Rocket, BadgeCheck, Wrench, Bell, Zap, Briefcase, ChevronLeft } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ProjectForm, { Project } from "@/components/shared/project-form";
@@ -17,6 +17,8 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { InsertPulse } from "@shared/schema";
 import { IndustryCombobox } from "@/components/ui/industry-combobox";
+import { Link } from "wouter";
+import "../styles/neo-glass-spotify.css";
 
 export default function CreatePulsePage() {
   const { user } = useAuth();
@@ -423,58 +425,75 @@ export default function CreatePulsePage() {
     <div className="flex h-screen flex-col">
       <Header />
       <div className="flex flex-1 overflow-hidden pt-16"> {/* Added padding-top for fixed header */}
-        
         <div className="flex-1 overflow-auto">
-          <div className="container py-8 px-6 max-w-5xl mx-auto">
-            <div className="mb-8">
-              <h1 className="text-3xl font-bold tracking-tight">Create Pulse</h1>
-              <p className="text-muted-foreground mt-1">
-                Share your thoughts, projects, or expertise with the professional community
-              </p>
-            </div>
+          <div className="neo-spotify-container">
+            <div className="neo-spotify-wrapper">
+              <div className="neo-spotify-main w-full">
+                <div className="neo-spotify-header">
+                  <div className="header-nav">
+                    <Link href="/industry-pulse-new">
+                      <button className="header-nav-btn">
+                        <ChevronLeft className="w-4 h-4" />
+                      </button>
+                    </Link>
+                  </div>
+                </div>
+                
+                <div className="neo-spotify-artist-header">
+                  <div className="artist-verified">
+                    <span className="verified-badge">✓</span>
+                    Create New Content
+                  </div>
+                  <h1 className="artist-name">Create Pulse</h1>
+                  <div className="artist-stats">
+                    <span className="stats-icon">📝</span>
+                    Share your thoughts, projects, or expertise with the professional community
+                  </div>
+                </div>
+                
+                <div className="neo-spotify-content">
+                  {/* Pulse Type Selection */}
+                  <div className="tracks-list mb-6">
+                    <Card 
+                      className={`cursor-pointer transition-all hover:shadow-md ${pulseType === 'poll' ? 'ring-2 ring-primary' : ''} bg-[rgba(18,18,18,0.95)] text-white border-white/20 mb-2`}
+                      onClick={() => setPulseType('poll')}
+                    >
+                      <CardContent className="p-4 flex flex-col items-center justify-center text-center">
+                        <BarChart className={`h-10 w-10 mb-2 ${pulseType === 'poll' ? 'text-green-500' : 'text-white'}`} />
+                        <h3 className="font-medium">Trends</h3>
+                        <p className="text-xs text-gray-300 mt-1">Ask questions with options</p>
+                      </CardContent>
+                    </Card>
 
-            {/* Pulse Type Selection */}
-            <div className="grid md:grid-cols-3 gap-4 mb-6">
-              <Card 
-                className={`cursor-pointer transition-all hover:shadow-md ${pulseType === 'poll' ? 'ring-2 ring-primary' : ''}`}
-                onClick={() => setPulseType('poll')}
-              >
-                <CardContent className="p-4 flex flex-col items-center justify-center text-center">
-                  <BarChart className={`h-10 w-10 mb-2 ${pulseType === 'poll' ? 'text-primary' : 'text-gray-500'}`} />
-                  <h3 className="font-medium">Trends</h3>
-                  <p className="text-xs text-gray-500 mt-1">Ask questions with options</p>
-                </CardContent>
-              </Card>
+                    <Card 
+                      className={`cursor-pointer transition-all hover:shadow-md ${pulseType === 'media-pulse' ? 'ring-2 ring-primary' : ''} bg-[rgba(18,18,18,0.95)] text-white border-white/20 mb-2`}
+                      onClick={() => setPulseType('media-pulse')}
+                    >
+                      <CardContent className="p-4 flex flex-col items-center justify-center text-center">
+                        {mediaType === 'video' ? (
+                          <Video className={`h-10 w-10 mb-2 ${pulseType === 'media-pulse' ? 'text-green-500' : 'text-white'}`} />
+                        ) : (
+                          <Image className={`h-10 w-10 mb-2 ${pulseType === 'media-pulse' ? 'text-green-500' : 'text-white'}`} />
+                        )}
+                        <h3 className="font-medium">Insights</h3>
+                        <p className="text-xs text-gray-300 mt-1">Images or video for your branding</p>
+                      </CardContent>
+                    </Card>
 
-              <Card 
-                className={`cursor-pointer transition-all hover:shadow-md ${pulseType === 'media-pulse' ? 'ring-2 ring-primary' : ''}`}
-                onClick={() => setPulseType('media-pulse')}
-              >
-                <CardContent className="p-4 flex flex-col items-center justify-center text-center">
-                  {mediaType === 'video' ? (
-                    <Video className={`h-10 w-10 mb-2 ${pulseType === 'media-pulse' ? 'text-primary' : 'text-gray-500'}`} />
-                  ) : (
-                    <Image className={`h-10 w-10 mb-2 ${pulseType === 'media-pulse' ? 'text-primary' : 'text-gray-500'}`} />
-                  )}
-                  <h3 className="font-medium">Insights</h3>
-                  <p className="text-xs text-gray-500 mt-1">Images or video for your branding</p>
-                </CardContent>
-              </Card>
+                    <Card 
+                      className={`cursor-pointer transition-all hover:shadow-md ${pulseType === 'project' ? 'ring-2 ring-primary' : ''} bg-[rgba(18,18,18,0.95)] text-white border-white/20`}
+                      onClick={() => setPulseType('project')} // Note: value remains 'project' for backward compatibility
+                    >
+                      <CardContent className="p-4 flex flex-col items-center justify-center text-center">
+                        <FileCode className={`h-10 w-10 mb-2 ${pulseType === 'project' ? 'text-green-500' : 'text-white'}`} />
+                        <h3 className="font-medium">Assignments</h3>
+                        <p className="text-xs text-gray-300 mt-1">Showcase your work and expertise with a detailed assignment.</p>
+                      </CardContent>
+                    </Card>
+                  </div>
 
-              <Card 
-                className={`cursor-pointer transition-all hover:shadow-md ${pulseType === 'project' ? 'ring-2 ring-primary' : ''}`}
-                onClick={() => setPulseType('project')} // Note: value remains 'project' for backward compatibility
-              >
-                <CardContent className="p-4 flex flex-col items-center justify-center text-center">
-                  <FileCode className={`h-10 w-10 mb-2 ${pulseType === 'project' ? 'text-primary' : 'text-gray-500'}`} />
-                  <h3 className="font-medium">Assignments</h3>
-                  <p className="text-xs text-gray-500 mt-1">Showcase your work and expertise with a detailed assignment. Add details, images and links to demonstrate your professional skills.</p>
-                </CardContent>
-              </Card>
-            </div>
-
-            <Card className="mb-6">
-              <CardContent className="p-6">
+                  <Card className="mb-6 bg-[rgba(18,18,18,0.95)] text-white border-white/20">
+                    <CardContent className="p-6">
                 {pulseType === 'poll' && (
                   <Alert className="mb-6 bg-purple-50 border-purple-200">
                     <BarChart className="h-4 w-4 text-purple-500" />
