@@ -271,7 +271,7 @@ function PulseReactions({ pulse }: PulseReactionsProps) {
           <TooltipTrigger asChild>
             <button 
               disabled={isLoading}
-              className="text-gray-400 hover:text-white hover:bg-gray-600/30 hover:scale-105 rounded-md px-2 py-1 text-sm flex items-center gap-1.5 transition-all duration-200 disabled:opacity-50"
+              className="text-gray-400 hover:text-white hover:bg-gray-600/30 hover:scale-110 hover:shadow-md rounded-md px-2 py-1 text-sm flex items-center gap-1.5 transition-all duration-200 disabled:opacity-50"
               onClick={() => handleReaction("insightful")}
             >
               <Flame className={`h-4 w-4 transition-all duration-200 ${hasInsightfulReaction ? "text-white fill-white scale-110" : ""}`} />
@@ -293,7 +293,7 @@ function PulseReactions({ pulse }: PulseReactionsProps) {
           <TooltipTrigger asChild>
             <button 
               disabled={isLoading}
-              className="text-gray-400 hover:text-white hover:bg-gray-600/30 hover:scale-105 rounded-md px-2 py-1 text-sm flex items-center gap-1.5 transition-all duration-200 disabled:opacity-50"
+              className="text-gray-400 hover:text-white hover:bg-gray-600/30 hover:scale-110 hover:shadow-md rounded-md px-2 py-1 text-sm flex items-center gap-1.5 transition-all duration-200 disabled:opacity-50"
               onClick={() => handleReaction("misinformed")}
             >
               <AlertTriangle className={`h-4 w-4 transition-all duration-200 ${hasMisinformedReaction ? "text-white fill-white/30 scale-110" : ""}`} />
