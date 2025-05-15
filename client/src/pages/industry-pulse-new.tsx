@@ -501,12 +501,15 @@ function PollVoting({ pulse }: PollVotingProps) {
                   type="button"
                   variant="outline"
                   size="sm"
-                  className={`h-8 ${userVote === index ? 'bg-gray-200/80 border-white/20 text-white' : ''} transition-all duration-200 hover:scale-110 hover:shadow-md`}
+                  className={`relative h-8 overflow-hidden group ${userVote === index ? 'bg-gray-200/80 border-white/20 text-white' : ''} transition-all duration-200 hover:scale-110 hover:shadow-md`}
                   onClick={() => handleVote(index)}
                   disabled={isLoading}
                 >
-                  {userVote === index && <Check className="h-3 w-3 mr-1 text-white" />}
-                  {option}
+                  <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-all duration-700 ease-in-out" style={{ transform: 'skewX(-45deg)' }}></span>
+                  <span className="relative z-10 flex items-center">
+                    {userVote === index && <Check className="h-3 w-3 mr-1 text-white" />}
+                    {option}
+                  </span>
                 </Button>
                 
                 {userVote !== null && (
@@ -1110,11 +1113,11 @@ export default function IndustryPulsePage() {
               
               <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab}>
                 <TabsList className="mb-6 neo-glass-tabs">
-                  <TabsTrigger value="all" className="text-white hover:text-gray-200">All</TabsTrigger>
-                  <TabsTrigger value="media-pulse" className="text-white hover:text-gray-200">Media</TabsTrigger>
-                  <TabsTrigger value="poll" className="text-white hover:text-gray-200">Polls</TabsTrigger>
-                  <TabsTrigger value="project" className="text-white hover:text-gray-200">Projects</TabsTrigger>
-                  <TabsTrigger value="musk-news" className="text-white hover:text-gray-200">
+                  <TabsTrigger value="all" className="text-white hover:text-gray-200 hover:bg-gray-600/30 transition-colors duration-200">All</TabsTrigger>
+                  <TabsTrigger value="media-pulse" className="text-white hover:text-gray-200 hover:bg-gray-600/30 transition-colors duration-200">Media</TabsTrigger>
+                  <TabsTrigger value="poll" className="text-white hover:text-gray-200 hover:bg-gray-600/30 transition-colors duration-200">Polls</TabsTrigger>
+                  <TabsTrigger value="project" className="text-white hover:text-gray-200 hover:bg-gray-600/30 transition-colors duration-200">Projects</TabsTrigger>
+                  <TabsTrigger value="musk-news" className="text-white hover:text-gray-200 hover:bg-gray-600/30 transition-colors duration-200">
                     Musk ⚡
                   </TabsTrigger>
                 </TabsList>
