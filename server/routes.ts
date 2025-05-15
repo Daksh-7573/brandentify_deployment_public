@@ -335,24 +335,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         if (!user) {
           console.log(`[GET /users/:id] No existing user found with Firebase UID: ${idParam}`);
-          console.log(`[GET /users/:id] Creating new user for Firebase UID: ${idParam}`);
-          
-          const newUser = await storage.createUser({
-            username: idParam,
-            email: `firebase_${idParam.substring(0, 8)}@example.com`,
-            password: null,
-            name: "Firebase User",
-            phoneNumber: null,
-            photoURL: null,
-            title: null,
-            location: null,
-            industry: null,
-            lookingFor: null,
-            profileCompleted: null
+          console.log(`[GET /users/:id] This GET request should not create a new user - users should be created via POST /api/users`);
+          return res.status(404).json({ 
+            message: "User not found",
+            error: "This route should not create users. Create users via POST /api/users." 
           });
-          
-          console.log(`[GET /users/:id] Created new user for Firebase UID:`, newUser);
-          return res.status(201).json(newUser);
         }
         
         console.log(`[GET /users/:id] Found existing user with Firebase UID: ${user.id}`);

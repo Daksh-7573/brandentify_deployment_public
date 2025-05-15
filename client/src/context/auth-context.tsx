@@ -94,12 +94,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Create or update a user in our backend
   const createOrUpdateUserInBackend = async (firebaseUser: FirebaseUser) => {
     try {
-      // Make sure required fields exist
+      console.log("Creating/updating user with Google profile:", {
+        uid: firebaseUser.uid,
+        email: firebaseUser.email,
+        displayName: firebaseUser.displayName,
+        photoURL: firebaseUser.photoURL
+      });
+      
+      // Make sure required fields exist and use all available Google profile data
       const userData = {
         username: firebaseUser.uid, // Use Firebase UID as username for consistency
         email: firebaseUser.email || `firebase_${firebaseUser.uid.substring(0, 8)}@example.com`,
-        name: firebaseUser.displayName || "Firebase User",
+        name: firebaseUser.displayName || "Google User",
         photoURL: firebaseUser.photoURL,
+        // Include provider data for more detail
+        provider: "google",
+        emailVerified: firebaseUser.emailVerified || false,
       };
       
       // Create the user
@@ -107,10 +117,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       // If the user was created, return the user data from the backend
       if (response.ok) {
-        return await response.json();
+        const createdUser = await response.json();
+        console.log("User created in backend successfully:", createdUser);
+        return createdUser;
+      }
+      
+      // If post fails (likely because user already exists), try updating instead
+      console.log("User POST failed, trying to update existing user with PUT");
+      const updateResponse = await apiRequest('PUT', `/api/users/${firebaseUser.uid}`, userData);
+      
+      if (updateResponse.ok) {
+        const updatedUser = await updateResponse.json();
+        console.log("User updated in backend successfully:", updatedUser);
+        return updatedUser;
       }
       
       // If we get here, just fetch the user data instead
+      console.log("Falling back to fetching existing user data");
       return await fetchUserData(firebaseUser.uid);
     } catch (error) {
       console.error("Error in createOrUpdateUserInBackend:", error);
