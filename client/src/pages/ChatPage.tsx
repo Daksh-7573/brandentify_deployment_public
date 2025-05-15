@@ -70,19 +70,17 @@ const ChatPage: React.FC = () => {
       {/* Top Navigation Bar */}
       <Header />
       
-      {/* Page Heading */}
-      <div className="pt-20 pb-6 px-4 md:px-8">
-        <div className="max-w-7xl mx-auto">
-          <h1 className="text-3xl font-bold text-spotify-white mb-2">Messages</h1>
-          <p className="text-spotify-light-gray">Connect with professionals in your network</p>
-        </div>
-      </div>
-      
       {/* Main Content Area with Neo-Glass Layout - matches Industry Pulse page */}
-      <div className="flex flex-1 overflow-hidden pt-4"> 
+      <div className="flex flex-1 overflow-hidden pt-20"> 
         <div className="flex-1 overflow-auto">
           <NeoGlassLayout className="mt-3 mx-6">
             <div className="flex-1 max-w-7xl mx-auto">
+              {/* Page Heading (Now inside the card) */}
+              <div className="p-6 border-b border-spotify-glass-border">
+                <h1 className="text-3xl font-bold text-spotify-white mb-2">Messages</h1>
+                <p className="text-spotify-light-gray">Connect with professionals in your network</p>
+              </div>
+              
               <ChatProvider userId={userId}>
                 <Chat userId={userId} />
               </ChatProvider>
