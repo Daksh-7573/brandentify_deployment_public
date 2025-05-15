@@ -53,6 +53,7 @@ import NeoGlassDemoPage from "@/pages/neo-glass-demo"; // Neo-Glass UI demo page
 import NeoGlassSpotifyDemoPage from "@/pages/neo-glass-demo-spotify"; // Spotify-style Neo-Glass UI demo
 import NeoGlassFormDemoPage from "@/pages/neo-glass-form-demo"; // Neo-Glass Form UI demo
 import NeoGlassDemoMainPage from "@/pages/neo-glass-demo-main"; // Main platform styled Neo-Glass UI demo
+import NeoGlassSimplePage from "@/pages/neo-glass-simple"; // Simple Neo-Glass demo without dependencies
 // Lazy load the SharedCardPage to improve performance and show loader immediately
 import { lazy, Suspense } from "react";
 const SharedCardPage = lazy(() => import("@/pages/shared-card"));
@@ -203,6 +204,9 @@ function Router() {
       </Route>
       <Route path="/neo-glass-demo-main">
         <ProtectedRoute path="/neo-glass-demo-main" component={NeoGlassDemoMainPage} />
+      </Route>
+      <Route path="/neo-glass-simple">
+        <ProtectedRoute path="/neo-glass-simple" component={NeoGlassSimplePage} />
       </Route>
       {/* Brand Quests - All demo mode functionality removed */}
       <Route path="/brand-quests">
