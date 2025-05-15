@@ -148,24 +148,24 @@ export function BadgeDisplay({ userId, limit, compact = false, className }: Badg
 
 function BadgeDialogContent({ badge }: { badge: UserBadge }) {
   return (
-    <DialogContent className="sm:max-w-md">
+    <DialogContent className="sm:max-w-md bg-gray-900/90 backdrop-blur-md border border-white/10 shadow-xl">
       <DialogHeader>
-        <DialogTitle>
+        <DialogTitle className="text-white">
           <div className="flex items-center gap-2">
             <span className="text-2xl">{BADGE_ICONS[badge.badgeType]}</span>
             <span>{getBadgeLabel(badge.badgeType)}</span>
           </div>
         </DialogTitle>
-        <DialogDescription>
+        <DialogDescription className="text-white/60">
           Earned on {new Date(badge.earnedAt).toLocaleDateString()}
         </DialogDescription>
       </DialogHeader>
       
       <div className="space-y-4">
-        <p>{getBadgeDescription(badge.badgeType)}</p>
+        <p className="text-white/80">{getBadgeDescription(badge.badgeType)}</p>
         
         <div className="flex justify-center py-4">
-          <div className={cn("w-24 h-24 rounded-full flex items-center justify-center text-4xl", 
+          <div className={cn("w-28 h-28 rounded-full flex items-center justify-center text-4xl backdrop-blur-sm", 
             BADGE_COLORS[badge.badgeType])}>
             {BADGE_ICONS[badge.badgeType]}
           </div>
@@ -173,7 +173,9 @@ function BadgeDialogContent({ badge }: { badge: UserBadge }) {
       </div>
       
       <DialogFooter>
-        <Button variant="secondary">Close</Button>
+        <Button variant="ghost" className="bg-white/10 text-white hover:bg-white/20 border border-white/10">
+          Close
+        </Button>
       </DialogFooter>
     </DialogContent>
   );
