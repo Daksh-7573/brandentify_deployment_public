@@ -51,6 +51,7 @@ import DirectContentPage from "@/pages/direct-content"; // Direct access to cont
 import DirectContentManagementPage from "@/pages/direct-content-management"; // Direct content management (debugging)
 import NeoGlassDemoPage from "@/pages/neo-glass-demo"; // Neo-Glass UI demo page
 import NeoGlassSpotifyDemoPage from "@/pages/neo-glass-demo-spotify"; // Spotify-style Neo-Glass UI demo
+import NeoGlassFormDemoPage from "@/pages/neo-glass-form-demo"; // Neo-Glass Form UI demo
 // Lazy load the SharedCardPage to improve performance and show loader immediately
 import { lazy, Suspense } from "react";
 const SharedCardPage = lazy(() => import("@/pages/shared-card"));
@@ -195,6 +196,9 @@ function Router() {
       </Route>
       <Route path="/neo-glass-demo-spotify">
         <ProtectedRoute path="/neo-glass-demo-spotify" component={NeoGlassSpotifyDemoPage} />
+      </Route>
+      <Route path="/neo-glass-form-demo">
+        <ProtectedRoute path="/neo-glass-form-demo" component={NeoGlassFormDemoPage} />
       </Route>
       {/* Brand Quests - All demo mode functionality removed */}
       <Route path="/brand-quests">

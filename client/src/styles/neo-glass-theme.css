@@ -1,0 +1,267 @@
+/* Neo-Glass UI Theme 
+ * A sophisticated, frosted glass UI theme with 60% opacity panels
+ * and subtle texture effects for a premium look and feel.
+ */
+
+:root {
+  /* Core colors */
+  --neo-black: #121212;
+  --neo-dark-gray: #181818;
+  --neo-gray: #282828;
+  --neo-light-gray: #b3b3b3;
+  --neo-white: #ffffff;
+  --neo-primary: #1DB954;      /* Spotify green as default primary */
+  --neo-primary-bright: #1ED760;
+  --neo-primary-glow: #4eff64;
+  
+  /* Glass effect */
+  --neo-glass-bg: rgba(18, 18, 18, 0.6);  /* 60% opacity (40% transparent) */
+  --neo-glass-border: rgba(255, 255, 255, 0.1);
+  --neo-glass-highlight: rgba(255, 255, 255, 0.1);
+  --neo-glass-shadow: rgba(0, 0, 0, 0.5);
+  
+  /* Frost effect */
+  --neo-frost-texture: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0.3 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+/* Layout containers */
+.neo-glass-container {
+  min-height: 100vh;
+  font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
+  color: var(--neo-white);
+  position: relative;
+  padding: 2rem;
+  overflow: hidden;
+  background-image: url('/assets/dark-living-room.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.neo-glass-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.5)),
+    radial-gradient(circle at 10% 30%, rgba(30, 215, 96, 0.25) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(60, 130, 255, 0.2) 0%, transparent 50%);
+  z-index: -1;
+  opacity: 0.8;
+  pointer-events: none;
+}
+
+/* Standard glass panel */
+.neo-glass-panel {
+  background: var(--neo-glass-bg);
+  border-radius: 1rem;
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  box-shadow: 0 4px 12px var(--neo-glass-shadow), 0 0 30px rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--neo-glass-border);
+  overflow: hidden;
+  position: relative;
+}
+
+.neo-glass-panel::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: var(--neo-frost-texture);
+  opacity: 0.3;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.neo-glass-panel > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* Card variant */
+.neo-glass-card {
+  background: rgba(40, 40, 40, 0.5);
+  border: 1px solid var(--neo-glass-border);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4), 0 0 20px rgba(0, 0, 0, 0.2);
+  border-radius: 0.5rem;
+  position: relative;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  overflow: hidden;
+  padding: 1.5rem;
+}
+
+.neo-glass-card::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: var(--neo-frost-texture);
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.neo-glass-card > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* Highlight panel (for features, CTAs, etc.) */
+.neo-glass-highlight {
+  background: linear-gradient(to bottom, var(--neo-primary) 0%, rgba(30, 215, 96, 0.5) 100%);
+  padding: 2rem;
+  color: var(--neo-black);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 
+    0 0 0 1px rgba(30, 215, 96, 0.5),
+    0 0 15px rgba(30, 215, 96, 0.3);
+  border-radius: 1rem;
+}
+
+.neo-glass-highlight::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--neo-frost-texture);
+  opacity: 0.1;
+  pointer-events: none;
+}
+
+/* Button styles */
+.neo-glass-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 2rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: var(--neo-primary);
+  color: var(--neo-black);
+}
+
+.neo-glass-button:hover {
+  transform: scale(1.05);
+  background: var(--neo-primary-bright);
+}
+
+.neo-glass-button.secondary {
+  background: transparent;
+  color: var(--neo-white);
+  border: 1px solid var(--neo-glass-border);
+}
+
+.neo-glass-button.secondary:hover {
+  background: var(--neo-glass-highlight);
+}
+
+/* Form elements */
+.neo-glass-input {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--neo-glass-border);
+  color: var(--neo-white);
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  width: 100%;
+}
+
+.neo-glass-input:focus {
+  outline: none;
+  border-color: var(--neo-primary);
+  box-shadow: 0 0 0 2px rgba(30, 215, 96, 0.3);
+}
+
+/* Navigation styles */
+.neo-glass-nav {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+  border-bottom: 1px solid var(--neo-glass-border);
+}
+
+.neo-glass-nav-item {
+  color: var(--neo-light-gray);
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.neo-glass-nav-item:hover {
+  color: var(--neo-white);
+  background: var(--neo-glass-highlight);
+}
+
+.neo-glass-nav-item.active {
+  color: var(--neo-white);
+  background: rgba(30, 215, 96, 0.2);
+}
+
+/* Avatar */
+.neo-glass-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--neo-gray);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--neo-glass-border);
+}
+
+.neo-glass-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Layout utilities */
+.neo-glass-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.neo-glass-flex {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.neo-glass-flex-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .neo-glass-container {
+    padding: 1rem;
+  }
+  
+  .neo-glass-flex {
+    flex-direction: column;
+  }
+  
+  .neo-glass-grid {
+    grid-template-columns: 1fr;
+  }
+}

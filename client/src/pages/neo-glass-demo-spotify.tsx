@@ -313,6 +313,11 @@ const NeoGlassSpotifyDemo = () => {
             Back to Demo 1
           </span>
         </Link>
+        <Link href="/neo-glass-form-demo">
+          <span className="neo-demo-link">
+            View Form Demo
+          </span>
+        </Link>
       </div>
     </div>
   );
