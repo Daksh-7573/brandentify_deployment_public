@@ -1079,15 +1079,15 @@ const SearchPage = () => {
 
                       {formData.industry && domains.length > 0 && (
                         <div className="space-y-2">
-                          <Label htmlFor="domain">Domain Expertise</Label>
+                          <Label htmlFor="domain" className="text-white">Domain Expertise</Label>
                           <Select 
                             value={formData.domain}
                             onValueChange={(value) => setFormData({...formData, domain: value})}
                           >
-                            <SelectTrigger className="w-full">
+                            <SelectTrigger className="w-full bg-gray-800/80 border-gray-700/50 text-white focus:ring-white/20">
                               <SelectValue placeholder="Select domain expertise" />
                             </SelectTrigger>
-                            <SelectContent>
+                            <SelectContent className="bg-gray-800 border-gray-700/50 text-white">
                               {domains.map(domain => (
                                 <SelectItem key={domain} value={domain}>
                                   {domain}
@@ -1099,24 +1099,24 @@ const SearchPage = () => {
                       )}
 
                       <div className="space-y-2">
-                        <Label htmlFor="location">Location</Label>
+                        <Label htmlFor="location" className="text-white">Location</Label>
                         <Input
                           name="location"
                           value={formData.location}
                           onChange={handleInputChange}
                           placeholder="City, Country"
-                          className="w-full"
+                          className="w-full bg-gray-800/80 border-gray-700/50 text-white focus:ring-white/20 focus:border-white/40 placeholder:text-gray-400"
                         />
                       </div>
 
                       <button 
                         type="submit" 
-                        className="w-full mt-6 px-5 py-2.5 rounded-full bg-gradient-to-r from-primary to-primary/90 text-white hover:from-primary/95 hover:to-primary/85 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-sm font-medium transition-all disabled:opacity-70 disabled:cursor-not-allowed"
+                        className="w-full mt-6 px-5 py-2.5 rounded-full bg-gradient-to-r from-white/80 to-white/90 text-black hover:shadow-md hover:scale-105 hover:from-white/90 hover:to-white focus:outline-none focus:ring-1 focus:ring-white/20 shadow-sm font-medium transition-all disabled:opacity-70 disabled:cursor-not-allowed"
                         disabled={matchMutation.isPending}
                       >
                         {matchMutation.isPending ? (
                           <span className="flex items-center justify-center">
-                            <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2" />
+                            <div className="animate-spin h-4 w-4 border-2 border-black border-t-transparent rounded-full mr-2" />
                             <span>Finding matches...</span>
                           </span>
                         ) : (
@@ -1181,18 +1181,18 @@ const SearchPage = () => {
 
               {/* Network Recommendations */}
               {!showMatchResults && (
-                <Card>
+                <Card className="bg-gray-900/60 backdrop-blur-md border border-white/10 shadow-xl">
                   <CardHeader>
-                    <CardTitle>Network Tips</CardTitle>
+                    <CardTitle className="text-white">Network Tips</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="flex gap-3">
-                      <div className="bg-primary/10 rounded-full p-2 h-fit">
-                        <Star className="h-4 w-4 text-primary" />
+                      <div className="bg-white/20 rounded-full p-2 h-fit">
+                        <Star className="h-4 w-4 text-white" />
                       </div>
                       <div>
-                        <h4 className="font-medium text-sm">Complete your profile</h4>
-                        <p className="text-gray-500 text-xs">Profiles with 80%+ completion get 3x more connections</p>
+                        <h4 className="font-medium text-sm text-white">Complete your profile</h4>
+                        <p className="text-gray-300 text-xs">Profiles with 80%+ completion get 3x more connections</p>
                       </div>
                     </div>
                     <div className="flex gap-3">
