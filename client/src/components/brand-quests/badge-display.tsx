@@ -1,6 +1,4 @@
 import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -28,14 +26,14 @@ const BADGE_ICONS: Record<BadgeType, string> = {
 };
 
 const BADGE_COLORS: Record<BadgeType, string> = {
-  quest_initiate: 'bg-blue-100 text-blue-800 dark:bg-blue-800/20 dark:text-blue-300',
-  weekly_hustler: 'bg-green-100 text-green-800 dark:bg-green-800/20 dark:text-green-300',
-  musk_learner: 'bg-purple-100 text-purple-800 dark:bg-purple-800/20 dark:text-purple-300',
-  thought_leader: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-800/20 dark:text-yellow-300',
-  portfolio_star: 'bg-pink-100 text-pink-800 dark:bg-pink-800/20 dark:text-pink-300',
-  visibility_boosted: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-800/20 dark:text-indigo-300',
-  explorer: 'bg-amber-100 text-amber-800 dark:bg-amber-800/20 dark:text-amber-300',
-  opportunist: 'bg-teal-100 text-teal-800 dark:bg-teal-800/20 dark:text-teal-300'
+  quest_initiate: 'bg-blue-500/20 text-white border border-blue-500/20',
+  weekly_hustler: 'bg-green-500/20 text-white border border-green-500/20',
+  musk_learner: 'bg-purple-500/20 text-white border border-purple-500/20',
+  thought_leader: 'bg-yellow-500/20 text-white border border-yellow-500/20',
+  portfolio_star: 'bg-pink-500/20 text-white border border-pink-500/20',
+  visibility_boosted: 'bg-indigo-500/20 text-white border border-indigo-500/20',
+  explorer: 'bg-amber-500/20 text-white border border-amber-500/20',
+  opportunist: 'bg-teal-500/20 text-white border border-teal-500/20'
 };
 
 export function BadgeDisplay({ userId, limit, compact = false, className }: BadgeDisplayProps) {
@@ -54,21 +52,21 @@ export function BadgeDisplay({ userId, limit, compact = false, className }: Badg
         {compact ? (
           <div className="flex flex-wrap gap-2">
             {Array.from({ length: 4 }).map((_, i) => (
-              <Skeleton key={i} className="w-14 h-14 rounded-full" />
+              <Skeleton key={i} className="w-14 h-14 rounded-full bg-gray-800/60" />
             ))}
           </div>
         ) : (
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle>Your Badges</CardTitle>
-              <CardDescription>Achievements you've unlocked</CardDescription>
-            </CardHeader>
-            <CardContent className="flex flex-wrap gap-2">
+          <div>
+            <div className="mb-4">
+              <h2 className="text-xl font-semibold text-white">Your Badges</h2>
+              <p className="text-white/70 text-sm">Achievements you've unlocked</p>
+            </div>
+            <div className="flex flex-wrap gap-2">
               {Array.from({ length: 6 }).map((_, i) => (
-                <Skeleton key={i} className="w-16 h-16 rounded-full" />
+                <Skeleton key={i} className="w-16 h-16 rounded-full bg-gray-800/60" />
               ))}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         )}
       </div>
     );
@@ -78,17 +76,17 @@ export function BadgeDisplay({ userId, limit, compact = false, className }: Badg
     if (compact) return null;
     
     return (
-      <Card className={className}>
-        <CardHeader className="pb-2">
-          <CardTitle>Your Badges</CardTitle>
-          <CardDescription>Complete quests to earn badges</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center py-4 text-muted-foreground">
+      <div className={className}>
+        <div className="mb-4">
+          <h2 className="text-xl font-semibold text-white">Your Badges</h2>
+          <p className="text-white/70 text-sm">Complete quests to earn badges</p>
+        </div>
+        <div className="bg-gray-900/40 backdrop-blur-md border border-white/5 rounded-lg p-4">
+          <div className="text-center py-4 text-white/60">
             You haven't earned any badges yet. Complete quests to earn badges!
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     );
   }
   
@@ -119,19 +117,19 @@ export function BadgeDisplay({ userId, limit, compact = false, className }: Badg
   }
   
   return (
-    <Card className={className}>
-      <CardHeader className="pb-2">
-        <CardTitle>Your Badges</CardTitle>
-        <CardDescription>Achievements you've unlocked</CardDescription>
-      </CardHeader>
-      <CardContent>
+    <div className={className}>
+      <div className="mb-4">
+        <h2 className="text-xl font-semibold text-white">Your Badges</h2>
+        <p className="text-white/70 text-sm">Achievements you've unlocked</p>
+      </div>
+      <div className="bg-gray-900/40 backdrop-blur-md border border-white/5 rounded-lg p-4">
         <div className="flex flex-wrap gap-3">
           {displayBadges && displayBadges.map(badge => (
             <Dialog key={badge.id}>
               <DialogTrigger asChild>
                 <Button 
                   variant="ghost" 
-                  className={cn("w-20 h-20 rounded-full flex flex-col items-center justify-center p-0", 
+                  className={cn("w-20 h-20 rounded-full flex flex-col items-center justify-center p-0 backdrop-blur-sm", 
                     BADGE_COLORS[badge.badgeType])}
                   onClick={() => handleBadgeClick(badge)}
                 >
@@ -143,8 +141,8 @@ export function BadgeDisplay({ userId, limit, compact = false, className }: Badg
             </Dialog>
           ))}
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
 
