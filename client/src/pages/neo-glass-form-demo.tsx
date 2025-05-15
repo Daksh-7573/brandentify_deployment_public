@@ -102,7 +102,10 @@ const NeoGlassFormDemo = () => {
                   onChange={handleChange}
                   placeholder="Enter your full name"
                   className="neo-glass-input"
-                  style={{ backgroundColor: 'rgba(18, 18, 18, 0.7)', color: 'var(--neo-white)' }}
+                  style={{ 
+                    backgroundColor: 'rgba(18, 18, 18, 0.95) !important', 
+                    color: 'var(--neo-white) !important' 
+                  }}
                   required
                 />
               </div>
@@ -126,7 +129,10 @@ const NeoGlassFormDemo = () => {
                   onChange={handleChange}
                   placeholder="your.email@example.com"
                   className="neo-glass-input"
-                  style={{ backgroundColor: 'rgba(18, 18, 18, 0.7)', color: 'var(--neo-white)' }}
+                  style={{ 
+                    backgroundColor: 'rgba(18, 18, 18, 0.95) !important', 
+                    color: 'var(--neo-white) !important' 
+                  }}
                   required
                 />
               </div>
@@ -150,7 +156,10 @@ const NeoGlassFormDemo = () => {
                   onChange={handleChange}
                   placeholder="••••••••"
                   className="neo-glass-input"
-                  style={{ backgroundColor: 'rgba(18, 18, 18, 0.7)', color: 'var(--neo-white)' }}
+                  style={{ 
+                    backgroundColor: 'rgba(18, 18, 18, 0.95) !important', 
+                    color: 'var(--neo-white) !important'
+                  }}
                   required
                 />
               </div>
@@ -176,8 +185,8 @@ const NeoGlassFormDemo = () => {
                   style={{ 
                     minHeight: '100px', 
                     resize: 'vertical',
-                    backgroundColor: 'rgba(18, 18, 18, 0.7)', 
-                    color: 'var(--neo-white)' 
+                    backgroundColor: 'rgba(18, 18, 18, 0.95) !important', 
+                    color: 'var(--neo-white) !important'
                   }}
                 ></textarea>
               </div>
@@ -200,15 +209,16 @@ const NeoGlassFormDemo = () => {
                   onChange={handleChange}
                   className="neo-glass-input"
                   style={{ 
-                    background: 'rgba(18, 18, 18, 0.7)',
-                    color: 'var(--neo-white)'
+                    background: 'rgba(18, 18, 18, 0.95) !important',
+                    backgroundColor: 'rgba(18, 18, 18, 0.95) !important',
+                    color: 'var(--neo-white) !important'
                   }}
                 >
-                  <option value="developer" style={{ backgroundColor: 'rgba(18, 18, 18, 0.95)', color: 'white' }}>Developer</option>
-                  <option value="designer" style={{ backgroundColor: 'rgba(18, 18, 18, 0.95)', color: 'white' }}>Designer</option>
-                  <option value="manager" style={{ backgroundColor: 'rgba(18, 18, 18, 0.95)', color: 'white' }}>Product Manager</option>
-                  <option value="marketer" style={{ backgroundColor: 'rgba(18, 18, 18, 0.95)', color: 'white' }}>Marketer</option>
-                  <option value="other" style={{ backgroundColor: 'rgba(18, 18, 18, 0.95)', color: 'white' }}>Other</option>
+                  <option value="developer" style={{ backgroundColor: 'rgba(18, 18, 18, 0.95) !important', color: 'white !important' }}>Developer</option>
+                  <option value="designer" style={{ backgroundColor: 'rgba(18, 18, 18, 0.95) !important', color: 'white !important' }}>Designer</option>
+                  <option value="manager" style={{ backgroundColor: 'rgba(18, 18, 18, 0.95) !important', color: 'white !important' }}>Product Manager</option>
+                  <option value="marketer" style={{ backgroundColor: 'rgba(18, 18, 18, 0.95) !important', color: 'white !important' }}>Marketer</option>
+                  <option value="other" style={{ backgroundColor: 'rgba(18, 18, 18, 0.95) !important', color: 'white !important' }}>Other</option>
                 </select>
               </div>
               
