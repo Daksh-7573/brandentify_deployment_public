@@ -232,15 +232,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             }
           }
           
-          // If backend operations failed, use Firebase user data as last resort
-          console.log("Using Firebase data as fallback after redirect");
+          // If backend operations failed, use Google data as last resort
+          console.log("Using Google/Firebase data as fallback after redirect");
+          
+          // Check for Google provider data
+          const isGoogleProvider = result.user.providerData && 
+            result.user.providerData.some(provider => provider.providerId === "google.com");
+          
+          const googleProvider = isGoogleProvider ? 
+            result.user.providerData.find(provider => provider.providerId === "google.com") : null;
+          
+          console.log("Google provider data available:", !!googleProvider);
+          
           const fallbackUser = {
             uid: result.user.uid,
             id: parseInt(result.user.uid.substring(0, 5), 36) || 999,
-            username: result.user.uid.substring(0, 8),
-            email: result.user.email,
-            name: result.user.displayName,
-            photoURL: result.user.photoURL
+            username: googleProvider?.email?.split('@')[0] || result.user.uid.substring(0, 8),
+            email: googleProvider?.email || result.user.email,
+            name: googleProvider?.displayName || result.user.displayName,
+            photoURL: googleProvider?.photoURL || result.user.photoURL
           };
           
           setUser(fallbackUser);
@@ -512,21 +522,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signOut = async () => {
     try {
       setIsLoading(true);
+      console.log("Signing out user");
       
-      // Only sign out from Firebase if not in demo mode
-      if (!isDemoMode) {
-        await firebaseSignOut(auth);
-      }
+      // Clear user state first
+      setUser(null);
       
       // Clear demo mode
       setIsDemoMode(false);
       localStorage.removeItem('demoMode');
       
-      // Clear user
-      setUser(null);
+      // Remove any stored authentication data
+      localStorage.removeItem('authAttemptInProgress');
+      localStorage.removeItem('authAttemptTime');
       
-      // Clear query cache
+      // Clear query cache to prevent stale data on next login
       queryClient.clear();
+      
+      // Only sign out from Firebase if not in demo mode
+      if (!isDemoMode) {
+        try {
+          await firebaseSignOut(auth);
+          console.log("Firebase sign-out successful");
+        } catch (firebaseError) {
+          console.error("Firebase sign-out error:", firebaseError);
+          // Continue with local sign-out even if Firebase fails
+        }
+      }
       
       toast({
         title: "Signed out",
