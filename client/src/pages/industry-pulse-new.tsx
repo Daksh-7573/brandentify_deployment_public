@@ -316,10 +316,10 @@ function PulseReactions({ pulse }: PulseReactionsProps) {
       {/* Share Button */}
       <Dialog open={isShareDialogOpen} onOpenChange={setIsShareDialogOpen}>
         <DialogTrigger asChild>
-          <Button variant="ghost" size="sm" className="text-muted-foreground hover:bg-blue-50 hover:text-blue-700 transition-all duration-200">
-            <Share className={`h-4 w-4 mr-2 transition-all duration-200 ${isShareDialogOpen ? "text-blue-600 scale-110" : "text-muted-foreground"}`} />
+          <button className="text-gray-400 hover:text-white hover:bg-gray-600/30 rounded-md px-2 py-1 text-sm flex items-center gap-1.5 transition-all duration-200">
+            <Share className={`h-4 w-4 transition-all duration-200 ${isShareDialogOpen ? "text-white scale-110" : ""}`} />
             {formatCount(pulse.shareCount || 0)}
-          </Button>
+          </button>
         </DialogTrigger>
         <DialogContent className="max-w-md">
           <DialogHeader>
@@ -354,11 +354,20 @@ function PulseReactions({ pulse }: PulseReactionsProps) {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsShareDialogOpen(false)}>Cancel</Button>
-            <Button onClick={handleShareSubmit} disabled={isLoading}>
+            <button 
+              onClick={() => setIsShareDialogOpen(false)}
+              className="flex items-center px-3 py-1.5 rounded-md bg-gray-800/80 text-white/80 text-sm border border-gray-700/50 hover:bg-gray-700/70 transition-colors"
+            >
+              Cancel
+            </button>
+            <button 
+              onClick={handleShareSubmit} 
+              disabled={isLoading}
+              className="flex items-center px-3 py-1.5 rounded-md bg-gradient-to-r from-[#e0e0e0] to-[#ffffff] text-black font-medium text-sm disabled:opacity-50"
+            >
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Share
-            </Button>
+            </button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -1071,9 +1080,13 @@ export default function IndustryPulsePage() {
                     Discover insights, polls, and media from your professional network
                   </p>
                 </div>
-                <Button onClick={() => setLocation("/create-pulse")} className="neo-glass-button">
+                <button 
+                  onClick={() => setLocation("/create-pulse")} 
+                  className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-[#e0e0e0] to-[#ffffff] text-black font-medium text-sm"
+                >
+                  <MessageSquare className="w-4 h-4 mr-2" />
                   Create Pulse
-                </Button>
+                </button>
               </div>
               
               <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab}>
@@ -1144,13 +1157,21 @@ export default function IndustryPulsePage() {
                               : `No ${activeTab} pulses available yet. Create one to get started!`}
                         </p>
                         {activeTab === "musk-news" ? (
-                          <Button variant="outline" onClick={() => setActiveTab("all")} className="neo-glass-button">
+                          <button 
+                            onClick={() => setActiveTab("all")} 
+                            className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-[#e0e0e0] to-[#ffffff] text-black font-medium text-sm"
+                          >
+                            <Newspaper className="w-4 h-4 mr-2" />
                             View All Pulses
-                          </Button>
+                          </button>
                         ) : (
-                          <Button onClick={() => setLocation("/create-pulse")} className="neo-glass-button">
+                          <button 
+                            onClick={() => setLocation("/create-pulse")} 
+                            className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-[#e0e0e0] to-[#ffffff] text-black font-medium text-sm"
+                          >
+                            <MessageSquare className="w-4 h-4 mr-2" />
                             Create Your First Pulse
-                          </Button>
+                          </button>
                         )}
                       </div>
                     </NeoGlassSection>
