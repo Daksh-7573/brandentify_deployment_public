@@ -67,22 +67,25 @@ export function NotificationBell({ className = '' }: NotificationBellProps) {
         <Button
           variant="ghost"
           size="icon"
-          className={`relative rounded-md p-2 hover:bg-gray-100 transition-colors ${className}`}
+          className={`relative rounded-full p-2 hover:bg-spotify-glass-highlight transition-colors ${className}`}
           onClick={() => setIsOpen(true)}
           aria-label="Notifications"
         >
-          <Bell className="h-5 w-5 text-gray-600" />
+          <Bell className="h-5 w-5 text-spotify-white" />
           {unreadCount > 0 && (
             <Badge 
-              className="absolute -top-1 -right-1 px-1.5 h-5 min-w-[20px] flex items-center justify-center bg-red-500 text-white border-0 text-xs" 
-              variant="destructive"
+              className="absolute -top-1 -right-1 px-1.5 h-5 min-w-[20px] flex items-center justify-center bg-spotify-white text-black border-0 text-xs" 
+              variant="default"
             >
               {unreadCount > 99 ? '99+' : unreadCount}
             </Badge>
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[350px] p-0 mr-4" align="end">
+      <PopoverContent 
+        className="w-[350px] p-0 mr-4 bg-spotify-glass-bg border border-spotify-glass-border backdrop-blur-md shadow-spotify-glass" 
+        align="end"
+      >
         <NotificationList 
           userId={userId} 
           onMarkAllAsRead={handleMarkAllAsRead}
