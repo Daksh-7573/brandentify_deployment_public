@@ -1,12 +1,6 @@
 import { useState, useEffect, useRef } from "react";
-import { 
-  Card, 
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription 
-} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { NeoGlassSection } from "@/components/layout/neo-glass-layout";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
