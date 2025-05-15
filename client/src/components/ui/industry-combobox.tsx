@@ -42,6 +42,8 @@ export interface IndustryComboboxProps {
   className?: string;
   disabled?: boolean;
   width?: string;
+  triggerClassName?: string;
+  contentClassName?: string;
 }
 
 export function IndustryCombobox({
@@ -50,7 +52,9 @@ export function IndustryCombobox({
   placeholder = "Select an industry",
   className,
   disabled = false,
-  width = "w-full"
+  width = "w-full",
+  triggerClassName,
+  contentClassName
 }: IndustryComboboxProps) {
   const [open, setOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
@@ -107,7 +111,7 @@ export function IndustryCombobox({
             "justify-between", 
             width, 
             className,
-            "border-blue-100 focus:border-blue-300 focus-visible:ring-blue-500"
+            triggerClassName || "border-blue-100 focus:border-blue-300 focus-visible:ring-blue-500"
           )}
           disabled={disabled}
           onClick={() => setOpen(true)}
@@ -119,7 +123,7 @@ export function IndustryCombobox({
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className={cn("p-0", width)}>
+      <PopoverContent className={cn("p-0", width, contentClassName)}>
         <Command shouldFilter={false}>
           <CommandInput 
             placeholder="Search industries or type to add new..." 
