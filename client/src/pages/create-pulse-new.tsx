@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
-import { useAuth } from "@/hooks/use-auth";
-import { useMutation } from "@tanstack/react-query";
+import { useAuth } from "@/context/auth-context";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import Header from "@/components/layout/header";
 // Removed Sidebar import, using top navigation only
 import { Button } from "@/components/ui/button";
@@ -18,6 +18,8 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { InsertPulse } from "@shared/schema";
 import { IndustryCombobox } from "@/components/ui/industry-combobox";
 import { Link } from "wouter";
+import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
+import { cn } from "@/lib/utils";
 import "../styles/neo-glass-spotify.css";
 
 export default function CreatePulsePage() {
