@@ -129,10 +129,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
       
-      // Special handling for Firebase auth users
-      const isFirebaseUser = req.body.email && 
-        (req.body.email.includes("@gmail.com") || 
-        req.body.email.includes("firebase_"));
+      // Special handling for Google and Firebase auth users
+      const isGoogleUser = req.body.email && req.body.email.includes("@gmail.com");
+      const isFirebaseUser = req.body.username && req.body.username.length > 20;
+      const isAuthUser = isGoogleUser || isFirebaseUser;
+      
+      console.log(`[POST /users] Auth detection: isGoogleUser=${isGoogleUser}, isFirebaseUser=${isFirebaseUser}`);
       
       let userData_withVerificationFlag: any;
       
@@ -146,14 +148,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
           emailVerified: false
         };
       } catch (validationError) {
-        // If it's a Firebase user with validation errors, try to be more permissive
-        if (isFirebaseUser) {
-          console.log("[POST /users] Firebase user validation failed:", validationError);
+        // If it's a Google/Firebase user with validation errors, try to be more permissive
+        if (isAuthUser) {
+          console.log("[POST /users] Google/Firebase user validation failed:", validationError);
           
-          // Create a unique username if none provided
+          // Prioritize email as username for Google accounts
           let username = req.body.username;
-          if (!username) {
-            // Extract username from email or generate random
+          if (isGoogleUser && req.body.email) {
+            // For Google users, extract username from email (before @)
+            const emailParts = req.body.email.split('@');
+            if (emailParts.length > 0) {
+              username = emailParts[0];
+              console.log(`[POST /users] Using email-based username for Google user: ${username}`);
+            }
+          } else if (!username) {
+            // Fall back to UID or random username for other cases
             if (req.body.email) {
               const emailParts = req.body.email.split('@');
               if (emailParts.length > 0) {
@@ -162,17 +171,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 username = `user_${Math.floor(Math.random() * 10000)}`;
               }
             } else {
-              username = `firebase_user_${Date.now()}`;
+              username = `user_${Date.now()}`;
             }
           }
           
-          // Create a fixed version of the data
+          // Create a fixed version of the data - prioritize Google/Firebase provided info
           const fixedUserData = {
             username: username,
-            email: req.body.email || `firebase_${Date.now()}@example.com`,
-            name: req.body.name || "Firebase User",
+            email: req.body.email || `user_${Date.now()}@example.com`,
+            name: req.body.name || (isGoogleUser ? "Google User" : "Firebase User"),
             photoURL: req.body.photoURL || null,
-            emailVerified: false
+            emailVerified: isGoogleUser, // Google users can be considered verified
           };
           
           console.log("[POST /users] Using fixed user data:", fixedUserData);
@@ -331,10 +340,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (isFirebaseUid) {
         // If it looks like a Firebase UID, check by username
         console.log(`[GET /users/:id] ID appears to be a Firebase UID: ${idParam}`);
+        
+        // First try by username (Firebase UID)
         user = await storage.getUserByUsername(idParam);
         
+        // If user not found and email is provided, try to find by email (for Google auth)
+        if (!user && req.query.email) {
+          const email = req.query.email as string;
+          console.log(`[GET /users/:id] No user found with Firebase UID, trying by email: ${email}`);
+          user = await storage.getUserByEmail(email);
+          
+          if (user) {
+            console.log(`[GET /users/:id] Found user by email: ${email} with ID: ${user.id}`);
+          }
+        }
+        
         if (!user) {
-          console.log(`[GET /users/:id] No existing user found with Firebase UID: ${idParam}`);
+          console.log(`[GET /users/:id] No existing user found with Firebase UID: ${idParam} or by email`);
           console.log(`[GET /users/:id] This GET request should not create a new user - users should be created via POST /api/users`);
           return res.status(404).json({ 
             message: "User not found",
@@ -342,7 +364,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           });
         }
         
-        console.log(`[GET /users/:id] Found existing user with Firebase UID: ${user.id}`);
+        console.log(`[GET /users/:id] Found existing user with ID: ${user.id}`);
       } else {
         // Try to parse as numeric ID
         const userId = parseInt(idParam);
