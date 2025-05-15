@@ -2,14 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useProfileServices } from "@/hooks/use-profile-services";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
-import { 
-  Card, 
-  CardHeader, 
-  CardContent, 
-  CardTitle, 
-  CardDescription, 
-  CardFooter 
-} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { 
   Loader2, 
@@ -20,7 +12,8 @@ import {
   Package,
   MessageSquareQuote,
   Quote,
-  AlertCircle
+  AlertCircle,
+  Plus
 } from "lucide-react";
 import ServiceForm from "@/components/services/service-form";
 import {
@@ -42,6 +35,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { NeoGlassSection } from "@/components/layout/neo-glass-layout";
 
 export default function Services() {
   const { user } = useAuth();
@@ -284,21 +278,19 @@ export default function Services() {
   };
   
   return (
-    <Card className="mb-6">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+    <NeoGlassSection title="What I Offer" className="mb-6 p-6">
+      <div className="flex flex-row items-center justify-between space-y-0 pb-2">
         <div>
-          <CardTitle className="text-xl font-bold">What I Offer</CardTitle>
-          <CardDescription>Professional services I provide (max 6)</CardDescription>
+          <p className="text-sm text-slate-300">Professional services I provide (max 6)</p>
         </div>
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogTrigger asChild>
             <Button
-              variant="outline"
               size="sm"
-              className="h-8 gap-1"
+              className="h-8 gap-1 bg-slate-800/60 text-white hover:bg-slate-700/70"
               disabled={services.length >= 6 || isPendingCreate || isPendingUpdate}
             >
-              <PlusCircle className="h-3.5 w-3.5" />
+              <Plus className="h-3.5 w-3.5" />
               Add What I Offer
             </Button>
           </DialogTrigger>
@@ -316,33 +308,33 @@ export default function Services() {
             />
           </DialogContent>
         </Dialog>
-      </CardHeader>
+      </div>
     
-      <CardContent>
+      <div className="mt-4">
         {/* Specific Services List */}
         <div>
           
           {isLoading ? (
             <div className="flex justify-center py-6">
-              <Loader2 className="h-6 w-6 animate-spin text-primary" />
+              <Loader2 className="h-6 w-6 animate-spin text-white" />
             </div>
           ) : !services || !Array.isArray(services) || services.length === 0 ? (
-            <div className="py-6 text-center">
-              <Package className="mx-auto h-10 w-10 text-muted-foreground/50" />
-              <p className="mt-2 text-muted-foreground">No offerings added yet.</p>
+            <div className="py-6 text-center border border-white/5 rounded-lg bg-slate-800/40 backdrop-blur-md">
+              <Package className="mx-auto h-10 w-10 text-slate-300 mb-2" />
+              <p className="mt-2 text-slate-300">No offerings added yet.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               {services.map((service) => (
                 <div 
                   key={service.id} 
-                  className="border bg-background rounded-lg p-4 transition-all hover:shadow-md hover:border-primary/30"
+                  className="border border-white/5 rounded-lg p-4 bg-slate-800/40 backdrop-blur-md transition-all hover:bg-slate-700/40"
                 >
                   <div className="flex justify-between items-start">
-                    <h3 className="font-medium text-base line-clamp-2 flex-1">{service.title}</h3>
+                    <h3 className="font-medium text-base line-clamp-2 flex-1 text-white">{service.title}</h3>
                     <div className="flex items-center space-x-1 ml-2">
                       <button 
-                        className="text-muted-foreground hover:text-primary focus:outline-none rounded-full p-1 hover:bg-muted"
+                        className="text-slate-300 hover:text-white focus:outline-none rounded-full p-1 hover:bg-slate-700/50"
                         onClick={() => {
                           setSelectedService(service);
                           setIsEditDialogOpen(true);
@@ -351,7 +343,7 @@ export default function Services() {
                         <Edit className="h-3.5 w-3.5" />
                       </button>
                       <button 
-                        className="text-muted-foreground hover:text-destructive focus:outline-none rounded-full p-1 hover:bg-muted"
+                        className="text-slate-300 hover:text-red-400 focus:outline-none rounded-full p-1 hover:bg-slate-700/50"
                         onClick={() => {
                           setSelectedService(service);
                           setIsDeleteDialogOpen(true);
@@ -364,7 +356,7 @@ export default function Services() {
                   
                   {/* Service description */}
                   {service.description && (
-                    <p className="mt-2 text-sm text-muted-foreground line-clamp-2">
+                    <p className="mt-2 text-sm text-slate-300 line-clamp-2">
                       {service.description}
                     </p>
                   )}
@@ -372,13 +364,13 @@ export default function Services() {
                   {/* Display price information */}
                   <div className="mt-2">
                     {(service.priceUsd !== undefined && service.priceUsd !== null) && (
-                      <p className="text-sm font-medium">
+                      <p className="text-sm font-medium text-white">
                         {formatCurrency(service.priceUsd, 'USD')}
                         {service.isHourly ? '/hr' : ''}
                       </p>
                     )}
                     {(service.priceInr !== undefined && service.priceInr !== null) && (
-                      <p className="text-sm font-medium">
+                      <p className="text-sm font-medium text-white">
                         {formatCurrency(service.priceInr, 'INR')}
                         {service.isHourly ? '/hr' : ''}
                       </p>
@@ -386,7 +378,9 @@ export default function Services() {
                   </div>
                   
                   <div className="mt-2 flex items-center">
-                    <Badge variant="outline" className={service.isActive ? 'bg-primary/10 text-primary border-primary/30' : 'bg-muted'}>
+                    <Badge 
+                      className={service.isActive ? 'bg-slate-700/60 text-white hover:bg-slate-600/70 border-none' : 'bg-slate-800/60 text-slate-400 border-none'}
+                    >
                       {service.isActive ? 'Active' : 'Inactive'}
                     </Badge>
                   </div>
@@ -395,7 +389,37 @@ export default function Services() {
             </div>
           )}
         </div>
-      </CardContent>
+        
+        {/* What I Offer content - general description */}
+        <div className="mt-8">
+          <div className="flex justify-between items-center mb-3">
+            <h3 className="text-base font-semibold text-white">General Professional Offering</h3>
+            <Button
+              size="sm"
+              className="h-8 gap-1 bg-slate-800/60 text-white hover:bg-slate-700/70"
+              disabled={isPendingCreate || isPendingUpdate}
+              onClick={() => setEditWhatIOfferDialogOpen(true)}
+            >
+              <MessageSquareQuote className="h-3.5 w-3.5" />
+              Edit Description
+            </Button>
+          </div>
+          
+          {whatIOffer ? (
+            <div className="border border-white/5 rounded-lg p-4 bg-slate-800/40 backdrop-blur-md">
+              <Quote className="h-5 w-5 text-slate-300 mb-1" />
+              <p className="text-sm text-slate-300 whitespace-pre-line">{whatIOffer}</p>
+            </div>
+          ) : (
+            <div className="border border-dashed border-white/10 rounded-lg p-4 bg-slate-800/40 backdrop-blur-md text-center">
+              <AlertCircle className="mx-auto h-8 w-8 text-slate-300/60 mb-2" />
+              <p className="text-sm text-slate-300">
+                Add a general description of your professional services.
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
 
       {/* Edit Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
@@ -451,6 +475,6 @@ export default function Services() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </Card>
+    </NeoGlassSection>
   );
 }
