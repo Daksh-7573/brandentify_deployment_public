@@ -1,17 +1,11 @@
 import { useState, useEffect, useRef } from "react";
-import { 
-  Card, 
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription 
-} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Loader2, Pencil, Trash2, Plus, Lightbulb } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { NeoGlassSection } from "@/components/layout/neo-glass-layout";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
@@ -246,23 +240,21 @@ export default function Skills() {
   
   return (
     <>
-      <Card className="mb-6">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+      <NeoGlassSection className="mb-6">
+        <div className="flex flex-row items-center justify-between space-y-0 pb-4 mb-4 border-b border-gray-800">
           <div>
-            <CardTitle className="text-xl font-bold">What I'm Good At</CardTitle>
-            <CardDescription>Add your professional skills and expertise levels</CardDescription>
+            <h2 className="text-xl font-bold text-white">What I'm Good At</h2>
+            <p className="text-sm text-gray-300">Add your professional skills and expertise levels</p>
           </div>
           <Button
-            variant="outline"
-            size="sm"
-            className="h-8 gap-1"
+            className="neo-glass-button"
             onClick={handleOpenAddModal}
           >
-            <Plus className="h-3.5 w-3.5" />
+            <Plus className="h-3.5 w-3.5 mr-1" />
             Add Skill
           </Button>
-        </CardHeader>
-        <CardContent>
+        </div>
+        <div className="p-1">
           {isLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               <CardSkeleton />
@@ -274,35 +266,35 @@ export default function Skills() {
               {skills.map((skill) => (
                 <div 
                   key={skill.id} 
-                  className="border bg-background rounded-lg p-4 transition-all hover:shadow-md hover:border-primary/30"
+                  className="neo-glass-card p-4 rounded-lg transition-all hover:translate-y-[-3px]"
                 >
                   <div className="flex justify-between items-start">
-                    <h3 className="font-medium text-base line-clamp-2 flex-1">{skill.name}</h3>
+                    <h3 className="font-medium text-base line-clamp-2 flex-1 text-white">{skill.name}</h3>
                     <div className="flex items-center space-x-1 ml-2">
                       <button 
                         onClick={() => handleEditSkill(skill)} 
-                        className="text-muted-foreground hover:text-primary focus:outline-none rounded-full p-1 hover:bg-muted"
+                        className="text-gray-300 hover:text-white focus:outline-none rounded-full p-1 hover:bg-gray-800/50"
                       >
                         <Pencil className="h-3.5 w-3.5" />
                       </button>
                       <button 
                         onClick={() => handleDeleteSkill(skill.id)} 
-                        className="text-muted-foreground hover:text-destructive focus:outline-none rounded-full p-1 hover:bg-muted"
+                        className="text-red-400 hover:text-red-300 focus:outline-none rounded-full p-1 hover:bg-red-900/20"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
                       </button>
                     </div>
                   </div>
                   <div className="mt-2">
-                    <span className="inline-block text-xs text-muted-foreground px-2 py-0.5 rounded-full bg-muted mb-2">
+                    <span className="inline-block text-xs text-gray-300 px-2 py-0.5 rounded-full bg-gray-800/50 mb-2">
                       {skill.level || 'No level set'}
                     </span>
                     <div className="mt-2">
                       <div className="flex items-center justify-between text-xs mb-1">
-                        <span className="text-muted-foreground">Proficiency Percentage</span>
-                        <span>{skill.proficiency}%</span>
+                        <span className="text-gray-300">Proficiency Percentage</span>
+                        <span className="text-gray-300">{skill.proficiency}%</span>
                       </div>
-                      <div className="w-full bg-gray-200 rounded-full h-1.5">
+                      <div className="w-full bg-gray-800/80 rounded-full h-1.5">
                         <div 
                           className={`${getColor(skill.proficiency)} h-1.5 rounded-full`} 
                           style={{ width: `${skill.proficiency}%` }}
@@ -315,36 +307,36 @@ export default function Skills() {
             </div>
           ) : (
             <div className="py-6 text-center">
-              <Lightbulb className="mx-auto h-10 w-10 text-muted-foreground/50" />
-              <p className="mt-2 text-muted-foreground">Nothing added yet. Share what you're good at!</p>
+              <Lightbulb className="mx-auto h-10 w-10 text-gray-500/50" />
+              <p className="mt-2 text-gray-400">Nothing added yet. Share what you're good at!</p>
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </NeoGlassSection>
       
       {/* Add/Edit Skill Modal */}
       <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
-        <DialogContent className="sm:max-w-[550px]">
+        <DialogContent className="neo-glass-dialog sm:max-w-[550px] border border-gray-800">
           <DialogHeader>
-            <DialogTitle>{newSkill.id ? 'Edit What You\'re Good At' : 'Add What You\'re Good At'}</DialogTitle>
+            <DialogTitle className="text-white text-lg font-bold">{newSkill.id ? 'Edit What You\'re Good At' : 'Add What You\'re Good At'}</DialogTitle>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
+          <div className="grid gap-5 py-5">
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="name" className="text-right">
+              <Label htmlFor="name" className="text-right text-gray-300">
                 What You're Good At*
               </Label>
               <Input
                 id="name"
                 value={newSkill.name}
                 onChange={(e) => setNewSkill({...newSkill, name: e.target.value})}
-                className="col-span-3"
+                className="col-span-3 neo-glass-input bg-gray-900/60 text-white border-gray-700"
                 placeholder="e.g., JavaScript, Project Management, Public Speaking"
                 required
               />
             </div>
             
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="level" className="text-right">
+              <Label htmlFor="level" className="text-right text-gray-300">
                 Proficiency Level*
               </Label>
               <div className="col-span-3">
@@ -358,15 +350,15 @@ export default function Skills() {
             </div>
             
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label className="text-right">
+              <Label className="text-right text-gray-300">
                 Proficiency Percentage <span className="text-xs text-gray-500">(auto-set based on level)</span>
               </Label>
               <div className="col-span-3 px-2">
                 <div className="mb-2 flex justify-between">
-                  <span className="text-xs text-gray-600">Beginner</span>
-                  <span className="text-xs text-gray-600">Intermediate</span>
-                  <span className="text-xs text-gray-600">Advanced</span>
-                  <span className="text-xs text-gray-600">Expert</span>
+                  <span className="text-xs text-gray-400">Beginner</span>
+                  <span className="text-xs text-gray-400">Intermediate</span>
+                  <span className="text-xs text-gray-400">Advanced</span>
+                  <span className="text-xs text-gray-400">Expert</span>
                 </div>
                 <Slider
                   value={[sliderValue]}
@@ -377,22 +369,22 @@ export default function Skills() {
                   className="mb-3"
                 />
                 <div className="flex justify-between items-center">
-                  <div className="w-full bg-gray-200 rounded-full h-1.5 mb-2">
+                  <div className="w-full bg-gray-800/80 rounded-full h-1.5 mb-2">
                     <div 
                       className={`${getColor(sliderValue)} h-1.5 rounded-full`} 
                       style={{ width: `${sliderValue}%` }}
                     ></div>
                   </div>
-                  <span className="text-xs font-medium text-gray-700 ml-2">{sliderValue}%</span>
+                  <span className="text-xs font-medium text-gray-300 ml-2">{sliderValue}%</span>
                 </div>
               </div>
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={handleCloseModal}>
+            <Button className="neo-glass-button-secondary" onClick={handleCloseModal}>
               Cancel
             </Button>
-            <Button onClick={handleSaveSkill}>
+            <Button className="neo-glass-button" onClick={handleSaveSkill}>
               Save
             </Button>
           </DialogFooter>
