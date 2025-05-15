@@ -8,6 +8,7 @@ import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { popularLocations } from "@/lib/location-data";
 import { formatDate } from "@/lib/utils";
+import { NeoGlassSection } from "@/components/layout/neo-glass-layout";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -983,23 +984,21 @@ export default function WorkExperience() {
   });
   
   return (
-    <Card className="mb-6">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+    <NeoGlassSection className="mb-6">
+      <div className="flex flex-row items-center justify-between space-y-0 pb-4 mb-4 border-b border-gray-800">
         <div>
-          <CardTitle className="text-xl font-bold">Career Path</CardTitle>
-          <CardDescription>Add your professional experience</CardDescription>
+          <h2 className="text-xl font-bold text-white">Career Path</h2>
+          <p className="text-sm text-gray-300">Add your professional experience</p>
         </div>
         <Button
-          variant="outline"
-          size="sm"
-          className="h-8 gap-1"
+          className="neo-glass-button"
           onClick={openAddDialog}
         >
-          <Plus className="h-3.5 w-3.5" />
+          <Plus className="h-3.5 w-3.5 mr-1" />
           Add Experience
         </Button>
-      </CardHeader>
-      <CardContent>
+      </div>
+      <div className="p-1">
         {isLoading ? (
           <div className="space-y-4">
             <ExperienceItemSkeleton />
@@ -1007,17 +1006,17 @@ export default function WorkExperience() {
           </div>
         ) : sortedExperiences.length === 0 ? (
           <div className="py-6 text-center">
-            <Briefcase className="mx-auto h-10 w-10 text-muted-foreground/50" />
-            <p className="mt-2 text-muted-foreground">No career path added yet.</p>
+            <Briefcase className="mx-auto h-10 w-10 text-gray-400/50" />
+            <p className="mt-2 text-gray-400">No career path added yet.</p>
           </div>
         ) : (
           <div className="space-y-4">
             {sortedExperiences.map((experience: any) => (
-              <div key={experience.id} className="rounded-md border p-4">
+              <div key={experience.id} className="neo-glass-card p-4 rounded-lg transition-all hover:translate-y-[-3px]">
                 <div className="flex justify-between items-start">
                   <div>
-                    <h3 className="font-medium">{experience.title}</h3>
-                    <p className="text-sm text-muted-foreground flex items-center mt-1">
+                    <h3 className="font-medium text-white">{experience.title}</h3>
+                    <p className="text-sm text-gray-300 flex items-center mt-1">
                       <Building className="h-3.5 w-3.5 mr-1.5" />
                       {experience.company}
                       {experience.location && (
@@ -1028,7 +1027,7 @@ export default function WorkExperience() {
                         </>
                       )}
                     </p>
-                    <p className="text-sm text-muted-foreground flex items-center mt-1">
+                    <p className="text-sm text-gray-300 flex items-center mt-1">
                       <CalendarIcon className="h-3.5 w-3.5 mr-1.5" />
                       {formatDate(experience.startDate)} - 
                       {experience.endDate ? formatDate(experience.endDate) : 'Present'}
@@ -1036,13 +1035,13 @@ export default function WorkExperience() {
                     
                     <div className="flex flex-wrap gap-1.5 mt-2">
                       {experience.industry && (
-                        <Badge variant="outline" className="bg-gray-50 flex items-center">
+                        <Badge className="neo-glass-badge flex items-center">
                           <Briefcase className="h-3 w-3 mr-1" />
                           {experience.industry}
                         </Badge>
                       )}
                       {experience.domain && (
-                        <Badge variant="outline" className="bg-gray-50 flex items-center">
+                        <Badge className="neo-glass-badge flex items-center">
                           <TagIcon className="h-3 w-3 mr-1" />
                           {experience.domain}
                         </Badge>
@@ -1052,8 +1051,8 @@ export default function WorkExperience() {
                     {/* Key Responsibilities Section */}
                     {experience.keyResponsibilities && Array.isArray(experience.keyResponsibilities) && experience.keyResponsibilities.length > 0 && (
                       <div className="mt-3">
-                        <h4 className="text-sm font-medium mb-1">Key Responsibilities:</h4>
-                        <ul className="text-sm text-muted-foreground list-disc pl-5 space-y-1">
+                        <h4 className="text-sm font-medium text-white mb-1">Key Responsibilities:</h4>
+                        <ul className="text-sm text-gray-300 list-disc pl-5 space-y-1">
                           {experience.keyResponsibilities.map((responsibility: string, index: number) => (
                             <li key={index}>{responsibility}</li>
                           ))}
@@ -1065,7 +1064,7 @@ export default function WorkExperience() {
                     <Button
                       size="icon"
                       variant="ghost"
-                      className="h-8 w-8"
+                      className="h-8 w-8 text-gray-300 hover:text-white hover:bg-gray-800/50"
                       onClick={() => openEditDialog(experience)}
                     >
                       <Edit className="h-4 w-4" />
@@ -1074,7 +1073,7 @@ export default function WorkExperience() {
                     <Button
                       size="icon"
                       variant="ghost"
-                      className="h-8 w-8 text-destructive"
+                      className="h-8 w-8 text-red-400 hover:text-red-300 hover:bg-red-900/20"
                       onClick={() => handleDelete(experience.id)}
                     >
                       <Trash2 className="h-4 w-4" />
@@ -1086,7 +1085,7 @@ export default function WorkExperience() {
             ))}
           </div>
         )}
-      </CardContent>
+      </div>
       
       {/* Add Experience Dialog */}
       <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
@@ -1753,6 +1752,6 @@ export default function WorkExperience() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </Card>
+    </NeoGlassSection>
   );
 }
