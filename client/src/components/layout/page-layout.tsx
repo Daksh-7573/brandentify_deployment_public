@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import { PageHeader } from "@/components/ui/page-header";
 import Header from "@/components/layout/header";
+import { NeoGlassLayout } from "@/components/layout/neo-glass-layout";
 
 interface PageLayoutProps {
   title: string;
@@ -26,11 +27,14 @@ export function PageLayout({
           description={description}
           icon={icon}
           action={actions}
+          className="text-white"
         />
         
-        <main className="flex-1">
-          {children}
-        </main>
+        <NeoGlassLayout>
+          <main className="flex-1">
+            {children}
+          </main>
+        </NeoGlassLayout>
       </div>
     </div>
   );

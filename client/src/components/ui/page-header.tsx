@@ -6,13 +6,15 @@ interface PageHeaderProps {
   description?: string;
   icon?: ReactNode;
   action?: ReactNode;
+  className?: string;
 }
 
 export function PageHeader({
   heading,
   description,
   icon,
-  action
+  action,
+  className = ""
 }: PageHeaderProps) {
   return (
     <div className="bg-card border-b">
