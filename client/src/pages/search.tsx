@@ -953,10 +953,10 @@ const SearchPage = () => {
           <TabsContent value="smart-connect" className="mt-6">
             <div className="space-y-6">
               {/* Matchmaking Form */}
-              <Card>
+              <Card className="bg-gray-900/60 backdrop-blur-md border border-white/10 shadow-xl">
                 <CardHeader>
-                  <CardTitle>{showMatchResults ? "Your Match Criteria" : "Find Your Match"}</CardTitle>
-                  <CardDescription>
+                  <CardTitle className="text-white">{showMatchResults ? "Your Match Criteria" : "Find Your Match"}</CardTitle>
+                  <CardDescription className="text-gray-300">
                     {showMatchResults 
                       ? "Based on these criteria, we found relevant matches for you" 
                       : "Fill in the criteria to find professionals matching your needs"}
@@ -966,15 +966,15 @@ const SearchPage = () => {
                   {!showMatchResults ? (
                     <form onSubmit={handleSmartConnectSubmit} className="space-y-4">
                       <div className="space-y-2">
-                        <Label htmlFor="lookingFor">I am looking for</Label>
+                        <Label htmlFor="lookingFor" className="text-white">I am looking for</Label>
                         <Select 
                           value={formData.lookingFor}
                           onValueChange={(value) => setFormData({...formData, lookingFor: value})}
                         >
-                          <SelectTrigger className="w-full">
+                          <SelectTrigger className="w-full bg-gray-800/80 border-gray-700/50 text-white focus:ring-white/20">
                             <SelectValue placeholder="What are you looking for?" />
                           </SelectTrigger>
-                          <SelectContent className="max-h-80">
+                          <SelectContent className="max-h-80 bg-gray-800 border-gray-700/50 text-white">
                             <SelectGroup>
                               <SelectLabel>Career & Job Seeking</SelectLabel>
                               {LOOKING_FOR_OPTIONS.filter(opt => opt.category === "Career & Job Seeking").map(option => (
@@ -1024,24 +1024,25 @@ const SearchPage = () => {
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="jobTitle">Job Title</Label>
+                        <Label htmlFor="jobTitle" className="text-white">Job Title</Label>
                         <JobTitleCombobox
                           value={formData.jobTitle}
                           onChange={(value) => setFormData({...formData, jobTitle: value})}
                           placeholder="Enter job title"
+                          className="bg-gray-800/80 border-gray-700/50 text-white"
                         />
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="experienceLevel">Experience Level</Label>
+                        <Label htmlFor="experienceLevel" className="text-white">Experience Level</Label>
                         <Select 
                           value={formData.experienceLevel}
                           onValueChange={(value) => setFormData({...formData, experienceLevel: value})}
                         >
-                          <SelectTrigger className="w-full">
+                          <SelectTrigger className="w-full bg-gray-800/80 border-gray-700/50 text-white focus:ring-white/20">
                             <SelectValue placeholder="Select experience level" />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent className="bg-gray-800 border-gray-700/50 text-white">
                             {EXPERIENCE_LEVELS.map(level => (
                               <SelectItem key={level} value={level}>
                                 {level}
@@ -1052,7 +1053,7 @@ const SearchPage = () => {
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="industry">Industry</Label>
+                        <Label htmlFor="industry" className="text-white">Industry</Label>
                         <Select 
                           value={formData.industry}
                           onValueChange={(value) => {
@@ -1063,10 +1064,10 @@ const SearchPage = () => {
                             });
                           }}
                         >
-                          <SelectTrigger className="w-full">
+                          <SelectTrigger className="w-full bg-gray-800/80 border-gray-700/50 text-white focus:ring-white/20">
                             <SelectValue placeholder="Select industry" />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent className="bg-gray-800 border-gray-700/50 text-white">
                             {INDUSTRIES.map(industry => (
                               <SelectItem key={industry} value={industry}>
                                 {industry}
