@@ -10,9 +10,9 @@
   --neo-gray: #282828;
   --neo-light-gray: #b3b3b3;
   --neo-white: #ffffff;
-  --neo-primary: #1DB954;      /* Spotify green as default primary */
-  --neo-primary-bright: #1ED760;
-  --neo-primary-glow: #4eff64;
+  --neo-primary: #f5f5f5;      /* Updated to white */
+  --neo-primary-bright: #ffffff;
+  --neo-primary-glow: rgba(255, 255, 255, 0.7);
   
   /* Glass effect */
   --neo-glass-bg: rgba(18, 18, 18, 0.6);  /* 60% opacity (40% transparent) */
@@ -166,14 +166,14 @@ body.neo-glass-theme {
 
 /* Highlight panel (for features, CTAs, etc.) */
 .neo-glass-highlight {
-  background: linear-gradient(to bottom, var(--neo-primary) 0%, rgba(30, 215, 96, 0.5) 100%);
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%);
   padding: 1.5rem;
-  color: var(--neo-black);
+  color: var(--neo-white);
   position: relative;
   overflow: hidden;
   box-shadow: 
-    0 0 0 1px rgba(30, 215, 96, 0.5),
-    0 0 15px rgba(30, 215, 96, 0.3);
+    0 0 0 1px rgba(255, 255, 255, 0.15),
+    0 0 15px rgba(0, 0, 0, 0.4);
   border-radius: 1rem;
 }
 
@@ -211,8 +211,8 @@ input.neo-glass-input:focus,
 textarea.neo-glass-input:focus,
 select.neo-glass-input:focus {
   outline: none !important;
-  border-color: var(--neo-primary) !important;
-  box-shadow: 0 0 0 2px rgba(30, 215, 96, 0.3) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1) !important;
 }
 
 /* Dropdown styling */
@@ -243,14 +243,16 @@ select.neo-glass-input option {
   border-radius: 2rem;
   font-weight: 600;
   font-size: 0.9rem;
-  border: none;
+  border: 1px solid rgba(255, 255, 255, 0.15);
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-  background: var(--neo-primary);
-  color: var(--neo-black);
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--neo-white);
   position: relative;
   overflow: hidden;
   z-index: 1;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
 }
 
 .neo-glass-button::before {
@@ -260,7 +262,7 @@ select.neo-glass-input option {
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(120deg, transparent, var(--neo-primary-glow), transparent);
+  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.2), transparent);
   transform: translateX(-100%);
   transition: 0.6s;
   z-index: -1;
@@ -268,8 +270,9 @@ select.neo-glass-input option {
 
 .neo-glass-button:hover {
   transform: translateY(-3px) scale(1.03);
-  background: var(--neo-primary-bright);
-  box-shadow: 0 5px 15px rgba(30, 215, 96, 0.4);
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
 .neo-glass-button:hover::before {
@@ -281,35 +284,37 @@ select.neo-glass-input option {
 }
 
 .neo-glass-button.secondary {
-  background: rgba(40, 40, 40, 0.5);
-  color: var(--neo-white);
-  border: 1px solid var(--neo-glass-border);
+  background: rgba(30, 30, 30, 0.7);
+  color: var(--neo-light-gray);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(var(--neo-blur-small));
   -webkit-backdrop-filter: blur(var(--neo-blur-small));
 }
 
 .neo-glass-button.secondary::before {
-  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.05), transparent);
 }
 
 .neo-glass-button.secondary:hover {
-  background: rgba(60, 60, 60, 0.6);
+  background: rgba(40, 40, 40, 0.8);
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-  border-color: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: var(--neo-white);
 }
 
 .neo-glass-button.tertiary {
   background: transparent;
-  color: var(--neo-white);
-  border: 1px solid var(--neo-glass-border);
+  color: var(--neo-light-gray);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(var(--neo-blur-small));
   -webkit-backdrop-filter: blur(var(--neo-blur-small));
 }
 
 .neo-glass-button.tertiary:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.15);
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  color: var(--neo-white);
 }
 
 /* Navigation styles */
@@ -335,7 +340,7 @@ select.neo-glass-input option {
 
 .neo-glass-nav-item.active {
   color: var(--neo-white);
-  background: rgba(30, 215, 96, 0.2);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 /* Header and sidebar */
@@ -402,9 +407,9 @@ select.neo-glass-input option {
   border-radius: 1rem;
   font-size: 0.75rem;
   font-weight: 500;
-  background: rgba(30, 215, 96, 0.2);
-  color: var(--neo-primary-bright);
-  border: 1px solid rgba(30, 215, 96, 0.4);
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--neo-white);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 /* Tables */
@@ -508,7 +513,7 @@ select.neo-glass-input option {
 }
 
 .neo-glass-tab.active {
-  color: var(--neo-primary);
+  color: var(--neo-white);
 }
 
 .neo-glass-tab.active::after {
@@ -518,7 +523,7 @@ select.neo-glass-input option {
   left: 0;
   width: 100%;
   height: 2px;
-  background: var(--neo-primary);
+  background: rgba(255, 255, 255, 0.5);
 }
 
 /* Modals */
