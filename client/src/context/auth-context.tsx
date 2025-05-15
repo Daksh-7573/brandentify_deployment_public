@@ -164,16 +164,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // Use Google display name when available
         name: isGoogleProvider && googleProvider?.displayName ? 
           googleProvider.displayName : 
-          (firebaseUser.displayName || "Firebase User"),
+          (firebaseUser.displayName || null),
         
         // Use Google photo when available
         photoURL: isGoogleProvider && googleProvider?.photoURL ? 
           googleProvider.photoURL : 
           firebaseUser.photoURL,
+          
+        // Add additional profile fields
+        title: null,
+        location: null,
+        
+        // Pass the display name directly to help with the server-side update
+        displayName: isGoogleProvider && googleProvider?.displayName ? 
+          googleProvider.displayName : firebaseUser.displayName,
         
         // Include provider data
         provider: isGoogleProvider ? "google.com" : firebaseUser.providerId || "firebase",
         emailVerified: firebaseUser.emailVerified || false,
+        
+        // For Google accounts, explicitly flag it to enable special handling on the server
+        isGoogleAccount: isGoogleProvider
       };
       
       // Create the user

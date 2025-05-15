@@ -179,8 +179,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const fixedUserData = {
             username: username,
             email: req.body.email || `user_${Date.now()}@example.com`,
-            name: req.body.name || (isGoogleUser ? "Google User" : "Firebase User"),
+            // For Google users, ensure we never use the generic "Google User" name
+            // but instead use their actual display name or leave it blank
+            name: req.body.name || (isGoogleUser ? req.body.displayName || null : "Firebase User"),
+            // Ensure we use the photoURL from Google if available
             photoURL: req.body.photoURL || null,
+            // Additional fields to improve profile data
+            title: req.body.title || null,
+            location: req.body.location || null,
             emailVerified: isGoogleUser, // Google users can be considered verified
           };
           
@@ -192,6 +198,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
             const existingUser = await storage.getUserByUsername(username);
             if (existingUser) {
               console.log("[POST /users] User with username already exists:", username);
+              
+              // For Google users, update existing user with Google profile data if needed
+              if (isGoogleUser && req.body.isGoogleAccount) {
+                console.log("[POST /users] Updating existing user with Google profile data");
+                
+                // Only update fields that are provided and better than what we have
+                const updateData: any = {};
+                
+                // Use display name from Google when available
+                if (req.body.displayName && (!existingUser.name || existingUser.name === "Firebase User")) {
+                  updateData.name = req.body.displayName;
+                }
+                
+                // Use Google email if the existing one is generic
+                if (req.body.email && existingUser.email && existingUser.email.includes("firebase_")) {
+                  updateData.email = req.body.email;
+                }
+                
+                // Use Google photo URL if available and existing one is null
+                if (req.body.photoURL && !existingUser.photoURL) {
+                  updateData.photoURL = req.body.photoURL;
+                }
+                
+                // Only update if we have changes to make
+                if (Object.keys(updateData).length > 0) {
+                  try {
+                    console.log("[POST /users] Updating user with Google data:", updateData);
+                    const updatedUser = await storage.updateUser(existingUser.id, updateData);
+                    return res.status(200).json(updatedUser);
+                  } catch (updateError) {
+                    console.error("[POST /users] Failed to update user with Google data:", updateError);
+                  }
+                }
+              }
+              
               return res.status(200).json(existingUser);
             }
           } catch (usernameCheckError) {
