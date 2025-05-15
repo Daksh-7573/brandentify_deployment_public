@@ -649,10 +649,10 @@ const SearchPage = () => {
 
         {/* Main Tabs: Search vs Smart Connect */}
         <Tabs defaultValue={activeCategory === "smart-connect" ? "smart-connect" : "search"} className="mb-6">
-          <TabsList className="w-full border-b shadow-sm rounded-lg overflow-hidden">
+          <TabsList className="w-full border-b border-gray-700/50 shadow-md rounded-lg overflow-hidden">
             <TabsTrigger 
               value="search" 
-              className="flex items-center justify-center gap-2 flex-1 py-4 data-[state=active]:bg-gradient-to-b data-[state=active]:from-white data-[state=active]:to-gray-50 data-[state=active]:shadow-sm data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary transition-all"
+              className="flex items-center justify-center gap-2 flex-1 py-4 text-gray-300 data-[state=active]:bg-gradient-to-b data-[state=active]:from-white/15 data-[state=active]:to-white/5 data-[state=active]:shadow-sm data-[state=active]:border-b-2 data-[state=active]:border-white/70 data-[state=active]:text-white transition-all"
               onClick={() => activeCategory !== "pulses" && setActiveCategory("pulses")}
             >
               <SearchIcon size={18} />
@@ -660,7 +660,7 @@ const SearchPage = () => {
             </TabsTrigger>
             <TabsTrigger 
               value="smart-connect" 
-              className="flex items-center justify-center gap-2 flex-1 py-4 data-[state=active]:bg-gradient-to-b data-[state=active]:from-white data-[state=active]:to-gray-50 data-[state=active]:shadow-sm data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary transition-all"
+              className="flex items-center justify-center gap-2 flex-1 py-4 text-gray-300 data-[state=active]:bg-gradient-to-b data-[state=active]:from-white/15 data-[state=active]:to-white/5 data-[state=active]:shadow-sm data-[state=active]:border-b-2 data-[state=active]:border-white/70 data-[state=active]:text-white transition-all"
               onClick={() => activeCategory !== "smart-connect" && setActiveCategory("smart-connect")}
             >
               <UserPlus size={18} />
@@ -673,18 +673,18 @@ const SearchPage = () => {
             {/* Search Form */}
             <form onSubmit={handleSearch} className="flex gap-2 mb-6">
               <div className="relative flex-1">
-                <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-primary/60 z-10" size={18} />
+                <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 z-10" size={18} />
                 <input
                   type="search"
                   placeholder="Search pulses, profiles, or hashtags..."
-                  className="w-full rounded-md pl-10 py-2 bg-white border border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 placeholder:text-gray-400 text-gray-800 transition-all"
+                  className="w-full rounded-md pl-10 py-2 bg-gray-800/80 border border-gray-700/50 shadow-sm focus:outline-none focus:ring-1 focus:ring-white/20 focus:border-white/40 placeholder:text-gray-400 text-white transition-all"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
               <button 
                 type="submit"
-                className="px-5 py-2 rounded-md bg-primary text-white hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-sm font-medium transition-all min-w-[100px]"
+                className="px-5 py-2 rounded-md bg-gradient-to-r from-white/80 to-white/90 text-black hover:shadow-md hover:scale-105 hover:from-white/90 hover:to-white focus:outline-none focus:ring-1 focus:ring-white/20 shadow-sm font-medium transition-all min-w-[100px]"
                 disabled={isLoading}
               >
                 {isLoading ? (
@@ -703,24 +703,24 @@ const SearchPage = () => {
 
             {/* Search Category Tabs */}
             <Tabs defaultValue={activeCategory === "smart-connect" ? "pulses" : activeCategory} onValueChange={handleTabChange}>
-              <TabsList className="mb-6 bg-white rounded-full p-1 border border-gray-200 shadow-sm">
+              <TabsList className="mb-6 bg-gray-800/60 rounded-full p-1 border border-gray-700/40 shadow-sm">
                 <TabsTrigger 
                   value="pulses" 
-                  className="flex items-center gap-1.5 py-2 px-4 rounded-full data-[state=active]:bg-primary/5 data-[state=active]:text-primary data-[state=active]:shadow-sm data-[state=active]:border-primary/10 transition-all"
+                  className="flex items-center gap-1.5 py-2 px-4 rounded-full text-gray-300 hover:text-white data-[state=active]:bg-gradient-to-r data-[state=active]:from-white/10 data-[state=active]:to-white/20 data-[state=active]:text-white data-[state=active]:shadow-sm data-[state=active]:border-white/10 transition-all"
                 >
                   <MessageSquare size={16} />
                   <span>Pulses</span>
                 </TabsTrigger>
                 <TabsTrigger 
                   value="profiles" 
-                  className="flex items-center gap-1.5 py-2 px-4 rounded-full data-[state=active]:bg-primary/5 data-[state=active]:text-primary data-[state=active]:shadow-sm data-[state=active]:border-primary/10 transition-all"
+                  className="flex items-center gap-1.5 py-2 px-4 rounded-full text-gray-300 hover:text-white data-[state=active]:bg-gradient-to-r data-[state=active]:from-white/10 data-[state=active]:to-white/20 data-[state=active]:text-white data-[state=active]:shadow-sm data-[state=active]:border-white/10 transition-all"
                 >
                   <Users size={16} />
                   <span>Profiles</span>
                 </TabsTrigger>
                 <TabsTrigger 
                   value="hashtags" 
-                  className="flex items-center gap-1.5 py-2 px-4 rounded-full data-[state=active]:bg-primary/5 data-[state=active]:text-primary data-[state=active]:shadow-sm data-[state=active]:border-primary/10 transition-all"
+                  className="flex items-center gap-1.5 py-2 px-4 rounded-full text-gray-300 hover:text-white data-[state=active]:bg-gradient-to-r data-[state=active]:from-white/10 data-[state=active]:to-white/20 data-[state=active]:text-white data-[state=active]:shadow-sm data-[state=active]:border-white/10 transition-all"
                 >
                   <Hash size={16} />
                   <span>Hashtags</span>
