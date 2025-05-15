@@ -329,7 +329,7 @@ function PulseReactions({ pulse }: PulseReactionsProps) {
               <Label htmlFor="recipient">Recipient</Label>
               <select 
                 id="recipient" 
-                className="w-full rounded-md border border-input p-2"
+                className="w-full rounded-md border border-input bg-gray-800/80 text-white p-2 focus:ring-1 focus:ring-white/20 outline-none"
                 value={shareRecipientId || ""}
                 onChange={(e) => setShareRecipientId(Number(e.target.value) || null)}
               >
@@ -359,7 +359,7 @@ function PulseReactions({ pulse }: PulseReactionsProps) {
             <button 
               onClick={handleShareSubmit} 
               disabled={isLoading}
-              className="flex items-center px-3 py-1.5 rounded-md bg-gradient-to-r from-[#e0e0e0] to-[#ffffff] text-black font-medium text-sm disabled:opacity-50 hover:shadow-md hover:scale-105 transition-all duration-200"
+              className="flex items-center px-3 py-1.5 rounded-md bg-gradient-to-r from-[#e0e0e0] to-[#ffffff] text-black font-medium text-sm disabled:opacity-50 hover:shadow-md hover:scale-110 transition-all duration-200"
             >
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Share
@@ -370,7 +370,7 @@ function PulseReactions({ pulse }: PulseReactionsProps) {
       
       {/* Comments Button */}
       <button 
-        className="text-gray-400 hover:text-white hover:bg-gray-600/30 hover:scale-105 rounded-md px-2 py-1 text-sm flex items-center gap-1.5 transition-all duration-200"
+        className="text-gray-400 hover:text-white hover:bg-gray-600/30 hover:scale-110 hover:shadow-md rounded-md px-2 py-1 text-sm flex items-center gap-1.5 transition-all duration-200"
       >
         <MessageSquare className="h-4 w-4" />
         {formatCount(pulse.comments || 0)}
@@ -506,9 +506,9 @@ function PollVoting({ pulse }: PollVotingProps) {
             </div>
             
             {userVote !== null && (
-              <div className="h-2 bg-gray-700/30 rounded-full overflow-hidden">
+              <div className="h-2 bg-gray-700/30 rounded-full overflow-hidden shadow-inner">
                 <div 
-                  className="h-full bg-white/70 transition-all duration-500 ease-in-out"
+                  className="h-full bg-gradient-to-r from-white/60 to-white/80 transition-all duration-500 ease-in-out"
                   style={{ 
                     width: `${totalVotes > 0 ? (voteCounts[index] || 0) / totalVotes * 100 : 0}%` 
                   }} 
@@ -715,7 +715,7 @@ function ImageCarousel({ pulse }: { pulse: PulseWithUser }) {
                       <div 
                         key={idx} 
                         className={`h-1.5 rounded-full transition-all duration-300 ${
-                          idx === currentImageIndex ? 'w-4 bg-primary' : 'w-1.5 bg-gray-300'
+                          idx === currentImageIndex ? 'w-4 bg-white shadow-sm' : 'w-1.5 bg-gray-300/70'
                         }`}
                       />
                     ))}
