@@ -45,6 +45,7 @@ import {
 } from "@/components/ui/select";
 import { JobTitleCombobox } from "@/components/ui/job-title-combobox";
 import { ProfilePageSkeleton } from "@/components/ui/skeleton-loaders";
+import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
 
 // Define "I am looking for" categories
 const LOOKING_FOR_CATEGORIES = [
@@ -2067,15 +2068,20 @@ export default function Profile() {
 
       {/* Main Content */}
       <div className="flex flex-1 overflow-hidden pt-16"> {/* Added padding-top for fixed header */}
-        {/* Sidebar */}
-        
-
-        {/* Center content */}
-        <div className="flex-1 overflow-auto p-6 bg-gray-50">
-          <div className="mx-auto max-w-3xl">
-            <div className="flex items-center justify-between mb-6">
-              <h1 className="text-2xl font-semibold text-gray-900">Profile</h1>
-              <div className="flex items-center gap-4">
+        {/* Main content area */}
+        <div className="flex-1 overflow-auto">
+          <NeoGlassLayout className="mt-3 mx-6">
+            <NeoGlassSection>
+              {/* Main content */}
+              <div className="flex-1 max-w-4xl mx-auto">
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h1 className="text-3xl font-bold tracking-tight text-white">Profile</h1>
+                    <p className="text-white/80 mt-1">
+                      Manage your professional information and career details
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-4">
                 <Button 
                   onClick={() => {
                     // Create a loading state in the button
@@ -2318,7 +2324,7 @@ export default function Profile() {
                 Sign Out
               </Button>
             </div>
-          </div>
+          </NeoGlassLayout>
         </div>
       </div>
       
