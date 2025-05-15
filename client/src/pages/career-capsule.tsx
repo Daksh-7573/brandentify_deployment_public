@@ -769,14 +769,14 @@ export default function CareerCapsulePage() {
                               </div>
                             </div>
                           ) : (
-                            <p className="text-xs italic mt-2">No tasks defined for this milestone</p>
+                            <p className="text-xs italic mt-2 text-gray-400">No tasks defined for this milestone</p>
                           )}
                         </div>
                       );
                     })}
                   </div>
                 ) : (
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-gray-300 p-3 bg-gray-800/30 backdrop-blur-sm rounded-lg">
                     {generateMilestones.isPending 
                       ? "Generating milestones..." 
                       : "No milestones yet. Click the button above to have Musk AI generate personalized milestones for your career goal."}
