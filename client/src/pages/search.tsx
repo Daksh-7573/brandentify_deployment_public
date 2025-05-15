@@ -799,10 +799,10 @@ const SearchPage = () => {
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center py-12 border rounded-lg bg-gray-50">
-                    <MessageSquare className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                    <h3 className="text-lg font-medium">No pulses found</h3>
-                    <p className="text-gray-500 mt-2">
+                  <div className="text-center py-12 border border-white/10 rounded-lg bg-gray-900/60 backdrop-blur-md shadow-xl">
+                    <MessageSquare className="mx-auto h-12 w-12 text-white/70 mb-4" />
+                    <h3 className="text-lg font-medium text-white">No pulses found</h3>
+                    <p className="text-gray-300 mt-2">
                       Try a different search term or check for typos
                     </p>
                   </div>
@@ -812,10 +812,10 @@ const SearchPage = () => {
               {/* Profiles Results */}
               <TabsContent value="profiles">
                 {!submittedQuery ? (
-                  <div className="text-center py-12">
-                    <Users className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                    <h3 className="text-lg font-medium">Search for profiles</h3>
-                    <p className="text-gray-500 mt-2">
+                  <div className="text-center py-12 border border-white/10 rounded-lg bg-gray-900/60 backdrop-blur-md shadow-xl">
+                    <Users className="mx-auto h-12 w-12 text-white/70 mb-4" />
+                    <h3 className="text-lg font-medium text-white">Search for profiles</h3>
+                    <p className="text-gray-300 mt-2">
                       Discover professionals across various industries
                     </p>
                   </div>
@@ -895,10 +895,10 @@ const SearchPage = () => {
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center py-12 border rounded-lg bg-gray-50">
-                    <Users className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                    <h3 className="text-lg font-medium">No profiles found</h3>
-                    <p className="text-gray-500 mt-2">
+                  <div className="text-center py-12 border border-white/10 rounded-lg bg-gray-900/60 backdrop-blur-md shadow-xl">
+                    <Users className="mx-auto h-12 w-12 text-white/70 mb-4" />
+                    <h3 className="text-lg font-medium text-white">No profiles found</h3>
+                    <p className="text-gray-300 mt-2">
                       Try a different search term or check for typos
                     </p>
                   </div>
@@ -908,10 +908,10 @@ const SearchPage = () => {
               {/* Hashtags Results */}
               <TabsContent value="hashtags">
                 {!submittedQuery ? (
-                  <div className="text-center py-12">
-                    <Hash className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                    <h3 className="text-lg font-medium">Search for hashtags</h3>
-                    <p className="text-gray-500 mt-2">
+                  <div className="text-center py-12 border border-white/10 rounded-lg bg-gray-900/60 backdrop-blur-md shadow-xl">
+                    <Hash className="mx-auto h-12 w-12 text-white/70 mb-4" />
+                    <h3 className="text-lg font-medium text-white">Search for hashtags</h3>
+                    <p className="text-gray-300 mt-2">
                       Discover trending topics and hashtags across the platform
                     </p>
                   </div>
