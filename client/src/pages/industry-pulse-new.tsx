@@ -707,8 +707,8 @@ function ImageCarousel({ pulse }: { pulse: PulseWithUser }) {
               {images.length > 1 && (
                 <div className="flex flex-col items-center justify-center mt-4 gap-2">
                   <div className="flex items-center gap-2">
-                    <CarouselPrevious className="relative -translate-y-0 -left-0 mr-2 bg-white/90 hover:bg-white shadow-md" />
-                    <CarouselNext className="relative -translate-y-0 -right-0 ml-2 bg-white/90 hover:bg-white shadow-md" />
+                    <CarouselPrevious className="relative -translate-y-0 -left-0 mr-2 bg-white/80 hover:bg-white hover:scale-110 shadow-md transition-all duration-200" />
+                    <CarouselNext className="relative -translate-y-0 -right-0 ml-2 bg-white/80 hover:bg-white hover:scale-110 shadow-md transition-all duration-200" />
                   </div>
                   <div className="flex gap-1 mt-1">
                     {images.map((_, idx) => (
@@ -739,7 +739,7 @@ function ImageCarousel({ pulse }: { pulse: PulseWithUser }) {
           >
             {/* Close button */}
             <button 
-              className="absolute top-4 right-4 z-10 text-white p-2 rounded-full hover:bg-gray-800"
+              className="absolute top-4 right-4 z-10 text-white p-2 rounded-full hover:bg-gray-800/70 hover:scale-110 transition-all duration-200"
               onClick={closeLightbox}
             >
               <X className="w-6 h-6" />
@@ -984,7 +984,7 @@ function SmartRefreshBanner({ hasNewContent, onRefresh, isPremiumContent = false
   
   return (
     <button 
-      className={`w-full py-3 px-4 rounded-lg border backdrop-blur-sm flex items-center justify-center gap-2 mb-4 hover:bg-gray-800/50 transition-all ${bannerClasses}`}
+      className={`w-full py-3 px-4 rounded-lg border backdrop-blur-sm flex items-center justify-center gap-2 mb-4 hover:bg-gray-800/50 hover:scale-[1.02] hover:shadow-lg transition-all duration-200 ${bannerClasses}`}
       onClick={onRefresh}
     >
       <RefreshCw className={`h-4 w-4 ${iconClasses} animate-pulse`} />
