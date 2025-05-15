@@ -1077,7 +1077,7 @@ export default function IndustryPulsePage() {
                 </div>
                 <button 
                   onClick={() => setLocation("/create-pulse")} 
-                  className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-[#e0e0e0] to-[#ffffff] text-black font-medium text-sm"
+                  className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-[#e0e0e0] to-[#ffffff] text-black font-medium text-sm transition-all duration-200 hover:shadow-lg hover:scale-105"
                 >
                   <MessageSquare className="w-4 h-4 mr-2" />
                   Create Pulse
@@ -1154,7 +1154,7 @@ export default function IndustryPulsePage() {
                         {activeTab === "musk-news" ? (
                           <button 
                             onClick={() => setActiveTab("all")} 
-                            className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-[#e0e0e0] to-[#ffffff] text-black font-medium text-sm"
+                            className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-[#e0e0e0] to-[#ffffff] text-black font-medium text-sm transition-all duration-200 hover:shadow-lg hover:scale-105"
                           >
                             <Newspaper className="w-4 h-4 mr-2" />
                             View All Pulses
@@ -1162,7 +1162,7 @@ export default function IndustryPulsePage() {
                         ) : (
                           <button 
                             onClick={() => setLocation("/create-pulse")} 
-                            className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-[#e0e0e0] to-[#ffffff] text-black font-medium text-sm"
+                            className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-[#e0e0e0] to-[#ffffff] text-black font-medium text-sm transition-all duration-200 hover:shadow-lg hover:scale-105"
                           >
                             <MessageSquare className="w-4 h-4 mr-2" />
                             Create Your First Pulse
