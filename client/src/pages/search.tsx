@@ -971,10 +971,10 @@ const SearchPage = () => {
                           value={formData.lookingFor}
                           onValueChange={(value) => setFormData({...formData, lookingFor: value})}
                         >
-                          <SelectTrigger className="w-full bg-gray-800/80 border-gray-700/50 text-white focus:ring-white/20">
+                          <SelectTrigger className="w-full bg-gray-800/90 border-white/10 text-white focus:ring-white/20 focus:border-white/30 backdrop-blur-md">
                             <SelectValue placeholder="What are you looking for?" />
                           </SelectTrigger>
-                          <SelectContent className="max-h-80 bg-gray-800 border-gray-700/50 text-white">
+                          <SelectContent className="max-h-80 bg-gray-900/95 border-white/10 text-white backdrop-blur-md">
                             <SelectGroup>
                               <SelectLabel>Career & Job Seeking</SelectLabel>
                               {LOOKING_FOR_OPTIONS.filter(opt => opt.category === "Career & Job Seeking").map(option => (
@@ -1029,7 +1029,7 @@ const SearchPage = () => {
                           value={formData.jobTitle}
                           onChange={(value) => setFormData({...formData, jobTitle: value})}
                           placeholder="Enter job title"
-                          className="bg-gray-800/80 border-gray-700/50 text-white"
+                          className="w-full bg-gray-800/90 border-white/10 text-white focus:ring-white/20 focus:border-white/30 backdrop-blur-md"
                         />
                       </div>
 
@@ -1039,10 +1039,10 @@ const SearchPage = () => {
                           value={formData.experienceLevel}
                           onValueChange={(value) => setFormData({...formData, experienceLevel: value})}
                         >
-                          <SelectTrigger className="w-full bg-gray-800/80 border-gray-700/50 text-white focus:ring-white/20">
+                          <SelectTrigger className="w-full bg-gray-800/90 border-white/10 text-white focus:ring-white/20 focus:border-white/30 backdrop-blur-md">
                             <SelectValue placeholder="Select experience level" />
                           </SelectTrigger>
-                          <SelectContent className="bg-gray-800 border-gray-700/50 text-white">
+                          <SelectContent className="bg-gray-900/95 border-white/10 text-white backdrop-blur-md">
                             {EXPERIENCE_LEVELS.map(level => (
                               <SelectItem key={level} value={level}>
                                 {level}
@@ -1064,10 +1064,10 @@ const SearchPage = () => {
                             });
                           }}
                         >
-                          <SelectTrigger className="w-full bg-gray-800/80 border-gray-700/50 text-white focus:ring-white/20">
+                          <SelectTrigger className="w-full bg-gray-800/90 border-white/10 text-white focus:ring-white/20 focus:border-white/30 backdrop-blur-md">
                             <SelectValue placeholder="Select industry" />
                           </SelectTrigger>
-                          <SelectContent className="bg-gray-800 border-gray-700/50 text-white">
+                          <SelectContent className="bg-gray-900/95 border-white/10 text-white backdrop-blur-md">
                             {INDUSTRIES.map(industry => (
                               <SelectItem key={industry} value={industry}>
                                 {industry}
