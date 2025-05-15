@@ -1077,12 +1077,12 @@ export default function IndustryPulsePage() {
               </div>
               
               <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab}>
-                <TabsList className="mb-6">
-                  <TabsTrigger value="all">All</TabsTrigger>
-                  <TabsTrigger value="media-pulse">Media</TabsTrigger>
-                  <TabsTrigger value="poll">Polls</TabsTrigger>
-                  <TabsTrigger value="project">Projects</TabsTrigger>
-                  <TabsTrigger value="musk-news" className="bg-amber-50 text-amber-900 hover:bg-amber-100 data-[state=active]:bg-amber-200">
+                <TabsList className="mb-6 neo-glass-tabs">
+                  <TabsTrigger value="all" className="text-white">All</TabsTrigger>
+                  <TabsTrigger value="media-pulse" className="text-white">Media</TabsTrigger>
+                  <TabsTrigger value="poll" className="text-white">Polls</TabsTrigger>
+                  <TabsTrigger value="project" className="text-white">Projects</TabsTrigger>
+                  <TabsTrigger value="musk-news" className="text-white data-[state=active]:bg-white/20">
                     Musk ⚡
                   </TabsTrigger>
                 </TabsList>
@@ -1157,8 +1157,8 @@ export default function IndustryPulsePage() {
                   ) : (
                     <div className="space-y-6">
                       {filteredPulses.map((pulse: PulseWithUser) => (
-                        <Card key={pulse.id} className="overflow-hidden">
-                          <CardHeader className="pb-3">
+                        <NeoGlassSection key={pulse.id} className="overflow-hidden mb-6">
+                          <div className="pb-3">
                             <div className="flex justify-between">
                               <div className="flex items-start gap-3">
                                 <Avatar className="h-9 w-9">
@@ -1189,10 +1189,10 @@ export default function IndustryPulsePage() {
                                 </div>
                               </div>
                             </div>
-                          </CardHeader>
-                          <CardContent>
-                            <CardTitle className="mb-3">{pulse.title}</CardTitle>
-                            <p className="text-muted-foreground">{pulse.content}</p>
+                          </div>
+                          <div className="px-4 py-2">
+                            <h3 className="text-xl font-semibold mb-3 text-white">{pulse.title}</h3>
+                            <p className="text-white/70">{pulse.content}</p>
                             
                             {/* Render pulse content based on type */}
                             {pulse.type === 'poll' && (
@@ -1210,11 +1210,11 @@ export default function IndustryPulsePage() {
                             {pulse.type === 'project' && (
                               <ProjectDetails pulse={pulse} />
                             )}
-                          </CardContent>
-                          <CardFooter className="flex justify-between pt-0">
+                          </div>
+                          <div className="flex justify-between pt-0 px-4 pb-4">
                             <PulseReactions pulse={pulse} />
-                          </CardFooter>
-                        </Card>
+                          </div>
+                        </NeoGlassSection>
                       ))}
                     </div>
                   )}
