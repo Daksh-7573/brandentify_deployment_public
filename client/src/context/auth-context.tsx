@@ -62,20 +62,53 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const { toast } = useToast();
 
   // Fetch user data from our backend
-  const fetchUserData = async (userId: string | number): Promise<AuthUser | null> => {
+  const fetchUserData = async (userId: string | number, userEmail?: string): Promise<AuthUser | null> => {
     try {
-      // If userId is a Google email username (doesn't contain Firebase UID pattern), 
-      // try to fetch by username
+      // Check if this is a Google/Firebase user
       const isGoogleIdentifier = typeof userId === 'string' && 
-        userId.includes('@') && userId.split('@')[1].includes('.');
-        
-      console.log(`Fetching user data for user ${isGoogleIdentifier ? 'email' : 'ID'}: ${userId}`);
+        (userId.includes('@') && userId.split('@')[1].includes('.'));
+      const isFirebaseUid = typeof userId === 'string' && userId.length > 20;
       
-      // First try direct fetch by ID
-      const response = await apiRequest('GET', `/api/users/${userId}`);
+      console.log(`Fetching user data for user ${isGoogleIdentifier ? 'email' : (isFirebaseUid ? 'Firebase UID' : 'ID')}: ${userId}`);
+      
+      // Include email as query parameter if provided, to help with Google authentication
+      let url = `/api/users/${userId}`;
+      if (userEmail) {
+        console.log(`Including email in user lookup: ${userEmail}`);
+        url += `?email=${encodeURIComponent(userEmail)}`;
+      }
+      
+      // Try to fetch user data
+      const response = await apiRequest('GET', url);
       
       if (response.status === 404) {
         console.log('User not found in backend by direct ID lookup');
+        
+        // If email is available but wasn't in the URL yet, try again with email
+        if (userEmail && !url.includes('email=')) {
+          console.log(`Trying again with email parameter: ${userEmail}`);
+          const retryResponse = await apiRequest('GET', `/api/users/${userId}?email=${encodeURIComponent(userEmail)}`);
+          
+          if (retryResponse.status === 404) {
+            console.log('User not found even with email parameter');
+            return null;
+          }
+          
+          const userData = await retryResponse.json();
+          console.log('Backend user data (found with email parameter):', userData);
+          
+          return {
+            uid: userId.toString(),
+            id: userData.id,
+            username: userData.username,
+            email: userData.email,
+            name: userData.name,
+            photoURL: userData.photoURL || null,
+            title: userData.title,
+            location: userData.location
+          };
+        }
+        
         return null;
       }
       
@@ -165,7 +198,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       // If we get here, just fetch the user data instead
       console.log("Falling back to fetching existing user data");
-      return await fetchUserData(firebaseUser.uid);
+      return await fetchUserData(
+        firebaseUser.uid, 
+        userData.email // Pass the email as well to help with Google auth
+      );
     } catch (error) {
       console.error("Error in createOrUpdateUserInBackend:", error);
       return null;
@@ -212,7 +248,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             
             // Fetch complete user data from backend
             console.log("Fetching user data after redirect");
-            const userData = await fetchUserData(result.user.uid);
+            // Check for Google provider data to get email
+            const googleProvider = result.user.providerData?.find(provider => 
+              provider.providerId === "google.com"
+            );
+            const userEmail = googleProvider?.email || result.user.email;
+            
+            console.log("Using Google email for data lookup if available:", userEmail);
+            const userData = await fetchUserData(result.user.uid, userEmail);
             
             if (userData) {
               console.log("Setting user state with backend data after redirect");
@@ -316,7 +359,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               
               // Then get user data from backend 
               console.log("Fetching user data from backend");
-              const userData = await fetchUserData(firebaseUser.uid);
+              
+              // Check for Google provider data to get email
+              const googleProvider = firebaseUser.providerData?.find(provider => 
+                provider.providerId === "google.com"
+              );
+              const userEmail = googleProvider?.email || firebaseUser.email;
+                
+              console.log(`Fetching user data for user ID: ${firebaseUser.uid}${userEmail ? ` with email: ${userEmail}` : ''}`);
+              const userData = await fetchUserData(firebaseUser.uid, userEmail);
               
               if (userData) {
                 console.log("Setting user state with backend data");
