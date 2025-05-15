@@ -318,9 +318,12 @@ function PulseReactions({ pulse }: PulseReactionsProps) {
       {/* Share Button */}
       <Dialog open={isShareDialogOpen} onOpenChange={setIsShareDialogOpen}>
         <DialogTrigger asChild>
-          <button className="text-gray-400 hover:text-white hover:bg-gray-600/30 hover:scale-110 hover:shadow-md rounded-md px-2 py-1 text-sm flex items-center gap-1.5 transition-all duration-200">
-            <Share className={`h-4 w-4 transition-all duration-200 ${isShareDialogOpen ? "text-white scale-110" : ""}`} />
-            {formatCount(pulse.shareCount || 0)}
+          <button className="relative text-gray-400 hover:text-white hover:bg-gray-600/30 hover:scale-110 hover:shadow-md rounded-md px-2 py-1 text-sm flex items-center gap-1.5 transition-all duration-200 overflow-hidden group">
+            <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-all duration-700 ease-in-out" style={{ transform: 'skewX(-45deg)' }}></span>
+            <span className="relative z-10 flex items-center gap-1.5">
+              <Share className={`h-4 w-4 transition-all duration-200 ${isShareDialogOpen ? "text-white scale-110" : ""}`} />
+              {formatCount(pulse.shareCount || 0)}
+            </span>
           </button>
         </DialogTrigger>
         <DialogContent className="max-w-md bg-gray-900/80 backdrop-blur-sm border-gray-700/50">
@@ -382,10 +385,13 @@ function PulseReactions({ pulse }: PulseReactionsProps) {
       
       {/* Comments Button */}
       <button 
-        className="text-gray-400 hover:text-white hover:bg-gray-600/30 hover:scale-110 hover:shadow-md rounded-md px-2 py-1 text-sm flex items-center gap-1.5 transition-all duration-200"
+        className="relative text-gray-400 hover:text-white hover:bg-gray-600/30 hover:scale-110 hover:shadow-md rounded-md px-2 py-1 text-sm flex items-center gap-1.5 transition-all duration-200 overflow-hidden group"
       >
-        <MessageSquare className="h-4 w-4" />
-        {formatCount(pulse.comments || 0)}
+        <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-all duration-700 ease-in-out" style={{ transform: 'skewX(-45deg)' }}></span>
+        <span className="relative z-10 flex items-center gap-1.5">
+          <MessageSquare className="h-4 w-4" />
+          {formatCount(pulse.comments || 0)}
+        </span>
       </button>
     </div>
   );
@@ -1089,10 +1095,13 @@ export default function IndustryPulsePage() {
                 </div>
                 <button 
                   onClick={() => setLocation("/create-pulse")} 
-                  className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-[#e0e0e0] to-[#ffffff] text-black font-medium text-sm transition-all duration-200 hover:shadow-lg hover:scale-105"
+                  className="relative inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-[#e0e0e0] to-[#ffffff] text-black font-medium text-sm transition-all duration-200 hover:shadow-lg hover:scale-105 overflow-hidden group"
                 >
-                  <MessageSquare className="w-4 h-4 mr-2" />
-                  Create Pulse
+                  <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/70 to-transparent -translate-x-full group-hover:translate-x-full transition-all duration-700 ease-in-out" style={{ transform: 'skewX(-45deg)' }}></span>
+                  <span className="relative z-10 flex items-center">
+                    <MessageSquare className="w-4 h-4 mr-2" />
+                    Create Pulse
+                  </span>
                 </button>
               </div>
               
