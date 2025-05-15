@@ -638,27 +638,27 @@ export default function CareerCapsulePage() {
                       console.log(`Milestone ${index} has ${milestone.tasks ? milestone.tasks.length : 0} tasks`);
                       
                       return (
-                        <div key={milestone.id} className={`border rounded-md p-3 ${
-                          milestone.status === "completed" ? 'border-l-4 border-green-500' : ''
+                        <div key={milestone.id} className={`neo-glass-highlight rounded-lg p-4 ${
+                          milestone.status === "completed" ? 'border-l-2 border-green-500/50' : ''
                         }`}>
                           <div className="flex justify-between items-start">
                             <div className="flex items-center gap-2">
-                              <h4 className="font-medium">{milestone.title}</h4>
+                              <h4 className="font-medium text-white">{milestone.title}</h4>
                               {milestone.status === "completed" && (
-                                <CheckCircle2 className="h-4 w-4 text-green-500" />
+                                <CheckCircle2 className="h-4 w-4 text-green-400" />
                               )}
                             </div>
                             <Badge 
-                              className={getStatusColor(milestone.status)}
+                              className={`${getStatusColor(milestone.status)} neo-glass-badge`}
                             >
                               {milestone.status === "in_progress" ? "In Progress" : 
                                milestone.status === "completed" ? "Completed" : 
                                milestone.status === "abandoned" ? "Abandoned" : "Not Started"}
                             </Badge>
                           </div>
-                          <p className="text-sm mt-1">{milestone.description}</p>
+                          <p className="text-sm mt-1 text-gray-300">{milestone.description}</p>
                           {milestone.targetDate && (
-                            <p className="text-xs text-muted-foreground mt-2">
+                            <p className="text-xs text-gray-400 mt-2">
                               Due: {formatDate(milestone.targetDate as string)}
                             </p>
                           )}
@@ -676,12 +676,12 @@ export default function CareerCapsulePage() {
                                   return (
                                     <>
                                       <div className="flex justify-between text-xs mb-1">
-                                        <span>{completedTasks} of {totalTasks} tasks completed</span>
-                                        <span className="font-medium">{progressPercentage}%</span>
+                                        <span className="text-gray-300">{completedTasks} of {totalTasks} tasks completed</span>
+                                        <span className="font-medium text-white">{progressPercentage}%</span>
                                       </div>
-                                      <div className="w-full bg-muted h-2 rounded-full overflow-hidden mb-3">
+                                      <div className="w-full bg-gray-800/50 h-2 rounded-full overflow-hidden mb-3 backdrop-blur-sm">
                                         <div 
-                                          className="h-full bg-primary transition-all duration-500 ease-in-out" 
+                                          className="h-full bg-white/30 transition-all duration-500 ease-in-out" 
                                           style={{ width: `${progressPercentage}%` }}
                                         />
                                       </div>
@@ -695,7 +695,7 @@ export default function CareerCapsulePage() {
                           {/* Display tasks for this milestone */}
                           {milestone.tasks && milestone.tasks.length > 0 ? (
                             <div className="mt-3">
-                              <h5 className="text-sm font-medium mb-2">Tasks:</h5>
+                              <h5 className="text-sm font-medium mb-2 text-white">Tasks:</h5>
                               <div className="space-y-2">
                                 {milestone.tasks.map((task, taskIndex) => {
                                   console.log(`Rendering task ${taskIndex} for milestone ${index}: id=${task.id}, title=${task.title}`);
@@ -716,10 +716,10 @@ export default function CareerCapsulePage() {
                                   return (
                                     <div 
                                       key={task.id} 
-                                      className={`bg-muted/30 p-2 rounded-sm transition-all duration-300 ${
+                                      className={`bg-gray-800/30 backdrop-blur-[5px] p-3 rounded-lg transition-all duration-300 ${
                                         isBeingToggled ? 'scale-[1.02] shadow-md' : ''
                                       } ${
-                                        task.isCompleted ? 'border-l-4 border-green-500' : ''
+                                        task.isCompleted ? 'border-l-2 border-green-500/50' : ''
                                       }`}
                                     >
                                       <div className="flex items-center justify-between">
@@ -728,9 +728,9 @@ export default function CareerCapsulePage() {
                                             size="icon" 
                                             variant="ghost" 
                                             className={`h-6 w-6 rounded-full transition-colors ${
-                                              task.isCompleted ? 'text-green-600' : 'text-gray-400'
+                                              task.isCompleted ? 'text-green-400' : 'text-gray-300'
                                             } ${
-                                              isBeingToggled ? 'bg-muted/50' : ''
+                                              isBeingToggled ? 'bg-gray-700/50' : ''
                                             }`}
                                             onClick={handleToggleTask}
                                             disabled={toggleTaskCompletion.isPending}
@@ -744,22 +744,22 @@ export default function CareerCapsulePage() {
                                             )}
                                           </Button>
                                           <span className={`font-medium text-sm transition-all ${
-                                            task.isCompleted ? 'line-through text-muted-foreground' : ''
+                                            task.isCompleted ? 'line-through text-gray-400' : 'text-white'
                                           }`}>
                                             {task.title}
                                           </span>
                                         </div>
                                         <Badge 
                                           variant="outline"
-                                          className={`transition-colors ${
-                                            task.isCompleted ? "bg-green-100 text-green-800" : ""
+                                          className={`transition-colors neo-glass-badge ${
+                                            task.isCompleted ? "bg-green-500/10 text-green-300 border-green-500/30" : "text-gray-300 border-gray-700"
                                           }`}
                                         >
                                           {task.isCompleted ? "Completed" : "Pending"}
                                         </Badge>
                                       </div>
                                       <div className={`text-xs mt-1 ml-8 whitespace-pre-line transition-colors ${
-                                        task.isCompleted ? 'text-muted-foreground' : ''
+                                        task.isCompleted ? 'text-gray-400' : 'text-gray-300'
                                       }`}>
                                         {task.description}
                                       </div>
