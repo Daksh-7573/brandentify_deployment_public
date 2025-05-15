@@ -191,12 +191,16 @@ const NeoGlassFormDemo = () => {
                   value={formState.role}
                   onChange={handleChange}
                   className="neo-glass-input"
+                  style={{ 
+                    background: 'rgba(18, 18, 18, 0.7)',
+                    color: 'var(--neo-white)'
+                  }}
                 >
-                  <option value="developer">Developer</option>
-                  <option value="designer">Designer</option>
-                  <option value="manager">Product Manager</option>
-                  <option value="marketer">Marketer</option>
-                  <option value="other">Other</option>
+                  <option value="developer" style={{ backgroundColor: 'rgba(18, 18, 18, 0.95)', color: 'white' }}>Developer</option>
+                  <option value="designer" style={{ backgroundColor: 'rgba(18, 18, 18, 0.95)', color: 'white' }}>Designer</option>
+                  <option value="manager" style={{ backgroundColor: 'rgba(18, 18, 18, 0.95)', color: 'white' }}>Product Manager</option>
+                  <option value="marketer" style={{ backgroundColor: 'rgba(18, 18, 18, 0.95)', color: 'white' }}>Marketer</option>
+                  <option value="other" style={{ backgroundColor: 'rgba(18, 18, 18, 0.95)', color: 'white' }}>Other</option>
                 </select>
               </div>
               

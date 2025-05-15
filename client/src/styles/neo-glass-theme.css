@@ -188,6 +188,12 @@
   box-shadow: 0 0 0 2px rgba(30, 215, 96, 0.3);
 }
 
+/* Dropdown styling */
+select.neo-glass-input option {
+  background-color: rgba(18, 18, 18, 0.95);
+  color: var(--neo-white);
+}
+
 /* Navigation styles */
 .neo-glass-nav {
   display: flex;
