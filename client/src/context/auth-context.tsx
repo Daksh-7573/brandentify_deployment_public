@@ -336,76 +336,63 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
   }, [user, toast]);
 
-  // Sign in with Google - using popup authentication for better compatibility
+  // Sign in with Google - using our optimized popup authentication
   const signInWithGoogle = async () => {
     try {
       setIsLoading(true);
-      console.log("Starting Google sign-in flow with POPUP");
       
-      // Clear any previous auth state attempts
-      localStorage.removeItem('authAttemptInProgress');
+      // Import the enhanced popup authentication utility
+      const { googlePopupAuth, clearAuthAttemptData } = await import('@/utils/auth-popup-fix');
       
-      // Mark an auth attempt in progress to help debug issues
-      localStorage.setItem('authAttemptInProgress', 'true');
-      localStorage.setItem('authAttemptTime', new Date().toISOString());
+      // Clear any previous auth state tracking
+      clearAuthAttemptData();
       
-      // Get current domain info
-      const currentHostname = window.location.hostname;
-      const currentOrigin = window.location.origin;
+      console.log("Starting Google sign-in with enhanced popup authentication");
       
-      console.log("Using popup auth flow with these parameters:", {
-        currentHostname,
-        currentOrigin
-      });
+      // Use our specialized popup authentication function
+      const result = await googlePopupAuth(auth);
+      console.log("Google authentication successful:", result.user);
       
-      // Create a fresh provider for this authentication attempt
-      const freshProvider = new GoogleAuthProvider();
-      freshProvider.addScope('profile');
-      freshProvider.addScope('email');
-      
-      // Use popup authentication which is more reliable across domains
-      console.log("Attempting popup authentication...");
-      try {
-        const result = await signInWithPopup(auth, freshProvider);
-        console.log("Popup authentication successful:", result.user);
+      if (result.user) {
+        // Create or update the user in the backend
+        console.log("Creating/updating user in backend after successful authentication");
+        await createOrUpdateUserInBackend(result.user);
         
-        if (result.user) {
-          // Create or update the user in the backend and get user data
-          console.log("Creating/updating user in backend after popup auth");
-          await createOrUpdateUserInBackend(result.user);
+        // Fetch the complete user data from backend
+        console.log("Fetching user data from backend");
+        const userData = await fetchUserData(result.user.uid);
+        
+        if (userData) {
+          // Set the user in state if we got valid data
+          console.log("Setting user state with backend data");
+          setUser(userData);
           
-          // Fetch user data from backend
-          const userData = await fetchUserData(result.user.uid);
+          // Show welcome toast
+          toast({
+            title: "Signed in successfully",
+            description: `Welcome${userData.name ? ` ${userData.name}` : ''}!`,
+          });
+        } else {
+          // If we couldn't get user data from backend, use a minimal representation
+          console.warn("Could not get user data from backend after authentication");
           
-          if (userData) {
-            console.log("Setting user state with backend data after popup auth:", userData);
-            setUser(userData);
-            toast({
-              title: "Signed in successfully",
-              description: `Welcome${userData.name ? ` ${userData.name}` : ''}!`,
-            });
-          } else {
-            console.error("Failed to get user data from backend after successful authentication");
-            toast({
-              title: "Authentication issue",
-              description: "Signed in, but couldn't load your profile. Please try again.",
-              variant: "destructive"
-            });
-          }
+          // Create a fallback user with minimal data
+          const fallbackUser = {
+            uid: result.user.uid,
+            id: parseInt(result.user.uid.substring(0, 5), 36) || 999,
+            username: result.user.uid,
+            email: result.user.email,
+            name: result.user.displayName,
+            photoURL: result.user.photoURL
+          };
+          
+          setUser(fallbackUser);
+          
+          toast({
+            title: "Signed in with limited data",
+            description: "Welcome! Some profile data may be missing.",
+          });
         }
-      } catch (popupError) {
-        console.error("Popup authentication failed:", popupError);
-        
-        // If popup fails, try redirect as fallback
-        console.log("Falling back to redirect authentication...");
-        
-        // Store current URL for debugging
-        localStorage.setItem('auth_redirect_origin', currentOrigin);
-        localStorage.setItem('auth_redirect_hostname', currentHostname);
-        
-        // Use redirect authentication as fallback
-        await signInWithRedirect(auth, freshProvider);
-        console.log("Redirect initiated");
       }
     } catch (error: any) {
       console.error("Google sign-in error:", error);
@@ -413,14 +400,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Log detailed error information for debugging
       logAuthError(error, "signInWithGoogle");
       
-      // Show error toast for all authentication errors
+      // Check for specific errors and show helpful messages
+      let errorMessage = "There was a problem with Google sign-in. Please try again.";
+      
+      if (error.code === 'auth/popup-blocked') {
+        errorMessage = "The login popup was blocked by your browser. Please allow popups for this site.";
+      } else if (error.code === 'auth/popup-closed-by-user') {
+        errorMessage = "Sign-in was cancelled. Please try again when you're ready.";
+      } else if (error.code === 'auth/unauthorized-domain') {
+        errorMessage = "Authentication isn't configured for this domain. Please contact support.";
+      }
+      
       toast({
         title: "Authentication error",
-        description: "There was a problem with Google sign-in. Please try again.",
+        description: errorMessage,
         variant: "destructive"
       });
-      
-      throw error; // Re-throw for handling in the component
     } finally {
       setIsLoading(false);
     }
