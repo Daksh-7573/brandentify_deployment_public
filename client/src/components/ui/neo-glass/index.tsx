@@ -456,3 +456,96 @@ export const NeoGlassSparkle = ({
     />
   );
 };
+
+// Progress bar component
+interface NeoGlassProgressProps {
+  value: number;
+  max?: number;
+  className?: string;
+}
+
+export const NeoGlassProgress = ({ 
+  value, 
+  max = 100, 
+  className = '' 
+}: NeoGlassProgressProps) => {
+  const percentage = Math.min(100, Math.max(0, (value / max) * 100));
+  
+  return (
+    <div className={`h-2 bg-white/10 rounded-full overflow-hidden ${className}`}>
+      <div 
+        className="h-full bg-primary rounded-full"
+        style={{ width: `${percentage}%` }}
+      />
+    </div>
+  );
+};
+
+// Switch component
+interface NeoGlassSwitchProps {
+  checked: boolean;
+  onChange: () => void;
+  label?: string;
+  className?: string;
+}
+
+export const NeoGlassSwitch = ({ 
+  checked, 
+  onChange, 
+  label, 
+  className = '' 
+}: NeoGlassSwitchProps) => {
+  return (
+    <div className={`flex items-center gap-3 ${className}`}>
+      <button
+        type="button"
+        role="switch"
+        aria-checked={checked}
+        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors 
+                   focus:outline-none focus:ring-2 focus:ring-primary/20 focus:ring-offset-2
+                   ${checked ? 'bg-primary' : 'bg-white/10'}`}
+        onClick={onChange}
+      >
+        <span
+          className={`inline-block h-4 w-4 rounded-full bg-white shadow-lg transform transition-transform
+                     ${checked ? 'translate-x-6' : 'translate-x-1'}`}
+        />
+      </button>
+      {label && <span className="text-white text-sm">{label}</span>}
+    </div>
+  );
+};
+
+// Page container component
+interface NeoPageContainerProps {
+  children: ReactNode;
+  background?: 'gradient' | 'white-room' | 'mixed';
+  className?: string;
+}
+
+export const NeoPageContainer = ({ 
+  children, 
+  background = 'gradient', 
+  className = '' 
+}: NeoPageContainerProps) => {
+  let backgroundClasses = '';
+
+  switch (background) {
+    case 'white-room':
+      backgroundClasses = 'bg-[url(/assets/dark-living-room.jpg)] bg-cover bg-center';
+      break;
+    case 'mixed':
+      backgroundClasses = 'bg-gradient-to-br from-primary/30 to-blue-800/50';
+      break;
+    case 'gradient':
+    default:
+      backgroundClasses = 'bg-gradient-to-br from-[#1a1a1a] to-[#0a0a0a]';
+      break;
+  }
+
+  return (
+    <div className={`min-h-screen ${backgroundClasses} ${className}`}>
+      {children}
+    </div>
+  );
+};
