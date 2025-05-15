@@ -14,7 +14,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectSeparator, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
-import { Search as SearchIcon, Users, MessageSquare, Hash, UserPlus, Star, MapPin, ArrowUpRight, ArrowDownRight, Plus, Check, ChevronRight } from "lucide-react";
+import { Search as SearchIcon, Users, MessageSquare, Hash, UserPlus, Star, MapPin, ArrowUpRight, ArrowDownRight, Plus, Check, ChevronRight, Sparkles, Building, FileCode, Image } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { JobTitleCombobox } from "@/components/ui/job-title-combobox";
 import Header from "@/components/layout/header";
@@ -218,7 +218,7 @@ const SearchPage = () => {
   // Hashtag card component
   const HashtagItem = ({ tag, showFollowButton = true }: { tag: { id: number, name: string, count: number }, showFollowButton?: boolean }) => {
     const [isFollowing, setIsFollowing] = useState(false);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [isFollowLoading, setIsFollowLoading] = useState<boolean>(false);
     
     // Check if user is following this hashtag
     const { data: followData } = useQuery<{ isFollowing: boolean }>({
@@ -253,7 +253,7 @@ const SearchPage = () => {
           return;
         }
         
-        setIsLoading(true);
+        setIsFollowLoading(true);
         const res = await apiRequest({
           method: 'POST',
           url: `/api/hashtags/${tag.id}/follow?userId=${userId}`,
@@ -278,7 +278,7 @@ const SearchPage = () => {
         });
       },
       onSettled: () => {
-        setIsLoading(false);
+        setIsFollowLoading(false);
       }
     });
     
@@ -287,7 +287,7 @@ const SearchPage = () => {
       mutationFn: async () => {
         if (!userId) return;
         
-        setIsLoading(true);
+        setIsFollowLoading(true);
         const res = await apiRequest({
           method: 'DELETE',
           url: `/api/hashtags/${tag.id}/follow?userId=${userId}`,
@@ -311,7 +311,7 @@ const SearchPage = () => {
         });
       },
       onSettled: () => {
-        setIsLoading(false);
+        setIsFollowLoading(false);
       }
     });
     
@@ -338,42 +338,41 @@ const SearchPage = () => {
           </div>
           
           {showFollowButton && userId ? (
-              <button 
-                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all hover:scale-105 flex items-center ${
-                  isFollowing 
-                    ? 'text-white bg-gray-800/80 border border-white/20 hover:bg-gray-700/80 hover:shadow-md' 
-                    : 'bg-white/20 text-white hover:bg-white/30 hover:shadow-md'
-                }`}
-                onClick={handleFollowToggle}
-                disabled={isLoading}
-              >
-                <span className="relative flex items-center justify-center">
-                  {isLoading ? (
-                    <div className="flex items-center">
-                      <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2" />
-                      <span>{isFollowing ? 'Unfollowing...' : 'Following...'}</span>
-                    </div>
-                  ) : (
-                    <div className="flex items-center">
-                      {isFollowing ? (
-                        <span className="flex items-center">
-                          <Check className="h-3.5 w-3.5 mr-1.5" /> Unfollow
-                        </span>
-                      ) : (
-                        <span className="flex items-center">
-                          <Plus className="h-3.5 w-3.5 mr-1.5" /> Follow
-                        </span>
-                      )}
-                    </div>
-                  )}
-                </span>
-              </button>
-            ) : (
-              <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-colors duration-300">
-                <Hash className="h-5 w-5 text-white" />
-              </div>
-            )}
-          </div>
+            <button 
+              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all hover:scale-105 flex items-center ${
+                isFollowing 
+                  ? 'text-white bg-gray-800/80 border border-white/20 hover:bg-gray-700/80 hover:shadow-md' 
+                  : 'bg-white/20 text-white hover:bg-white/30 hover:shadow-md'
+              }`}
+              onClick={handleFollowToggle}
+              disabled={isFollowLoading}
+            >
+              <span className="relative flex items-center justify-center">
+                {isFollowLoading ? (
+                  <div className="flex items-center">
+                    <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2" />
+                    <span>{isFollowing ? 'Unfollowing...' : 'Following...'}</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center">
+                    {isFollowing ? (
+                      <span className="flex items-center">
+                        <Check className="h-3.5 w-3.5 mr-1.5" /> Unfollow
+                      </span>
+                    ) : (
+                      <span className="flex items-center">
+                        <Plus className="h-3.5 w-3.5 mr-1.5" /> Follow
+                      </span>
+                    )}
+                  </div>
+                )}
+              </span>
+            </button>
+          ) : (
+            <div className="h-10 w-10 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-colors duration-300">
+              <Hash className="h-5 w-5 text-white" />
+            </div>
+          )}
         </CardContent>
       </Card>
     );
@@ -982,7 +981,7 @@ const SearchPage = () => {
                       </CardFooter>
                     )}
                   </Card>
-                </div>
+                )}
               </NeoGlassSection>
             </TabsContent>
           </Tabs>
