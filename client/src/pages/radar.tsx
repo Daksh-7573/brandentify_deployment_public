@@ -4,7 +4,8 @@ import { Link } from 'wouter';
 import { UserData } from '@/types/user';
 import { apiRequest } from '@/lib/queryClient';
 import { useAuth } from '@/hooks/use-auth';
-import DashboardLayout from "@/components/layout/dashboard-layout";
+import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
+import Header from "@/components/layout/header";
 import { User as UserIcon } from 'lucide-react';
 
 // Define industry and looking for categories constants
@@ -153,15 +154,19 @@ interface NearbyUser {
 // Placeholder component for when location access is still pending
 const LocationPending = () => (
   <div className="flex flex-col items-center justify-center py-10 space-y-4">
-    <div className="rounded-full bg-amber-100 p-3">
-      <MapPin className="h-8 w-8 text-amber-600" />
+    <div className="rounded-full bg-white/10 p-3 border border-white/20">
+      <MapPin className="h-8 w-8 text-white" />
     </div>
-    <h3 className="text-xl font-medium">Location Access Required</h3>
-    <p className="text-gray-500 text-center max-w-md">
+    <h3 className="text-xl font-medium text-white">Location Access Required</h3>
+    <p className="text-white/80 text-center max-w-md">
       Smart Radar needs access to your location to find nearby professionals.
       Please allow location access when prompted.
     </p>
-    <Button variant="outline" onClick={() => window.location.reload()}>
+    <Button 
+      variant="outline" 
+      onClick={() => window.location.reload()}
+      className="bg-white/10 text-white hover:bg-white/20 border border-white/20"
+    >
       <RefreshCw className="mr-2 h-4 w-4" />
       Retry
     </Button>
@@ -171,11 +176,11 @@ const LocationPending = () => (
 // Placeholder component for when no nearby users are found
 const NoNearbyUsers = () => (
   <div className="flex flex-col items-center justify-center py-10 space-y-4">
-    <div className="rounded-full bg-gray-100 p-3">
-      <Users className="h-8 w-8 text-gray-500" />
+    <div className="rounded-full bg-white/10 p-3 border border-white/20">
+      <Users className="h-8 w-8 text-white" />
     </div>
-    <h3 className="text-xl font-medium">No Professionals Nearby</h3>
-    <p className="text-gray-500 text-center max-w-md">
+    <h3 className="text-xl font-medium text-white">No Professionals Nearby</h3>
+    <p className="text-white/80 text-center max-w-md">
       We couldn't find any professionals in your area right now. 
       Try expanding your search radius or checking back later.
     </p>
@@ -184,64 +189,63 @@ const NoNearbyUsers = () => (
 
 // User card component
 const UserCard = ({ user, onClick }: { user: NearbyUser, onClick: () => void }) => (
-  <Card className="overflow-hidden cursor-pointer hover:shadow-md transition-shadow" onClick={onClick}>
-    <CardContent className="p-4">
-      <div className="flex items-center space-x-4">
-        <Avatar className="h-12 w-12 border">
-          <AvatarImage src={user.photoURL || undefined} alt={user.name || 'User'} />
-          <AvatarFallback>{user.name?.charAt(0) || 'U'}</AvatarFallback>
-        </Avatar>
-        <div className="flex-1 min-w-0">
-          <h4 className="text-sm font-semibold truncate">{user.name || 'Anonymous User'}</h4>
-          {user.title && (
-            <p className="text-xs text-gray-500 truncate">{user.title}</p>
+  <div 
+    className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg overflow-hidden cursor-pointer hover:bg-white/15 transition-all hover:scale-[1.02] hover:shadow-lg p-4 mb-3" 
+    onClick={onClick}
+  >
+    <div className="flex items-center space-x-4">
+      <Avatar className="h-12 w-12 border border-white/30">
+        <AvatarImage src={user.photoURL || undefined} alt={user.name || 'User'} />
+        <AvatarFallback className="bg-white/20 text-white">{user.name?.charAt(0) || 'U'}</AvatarFallback>
+      </Avatar>
+      <div className="flex-1 min-w-0">
+        <h4 className="text-sm font-semibold truncate text-white">{user.name || 'Anonymous User'}</h4>
+        {user.title && (
+          <p className="text-xs text-white/70 truncate">{user.title}</p>
+        )}
+        {user.company && (
+          <p className="text-xs text-white/70 truncate">{user.company}</p>
+        )}
+        <div className="flex items-center gap-2 mt-1">
+          {user.industry && (
+            <Badge variant="secondary" className="text-xs px-1.5 py-0 bg-white/20 text-white border-white/10 hover:bg-white/30">
+              {user.industry}
+            </Badge>
           )}
-          {user.company && (
-            <p className="text-xs text-gray-500 truncate">{user.company}</p>
+          {user.lookingFor && (
+            <Badge variant="outline" className="text-xs px-1.5 py-0 text-white border-white/20 hover:bg-white/10">
+              Looking for: {
+                // Display the human-readable label instead of the value
+                (typeof user.lookingFor === 'string' && 
+                 LOOKING_FOR_CATEGORIES.find(cat => cat.value === user.lookingFor)?.label?.replace(/^[^ ]+ /, '')) || 
+                user.lookingFor
+              }
+            </Badge>
           )}
-          <div className="flex items-center gap-2 mt-1">
-            {user.industry && (
-              <Badge variant="secondary" className="text-xs px-1.5 py-0">
-                {user.industry}
-              </Badge>
-            )}
-            {user.lookingFor && (
-              <Badge variant="outline" className="text-xs px-1.5 py-0">
-                Looking for: {
-                  // Display the human-readable label instead of the value
-                  (typeof user.lookingFor === 'string' && 
-                   LOOKING_FOR_CATEGORIES.find(cat => cat.value === user.lookingFor)?.label?.replace(/^[^ ]+ /, '')) || 
-                  user.lookingFor
-                }
-              </Badge>
-            )}
-          </div>
-        </div>
-        <div className="text-right">
-          <Badge variant="outline" className="flex items-center space-x-1 text-xs">
-            <MapPin className="h-3 w-3" />
-            <span>{user.distance.toFixed(1)} km</span>
-          </Badge>
         </div>
       </div>
-    </CardContent>
-  </Card>
+      <div className="text-right">
+        <Badge variant="outline" className="flex items-center space-x-1 text-xs text-white border-white/20 bg-white/10">
+          <MapPin className="h-3 w-3" />
+          <span>{user.distance.toFixed(1)} km</span>
+        </Badge>
+      </div>
+    </div>
+  </div>
 );
 
 // Loading skeleton for user cards
 const UserCardSkeleton = () => (
-  <Card>
-    <CardContent className="p-4">
-      <div className="flex items-center space-x-4">
-        <Skeleton className="h-12 w-12 rounded-full" />
-        <div className="flex-1 space-y-2">
-          <Skeleton className="h-4 w-3/4" />
-          <Skeleton className="h-3 w-1/2" />
-        </div>
-        <Skeleton className="h-6 w-12" />
+  <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg overflow-hidden p-4 mb-3">
+    <div className="flex items-center space-x-4">
+      <Skeleton className="h-12 w-12 rounded-full bg-white/20" />
+      <div className="flex-1 space-y-2">
+        <Skeleton className="h-4 w-3/4 bg-white/20" />
+        <Skeleton className="h-3 w-1/2 bg-white/20" />
       </div>
-    </CardContent>
-  </Card>
+      <Skeleton className="h-6 w-12 bg-white/20" />
+    </div>
+  </div>
 );
 
 // Demo data for nearby users
@@ -508,71 +512,75 @@ const Radar = () => {
   };
   
   return (
-    <DashboardLayout hideRightSidebar={true}>
-      <div className="container max-w-5xl mx-auto py-8 px-4">
-        <PageTitle>Smart Radar</PageTitle>
+    <div className="bg-gradient-to-b from-gray-900 to-black w-full min-h-screen">
+      <Header />
+      <div className="container max-w-7xl mx-auto pt-24 pb-10 px-4 relative">
+        <NeoGlassLayout>
+            <div className="p-4 md:p-6">
+              <h1 className="text-2xl sm:text-3xl font-bold text-white mb-6">Smart Radar</h1>
+              
+              {/* Location error alert */}
+              {locationError && (
+                <Alert variant="destructive" className="mb-6 bg-red-500/10 border border-red-400/20 text-white">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertTitle>Location Error</AlertTitle>
+                  <AlertDescription>{locationError}</AlertDescription>
+                </Alert>
+              )}
         
-        {/* Location error alert */}
-        {locationError && (
-          <Alert variant="destructive" className="mb-6">
-            <AlertCircle className="h-4 w-4" />
-            <AlertTitle>Location Error</AlertTitle>
-            <AlertDescription>{locationError}</AlertDescription>
-          </Alert>
-        )}
-        
-        {/* Settings card */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <MapPin className="mr-2 h-5 w-5" />
-              <span>Smart Radar Settings</span>
-            </CardTitle>
-            <CardDescription>
-              Connect with professionals near your current location.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-col md:flex-row gap-6">
-              <div className="flex-1 space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label htmlFor="visible">Show me in nearby list</Label>
-                    <p className="text-xs text-gray-500">
-                      Other professionals can discover your profile based on proximity
-                    </p>
-                  </div>
-                  <Switch
-                    id="visible"
-                    checked={visibleInRadar}
-                    onCheckedChange={handleVisibilityToggle}
-                    disabled={updateVisibilityMutation.isPending}
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="radius">Search radius</Label>
-                  <Select value={radius} onValueChange={handleRadiusChange}>
-                    <SelectTrigger id="radius">
-                      <SelectValue placeholder="Select radius" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="1">1 km</SelectItem>
-                      <SelectItem value="5">5 km</SelectItem>
-                      <SelectItem value="10">10 km</SelectItem>
-                      <SelectItem value="25">25 km</SelectItem>
-                      <SelectItem value="50">50 km</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div className="flex items-center justify-between mb-2">
-                  <h4 className="text-sm font-medium">Filter Professionals</h4>
-                  {userData && (
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => {
+              {/* Settings card */}
+              <NeoGlassSection className="mb-6">
+                <div className="p-4">
+                  <h2 className="text-xl font-semibold text-white flex items-center mb-2">
+                    <MapPin className="mr-2 h-5 w-5" />
+                    <span>Smart Radar Settings</span>
+                  </h2>
+                  <p className="text-white/70 mb-4">
+                    Connect with professionals near your current location.
+                  </p>
+                  
+                  <div className="flex flex-col md:flex-row gap-6">
+                    <div className="flex-1 space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-0.5">
+                          <Label htmlFor="visible" className="text-white">Show me in nearby list</Label>
+                          <p className="text-xs text-white/60">
+                            Other professionals can discover your profile based on proximity
+                          </p>
+                        </div>
+                        <Switch
+                          id="visible"
+                          checked={visibleInRadar}
+                          onCheckedChange={handleVisibilityToggle}
+                          disabled={updateVisibilityMutation.isPending}
+                          className="neo-glass-switch"
+                        />
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="radius" className="text-white">Search radius</Label>
+                        <Select value={radius} onValueChange={handleRadiusChange}>
+                          <SelectTrigger id="radius" className="bg-[rgba(18,18,18,0.95)] text-white border-white/20">
+                            <SelectValue placeholder="Select radius" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-[rgba(18,18,18,0.95)] text-white border-white/20">
+                            <SelectItem value="1">1 km</SelectItem>
+                            <SelectItem value="5">5 km</SelectItem>
+                            <SelectItem value="10">10 km</SelectItem>
+                            <SelectItem value="25">25 km</SelectItem>
+                            <SelectItem value="50">50 km</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="text-sm font-medium text-white">Filter Professionals</h4>
+                        {userData && (
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            className="border-white/20 bg-white/10 text-white hover:bg-white/20"
+                            onClick={() => {
                         if (userData.title) setJobTitleFilter(userData.title);
                         if (userData.industry) setIndustryFilter(userData.industry);
                         if (userData.lookingFor) setLookingForFilter(userData.lookingFor);
@@ -677,26 +685,28 @@ const Radar = () => {
                 </Button>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </NeoGlassSection>
         
         {/* Nearby users section */}
-        <div className="mt-8">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold">Nearby Professionals</h2>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={() => refetchNearby()}
-              disabled={isLoadingNearby}
-            >
-              {isLoadingNearby ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <RefreshCw className="h-4 w-4" />
-              )}
-            </Button>
-          </div>
+        <NeoGlassSection className="mt-6">
+          <div className="p-4">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold text-white">Nearby Professionals</h2>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => refetchNearby()}
+                disabled={isLoadingNearby}
+                className="bg-white/10 text-white hover:bg-white/20 border border-white/20"
+              >
+                {isLoadingNearby ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <RefreshCw className="h-4 w-4" />
+                )}
+              </Button>
+            </div>
           
           {locationStatus === 'pending' && <LocationPending />}
           
@@ -729,7 +739,8 @@ const Radar = () => {
               )}
             </>
           )}
-        </div>
+          </div>
+        </NeoGlassSection>
         
         {/* User Quantum Card dialog */}
         <Dialog open={cardOpen} onOpenChange={setCardOpen}>
@@ -794,8 +805,10 @@ const Radar = () => {
             </DialogFooter>
           </DialogContent>
         </Dialog>
-    </div>
-    </DashboardLayout>
+      </div>
+    </NeoGlassLayout>
+  </div>
+  </div>
   );
 };
 
