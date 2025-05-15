@@ -651,10 +651,10 @@ const Radar = () => {
               </div>
               
               <div className="flex-1 space-y-4">
-                <div className="p-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-lg">
+                <div className="p-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-lg shadow-md">
                   <h4 className="text-sm font-medium mb-2 text-white">Your Location Status</h4>
                   <div className="flex items-center">
-                    <div className={`h-2.5 w-2.5 rounded-full mr-2 ${
+                    <div className={`h-2.5 w-2.5 rounded-full mr-2 shadow-sm ${
                       locationStatus === 'granted' ? 'bg-green-500' : 
                       locationStatus === 'denied' ? 'bg-red-500' : 'bg-amber-500'
                     }`} />
@@ -672,7 +672,7 @@ const Radar = () => {
                 
                 <Button 
                   variant="outline" 
-                  className="w-full bg-white/10 text-white hover:bg-white/20 border border-white/20"
+                  className="w-full bg-white/10 text-white hover:bg-white/20 border border-white/20 backdrop-blur-md shadow-md transition-all hover:scale-105"
                   onClick={handleRefreshLocation}
                   disabled={locationStatus !== 'granted' || updateGeoLocationMutation.isPending}
                 >
