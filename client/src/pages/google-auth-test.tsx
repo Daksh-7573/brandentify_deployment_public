@@ -156,13 +156,33 @@ export default function GoogleAuthTest() {
               </div>
               
               <div>
-                <h3 className="font-semibold mb-2">Fixed Issues</h3>
+                <h3 className="font-semibold mb-2">Latest Improvements (May 2025)</h3>
+                <ul className="list-disc list-inside space-y-2 text-sm">
+                  <li>Added email parameter to all fetchUserData calls for Google account lookup reliability</li>
+                  <li>Enhanced detection of Google provider data in the authentication flow</li>
+                  <li>Updated server-side user lookups to prioritize email for Google accounts</li>
+                  <li>Improved error handling in the sign-out process</li>
+                  <li>Added comprehensive logging throughout the authentication process</li>
+                </ul>
+              </div>
+              
+              <div>
+                <h3 className="font-semibold mb-2">Previous Fixes</h3>
                 <ul className="list-disc list-inside space-y-2 text-sm">
                   <li>Enhanced user creation to properly sync Google profile data to backend</li>
                   <li>Added better handling of both Firebase UID and numeric ID in API calls</li>
                   <li>Improved error handling for authentication redirect flow</li>
                   <li>Prevented creation of generic "Firebase User" profiles without proper Google data</li>
                 </ul>
+              </div>
+              
+              <div className="bg-blue-50 p-3 rounded-md mt-4 dark:bg-blue-900/20">
+                <h3 className="font-semibold mb-2 text-blue-800 dark:text-blue-300">Debug Information</h3>
+                <div className="text-xs font-mono bg-white/50 dark:bg-gray-800/50 p-2 rounded overflow-auto max-h-32">
+                  <p>Domain: {window.location.hostname}</p>
+                  <p>Firebase Config: {import.meta.env.VITE_FIREBASE_PROJECT_ID ? "Available" : "Missing"}</p>
+                  <p>Browser Storage: {typeof localStorage !== 'undefined' ? "Available" : "Not Available"}</p>
+                </div>
               </div>
             </div>
           </NeoGlassSection>
