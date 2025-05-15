@@ -499,11 +499,11 @@ export default function CareerCapsulePage() {
                   <span>Your goal has been added to your Career Capsule</span>
                 </li>
                 <li className="flex items-start">
-                  <CheckCircle2 className="mr-2 h-4 w-4 text-primary mt-0.5" />
+                  <CheckCircle2 className="mr-2 h-4 w-4 text-white mt-0.5" />
                   <span>AI-generated milestones have been created to guide your journey</span>
                 </li>
                 <li className="flex items-start">
-                  <CheckCircle2 className="mr-2 h-4 w-4 text-primary mt-0.5" />
+                  <CheckCircle2 className="mr-2 h-4 w-4 text-white mt-0.5" />
                   <span>You can track your progress and update milestones as you complete them</span>
                 </li>
               </ul>
@@ -519,6 +519,7 @@ export default function CareerCapsulePage() {
                   setShowDetailsDialog(true);
                 }
               }}
+              className="neo-glass-button"
             >
               View Goal Details
             </Button>
@@ -528,15 +529,15 @@ export default function CareerCapsulePage() {
       
       {/* Details Dialog */}
       <Dialog open={showDetailsDialog} onOpenChange={setShowDetailsDialog}>
-        <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto neo-glass-modal">
           <DialogHeader>
-            <DialogTitle>
+            <DialogTitle className="text-white">
               {goalDetails && typeof goalDetails === 'object' ? 
                 (goalDetails.goal?.title || goalDetails.title || "Goal Details") : 
                 "Goal Details"
               }
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-gray-300">
               {goalDetails && typeof goalDetails === 'object' ? 
                 (goalDetails.goal?.description || goalDetails.description || "Loading goal details...") : 
                 "Loading goal details..."
@@ -546,22 +547,22 @@ export default function CareerCapsulePage() {
           
           {isLoadingDetails ? (
             <div className="flex items-center justify-center h-40">
-              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-white"></div>
             </div>
           ) : goalDetails ? (
             <div className="space-y-6 py-4">
-              <div className="flex flex-col md:flex-row md:justify-between gap-4">
+              <div className="flex flex-col md:flex-row md:justify-between gap-4 p-4 neo-glass-highlight rounded-lg mb-2">
                 <div className="space-y-1">
-                  <p className="text-sm font-medium">Goal Type</p>
-                  <p className="text-sm">
+                  <p className="text-sm font-medium text-white">Goal Type</p>
+                  <p className="text-sm text-gray-300">
                     {getGoalTypeText(
                       (goalDetails.goal?.goalType || goalDetails.goalType) as GoalType
                     )}
                   </p>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-sm font-medium">Target Date</p>
-                  <p className="text-sm">
+                  <p className="text-sm font-medium text-white">Target Date</p>
+                  <p className="text-sm text-gray-300">
                     {formatDate(
                       (goalDetails.goal?.targetDate || goalDetails.targetDate) as string
                     )}
@@ -572,11 +573,12 @@ export default function CareerCapsulePage() {
               
               <div className="space-y-2">
                 <div className="flex justify-between items-center mb-3">
-                  <h3 className="text-lg font-medium">Milestones</h3>
+                  <h3 className="text-lg font-medium text-white">Milestones</h3>
                   {(!goalDetails || !goalDetails.milestones || 
                     (goalDetails.milestones && goalDetails.milestones.length === 0)) && (
                     <Button 
                       size="sm" 
+                      className="neo-glass-button"
                       onClick={() => {
                         if (selectedGoalId && goalDetails) {
                           console.log("Generating milestones for goal:", selectedGoalId);
@@ -603,15 +605,15 @@ export default function CareerCapsulePage() {
                 </div>
                 
                 {generateMilestones.isPending && (
-                  <Alert className="mb-3 bg-muted/30">
-                    <AlertTitle className="flex items-center">
+                  <div className="mb-3 p-3 rounded-lg neo-glass-highlight">
+                    <div className="flex items-center text-white font-medium mb-1">
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       Musk AI is generating your career milestones
-                    </AlertTitle>
-                    <AlertDescription>
+                    </div>
+                    <p className="text-sm text-gray-300">
                       This may take a moment as Musk analyzes your goal, profile, and current market trends to create personalized milestones.
-                    </AlertDescription>
-                  </Alert>
+                    </p>
+                  </div>
                 )}
                 
                 {/* Debug info about milestones data */}
