@@ -593,24 +593,22 @@ export default function Education() {
   }));
   
   return (
-    <Card className="mb-6">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+    <NeoGlassSection className="mb-6">
+      <div className="flex flex-row items-center justify-between space-y-0 pb-4 mb-4 border-b border-gray-800">
         <div>
-          <CardTitle className="text-xl font-bold">Academic Background</CardTitle>
-          <CardDescription>Add your academic journey</CardDescription>
+          <h2 className="text-xl font-bold text-white">Academic Background</h2>
+          <p className="text-sm text-gray-300">Add your academic journey</p>
         </div>
         <Button
-          variant="outline"
-          size="sm"
-          className="h-8 gap-1"
+          className="neo-glass-button"
           onClick={handleAddEducation}
         >
-          <Plus className="h-3.5 w-3.5" />
+          <Plus className="h-3.5 w-3.5 mr-1" />
           Add Education
         </Button>
-      </CardHeader>
+      </div>
       
-      <CardContent>
+      <div className="p-1">
         {isLoading ? (
           // Loading skeleton with improved components
           <div className="space-y-4">
@@ -620,25 +618,25 @@ export default function Education() {
         ) : educations.length === 0 ? (
           // Empty state
           <div className="py-6 text-center">
-            <GraduationCap className="mx-auto h-10 w-10 text-muted-foreground/50" />
-            <p className="mt-2 text-muted-foreground">No academic background added yet.</p>
+            <GraduationCap className="mx-auto h-10 w-10 text-gray-400/50" />
+            <p className="mt-2 text-gray-400">No academic background added yet.</p>
           </div>
         ) : (
           // Education list
           <div className="space-y-4">
             {educations.map((education, index) => (
-              <div key={education.id || index} className="relative group">
+              <div key={education.id || index} className="neo-glass-card p-4 rounded-lg transition-all hover:translate-y-[-3px]">
                 <div className="mb-1">
                   <div className="flex justify-between items-start">
                     <div className="flex items-center">
-                      <GraduationCap className="h-5 w-5 mr-2 text-muted-foreground flex-shrink-0" />
-                      <h3 className="font-medium text-lg">{education.institution}</h3>
+                      <GraduationCap className="h-5 w-5 mr-2 text-gray-300 flex-shrink-0" />
+                      <h3 className="font-medium text-lg text-white">{education.institution}</h3>
                     </div>
-                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="flex gap-1">
                       <Button 
                         variant="ghost" 
                         size="icon" 
-                        className="h-8 w-8" 
+                        className="h-8 w-8 text-gray-300 hover:text-white hover:bg-gray-800/50" 
                         onClick={() => handleEditEducation(education)}
                       >
                         <Pencil className="h-4 w-4" />
@@ -647,7 +645,7 @@ export default function Education() {
                       <Button 
                         variant="ghost" 
                         size="icon" 
-                        className="h-8 w-8 text-destructive"
+                        className="h-8 w-8 text-red-400 hover:text-red-300 hover:bg-red-900/20"
                         onClick={() => education.id && deleteEducationMutation.mutate(education.id)}
                       >
                         <Trash2 className="h-4 w-4" />
@@ -656,18 +654,18 @@ export default function Education() {
                     </div>
                   </div>
                   
-                  <p className="text-sm text-muted-foreground ml-7">
+                  <p className="text-sm text-gray-300 ml-7">
                     {education.degree}{education.fieldOfStudy ? `, ${education.fieldOfStudy}` : ""}
                   </p>
                   
                   <div className="flex flex-wrap gap-y-1 gap-x-4 mt-1 text-sm ml-7">
                     {education.location && (
-                      <span className="flex items-center text-muted-foreground">
+                      <span className="flex items-center text-gray-300">
                         <MapPin className="h-3.5 w-3.5 mr-1 flex-shrink-0" />
                         {education.location}
                       </span>
                     )}
-                    <span className="flex items-center text-muted-foreground">
+                    <span className="flex items-center text-gray-300">
                       <CalendarIcon className="h-3.5 w-3.5 mr-1 flex-shrink-0" />
                       {formatDate(education.startDate)} - {education.currentlyEnrolled 
                         ? "Present" 
@@ -678,12 +676,12 @@ export default function Education() {
                   {(education.industry || education.domain) && (
                     <div className="flex flex-wrap gap-1 mt-2 ml-7">
                       {education.industry && (
-                        <Badge variant="outline" className="bg-primary/10 text-primary/90">
+                        <Badge className="neo-glass-badge flex items-center">
                           {education.industry}
                         </Badge>
                       )}
                       {education.domain && (
-                        <Badge variant="outline" className="bg-secondary/10">
+                        <Badge className="neo-glass-badge flex items-center">
                           {education.domain}
                         </Badge>
                       )}
@@ -692,8 +690,8 @@ export default function Education() {
                   
                   {education.skillsAcquired && education.skillsAcquired.length > 0 && (
                     <div className="mt-2 ml-7">
-                      <h4 className="text-xs font-medium text-muted-foreground mb-1">Skills & Achievements</h4>
-                      <ul className="list-disc pl-4 text-sm space-y-1">
+                      <h4 className="text-xs font-medium text-white mb-1">Skills & Achievements</h4>
+                      <ul className="list-disc pl-4 text-sm space-y-1 text-gray-300">
                         {education.skillsAcquired.map((skill, i) => (
                           <li key={i}>{skill}</li>
                         ))}
@@ -706,7 +704,7 @@ export default function Education() {
             ))}
           </div>
         )}
-      </CardContent>
+      </div>
       
       {/* Education dialog for adding/editing */}
       <Dialog open={openDialog} onOpenChange={(open) => !open && setOpenDialog(false)}>
@@ -1077,6 +1075,6 @@ export default function Education() {
           </Form>
         </DialogContent>
       </Dialog>
-    </Card>
+    </NeoGlassSection>
   );
 }
