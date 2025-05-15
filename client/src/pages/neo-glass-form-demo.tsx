@@ -215,7 +215,7 @@ const NeoGlassFormDemo = () => {
                       borderRadius: '0.5rem',
                       background: formState.experience === option 
                         ? 'rgba(30, 215, 96, 0.2)' 
-                        : 'rgba(0, 0, 0, 0.2)',
+                        : 'rgba(18, 18, 18, 0.7)',
                       border: `1px solid ${formState.experience === option 
                         ? 'var(--neo-primary)' 
                         : 'var(--neo-glass-border)'}`
@@ -314,7 +314,7 @@ const NeoGlassFormDemo = () => {
               
               <div style={{
                 padding: '0.75rem',
-                background: 'rgba(0, 0, 0, 0.2)',
+                background: 'rgba(18, 18, 18, 0.7)',
                 borderRadius: '0.5rem',
                 marginBottom: '1rem'
               }}>
