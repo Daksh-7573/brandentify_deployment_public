@@ -99,7 +99,7 @@ export default function Header() {
   const photoURL = userData?.photoURL || user?.photoURL;
 
   return (
-    <nav className="bg-white border-b border-gray-200 shadow-sm fixed top-0 left-0 right-0 z-50">
+    <nav className="neo-glass-panel fixed top-0 left-0 right-0 z-50">
       <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
@@ -109,10 +109,10 @@ export default function Header() {
                   className="flex items-center gap-1.5 cursor-pointer group"
                   onClick={() => setLocation('/dashboard')}
                 >
-                  <div className="h-8 w-8 bg-gradient-to-br from-primary to-indigo-600 rounded-lg flex items-center justify-center shadow-sm transition-transform group-hover:scale-105">
-                    <span className="text-white font-bold text-lg">B</span>
+                  <div className="h-8 w-8 bg-gradient-to-br from-white to-white/60 rounded-lg flex items-center justify-center shadow-sm transition-transform group-hover:scale-105">
+                    <span className="text-black font-bold text-lg">B</span>
                   </div>
-                  <span className="text-primary text-xl font-bold cursor-pointer bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/80">
+                  <span className="text-xl font-bold cursor-pointer bg-clip-text text-transparent bg-gradient-to-r from-white to-white/80">
                     Brandentifier
                   </span>
                 </div>
@@ -131,8 +131,8 @@ export default function Header() {
                 size="sm"
                 className={`flex items-center gap-2 font-medium px-3 py-2 h-auto ${
                   isActive('/industry-pulse') 
-                    ? 'text-primary bg-primary/5 hover:bg-primary/10' 
-                    : 'text-gray-800 hover:text-primary hover:bg-gray-50'
+                    ? 'text-white bg-white/10 hover:bg-white/15 neo-glass-nav-item active' 
+                    : 'text-white/80 hover:text-white hover:bg-white/5 neo-glass-nav-item'
                 }`}
                 onClick={() => setLocation('/industry-pulse')}
               >
@@ -145,8 +145,8 @@ export default function Header() {
                 size="sm"
                 className={`flex items-center gap-2 font-medium px-3 py-2 h-auto ${
                   isActive('/search') 
-                    ? 'text-primary bg-primary/5 hover:bg-primary/10' 
-                    : 'text-gray-800 hover:text-primary hover:bg-gray-50'
+                    ? 'text-white bg-white/10 hover:bg-white/15 neo-glass-nav-item active' 
+                    : 'text-white/80 hover:text-white hover:bg-white/5 neo-glass-nav-item'
                 }`}
                 onClick={() => setLocation('/search')}
               >
@@ -161,8 +161,8 @@ export default function Header() {
                 size="sm" 
                 className={`flex items-center gap-2 font-medium px-3 py-2 h-auto ${
                   isActive('/radar') 
-                    ? 'text-primary bg-primary/5 hover:bg-primary/10' 
-                    : 'text-gray-800 hover:text-primary hover:bg-gray-50'
+                    ? 'text-white bg-white/10 hover:bg-white/15 neo-glass-nav-item active' 
+                    : 'text-white/80 hover:text-white hover:bg-white/5 neo-glass-nav-item'
                 }`}
                 onClick={() => setLocation('/radar')}
               >
@@ -176,8 +176,8 @@ export default function Header() {
                 size="sm" 
                 className={`flex items-center gap-2 font-medium px-3 py-2 h-auto ${
                   isActive('/brand-quests') || isActive('/career-quests')
-                    ? 'text-primary bg-primary/5 hover:bg-primary/10' 
-                    : 'text-gray-800 hover:text-primary hover:bg-gray-50'
+                    ? 'text-white bg-white/10 hover:bg-white/15 neo-glass-nav-item active' 
+                    : 'text-white/80 hover:text-white hover:bg-white/5 neo-glass-nav-item'
                 }`}
                 onClick={() => setLocation('/brand-quests')}
               >
@@ -190,8 +190,8 @@ export default function Header() {
                 size="sm" 
                 className={`flex items-center gap-2 font-medium px-3 py-2 h-auto ${
                   isActive('/career-capsule') 
-                    ? 'text-primary bg-primary/5 hover:bg-primary/10' 
-                    : 'text-gray-800 hover:text-primary hover:bg-gray-50'
+                    ? 'text-white bg-white/10 hover:bg-white/15 neo-glass-nav-item active' 
+                    : 'text-white/80 hover:text-white hover:bg-white/5 neo-glass-nav-item'
                 }`}
                 onClick={() => setLocation('/career-capsule')}
               >
@@ -205,8 +205,8 @@ export default function Header() {
                 size="sm" 
                 className={`flex items-center gap-2 font-medium px-3 py-2 h-auto ${
                   isActive('/privacy') 
-                    ? 'text-primary bg-primary/5 hover:bg-primary/10' 
-                    : 'text-gray-800 hover:text-primary hover:bg-gray-50'
+                    ? 'text-white bg-white/10 hover:bg-white/15 neo-glass-nav-item active' 
+                    : 'text-white/80 hover:text-white hover:bg-white/5 neo-glass-nav-item'
                 }`}
                 onClick={() => setLocation('/privacy')}
               >
