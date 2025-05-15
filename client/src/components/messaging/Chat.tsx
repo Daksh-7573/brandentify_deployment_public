@@ -19,7 +19,13 @@ import {
   MessageSquare, 
   MessageCircleMore,
   UserRound,
-  ChevronRight
+  ChevronRight,
+  Music2,
+  Home,
+  LibraryBig,
+  Plus,
+  X,
+  ChevronLeft
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -85,199 +91,146 @@ const Chat: React.FC<{ userId: number }> = ({ userId }) => {
   const otherUser = currentConversation?.participants?.find(p => p.userId !== userId);
 
   return (
-    <div className="h-full flex flex-col md:flex-row overflow-hidden bg-gradient-to-br from-background to-muted/30">
-      {/* Mobile header if conversation is selected */}
-      {currentConversation && (
-        <div className="md:hidden p-4 border-b bg-background/80 backdrop-blur-sm flex items-center">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setCurrentConversation(null)}
-            className="mr-3 rounded-full hover:bg-primary/10"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          
-          <Avatar className="h-9 w-9 mr-3 ring-2 ring-primary/20 ring-offset-2 ring-offset-background">
-            <AvatarImage 
-              src={otherUser?.photoURL || undefined} 
-              alt={otherUser?.userName || 'User'} 
-            />
-            <AvatarFallback className="bg-primary/10 text-primary font-medium">
-              {otherUser?.userName?.[0]?.toUpperCase() || 'U'}
-            </AvatarFallback>
-          </Avatar>
-          
-          <div>
-            <h2 className="font-semibold line-clamp-1">
-              {otherUser?.userName || 'Conversation'}
-            </h2>
-            {otherUser?.title && (
-              <p className="text-xs text-muted-foreground line-clamp-1">
-                {otherUser.title}
-              </p>
-            )}
+    <>
+      {/* Spotify-style layout with sidebar, main content, and right sidebar */}
+      <div className="neo-spotify-sidebar">
+        <div className="sidebar-top">
+          <div className="user-profile">
+            <div className="neo-spotify-avatar">
+              <UserRound className="w-5 h-5 text-spotify-white" />
+            </div>
+            <div className="user-info">
+              <div className="user-name">My Messages</div>
+              <div className="user-type">Professional Network</div>
+            </div>
           </div>
-        </div>
-      )}
-      
-      {/* Side panel with conversations */}
-      <div className={`${
-        currentConversation ? 'hidden md:block' : ''
-      } border-r md:w-96 h-full bg-background/70 backdrop-blur-sm`}>
-        <div className="p-4 border-b flex flex-col">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="font-semibold text-lg flex items-center">
-              <MessageCircleMore className="h-5 w-5 mr-2 text-primary" />
+          
+          <div className="sidebar-nav">
+            <div className="sidebar-item active">
+              <Home className="w-4 h-4 mr-2" />
               Messages
-            </h2>
-            <Button
-              onClick={() => setIsNewConversationModalOpen(true)}
-              variant="outline" 
-              size="sm"
-              className="gap-1 border-primary/30 text-primary hover:bg-primary/10 hover:text-primary"
-            >
-              <UserRound className="h-3.5 w-3.5" />
-              <span>New</span>
-            </Button>
+            </div>
+            <div className="sidebar-actions">
+              <button className="sidebar-action-btn">
+                <Plus className="w-4 h-4" onClick={() => setIsNewConversationModalOpen(true)} />
+              </button>
+            </div>
           </div>
           
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search conversations..."
-              className="pl-9 bg-muted/50"
-            />
+          <div className="sidebar-tabs">
+            <div className="sidebar-tab active">Recent</div>
+            <div className="sidebar-tab">Unread</div>
+            <div className="sidebar-tab">All</div>
           </div>
         </div>
         
-        <Tabs defaultValue="all" className="w-full">
-          <div className="px-4 pt-2">
-            <TabsList className="w-full grid grid-cols-2">
-              <TabsTrigger value="all">All</TabsTrigger>
-              <TabsTrigger value="unread">Unread</TabsTrigger>
-            </TabsList>
-          </div>
-          
-          <TabsContent value="all" className="mt-0">
-            <ScrollArea className="h-[calc(100vh-170px)]">
-              <ConversationList onNewConversation={() => setIsNewConversationModalOpen(true)} />
-            </ScrollArea>
-          </TabsContent>
-          
-          <TabsContent value="unread" className="mt-0">
-            <ScrollArea className="h-[calc(100vh-170px)]">
-              <div className="py-8 px-4 text-center">
-                <MessageSquare className="h-10 w-10 mx-auto text-muted-foreground mb-3 opacity-70" />
-                <p className="text-muted-foreground">No unread messages</p>
-              </div>
-            </ScrollArea>
-          </TabsContent>
-        </Tabs>
+        <div className="sidebar-playlists">
+          <ConversationList onNewConversation={() => setIsNewConversationModalOpen(true)} />
+        </div>
       </div>
       
-      {/* Message area */}
-      <div className={`${
-        !currentConversation ? 'hidden md:flex' : 'flex'
-      } flex-col flex-1 h-full`}>
+      <div className="neo-spotify-main">
         {currentConversation ? (
           <>
-            {/* Desktop header */}
-            <div className="hidden md:flex p-4 border-b bg-background/80 backdrop-blur-sm items-center">
-              <Avatar className="h-10 w-10 mr-3 ring-2 ring-primary/20 ring-offset-2 ring-offset-background">
-                <AvatarImage 
-                  src={otherUser?.photoURL || undefined} 
-                  alt={otherUser?.userName || 'User'} 
-                />
-                <AvatarFallback className="bg-primary/10 text-primary font-medium">
-                  {otherUser?.userName?.[0]?.toUpperCase() || 'U'}
-                </AvatarFallback>
-              </Avatar>
-              
-              <div className="flex-1">
-                <div className="flex items-center">
-                  <h2 className="font-semibold">
-                    {otherUser?.userName || 'Conversation'}
-                  </h2>
-                  <Badge 
-                    variant="outline" 
-                    className="ml-2 text-xs px-1.5 border-primary/30 text-primary bg-primary/5"
+            {/* Message header */}
+            <div className="neo-spotify-header">
+              <div className="flex items-center">
+                <div className="header-nav mr-4 md:hidden">
+                  <button 
+                    className="header-nav-btn"
+                    onClick={() => setCurrentConversation(null)}
                   >
-                    Connected
-                  </Badge>
+                    <ChevronLeft className="h-4 w-4" />
+                  </button>
                 </div>
-                {otherUser?.title && (
-                  <p className="text-sm text-muted-foreground">
-                    {otherUser.title}
-                  </p>
-                )}
+                
+                <div className="neo-spotify-avatar">
+                  <AvatarImage 
+                    src={otherUser?.photoURL || undefined} 
+                    alt={otherUser?.userName || 'User'} 
+                  />
+                  <span className="avatar-placeholder">
+                    {otherUser?.userName?.[0]?.toUpperCase() || 'U'}
+                  </span>
+                </div>
+                
+                <div className="ml-3">
+                  <div className="font-semibold text-sm">
+                    {otherUser?.userName || 'Conversation'}
+                  </div>
+                  {otherUser?.title && (
+                    <div className="text-xs text-spotify-light-gray">
+                      {otherUser.title}
+                    </div>
+                  )}
+                </div>
               </div>
               
-              <div>
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  className="text-muted-foreground hover:text-foreground"
-                >
-                  View Profile
-                </Button>
+              <div className="flex items-center">
+                <button className="sidebar-action-btn ml-3">
+                  <Users className="w-4 h-4" />
+                </button>
               </div>
             </div>
             
-            {/* Messages area with custom styling */}
-            <ScrollArea 
-              className="flex-1 p-4 bg-gradient-to-b from-background/50 to-muted/20"
-              ref={scrollRef}
-            >
+            {/* Message content */}
+            <div className="neo-spotify-content" ref={scrollRef}>
               <MessageList />
-            </ScrollArea>
+            </div>
             
-            {/* Input area */}
-            <div className="p-4 border-t bg-background/80 backdrop-blur-sm">
+            {/* Message input */}
+            <div className="p-4 border-t border-spotify-glass-border backdrop-filter backdrop-blur-[15px] bg-spotify-glass-bg">
               <MessageInput />
             </div>
           </>
         ) : (
-          <div className="h-full flex items-center justify-center p-6 text-center">
+          <div className="neo-spotify-content flex items-center justify-center text-center">
             <div className="max-w-md">
-              <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-6">
-                <MessageSquare className="h-10 w-10 text-primary" />
+              <div className="w-20 h-20 mx-auto rounded-full bg-spotify-glass-highlight flex items-center justify-center mb-6">
+                <MessageSquare className="h-10 w-10 text-spotify-white" />
               </div>
-              <h3 className="text-2xl font-bold mb-2 bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">Connect & Collaborate</h3>
-              <p className="text-muted-foreground mb-8 text-lg">
+              <h3 className="text-2xl font-bold mb-2 text-spotify-white">Connect & Collaborate</h3>
+              <p className="text-spotify-light-gray mb-8 text-lg">
                 Start meaningful conversations with professionals in your network
               </p>
-              <Button 
+              <button 
                 onClick={() => setIsNewConversationModalOpen(true)}
-                size="lg"
-                className="px-6 font-medium rounded-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 transition-all duration-300"
+                className="px-6 py-3 rounded-full bg-spotify-white text-spotify-black hover:scale-105 transition-transform font-medium"
               >
                 Find professionals
-                <ChevronRight className="ml-1 h-4 w-4" />
-              </Button>
+                <ChevronRight className="ml-1 h-4 w-4 inline-block" />
+              </button>
             </div>
           </div>
         )}
       </div>
       
-      {/* New conversation modal with enhanced design */}
+      {/* New conversation modal with Spotify style */}
       <Dialog open={isNewConversationModalOpen} onOpenChange={setIsNewConversationModalOpen}>
-        <DialogContent className="sm:max-w-md border border-primary/20">
+        <DialogContent className="sm:max-w-md border-none bg-spotify-glass-bg backdrop-filter backdrop-blur-[15px] text-spotify-white">
           <DialogHeader>
-            <DialogTitle className="text-xl font-bold flex items-center">
-              <UserRound className="h-5 w-5 mr-2 text-primary" />
-              Connect with Professionals
-            </DialogTitle>
+            <div className="flex items-center justify-between">
+              <DialogTitle className="text-xl font-bold flex items-center text-spotify-white">
+                <UserRound className="h-5 w-5 mr-2" />
+                Connect with Professionals
+              </DialogTitle>
+              <button 
+                className="w-8 h-8 rounded-full bg-spotify-glass-bg flex items-center justify-center"
+                onClick={() => setIsNewConversationModalOpen(false)}
+              >
+                <X className="w-4 h-4 text-spotify-light-gray" />
+              </button>
+            </div>
           </DialogHeader>
           
           <div className="py-4">
             <div className="relative mb-6">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-spotify-light-gray" />
+              <input
                 placeholder="Find people by name or role..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-9 bg-muted/30 border-primary/20 focus-visible:ring-primary/30"
+                className="w-full px-10 py-3 bg-spotify-gray/50 rounded-full text-spotify-white border-none focus:outline-none focus:ring-2 focus:ring-spotify-light-gray/30"
               />
             </div>
             
@@ -285,66 +238,59 @@ const Chat: React.FC<{ userId: number }> = ({ userId }) => {
               {loadingUsers ? (
                 <div className="space-y-3">
                   {[1, 2, 3].map((i) => (
-                    <Card key={i} className="bg-muted/20 border-primary/10 overflow-hidden">
-                      <CardContent className="p-4 flex items-center space-x-3">
-                        <div className="w-12 h-12 rounded-full bg-primary/5 animate-pulse" />
-                        <div className="space-y-2 flex-1">
-                          <div className="h-4 bg-primary/5 animate-pulse rounded-full w-1/2" />
-                          <div className="h-3 bg-primary/5 animate-pulse rounded-full w-1/3" />
-                        </div>
-                      </CardContent>
-                    </Card>
+                    <div key={i} className="p-4 bg-spotify-glass-highlight rounded-lg flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-full bg-spotify-gray animate-pulse" />
+                      <div className="space-y-2 flex-1">
+                        <div className="h-4 bg-spotify-gray animate-pulse rounded-full w-1/2" />
+                        <div className="h-3 bg-spotify-gray animate-pulse rounded-full w-1/3" />
+                      </div>
+                    </div>
                   ))}
                 </div>
               ) : filteredUsers.length > 0 ? (
                 <div className="space-y-2">
                   {filteredUsers.map((user) => (
-                    <Card 
+                    <div 
                       key={user.id} 
-                      className="overflow-hidden border border-primary/10 hover:border-primary/30 transition-all duration-300 group"
+                      className="p-4 bg-spotify-glass-highlight hover:bg-spotify-glass-highlight/80 rounded-lg flex items-center gap-3 transition-all cursor-pointer group"
+                      onClick={() => handleStartConversation(user.id)}
                     >
-                      <CardContent 
-                        className="p-4 flex items-center cursor-pointer" 
-                        onClick={() => handleStartConversation(user.id)}
+                      <div className="neo-spotify-avatar" style={{width: '48px', height: '48px'}}>
+                        <AvatarImage src={user.photoURL || undefined} alt={user.name || 'User'} />
+                        <span className="avatar-placeholder">
+                          {(user.name?.[0] || user.username?.[0] || 'U').toUpperCase()}
+                        </span>
+                      </div>
+                      
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-semibold truncate flex items-center text-spotify-white">
+                          {user.name || user.username}
+                        </h4>
+                        {user.title && (
+                          <p className="text-sm text-spotify-light-gray truncate mt-0.5">
+                            {user.title}
+                          </p>
+                        )}
+                      </div>
+                      
+                      <button 
+                        className="ml-2 px-4 py-2 rounded-full bg-spotify-green text-spotify-black text-xs font-medium opacity-0 group-hover:opacity-100 transition-all"
                       >
-                        <Avatar className="h-12 w-12 ring-2 ring-primary/10 group-hover:ring-primary/30 transition-all duration-300 mr-4">
-                          <AvatarImage src={user.photoURL || undefined} alt={user.name || 'User'} />
-                          <AvatarFallback className="bg-primary/10 text-primary font-medium">
-                            {(user.name?.[0] || user.username?.[0] || 'U').toUpperCase()}
-                          </AvatarFallback>
-                        </Avatar>
-                        
-                        <div className="flex-1 min-w-0">
-                          <h4 className="font-semibold truncate flex items-center">
-                            {user.name || user.username}
-                          </h4>
-                          {user.title && (
-                            <p className="text-sm text-muted-foreground truncate mt-0.5">
-                              {user.title}
-                            </p>
-                          )}
-                        </div>
-                        
-                        <Button 
-                          size="sm" 
-                          className="ml-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-primary/10 hover:bg-primary/20 text-primary border-0"
-                        >
-                          <MessageSquare className="h-4 w-4 mr-1" />
-                          Connect
-                        </Button>
-                      </CardContent>
-                    </Card>
+                        <MessageSquare className="h-3 w-3 inline-block mr-1" />
+                        Connect
+                      </button>
+                    </div>
                   ))}
                 </div>
               ) : (
                 <div className="flex flex-col items-center justify-center py-10 px-4 text-center">
-                  <div className="w-16 h-16 rounded-full bg-primary/5 flex items-center justify-center mb-4">
-                    <Users className="h-8 w-8 text-primary/40" />
+                  <div className="w-16 h-16 rounded-full bg-spotify-glass-highlight flex items-center justify-center mb-4">
+                    <Users className="h-8 w-8 text-spotify-white/40" />
                   </div>
-                  <p className="text-muted-foreground font-medium mb-1">
+                  <p className="text-spotify-white font-medium mb-1">
                     {searchTerm ? 'No matching users found' : 'No other users available'}
                   </p>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-spotify-light-gray">
                     {searchTerm ? 'Try a different search term' : 'Invite colleagues to join Brandentifier'}
                   </p>
                 </div>
@@ -353,7 +299,7 @@ const Chat: React.FC<{ userId: number }> = ({ userId }) => {
           </div>
         </DialogContent>
       </Dialog>
-    </div>
+    </>
   );
 };
 

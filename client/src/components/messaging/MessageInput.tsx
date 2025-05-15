@@ -74,100 +74,58 @@ const MessageInput: React.FC = () => {
     <div className="w-full relative">
       <div className="flex items-end gap-2 relative">
         <div className="flex-1 relative">
-          <Textarea
+          <textarea
             ref={textareaRef}
             value={message}
             onChange={handleTextareaChange}
             onKeyDown={handleKeyDown}
             placeholder="Type your message..."
             className={cn(
-              "resize-none py-3 px-4 pr-12 min-h-[50px] max-h-[150px] overflow-y-auto",
-              "rounded-2xl bg-muted/20 backdrop-blur-sm focus:bg-muted/30 transition-colors",
-              "border-muted/30 focus-visible:border-primary/30 focus-visible:ring-1 focus-visible:ring-primary/20",
-              "placeholder:text-muted-foreground/60"
+              "resize-none py-3 px-4 pr-12 min-h-[50px] max-h-[150px] overflow-y-auto w-full",
+              "rounded-full bg-spotify-gray/40 text-spotify-white",
+              "border-spotify-glass-border focus:border-spotify-light-gray/30",
+              "focus:outline-none focus:ring-1 focus:ring-spotify-light-gray/30",
+              "placeholder:text-spotify-light-gray/60"
             )}
             disabled={!currentConversation || !isConnected}
           />
           
-          <div className="absolute right-3 bottom-2.5 flex items-center gap-1.5">
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button 
-                        type="button" 
-                        size="icon" 
-                        variant="ghost" 
-                        className="h-8 w-8 rounded-full hover:bg-primary/10 text-muted-foreground"
-                        disabled={!currentConversation || !isConnected}
-                      >
-                        <Smile className="h-5 w-5" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-80 p-0">
-                      <div className="p-4 text-center text-sm text-muted-foreground">
-                        Emoji picker coming soon
-                      </div>
-                    </PopoverContent>
-                  </Popover>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Add emoji</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+          <div className="absolute right-3 bottom-3 flex items-center">
+            <button
+              type="button"
+              className="text-spotify-light-gray hover:text-spotify-white transition-colors"
+              disabled={!currentConversation || !isConnected}
+            >
+              <Smile className="h-5 w-5" />
+            </button>
           </div>
         </div>
         
-        <div className="flex gap-1.5">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  type="button"
-                  size="icon"
-                  variant="ghost"
-                  className="h-10 w-10 rounded-full hover:bg-primary/10 text-muted-foreground hidden md:flex"
-                  disabled={!currentConversation || !isConnected}
-                >
-                  <Paperclip className="h-5 w-5" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Attach file</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+        <div className="flex items-center">
+          <button
+            type="button"
+            className="w-8 h-8 flex items-center justify-center rounded-full text-spotify-light-gray hover:text-spotify-white hidden md:flex mx-1"
+            disabled={!currentConversation || !isConnected}
+          >
+            <Paperclip className="h-4 w-4" />
+          </button>
           
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  type="button"
-                  size="icon"
-                  variant="ghost"
-                  className="h-10 w-10 rounded-full hover:bg-primary/10 text-muted-foreground hidden md:flex"
-                  disabled={!currentConversation || !isConnected}
-                >
-                  <Image className="h-5 w-5" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Send image</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <button
+            type="button"
+            className="w-8 h-8 flex items-center justify-center rounded-full text-spotify-light-gray hover:text-spotify-white hidden md:flex mx-1"
+            disabled={!currentConversation || !isConnected}
+          >
+            <Image className="h-4 w-4" />
+          </button>
           
-          <Button 
-            size="icon"
+          <button 
             type="submit"
             onClick={handleSubmit}
             disabled={!message.trim() || !currentConversation || isSubmitting || !isConnected}
             className={cn(
-              "h-10 w-10 rounded-full",
-              "bg-gradient-to-r from-primary to-primary/80",
-              "hover:opacity-90 transition-opacity",
+              "h-10 w-10 rounded-full bg-spotify-green text-spotify-black",
+              "flex items-center justify-center ml-1",
+              "hover:scale-105 transition-transform",
               !message.trim() && "opacity-70"
             )}
           >
@@ -176,13 +134,13 @@ const MessageInput: React.FC = () => {
             ) : (
               <Send className="h-4 w-4" />
             )}
-          </Button>
+          </button>
         </div>
       </div>
       
       {!isConnected && (
         <div className="absolute inset-x-0 -top-8 flex justify-center">
-          <div className="px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-xs text-amber-500 animate-pulse flex items-center gap-1.5">
+          <div className="px-3 py-1 rounded-full bg-spotify-glass-highlight border border-spotify-glass-border text-xs text-spotify-light-gray animate-pulse flex items-center gap-1.5">
             <Loader2 className="h-3 w-3 animate-spin" />
             <span>Connecting to chat server...</span>
           </div>

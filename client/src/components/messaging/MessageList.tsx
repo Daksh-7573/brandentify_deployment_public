@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from 'react';
 import { useChat, type Message as MessageType } from '@/contexts/ChatContext';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { format, isToday, isYesterday } from 'date-fns';
 import { Check, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -27,7 +26,7 @@ const MessageList: React.FC = () => {
     return (
       <div className="flex-1 flex flex-col p-4 space-y-8">
         <div className="flex justify-center py-3">
-          <div className="px-3 py-1 rounded-full bg-muted/70 text-xs text-muted-foreground">
+          <div className="px-3 py-1 rounded-full bg-spotify-gray/50 text-xs text-spotify-light-gray">
             Today
           </div>
         </div>
@@ -38,14 +37,14 @@ const MessageList: React.FC = () => {
           >
             <div className={cn(
               "h-8 w-8 rounded-full flex-shrink-0", 
-              i % 2 === 0 ? "bg-primary/10" : "bg-muted/50"
+              i % 2 === 0 ? "bg-spotify-green/20" : "bg-spotify-gray/50"
             )} />
             <div 
               className={cn(
                 "p-4 rounded-2xl max-w-[85%] h-[60px]",
                 i % 2 === 0 
-                  ? "bg-gradient-to-br from-primary/80 to-primary rounded-br-none" 
-                  : "bg-muted/30 backdrop-blur-sm border border-muted/20 rounded-bl-none"
+                  ? "bg-spotify-green text-spotify-black rounded-br-none" 
+                  : "bg-spotify-glass-highlight border border-spotify-glass-border rounded-bl-none"
               )}
             >
               <div className="h-3 w-24 bg-current opacity-10 animate-pulse rounded-full" />
@@ -61,12 +60,12 @@ const MessageList: React.FC = () => {
   if (messages.length === 0) {
     return (
       <div className="flex-1 flex items-center justify-center">
-        <div className="text-center bg-muted/20 backdrop-blur-sm border border-muted/10 rounded-xl px-8 py-6 max-w-xs">
-          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mx-auto mb-4">
-            <Check className="h-6 w-6 text-primary" />
+        <div className="text-center bg-spotify-glass-highlight backdrop-filter backdrop-blur-[15px] border border-spotify-glass-border rounded-xl px-8 py-6 max-w-xs">
+          <div className="w-12 h-12 rounded-full bg-spotify-green/20 flex items-center justify-center mx-auto mb-4">
+            <Check className="h-6 w-6 text-spotify-green" />
           </div>
-          <h3 className="font-semibold text-lg mb-2">Begin Your Conversation</h3>
-          <p className="text-sm text-muted-foreground">
+          <h3 className="font-semibold text-lg mb-2 text-spotify-white">Begin Your Conversation</h3>
+          <p className="text-sm text-spotify-light-gray">
             Send your first message below to start connecting
           </p>
         </div>
@@ -110,7 +109,7 @@ const MessageList: React.FC = () => {
       {messageGroups.map((group) => (
         <div key={group.date} className="space-y-6">
           <div className="flex justify-center py-1">
-            <div className="px-3 py-1 rounded-full bg-muted/60 text-xs text-muted-foreground backdrop-blur-sm">
+            <div className="px-3 py-1 rounded-full bg-spotify-glass-highlight text-xs text-spotify-light-gray backdrop-filter backdrop-blur-[15px]">
               {group.formattedDate}
             </div>
           </div>
@@ -133,7 +132,7 @@ const MessageList: React.FC = () => {
               <div key={message.id} className="space-y-1">
                 {showSenderName && (
                   <div className="flex items-center ml-12 mb-1">
-                    <div className="text-xs font-medium text-muted-foreground">
+                    <div className="text-xs font-medium text-spotify-light-gray">
                       {message.senderName}
                     </div>
                   </div>
@@ -147,14 +146,15 @@ const MessageList: React.FC = () => {
                   )}
                 >
                   {!isOwnMessage && showAvatar ? (
-                    <Avatar className="h-9 w-9 ring-2 ring-primary/10 ring-offset-1 ring-offset-background flex-shrink-0">
+                    <div className="neo-spotify-avatar h-9 w-9 flex-shrink-0">
                       {message.senderPhotoURL ? (
-                        <AvatarImage src={message.senderPhotoURL} alt={message.senderName || 'User'} />
-                      ) : null}
-                      <AvatarFallback className="bg-primary/10 text-primary font-medium">
-                        {(message.senderName?.[0] || 'U').toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
+                        <img src={message.senderPhotoURL} alt={message.senderName || 'User'} />
+                      ) : (
+                        <span className="avatar-placeholder">
+                          {(message.senderName?.[0] || 'U').toUpperCase()}
+                        </span>
+                      )}
+                    </div>
                   ) : !isOwnMessage ? (
                     <div className="w-9 flex-shrink-0" />
                   ) : null}
@@ -163,8 +163,8 @@ const MessageList: React.FC = () => {
                     className={cn(
                       "max-w-[85%] px-4 py-3",
                       isOwnMessage 
-                        ? "text-primary-foreground bg-gradient-to-br from-primary/90 to-primary" 
-                        : "bg-muted/30 backdrop-blur-sm border border-muted/10",
+                        ? "bg-spotify-green text-spotify-black" 
+                        : "bg-spotify-glass-highlight border border-spotify-glass-border text-spotify-white",
                       // Dynamically add rounded corners based on message sequence
                       "rounded-2xl",
                       isOwnMessage && !isSequence ? "rounded-tr-md" : "",
@@ -179,7 +179,7 @@ const MessageList: React.FC = () => {
                     <div className="text-[10px] opacity-70 mt-1 text-right flex items-center justify-end">
                       {format(new Date(message.sentAt), 'h:mm a')}
                       {isOwnMessage && (
-                        <span className="ml-1 text-primary-foreground">
+                        <span className="ml-1">
                           {message.readAt ? (
                             <Check className="h-3 w-3 inline-block" />
                           ) : (
