@@ -1058,7 +1058,7 @@ export default function IndustryPulsePage() {
   return (
     <div className="flex h-screen flex-col">
       <Header />
-      <div className="flex flex-1 overflow-hidden pt-6"> {/* Adjusted padding-top for consistent spacing */}
+      <div className="flex flex-1 overflow-hidden pt-16"> {/* Added padding-top for fixed header */}
         {/* Main content area */}
         <div className="flex-1 overflow-auto">
           <NeoGlassLayout>

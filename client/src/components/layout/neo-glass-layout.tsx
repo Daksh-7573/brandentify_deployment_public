@@ -11,7 +11,7 @@ interface NeoGlassLayoutProps {
  */
 export function NeoGlassLayout({ children, className = '' }: NeoGlassLayoutProps) {
   return (
-    <div className="container mx-auto px-6 py-6 min-h-screen">
+    <div className="container mx-auto px-4 py-24 min-h-screen">
       <div className={`neo-glass-panel rounded-lg p-6 mb-10 ${className}`}>
         {children}
       </div>
