@@ -381,8 +381,8 @@ const SearchPage = () => {
   return (
     <div className="flex h-screen flex-col neo-glass-container">
       <Header />
-      <div className="flex-1 overflow-auto pt-16 neo-glass-content">
-        <NeoGlassLayout className="w-full max-w-7xl mx-auto px-4 sm:px-6 pb-12">
+      <div className="flex-1 overflow-hidden pt-16 neo-glass-content">
+        <NeoGlassLayout>
           <div className="mb-8">
             <h1 className="text-3xl font-bold mb-2 text-white">Discover & Connect</h1>
             <p className="text-gray-300">Find content, professionals, and networking opportunities in one place</p>
@@ -565,7 +565,7 @@ const SearchPage = () => {
                       </p>
                     </div>
                   ) : isLoading ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 pb-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                       {[1, 2, 3, 4, 5, 6].map((i) => (
                         <Card key={i} className="overflow-hidden rounded-xl shadow-xl border border-white/10 bg-gray-900/60 backdrop-blur-md">
                           <div className="bg-gradient-to-br from-white/15 via-white/10 to-white/5 h-28 relative overflow-hidden">
@@ -589,7 +589,7 @@ const SearchPage = () => {
                       ))}
                     </div>
                   ) : searchResults && searchResults.profiles && searchResults.profiles.length > 0 ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 pb-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                       {searchResults.profiles.map((profile: {
                         id: number;
                         name: string;
@@ -719,8 +719,8 @@ const SearchPage = () => {
                         Define what you're looking for to find the best matches
                       </CardDescription>
                     </CardHeader>
-                    <CardContent className="pb-6">
-                      <form onSubmit={handleMatchSubmit} className="space-y-8">
+                    <CardContent>
+                      <form onSubmit={handleMatchSubmit} className="space-y-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           <div className="space-y-2">
                             <Label htmlFor="industry" className="text-white">Industry</Label>
@@ -838,14 +838,14 @@ const SearchPage = () => {
                 )}
                 
                 {showMatchResults && (
-                  <Card className="bg-gray-900/60 backdrop-blur-md border border-white/10 shadow-xl mb-12">
+                  <Card className="bg-gray-900/60 backdrop-blur-md border border-white/10 shadow-xl">
                     <CardHeader>
                       <CardTitle className="text-white">Match Results</CardTitle>
                       <CardDescription className="text-gray-300">
                         Professionals who match your criteria
                       </CardDescription>
                     </CardHeader>
-                    <CardContent className="overflow-visible">
+                    <CardContent>
                       {matchMutation.isPending ? (
                         <div className="space-y-4">
                           {[1, 2, 3].map((i) => (
