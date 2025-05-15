@@ -1061,9 +1061,9 @@ export default function IndustryPulsePage() {
       <div className="flex flex-1 overflow-hidden pt-16"> {/* Added padding-top for fixed header */}
         {/* Main content area */}
         <div className="flex-1 overflow-auto">
-          <NeoGlassLayout>
+          <NeoGlassLayout className="mt-6 mx-6"> {/* Added consistent margin for top, left, right */}
             {/* Main content */}
-            <div className="flex-1 max-w-4xl mr-6">
+            <div className="flex-1 max-w-4xl">
               <div className="mb-8 flex justify-between items-center">
                 <div>
                   <h1 className="text-3xl font-bold tracking-tight text-white">Industry Pulse</h1>
