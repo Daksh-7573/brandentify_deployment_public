@@ -497,22 +497,22 @@ select.neo-glass-input option {
 /* Tabs */
 .neo-glass-tabs {
   display: flex;
-  border-bottom: 1px solid var(--neo-glass-border);
   margin-bottom: 1rem;
-  background: rgba(18, 18, 18, 0.7) !important;
+  background: rgba(30, 30, 30, 0.5) !important;
   padding: 4px !important;
   backdrop-filter: blur(var(--neo-blur-medium));
   -webkit-backdrop-filter: blur(var(--neo-blur-medium));
-  border-radius: 0.5rem !important;
-  border: 1px solid var(--neo-glass-border) !important;
+  border-radius: 0.75rem !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  gap: 4px;
 }
 
 .neo-glass-tabs [data-state="active"] {
-  background: rgba(255, 255, 255, 0.15) !important;
-  color: var(--neo-white) !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  backdrop-filter: blur(5px) !important;
-  -webkit-backdrop-filter: blur(5px) !important;
+  background: linear-gradient(to right, rgba(224, 224, 224, 0.9), rgba(255, 255, 255, 0.9)) !important;
+  color: #000 !important;
+  border: none !important;
+  font-weight: 500 !important;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2) !important;
 }
 
 .neo-glass-tab {

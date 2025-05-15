@@ -1086,11 +1086,11 @@ export default function IndustryPulsePage() {
               
               <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab}>
                 <TabsList className="mb-6 neo-glass-tabs">
-                  <TabsTrigger value="all" className="text-white">All</TabsTrigger>
-                  <TabsTrigger value="media-pulse" className="text-white">Media</TabsTrigger>
-                  <TabsTrigger value="poll" className="text-white">Polls</TabsTrigger>
-                  <TabsTrigger value="project" className="text-white">Projects</TabsTrigger>
-                  <TabsTrigger value="musk-news" className="text-white data-[state=active]:bg-white/20">
+                  <TabsTrigger value="all" className="text-white hover:text-gray-200">All</TabsTrigger>
+                  <TabsTrigger value="media-pulse" className="text-white hover:text-gray-200">Media</TabsTrigger>
+                  <TabsTrigger value="poll" className="text-white hover:text-gray-200">Polls</TabsTrigger>
+                  <TabsTrigger value="project" className="text-white hover:text-gray-200">Projects</TabsTrigger>
+                  <TabsTrigger value="musk-news" className="text-white hover:text-gray-200">
                     Musk ⚡
                   </TabsTrigger>
                 </TabsList>
