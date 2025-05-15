@@ -269,16 +269,14 @@ function PulseReactions({ pulse }: PulseReactionsProps) {
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button 
-              variant="ghost" 
-              size="sm" 
+            <button 
               disabled={isLoading}
-              className="text-muted-foreground hover:bg-amber-50 hover:text-amber-700 transition-all duration-200"
+              className="text-gray-400 hover:text-white hover:bg-gray-600/30 rounded-md px-2 py-1 text-sm flex items-center gap-1.5 transition-all duration-200 disabled:opacity-50"
               onClick={() => handleReaction("insightful")}
             >
-              <Flame className={`h-4 w-4 mr-2 transition-all duration-200 ${hasInsightfulReaction ? "text-amber-600 fill-amber-500 scale-110" : "text-muted-foreground"}`} />
+              <Flame className={`h-4 w-4 transition-all duration-200 ${hasInsightfulReaction ? "text-white fill-white scale-110" : ""}`} />
               {formatCount(pulse.insightfulCount || 0)}
-            </Button>
+            </button>
           </TooltipTrigger>
           <TooltipContent>
             <p>Mark as Insightful 🔥</p>
@@ -293,16 +291,14 @@ function PulseReactions({ pulse }: PulseReactionsProps) {
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button 
-              variant="ghost" 
-              size="sm" 
+            <button 
               disabled={isLoading}
-              className="text-muted-foreground hover:bg-red-50 hover:text-red-700 transition-all duration-200"
+              className="text-gray-400 hover:text-white hover:bg-gray-600/30 rounded-md px-2 py-1 text-sm flex items-center gap-1.5 transition-all duration-200 disabled:opacity-50"
               onClick={() => handleReaction("misinformed")}
             >
-              <AlertTriangle className={`h-4 w-4 mr-2 transition-all duration-200 ${hasMisinformedReaction ? "text-red-600 fill-red-300 scale-110" : "text-muted-foreground"}`} />
+              <AlertTriangle className={`h-4 w-4 transition-all duration-200 ${hasMisinformedReaction ? "text-white fill-white/30 scale-110" : ""}`} />
               {formatCount(pulse.misinformedCount || 0)}
-            </Button>
+            </button>
           </TooltipTrigger>
           <TooltipContent>
             <p>Flag as Misinformed ⚠️</p>
@@ -373,14 +369,12 @@ function PulseReactions({ pulse }: PulseReactionsProps) {
       </Dialog>
       
       {/* Comments Button */}
-      <Button 
-        variant="ghost" 
-        size="sm" 
-        className="text-muted-foreground hover:bg-purple-50 hover:text-purple-700 transition-all duration-200"
+      <button 
+        className="text-gray-400 hover:text-white hover:bg-gray-600/30 rounded-md px-2 py-1 text-sm flex items-center gap-1.5 transition-all duration-200"
       >
-        <MessageSquare className="h-4 w-4 mr-2 text-muted-foreground" />
+        <MessageSquare className="h-4 w-4" />
         {formatCount(pulse.comments || 0)}
-      </Button>
+      </button>
     </div>
   );
 }
@@ -979,20 +973,21 @@ interface SmartRefreshBannerProps {
 function SmartRefreshBanner({ hasNewContent, onRefresh, isPremiumContent = false }: SmartRefreshBannerProps) {
   if (!hasNewContent) return null;
   
+  // Using Neo-Glass UI styling for both types
   const bannerClasses = isPremiumContent
-    ? "bg-amber-50 border-amber-200 text-amber-900" // Premium content (Musk)
-    : "bg-gray-50 border-gray-200 text-gray-900"; // Regular content
+    ? "bg-gray-900/40 border-gray-700/30 text-white" // Premium content (Musk)
+    : "bg-gray-900/40 border-gray-700/30 text-white"; // Regular content
     
   const iconClasses = isPremiumContent
-    ? "text-amber-500" // Premium content (Musk)
-    : "text-muted-foreground"; // Regular content
+    ? "text-white" // Premium content (Musk)
+    : "text-white"; // Regular content
   
   return (
     <button 
-      className={`w-full py-3 px-4 rounded-lg border flex items-center justify-center gap-2 mb-4 hover:opacity-90 transition-all ${bannerClasses}`}
+      className={`w-full py-3 px-4 rounded-lg border backdrop-blur-sm flex items-center justify-center gap-2 mb-4 hover:bg-gray-800/50 transition-all ${bannerClasses}`}
       onClick={onRefresh}
     >
-      <RefreshCw className={`h-4 w-4 ${iconClasses}`} />
+      <RefreshCw className={`h-4 w-4 ${iconClasses} animate-pulse`} />
       <span className="font-medium">
         {isPremiumContent ? 'Musk has updated your feed' : 'New posts available'}
       </span>
