@@ -99,14 +99,14 @@ export default function NotificationList({
   const getNotificationIcon = (type: string) => {
     switch (type) {
       case 'success':
-        return <Badge className="bg-green-100 text-green-600 hover:bg-green-100">✓</Badge>;
+        return <Badge className="bg-spotify-glass-highlight text-spotify-white border border-spotify-glass-border">✓</Badge>;
       case 'error':
-        return <Badge className="bg-red-100 text-red-600 hover:bg-red-100">!</Badge>;
+        return <Badge className="bg-spotify-glass-highlight text-spotify-white border border-spotify-glass-border">!</Badge>;
       case 'warning':
-        return <Badge className="bg-yellow-100 text-yellow-600 hover:bg-yellow-100">⚠</Badge>;
+        return <Badge className="bg-spotify-glass-highlight text-spotify-white border border-spotify-glass-border">⚠</Badge>;
       case 'info':
       default:
-        return <Badge className="bg-blue-100 text-blue-600 hover:bg-blue-100">i</Badge>;
+        return <Badge className="bg-spotify-glass-highlight text-spotify-white border border-spotify-glass-border">i</Badge>;
     }
   };
   
@@ -210,11 +210,11 @@ export default function NotificationList({
               ))
             ) : (
               <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
-                <div className="bg-gray-100 p-3 rounded-full mb-3">
-                  <Bell className="h-6 w-6 text-gray-400" />
+                <div className="bg-spotify-glass-highlight p-3 rounded-full mb-3">
+                  <Bell className="h-6 w-6 text-spotify-light-gray" />
                 </div>
-                <h3 className="text-base font-medium text-gray-900">No notifications</h3>
-                <p className="mt-1 text-sm text-gray-500">
+                <h3 className="text-base font-medium text-spotify-white">No notifications</h3>
+                <p className="mt-1 text-sm text-spotify-light-gray">
                   {activeTab === 'all' 
                     ? "You don't have any notifications yet" 
                     : "You don't have any unread notifications"}
@@ -282,11 +282,11 @@ export default function NotificationList({
               ))
             ) : (
               <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
-                <div className="bg-gray-100 p-3 rounded-full mb-3">
-                  <Bell className="h-6 w-6 text-gray-400" />
+                <div className="bg-spotify-glass-highlight p-3 rounded-full mb-3">
+                  <Bell className="h-6 w-6 text-spotify-light-gray" />
                 </div>
-                <h3 className="text-base font-medium text-gray-900">No unread notifications</h3>
-                <p className="mt-1 text-sm text-gray-500">
+                <h3 className="text-base font-medium text-spotify-white">No unread notifications</h3>
+                <p className="mt-1 text-sm text-spotify-light-gray">
                   All caught up! You've read all your notifications.
                 </p>
               </div>
