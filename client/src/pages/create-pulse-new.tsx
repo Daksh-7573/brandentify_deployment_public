@@ -759,6 +759,7 @@ export default function CreatePulsePage() {
                                   }}
                                   useDarkMode={true}
                                   className="neo-glass-input"
+                                  closeModal={() => {}}
                                 />
                               </TabsContent>
                               
