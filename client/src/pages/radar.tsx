@@ -190,7 +190,7 @@ const NoNearbyUsers = () => (
 // User card component
 const UserCard = ({ user, onClick }: { user: NearbyUser, onClick: () => void }) => (
   <div 
-    className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg overflow-hidden cursor-pointer hover:bg-white/15 transition-all hover:scale-[1.02] hover:shadow-lg p-4 mb-3" 
+    className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg overflow-hidden cursor-pointer hover:bg-white/15 transition-all hover:scale-[1.02] hover:shadow-lg hover:shadow-white/10 p-4 mb-3" 
     onClick={onClick}
   >
     <div className="flex items-center space-x-4">
@@ -208,12 +208,12 @@ const UserCard = ({ user, onClick }: { user: NearbyUser, onClick: () => void }) 
         )}
         <div className="flex items-center gap-2 mt-1">
           {user.industry && (
-            <Badge variant="secondary" className="text-xs px-1.5 py-0 bg-white/20 text-white border-white/10 hover:bg-white/30">
+            <Badge variant="secondary" className="text-xs px-1.5 py-0 bg-white/20 text-white border-white/10 hover:bg-white/30 backdrop-blur-sm">
               {user.industry}
             </Badge>
           )}
           {user.lookingFor && (
-            <Badge variant="outline" className="text-xs px-1.5 py-0 text-white border-white/20 hover:bg-white/10">
+            <Badge variant="outline" className="text-xs px-1.5 py-0 text-white border-white/20 hover:bg-white/10 backdrop-blur-sm">
               Looking for: {
                 // Display the human-readable label instead of the value
                 (typeof user.lookingFor === 'string' && 
@@ -225,7 +225,7 @@ const UserCard = ({ user, onClick }: { user: NearbyUser, onClick: () => void }) 
         </div>
       </div>
       <div className="text-right">
-        <Badge variant="outline" className="flex items-center space-x-1 text-xs text-white border-white/20 bg-white/10">
+        <Badge variant="outline" className="flex items-center space-x-1 text-xs text-white border-white/20 bg-white/10 backdrop-blur-sm shadow-sm">
           <MapPin className="h-3 w-3" />
           <span>{user.distance.toFixed(1)} km</span>
         </Badge>
@@ -236,14 +236,14 @@ const UserCard = ({ user, onClick }: { user: NearbyUser, onClick: () => void }) 
 
 // Loading skeleton for user cards
 const UserCardSkeleton = () => (
-  <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg overflow-hidden p-4 mb-3">
+  <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg overflow-hidden p-4 mb-3 shadow-md">
     <div className="flex items-center space-x-4">
-      <Skeleton className="h-12 w-12 rounded-full bg-white/20" />
+      <Skeleton className="h-12 w-12 rounded-full bg-white/20 shadow-sm" />
       <div className="flex-1 space-y-2">
-        <Skeleton className="h-4 w-3/4 bg-white/20" />
-        <Skeleton className="h-3 w-1/2 bg-white/20" />
+        <Skeleton className="h-4 w-3/4 bg-white/20 shadow-sm" />
+        <Skeleton className="h-3 w-1/2 bg-white/20 shadow-sm" />
       </div>
-      <Skeleton className="h-6 w-12 bg-white/20" />
+      <Skeleton className="h-6 w-12 bg-white/20 shadow-sm" />
     </div>
   </div>
 );
