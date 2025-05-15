@@ -3,6 +3,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { Pulse } from "@shared/schema";
 import { useLocation } from "wouter";
 import Header from "@/components/layout/header";
+import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
 // Nowboard panel import
 // Removed Nowboard panel import as it's now integrated into quests
 // Removed Sidebar import, using top navigation only
@@ -1060,17 +1061,17 @@ export default function IndustryPulsePage() {
       <div className="flex flex-1 overflow-hidden pt-16"> {/* Added padding-top for fixed header */}
         {/* Main content area */}
         <div className="flex-1 overflow-auto">
-          <div className="container py-8 px-6 mx-auto flex">
+          <NeoGlassLayout>
             {/* Main content */}
             <div className="flex-1 max-w-4xl mr-6">
               <div className="mb-8 flex justify-between items-center">
                 <div>
-                  <h1 className="text-3xl font-bold tracking-tight">Industry Pulse</h1>
-                  <p className="text-muted-foreground mt-1">
+                  <h1 className="text-3xl font-bold tracking-tight text-white">Industry Pulse</h1>
+                  <p className="text-white/80 mt-1">
                     Discover insights, polls, and media from your professional network
                   </p>
                 </div>
-                <Button onClick={() => setLocation("/create-pulse")}>
+                <Button onClick={() => setLocation("/create-pulse")} className="neo-glass-button">
                   Create Pulse
                 </Button>
               </div>
@@ -1131,11 +1132,11 @@ export default function IndustryPulsePage() {
                       ))}
                     </div>
                   ) : filteredPulses.length === 0 ? (
-                    <Card>
-                      <CardContent className="flex flex-col items-center justify-center py-10">
-                        <Users className="h-16 w-16 text-muted-foreground/50 mb-4" />
-                        <h3 className="text-xl font-semibold mb-2">No pulses yet</h3>
-                        <p className="text-center text-muted-foreground max-w-md mb-6">
+                    <NeoGlassSection>
+                      <div className="flex flex-col items-center justify-center py-10">
+                        <Users className="h-16 w-16 text-white/80 mb-4" />
+                        <h3 className="text-xl font-semibold mb-2 text-white">No pulses yet</h3>
+                        <p className="text-center text-white/70 max-w-md mb-6">
                           {activeTab === "all" 
                             ? "Be the first to create a pulse in your professional network!" 
                             : activeTab === "musk-news" 
@@ -1143,16 +1144,16 @@ export default function IndustryPulsePage() {
                               : `No ${activeTab} pulses available yet. Create one to get started!`}
                         </p>
                         {activeTab === "musk-news" ? (
-                          <Button variant="outline" onClick={() => setActiveTab("all")}>
+                          <Button variant="outline" onClick={() => setActiveTab("all")} className="neo-glass-button">
                             View All Pulses
                           </Button>
                         ) : (
-                          <Button onClick={() => setLocation("/create-pulse")}>
+                          <Button onClick={() => setLocation("/create-pulse")} className="neo-glass-button">
                             Create Your First Pulse
                           </Button>
                         )}
-                      </CardContent>
-                    </Card>
+                      </div>
+                    </NeoGlassSection>
                   ) : (
                     <div className="space-y-6">
                       {filteredPulses.map((pulse: PulseWithUser) => (
@@ -1222,7 +1223,7 @@ export default function IndustryPulsePage() {
             </div>
             
             {/* Nowboard Panel Sidebar removed as it's now integrated into quests */}
-          </div>
+          </NeoGlassLayout>
         </div>
       </div>
     </div>
