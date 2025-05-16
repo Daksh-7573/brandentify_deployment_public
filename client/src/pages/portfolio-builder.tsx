@@ -776,9 +776,9 @@ export default function PortfolioBuilder() {
         
         return (
           <div className="space-y-8">
-            <div className="bg-primary/5 p-6 rounded-lg border mb-8">
-              <h2 className="text-xl font-semibold mb-2">Step 2: Preview Your Portfolio</h2>
-              <p className="text-gray-600">
+            <div className="bg-black/50 p-6 rounded-lg border border-white/10 backdrop-blur-md mb-8">
+              <h2 className="text-xl font-semibold mb-2 text-white">Step 2: Preview Your Portfolio</h2>
+              <p className="text-white/70">
                 Review your AI-generated portfolio before publishing it to the world.
               </p>
             </div>
@@ -1050,13 +1050,13 @@ export default function PortfolioBuilder() {
               <Button 
                 variant="outline"
                 onClick={() => setCurrentStep(STEPS.SELECT_LAYOUT)}
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 bg-black/70 text-white border-white/20 hover:bg-black/80 hover:border-white/30"
               >
                 <ArrowLeft className="h-4 w-4" /> Back
               </Button>
               <Button 
                 onClick={handlePublish}
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white border-0"
                 disabled={portfolioMutation.isPending}
               >
                 {portfolioMutation.isPending ? (
@@ -1072,37 +1072,41 @@ export default function PortfolioBuilder() {
       case STEPS.PUBLISH:
         return (
           <div className="space-y-8">
-            <div className="bg-green-50 p-6 rounded-lg border border-green-200 mb-8">
-              <h2 className="text-xl font-semibold text-green-700 mb-2">Success! Your Portfolio is Live</h2>
-              <p className="text-gray-600">
+            <div className="bg-black/70 backdrop-blur-lg p-6 rounded-lg border border-green-500/30 mb-8">
+              <h2 className="text-xl font-semibold text-green-400 mb-2">Success! Your Portfolio is Live</h2>
+              <p className="text-white/70">
                 Your portfolio has been published and is now available to the public. Share your custom URL with others to showcase your professional profile.
               </p>
             </div>
             
-            <Card>
+            <Card className="bg-black/70 backdrop-blur-lg border border-white/10">
               <CardHeader>
-                <CardTitle>Portfolio Details</CardTitle>
+                <CardTitle className="text-white">Portfolio Details</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <h3 className="font-semibold">Layout Style</h3>
-                  <p>{layoutOptions.find(l => l.id === form.watch("layout"))?.name || "Professional"}</p>
+                  <h3 className="font-semibold text-white">Layout Style</h3>
+                  <p className="text-white/70">{layoutOptions.find(l => l.id === form.watch("layout"))?.name || "Professional"}</p>
                 </div>
                 {form.watch("publicUrl") && (
                   <div>
-                    <h3 className="font-semibold">Portfolio URL</h3>
-                    <p className="text-primary">brandentifier.com/{form.watch("publicUrl")}</p>
+                    <h3 className="font-semibold text-white">Portfolio URL</h3>
+                    <p className="text-purple-400">brandentifier.com/{form.watch("publicUrl")}</p>
                   </div>
                 )}
               </CardContent>
-              <CardFooter className="flex justify-end gap-2">
+              <CardFooter className="flex justify-end gap-2 border-t border-white/5">
                 <Button 
                   variant="outline"
                   onClick={() => setCurrentStep(STEPS.SELECT_LAYOUT)}
+                  className="bg-black/70 text-white border-white/20 hover:bg-black/80 hover:border-white/30"
                 >
                   Edit Portfolio
                 </Button>
-                <Button onClick={() => setLocation('/profile')}>
+                <Button 
+                  onClick={() => setLocation('/profile')}
+                  className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white border-0"
+                >
                   Return to Profile
                 </Button>
               </CardFooter>
