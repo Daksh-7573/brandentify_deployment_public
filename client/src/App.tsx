@@ -154,6 +154,9 @@ function Router() {
       <Route path="/portfolio-builder">
         <ProtectedRoute path="/portfolio-builder" component={PortfolioBuilder} />
       </Route>
+      <Route path="/portfolio/edit">
+        <ProtectedRoute path="/portfolio/edit" component={PortfolioBuilder} />
+      </Route>
       <Route path="/services">
         <ProtectedRoute path="/services" component={ManageServicesPage} />
       </Route>
