@@ -458,24 +458,24 @@ function SearchPage() {
 
                   {/* Search Category Tabs */}
                   <Tabs defaultValue={activeCategory === "smart-connect" ? "pulses" : activeCategory} onValueChange={handleTabChange}>
-                    <TabsList className="mb-6 neo-glass-tabs">
+                    <TabsList className="mb-6 dark-tabs-list">
                       <TabsTrigger 
                         value="pulses" 
-                        className="text-white hover:text-gray-200"
+                        className="dark-tabs-trigger"
                       >
                         <MessageSquare size={16} className="mr-1.5" />
                         <span>Pulses</span>
                       </TabsTrigger>
                       <TabsTrigger 
                         value="profiles" 
-                        className="text-white hover:text-gray-200"
+                        className="dark-tabs-trigger"
                       >
                         <Users size={16} className="mr-1.5" />
                         <span>Profiles</span>
                       </TabsTrigger>
                       <TabsTrigger 
                         value="hashtags" 
-                        className="text-white hover:text-gray-200"
+                        className="dark-tabs-trigger"
                       >
                         <Hash size={16} className="mr-1.5" />
                         <span>Hashtags</span>
