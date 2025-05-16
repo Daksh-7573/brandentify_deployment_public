@@ -676,7 +676,11 @@ export default function PortfolioBuilder() {
                 {layoutOptions.map(layout => (
                   <div 
                     key={layout.id}
-                    className={`neo-glass-card cursor-pointer transition-all rounded-lg p-4 hover:shadow-xl ${form.watch("layout") === layout.id ? "ring-2 ring-primary border-primary/40" : "border border-white/10"}`}
+                    className={`cursor-pointer transition-all rounded-lg p-4 hover:shadow-xl hover:border-white/20 hover:-translate-y-1 ${
+                      form.watch("layout") === layout.id 
+                        ? "ring-2 ring-primary border border-primary/40 bg-black/60 backdrop-blur-md" 
+                        : "border border-white/10 bg-slate-900/60 backdrop-blur-md"
+                    }`}
                     onClick={() => form.setValue("layout", layout.id as any)}
                   >
                     <div className="flex flex-col h-full">
@@ -696,7 +700,7 @@ export default function PortfolioBuilder() {
                       </div>
                       <div className="pt-3 flex justify-end">
                         {form.watch("layout") === layout.id && (
-                          <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
+                          <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center shadow-md shadow-primary/20">
                             <Check className="h-4 w-4 text-white" />
                           </div>
                         )}
