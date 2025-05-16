@@ -448,30 +448,43 @@ const SearchPage = () => {
                 defaultValue={activeCategory === "smart-connect" ? "pulses" : activeCategory} 
                 onValueChange={handleTabChange}
                 data-category-tabs="true"
+                className="w-full"
               >
-                <TabsList className="mb-6 dark-tabs-list">
-                  <TabsTrigger 
-                    value="pulses" 
-                    className="dark-tabs-trigger"
+                <div className="mb-6 flex bg-[rgba(30,31,35,0.8)] backdrop-blur-md border border-white/15 rounded-full p-1">
+                  <button 
+                    onClick={() => handleTabChange("pulses")}
+                    className={`flex-1 flex items-center justify-center text-white font-medium py-2 px-4 rounded-full ${
+                      activeCategory === "pulses" 
+                        ? "bg-white/20 text-white font-medium text-shadow" 
+                        : "hover:bg-white/10 transition-colors"
+                    }`}
                   >
                     <MessageSquare size={16} className="mr-1.5" />
                     <span>Pulses</span>
-                  </TabsTrigger>
-                  <TabsTrigger 
-                    value="profiles" 
-                    className="dark-tabs-trigger"
+                  </button>
+                  <button 
+                    onClick={() => handleTabChange("profiles")}
+                    className={`flex-1 flex items-center justify-center text-white font-medium py-2 px-4 rounded-full ${
+                      activeCategory === "profiles" 
+                        ? "bg-white/20 text-white font-medium text-shadow" 
+                        : "hover:bg-white/10 transition-colors"
+                    }`}
                   >
                     <Users size={16} className="mr-1.5" />
                     <span>Profiles</span>
-                  </TabsTrigger>
-                  <TabsTrigger 
-                    value="hashtags" 
-                    className="dark-tabs-trigger"
+                  </button>
+                  <button 
+                    onClick={() => handleTabChange("hashtags")}
+                    className={`flex-1 flex items-center justify-center text-white font-medium py-2 px-4 rounded-full ${
+                      activeCategory === "hashtags" 
+                        ? "bg-white/20 text-white font-medium text-shadow" 
+                        : "hover:bg-white/10 transition-colors"
+                    }`}
                   >
                     <Hash size={16} className="mr-1.5" />
                     <span>Hashtags</span>
-                  </TabsTrigger>
-                </TabsList>
+                  </button>
+                </div>
 
                 {/* Pulses Results */}
                 <TabsContent value="pulses">
