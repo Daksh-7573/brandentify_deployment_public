@@ -677,7 +677,7 @@ export default function PortfolioBuilder() {
               {layoutOptions.map(layout => (
                 <Card 
                   key={layout.id} 
-                  className={`cursor-pointer transition-all bg-black/70 backdrop-blur-lg border border-white/10 hover:shadow-xl hover:border-white/20 ${form.watch("layout") === layout.id ? "ring-2 ring-purple-500" : ""}`}
+                  className={`cursor-pointer transition-all bg-black/70 backdrop-blur-lg border border-white/10 hover:shadow-xl hover:border-white/20 ${form.watch("layout") === layout.id ? "ring-2 ring-primary" : ""}`}
                   onClick={() => form.setValue("layout", layout.id as any)}
                 >
                   <CardHeader className="pb-2">
@@ -696,7 +696,7 @@ export default function PortfolioBuilder() {
                   </CardContent>
                   <CardFooter className="pt-0 flex justify-end">
                     {form.watch("layout") === layout.id && (
-                      <div className="w-6 h-6 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 flex items-center justify-center">
+                      <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
                         <Check className="h-4 w-4 text-white" />
                       </div>
                     )}
@@ -708,7 +708,7 @@ export default function PortfolioBuilder() {
             <div className="flex justify-end">
               <Button 
                 onClick={handleCreatePortfolio}
-                className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white border-0"
+                className="flex items-center gap-2 bg-primary hover:bg-primary/90 text-white border-0"
               >
                 <Bot className="h-4 w-4" /> Create with Musk AI
               </Button>
@@ -1056,7 +1056,7 @@ export default function PortfolioBuilder() {
               </Button>
               <Button 
                 onClick={handlePublish}
-                className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white border-0"
+                className="flex items-center gap-2 bg-primary hover:bg-primary/90 text-white border-0"
                 disabled={portfolioMutation.isPending}
               >
                 {portfolioMutation.isPending ? (
@@ -1091,7 +1091,7 @@ export default function PortfolioBuilder() {
                 {form.watch("publicUrl") && (
                   <div>
                     <h3 className="font-semibold text-white">Portfolio URL</h3>
-                    <p className="text-purple-400">brandentifier.com/{form.watch("publicUrl")}</p>
+                    <p className="text-primary">brandentifier.com/{form.watch("publicUrl")}</p>
                   </div>
                 )}
               </CardContent>
@@ -1105,7 +1105,7 @@ export default function PortfolioBuilder() {
                 </Button>
                 <Button 
                   onClick={() => setLocation('/profile')}
-                  className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white border-0"
+                  className="bg-primary hover:bg-primary/90 text-white border-0"
                 >
                   Return to Profile
                 </Button>
