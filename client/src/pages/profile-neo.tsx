@@ -351,6 +351,13 @@ export default function ProfileNeo() {
                     Portfolio
                   </button>
                   <button 
+                    onClick={() => setLocation('/resume-builder')}
+                    className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-[#e0e0e0] to-[#ffffff] text-black font-medium text-sm transition-all duration-200 hover:shadow-lg hover:scale-105"
+                  >
+                    <FileText className="w-4 h-4 mr-2" />
+                    Resume Builder
+                  </button>
+                  <button 
                     onClick={() => setLocation('/career-capsule')}
                     className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-[#e0e0e0] to-[#ffffff] text-black font-medium text-sm transition-all duration-200 hover:shadow-lg hover:scale-105"
                   >
