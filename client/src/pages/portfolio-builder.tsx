@@ -1171,16 +1171,23 @@ export default function PortfolioBuilder() {
 
   // Main render
   return (
-    <div className="flex h-screen flex-col">
+    <div className="flex h-screen flex-col bg-background bg-opacity-30 relative">
+      <div className="absolute inset-0 bg-cover bg-center bg-fixed z-0" 
+           style={{ 
+             backgroundImage: "url('/attached_assets/interior-background-of-a-cozy-dark-living-room-ai-generated-photo.jpg')", 
+             opacity: 0.3, 
+             filter: "blur(5px)" 
+           }}>
+      </div>
       <Header />
-      <div className="flex flex-1 overflow-hidden pt-16"> {/* Added padding-top (pt-16) to account for fixed header */}
+      <div className="flex flex-1 overflow-hidden pt-16 relative z-10"> {/* Added padding-top (pt-16) to account for fixed header */}
         
         <div className="flex-1 overflow-auto">
             <div className="container px-6 py-8">
               <div className="flex items-center justify-between mb-8">
                 <div>
-                  <h1 className="text-3xl font-bold">Portfolio Builder</h1>
-                  <p className="text-muted-foreground">Create a personalized portfolio with Musk AI</p>
+                  <h1 className="text-3xl font-bold text-white">Portfolio Builder</h1>
+                  <p className="text-white/70">Create a personalized portfolio with Musk AI</p>
                 </div>
                 {/* Progress indicator */}
               <div className="hidden sm:flex items-center space-x-2">
@@ -1188,18 +1195,20 @@ export default function PortfolioBuilder() {
                   <div 
                     key={step} 
                     className={`h-2 w-12 rounded-full ${
-                      currentStep >= step ? "bg-primary" : "bg-gray-200"
+                      currentStep >= step ? "bg-white/80" : "bg-gray-500/30"
                     }`}
                   />
                 ))}
               </div>
             </div>
 
-            {isAnalyzingProfile || isGenerating || isLoadingPortfolio ? (
-              renderLoadingState()
-            ) : (
-              renderStepContent()
-            )}
+            <div className="bg-black/60 backdrop-blur-lg border border-white/10 rounded-xl p-6 shadow-xl">
+              {isAnalyzingProfile || isGenerating || isLoadingPortfolio ? (
+                renderLoadingState()
+              ) : (
+                renderStepContent()
+              )}
+            </div>
           </div>
         </div>
       </div>
