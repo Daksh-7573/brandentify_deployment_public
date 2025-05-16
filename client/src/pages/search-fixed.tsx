@@ -165,10 +165,13 @@ function SearchPage() {
         lookingFor
       };
       
-      const response = await apiRequest({
-        url: "/api/smart-connect/match",
+      const response = await fetch("/api/smart-connect/match", {
         method: "POST",
-        data: payload
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload),
+        credentials: "include"
       });
       
       return response.json();
@@ -254,11 +257,16 @@ function SearchPage() {
         }
         
         setIsFollowLoading(true);
-        const res = await apiRequest({
-          method: 'POST',
-          url: `/api/hashtags/${tag.id}/follow?userId=${userId}`,
-          data: { userId }
-        });
+        const res = await apiRequest(
+          `/api/hashtags/${tag.id}/follow?userId=${userId}`,
+          {
+            method: 'POST',
+            body: JSON.stringify({ userId }),
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          }
+        );
         
         return res.json();
       },
@@ -288,10 +296,12 @@ function SearchPage() {
         if (!userId) return;
         
         setIsFollowLoading(true);
-        const res = await apiRequest({
-          method: 'DELETE',
-          url: `/api/hashtags/${tag.id}/follow?userId=${userId}`,
-        });
+        const res = await apiRequest(
+          `/api/hashtags/${tag.id}/follow?userId=${userId}`,
+          {
+            method: 'DELETE'
+          }
+        );
         
         return res.json();
       },
