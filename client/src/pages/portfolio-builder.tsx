@@ -667,53 +667,54 @@ export default function PortfolioBuilder() {
       case STEPS.SELECT_LAYOUT:
         return (
           <div className="space-y-8">
-            <div className="bg-slate-900/80 p-6 rounded-lg border border-slate-700/40 backdrop-blur-md mb-8 shadow-lg">
-              <h2 className="text-xl font-semibold mb-2 text-white">Step 1: Choose a Portfolio Layout</h2>
-              <p className="text-white/70">
+            <NeoGlassSection title="Step 1: Choose a Portfolio Layout">
+              <p className="text-white/70 mb-4">
                 Browse through multiple portfolio designs and select a layout that best represents your professional brand.
               </p>
-            </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {layoutOptions.map(layout => (
-                <Card 
-                  key={layout.id} 
-                  className={`cursor-pointer transition-all bg-slate-900/80 backdrop-blur-lg border border-slate-700/30 hover:shadow-xl hover:border-slate-600/50 ${form.watch("layout") === layout.id ? "ring-2 ring-primary" : ""}`}
-                  onClick={() => form.setValue("layout", layout.id as any)}
-                >
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-lg text-white">{layout.name}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div 
-                      className="text-sm text-white/70 whitespace-pre-line" 
-                      style={{
-                        maxHeight: '220px',
-                        overflowY: 'auto'
-                      }}
-                    >
-                      {layout.description}
-                    </div>
-                  </CardContent>
-                  <CardFooter className="pt-0 flex justify-end">
-                    {form.watch("layout") === layout.id && (
-                      <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
-                        <Check className="h-4 w-4 text-white" />
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {layoutOptions.map(layout => (
+                  <div 
+                    key={layout.id}
+                    className={`neo-glass-card cursor-pointer transition-all rounded-lg p-4 hover:shadow-xl ${form.watch("layout") === layout.id ? "ring-2 ring-primary border-primary/40" : "border border-white/10"}`}
+                    onClick={() => form.setValue("layout", layout.id as any)}
+                  >
+                    <div className="flex flex-col h-full">
+                      <div className="pb-2">
+                        <h3 className="text-lg font-medium text-white">{layout.name}</h3>
                       </div>
-                    )}
-                  </CardFooter>
-                </Card>
-              ))}
-            </div>
-            
-            <div className="flex justify-end">
-              <Button 
-                onClick={handleCreatePortfolio}
-                className="flex items-center gap-2 bg-primary hover:bg-primary/90 text-white border-0 shadow-md"
-              >
-                <Bot className="h-4 w-4" /> Create with Musk AI
-              </Button>
-            </div>
+                      <div className="flex-grow">
+                        <div 
+                          className="text-sm text-white/70 whitespace-pre-line" 
+                          style={{
+                            maxHeight: '220px',
+                            overflowY: 'auto'
+                          }}
+                        >
+                          {layout.description}
+                        </div>
+                      </div>
+                      <div className="pt-3 flex justify-end">
+                        {form.watch("layout") === layout.id && (
+                          <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
+                            <Check className="h-4 w-4 text-white" />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              <div className="flex justify-end mt-6">
+                <Button 
+                  onClick={handleCreatePortfolio}
+                  className="flex items-center gap-2 bg-primary hover:bg-primary/90 text-white border-0 shadow-md"
+                >
+                  <Bot className="h-4 w-4" /> Create with Musk AI
+                </Button>
+              </div>
+            </NeoGlassSection>
           </div>
         );
 
