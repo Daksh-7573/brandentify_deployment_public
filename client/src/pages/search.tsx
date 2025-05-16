@@ -390,28 +390,34 @@ const SearchPage = () => {
           </div>
 
           {/* Main Tabs: Search vs Smart Connect */}
-          <Tabs defaultValue={activeCategory === "smart-connect" ? "search" : "search"} className="w-full">
-            <TabsList className="mb-6 dark-tabs-list">
-              <TabsTrigger 
-                value="search" 
-                className="dark-tabs-trigger"
+          <div className="w-full">
+            <div className="mb-6 flex bg-[rgba(30,31,35,0.8)] backdrop-blur-md border border-white/15 rounded-full p-1">
+              <button 
                 onClick={() => setActiveCategory("pulses")}
+                className={`flex-1 flex items-center justify-center text-white font-medium py-2 px-4 rounded-full ${
+                  activeCategory !== "smart-connect" 
+                    ? "bg-white/20 text-white font-medium text-shadow" 
+                    : "hover:bg-white/10 transition-colors"
+                }`}
               >
                 <SearchIcon size={16} className="mr-1.5" />
                 <span>Search</span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="smart-connect" 
-                className="dark-tabs-trigger"
+              </button>
+              <button 
                 onClick={() => {
                   setActiveCategory("smart-connect");
                   setShowMatchForm(true);
                 }}
+                className={`flex-1 flex items-center justify-center text-white font-medium py-2 px-4 rounded-full ${
+                  activeCategory === "smart-connect" 
+                    ? "bg-white/20 text-white font-medium text-shadow" 
+                    : "hover:bg-white/10 transition-colors"
+                }`}
               >
                 <Users size={16} className="mr-1.5" />
                 <span>Smart Connect</span>
-              </TabsTrigger>
-            </TabsList>
+              </button>
+            </div>
 
             {/* Search Tab */}
             <TabsContent value="search" className="space-y-6">
@@ -444,12 +450,7 @@ const SearchPage = () => {
               </form>
 
               {/* Search Category Tabs */}
-              <Tabs 
-                defaultValue={activeCategory === "smart-connect" ? "pulses" : activeCategory} 
-                onValueChange={handleTabChange}
-                data-category-tabs="true"
-                className="w-full"
-              >
+              <div className="w-full">
                 <div className="mb-6 flex bg-[rgba(30,31,35,0.8)] backdrop-blur-md border border-white/15 rounded-full p-1">
                   <button 
                     onClick={() => handleTabChange("pulses")}
@@ -487,7 +488,7 @@ const SearchPage = () => {
                 </div>
 
                 {/* Pulses Results */}
-                <TabsContent value="pulses">
+                <div className={activeCategory === "pulses" ? "block" : "hidden"}>
                   {!submittedQuery ? (
                     <div className="text-center py-12 border border-white/10 rounded-lg bg-gray-900/60 backdrop-blur-md shadow-xl">
                       <MessageSquare className="mx-auto h-12 w-12 text-white/70 mb-4" />
