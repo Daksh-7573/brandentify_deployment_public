@@ -29,6 +29,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
+import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
 
 // Import our portfolio templates
 import MinimalistPro from "@/components/portfolio/templates/minimalist-pro";
@@ -1178,24 +1179,22 @@ export default function PortfolioBuilder() {
 
   // Main render
   return (
-    <div className="flex h-screen flex-col bg-black relative">
+    <div className="flex h-screen flex-col relative">
       <div className="absolute inset-0 bg-black/75 bg-blend-overlay bg-cover bg-center bg-fixed z-0" 
            style={{ 
              backgroundImage: "url('/attached_assets/interior-background-of-a-cozy-dark-living-room-ai-generated-photo.jpg')"
            }}>
       </div>
       <Header />
-      <div className="flex flex-1 overflow-hidden pt-16 relative z-10"> {/* Added padding-top (pt-16) to account for fixed header */}
-        
-        <div className="flex-1 overflow-auto">
-            <div className="container px-6 py-8">
-              <div className="flex items-center justify-between mb-8">
-                <div>
-                  <h1 className="text-3xl font-bold text-white">Portfolio Builder</h1>
-                  <p className="text-white/70">Create a personalized portfolio with Musk AI</p>
-                </div>
-                {/* Progress indicator */}
-              <div className="hidden sm:flex items-center space-x-2">
+      <div className="pt-16 relative z-10">
+        <NeoGlassLayout>
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h1 className="text-3xl font-bold text-white">Portfolio Builder</h1>
+              <p className="text-white/70">Create a personalized portfolio with Musk AI</p>
+            </div>
+            {/* Progress indicator */}
+            <div className="hidden sm:flex items-center space-x-2">
                 {Object.values(STEPS).filter(step => typeof step === 'number').map((step) => (
                   <div 
                     key={step} 
@@ -1207,14 +1206,14 @@ export default function PortfolioBuilder() {
               </div>
             </div>
 
-            <div className="bg-black/60 backdrop-blur-lg border border-white/10 rounded-xl p-6 shadow-xl">
+            <NeoGlassSection>
               {isAnalyzingProfile || isGenerating || isLoadingPortfolio ? (
                 renderLoadingState()
               ) : (
                 renderStepContent()
               )}
-            </div>
-          </div>
+            </NeoGlassSection>
+          </NeoGlassLayout>
         </div>
       </div>
     </div>
