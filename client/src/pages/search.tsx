@@ -391,33 +391,37 @@ const SearchPage = () => {
 
           {/* Main Tabs: Search vs Smart Connect */}
           <div className="w-full">
-            <div className="mb-6 flex bg-[rgba(30,31,35,0.8)] backdrop-blur-md border border-white/15 rounded-full p-1">
-              <button 
-                onClick={() => setActiveCategory("pulses")}
-                className={`flex-1 flex items-center justify-center text-white font-medium py-2 px-4 rounded-full ${
-                  activeCategory !== "smart-connect" 
-                    ? "bg-white/20 text-white font-medium text-shadow" 
-                    : "hover:bg-white/10 transition-colors"
-                }`}
-              >
-                <SearchIcon size={16} className="mr-1.5" />
-                <span>Search</span>
-              </button>
-              <button 
-                onClick={() => {
-                  setActiveCategory("smart-connect");
-                  setShowMatchForm(true);
-                }}
-                className={`flex-1 flex items-center justify-center text-white font-medium py-2 px-4 rounded-full ${
-                  activeCategory === "smart-connect" 
-                    ? "bg-white/20 text-white font-medium text-shadow" 
-                    : "hover:bg-white/10 transition-colors"
-                }`}
-              >
-                <Users size={16} className="mr-1.5" />
-                <span>Smart Connect</span>
-              </button>
-            </div>
+            <ul className="mb-6 flex gap-0 bg-[rgba(30,31,35,0.8)] backdrop-blur-md border border-white/15 p-1 rounded-full">
+              <li className="flex-1">
+                <button 
+                  onClick={() => setActiveCategory("pulses")}
+                  className={`w-full flex items-center justify-center text-white font-medium py-2 px-4 rounded-full ${
+                    activeCategory !== "smart-connect" 
+                      ? "bg-white/20 text-white text-shadow" 
+                      : "hover:bg-white/10 transition-colors"
+                  }`}
+                >
+                  <SearchIcon size={16} className="mr-1.5" />
+                  <span>Search</span>
+                </button>
+              </li>
+              <li className="flex-1">
+                <button 
+                  onClick={() => {
+                    setActiveCategory("smart-connect");
+                    setShowMatchForm(true);
+                  }}
+                  className={`w-full flex items-center justify-center text-white font-medium py-2 px-4 rounded-full ${
+                    activeCategory === "smart-connect" 
+                      ? "bg-white/20 text-white text-shadow" 
+                      : "hover:bg-white/10 transition-colors"
+                  }`}
+                >
+                  <Users size={16} className="mr-1.5" />
+                  <span>Smart Connect</span>
+                </button>
+              </li>
+            </ul>
 
             {/* Search Tab */}
             <TabsContent value="search" className="space-y-6">
@@ -451,40 +455,48 @@ const SearchPage = () => {
 
               {/* Search Category Tabs */}
               <div className="w-full">
-                <div className="mb-6 flex bg-[rgba(30,31,35,0.8)] backdrop-blur-md border border-white/15 rounded-full p-1">
-                  <button 
-                    onClick={() => handleTabChange("pulses")}
-                    className={`flex-1 flex items-center justify-center text-white font-medium py-2 px-4 rounded-full ${
-                      activeCategory === "pulses" 
-                        ? "bg-white/20 text-white font-medium text-shadow" 
-                        : "hover:bg-white/10 transition-colors"
-                    }`}
-                  >
-                    <MessageSquare size={16} className="mr-1.5" />
-                    <span>Pulses</span>
-                  </button>
-                  <button 
-                    onClick={() => handleTabChange("profiles")}
-                    className={`flex-1 flex items-center justify-center text-white font-medium py-2 px-4 rounded-full ${
-                      activeCategory === "profiles" 
-                        ? "bg-white/20 text-white font-medium text-shadow" 
-                        : "hover:bg-white/10 transition-colors"
-                    }`}
-                  >
-                    <Users size={16} className="mr-1.5" />
-                    <span>Profiles</span>
-                  </button>
-                  <button 
-                    onClick={() => handleTabChange("hashtags")}
-                    className={`flex-1 flex items-center justify-center text-white font-medium py-2 px-4 rounded-full ${
-                      activeCategory === "hashtags" 
-                        ? "bg-white/20 text-white font-medium text-shadow" 
-                        : "hover:bg-white/10 transition-colors"
-                    }`}
-                  >
-                    <Hash size={16} className="mr-1.5" />
-                    <span>Hashtags</span>
-                  </button>
+                <div className="mb-6">
+                  <ul className="flex gap-0 bg-[rgba(30,31,35,0.8)] backdrop-blur-md border border-white/15 p-1 rounded-full">
+                    <li className="flex-1">
+                      <button 
+                        onClick={() => handleTabChange("pulses")}
+                        className={`w-full flex items-center justify-center text-white font-medium py-2 px-4 rounded-full ${
+                          activeCategory === "pulses" 
+                            ? "bg-white/20 text-white text-shadow" 
+                            : "hover:bg-white/10 transition-colors"
+                        }`}
+                      >
+                        <MessageSquare size={16} className="mr-1.5" />
+                        <span>Pulses</span>
+                      </button>
+                    </li>
+                    <li className="flex-1">
+                      <button 
+                        onClick={() => handleTabChange("profiles")}
+                        className={`w-full flex items-center justify-center text-white font-medium py-2 px-4 rounded-full ${
+                          activeCategory === "profiles" 
+                            ? "bg-white/20 text-white text-shadow" 
+                            : "hover:bg-white/10 transition-colors"
+                        }`}
+                      >
+                        <Users size={16} className="mr-1.5" />
+                        <span>Profiles</span>
+                      </button>
+                    </li>
+                    <li className="flex-1">
+                      <button 
+                        onClick={() => handleTabChange("hashtags")}
+                        className={`w-full flex items-center justify-center text-white font-medium py-2 px-4 rounded-full ${
+                          activeCategory === "hashtags" 
+                            ? "bg-white/20 text-white text-shadow" 
+                            : "hover:bg-white/10 transition-colors"
+                        }`}
+                      >
+                        <Hash size={16} className="mr-1.5" />
+                        <span>Hashtags</span>
+                      </button>
+                    </li>
+                  </ul>
                 </div>
 
                 {/* Pulses Results */}
