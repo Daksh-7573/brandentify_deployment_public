@@ -643,14 +643,17 @@ export default function PortfolioBuilder() {
   // Authentication check
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Card className="w-96">
+      <div className="min-h-screen flex items-center justify-center bg-black/90 bg-blend-overlay bg-cover bg-center" 
+           style={{ backgroundImage: "url('/attached_assets/interior-background-of-a-cozy-dark-living-room-ai-generated-photo.jpg')" }}>
+        <Card className="w-96 bg-black/80 backdrop-blur-xl border border-white/10">
           <CardHeader>
-            <CardTitle>Authentication Required</CardTitle>
-            <CardDescription>Please log in to access this page.</CardDescription>
+            <CardTitle className="text-white">Authentication Required</CardTitle>
+            <CardDescription className="text-white/70">Please log in to access this page.</CardDescription>
           </CardHeader>
           <CardFooter>
-            <Button onClick={() => setLocation("/auth")}>Go to Login</Button>
+            <Button onClick={() => setLocation("/auth")} className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white">
+              Go to Login
+            </Button>
           </CardFooter>
         </Card>
       </div>
@@ -663,9 +666,9 @@ export default function PortfolioBuilder() {
       case STEPS.SELECT_LAYOUT:
         return (
           <div className="space-y-8">
-            <div className="bg-primary/5 p-6 rounded-lg border mb-8">
-              <h2 className="text-xl font-semibold mb-2">Step 1: Choose a Portfolio Layout</h2>
-              <p className="text-gray-600">
+            <div className="bg-black/50 p-6 rounded-lg border border-white/10 backdrop-blur-md mb-8">
+              <h2 className="text-xl font-semibold mb-2 text-white">Step 1: Choose a Portfolio Layout</h2>
+              <p className="text-white/70">
                 Browse through multiple portfolio designs and select a layout that best represents your professional brand.
               </p>
             </div>
@@ -674,15 +677,15 @@ export default function PortfolioBuilder() {
               {layoutOptions.map(layout => (
                 <Card 
                   key={layout.id} 
-                  className={`cursor-pointer transition-all hover:shadow-md ${form.watch("layout") === layout.id ? "ring-2 ring-primary" : ""}`}
+                  className={`cursor-pointer transition-all bg-black/70 backdrop-blur-lg border border-white/10 hover:shadow-xl hover:border-white/20 ${form.watch("layout") === layout.id ? "ring-2 ring-purple-500" : ""}`}
                   onClick={() => form.setValue("layout", layout.id as any)}
                 >
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-lg">{layout.name}</CardTitle>
+                    <CardTitle className="text-lg text-white">{layout.name}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div 
-                      className="text-sm text-gray-600 whitespace-pre-line" 
+                      className="text-sm text-white/70 whitespace-pre-line" 
                       style={{
                         maxHeight: '220px',
                         overflowY: 'auto'
@@ -693,7 +696,7 @@ export default function PortfolioBuilder() {
                   </CardContent>
                   <CardFooter className="pt-0 flex justify-end">
                     {form.watch("layout") === layout.id && (
-                      <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
+                      <div className="w-6 h-6 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 flex items-center justify-center">
                         <Check className="h-4 w-4 text-white" />
                       </div>
                     )}
@@ -705,7 +708,7 @@ export default function PortfolioBuilder() {
             <div className="flex justify-end">
               <Button 
                 onClick={handleCreatePortfolio}
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white border-0"
               >
                 <Bot className="h-4 w-4" /> Create with Musk AI
               </Button>
