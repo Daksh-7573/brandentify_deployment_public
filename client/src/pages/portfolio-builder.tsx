@@ -1195,26 +1195,29 @@ export default function PortfolioBuilder() {
             </div>
             {/* Progress indicator */}
             <div className="hidden sm:flex items-center space-x-2">
-                {Object.values(STEPS).filter(step => typeof step === 'number').map((step) => (
-                  <div 
-                    key={step} 
-                    className={`h-2 w-12 rounded-full ${
-                      currentStep >= step ? "bg-white/80" : "bg-gray-500/30"
-                    }`}
-                  />
-                ))}
-              </div>
+              {Object.values(STEPS).filter(step => typeof step === 'number').map((step) => (
+                <div 
+                  key={step} 
+                  className={`h-2 w-12 rounded-full ${
+                    currentStep === step 
+                      ? 'bg-primary' 
+                      : currentStep > step 
+                        ? 'bg-primary/70' 
+                        : 'bg-slate-600'
+                  }`}
+                />
+              ))}
             </div>
-
-            <NeoGlassSection>
-              {isAnalyzingProfile || isGenerating || isLoadingPortfolio ? (
-                renderLoadingState()
-              ) : (
-                renderStepContent()
-              )}
-            </NeoGlassSection>
-          </NeoGlassLayout>
-        </div>
+          </div>
+          
+          <NeoGlassSection>
+            {isAnalyzingProfile || isGenerating || isLoadingPortfolio ? (
+              renderLoadingState()
+            ) : (
+              renderStepContent()
+            )}
+          </NeoGlassSection>
+        </NeoGlassLayout>
       </div>
     </div>
   );
