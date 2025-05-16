@@ -398,10 +398,10 @@ function SearchPage() {
 
               {/* Main Tabs: Search vs Smart Connect */}
               <Tabs defaultValue={activeCategory === "smart-connect" ? "search" : "search"} className="w-full">
-                <TabsList className="mb-6 neo-glass-tabs">
+                <TabsList className="mb-6 dark-tabs-list">
                   <TabsTrigger 
                     value="search" 
-                    className="text-white hover:text-gray-200"
+                    className="dark-tabs-trigger"
                     onClick={() => setActiveCategory("pulses")}
                   >
                     <SearchIcon size={16} className="mr-1.5" />
@@ -409,7 +409,7 @@ function SearchPage() {
                   </TabsTrigger>
                   <TabsTrigger 
                     value="smart-connect" 
-                    className="text-white hover:text-gray-200"
+                    className="dark-tabs-trigger"
                     onClick={() => {
                       setActiveCategory("smart-connect");
                       setShowMatchForm(true);
