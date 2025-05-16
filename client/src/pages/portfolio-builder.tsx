@@ -1215,13 +1215,11 @@ export default function PortfolioBuilder() {
             </div>
           </div>
           
-          <NeoGlassSection>
-            {isAnalyzingProfile || isGenerating || isLoadingPortfolio ? (
-              renderLoadingState()
-            ) : (
-              renderStepContent()
-            )}
-          </NeoGlassSection>
+          {isAnalyzingProfile || isGenerating || isLoadingPortfolio ? (
+            renderLoadingState()
+          ) : (
+            renderStepContent()
+          )}
         </NeoGlassLayout>
       </div>
     </div>
