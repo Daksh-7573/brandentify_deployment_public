@@ -1,22 +1,22 @@
 {
   "variant": "vibrant",
-  "primary": "#8A7CFF",
-  "appearance": "light",
+  "primary": "#3B82F6",
+  "appearance": "dark",
   "radius": 1.5,
   "colors": {
-    "secondary": "#FF7CED",
-    "tertiary": "#7CE3FF",
-    "background": "#E0E9FF",
-    "card": "rgba(255, 255, 255, 0.25)",
+    "secondary": "#0EA5E9",
+    "tertiary": "#06B6D4",
+    "background": "#0F172A",
+    "card": "rgba(30, 41, 59, 0.7)",
     "text": "#FFFFFF",
     "textSecondary": "rgba(255, 255, 255, 0.8)",
-    "success": "#7CFFB6",
-    "warning": "#FF9D7C",
-    "accent1": "#F877FF",
-    "accent2": "#77C9FF",
-    "glassBackground": "rgba(255, 255, 255, 0.15)",
-    "glassBorder": "rgba(255, 255, 255, 0.4)",
-    "glassHighlight": "rgba(255, 255, 255, 0.6)",
-    "glassShadow": "rgba(0, 0, 0, 0.1)"
+    "success": "#10B981",
+    "warning": "#F59E0B",
+    "accent1": "#6366F1",
+    "accent2": "#8B5CF6",
+    "glassBackground": "rgba(15, 23, 42, 0.7)",
+    "glassBorder": "rgba(255, 255, 255, 0.1)",
+    "glassHighlight": "rgba(255, 255, 255, 0.1)",
+    "glassShadow": "rgba(0, 0, 0, 0.4)"
   }
 }

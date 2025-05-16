@@ -666,7 +666,7 @@ export default function PortfolioBuilder() {
       case STEPS.SELECT_LAYOUT:
         return (
           <div className="space-y-8">
-            <div className="bg-black/50 p-6 rounded-lg border border-white/10 backdrop-blur-md mb-8">
+            <div className="bg-slate-900/80 p-6 rounded-lg border border-slate-700/40 backdrop-blur-md mb-8 shadow-lg">
               <h2 className="text-xl font-semibold mb-2 text-white">Step 1: Choose a Portfolio Layout</h2>
               <p className="text-white/70">
                 Browse through multiple portfolio designs and select a layout that best represents your professional brand.
@@ -677,7 +677,7 @@ export default function PortfolioBuilder() {
               {layoutOptions.map(layout => (
                 <Card 
                   key={layout.id} 
-                  className={`cursor-pointer transition-all bg-black/70 backdrop-blur-lg border border-white/10 hover:shadow-xl hover:border-white/20 ${form.watch("layout") === layout.id ? "ring-2 ring-primary" : ""}`}
+                  className={`cursor-pointer transition-all bg-slate-900/80 backdrop-blur-lg border border-slate-700/30 hover:shadow-xl hover:border-slate-600/50 ${form.watch("layout") === layout.id ? "ring-2 ring-primary" : ""}`}
                   onClick={() => form.setValue("layout", layout.id as any)}
                 >
                   <CardHeader className="pb-2">
@@ -708,7 +708,7 @@ export default function PortfolioBuilder() {
             <div className="flex justify-end">
               <Button 
                 onClick={handleCreatePortfolio}
-                className="flex items-center gap-2 bg-primary hover:bg-primary/90 text-white border-0"
+                className="flex items-center gap-2 bg-primary hover:bg-primary/90 text-white border-0 shadow-md"
               >
                 <Bot className="h-4 w-4" /> Create with Musk AI
               </Button>
@@ -1179,7 +1179,7 @@ export default function PortfolioBuilder() {
   // Main render
   return (
     <div className="flex h-screen flex-col bg-black relative">
-      <div className="absolute inset-0 bg-black/60 bg-blend-overlay bg-cover bg-center bg-fixed z-0" 
+      <div className="absolute inset-0 bg-black/75 bg-blend-overlay bg-cover bg-center bg-fixed z-0" 
            style={{ 
              backgroundImage: "url('/attached_assets/interior-background-of-a-cozy-dark-living-room-ai-generated-photo.jpg')"
            }}>
