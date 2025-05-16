@@ -135,14 +135,14 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
         </div>
       ) : (
         <Tabs defaultValue="weekly" value={tabValue} onValueChange={setTabValue}>
-          <TabsList className="grid grid-cols-3 mb-4 neo-glass-tabs bg-gray-900/40 border border-white/5">
-            <TabsTrigger value="weekly" className="text-white hover:text-gray-200">
+          <TabsList className="grid grid-cols-3 mb-4 dark-tabs-list border border-white/5">
+            <TabsTrigger value="weekly" className="dark-tabs-trigger">
               Weekly ({weeklyQuests?.length || 0})
             </TabsTrigger>
-            <TabsTrigger value="completed" className="text-white hover:text-gray-200">
+            <TabsTrigger value="completed" className="dark-tabs-trigger">
               Completed ({completedQuests.length})
             </TabsTrigger>
-            <TabsTrigger value="expired" className="text-white hover:text-gray-200">
+            <TabsTrigger value="expired" className="dark-tabs-trigger">
               Missed ({expiredQuests.length})
             </TabsTrigger>
           </TabsList>
