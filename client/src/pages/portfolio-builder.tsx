@@ -678,7 +678,7 @@ export default function PortfolioBuilder() {
                     key={layout.id}
                     className={`cursor-pointer transition-all rounded-lg p-4 hover:shadow-xl hover:border-white/20 hover:-translate-y-1 ${
                       form.watch("layout") === layout.id 
-                        ? "ring-2 ring-primary border border-primary/40 bg-black/60 backdrop-blur-md" 
+                        ? "ring-2 ring-primary/70 border border-primary/40 bg-black/60 backdrop-blur-md shadow-lg shadow-primary/10" 
                         : "border border-white/10 bg-slate-900/60 backdrop-blur-md"
                     }`}
                     onClick={() => form.setValue("layout", layout.id as any)}
@@ -700,8 +700,8 @@ export default function PortfolioBuilder() {
                       </div>
                       <div className="pt-3 flex justify-end">
                         {form.watch("layout") === layout.id && (
-                          <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center shadow-md shadow-primary/20">
-                            <Check className="h-4 w-4 text-white" />
+                          <div className="w-6 h-6 rounded-full bg-gradient-to-r from-primary to-primary/80 flex items-center justify-center shadow-md shadow-primary/20 border border-white/20">
+                            <Check className="h-3.5 w-3.5 text-white" />
                           </div>
                         )}
                       </div>
