@@ -444,7 +444,11 @@ const SearchPage = () => {
               </form>
 
               {/* Search Category Tabs */}
-              <Tabs defaultValue={activeCategory === "smart-connect" ? "pulses" : activeCategory} onValueChange={handleTabChange}>
+              <Tabs 
+                defaultValue={activeCategory === "smart-connect" ? "pulses" : activeCategory} 
+                onValueChange={handleTabChange}
+                data-category-tabs="true"
+              >
                 <TabsList className="mb-6 dark-tabs-list">
                   <TabsTrigger 
                     value="pulses" 

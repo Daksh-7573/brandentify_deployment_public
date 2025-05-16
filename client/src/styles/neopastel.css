@@ -408,6 +408,7 @@ input:focus, textarea:focus, select:focus, .select-trigger:focus {
   background-color: rgba(30, 31, 35, 0.7) !important;
   border-radius: var(--border-radius-pill) !important;
   padding: 4px !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
 }
 
 .dark-tabs-trigger {
@@ -419,6 +420,25 @@ input:focus, textarea:focus, select:focus, .select-trigger:focus {
   background-color: rgba(255, 255, 255, 0.15) !important;
   color: white !important;
   text-shadow: 0 0 10px rgba(255, 255, 255, 0.5) !important;
+}
+
+/* Specific overrides for search category tabs */
+[data-category-tabs="true"] .dark-tabs-list {
+  background-color: rgba(30, 31, 35, 0.8) !important;
+  border-radius: var(--border-radius-pill) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+[data-category-tabs="true"] .dark-tabs-trigger {
+  color: white !important;
+  font-weight: 500 !important;
+  padding: 8px 16px !important;
+}
+
+[data-category-tabs="true"] .dark-tabs-trigger[data-state="active"] {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.6) !important;
 }
 
 /* Make sure click events work on tabs */
