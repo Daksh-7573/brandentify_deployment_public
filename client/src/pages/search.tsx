@@ -390,38 +390,28 @@ const SearchPage = () => {
           </div>
 
           {/* Main Tabs: Search vs Smart Connect */}
-          <div className="w-full">
-            <ul className="mb-6 flex gap-0 bg-[rgba(30,31,35,0.8)] backdrop-blur-md border border-white/15 p-1 rounded-full">
-              <li className="flex-1">
-                <button 
-                  onClick={() => setActiveCategory("pulses")}
-                  className={`w-full flex items-center justify-center text-white font-medium py-2 px-4 rounded-full ${
-                    activeCategory !== "smart-connect" 
-                      ? "bg-white/20 text-white text-shadow" 
-                      : "hover:bg-white/10 transition-colors"
-                  }`}
-                >
-                  <SearchIcon size={16} className="mr-1.5" />
-                  <span>Search</span>
-                </button>
-              </li>
-              <li className="flex-1">
-                <button 
-                  onClick={() => {
-                    setActiveCategory("smart-connect");
-                    setShowMatchForm(true);
-                  }}
-                  className={`w-full flex items-center justify-center text-white font-medium py-2 px-4 rounded-full ${
-                    activeCategory === "smart-connect" 
-                      ? "bg-white/20 text-white text-shadow" 
-                      : "hover:bg-white/10 transition-colors"
-                  }`}
-                >
-                  <Users size={16} className="mr-1.5" />
-                  <span>Smart Connect</span>
-                </button>
-              </li>
-            </ul>
+          <Tabs defaultValue={activeCategory === "smart-connect" ? "search" : "search"} className="w-full">
+            <TabsList className="mb-6 dark-tabs-list">
+              <TabsTrigger 
+                value="search" 
+                className="dark-tabs-trigger"
+                onClick={() => setActiveCategory("pulses")}
+              >
+                <SearchIcon size={16} className="mr-1.5" />
+                <span>Search</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="smart-connect" 
+                className="dark-tabs-trigger"
+                onClick={() => {
+                  setActiveCategory("smart-connect");
+                  setShowMatchForm(true);
+                }}
+              >
+                <Users size={16} className="mr-1.5" />
+                <span>Smart Connect</span>
+              </TabsTrigger>
+            </TabsList>
 
             {/* Search Tab */}
             <TabsContent value="search" className="space-y-6">
@@ -454,53 +444,33 @@ const SearchPage = () => {
               </form>
 
               {/* Search Category Tabs */}
-              <div className="w-full">
-                <div className="mb-6">
-                  <ul className="flex gap-0 bg-[rgba(30,31,35,0.8)] backdrop-blur-md border border-white/15 p-1 rounded-full">
-                    <li className="flex-1">
-                      <button 
-                        onClick={() => handleTabChange("pulses")}
-                        className={`w-full flex items-center justify-center text-white font-medium py-2 px-4 rounded-full ${
-                          activeCategory === "pulses" 
-                            ? "bg-white/20 text-white text-shadow" 
-                            : "hover:bg-white/10 transition-colors"
-                        }`}
-                      >
-                        <MessageSquare size={16} className="mr-1.5" />
-                        <span>Pulses</span>
-                      </button>
-                    </li>
-                    <li className="flex-1">
-                      <button 
-                        onClick={() => handleTabChange("profiles")}
-                        className={`w-full flex items-center justify-center text-white font-medium py-2 px-4 rounded-full ${
-                          activeCategory === "profiles" 
-                            ? "bg-white/20 text-white text-shadow" 
-                            : "hover:bg-white/10 transition-colors"
-                        }`}
-                      >
-                        <Users size={16} className="mr-1.5" />
-                        <span>Profiles</span>
-                      </button>
-                    </li>
-                    <li className="flex-1">
-                      <button 
-                        onClick={() => handleTabChange("hashtags")}
-                        className={`w-full flex items-center justify-center text-white font-medium py-2 px-4 rounded-full ${
-                          activeCategory === "hashtags" 
-                            ? "bg-white/20 text-white text-shadow" 
-                            : "hover:bg-white/10 transition-colors"
-                        }`}
-                      >
-                        <Hash size={16} className="mr-1.5" />
-                        <span>Hashtags</span>
-                      </button>
-                    </li>
-                  </ul>
-                </div>
+              <Tabs defaultValue={activeCategory === "smart-connect" ? "pulses" : activeCategory} onValueChange={handleTabChange}>
+                <TabsList className="mb-6 dark-tabs-list">
+                  <TabsTrigger 
+                    value="pulses" 
+                    className="dark-tabs-trigger"
+                  >
+                    <MessageSquare size={16} className="mr-1.5" />
+                    <span>Pulses</span>
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="profiles" 
+                    className="dark-tabs-trigger"
+                  >
+                    <Users size={16} className="mr-1.5" />
+                    <span>Profiles</span>
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="hashtags" 
+                    className="dark-tabs-trigger"
+                  >
+                    <Hash size={16} className="mr-1.5" />
+                    <span>Hashtags</span>
+                  </TabsTrigger>
+                </TabsList>
 
                 {/* Pulses Results */}
-                <div className={activeCategory === "pulses" ? "block" : "hidden"}>
+                <TabsContent value="pulses">
                   {!submittedQuery ? (
                     <div className="text-center py-12 border border-white/10 rounded-lg bg-gray-900/60 backdrop-blur-md shadow-xl">
                       <MessageSquare className="mx-auto h-12 w-12 text-white/70 mb-4" />
