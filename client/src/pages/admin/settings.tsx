@@ -152,20 +152,20 @@ export default function SettingsPage() {
         </div>
         
         <Tabs defaultValue="general" className="space-y-4">
-          <TabsList className="grid sm:grid-cols-4 grid-cols-2 w-full">
-            <TabsTrigger value="general" className="flex items-center gap-2">
+          <TabsList className="grid sm:grid-cols-4 grid-cols-2 w-full dark-tabs-list">
+            <TabsTrigger value="general" className="flex items-center gap-2 dark-tabs-trigger">
               <Settings className="h-4 w-4" />
               <span>General</span>
             </TabsTrigger>
-            <TabsTrigger value="security" className="flex items-center gap-2">
+            <TabsTrigger value="security" className="flex items-center gap-2 dark-tabs-trigger">
               <Shield className="h-4 w-4" />
               <span>Security</span>
             </TabsTrigger>
-            <TabsTrigger value="email" className="flex items-center gap-2">
+            <TabsTrigger value="email" className="flex items-center gap-2 dark-tabs-trigger">
               <Mail className="h-4 w-4" />
               <span>Email</span>
             </TabsTrigger>
-            <TabsTrigger value="api" className="flex items-center gap-2">
+            <TabsTrigger value="api" className="flex items-center gap-2 dark-tabs-trigger">
               <Key className="h-4 w-4" />
               <span>API & Integration</span>
             </TabsTrigger>

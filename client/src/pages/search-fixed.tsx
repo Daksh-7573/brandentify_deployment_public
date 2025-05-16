@@ -257,16 +257,14 @@ function SearchPage() {
         }
         
         setIsFollowLoading(true);
-        const res = await apiRequest(
-          `/api/hashtags/${tag.id}/follow?userId=${userId}`,
-          {
-            method: 'POST',
-            body: JSON.stringify({ userId }),
-            headers: {
-              'Content-Type': 'application/json'
-            }
-          }
-        );
+        const res = await fetch(`/api/hashtags/${tag.id}/follow?userId=${userId}`, {
+          method: 'POST',
+          body: JSON.stringify({ userId }),
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include'
+        } as RequestInit);
         
         return res.json();
       },
@@ -296,12 +294,10 @@ function SearchPage() {
         if (!userId) return;
         
         setIsFollowLoading(true);
-        const res = await apiRequest(
-          `/api/hashtags/${tag.id}/follow?userId=${userId}`,
-          {
-            method: 'DELETE'
-          }
-        );
+        const res = await fetch(`/api/hashtags/${tag.id}/follow?userId=${userId}`, {
+          method: 'DELETE',
+          credentials: 'include'
+        } as RequestInit);
         
         return res.json();
       },
