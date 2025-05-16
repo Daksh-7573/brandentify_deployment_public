@@ -676,10 +676,10 @@ export default function PortfolioBuilder() {
                 {layoutOptions.map(layout => (
                   <div 
                     key={layout.id}
-                    className={`cursor-pointer transition-all rounded-lg p-4 hover:shadow-xl hover:border-white/20 hover:-translate-y-1 ${
+                    className={`neo-glass-card cursor-pointer transition-all rounded-lg p-4 hover:shadow-xl hover:border-white/20 hover:-translate-y-1 ${
                       form.watch("layout") === layout.id 
-                        ? "ring-1 ring-white/30 border border-white/20 bg-black/70 backdrop-blur-md" 
-                        : "border border-white/10 bg-slate-900/60 backdrop-blur-md"
+                        ? "ring-1 ring-white/20 border border-white/15 bg-black/70" 
+                        : "border border-white/10 bg-black/60"
                     }`}
                     onClick={() => form.setValue("layout", layout.id as any)}
                   >
