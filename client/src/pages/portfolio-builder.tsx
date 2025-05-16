@@ -1178,12 +1178,10 @@ export default function PortfolioBuilder() {
 
   // Main render
   return (
-    <div className="flex h-screen flex-col bg-background bg-opacity-30 relative">
-      <div className="absolute inset-0 bg-cover bg-center bg-fixed z-0" 
+    <div className="flex h-screen flex-col bg-black relative">
+      <div className="absolute inset-0 bg-black/60 bg-blend-overlay bg-cover bg-center bg-fixed z-0" 
            style={{ 
-             backgroundImage: "url('/attached_assets/interior-background-of-a-cozy-dark-living-room-ai-generated-photo.jpg')", 
-             opacity: 0.3, 
-             filter: "blur(5px)" 
+             backgroundImage: "url('/attached_assets/interior-background-of-a-cozy-dark-living-room-ai-generated-photo.jpg')"
            }}>
       </div>
       <Header />
