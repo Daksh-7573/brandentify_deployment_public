@@ -5,17 +5,16 @@ import { useToast } from '@/hooks/use-toast';
 import { useLocation } from 'wouter';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useAuth } from '@/hooks/use-auth';
-import { apiRequest } from '@/lib/queryClient';
+import { queryClient } from '@/lib/queryClient';
 
 /**
- * Reliable Login Page - Works on all Replit domains
+ * Universal Login Page - Works on all Replit domains
  * 
  * This login page bypasses external OAuth providers and uses a direct
  * API call to the backend for authentication. This ensures it works
  * on all Replit domains regardless of cross-domain restrictions.
  */
-const ReliableLoginPage: React.FC = () => {
+const UniversalLoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -23,18 +22,26 @@ const ReliableLoginPage: React.FC = () => {
   const [success, setSuccess] = useState<string | null>(null);
   const [_, navigate] = useLocation();
   const { toast } = useToast();
-  const { user, signInWithEmail, isAuthenticated } = useAuth();
 
-  // Check if user is already authenticated
+  // Check if user is already logged in via stored token
   useEffect(() => {
-    if (isAuthenticated && user) {
-      console.log("User already authenticated, redirecting to dashboard");
-      setSuccess(`Already logged in as: ${user.name || user.email}`);
-      setTimeout(() => navigate('/dashboard'), 1000);
+    const token = localStorage.getItem('user_session');
+    if (token) {
+      try {
+        const userData = JSON.parse(token);
+        if (userData && userData.email) {
+          console.log("Found existing session, redirecting to dashboard");
+          setSuccess(`Already logged in as: ${userData.name || userData.email}`);
+          setTimeout(() => navigate('/dashboard'), 1000);
+        }
+      } catch (e) {
+        // Invalid token, clear it
+        localStorage.removeItem('user_session');
+      }
     }
-  }, [isAuthenticated, user, navigate]);
+  }, [navigate]);
 
-  const handleLoginDirectly = async () => {
+  const handleDirectLogin = async () => {
     try {
       setIsLoading(true);
       setError(null);
@@ -46,8 +53,8 @@ const ReliableLoginPage: React.FC = () => {
       // Use demo credentials if no name provided
       const displayName = name || 'Demo User';
       
-      // Direct backend call to create/login a user
-      const response = await fetch('/api/auth/demo-login', {
+      // Make a direct API call to authenticate
+      const response = await fetch('/api/direct-login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -58,9 +65,9 @@ const ReliableLoginPage: React.FC = () => {
         }),
       });
       
-      // Check if response is ok before parsing JSON
       if (!response.ok) {
-        throw new Error(`Login failed with status: ${response.status}`);
+        const text = await response.text();
+        throw new Error(`Login failed with status: ${response.status}. ${text}`);
       }
       
       // Handle JSON parsing errors
@@ -69,8 +76,6 @@ const ReliableLoginPage: React.FC = () => {
         result = await response.json();
       } catch (parseError) {
         console.error('Failed to parse response:', parseError);
-        const text = await response.text();
-        console.error('Response was:', text);
         throw new Error('Server returned invalid JSON');
       }
       
@@ -78,16 +83,11 @@ const ReliableLoginPage: React.FC = () => {
         throw new Error(result?.message || "Login failed");
       }
       
-      // Create a simplified user object to pass to the auth context
-      // We only need the essential properties
-      const authUser = {
-        id: result.user.id,
-        username: result.user.username,
-        email: result.user.email,
-        name: result.user.name || null
-      };
+      // Store user data in local storage
+      localStorage.setItem('user_session', JSON.stringify(result.user));
       
-      signInWithEmail(authUser);
+      // Reset query cache to reflect new login state
+      queryClient.clear();
       
       setSuccess(`Logged in as: ${displayName}`);
       toast({
@@ -115,8 +115,13 @@ const ReliableLoginPage: React.FC = () => {
     setEmail("demo@brandentifier.com");
     setName("Demo User");
     
-    setTimeout(() => handleLoginDirectly(), 500);
+    setTimeout(() => handleDirectLogin(), 500);
   };
+
+  // Check if a user is stored in local storage
+  const userData = localStorage.getItem('user_session');
+  const isAuthenticated = !!userData;
+  const user = userData ? JSON.parse(userData) : null;
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-black bg-opacity-80 p-4" 
@@ -133,7 +138,7 @@ const ReliableLoginPage: React.FC = () => {
         
         <Card className="w-full backdrop-blur-lg bg-black bg-opacity-40 border border-gray-800 neo-glass">
           <CardHeader>
-            <CardTitle className="text-white">Reliable Login</CardTitle>
+            <CardTitle className="text-white">Universal Login</CardTitle>
             <CardDescription className="text-gray-300">
               Sign in to access your account (works on all domains)
             </CardDescription>
@@ -160,6 +165,17 @@ const ReliableLoginPage: React.FC = () => {
                   className="w-full bg-blue-600 hover:bg-blue-700 mt-3"
                 >
                   Go to Dashboard
+                </Button>
+                
+                <Button 
+                  onClick={() => {
+                    localStorage.removeItem('user_session');
+                    window.location.reload();
+                  }}
+                  variant="outline"
+                  className="w-full mt-3 bg-red-900 bg-opacity-30 hover:bg-red-900 hover:bg-opacity-50 text-white"
+                >
+                  Sign Out
                 </Button>
               </div>
             ) : (
@@ -189,7 +205,7 @@ const ReliableLoginPage: React.FC = () => {
                 </div>
                 
                 <Button 
-                  onClick={handleLoginDirectly}
+                  onClick={handleDirectLogin}
                   className="w-full mt-4 bg-blue-600 hover:bg-blue-700"
                   disabled={isLoading}
                 >
@@ -244,4 +260,4 @@ const ReliableLoginPage: React.FC = () => {
   );
 };
 
-export default ReliableLoginPage;
+export default UniversalLoginPage;

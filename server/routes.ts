@@ -5640,7 +5640,7 @@ ${extractedText.substring(0, 5000)}
   console.log("Mentorship Connect routes loaded");
   
   // Demo auth routes that work on all domains
-  app.use('/api', demoAuthRoutes);
+  app.use(demoAuthRoutes);
   console.log("Demo auth routes loaded");
   
   // Career Capsule routes - removed
