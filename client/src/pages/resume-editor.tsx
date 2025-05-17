@@ -948,6 +948,101 @@ export default function ResumeEditor() {
     }
   }, [resumeData?.resume?.id, resumeData?.form]);
   
+  // Check for uploaded resume data from file upload
+  useEffect(() => {
+    // Check if there's parsed resume data from file upload
+    const parsedResumeData = localStorage.getItem('parsedResumeData');
+    if (parsedResumeData && !formInitialized) {
+      try {
+        const parsedData = JSON.parse(parsedResumeData);
+        console.log('Found parsed resume data from file upload:', parsedData);
+        
+        toast({
+          title: 'Resume uploaded successfully',
+          description: 'We\'ve extracted information from your resume. Please review and confirm the details.',
+          variant: 'default',
+        });
+        
+        // Map parsed resume data to form structure
+        const mappedData = {
+          personalInfo: {
+            fullName: parsedData.personalInfo?.name || '',
+            title: parsedData.personalInfo?.title || '',
+            email: parsedData.personalInfo?.email || '',
+            phone: parsedData.personalInfo?.phone || '',
+            location: parsedData.personalInfo?.location || '',
+            summary: parsedData.summary || '',
+            website: parsedData.personalInfo?.website || '',
+          },
+          experiences: { 
+            experiences: (parsedData.experiences || []).map(exp => ({
+              title: exp.title || '',
+              company: exp.company || '',
+              location: exp.location || '',
+              startDate: exp.startDate || '',
+              endDate: exp.endDate || '',
+              isCurrent: exp.endDate === 'Present' || exp.endDate === 'Current' || false,
+              description: exp.description || '',
+              responsibilities: Array.isArray(exp.achievements) ? exp.achievements : [],
+            }))
+          },
+          education: { 
+            educations: (parsedData.education || []).map(edu => ({
+              institution: edu.institution || '',
+              degree: edu.degree || '',
+              fieldOfStudy: edu.fieldOfStudy || '',
+              location: '',
+              startDate: edu.startDate || '',
+              endDate: edu.endDate || '',
+              isCurrentlyEnrolled: edu.endDate === 'Present' || edu.endDate === 'Current' || false,
+              gpa: '',
+              achievements: '',
+            }))
+          },
+          skills: { 
+            skills: (parsedData.skills || []).map(skill => ({
+              name: typeof skill === 'string' ? skill : skill.name || '',
+              level: typeof skill === 'object' ? skill.level || '' : '',
+              category: typeof skill === 'object' ? skill.category || '' : '',
+            }))
+          },
+          projects: { 
+            projects: (parsedData.projects || []).map(project => ({
+              title: project.title || '',
+              description: project.description || '',
+              startDate: project.startDate || '',
+              endDate: project.endDate || '',
+              url: project.url || '',
+              skills: Array.isArray(project.skills) ? project.skills : [],
+              achievements: typeof project.achievements === 'string' ? project.achievements : '',
+            }))
+          },
+          settings: {
+            isDownloadable: true,
+            visibility: 'private',
+            themeStyle: 'professional',
+          },
+        };
+        
+        // Set the form values
+        console.log('Setting form values with mapped data:', mappedData);
+        form.reset(mappedData);
+        setFormInitialized(true);
+        setPageStatus('ready');
+        
+        // Clear the localStorage to prevent reloading the same data
+        localStorage.removeItem('parsedResumeData');
+      } catch (error) {
+        console.error('Error processing parsed resume data:', error);
+        toast({
+          title: 'Error processing resume',
+          description: 'There was a problem processing your uploaded resume. Please try again.',
+          variant: 'destructive',
+        });
+      }
+    }
+  }, [formInitialized, form, toast]);
+  
   // Parse metadata
   useEffect(() => {
     if (resumeData?.resume?.metadata && !resumeData?.form) {
