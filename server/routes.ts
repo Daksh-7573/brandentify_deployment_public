@@ -28,6 +28,7 @@ import brandsOfTheDayRoutes from "./routes-brands-of-the-day";
 import messagingRoutes from "./routes-messaging";
 import enhancedUserRoutes from "./routes-enhanced-user";
 import whatIOfferRoutes from "./routes-what-i-offer";
+import demoAuthRoutes from "./routes-auth-demo";
 import profileServicesRoutes from "./routes-services-sync";
 import adminRoutes from "./routes-admin";
 import resumeParserRoutes from "./resume-routes";
