@@ -25,6 +25,7 @@ import SearchPage from "@/pages/search-fixed";
 import AuthPage from "@/pages/auth-page";
 import EmailVerification from "@/pages/email-verification";
 import NewsSourcesPage from "@/pages/news-sources";
+import LoginPage from "@/pages/login";
 import Radar from "@/pages/radar";
 import FirebaseAuthTest from "@/pages/auth-test";
 import GoogleAuthTest from "@/pages/google-auth-test";
@@ -98,6 +99,8 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Landing} />
+      {/* Dedicated login page for Google auth */}
+      <Route path="/login" component={LoginPage} />
       {/* Add multiple routes to catch all possible auth callback paths */}
       <Route path="/auth-callback" component={AuthCallback} />
       <Route path="/__/auth/handler" component={AuthCallback} />
