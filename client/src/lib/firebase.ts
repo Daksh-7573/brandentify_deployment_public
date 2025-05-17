@@ -74,18 +74,24 @@ try {
   // Initialize Firebase Auth
   auth = getAuth(app);
   
-  // Configure Google Auth Provider with minimal parameters for maximum compatibility
+  // Configure Google Auth Provider with strong parameters for explicit Google authentication
   googleProvider = new GoogleAuthProvider();
   
-  // Set up popup mode as the primary auth method for better reliability
-  // Setting prompt ensures the user always gets to choose which account to use
+  // Set up enhanced parameters to ensure explicit Google selection 
+  // These settings force the account selection UI and prevent auto-selection
   googleProvider.setCustomParameters({
-    prompt: 'select_account'
+    prompt: 'select_account',
+    // Force reauthentication to ensure Google account selection appears
+    auth_type: 'reauthenticate',
+    // Additional parameters to ensure Google authentication
+    access_type: 'offline',
+    include_granted_scopes: 'true'
   });
   
-  // Add OAuth scopes to ensure we get the right profile data
+  // Add comprehensive OAuth scopes for complete Google profile access
   googleProvider.addScope('email');
   googleProvider.addScope('profile');
+  googleProvider.addScope('https://www.googleapis.com/auth/userinfo.profile');
   
   // Ensure the auth provider trusts our domain
   auth.useDeviceLanguage();
