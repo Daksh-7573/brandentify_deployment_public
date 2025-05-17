@@ -32,6 +32,7 @@ import SimpleLoginPage from "@/pages/simple-login";
 import ReliableLoginPage from "@/pages/reliable-login";
 import UniversalLoginPage from "@/pages/universal-login";
 import SimpleUniversalLoginPage from "@/pages/simple-universal-login";
+import EasyLoginPage from "@/pages/easy-login";
 import Radar from "@/pages/radar";
 import FirebaseAuthTest from "@/pages/auth-test";
 import GoogleAuthTest from "@/pages/google-auth-test";
@@ -119,6 +120,7 @@ function Router() {
       <Route path="/reliable-login" component={ReliableLoginPage} />
       <Route path="/universal-login" component={UniversalLoginPage} />
       <Route path="/simple-universal-login" component={SimpleUniversalLoginPage} />
+      <Route path="/easy-login" component={EasyLoginPage} />
       <Route path="/fixed-login" component={() => {
         const FixedLoginPage = lazy(() => import("@/pages/fixed-login"));
         return (
