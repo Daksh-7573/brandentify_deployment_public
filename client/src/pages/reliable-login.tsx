@@ -47,27 +47,48 @@ const ReliableLoginPage: React.FC = () => {
       const displayName = name || 'Demo User';
       
       // Direct backend call to create/login a user
-      const result = await apiRequest('/api/auth/demo-login', {
+      const response = await fetch('/api/auth/demo-login', {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({
           email,
           name: displayName,
         }),
       });
       
+      const result = await response.json();
+      
       if (!result || !result.success) {
         throw new Error(result?.message || "Login failed");
       }
       
       // Call the auth context method to set up user session
-      signInWithEmail({
+      // Create a compatible user object with all required properties
+      const authUser = {
         id: result.user.id,
         username: result.user.username,
         email: result.user.email,
-        name: result.user.name,
-        title: result.user.title,
-        location: result.user.location,
-      });
+        name: result.user.name || null,
+        title: result.user.title || null,
+        aboutMe: null,
+        location: result.user.location || null,
+        password: null,
+        phoneNumber: null,
+        photoURL: null,
+        isVerified: true,
+        googleId: null,
+        facebookId: null,
+        twitterId: null,
+        appleId: null,
+        githubId: null,
+        linkedinId: null,
+        lastLogin: new Date(),
+        createdAt: null
+      };
+      
+      signInWithEmail(authUser);
       
       setSuccess(`Logged in as: ${displayName}`);
       toast({

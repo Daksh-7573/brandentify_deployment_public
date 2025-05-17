@@ -43,7 +43,7 @@ router.post("/auth/demo-login", async (req: Request, res: Response) => {
         email,
         name: name || 'Demo User',
         photoURL: null,
-        emailVerified: true,
+        // emailVerified is handled internally
       });
       
       console.log(`Created new demo user: ${user.name} (${user.email})`);
