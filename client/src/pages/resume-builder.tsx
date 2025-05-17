@@ -33,17 +33,32 @@ export default function ResumeBuilder() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
-      const allowedTypes = ['.pdf', '.doc', '.docx'];
-      const fileExtension = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
       
-      console.log(`File selected: ${file.name}, type: ${file.type}, extension: ${fileExtension}`);
+      // Get file extension and make more flexible checks
+      const fileName = file.name.toLowerCase();
+      const fileType = file.type.toLowerCase();
       
-      if (allowedTypes.some(type => fileExtension === type)) {
+      console.log(`File selected: ${file.name}, type: ${file.type}`);
+      
+      // Accept any file that has a PDF or Word document extension or MIME type
+      if (
+        // Check extensions
+        fileName.endsWith('.pdf') || 
+        fileName.endsWith('.doc') || 
+        fileName.endsWith('.docx') ||
+        // Check MIME types
+        fileType.includes('pdf') || 
+        fileType.includes('word') || 
+        fileType.includes('document') ||
+        fileType.includes('application/octet-stream') // Sometimes browsers use this generic type
+      ) {
+        console.log('File accepted!');
         setSelectedFile(file);
         setUploadError(null);
       } else {
+        console.log('File rejected: Invalid type');
         setSelectedFile(null);
-        setUploadError(`Invalid file type: ${fileExtension}. Please upload a PDF (.pdf), DOC (.doc), or DOCX (.docx) file.`);
+        setUploadError(`Invalid file type. Please upload a PDF (.pdf), DOC (.doc), or DOCX (.docx) file.`);
       }
     }
   };
@@ -69,16 +84,31 @@ export default function ResumeBuilder() {
     
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       const file = e.dataTransfer.files[0];
-      const allowedTypes = ['.pdf', '.doc', '.docx'];
-      const fileExtension = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
       
-      console.log(`File dropped: ${file.name}, type: ${file.type}, extension: ${fileExtension}`);
+      // Get file extension and make more flexible checks
+      const fileName = file.name.toLowerCase();
+      const fileType = file.type.toLowerCase();
       
-      if (allowedTypes.some(type => fileExtension === type)) {
+      console.log(`File dropped: ${file.name}, type: ${file.type}`);
+      
+      // Accept any file that has a PDF or Word document extension or MIME type
+      if (
+        // Check extensions
+        fileName.endsWith('.pdf') || 
+        fileName.endsWith('.doc') || 
+        fileName.endsWith('.docx') ||
+        // Check MIME types
+        fileType.includes('pdf') || 
+        fileType.includes('word') || 
+        fileType.includes('document') ||
+        fileType.includes('application/octet-stream') // Sometimes browsers use this generic type
+      ) {
+        console.log('File accepted!');
         setSelectedFile(file);
       } else {
+        console.log('File rejected: Invalid type');
         setSelectedFile(null);
-        setUploadError(`Invalid file type: ${fileExtension}. Please upload a PDF (.pdf), DOC (.doc), or DOCX (.docx) file.`);
+        setUploadError(`Invalid file type. Please upload a PDF (.pdf), DOC (.doc), or DOCX (.docx) file.`);
       }
     }
   };
@@ -108,10 +138,12 @@ export default function ResumeBuilder() {
       console.log('Uploading resume file:', selectedFile.name);
       console.log('User ID for upload:', user?.uid);
       
-      // Upload the resume file
+      // Upload the resume file with better error handling
+      console.log('Sending resume for parsing with content type automatically set by FormData');
       const response = await fetch('/api/resume/parse', {
         method: 'POST',
-        body: formData
+        body: formData,
+        // Don't set Content-Type header as FormData automatically sets it with boundary
       });
       
       if (!response.ok) {
