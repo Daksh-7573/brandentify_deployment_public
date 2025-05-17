@@ -580,14 +580,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       let result;
       
       try {
-        // Try the popup method first as it provides better UX
-        console.log("Using Google authentication popup");
-        result = await signInWithPopup(auth, googleProvider);
+        // Check if we're on a development domain that needs special handling
+        const currentHostname = window.location.hostname;
+        const needsSpecialHandling = 
+          currentHostname === "25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev";
         
-        // Verify this was actually a Google authentication
-        const credential = GoogleAuthProvider.credentialFromResult(result);
-        if (credential && credential.providerId === 'google.com') {
-          console.log("Confirmed authentic Google authentication");
+        if (needsSpecialHandling) {
+          // Use redirect for problematic domains - this works better with Replit's development domains
+          console.log("Using redirect method for problematic domain");
+          localStorage.setItem('auth_redirect_attempt', 'true');
+          localStorage.setItem('auth_redirect_time', Date.now().toString());
+          
+          // Always use redirect for the known problematic domain
+          await signInWithRedirect(auth, googleProvider);
+          console.log("Redirect initiated - page will reload after Google authentication");
+          return; // Function will exit here and auth will continue after redirect
+        } else {
+          // For other domains, try popup first
+          console.log("Using Google authentication popup");
+          result = await signInWithPopup(auth, googleProvider);
+          
+          // Verify this was actually a Google authentication
+          const credential = GoogleAuthProvider.credentialFromResult(result);
+          if (credential && credential.providerId === 'google.com') {
+            console.log("Confirmed authentic Google authentication");
         } else {
           console.warn("Authentication succeeded but may not be Google-based");
         }
