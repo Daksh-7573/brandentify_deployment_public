@@ -476,7 +476,9 @@ function sanitizeLogsMiddleware(req: Request, res: Response, next: NextFunction)
     originalConsoleLog.apply(console, sanitizedArgs);
   };
   
-  // Override console.error to sanitize PII
+  // Comment out the console.error override temporarily to fix recursive stack overflow
+  /* 
+  // Override console.error to sanitize PII - disabled due to recursion bug
   console.error = function(...args) {
     const sanitizedArgs = args.map((arg) => {
       if (typeof arg === 'string') {
@@ -493,6 +495,7 @@ function sanitizeLogsMiddleware(req: Request, res: Response, next: NextFunction)
     // Call the original console.error with sanitized arguments
     originalConsoleError.apply(console, sanitizedArgs);
   };
+  */
   
   next();
 }
