@@ -2,7 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { 
+  getAuth, 
+  signInWithEmailAndPassword, 
+  createUserWithEmailAndPassword, 
+  signInWithPopup, 
+  signInWithRedirect,
+  getRedirectResult,
+  GoogleAuthProvider 
+} from 'firebase/auth';
 import { app as firebaseApp } from '../lib/firebase';
 import { useLocation } from 'wouter';
 import { Input } from '@/components/ui/input';
@@ -27,8 +35,57 @@ const FixedLoginPage: React.FC = () => {
   const [_, navigate] = useLocation();
   const { toast } = useToast();
 
-  // Keep track of current auth state
+  // Handle redirect result and keep track of auth state
   useEffect(() => {
+    async function checkRedirectResult() {
+      try {
+        // Check if we have a pending redirect result (returning from Google auth)
+        const redirectAttempt = localStorage.getItem('auth_redirect_attempt');
+        
+        if (redirectAttempt === 'true') {
+          console.log("Checking for redirect result from Google authentication");
+          setIsLoading(true);
+          
+          // Clear the redirect flag immediately
+          localStorage.removeItem('auth_redirect_attempt');
+          
+          // Get the result of the redirect operation
+          const result = await getRedirectResult(auth);
+          
+          if (result) {
+            // Successfully completed the redirect auth flow
+            console.log("Redirect authentication successful:", result.user.displayName || result.user.email);
+            
+            setSuccess(`Logged in with Google as: ${result.user.displayName || result.user.email}`);
+            toast({
+              title: "Google Login Successful",
+              description: `Logged in as: ${result.user.displayName || result.user.email}`,
+            });
+            
+            // Redirect to dashboard after success
+            setTimeout(() => navigate('/dashboard'), 1000);
+          } else {
+            console.log("No redirect result found, user may have cancelled the Google login");
+          }
+        }
+      } catch (err: any) {
+        console.error("Error processing redirect result:", err);
+        setError(`Authentication error: ${err.message}`);
+        
+        toast({
+          title: "Authentication Error",
+          description: err.message,
+          variant: "destructive"
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    
+    // Check for redirect result on page load
+    checkRedirectResult();
+    
+    // Set up auth state listener
     const unsubscribe = auth.onAuthStateChanged(user => {
       if (user) {
         console.log("Current user:", user.displayName || user.email);
@@ -38,8 +95,9 @@ const FixedLoginPage: React.FC = () => {
       }
     });
     
+    // Clean up
     return () => unsubscribe();
-  }, []);
+  }, [navigate, toast]);
 
   const loginEmail = async () => {
     try {
@@ -111,33 +169,65 @@ const FixedLoginPage: React.FC = () => {
     try {
       setIsLoading(true);
       setError(null);
+
+      // Get current hostname to determine authentication method
+      const currentHostname = window.location.hostname;
+      const isReplitDomain = currentHostname.includes('replit.dev') || 
+                             currentHostname.includes('replit.app') ||
+                             currentHostname.includes('repl.co');
       
-      // Use popup method which works better on Replit domains
-      const result = await signInWithPopup(auth, googleProvider);
-      
-      setSuccess(`Logged in with Google as: ${result.user.displayName || result.user.email}`);
-      toast({
-        title: "Google Login Successful",
-        description: `Logged in as: ${result.user.displayName || result.user.email}`,
+      // Set custom parameters for better authentication flow
+      googleProvider.setCustomParameters({
+        prompt: 'select_account',
+        auth_type: 'reauthenticate',
+        include_granted_scopes: 'true',
+        // Disable auto sign-in to prevent issues with cached states
+        disable_auto_sign_in: 'true',
       });
       
-      // Redirect to dashboard after a brief delay
-      setTimeout(() => navigate('/dashboard'), 1000);
+      // Always use redirect method on Replit domains for better compatibility
+      if (isReplitDomain) {
+        console.log("Using redirect authentication for Replit domain:", currentHostname);
+        // Store a flag in localStorage to track that we initiated a redirect
+        localStorage.setItem('auth_redirect_attempt', 'true');
+        localStorage.setItem('auth_redirect_time', Date.now().toString());
+        
+        // Use redirect method which works better on Replit domains
+        await signInWithRedirect(auth, googleProvider);
+        
+        // Note: this code will not execute until after the redirect completes
+        setSuccess("Redirecting to Google authentication...");
+        return;
+      } else {
+        // Use popup method on non-Replit domains
+        console.log("Using popup authentication for domain:", currentHostname);
+        const result = await signInWithPopup(auth, googleProvider);
+        
+        setSuccess(`Logged in with Google as: ${result.user.displayName || result.user.email}`);
+        toast({
+          title: "Google Login Successful",
+          description: `Logged in as: ${result.user.displayName || result.user.email}`,
+        });
+        
+        // Redirect to dashboard after a brief delay
+        setTimeout(() => navigate('/dashboard'), 1000);
+      }
     } catch (err: any) {
       console.error("Error logging in with Google:", err);
       
       // Special handling for popup blocked errors
       if (err.code === 'auth/popup-blocked') {
-        setError("Popup was blocked. Please allow popups for this site and try again.");
+        setError("Popup was blocked. Trying redirect method instead...");
+        await signInWithRedirect(auth, googleProvider);
       } else {
         setError(`Google login failed: ${err.message}`);
+        
+        toast({
+          title: "Google Login Error",
+          description: err.message,
+          variant: "destructive"
+        });
       }
-      
-      toast({
-        title: "Google Login Error",
-        description: err.message,
-        variant: "destructive"
-      });
     } finally {
       setIsLoading(false);
     }
