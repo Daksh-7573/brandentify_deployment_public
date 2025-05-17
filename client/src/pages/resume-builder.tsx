@@ -127,7 +127,7 @@ export default function ResumeBuilder() {
         navigate('/resume-editor');
       }, 1000);
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error uploading resume:', error);
       clearInterval(progressInterval);
       setUploadProgress(0);
