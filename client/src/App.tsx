@@ -33,6 +33,7 @@ import ReliableLoginPage from "@/pages/reliable-login";
 import UniversalLoginPage from "@/pages/universal-login";
 import SimpleUniversalLoginPage from "@/pages/simple-universal-login";
 import EasyLoginPage from "@/pages/easy-login";
+import GoogleAuthFixPage from "@/pages/google-auth-fix";
 import Radar from "@/pages/radar";
 import FirebaseAuthTest from "@/pages/auth-test";
 import GoogleAuthTest from "@/pages/google-auth-test";
@@ -139,6 +140,7 @@ function Router() {
       }} />
       <Route path="/auth-test" component={FirebaseAuthTest} />
       <Route path="/google-auth-test" component={GoogleAuthTest} />
+      <Route path="/google-auth-fix" component={GoogleAuthFixPage} />
       <Route path="/auth-debug" component={() => {
         const AuthDebugPage = lazy(() => import("@/pages/auth-debug"));
         return (
