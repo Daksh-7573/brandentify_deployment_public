@@ -113,6 +113,14 @@ function Router() {
       <Route path="/auth-status" component={AuthStatusPage} />
       <Route path="/dev-login" component={DevLoginPage} />
       <Route path="/simple-login" component={SimpleLoginPage} />
+      <Route path="/fixed-login" component={() => {
+        const FixedLoginPage = lazy(() => import("@/pages/fixed-login"));
+        return (
+          <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div></div>}>
+            <FixedLoginPage />
+          </Suspense>
+        );
+      }} />
       <Route path="/dev-auth" component={() => {
         const DevAuthUtilityPage = lazy(() => import("@/pages/dev-auth-utility"));
         return (
