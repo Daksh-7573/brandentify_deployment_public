@@ -34,6 +34,8 @@ import UniversalLoginPage from "@/pages/universal-login";
 import SimpleUniversalLoginPage from "@/pages/simple-universal-login";
 import EasyLoginPage from "@/pages/easy-login";
 import GoogleAuthFixPage from "@/pages/google-auth-fix";
+import ReplitDomainLogin from "@/pages/replit-domain-login";
+import UniversalGoogleAuthPage from "@/pages/universal-google-auth";
 import Radar from "@/pages/radar";
 import FirebaseAuthTest from "@/pages/auth-test";
 import GoogleAuthTest from "@/pages/google-auth-test";
@@ -141,6 +143,7 @@ function Router() {
       <Route path="/auth-test" component={FirebaseAuthTest} />
       <Route path="/google-auth-test" component={GoogleAuthTest} />
       <Route path="/google-auth-fix" component={GoogleAuthFixPage} />
+      <Route path="/universal-google-auth" component={UniversalGoogleAuthPage} />
       <Route path="/auth-debug" component={() => {
         const AuthDebugPage = lazy(() => import("@/pages/auth-debug"));
         return (
