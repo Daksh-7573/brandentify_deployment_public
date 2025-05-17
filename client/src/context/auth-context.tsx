@@ -604,8 +604,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           const credential = GoogleAuthProvider.credentialFromResult(result);
           if (credential && credential.providerId === 'google.com') {
             console.log("Confirmed authentic Google authentication");
-        } else {
-          console.warn("Authentication succeeded but may not be Google-based");
+          } else {
+            console.warn("Authentication succeeded but may not be Google-based");
+          }
         }
       } catch (popupError: any) {
         console.log("Google popup authentication failed:", popupError.code);
