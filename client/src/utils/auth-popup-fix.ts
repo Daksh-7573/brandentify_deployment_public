@@ -1,116 +1,93 @@
 /**
- * Google Authentication Popup Fix
+ * Replit-specific authentication workarounds
  * 
- * This utility ensures that Google authentication works consistently across
- * different domains, especially in Replit environments.
- * 
- * It provides a dedicated popup authentication mechanism that is more reliable
- * than the standard Firebase auth methods in certain environments.
+ * This utility contains special functions to fix authentication issues
+ * that occur specifically in Replit development environments.
  */
 
-import { Auth, GoogleAuthProvider, signInWithPopup, UserCredential } from "firebase/auth";
-import { logAuthError } from "./auth-diagnostics";
+import { GoogleAuthProvider } from 'firebase/auth';
 
 /**
- * Performs Google authentication using a popup window with additional error handling
- * and browser compatibility fixes specific to the Replit environment.
- * 
- * @param auth Firebase Auth instance
- * @returns A promise resolving to the UserCredential on success
+ * Creates a Google auth provider with enhanced parameters for Replit domains
+ * This helps solve issues with popup/redirect authentication on Replit preview domains
  */
-export async function googlePopupAuth(auth: Auth): Promise<UserCredential> {
-  try {
-    console.log("Starting enhanced Google popup authentication");
-    
-    // Create a fresh Google provider and explicitly force Google provider
-    const provider = new GoogleAuthProvider();
-    
-    // Force Google selection - this is critical for ensuring Google auth is used
-    provider.setCustomParameters({
-      prompt: 'select_account',
-      // Force Google auth selection to prevent Firebase auto-selection
-      auth_type: 'reauthenticate',
-      // Ensure login UI shows all accounts, including Google accounts
-      select_account: 'true'
-    });
-    
-    // Add standard scopes
-    provider.addScope('email');
-    provider.addScope('profile');
-    // Additional scope for better Google account access
-    provider.addScope('https://www.googleapis.com/auth/userinfo.profile');
-    
-    // Track the authentication attempt
-    localStorage.setItem('popup_auth_attempt', 'true');
-    localStorage.setItem('popup_auth_time', new Date().toISOString());
-    localStorage.setItem('auth_provider', 'google');
-    
-    // Use the popup method with the specially configured provider
-    console.log("Initiating Google popup authentication...");
-    const result = await signInWithPopup(auth, provider);
-    
-    // Verify this is a Google sign-in
-    const credential = GoogleAuthProvider.credentialFromResult(result);
-    if (!credential) {
-      console.warn("Google credential not found in result");
-    } else {
-      console.log("Confirmed Google authentication");
-    }
-    
-    // Clean up tracking variables on success
-    localStorage.removeItem('popup_auth_attempt');
-    localStorage.removeItem('popup_auth_time');
-    localStorage.removeItem('auth_provider');
-    
-    console.log("Google popup authentication successful");
-    return result;
-  } catch (error: any) {
-    console.error("Error in enhanced Google popup authentication:", error);
-    
-    // Log detailed error diagnostics
-    logAuthError(error, "googlePopupAuth");
-    
-    // Clean up tracking
-    localStorage.removeItem('popup_auth_attempt');
-    localStorage.removeItem('popup_auth_time');
-    localStorage.removeItem('auth_provider');
-    
-    // Re-throw to allow caller to handle or display error
-    throw error;
+export function createEnhancedGoogleProvider(): GoogleAuthProvider {
+  // Create a fresh Google provider for this attempt
+  const provider = new GoogleAuthProvider();
+  
+  // Add required scopes for comprehensive authentication
+  provider.addScope('email');
+  provider.addScope('profile');
+  
+  // Force account selection to ensure proper auth flow
+  provider.setCustomParameters({
+    // Force selection UI even if already logged in
+    prompt: 'select_account',
+    // Request fresh authentication
+    auth_type: 'reauthenticate',
+    // Clear any previous login hint
+    login_hint: '',
+    // Include all previously granted scopes
+    include_granted_scopes: 'true'
+  });
+  
+  return provider;
+}
+
+/**
+ * Check if the current domain is a Replit development domain
+ * This helps determine when to use special authentication methods
+ */
+export function isReplitDomain(): boolean {
+  const hostname = window.location.hostname;
+  return hostname.includes('.replit.dev') || 
+         hostname.includes('.repl.co') || 
+         hostname.includes('.repl.run') ||
+         hostname.includes('.id.repl.co') ||
+         hostname.includes('.replit.app') ||
+         hostname.includes('replit.dev') ||
+         hostname.endsWith('.repl.it');
+}
+
+/**
+ * Determines whether to use redirect-based authentication
+ * Redirect auth is more reliable on Replit domains than popup auth
+ */
+export function shouldUseRedirectAuth(): boolean {
+  // Always use redirect auth on Replit domains
+  if (isReplitDomain()) {
+    return true;
   }
+  
+  // Also use redirect on mobile devices
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  if (isMobile) {
+    return true;
+  }
+  
+  // Use redirect if the window is inside an iframe
+  if (window !== window.top) {
+    return true;
+  }
+  
+  // Default to popup auth in other cases
+  return false;
 }
 
 /**
- * Checks if the current page is likely a redirect result page from Google authentication
+ * Clear any stale authentication data from local storage
  */
-export function isGoogleAuthRedirect(): boolean {
-  // Check for common OAuth redirect parameters
-  const urlParams = new URLSearchParams(window.location.search);
-  return urlParams.has('code') || urlParams.has('state') || urlParams.has('error');
+export function clearAuthStorageData(): void {
+  // Clear redirect attempt tracking
+  localStorage.removeItem('auth_redirect_attempt');
+  localStorage.removeItem('auth_redirect_time');
+  localStorage.removeItem('dev_auth_redirect');
+  localStorage.removeItem('dev_auth_time');
+  
+  // Clear any Firebase auth persistence data that might be problematic
+  localStorage.removeItem('firebase:authUser');
+  
+  // Clear other auth-related data
+  localStorage.removeItem('auth_state');
+  localStorage.removeItem('auth_error');
 }
-
-/**
- * Checks for any previous authentication attempts
- */
-export function hasPreviousAuthAttempt(): boolean {
-  return localStorage.getItem('popup_auth_attempt') === 'true';
-}
-
-/**
- * Clears any stored authentication attempt data
- */
-export function clearAuthAttemptData(): void {
-  localStorage.removeItem('popup_auth_attempt');
-  localStorage.removeItem('popup_auth_time');
-  localStorage.removeItem('authAttemptInProgress');
-  localStorage.removeItem('authAttemptTime');
-  localStorage.removeItem('auth_redirect_origin');
-  localStorage.removeItem('auth_redirect_hostname');
-}
-
-export default {
-  googlePopupAuth,
-  isGoogleAuthRedirect,
-  hasPreviousAuthAttempt,
-  clearAuthAttemptData
-};

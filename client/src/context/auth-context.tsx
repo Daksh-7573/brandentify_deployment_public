@@ -15,6 +15,12 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { User } from "@shared/schema";
 import { logDetailedAuthError } from "@/utils/auth-error-logger";
 import { logAuthError, checkFirebaseConfig } from "@/utils/auth-diagnostics";
+import { 
+  createEnhancedGoogleProvider, 
+  isReplitDomain, 
+  shouldUseRedirectAuth, 
+  clearAuthStorageData 
+} from "@/utils/auth-popup-fix";
 
 // Define our auth user type
 type AuthUser = {
