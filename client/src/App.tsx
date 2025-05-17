@@ -112,6 +112,7 @@ function Router() {
       <Route path="/auth" component={AuthPage} />
       <Route path="/auth-status" component={AuthStatusPage} />
       <Route path="/dev-login" component={DevLoginPage} />
+      <Route path="/simple-login" component={SimpleLoginPage} />
       <Route path="/auth-test" component={FirebaseAuthTest} />
       <Route path="/google-auth-test" component={GoogleAuthTest} />
       <Route path="/auth-debug" component={() => {
