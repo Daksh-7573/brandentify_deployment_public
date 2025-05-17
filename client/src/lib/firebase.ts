@@ -45,18 +45,23 @@ console.log("Firebase initialization:", {
   domains: authDomains
 });
 
-// Check if we're on the specific problematic domain
-const isOnProblemDomain = currentHostname === "25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev";
+// Check if we're on a Replit domain
+const isReplitDomain = currentHostname.includes('replit.dev') || currentHostname.includes('replit.app');
+const isExactProblemDomain = currentHostname === "25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev";
 
-// Firebase configuration - using more compatible setup for problematic domains
+// For Firebase auth with Google on Replit, we need a special configuration
 const firebaseConfig: FirebaseOptions = {
   apiKey,
-  // CRITICAL FIX: Always use the Firebase domain for authDomain, especially for problematic Replit domains
-  // This ensures that the OAuth flow uses the official Firebase domain which is always allowed
-  authDomain: `${projectId}.firebaseapp.com`,
+  // CRITICAL: Use a configuration that works with both Replit domains and preview URLs
+  // For auth to work on both domains, we need to use this specific setup
+  authDomain: isReplitDomain ? 
+    // When on Replit domain: use Firebase's official domain which works universally
+    `${projectId}.firebaseapp.com` : 
+    // When on preview URL: use the current host
+    window.location.host,
   projectId,
   storageBucket: projectId ? `${projectId}.appspot.com` : undefined,
-  // These are okay as defaults since they're not sensitive and are only used for optional features
+  // Common defaults for Firebase initialization
   messagingSenderId: "330211556822",
   appId,
   measurementId: "G-JG24PTL5MS",
