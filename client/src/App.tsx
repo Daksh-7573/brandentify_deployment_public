@@ -146,6 +146,7 @@ function Router() {
       <Route path="/google-auth-fix" component={GoogleAuthFixPage} />
       <Route path="/universal-google-auth" component={UniversalGoogleAuthPage} />
       <Route path="/cross-domain-google-auth" component={CrossDomainGoogleAuth} />
+      <Route path="/replit-login" component={ReplitDomainLogin} />
       <Route path="/auth-debug" component={() => {
         const AuthDebugPage = lazy(() => import("@/pages/auth-debug"));
         return (
