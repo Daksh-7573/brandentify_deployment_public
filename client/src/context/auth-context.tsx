@@ -674,9 +674,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 </a>
               )
             });
+            
+            // Navigate user to the dev-login page automatically after a brief delay
+            setTimeout(() => {
+              window.location.href = '/dev-login';
+            }, 3000);
+            
+            setIsLoading(false);
+            return; // Exit early without re-throwing
+          } else {
+            // For non-Replit domains, show a more general error
+            toast({
+              title: "Google Authentication Failed",
+              description: "Please try again or contact support if the issue persists.",
+              variant: "destructive"
+            });
           }
           
-          // Re-throw other errors
+          // Re-throw error for general case
           throw popupError;
         }
       }
