@@ -8,7 +8,6 @@ import multer from 'multer';
 import { Express } from 'express';
 
 // the newest OpenAI model is "gpt-4o" which was released May 13, 2024
-// do not change this unless explicitly requested by the user
 const OPENAI_MODEL = "gpt-4o";
 
 // Setup OpenAI client
@@ -67,9 +66,28 @@ export const upload = multer({
  */
 async function extractTextFromPDF(filePath: string): Promise<string> {
   try {
-    const data = await extractPDF(filePath);
-    // Join all page content
-    return data.pages.map(page => page.content.map(item => item.str).join(' ')).join('\n');
+    const data = await extractPDF(filePath, { type: 'text' });
+    
+    // Handle the data safely with proper type checking
+    if (data && data.pages && Array.isArray(data.pages)) {
+      return data.pages
+        .map(page => {
+          if (page.content && Array.isArray(page.content)) {
+            return page.content
+              .map(item => {
+                if (item && typeof item === 'object' && 'str' in item) {
+                  return item.str || '';
+                }
+                return '';
+              })
+              .join(' ');
+          }
+          return '';
+        })
+        .join('\n');
+    }
+    
+    return 'Failed to extract content from PDF';
   } catch (error) {
     console.error('Error extracting text from PDF:', error);
     throw new Error('Failed to extract text from PDF');
@@ -77,93 +95,102 @@ async function extractTextFromPDF(filePath: string): Promise<string> {
 }
 
 /**
- * Extract text from a Word document
- * This is a placeholder - in a real implementation, you'd use a library like mammoth.js
+ * Extract text from a file based on its MIME type
  */
-async function extractTextFromWord(filePath: string): Promise<string> {
-  throw new Error('Word document extraction not implemented yet');
-}
-
-/**
- * Extract text from a resume file
- * @param filePath Path to the resume file
- * @param fileType MIME type of the file
- * @returns Extracted text content
- */
-export async function extractTextFromFile(filePath: string, fileType: string): Promise<string> {
-  if (fileType === 'application/pdf') {
+export async function extractTextFromFile(filePath: string, mimeType: string): Promise<string> {
+  if (mimeType === 'application/pdf') {
     return extractTextFromPDF(filePath);
   } else if (
-    fileType === 'application/msword' ||
-    fileType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    mimeType === 'application/msword' || 
+    mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
   ) {
-    return extractTextFromWord(filePath);
+    // For Word documents, we would need to use a specialized library
+    // For now, we'll throw an error
+    throw new Error('Word document parsing not implemented yet');
   } else {
-    throw new Error('Unsupported file type');
+    throw new Error(`Unsupported file type: ${mimeType}`);
   }
 }
 
 /**
- * Parse a resume using OpenAI GPT-4o
- * @param resumeText The text content of the resume
- * @returns Structured data extracted from the resume
- */
-export async function parseResume(resumeText: string): Promise<any> {
-  try {
-    // Prepare the prompt for GPT
-    const prompt = `
-      I need you to carefully analyze this resume text and extract structured information for a professional profile.
-      
-      Please extract the following information in a structured JSON format:
-      
-      - personalInfo: name, title, location, email, phone, summary
-      - skills: array of {name, category, level} objects where level is 1-5 based on emphasis or years of experience
-      - workExperience: array of jobs with {title, company, location, startDate, endDate, description, highlights, industry, domain}
-      - education: array of {degree, institution, location, startDate, endDate, fieldOfStudy, gpa, achievements}
-      - projects: array of {title, description, technologies, url, startDate, endDate} 
-      - certifications: array of {name, issuer, date, url}
-      
-      For complex resumes with design elements, pay special attention to:
-      1. Properly associating dates with experiences
-      2. Distinguishing job titles from company names
-      3. Recognizing skills mentioned throughout the resume, not just in dedicated skills sections
-      4. Identifying the current role based on date ranges (no end date typically means current position)
-      5. Inferring industry and domain from context if not explicitly stated
-      
-      If the resume has unusual formatting or Canva-style design, focus primarily on extracting accurate content over preserving formatting.
-      Ensure all text is extracted even if scattered across different visual sections.
-      
-      Return ONLY valid JSON without explanations or markdown. Missing or uncertain values should be omitted rather than guessed.
-      
-      Resume text:
-      ${resumeText}
-    `;
-    
-    // Call OpenAI API
-    const response = await openai.chat.completions.create({
-      model: OPENAI_MODEL,
-      messages: [{ role: "user", content: prompt }],
-      response_format: { type: "json_object" },
-      temperature: 0.2
-    });
-    
-    // Parse and return the extracted data
-    const result = JSON.parse(response.choices[0].message.content);
-    return result;
-  } catch (error) {
-    console.error('Error parsing resume with OpenAI:', error);
-    throw new Error('Failed to parse resume content');
-  }
-}
-
-/**
- * Clean up temporary files
- * @param filePath Path to the file to delete
+ * Clean up a temporary file
  */
 export async function cleanupFile(filePath: string): Promise<void> {
   try {
     await fs.promises.unlink(filePath);
+    console.log(`Deleted temporary file: ${filePath}`);
   } catch (error) {
-    console.error('Error cleaning up file:', error);
+    console.warn(`Failed to delete temporary file: ${filePath}`, error);
+  }
+}
+
+/**
+ * Use OpenAI to parse resume content
+ */
+export async function parseResume(resumeText: string): Promise<any> {
+  try {
+    const prompt = `
+    Parse the following resume text and extract the following information in JSON format:
+    - Personal information (name, email, phone, location, website)
+    - Professional summary or objective
+    - Work experiences (company, title, date range, description, achievements)
+    - Education (institution, degree, field of study, date range)
+    - Skills (technical, soft, languages)
+    - Projects (if any)
+    - Certifications (if any)
+    
+    Format the response as a JSON object with the following structure:
+    {
+      "personalInfo": {
+        "name": "",
+        "email": "",
+        "phone": "",
+        "location": "",
+        "website": ""
+      },
+      "summary": "",
+      "experiences": [
+        {
+          "company": "",
+          "title": "",
+          "startDate": "",
+          "endDate": "",
+          "description": "",
+          "achievements": []
+        }
+      ],
+      "education": [
+        {
+          "institution": "",
+          "degree": "",
+          "fieldOfStudy": "",
+          "startDate": "",
+          "endDate": ""
+        }
+      ],
+      "skills": [],
+      "projects": [],
+      "certifications": []
+    }
+    
+    Resume text:
+    ${resumeText}
+    `;
+
+    const response = await openai.chat.completions.create({
+      model: OPENAI_MODEL,
+      messages: [{ role: "user", content: prompt }],
+      response_format: { type: "json_object" },
+    });
+
+    const content = response.choices[0].message.content;
+    if (!content) {
+      throw new Error('No content in OpenAI response');
+    }
+
+    return JSON.parse(content);
+  } catch (error) {
+    console.error('Error parsing resume with OpenAI:', error);
+    throw new Error('Failed to parse resume content');
   }
 }

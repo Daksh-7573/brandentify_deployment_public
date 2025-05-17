@@ -80,8 +80,8 @@ export default function ResumeBuilder() {
     // Create an interval to simulate upload progress
     const progressInterval = setInterval(() => {
       setUploadProgress(prev => {
-        const newProgress = prev + Math.random() * 15;
-        return newProgress > 95 ? 95 : newProgress;
+        const newProgress = prev + Math.random() * 10;
+        return newProgress > 80 ? 80 : newProgress;
       });
     }, 300);
     
@@ -91,6 +91,9 @@ export default function ResumeBuilder() {
       formData.append('file', selectedFile);
       formData.append('userId', user?.uid || '');
       
+      console.log('Uploading resume file:', selectedFile.name);
+      console.log('User ID for upload:', user?.uid);
+      
       // Upload the resume file
       const response = await fetch('/api/resume/parse', {
         method: 'POST',
@@ -98,12 +101,26 @@ export default function ResumeBuilder() {
       });
       
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to upload resume');
+        let errorMessage = 'Failed to upload resume';
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorData.error || errorMessage;
+        } catch (parseError) {
+          console.error('Error parsing error response:', parseError);
+        }
+        throw new Error(errorMessage);
       }
       
+      // Parse the response
+      const parsedData = await response.json();
+      console.log('Parsed resume data:', parsedData);
+      
+      // Set upload to complete
       clearInterval(progressInterval);
       setUploadProgress(100);
+      
+      // Store the parsed data in localStorage to pass to the editor
+      localStorage.setItem('parsedResumeData', JSON.stringify(parsedData));
       
       // Navigate to the resume editor with parsed data
       setTimeout(() => {

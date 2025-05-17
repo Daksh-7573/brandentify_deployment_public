@@ -12,6 +12,7 @@ import fileUpload from "express-fileupload";
 import { projectThumbnailUpload, getFileUrl } from "./utils/upload";
 // Resume parsing functionality
 import { handleParseResume } from "./routes-parse-resume";
+import { upload, extractTextFromFile, cleanupFile, parseResume } from "./services/resume-parser-service";
 import { handleCreateDemoProfiles } from "./routes-demo-profiles";
 import { updateUserGeolocation, updateUserRadarVisibility, getNearbyUsers } from "./routes-radar";
 import { handleMuskChat, handleResumeUpload, handlePitchDeckUpload } from "./routes-musk";
@@ -751,6 +752,66 @@ export async function registerRoutes(app: Express): Promise<Server> {
   apiRouter.post("/parse-resume", async (req: Request, res: Response) => {
     console.log("[POST /parse-resume] Received resume parsing request");
     return handleParseResume(req, res);
+  });
+  
+  // Resume file upload and parsing for Resume Builder
+  apiRouter.post("/resume/parse", upload.single('file'), async (req: Request, res: Response) => {
+    try {
+      console.log("[POST /resume/parse] Received resume parsing request");
+      
+      // Get user ID from request
+      const userId = req.body.userId;
+      
+      // Check if file was uploaded
+      if (!req.file) {
+        console.error("[POST /resume/parse] No file was uploaded");
+        return res.status(400).json({ error: "No resume file was uploaded" });
+      }
+      
+      // Get file details
+      const file = req.file;
+      const filePath = file.path;
+      const fileType = file.mimetype;
+      
+      console.log(`[POST /resume/parse] Processing resume for user ID: ${userId}. File type: ${fileType}`);
+      
+      // Extract text from the uploaded file
+      try {
+        const resumeText = await extractTextFromFile(filePath, fileType);
+        console.log(`[POST /resume/parse] Successfully extracted text from resume`);
+        
+        // Use OpenAI to parse the resume text
+        const parsedResume = await parseResume(resumeText);
+        console.log(`[POST /resume/parse] Successfully parsed resume with OpenAI`);
+        
+        // Clean up temporary file
+        await cleanupFile(filePath);
+        
+        // Return the parsed resume data
+        return res.status(200).json(parsedResume);
+      } catch (error) {
+        console.error(`[POST /resume/parse] Error processing file:`, error);
+        
+        // Try to clean up temporary file even if processing failed
+        try {
+          await cleanupFile(filePath);
+        } catch (cleanupError) {
+          console.warn(`[POST /resume/parse] Error cleaning up file:`, cleanupError);
+        }
+        
+        // Return error response
+        return res.status(500).json({ 
+          error: "Failed to process resume file", 
+          message: error instanceof Error ? error.message : "Unknown error"
+        });
+      }
+    } catch (error) {
+      console.error("[POST /resume/parse] Error parsing resume:", error);
+      return res.status(500).json({ 
+        error: "Failed to parse resume", 
+        message: error instanceof Error ? error.message : "Unknown error"
+      });
+    }
   });
 
   // Work Experience routes
