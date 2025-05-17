@@ -546,49 +546,67 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       setIsLoading(true);
       
-      // Import the enhanced popup authentication utility
-      const { googlePopupAuth, clearAuthAttemptData } = await import('@/utils/auth-popup-fix');
+      // Clear previous auth state
+      localStorage.removeItem('auth_redirect_attempt');
+      localStorage.removeItem('auth_redirect_time');
+      localStorage.removeItem('popup_auth_attempt');
+      localStorage.removeItem('popup_auth_time');
       
-      // Clear any previous auth state tracking
-      clearAuthAttemptData();
+      console.log("Starting Google sign-in with direct Google Authentication");
       
-      console.log("Starting Google sign-in with enhanced authentication");
+      // Create a dedicated Google provider configured for Google authentication
+      const googleProvider = new GoogleAuthProvider();
       
-      // Configure a fresh Google provider for this sign-in attempt
-      const provider = new GoogleAuthProvider();
+      // Add extensive scopes to ensure we get complete Google profile data
+      googleProvider.addScope('email');
+      googleProvider.addScope('profile');
+      googleProvider.addScope('https://www.googleapis.com/auth/userinfo.profile');
       
-      // Add standard scopes
-      provider.addScope('email');
-      provider.addScope('profile');
-      
-      // Set custom parameters to ensure user can choose their account
-      provider.setCustomParameters({
-        prompt: 'select_account'
+      // Force Google account selection with these critical parameters
+      googleProvider.setCustomParameters({
+        prompt: 'select_account',
+        // Force reauthentication to ensure Google account selection appears
+        auth_type: 'reauthenticate',
+        // Additional parameters to ensure Google authentication
+        access_type: 'offline',
+        include_granted_scopes: 'true'
       });
       
-      // Try to authenticate with popup first, then fall back to redirect if needed
-      console.log("Attempting popup sign-in first");
+      console.log("Configured Google provider with all required parameters");
+      
+      // Track this as an explicit Google authentication attempt
+      localStorage.setItem('using_google_auth', 'true');
+      
       let result;
       
       try {
-        // First attempt: popup sign-in
-        result = await signInWithPopup(auth, provider);
-      } catch (popupError: any) {
-        console.log("Popup sign-in failed:", popupError.code);
+        // Try the popup method first as it provides better UX
+        console.log("Using Google authentication popup");
+        result = await signInWithPopup(auth, googleProvider);
         
-        // If popup is blocked or closed, try redirect method
+        // Verify this was actually a Google authentication
+        const credential = GoogleAuthProvider.credentialFromResult(result);
+        if (credential && credential.providerId === 'google.com') {
+          console.log("Confirmed authentic Google authentication");
+        } else {
+          console.warn("Authentication succeeded but may not be Google-based");
+        }
+      } catch (popupError: any) {
+        console.log("Google popup authentication failed:", popupError.code);
+        
+        // For specific errors that suggest UI issues, try redirect method
         if (
           popupError.code === 'auth/popup-blocked' || 
           popupError.code === 'auth/popup-closed-by-user' ||
           popupError.code === 'auth/cancelled-popup-request'
         ) {
-          console.log("Falling back to redirect sign-in");
-          // For redirect method, we need to store state
+          console.log("Falling back to Google redirect authentication");
+          // Track redirect attempt
           localStorage.setItem('auth_redirect_attempt', 'true');
           localStorage.setItem('auth_redirect_time', new Date().toISOString());
-          // Use redirect method
-          await signInWithRedirect(auth, provider);
-          return; // This page will reload after redirect
+          // Use redirect with explicitly configured Google provider
+          await signInWithRedirect(auth, googleProvider);
+          return; // Page will reload after redirect
         } else {
           // Re-throw other errors
           throw popupError;
