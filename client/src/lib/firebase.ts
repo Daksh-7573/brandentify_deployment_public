@@ -77,21 +77,36 @@ try {
   // Configure Google Auth Provider with strong parameters for explicit Google authentication
   googleProvider = new GoogleAuthProvider();
   
-  // Set up enhanced parameters to ensure explicit Google selection 
-  // These settings force the account selection UI and prevent auto-selection
+  // Force explicit Google selection with strict parameters
+  // These settings ensure the user must actively select a Google account
   googleProvider.setCustomParameters({
+    // Always force account selection UI - critical for ensuring Google auth
     prompt: 'select_account',
-    // Force reauthentication to ensure Google account selection appears
+    
+    // Always force Google to re-validate credentials
     auth_type: 'reauthenticate',
-    // Additional parameters to ensure Google authentication
+    
+    // Request offline access for tokens that work across sessions
     access_type: 'offline',
-    include_granted_scopes: 'true'
+    
+    // Include all previously granted scopes
+    include_granted_scopes: 'true',
+    
+    // Suppress the password credential sign-in option
+    disable_auto_sign_in: 'true',
+    
+    // Ensure native sign-in without federation with other providers
+    provider_id: 'google.com',
+    
+    // Set the preferred type of credentials
+    credential_type: 'google.com'
   });
   
-  // Add comprehensive OAuth scopes for complete Google profile access
+  // Add all OAuth scopes needed for complete Google profile access
   googleProvider.addScope('email');
   googleProvider.addScope('profile');
   googleProvider.addScope('https://www.googleapis.com/auth/userinfo.profile');
+  googleProvider.addScope('https://www.googleapis.com/auth/userinfo.email');
   
   // Ensure the auth provider trusts our domain
   auth.useDeviceLanguage();

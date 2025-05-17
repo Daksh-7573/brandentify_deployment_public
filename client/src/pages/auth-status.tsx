@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/use-auth';
-import { auth } from '@/lib/firebase';
+import { auth as firebaseAuth } from '@/lib/firebase';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -8,7 +8,8 @@ import { User as FirebaseUser } from 'firebase/auth';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { AlertCircle, CheckCircle, LogOut } from 'lucide-react';
-import { useNavigate } from 'wouter';
+import { useLocation } from 'wouter'; 
+import { Auth, getAuth } from 'firebase/auth';
 
 /**
  * AuthStatusPage - Shows detailed information about the current authentication status
@@ -17,14 +18,14 @@ import { useNavigate } from 'wouter';
 export default function AuthStatusPage() {
   const { user, isAuthenticated, signOut } = useAuth();
   const { toast } = useToast();
-  const navigate = useNavigate();
+  const [location, setLocation] = useLocation();
   const [firebaseUser, setFirebaseUser] = useState<FirebaseUser | null>(null);
   const [providers, setProviders] = useState<any[]>([]);
   
   // Get the raw Firebase user and provider data
   useEffect(() => {
     // Check current Firebase user
-    const currentFirebaseUser = auth.currentUser;
+    const currentFirebaseUser = firebaseAuth.currentUser;
     setFirebaseUser(currentFirebaseUser);
     
     // Extract provider data
@@ -45,7 +46,7 @@ export default function AuthStatusPage() {
       title: 'Signed out',
       description: 'You have been signed out completely.',
     });
-    navigate('/login');
+    setLocation('/login');
   };
   
   // Handle force Google auth
@@ -53,7 +54,9 @@ export default function AuthStatusPage() {
     // Force Google auth by clearing all auth state and redirecting to login
     try {
       // Sign out first
-      await auth.signOut();
+      if (firebaseAuth && typeof firebaseAuth.signOut === 'function') {
+        await firebaseAuth.signOut();
+      }
       
       // Clear all auth-related storage
       localStorage.removeItem('firebase:authUser');
@@ -192,7 +195,7 @@ export default function AuthStatusPage() {
           
           <Button 
             variant="outline"
-            onClick={() => navigate('/')}
+            onClick={() => setLocation('/')}
           >
             Go Home
           </Button>
