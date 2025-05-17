@@ -189,8 +189,12 @@ function Router() {
       </Route>
       <Route path="/resume-builder">
         <ProtectedRoute path="/resume-builder" component={() => {
-          const ResumeBuilder = require('@/pages/resume-builder').default;
-          return <ResumeBuilder />;
+          const ResumeBuilder = lazy(() => import('@/pages/resume-builder'));
+          return (
+            <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div></div>}>
+              <ResumeBuilder />
+            </Suspense>
+          );
         }} />
       </Route>
       <Route path="/resume-editor">
