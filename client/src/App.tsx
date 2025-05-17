@@ -26,6 +26,7 @@ import AuthPage from "@/pages/auth-page";
 import EmailVerification from "@/pages/email-verification";
 import NewsSourcesPage from "@/pages/news-sources";
 import LoginPage from "@/pages/login";
+import AuthStatusPage from "@/pages/auth-status";
 import Radar from "@/pages/radar";
 import FirebaseAuthTest from "@/pages/auth-test";
 import GoogleAuthTest from "@/pages/google-auth-test";
@@ -107,6 +108,7 @@ function Router() {
       <Route path="/_/auth/callback" component={AuthCallback} />
       <Route path="/auth/callback" component={AuthCallback} />
       <Route path="/auth" component={AuthPage} />
+      <Route path="/auth-status" component={AuthStatusPage} />
       <Route path="/auth-test" component={FirebaseAuthTest} />
       <Route path="/google-auth-test" component={GoogleAuthTest} />
       <Route path="/auth-debug" component={() => {
