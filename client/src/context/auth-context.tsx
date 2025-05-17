@@ -541,7 +541,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
   }, [user, toast]);
 
-  // Sign in with Google - using our optimized popup authentication
+  // Sign in with Google - using fallback authentication methods if needed
   const signInWithGoogle = async () => {
     try {
       setIsLoading(true);
@@ -552,10 +552,49 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Clear any previous auth state tracking
       clearAuthAttemptData();
       
-      console.log("Starting Google sign-in with enhanced popup authentication");
+      console.log("Starting Google sign-in with enhanced authentication");
       
-      // Use our specialized popup authentication function
-      const result = await googlePopupAuth(auth);
+      // Configure a fresh Google provider for this sign-in attempt
+      const provider = new GoogleAuthProvider();
+      
+      // Add standard scopes
+      provider.addScope('email');
+      provider.addScope('profile');
+      
+      // Set custom parameters to ensure user can choose their account
+      provider.setCustomParameters({
+        prompt: 'select_account'
+      });
+      
+      // Try to authenticate with popup first, then fall back to redirect if needed
+      console.log("Attempting popup sign-in first");
+      let result;
+      
+      try {
+        // First attempt: popup sign-in
+        result = await signInWithPopup(auth, provider);
+      } catch (popupError: any) {
+        console.log("Popup sign-in failed:", popupError.code);
+        
+        // If popup is blocked or closed, try redirect method
+        if (
+          popupError.code === 'auth/popup-blocked' || 
+          popupError.code === 'auth/popup-closed-by-user' ||
+          popupError.code === 'auth/cancelled-popup-request'
+        ) {
+          console.log("Falling back to redirect sign-in");
+          // For redirect method, we need to store state
+          localStorage.setItem('auth_redirect_attempt', 'true');
+          localStorage.setItem('auth_redirect_time', new Date().toISOString());
+          // Use redirect method
+          await signInWithRedirect(auth, provider);
+          return; // This page will reload after redirect
+        } else {
+          // Re-throw other errors
+          throw popupError;
+        }
+      }
+      
       console.log("Google authentication successful:", result.user);
       
       if (result.user) {
