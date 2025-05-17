@@ -187,6 +187,12 @@ function Router() {
       <Route path="/resume-cv">
         <ProtectedRoute path="/resume-cv" component={ResumeCV} />
       </Route>
+      <Route path="/resume-builder">
+        <ProtectedRoute path="/resume-builder" component={() => {
+          const ResumeBuilder = require('@/pages/resume-builder').default;
+          return <ResumeBuilder />;
+        }} />
+      </Route>
       <Route path="/resume-editor">
         {/* Explicitly using the fixed version to avoid hook ordering issues */}
         <ProtectedRoute path="/resume-editor" component={ResumeEditor} />
