@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
+import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/use-auth';
 import { NeoGlassLayout, NeoGlassSection } from '@/components/layout/neo-glass-layout';
 import Header from '@/components/layout/header';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { FileText, Upload, Database, ArrowRight } from 'lucide-react';
+import { FileText, Upload, Database, ArrowRight, Eye, Edit2, Loader2, AlertCircle } from 'lucide-react';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 
 export default function ResumeBuilder() {
   const { user } = useAuth();
@@ -17,11 +17,23 @@ export default function ResumeBuilder() {
   const [isDragging, setIsDragging] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+
+  // Fetch shadow resume for the user (if it exists)
+  const { 
+    data: shadowResumeData, 
+    isLoading: isResumeLoading, 
+    error: resumeError 
+  } = useQuery<{resume: any}>({
+    queryKey: ['/api/users', user?.uid, 'shadow-resume'],
+    enabled: !!user?.uid,
+  });
 
   // Handle file selection
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       setSelectedFile(e.target.files[0]);
+      setUploadError(null);
     }
   };
 
@@ -42,9 +54,18 @@ export default function ResumeBuilder() {
     e.preventDefault();
     e.stopPropagation();
     setIsDragging(false);
+    setUploadError(null);
     
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      setSelectedFile(e.dataTransfer.files[0]);
+      const file = e.dataTransfer.files[0];
+      const allowedTypes = ['.pdf', '.doc', '.docx'];
+      const fileExtension = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
+      
+      if (allowedTypes.some(type => fileExtension.includes(type))) {
+        setSelectedFile(file);
+      } else {
+        setUploadError('Please upload a PDF, DOC, or DOCX file.');
+      }
     }
   };
 
@@ -54,6 +75,7 @@ export default function ResumeBuilder() {
     
     setIsLoading(true);
     setUploadProgress(0);
+    setUploadError(null);
     
     // Create an interval to simulate upload progress
     const progressInterval = setInterval(() => {
@@ -67,6 +89,7 @@ export default function ResumeBuilder() {
       // Prepare file for upload
       const formData = new FormData();
       formData.append('file', selectedFile);
+      formData.append('userId', user?.uid || '');
       
       // Upload the resume file
       const response = await fetch('/api/resume/parse', {
@@ -75,7 +98,8 @@ export default function ResumeBuilder() {
       });
       
       if (!response.ok) {
-        throw new Error('Failed to upload resume');
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to upload resume');
       }
       
       clearInterval(progressInterval);
@@ -90,6 +114,7 @@ export default function ResumeBuilder() {
       console.error('Error uploading resume:', error);
       clearInterval(progressInterval);
       setUploadProgress(0);
+      setUploadError(error.message || 'Failed to upload resume. Please try again.');
       setIsLoading(false);
     }
   };
@@ -103,6 +128,19 @@ export default function ResumeBuilder() {
   const handleCreateFromProfile = () => {
     navigate('/resume-editor');
   };
+
+  // View shadow resume
+  const handleViewShadowResume = () => {
+    navigate('/resume');
+  };
+
+  // Edit shadow resume
+  const handleEditShadowResume = () => {
+    navigate('/resume-editor');
+  };
+
+  // Check if user has an existing shadow resume
+  const hasExistingResume = shadowResumeData?.resume;
 
   return (
     <div className="flex h-screen flex-col">
@@ -130,6 +168,48 @@ export default function ResumeBuilder() {
                 </div>
               </div>
             </div>
+
+            {/* Existing Resume Section (if available) */}
+            {isResumeLoading ? (
+              <NeoGlassSection className="mb-6 flex items-center justify-center p-8">
+                <Loader2 className="h-8 w-8 animate-spin text-white/70" />
+                <span className="ml-2 text-white/70">Checking for existing resumes...</span>
+              </NeoGlassSection>
+            ) : resumeError ? (
+              <NeoGlassSection className="mb-6 p-6">
+                <div className="flex items-center space-x-2 text-amber-400">
+                  <AlertCircle className="h-5 w-5" />
+                  <h3 className="font-medium">Error checking for existing resumes</h3>
+                </div>
+                <p className="mt-2 text-white/70">We encountered an error while checking for your existing resumes. You can still create a new one.</p>
+              </NeoGlassSection>
+            ) : hasExistingResume ? (
+              <NeoGlassSection className="mb-6 p-6">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
+                  <div>
+                    <h2 className="text-xl font-bold text-white mb-2">Your Shadow Resume</h2>
+                    <p className="text-white/70">You already have a resume that you can view, edit, or replace.</p>
+                  </div>
+                  <div className="flex space-x-3 mt-4 md:mt-0">
+                    <Button
+                      onClick={handleViewShadowResume}
+                      variant="outline"
+                      className="flex items-center bg-white/10 border-white/20 text-white hover:bg-white/20"
+                    >
+                      <Eye className="mr-2 h-4 w-4" />
+                      View Resume
+                    </Button>
+                    <Button
+                      onClick={handleEditShadowResume}
+                      className="flex items-center bg-gradient-to-r from-[#e0e0e0] to-[#ffffff] text-black hover:shadow-lg"
+                    >
+                      <Edit2 className="mr-2 h-4 w-4" />
+                      Edit Resume
+                    </Button>
+                  </div>
+                </div>
+              </NeoGlassSection>
+            ) : null}
 
             {/* Main Content */}
             <NeoGlassSection className="mb-6">
@@ -163,7 +243,9 @@ export default function ResumeBuilder() {
                           ? 'border-white/60 bg-white/10' 
                           : selectedFile 
                             ? 'border-white/30 bg-white/5' 
-                            : 'border-white/20 bg-black/40 hover:bg-black/50'
+                            : uploadError 
+                              ? 'border-red-400/40 bg-red-950/20' 
+                              : 'border-white/20 bg-black/40 hover:bg-black/50'
                       }`}
                       onDragOver={handleDragOver}
                       onDragLeave={handleDragLeave}
@@ -179,14 +261,21 @@ export default function ResumeBuilder() {
                       />
                       
                       <div className="flex flex-col items-center justify-center gap-2">
-                        <Upload className="h-12 w-12 text-white/60" />
-                        {selectedFile ? (
+                        {uploadError ? (
                           <>
+                            <AlertCircle className="h-12 w-12 text-red-400" />
+                            <p className="font-medium text-red-400 mt-2">{uploadError}</p>
+                            <p className="text-sm text-white/60">Click or drag to try again</p>
+                          </>
+                        ) : selectedFile ? (
+                          <>
+                            <FileText className="h-12 w-12 text-white/60" />
                             <p className="font-medium text-white mt-2">Selected: {selectedFile.name}</p>
                             <p className="text-sm text-white/60">Click or drag to change selection</p>
                           </>
                         ) : (
                           <>
+                            <Upload className="h-12 w-12 text-white/60" />
                             <p className="font-medium text-white mt-2">Drag & drop or click to upload</p>
                             <p className="text-sm text-white/60">Supported formats: PDF, DOC, DOCX</p>
                           </>
@@ -211,15 +300,18 @@ export default function ResumeBuilder() {
                     <div className="flex justify-end mt-6">
                       <Button
                         onClick={handleUploadResume}
-                        disabled={!selectedFile || isLoading}
+                        disabled={!selectedFile || isLoading || !!uploadError}
                         className="bg-gradient-to-r from-[#e0e0e0] to-[#ffffff] text-black font-medium hover:shadow-lg hover:scale-105"
                       >
                         {isLoading ? (
-                          <>Processing...</>
+                          <div className="flex items-center">
+                            <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                            Processing...
+                          </div>
                         ) : (
-                          <>
+                          <div className="flex items-center">
                             Continue <ArrowRight className="ml-2 h-4 w-4" />
-                          </>
+                          </div>
                         )}
                       </Button>
                     </div>
