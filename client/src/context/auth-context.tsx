@@ -586,25 +586,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       let result;
       
       try {
-        // Check if we're on a development domain that needs special handling
-        const currentHostname = window.location.hostname;
-        const needsSpecialHandling = 
-          currentHostname === "25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev";
+        // Check if we should use redirect-based auth based on environment
+        const shouldUseRedirect = shouldUseRedirectAuth();
+        const domainIsReplit = isReplitDomain();
         
-        if (needsSpecialHandling) {
-          // Use redirect for problematic domains - this works better with Replit's development domains
-          console.log("Using redirect method for problematic domain");
+        console.log("Auth environment:", {
+          domain: window.location.hostname,
+          isReplitDomain: domainIsReplit,
+          usingRedirect: shouldUseRedirect
+        });
+        
+        // Create an enhanced Google provider with optimized parameters
+        const enhancedProvider = createEnhancedGoogleProvider();
+        
+        if (shouldUseRedirect) {
+          // Use redirect for Replit domains - this works better with Replit's development domains
+          console.log("Using redirect method for reliable authentication");
+          
+          // Track this authentication attempt
           localStorage.setItem('auth_redirect_attempt', 'true');
           localStorage.setItem('auth_redirect_time', Date.now().toString());
+          localStorage.setItem('dev_auth_redirect', 'true');
           
-          // Always use redirect for the known problematic domain
-          await signInWithRedirect(auth, googleProvider);
+          // Clear any stale auth data
+          clearAuthStorageData();
+          
+          // Use our enhanced provider with redirect
+          await signInWithRedirect(auth, enhancedProvider);
           console.log("Redirect initiated - page will reload after Google authentication");
           return; // Function will exit here and auth will continue after redirect
         } else {
-          // For other domains, try popup first
-          console.log("Using Google authentication popup");
-          result = await signInWithPopup(auth, googleProvider);
+          // For other domains, try popup with enhanced provider
+          console.log("Using Google authentication popup with enhanced parameters");
+          result = await signInWithPopup(auth, enhancedProvider);
           
           // Verify this was actually a Google authentication
           const credential = GoogleAuthProvider.credentialFromResult(result);
@@ -615,22 +629,53 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           }
         }
       } catch (popupError: any) {
-        console.log("Google popup authentication failed:", popupError.code);
+        console.log("Google authentication failed:", popupError.code);
+        console.error("Error details:", popupError);
         
         // For specific errors that suggest UI issues, try redirect method
         if (
           popupError.code === 'auth/popup-blocked' || 
           popupError.code === 'auth/popup-closed-by-user' ||
-          popupError.code === 'auth/cancelled-popup-request'
+          popupError.code === 'auth/cancelled-popup-request' ||
+          popupError.code === 'auth/internal-error' ||
+          popupError.code === 'auth/network-request-failed' ||
+          // Handle any Firebase auth errors on Replit domains with redirect
+          (isReplitDomain() && popupError.code?.startsWith('auth/'))
         ) {
-          console.log("Falling back to Google redirect authentication");
+          console.log("Falling back to Google redirect authentication with enhanced parameters");
+          
+          // Clear any stale auth data
+          clearAuthStorageData();
+          
           // Track redirect attempt
           localStorage.setItem('auth_redirect_attempt', 'true');
-          localStorage.setItem('auth_redirect_time', new Date().toISOString());
-          // Use redirect with explicitly configured Google provider
-          await signInWithRedirect(auth, googleProvider);
+          localStorage.setItem('auth_redirect_time', Date.now().toString());
+          localStorage.setItem('dev_auth_redirect', 'true');
+          
+          // Always use the enhanced provider for redirects
+          const enhancedProvider = createEnhancedGoogleProvider();
+          await signInWithRedirect(auth, enhancedProvider);
+          
+          console.log("Redirect initiated after popup failure - page will reload after authentication");
           return; // Page will reload after redirect
         } else {
+          // Log detailed error information for non-standard errors
+          console.error("Non-standard authentication error:", popupError);
+          
+          // Suggest using the dev-login page if on a Replit domain
+          if (isReplitDomain()) {
+            toast({
+              title: "Authentication Error",
+              description: "Having trouble with Google login? Try using the special dev-login page instead.",
+              variant: "destructive",
+              action: (
+                <a href="/dev-login" className="bg-blue-600 text-white px-3 py-1 rounded text-xs">
+                  Dev Login
+                </a>
+              )
+            });
+          }
+          
           // Re-throw other errors
           throw popupError;
         }
