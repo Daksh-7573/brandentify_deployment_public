@@ -29,11 +29,22 @@ export default function ResumeBuilder() {
     enabled: !!user?.uid,
   });
 
-  // Handle file selection
+  // Handle file selection with validation
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      setSelectedFile(e.target.files[0]);
-      setUploadError(null);
+      const file = e.target.files[0];
+      const allowedTypes = ['.pdf', '.doc', '.docx'];
+      const fileExtension = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
+      
+      console.log(`File selected: ${file.name}, type: ${file.type}, extension: ${fileExtension}`);
+      
+      if (allowedTypes.some(type => fileExtension === type)) {
+        setSelectedFile(file);
+        setUploadError(null);
+      } else {
+        setSelectedFile(null);
+        setUploadError(`Invalid file type: ${fileExtension}. Please upload a PDF (.pdf), DOC (.doc), or DOCX (.docx) file.`);
+      }
     }
   };
 
@@ -61,10 +72,13 @@ export default function ResumeBuilder() {
       const allowedTypes = ['.pdf', '.doc', '.docx'];
       const fileExtension = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
       
-      if (allowedTypes.some(type => fileExtension.includes(type))) {
+      console.log(`File dropped: ${file.name}, type: ${file.type}, extension: ${fileExtension}`);
+      
+      if (allowedTypes.some(type => fileExtension === type)) {
         setSelectedFile(file);
       } else {
-        setUploadError('Please upload a PDF, DOC, or DOCX file.');
+        setSelectedFile(null);
+        setUploadError(`Invalid file type: ${fileExtension}. Please upload a PDF (.pdf), DOC (.doc), or DOCX (.docx) file.`);
       }
     }
   };
