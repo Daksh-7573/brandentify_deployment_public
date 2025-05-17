@@ -28,6 +28,7 @@ import NewsSourcesPage from "@/pages/news-sources";
 import LoginPage from "@/pages/login";
 import AuthStatusPage from "@/pages/auth-status";
 import DevLoginPage from "@/pages/dev-login";
+import SimpleLoginPage from "@/pages/simple-login";
 import Radar from "@/pages/radar";
 import FirebaseAuthTest from "@/pages/auth-test";
 import GoogleAuthTest from "@/pages/google-auth-test";
