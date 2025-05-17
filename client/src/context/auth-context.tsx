@@ -743,7 +743,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signOut = async () => {
     try {
       setIsLoading(true);
-      console.log("Signing out user");
+      console.log("Performing complete user sign-out and clearing all auth states");
       
       // Clear user state first
       setUser(null);
@@ -752,23 +752,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsDemoMode(false);
       localStorage.removeItem('demoMode');
       
-      // Remove any stored authentication data
+      // Remove all authentication attempts and data
       localStorage.removeItem('authAttemptInProgress');
       localStorage.removeItem('authAttemptTime');
+      localStorage.removeItem('auth_state');
+      localStorage.removeItem('auth_user');
+      localStorage.removeItem('auth_provider');
+      localStorage.removeItem('auth_redirect_attempt');
+      localStorage.removeItem('auth_redirect_time');
+      localStorage.removeItem('popup_auth_attempt');
+      localStorage.removeItem('popup_auth_time');
+      localStorage.removeItem('using_google_auth');
       
-      // Clear query cache to prevent stale data on next login
+      // Clear any Firebase-specific storage
+      localStorage.removeItem('firebase:authUser');
+      sessionStorage.removeItem('firebase:authUser');
+      
+      // Clear all caches to prevent stale data
       queryClient.clear();
       
-      // Only sign out from Firebase if not in demo mode
-      if (!isDemoMode) {
-        try {
-          await firebaseSignOut(auth);
-          console.log("Firebase sign-out successful");
-        } catch (firebaseError) {
-          console.error("Firebase sign-out error:", firebaseError);
-          // Continue with local sign-out even if Firebase fails
-        }
+      // Always sign out from Firebase completely
+      try {
+        await firebaseSignOut(auth);
+        console.log("Firebase sign-out successful");
+      } catch (firebaseError) {
+        console.error("Firebase sign-out error:", firebaseError);
+        // Continue with local sign-out even if Firebase fails
       }
+      
+      // This short timeout ensures all Firebase operations complete
+      await new Promise(resolve => setTimeout(resolve, 100));
       
       toast({
         title: "Signed out",
