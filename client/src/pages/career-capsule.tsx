@@ -399,7 +399,7 @@ export default function CareerCapsulePage() {
               />
             </div>
             
-            <div className="space-y-2">
+            <div className="space-y-2 relative">
               <label htmlFor="goal-type" className="text-sm font-medium text-white">
                 Goal Type
               </label>
@@ -407,7 +407,8 @@ export default function CareerCapsulePage() {
                 id="goal-type"
                 value={goalType}
                 onChange={(e) => setGoalType(e.target.value as GoalType)}
-                className="neo-glass-input w-full h-10 rounded-md"
+                className="neo-glass-input w-full h-10 rounded-md text-white px-3 appearance-none"
+                style={{ backgroundColor: "rgba(18, 18, 18, 0.95)", color: "white", paddingRight: "2rem" }}
               >
                 <option value="position_change">Position Change</option>
                 <option value="skill_acquisition">Skill Acquisition</option>
@@ -418,6 +419,9 @@ export default function CareerCapsulePage() {
                 <option value="education">Education</option>
                 <option value="custom">Custom</option>
               </select>
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400" style={{ top: '24px' }}>
+                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+              </div>
             </div>
             
             <div className="space-y-2">
