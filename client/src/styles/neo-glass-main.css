@@ -256,19 +256,20 @@ select.neo-glass-input option {
   justify-content: center;
   gap: 0.5rem;
   padding: 0.75rem 1.5rem;
-  border-radius: 2rem;
+  border-radius: 0.5rem;
   font-weight: 600;
   font-size: 0.9rem;
   border: 1px solid rgba(255, 255, 255, 0.15);
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-  background: rgba(255, 255, 255, 0.1);
+  transition: all 0.2s ease-in-out;
+  background: rgba(81, 69, 205, 0.9);
   color: var(--neo-white);
   position: relative;
   overflow: hidden;
   z-index: 1;
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
 }
 
 .neo-glass-button::before {
@@ -280,13 +281,13 @@ select.neo-glass-input option {
   height: 100%;
   background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.2), transparent);
   transform: translateX(-100%);
-  transition: 0.6s;
+  transition: 0.5s;
   z-index: -1;
 }
 
 .neo-glass-button:hover {
-  transform: translateY(-3px) scale(1.03);
-  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+  background: rgba(81, 69, 205, 0.8);
   border-color: rgba(255, 255, 255, 0.3);
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
@@ -296,7 +297,8 @@ select.neo-glass-input option {
 }
 
 .neo-glass-button:active {
-  transform: translateY(1px);
+  transform: translateY(0);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 .neo-glass-button.secondary {
