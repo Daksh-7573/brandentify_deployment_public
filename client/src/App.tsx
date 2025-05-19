@@ -39,6 +39,7 @@ import UniversalGoogleAuthPage from "@/pages/universal-google-auth";
 import CrossDomainGoogleAuth from "@/pages/cross-domain-google-auth";
 import ReplitRedirectAuth from "@/pages/replit-redirect-auth";
 import GoogleRedirectOnly from "@/pages/google-redirect-only";
+import DomainDebug from "@/pages/domain-debug";
 import Radar from "@/pages/radar";
 import FirebaseAuthTest from "@/pages/auth-test";
 import GoogleAuthTest from "@/pages/google-auth-test";
@@ -151,6 +152,7 @@ function Router() {
       <Route path="/replit-login" component={ReplitDomainLogin} />
       <Route path="/replit-redirect-auth" component={ReplitRedirectAuth} />
       <Route path="/google-login" component={GoogleRedirectOnly} />
+      <Route path="/domain-debug" component={DomainDebug} />
       <Route path="/auth-debug" component={() => {
         const AuthDebugPage = lazy(() => import("@/pages/auth-debug"));
         return (
