@@ -2050,8 +2050,13 @@ export default function ResumeEditor() {
                     <p className="text-sm text-muted-foreground mb-4">
                       Add your projects to showcase your portfolio work.
                     </p>
-                    <Button type="button" onClick={addProject}>
-                      Add Project
+                    <Button 
+                      type="button" 
+                      onClick={addProject}
+                      className="px-5 py-2 rounded-md bg-primary text-white hover:bg-opacity-90 shadow-sm font-medium transition-all flex items-center"
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      <span>Add Project</span>
                     </Button>
                   </div>
                 )}
