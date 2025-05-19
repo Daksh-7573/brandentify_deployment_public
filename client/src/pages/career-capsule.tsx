@@ -385,7 +385,7 @@ export default function CareerCapsulePage() {
               Set your career goals with a 1-5 year timeframe and get AI-generated milestones.
             </DialogDescription>
           </DialogHeader>
-          <form className="flex flex-col gap-5 py-4" onSubmit={handleSubmit}>
+          <form className="flex flex-col py-4 space-y-4" onSubmit={handleSubmit}>
             <div className="space-y-2">
               <label htmlFor="goal-title" className="text-sm font-medium text-white">
                 Goal Title
@@ -399,7 +399,7 @@ export default function CareerCapsulePage() {
               />
             </div>
             
-            <div className="space-y-2 relative mb-6">
+            <div className="space-y-2">
               <label htmlFor="goal-type" className="text-sm font-medium text-white">
                 Goal Type
               </label>
@@ -443,7 +443,7 @@ export default function CareerCapsulePage() {
               </div>
             </div>
             
-            <div className="space-y-2 relative mb-6">
+            <div className="space-y-2">
               <label htmlFor="timeframe" className="text-sm font-medium text-white">
                 Timeframe (years)
               </label>
