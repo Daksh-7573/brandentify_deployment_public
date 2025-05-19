@@ -399,50 +399,85 @@ export default function CareerCapsulePage() {
               />
             </div>
             
-            <div className="space-y-2 relative">
+            <div className="space-y-2 relative mb-6">
               <label htmlFor="goal-type" className="text-sm font-medium text-white">
                 Goal Type
               </label>
-              <select
-                id="goal-type"
-                value={goalType}
-                onChange={(e) => setGoalType(e.target.value as GoalType)}
-                className="neo-glass-input w-full h-10 rounded-md text-white px-3 appearance-none"
-                style={{ backgroundColor: "rgba(18, 18, 18, 0.95)", color: "white", paddingRight: "2rem" }}
-              >
-                <option value="position_change">Position Change</option>
-                <option value="skill_acquisition">Skill Acquisition</option>
-                <option value="promotion">Promotion</option>
-                <option value="industry_switch">Industry Switch</option>
-                <option value="entrepreneurship">Entrepreneurship</option>
-                <option value="certification">Certification</option>
-                <option value="education">Education</option>
-                <option value="custom">Custom</option>
-              </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400" style={{ top: '24px' }}>
-                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+              <div className="relative">
+                <div className="relative rounded-md shadow-sm">
+                  <button
+                    type="button"
+                    id="goal-type-button"
+                    onClick={() => document.getElementById('goal-type')?.click()}
+                    className="neo-glass-input w-full h-10 rounded-md text-white px-3 flex items-center justify-between"
+                    style={{ backgroundColor: "rgba(18, 18, 18, 0.95)" }}
+                  >
+                    {goalType === "position_change" && "Position Change"}
+                    {goalType === "skill_acquisition" && "Skill Acquisition"}
+                    {goalType === "promotion" && "Promotion"}
+                    {goalType === "industry_switch" && "Industry Switch"}
+                    {goalType === "entrepreneurship" && "Entrepreneurship"}
+                    {goalType === "certification" && "Certification"}
+                    {goalType === "education" && "Education"}
+                    {goalType === "custom" && "Custom"}
+                    <svg className="h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                    </svg>
+                  </button>
+                  <select
+                    id="goal-type"
+                    value={goalType}
+                    onChange={(e) => setGoalType(e.target.value as GoalType)}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  >
+                    <option value="position_change">Position Change</option>
+                    <option value="skill_acquisition">Skill Acquisition</option>
+                    <option value="promotion">Promotion</option>
+                    <option value="industry_switch">Industry Switch</option>
+                    <option value="entrepreneurship">Entrepreneurship</option>
+                    <option value="certification">Certification</option>
+                    <option value="education">Education</option>
+                    <option value="custom">Custom</option>
+                  </select>
+                </div>
               </div>
             </div>
             
-            <div className="space-y-2 relative">
+            <div className="space-y-2 relative mb-6">
               <label htmlFor="timeframe" className="text-sm font-medium text-white">
                 Timeframe (years)
               </label>
-              <select
-                id="timeframe"
-                value={timeframe}
-                onChange={(e) => setTimeframe(e.target.value)}
-                className="neo-glass-input w-full h-10 rounded-md text-white px-3 appearance-none"
-                style={{ backgroundColor: "rgba(18, 18, 18, 0.95)", color: "white", paddingRight: "2rem" }}
-              >
-                <option value="1">1 year</option>
-                <option value="2">2 years</option>
-                <option value="3">3 years</option>
-                <option value="4">4 years</option>
-                <option value="5">5 years</option>
-              </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400" style={{ top: '24px' }}>
-                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+              <div className="relative">
+                <div className="relative rounded-md shadow-sm">
+                  <button
+                    type="button"
+                    id="timeframe-button"
+                    onClick={() => document.getElementById('timeframe')?.click()}
+                    className="neo-glass-input w-full h-10 rounded-md text-white px-3 flex items-center justify-between"
+                    style={{ backgroundColor: "rgba(18, 18, 18, 0.95)" }}
+                  >
+                    {timeframe === "1" && "1 year"}
+                    {timeframe === "2" && "2 years"}
+                    {timeframe === "3" && "3 years"}
+                    {timeframe === "4" && "4 years"}
+                    {timeframe === "5" && "5 years"}
+                    <svg className="h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                    </svg>
+                  </button>
+                  <select
+                    id="timeframe"
+                    value={timeframe}
+                    onChange={(e) => setTimeframe(e.target.value)}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  >
+                    <option value="1">1 year</option>
+                    <option value="2">2 years</option>
+                    <option value="3">3 years</option>
+                    <option value="4">4 years</option>
+                    <option value="5">5 years</option>
+                  </select>
+                </div>
               </div>
             </div>
             
