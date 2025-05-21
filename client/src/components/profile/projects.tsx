@@ -961,7 +961,7 @@ export default function Projects() {
       <div className="flex items-center justify-between mb-4">
         <div className="flex-1"></div>
         <div className="flex items-center gap-2">
-          <button onClick={handleAdd} className="neo-glass-button flex items-center gap-1 py-1.5 px-3 whitespace-nowrap">
+          <button onClick={handleAdd} className="neo-glass-button flex items-center gap-1 py-1.5 px-3 whitespace-nowrap bg-slate-800/60 text-white hover:bg-slate-700/70">
             <Plus className="w-4 h-4" />
             <span>Add Project</span>
           </button>
