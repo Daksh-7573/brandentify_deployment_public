@@ -991,11 +991,11 @@ export default function WorkExperience() {
           <p className="text-sm text-gray-300">Add your professional experience</p>
         </div>
         <Button
-          className="neo-glass-button"
+          className="neo-glass-button flex items-center gap-1 py-1.5 px-3 whitespace-nowrap"
           onClick={openAddDialog}
         >
-          <Plus className="h-3.5 w-3.5 mr-1" />
-          Add Experience
+          <Plus className="h-3.5 w-3.5" />
+          <span>Add Experience</span>
         </Button>
       </div>
       <div className="p-1">
