@@ -1067,9 +1067,13 @@ export default function Education() {
               />
               
               <DialogFooter>
-                <Button type="submit" disabled={createEducationMutation.isPending || updateEducationMutation.isPending}>
+                <button 
+                  type="submit" 
+                  className="neo-glass-button"
+                  disabled={createEducationMutation.isPending || updateEducationMutation.isPending}
+                >
                   {editingEducation ? "Update" : "Add"} Academic Background
-                </Button>
+                </button>
               </DialogFooter>
             </form>
           </Form>
