@@ -297,7 +297,7 @@ export default function Services() {
   
   return (
     <>
-      {/* General Professional Offering Section as a completely separate section */}
+      {/* General Professional Offering Section */}
       <NeoGlassSection className="mb-6">
         <div className="flex justify-between items-center mb-4">
           <div>
@@ -314,7 +314,7 @@ export default function Services() {
           </button>
         </div>
         
-        <div className="p-1">
+        <div>
           {whatIOffer ? (
             <div className="neo-glass-card p-4 rounded-lg transition-all">
               <Quote className="h-5 w-5 text-gray-400 mb-2" />
@@ -329,10 +329,9 @@ export default function Services() {
             </div>
           )}
         </div>
-      </div>
       </NeoGlassSection>
       
-      {/* What I Offer as a completely separate section */}
+      {/* What I Offer Section */}
       <NeoGlassSection className="mb-6">
         <div className="flex justify-between items-center mb-4">
           <div>
@@ -397,146 +396,141 @@ export default function Services() {
                       </button>
                       <button 
                         className="text-gray-300 hover:text-red-400 focus:outline-none rounded-full p-1 hover:bg-gray-800/50"
-                      onClick={() => {
-                        setSelectedService(service);
-                        setIsDeleteDialogOpen(true);
-                      }}
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </button>
+                        onClick={() => {
+                          setSelectedService(service);
+                          setIsDeleteDialogOpen(true);
+                        }}
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
                   </div>
-                </div>
-                
-                {/* Service description */}
-                {service.description && (
-                  <div className="mt-2">
-                    <p className="text-sm text-gray-300 line-clamp-2 whitespace-pre-line">
+                  
+                  {/* Service description */}
+                  {service.description && (
+                    <p className="mt-2 text-sm text-gray-300 line-clamp-2">
                       {service.description}
                     </p>
+                  )}
+                  
+                  {/* Display price information */}
+                  <div className="mt-2">
+                    {(service.priceUsd !== undefined && service.priceUsd !== null) && (
+                      <p className="text-sm font-medium text-white">
+                        {formatCurrency(service.priceUsd, 'USD')}
+                        {service.isHourly ? '/hr' : ''}
+                      </p>
+                    )}
+                    {(service.priceInr !== undefined && service.priceInr !== null) && (
+                      <p className="text-sm font-medium text-white">
+                        {formatCurrency(service.priceInr, 'INR')}
+                        {service.isHourly ? '/hr' : ''}
+                      </p>
+                    )}
                   </div>
-                )}
-                
-                {/* Display price information */}
-                <div className="mt-2">
-                  {(service.priceUsd !== undefined && service.priceUsd !== null) && (
-                    <p className="text-sm font-medium text-gray-200">
-                      {formatCurrency(service.priceUsd, 'USD')}
-                      {service.isHourly ? '/hr' : ''}
-                    </p>
-                  )}
-                  {(service.priceInr !== undefined && service.priceInr !== null) && (
-                    <p className="text-sm font-medium text-white">
-                      {formatCurrency(service.priceInr, 'INR')}
-                      {service.isHourly ? '/hr' : ''}
-                    </p>
-                  )}
+                  
+                  <div className="mt-2 flex items-center">
+                    <Badge 
+                      className={service.isActive ? 'bg-white/15 text-white hover:bg-white/20 border-none' : 'bg-gray-800/60 text-gray-400 border-none'}
+                    >
+                      {service.isActive ? 'Active' : 'Inactive'}
+                    </Badge>
+                    {service.isRemote && (
+                      <Badge className="bg-white/15 text-white hover:bg-white/20 border-none ml-2">
+                        Remote
+                      </Badge>
+                    )}
+                    {service.category && (
+                      <Badge className="bg-white/15 text-white hover:bg-white/20 border-none ml-2">
+                        {service.category.charAt(0).toUpperCase() + service.category.slice(1)}
+                      </Badge>
+                    )}
+                  </div>
                 </div>
-                
-                {/* Service status badge */}
-                <div className="mt-3 pt-2 border-t border-white/10">
-                  <Badge 
-                    className={service.isActive ? 'bg-white/15 text-gray-200 hover:bg-white/20 border-none' : 'bg-gray-800/60 text-gray-400 border-none'}
-                  >
-                    {service.isActive ? 'Active' : 'Inactive'}
-                  </Badge>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+              ))}
+            </div>
+          )}
+        </div>
       </NeoGlassSection>
-
+      
+      {/* Edit What I Offer Dialog */}
+      <Dialog open={isEditWhatIOfferDialogOpen} onOpenChange={setEditWhatIOfferDialogOpen}>
+        <DialogContent className="sm:max-w-[525px]">
+          <DialogHeader>
+            <DialogTitle>Edit General Professional Offering</DialogTitle>
+            <DialogDescription>
+              Describe your overall professional services and expertise.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <label htmlFor="whatIOffer" className="text-sm font-medium text-white">
+                Description
+              </label>
+              <textarea
+                id="whatIOffer"
+                rows={5}
+                className="w-full p-3 bg-slate-800/50 border border-slate-700 rounded-lg text-white"
+                placeholder="Describe your professional services..."
+                value={whatIOffer || ''}
+                onChange={(e) => setWhatIOffer(e.target.value)}
+              />
+            </div>
+            <div className="flex justify-end space-x-2">
+              <Button variant="outline" onClick={() => setEditWhatIOfferDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button 
+                className="neo-glass-button" 
+                disabled={isPendingUpdate}
+                onClick={() => handleUpdateWhatIOffer(whatIOffer)}
+              >
+                {isPendingUpdate && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Save
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+      
       {/* Edit Service Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="sm:max-w-[525px] max-h-[88vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Edit What I Offer</DialogTitle>
+            <DialogTitle>Edit Service</DialogTitle>
             <DialogDescription>
-              Update your professional service.
+              Update your professional service details.
             </DialogDescription>
           </DialogHeader>
           {selectedService && (
             <ServiceForm 
-              service={selectedService}
               onSubmit={handleUpdate} 
               isPending={isPendingUpdate}
               existingServicesCount={services.length}
+              initialData={selectedService}
             />
           )}
         </DialogContent>
       </Dialog>
       
-      {/* Edit General Description Dialog */}
-      <Dialog open={isEditWhatIOfferDialogOpen} onOpenChange={setEditWhatIOfferDialogOpen}>
-        <DialogContent className="sm:max-w-[525px] max-h-[88vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Edit General Description</DialogTitle>
-            <DialogDescription>
-              Describe your overall professional services and expertise.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 pt-4">
-            <div className="grid w-full gap-1.5">
-              <label htmlFor="whatIOffer" className="text-sm font-medium leading-none">
-                Professional Offering Description
-              </label>
-              <textarea
-                id="whatIOffer"
-                rows={7}
-                className="w-full rounded-md border border-white/10 bg-slate-800 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-white/20"
-                placeholder="Describe your professional services or expertise here..."
-                defaultValue={whatIOffer}
-              />
-            </div>
-            <div className="flex justify-end">
-              <Button
-                type="button"
-                variant="outline"
-                className="mr-2"
-                onClick={() => setEditWhatIOfferDialogOpen(false)}
-              >
-                Cancel
-              </Button>
-              <Button
-                type="button"
-                className="neo-glass-button"
-                disabled={isPendingUpdate}
-                onClick={() => {
-                  const textarea = document.getElementById('whatIOffer') as HTMLTextAreaElement;
-                  if (textarea) {
-                    handleUpdateWhatIOffer(textarea.value);
-                  }
-                }}
-              >
-                {isPendingUpdate ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                    Saving
-                  </>
-                ) : (
-                  'Save Changes'
-                )}
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete your service offering.
+              This action cannot be undone. This will permanently delete the service
+              from your profile.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
+            <AlertDialogAction 
               className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
+              onClick={handleDelete}
+              disabled={isPendingDelete}
             >
+              {isPendingDelete && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>
