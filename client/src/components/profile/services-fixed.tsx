@@ -332,19 +332,21 @@ export default function Services() {
       </NeoGlassSection>
       
       {/* What I Offer as a completely separate section */}
-      <NeoGlassSection title="What I Offer" className="mb-6">
-        <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <p className="text-sm text-slate-300">Specific professional services I provide (max 6)</p>
+      <NeoGlassSection className="mb-6">
+        <div className="flex justify-between items-center mb-4">
+          <div>
+            <h2 className="text-xl font-semibold text-white">What I Offer</h2>
+            <p className="text-sm text-gray-300">Specific professional services I provide (max 6)</p>
+          </div>
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
             <DialogTrigger asChild>
-              <Button
-                size="sm"
+              <button
                 className="neo-glass-button flex items-center gap-1 py-1.5 px-3 whitespace-nowrap"
                 disabled={services.length >= 6 || isPendingCreate || isPendingUpdate}
               >
                 <Plus className="h-3.5 w-3.5" />
                 <span>Add What I Offer</span>
-              </Button>
+              </button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[525px] max-h-[88vh] overflow-y-auto">
               <DialogHeader>
@@ -362,23 +364,24 @@ export default function Services() {
           </Dialog>
         </div>
         
-        {/* Specific Services List */}
-        {isLoading ? (
-          <div className="flex justify-center py-6">
-            <Loader2 className="h-6 w-6 animate-spin text-white" />
-          </div>
-        ) : !services || !Array.isArray(services) || services.length === 0 ? (
-          <div className="py-6 text-center">
-            <Package className="mx-auto h-10 w-10 text-gray-500/50" />
-            <p className="mt-2 text-gray-400">No specific offerings added yet.</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4">
-            {services.map((service) => (
-              <div 
-                key={service.id} 
-                className="border border-white/10 rounded-lg p-4 bg-slate-800/50 backdrop-blur-md transition-all hover:bg-slate-700/50 shadow-xl shadow-black/5 neo-glass-card"
-              >
+        <div className="p-1">
+          {/* Specific Services List */}
+          {isLoading ? (
+            <div className="flex justify-center py-6">
+              <Loader2 className="h-6 w-6 animate-spin text-white" />
+            </div>
+          ) : !services || !Array.isArray(services) || services.length === 0 ? (
+            <div className="py-6 text-center">
+              <Package className="mx-auto h-10 w-10 text-gray-400/50" />
+              <p className="mt-2 text-gray-400">No specific offerings added yet.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              {services.map((service) => (
+                <div 
+                  key={service.id} 
+                  className="neo-glass-card p-4 rounded-lg transition-all hover:translate-y-[-3px]"
+                >
                 <div className="flex justify-between items-start">
                   <h3 className="font-medium text-base line-clamp-2 flex-1 text-white">{service.title}</h3>
                   <div className="flex items-center space-x-1 ml-2">
