@@ -298,12 +298,12 @@ export default function CareerCapsulePage() {
       <div className="max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold text-white">Career Capsule</h1>
-          <Button 
+          <button 
             onClick={() => setShowCreateDialog(true)}
-            className="neo-glass-button"
+            className="neo-glass-button flex items-center gap-2 py-2 px-4"
           >
-            Create New Goal
-          </Button>
+            <span>Create New Goal</span>
+          </button>
         </div>
         
         {isLoading ? (
@@ -371,12 +371,12 @@ export default function CareerCapsulePage() {
               Set 1-5 year career goals and get AI-generated milestones to help you achieve them.
               Track your progress and stay focused on your career development journey.
             </p>
-            <Button 
-              className="mt-6 px-5 py-2 rounded-md bg-primary text-white hover:bg-opacity-90 shadow-sm font-medium transition-all flex items-center"
+            <button 
+              className="neo-glass-button flex items-center gap-2 py-2 px-4 mt-6"
               onClick={() => setShowCreateDialog(true)}
             >
               <span>Get Started</span>
-            </Button>
+            </button>
           </NeoGlassSection>
         )}
       </div>
