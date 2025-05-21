@@ -34,6 +34,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+// Removed NeoGlassSection import as we're using direct div with neo-glass-card class
 
 export default function Services() {
   const { user } = useAuth();
@@ -50,36 +51,50 @@ export default function Services() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isEditWhatIOfferDialogOpen, setEditWhatIOfferDialogOpen] = useState(false);
-  const [selectedService, setSelectedService] = useState<any>(null);
+  const [selectedService, setSelectedService] = useState<Service | null>(null);
+
+  // Track refresh count to help debug and break cache
+  const [refreshCount, setRefreshCount] = useState(0);
   
-  // Get API methods from the hook
+  // Use the unified hook for data and mutations
   const { 
+    services: hookServices,
+    whatIOffer: hookWhatIOffer,
     createService, 
     updateService, 
     deleteService, 
-    isPendingCreate, 
-    isPendingUpdate, 
+    isPendingCreate,
+    isPendingUpdate,
     isPendingDelete,
+    isLoading: isLoadingFromHook
   } = useProfileServices();
   
-  // Fetch services data on mount and when userNumericId changes
-  useEffect(() => {
-    if (userNumericId) {
-      fetchServicesData();
-    }
-  }, [userNumericId]);
-
+  // Function to directly fetch the data with improved error handling
   const fetchServicesData = async () => {
     if (!userNumericId) return;
     
+    setRefreshCount(prev => prev + 1);
     setIsLoading(true);
+    setError(null);
     
     try {
-      // Fetch from API directly
-      const response = await fetch(`/api/users/${userNumericId}/services`);
+      const cacheBuster = `?t=${Date.now()}&r=${refreshCount}`;
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 8000);
+      
+      const response = await fetch(`/api/users/${userNumericId}/profile-services${cacheBuster}`, {
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        },
+        signal: controller.signal
+      });
+      
+      clearTimeout(timeoutId);
       
       if (!response.ok) {
-        throw new Error(`Server responded with status: ${response.status}`);
+        throw new Error(`Server responded with ${response.status}: ${response.statusText}`);
       }
       
       const data = await response.json();
@@ -136,26 +151,52 @@ export default function Services() {
     }
   };
   
-  const handleCreate = async (formData: any) => {
+  // Fetch data on component mount
+  useEffect(() => {
+    if (userNumericId) {
+      fetchServicesData();
+    }
+  }, [userNumericId]);
+  
+  // Use services from the hook when they become available
+  useEffect(() => {
+    if (hookServices && Array.isArray(hookServices) && hookServices.length > 0) {
+      setServices(hookServices);
+      setIsLoading(false);
+    }
+    
+    if (hookWhatIOffer) {
+      setWhatIOffer(hookWhatIOffer);
+    }
+  }, [hookServices, hookWhatIOffer]);
+  
+  const handleCreate = (formData: any) => {
     if (!userNumericId) return;
     
-    await createService({
+    const serviceData = {
       ...formData,
       userId: userNumericId
-    });
+    };
     
-    // Force a refresh after creation
-    setTimeout(() => {
-      fetchServicesData();
-    }, 1000);
-    
-    setIsCreateDialogOpen(false);
+    try {
+      createService(serviceData);
+      
+      // Force a refresh after creation
+      setTimeout(() => {
+        fetchServicesData();
+      }, 1000);
+      
+      setIsCreateDialogOpen(false);
+    } catch (err) {
+      // Ensure dialog is closed even on error
+      setIsCreateDialogOpen(false);
+    }
   };
   
-  const handleUpdate = async (formData: any) => {
-    if (!userNumericId || !selectedService) return;
+  const handleUpdate = (formData: any) => {
+    if (!selectedService || !userNumericId) return;
     
-    await updateService({
+    updateService({
       id: selectedService.id,
       data: {
         ...formData,
@@ -215,164 +256,160 @@ export default function Services() {
   return (
     <>
       {/* General Professional Offering Section */}
-      <div className="mb-6">
-        <div className="bg-slate-900/60 rounded-lg p-6">
-          <div className="flex flex-row items-center justify-between space-y-0 pb-4 mb-4 border-b border-gray-800">
-            <div>
-              <h2 className="text-xl font-bold text-white">General Professional Offering</h2>
-              <p className="text-sm text-gray-300">Overall description of your professional expertise</p>
-            </div>
-            <Button
-              variant="ghost"
-              className="neo-glass-button flex items-center gap-1 py-1.5 px-3 whitespace-nowrap"
-              disabled={isPendingCreate || isPendingUpdate}
-              onClick={() => setEditWhatIOfferDialogOpen(true)}
-            >
-              <Pencil className="h-3.5 w-3.5" />
-              <span>Edit Description</span>
-            </Button>
+      <div className="mb-6 neo-glass-card">
+        <div className="flex flex-row items-center justify-between space-y-0 pb-4 mb-4 border-b border-gray-800">
+          <div>
+            <h2 className="text-xl font-bold text-white">General Professional Offering</h2>
+            <p className="text-sm text-gray-300">Overall description of your professional expertise</p>
           </div>
-          
-          {whatIOffer ? (
-            <div className="transition-all">
-              <div className="flex items-center mb-2">
-                <Quote className="h-5 w-5 text-gray-300 mr-2" />
-                <h3 className="font-medium text-lg text-white">Professional Overview</h3>
-              </div>
-              <p className="text-sm text-gray-300 whitespace-pre-line ml-7">{whatIOffer}</p>
-            </div>
-          ) : (
-            <div className="py-6 text-center">
-              <AlertCircle className="mx-auto h-10 w-10 text-gray-400/50" />
-              <p className="mt-2 text-gray-400">
-                Add a general description of your professional services.
-              </p>
-            </div>
-          )}
+          <Button
+            variant="ghost"
+            className="neo-glass-button flex items-center gap-1 py-1.5 px-3 whitespace-nowrap"
+            disabled={isPendingCreate || isPendingUpdate}
+            onClick={() => setEditWhatIOfferDialogOpen(true)}
+          >
+            <Pencil className="h-3.5 w-3.5" />
+            <span>Edit Description</span>
+          </Button>
         </div>
+        
+        {whatIOffer ? (
+          <div className="transition-all">
+            <div className="flex items-center mb-2">
+              <Quote className="h-5 w-5 text-gray-300 mr-2" />
+              <h3 className="font-medium text-lg text-white">Professional Overview</h3>
+            </div>
+            <p className="text-sm text-gray-300 whitespace-pre-line ml-7">{whatIOffer}</p>
+          </div>
+        ) : (
+          <div className="py-6 text-center">
+            <AlertCircle className="mx-auto h-10 w-10 text-gray-400/50" />
+            <p className="mt-2 text-gray-400">
+              Add a general description of your professional services.
+            </p>
+          </div>
+        )}
       </div>
       
       {/* What I Offer Section */}
-      <div className="mb-6">
-        <div className="bg-slate-900/60 rounded-lg p-6">
-          <div className="flex flex-row items-center justify-between space-y-0 pb-4 mb-4 border-b border-gray-800">
-            <div>
-              <h2 className="text-xl font-bold text-white">What I Offer</h2>
-              <p className="text-sm text-gray-300">Specific professional services I provide (max 6)</p>
-            </div>
-            <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-              <DialogTrigger asChild>
-                <Button
-                  variant="ghost"
-                  className="neo-glass-button flex items-center gap-1 py-1.5 px-3 whitespace-nowrap"
-                  disabled={services.length >= 6 || isPendingCreate || isPendingUpdate}
-                >
-                  <Plus className="h-3.5 w-3.5" />
-                  <span>Add What I Offer</span>
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[525px] max-h-[88vh] overflow-y-auto">
-                <DialogHeader>
-                  <DialogTitle>Add What I Offer</DialogTitle>
-                  <DialogDescription>
-                    Enter a professional service you offer (one at a time).
-                  </DialogDescription>
-                </DialogHeader>
-                <ServiceForm 
-                  onSubmit={handleCreate} 
-                  isPending={isPendingCreate}
-                  existingServicesCount={services.length}
-                />
-              </DialogContent>
-            </Dialog>
+      <div className="mb-6 neo-glass-card">
+        <div className="flex flex-row items-center justify-between space-y-0 pb-4 mb-4 border-b border-gray-800">
+          <div>
+            <h2 className="text-xl font-bold text-white">What I Offer</h2>
+            <p className="text-sm text-gray-300">Specific professional services I provide (max 6)</p>
           </div>
-          
-          {/* Specific Services List */}
-          {isLoading ? (
-            <div className="flex justify-center py-6">
-              <Loader2 className="h-6 w-6 animate-spin text-white" />
-            </div>
-          ) : !services || !Array.isArray(services) || services.length === 0 ? (
-            <div className="py-6 text-center">
-              <Package className="mx-auto h-10 w-10 text-gray-400/50" />
-              <p className="mt-2 text-gray-400">No specific offerings added yet.</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              {services.map((service) => (
-                <div 
-                  key={service.id} 
-                  className="p-4 rounded-lg border border-gray-800 bg-black/40 transition-all hover:translate-y-[-3px]"
-                >
-                  <div className="flex justify-between items-start">
-                    <h3 className="font-medium text-base line-clamp-2 flex-1 text-white">{service.title}</h3>
-                    <div className="flex items-center space-x-1 ml-2">
-                      <button 
-                        className="text-gray-300 hover:text-white focus:outline-none rounded-full p-1 hover:bg-gray-800/50"
-                        onClick={() => {
-                          setSelectedService(service);
-                          setIsEditDialogOpen(true);
-                        }}
-                      >
-                        <Edit className="h-3.5 w-3.5" />
-                      </button>
-                      <button 
-                        className="text-gray-300 hover:text-red-400 focus:outline-none rounded-full p-1 hover:bg-gray-800/50"
-                        onClick={() => {
-                          setSelectedService(service);
-                          setIsDeleteDialogOpen(true);
-                        }}
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </button>
-                    </div>
-                  </div>
-                  
-                  {/* Service description */}
-                  {service.description && (
-                    <p className="mt-2 text-sm text-gray-300 line-clamp-2">
-                      {service.description}
-                    </p>
-                  )}
-                  
-                  {/* Display price information */}
-                  <div className="mt-2">
-                    {(service.priceUsd !== undefined && service.priceUsd !== null) && (
-                      <p className="text-sm font-medium text-white">
-                        {formatCurrency(service.priceUsd, 'USD')}
-                        {service.isHourly ? '/hr' : ''}
-                      </p>
-                    )}
-                    {(service.priceInr !== undefined && service.priceInr !== null) && (
-                      <p className="text-sm font-medium text-white">
-                        {formatCurrency(service.priceInr, 'INR')}
-                        {service.isHourly ? '/hr' : ''}
-                      </p>
-                    )}
-                  </div>
-                  
-                  <div className="mt-2 flex items-center">
-                    <Badge 
-                      className={service.isActive ? 'bg-white/15 text-white hover:bg-white/20 border-none' : 'bg-gray-800/60 text-gray-400 border-none'}
+          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+            <DialogTrigger asChild>
+              <Button
+                variant="ghost"
+                className="neo-glass-button flex items-center gap-1 py-1.5 px-3 whitespace-nowrap"
+                disabled={services.length >= 6 || isPendingCreate || isPendingUpdate}
+              >
+                <Plus className="h-3.5 w-3.5" />
+                <span>Add What I Offer</span>
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[525px] max-h-[88vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Add What I Offer</DialogTitle>
+                <DialogDescription>
+                  Enter a professional service you offer (one at a time).
+                </DialogDescription>
+              </DialogHeader>
+              <ServiceForm 
+                onSubmit={handleCreate} 
+                isPending={isPendingCreate}
+                existingServicesCount={services.length}
+              />
+            </DialogContent>
+          </Dialog>
+        </div>
+        
+        {/* Specific Services List */}
+        {isLoading ? (
+          <div className="flex justify-center py-6">
+            <Loader2 className="h-6 w-6 animate-spin text-white" />
+          </div>
+        ) : !services || !Array.isArray(services) || services.length === 0 ? (
+          <div className="py-6 text-center">
+            <Package className="mx-auto h-10 w-10 text-gray-400/50" />
+            <p className="mt-2 text-gray-400">No specific offerings added yet.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            {services.map((service) => (
+              <div 
+                key={service.id} 
+                className="p-4 rounded-lg border border-gray-800 bg-black/40 transition-all hover:translate-y-[-3px]"
+              >
+                <div className="flex justify-between items-start">
+                  <h3 className="font-medium text-base line-clamp-2 flex-1 text-white">{service.title}</h3>
+                  <div className="flex items-center space-x-1 ml-2">
+                    <button 
+                      className="text-gray-300 hover:text-white focus:outline-none rounded-full p-1 hover:bg-gray-800/50"
+                      onClick={() => {
+                        setSelectedService(service);
+                        setIsEditDialogOpen(true);
+                      }}
                     >
-                      {service.isActive ? 'Active' : 'Inactive'}
-                    </Badge>
-                    {service.isRemote && (
-                      <Badge className="bg-white/15 text-white hover:bg-white/20 border-none ml-2">
-                        Remote
-                      </Badge>
-                    )}
-                    {service.category && (
-                      <Badge className="bg-white/15 text-white hover:bg-white/20 border-none ml-2">
-                        {service.category.charAt(0).toUpperCase() + service.category.slice(1)}
-                      </Badge>
-                    )}
+                      <Edit className="h-3.5 w-3.5" />
+                    </button>
+                    <button 
+                      className="text-gray-300 hover:text-red-400 focus:outline-none rounded-full p-1 hover:bg-gray-800/50"
+                      onClick={() => {
+                        setSelectedService(service);
+                        setIsDeleteDialogOpen(true);
+                      }}
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </button>
                   </div>
                 </div>
-              ))}
-            </div>
-          )}
-        </div>
+                
+                {/* Service description */}
+                {service.description && (
+                  <p className="mt-2 text-sm text-gray-300 line-clamp-2">
+                    {service.description}
+                  </p>
+                )}
+                
+                {/* Display price information */}
+                <div className="mt-2">
+                  {(service.priceUsd !== undefined && service.priceUsd !== null) && (
+                    <p className="text-sm font-medium text-white">
+                      {formatCurrency(service.priceUsd, 'USD')}
+                      {service.isHourly ? '/hr' : ''}
+                    </p>
+                  )}
+                  {(service.priceInr !== undefined && service.priceInr !== null) && (
+                    <p className="text-sm font-medium text-white">
+                      {formatCurrency(service.priceInr, 'INR')}
+                      {service.isHourly ? '/hr' : ''}
+                    </p>
+                  )}
+                </div>
+                
+                <div className="mt-2 flex items-center">
+                  <Badge 
+                    className={service.isActive ? 'bg-white/15 text-white hover:bg-white/20 border-none' : 'bg-gray-800/60 text-gray-400 border-none'}
+                  >
+                    {service.isActive ? 'Active' : 'Inactive'}
+                  </Badge>
+                  {service.isRemote && (
+                    <Badge className="bg-white/15 text-white hover:bg-white/20 border-none ml-2">
+                      Remote
+                    </Badge>
+                  )}
+                  {service.category && (
+                    <Badge className="bg-white/15 text-white hover:bg-white/20 border-none ml-2">
+                      {service.category.charAt(0).toUpperCase() + service.category.slice(1)}
+                    </Badge>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
       
       {/* Edit What I Offer Dialog */}
@@ -441,14 +478,16 @@ export default function Services() {
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently delete this service from your profile.
+              This action cannot be undone. This will permanently delete the service
+              from your profile.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction 
+              className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
               onClick={handleDelete}
-              className="bg-red-500 hover:bg-red-600"
+              disabled={isPendingDelete}
             >
               {isPendingDelete && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Delete

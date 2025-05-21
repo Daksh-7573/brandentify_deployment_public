@@ -5,13 +5,15 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { 
   Loader2, 
-  Plus, 
+  PlusCircle, 
   Edit, 
   Trash2, 
+  ShoppingCart,
   Package,
-  Pencil,
+  MessageSquareQuote,
   Quote,
-  AlertCircle
+  AlertCircle,
+  Plus
 } from "lucide-react";
 import ServiceForm from "@/components/services/service-form";
 import {
@@ -22,6 +24,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Service } from "@shared/schema";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -32,6 +35,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { NeoGlassSection } from "@/components/layout/neo-glass-layout";
 
 export default function Services() {
   const { user } = useAuth();
@@ -42,42 +46,28 @@ export default function Services() {
   const [whatIOffer, setWhatIOffer] = useState('');
   const [services, setServices] = useState<any[]>([]);
   const [error, setError] = useState<Error | null>(null);
-  
-  // State for dialogs
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [isEditWhatIOfferDialogOpen, setEditWhatIOfferDialogOpen] = useState(false);
-  const [selectedService, setSelectedService] = useState<any>(null);
-  
-  // Get API methods from the hook
-  const { 
-    createService, 
-    updateService, 
-    deleteService, 
-    isPendingCreate, 
-    isPendingUpdate, 
-    isPendingDelete,
-  } = useProfileServices();
-  
-  // Fetch services data on mount and when userNumericId changes
-  useEffect(() => {
-    if (userNumericId) {
-      fetchServicesData();
-    }
-  }, [userNumericId]);
+
+  // Track refresh count to help debug and break cache
+  const [refreshCount, setRefreshCount] = useState(0);
   
   // Function to directly fetch the data with improved error handling
   const fetchServicesData = async () => {
     if (!userNumericId) return;
     
+    // Increment refresh count to track calls
+    setRefreshCount(prev => prev + 1);
     setIsLoading(true);
     setError(null);
     
     try {
-      const cacheBuster = `?t=${Date.now()}`;
+      console.log(`Services component - direct fetch #${refreshCount} started for user ID:`, userNumericId);
+      
+      // Add cache busting
+      const cacheBuster = `?t=${Date.now()}&r=${refreshCount}`;
+      
+      // Add timeout protection
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 8000);
+      const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
       
       const response = await fetch(`/api/users/${userNumericId}/profile-services${cacheBuster}`, {
         headers: {
@@ -88,6 +78,7 @@ export default function Services() {
         signal: controller.signal
       });
       
+      // Clear timeout since request completed
       clearTimeout(timeoutId);
       
       if (!response.ok) {
@@ -95,73 +86,174 @@ export default function Services() {
       }
       
       const data = await response.json();
+      console.log(`Services component - direct fetch #${refreshCount} result:`, data);
       
-      // Update state with fetched data
-      setServices(data.services);
-      setWhatIOffer(data.whatIOffer);
-      setIsLoading(false);
-    } catch (err: any) {
-      console.error('Error fetching services data:', err);
-      setError(err);
-      setIsLoading(false);
-      
-      // Try to recover with data from localStorage if available
+      // Save to localStorage as a fallback
       try {
-        const backupData = localStorage.getItem('services_data_backup');
-        if (backupData) {
-          const parsedData = JSON.parse(backupData);
-          setServices(parsedData.services);
-          setWhatIOffer(parsedData.whatIOffer);
-          console.log('Recovered services data from localStorage backup');
-        }
-      } catch (localStorageErr) {
-        console.error('Could not recover data from localStorage:', localStorageErr);
+        localStorage.setItem('services_data_backup', JSON.stringify(data));
+        localStorage.setItem('services_data_timestamp', Date.now().toString());
+      } catch (cacheErr) {
+        console.warn('Services component - could not cache data in localStorage:', cacheErr);
       }
+      
+      // Validate and set data
+      if (data && typeof data === 'object') {
+        // Handle whatIOffer field
+        if ('whatIOffer' in data && typeof data.whatIOffer === 'string') {
+          setWhatIOffer(data.whatIOffer);
+        }
+        
+        // Handle services array
+        if ('services' in data && Array.isArray(data.services)) {
+          setServices(data.services);
+          console.log(`Services component - found ${data.services.length} services in response`);
+        } else {
+          console.warn('Services component - response missing valid services array:', data);
+          // Try to keep existing services if new data is invalid
+          if (services.length > 0) {
+            console.log('Services component - keeping existing services data');
+          } else {
+            setServices([]);
+          }
+        }
+      } else {
+        console.error('Services component - response is not a valid object:', data);
+        throw new Error('Invalid response format');
+      }
+    } catch (err: any) {
+      console.error(`Services component - fetch #${refreshCount} error:`, err);
+      setError(err as Error);
+      
+      // Try to recover from localStorage if it's a network error or server error
+      if (err.name === 'AbortError' || (err.message && err.message.includes('Server responded with'))) {
+        try {
+          const cachedData = localStorage.getItem('services_data_backup');
+          const timestamp = localStorage.getItem('services_data_timestamp');
+          
+          if (cachedData && timestamp) {
+            const parsedTimestamp = parseInt(timestamp, 10);
+            const now = Date.now();
+            const isFresh = (now - parsedTimestamp) < 1000 * 60 * 30; // 30 minutes
+            
+            if (isFresh) {
+              console.log('Services component - recovering from localStorage cache');
+              const data = JSON.parse(cachedData);
+              
+              if (data.whatIOffer) setWhatIOffer(data.whatIOffer);
+              if (Array.isArray(data.services)) setServices(data.services);
+            }
+          }
+        } catch (recoveryErr) {
+          console.error('Services component - recovery from cache failed:', recoveryErr);
+        }
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
-
-  // Create a new service
-  const handleCreate = async (formData: any) => {
-    if (!userNumericId) return;
-
-    // Add userId to the form data
+  
+  // Fetch data on component mount, but don't set up a continuous refresh that causes flickering
+  useEffect(() => {
+    if (userNumericId) {
+      console.log('Services component - initial fetch for user ID:', userNumericId);
+      fetchServicesData();
+      
+      // No regular refresh interval - just do a one-time fetch
+      // This prevents the loading indicator from continuously appearing
+    }
+  }, [userNumericId]);
+  
+  // Use the unified hook for both data and mutations
+  const { 
+    services: hookServices,
+    whatIOffer: hookWhatIOffer,
+    createService, 
+    updateService, 
+    deleteService, 
+    isPendingCreate,
+    isPendingUpdate,
+    isPendingDelete,
+    isLoading: isLoadingFromHook
+  } = useProfileServices();
+  
+  // Use services from the hook when they become available
+  useEffect(() => {
+    if (hookServices && Array.isArray(hookServices) && hookServices.length > 0) {
+      console.log('Services component - using services from useProfileServices hook:', hookServices.length);
+      setServices(hookServices);
+      setIsLoading(false);
+    }
+    
+    if (hookWhatIOffer) {
+      console.log('Services component - using whatIOffer from hook:', hookWhatIOffer);
+      setWhatIOffer(hookWhatIOffer);
+    }
+  }, [hookServices, hookWhatIOffer]);
+  
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isEditWhatIOfferDialogOpen, setEditWhatIOfferDialogOpen] = useState(false);
+  const [selectedService, setSelectedService] = useState<Service | null>(null);
+  
+  const handleCreate = (formData: any) => {
+    if (!userNumericId) {
+      console.error("Services component - handleCreate: userNumericId is undefined!");
+      return;
+    }
+    
+    // Detailed logging to diagnose service creation issues
+    console.log("Services component - handleCreate called with formData:", JSON.stringify(formData));
+    console.log("Services component - userNumericId:", userNumericId, "type:", typeof userNumericId);
+    
+    // Always use the numeric ID for the database
     const serviceData = {
       ...formData,
       userId: userNumericId
     };
     
-    createService(serviceData);
+    console.log("Services component - createService submitting:", JSON.stringify(serviceData));
     
-    // Force a refresh to get the updated data
-    setTimeout(() => {
-      fetchServicesData();
-    }, 1000);
-    
-    // Close the dialog
-    setIsCreateDialogOpen(false);
+    // The try-catch block helps identify errors in service creation
+    try {
+      createService(serviceData);
+      
+      console.log("Services component - createService call completed");
+      
+      // Force a refresh after creation
+      setTimeout(() => {
+        console.log("Services component - refreshing services data after creation");
+        fetchServicesData();
+      }, 1000);
+      
+      setIsCreateDialogOpen(false);
+    } catch (err) {
+      console.error("Services component - service creation error:", err);
+      
+      // Ensure dialog is closed even on error
+      setIsCreateDialogOpen(false);
+    }
   };
   
-  // Update an existing service
-  const handleUpdate = async (formData: any) => {
-    if (!selectedService) return;
+  const handleUpdate = (formData: any) => {
+    if (!selectedService || !userNumericId) return;
     
-    const updatedData = {
-      ...formData,
-      id: selectedService.id
-    };
+    updateService({
+      id: selectedService.id,
+      data: {
+        ...formData,
+        userId: userNumericId // Ensure userId is always included
+      }
+    });
     
-    updateService(updatedData);
-    
-    // Force a refresh to get the updated data
+    // Force a refresh after update
     setTimeout(() => {
       fetchServicesData();
     }, 1000);
     
-    // Close the dialog
     setIsEditDialogOpen(false);
   };
   
-  // Delete a service
   const handleDelete = () => {
     if (!selectedService) return;
     
@@ -206,31 +298,27 @@ export default function Services() {
   return (
     <>
       {/* General Professional Offering Section */}
-      <div className="mb-6">
-        <div className="bg-slate-900/60 rounded-lg p-6">
-          <div className="flex flex-row items-center justify-between space-y-0 pb-4 mb-4 border-b border-gray-800">
-            <div>
-              <h2 className="text-xl font-bold text-white">General Professional Offering</h2>
-              <p className="text-sm text-gray-300">Overall description of your professional expertise</p>
-            </div>
-            <Button
-              variant="ghost"
-              className="neo-glass-button flex items-center gap-1 py-1.5 px-3 whitespace-nowrap"
-              disabled={isPendingCreate || isPendingUpdate}
-              onClick={() => setEditWhatIOfferDialogOpen(true)}
-            >
-              <Pencil className="h-3.5 w-3.5" />
-              <span>Edit Description</span>
-            </Button>
+      <NeoGlassSection className="mb-6">
+        <div className="flex justify-between items-center mb-4">
+          <div>
+            <h2 className="text-xl font-semibold text-white">General Professional Offering</h2>
+            <p className="text-sm text-gray-300">Overall description of your professional expertise</p>
           </div>
-          
+          <button
+            className="neo-glass-button flex items-center gap-1 py-1.5 px-3 whitespace-nowrap"
+            disabled={isPendingCreate || isPendingUpdate}
+            onClick={() => setEditWhatIOfferDialogOpen(true)}
+          >
+            <MessageSquareQuote className="h-3.5 w-3.5" />
+            <span>Edit Description</span>
+          </button>
+        </div>
+        
+        <div>
           {whatIOffer ? (
-            <div className="transition-all">
-              <div className="flex items-center mb-2">
-                <Quote className="h-5 w-5 text-gray-300 mr-2" />
-                <h3 className="font-medium text-lg text-white">Professional Overview</h3>
-              </div>
-              <p className="text-sm text-gray-300 whitespace-pre-line ml-7">{whatIOffer}</p>
+            <div className="neo-glass-card p-4 rounded-lg transition-all">
+              <Quote className="h-5 w-5 text-gray-400 mb-2" />
+              <p className="text-sm text-gray-300 whitespace-pre-line">{whatIOffer}</p>
             </div>
           ) : (
             <div className="py-6 text-center">
@@ -241,43 +329,42 @@ export default function Services() {
             </div>
           )}
         </div>
-      </div>
+      </NeoGlassSection>
       
       {/* What I Offer Section */}
-      <div className="mb-6">
-        <div className="bg-slate-900/60 rounded-lg p-6">
-          <div className="flex flex-row items-center justify-between space-y-0 pb-4 mb-4 border-b border-gray-800">
-            <div>
-              <h2 className="text-xl font-bold text-white">What I Offer</h2>
-              <p className="text-sm text-gray-300">Specific professional services I provide (max 6)</p>
-            </div>
-            <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-              <DialogTrigger asChild>
-                <Button
-                  variant="ghost"
-                  className="neo-glass-button flex items-center gap-1 py-1.5 px-3 whitespace-nowrap"
-                  disabled={services.length >= 6 || isPendingCreate || isPendingUpdate}
-                >
-                  <Plus className="h-3.5 w-3.5" />
-                  <span>Add What I Offer</span>
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[525px] max-h-[88vh] overflow-y-auto">
-                <DialogHeader>
-                  <DialogTitle>Add What I Offer</DialogTitle>
-                  <DialogDescription>
-                    Enter a professional service you offer (one at a time).
-                  </DialogDescription>
-                </DialogHeader>
-                <ServiceForm 
-                  onSubmit={handleCreate} 
-                  isPending={isPendingCreate}
-                  existingServicesCount={services.length}
-                />
-              </DialogContent>
-            </Dialog>
+      <NeoGlassSection className="mb-6">
+        <div className="flex justify-between items-center mb-4">
+          <div>
+            <h2 className="text-xl font-semibold text-white">What I Offer</h2>
+            <p className="text-sm text-gray-300">Specific professional services I provide (max 6)</p>
           </div>
-          
+          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+            <DialogTrigger asChild>
+              <button
+                className="neo-glass-button flex items-center gap-1 py-1.5 px-3 whitespace-nowrap"
+                disabled={services.length >= 6 || isPendingCreate || isPendingUpdate}
+              >
+                <Plus className="h-3.5 w-3.5" />
+                <span>Add What I Offer</span>
+              </button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[525px] max-h-[88vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Add What I Offer</DialogTitle>
+                <DialogDescription>
+                  Enter a professional service you offer (one at a time).
+                </DialogDescription>
+              </DialogHeader>
+              <ServiceForm 
+                onSubmit={handleCreate} 
+                isPending={isPendingCreate}
+                existingServicesCount={services.length}
+              />
+            </DialogContent>
+          </Dialog>
+        </div>
+        
+        <div>
           {/* Specific Services List */}
           {isLoading ? (
             <div className="flex justify-center py-6">
@@ -293,7 +380,7 @@ export default function Services() {
               {services.map((service) => (
                 <div 
                   key={service.id} 
-                  className="p-4 rounded-lg border border-gray-800 bg-black/40 transition-all hover:translate-y-[-3px]"
+                  className="neo-glass-card p-4 rounded-lg transition-all hover:translate-y-[-3px]"
                 >
                   <div className="flex justify-between items-start">
                     <h3 className="font-medium text-base line-clamp-2 flex-1 text-white">{service.title}</h3>
@@ -364,7 +451,7 @@ export default function Services() {
             </div>
           )}
         </div>
-      </div>
+      </NeoGlassSection>
       
       {/* Edit What I Offer Dialog */}
       <Dialog open={isEditWhatIOfferDialogOpen} onOpenChange={setEditWhatIOfferDialogOpen}>
@@ -432,14 +519,16 @@ export default function Services() {
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently delete this service from your profile.
+              This action cannot be undone. This will permanently delete the service
+              from your profile.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction 
+              className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
               onClick={handleDelete}
-              className="bg-red-500 hover:bg-red-600"
+              disabled={isPendingDelete}
             >
               {isPendingDelete && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Delete

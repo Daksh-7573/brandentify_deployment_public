@@ -6,7 +6,7 @@ import WorkExperience from "@/components/profile/work-experience";
 import Education from "@/components/profile/education";
 import Skills from "@/components/profile/skills";
 import Projects from "@/components/profile/projects";
-import Services from "@/components/profile/services-fixed";
+import Services from "@/components/profile/services";
 import PersonalInfoSection from "@/components/profile/personal-info-section";
 import EditPersonalInfo from "@/components/profile/edit-personal-info";
 import MuskButton from "@/components/musk/musk-button";
