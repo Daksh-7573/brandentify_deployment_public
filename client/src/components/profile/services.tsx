@@ -320,7 +320,7 @@ export default function Services() {
               <Loader2 className="h-6 w-6 animate-spin text-white" />
             </div>
           ) : !services || !Array.isArray(services) || services.length === 0 ? (
-            <div className="py-6 text-center border border-white/5 rounded-lg bg-slate-800/40 backdrop-blur-md">
+            <div className="py-6 text-center border border-white/10 rounded-lg bg-slate-800/50 backdrop-blur-md shadow-xl shadow-black/5 neo-glass-card">
               <Package className="mx-auto h-10 w-10 text-slate-300 mb-2" />
               <p className="mt-2 text-slate-300">No offerings added yet.</p>
             </div>
