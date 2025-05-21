@@ -11,6 +11,7 @@ import PersonalInfoSection from "@/components/profile/personal-info-section";
 import EditPersonalInfo from "@/components/profile/edit-personal-info";
 import MuskButton from "@/components/musk/musk-button";
 import { useQuery, useMutation } from "@tanstack/react-query";
+import { Plus, AlertCircle } from "lucide-react";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { calculateOverallProfileCompletion } from "@/lib/profile-utils";
 import { useState, useEffect } from "react";
