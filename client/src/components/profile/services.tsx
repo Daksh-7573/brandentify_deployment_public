@@ -274,7 +274,7 @@ export default function Services() {
         </div>
         
         {whatIOffer ? (
-          <div className="neo-glass-card p-4 rounded-lg transition-all hover:translate-y-[-3px]">
+          <div className="transition-all">
             <div className="flex items-center mb-2">
               <Quote className="h-5 w-5 text-gray-300 mr-2" />
               <h3 className="font-medium text-lg text-white">Professional Overview</h3>
@@ -340,7 +340,7 @@ export default function Services() {
             {services.map((service) => (
               <div 
                 key={service.id} 
-                className="neo-glass-card p-4 rounded-lg transition-all hover:translate-y-[-3px]"
+                className="p-4 rounded-lg border border-gray-800 bg-black/40 transition-all hover:translate-y-[-3px]"
               >
                 <div className="flex justify-between items-start">
                   <h3 className="font-medium text-base line-clamp-2 flex-1 text-white">{service.title}</h3>
