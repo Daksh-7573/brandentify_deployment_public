@@ -1125,7 +1125,7 @@ export default function Projects() {
               <p className="text-sm text-slate-300 mb-4">
                 Create your first project showcase to highlight your work
               </p>
-              <Button onClick={handleAdd} className="neo-glass-button flex items-center gap-1 py-2 px-4">
+              <Button onClick={handleAdd} className="gap-1 bg-slate-800/60 text-white hover:bg-slate-700/70">
                 <Plus className="w-4 h-4" />
                 Add New Project
               </Button>

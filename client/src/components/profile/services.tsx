@@ -329,13 +329,13 @@ export default function Services() {
               {services.map((service) => (
                 <div 
                   key={service.id} 
-                  className="border border-white/5 rounded-lg p-4 bg-slate-800/40 backdrop-blur-md transition-all hover:bg-slate-700/40"
+                  className="border border-white/10 rounded-lg p-4 bg-slate-800/50 backdrop-blur-md transition-all hover:bg-slate-700/50 shadow-xl shadow-black/5 neo-glass-card"
                 >
                   <div className="flex justify-between items-start">
                     <h3 className="font-medium text-base line-clamp-2 flex-1 text-white">{service.title}</h3>
                     <div className="flex items-center space-x-1 ml-2">
                       <button 
-                        className="text-slate-300 hover:text-white focus:outline-none rounded-full p-1 hover:bg-slate-700/50"
+                        className="text-slate-300 hover:text-white focus:outline-none rounded-full p-1 hover:bg-white/10"
                         onClick={() => {
                           setSelectedService(service);
                           setIsEditDialogOpen(true);
@@ -344,7 +344,7 @@ export default function Services() {
                         <Edit className="h-3.5 w-3.5" />
                       </button>
                       <button 
-                        className="text-slate-300 hover:text-red-400 focus:outline-none rounded-full p-1 hover:bg-slate-700/50"
+                        className="text-slate-300 hover:text-red-400 focus:outline-none rounded-full p-1 hover:bg-white/10"
                         onClick={() => {
                           setSelectedService(service);
                           setIsDeleteDialogOpen(true);
@@ -380,7 +380,7 @@ export default function Services() {
                   
                   <div className="mt-2 flex items-center">
                     <Badge 
-                      className={service.isActive ? 'bg-slate-700/60 text-white hover:bg-slate-600/70 border-none' : 'bg-slate-800/60 text-slate-400 border-none'}
+                      className={service.isActive ? 'bg-white/15 text-white hover:bg-white/20 border-none' : 'bg-slate-800/60 text-slate-400 border-none'}
                     >
                       {service.isActive ? 'Active' : 'Inactive'}
                     </Badge>
@@ -407,12 +407,12 @@ export default function Services() {
           </div>
           
           {whatIOffer ? (
-            <div className="border border-white/5 rounded-lg p-4 bg-slate-800/40 backdrop-blur-md">
+            <div className="border border-white/10 rounded-lg p-4 bg-slate-800/50 backdrop-blur-md shadow-xl shadow-black/5 neo-glass-card">
               <Quote className="h-5 w-5 text-slate-300 mb-1" />
               <p className="text-sm text-slate-300 whitespace-pre-line">{whatIOffer}</p>
             </div>
           ) : (
-            <div className="border border-dashed border-white/10 rounded-lg p-4 bg-slate-800/40 backdrop-blur-md text-center">
+            <div className="border border-dashed border-white/10 rounded-lg p-4 bg-slate-800/50 backdrop-blur-md text-center shadow-xl shadow-black/5 neo-glass-card">
               <AlertCircle className="mx-auto h-8 w-8 text-slate-300/60 mb-2" />
               <p className="text-sm text-slate-300">
                 Add a general description of your professional services.
