@@ -143,7 +143,7 @@ export default function ServiceForm({ service, initialData, onSubmit, isPending,
       // Add all pricing fields
       ...priceData,
       // Then add any existing service values for fields we didn't explicitly set
-      ...(service ? (({ id, userId }) => ({ id, userId }))(service) : {})
+      ...(serviceData ? (({ id, userId }) => ({ id, userId }))(serviceData) : {})
     };
     
     // If we don't have userId from an existing service, add it from auth context
@@ -365,10 +365,10 @@ export default function ServiceForm({ service, initialData, onSubmit, isPending,
           {isPending ? (
             <>
               <Loader2 className="h-4 w-4 animate-spin" />
-              <span>{service ? "Updating..." : "Creating..."}</span>
+              <span>{serviceData ? "Updating..." : "Creating..."}</span>
             </>
           ) : (
-            <span>{service ? "Update Service" : "Create Service"}</span>
+            <span>{serviceData ? "Update Service" : "Create Service"}</span>
           )}
         </Button>
       </form>
