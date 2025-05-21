@@ -472,6 +472,7 @@ export default function Services() {
                 type="button" 
                 variant="outline"
                 onClick={() => setEditWhatIOfferDialogOpen(false)}
+                className="neo-glass-button bg-transparent hover:bg-white/10"
               >
                 Cancel
               </Button>
@@ -496,14 +497,15 @@ export default function Services() {
                   }
                 }}
                 disabled={isPendingUpdate}
+                className="neo-glass-button flex items-center gap-2 py-2 px-4"
               >
                 {isPendingUpdate ? (
                   <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Saving...
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <span>Saving...</span>
                   </>
                 ) : (
-                  "Save"
+                  <span>Save</span>
                 )}
               </Button>
             </div>
@@ -527,19 +529,19 @@ export default function Services() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel className="neo-glass-button bg-transparent hover:bg-white/10">Cancel</AlertDialogCancel>
             <AlertDialogAction 
               onClick={handleDelete}
               disabled={isPendingDelete}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              className="neo-glass-button flex items-center gap-2 py-2 px-4 bg-destructive-foreground/20 hover:bg-destructive-foreground/30"
             >
               {isPendingDelete ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Deleting...
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span>Deleting...</span>
                 </>
               ) : (
-                "Delete"
+                <span>Delete</span>
               )}
             </AlertDialogAction>
           </AlertDialogFooter>
