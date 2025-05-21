@@ -1,0 +1,38 @@
+/**
+ * Button Override Styles for Neo-Glass Theme
+ * 
+ * This file contains styling overrides for buttons to ensure
+ * consistent styling across all components, especially fixing
+ * the issues with "Add What I Offer" and "Edit Description" buttons
+ */
+
+/* Force all neo-glass-button styling to override component-level styling */
+.neo-glass-button {
+  background: rgba(255, 255, 255, 0.1) !important;
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+.neo-glass-button:hover {
+  background: rgba(255, 255, 255, 0.15) !important;
+  background-color: rgba(255, 255, 255, 0.15) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  color: #ffffff !important;
+}
+
+/* This will ensure that any variant styling will not override our neo-glass-button styling */
+.neo-glass-button[class*="variant"] {
+  background: rgba(255, 255, 255, 0.1) !important;
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+.neo-glass-button[class*="variant"]:hover {
+  background: rgba(255, 255, 255, 0.15) !important;
+  background-color: rgba(255, 255, 255, 0.15) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  color: #ffffff !important;
+}
