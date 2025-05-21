@@ -1398,9 +1398,9 @@ export default function WorkExperience() {
           </div>
           
           <DialogFooter>
-            <Button
+            <button
               type="button"
-              variant="outline"
+              className="neo-glass-button bg-gray-800 hover:bg-gray-700"
               onClick={() => {
                 setShowAddDialog(false);
                 resetForm();
@@ -1408,14 +1408,15 @@ export default function WorkExperience() {
               disabled={createExperienceMutation.isPending}
             >
               Cancel
-            </Button>
-            <Button 
+            </button>
+            <button 
               type="button" 
+              className="neo-glass-button"
               onClick={handleAddSubmit}
               disabled={createExperienceMutation.isPending}
             >
               {createExperienceMutation.isPending ? "Adding..." : "Add Career Path"}
-            </Button>
+            </button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -1731,9 +1732,9 @@ export default function WorkExperience() {
           </div>
           
           <DialogFooter>
-            <Button
+            <button
               type="button"
-              variant="outline"
+              className="neo-glass-button bg-gray-800 hover:bg-gray-700"
               onClick={() => {
                 setShowEditDialog(false);
                 resetForm();
@@ -1741,14 +1742,15 @@ export default function WorkExperience() {
               disabled={updateExperienceMutation.isPending}
             >
               Cancel
-            </Button>
-            <Button 
+            </button>
+            <button 
               type="button" 
+              className="neo-glass-button"
               onClick={handleEditSubmit}
               disabled={updateExperienceMutation.isPending}
             >
               {updateExperienceMutation.isPending ? "Updating..." : "Update Career Path"}
-            </Button>
+            </button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
