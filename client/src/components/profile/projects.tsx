@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { NeoGlassSection } from "@/components/layout/neo-glass-layout";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -957,7 +956,7 @@ export default function Projects() {
   };
 
   return (
-    <NeoGlassSection className="flex-1">
+    <div className="flex-1">
       <div className="flex flex-row items-center justify-between space-y-0 pb-4 mb-4 border-b border-gray-800">
         <div>
           <h2 className="text-xl font-bold text-white">Project Showcase</h2>
