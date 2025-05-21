@@ -279,7 +279,7 @@ export default function Services() {
   };
   
   return (
-    <NeoGlassSection title="What I Offer" className="mb-6 p-6">
+    <NeoGlassSection title="What I Offer" className="mb-6">
       <div className="flex flex-row items-center justify-between space-y-0 pb-2">
         <div>
           <p className="text-sm text-slate-300">Professional services I provide (max 6)</p>
