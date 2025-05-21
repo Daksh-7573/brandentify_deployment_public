@@ -381,12 +381,12 @@ export default function Skills() {
             </div>
           </div>
           <DialogFooter>
-            <Button className="neo-glass-button-secondary" onClick={handleCloseModal}>
+            <button type="button" className="neo-glass-button-secondary" onClick={handleCloseModal}>
               Cancel
-            </Button>
-            <Button className="neo-glass-button" onClick={handleSaveSkill}>
+            </button>
+            <button type="button" className="neo-glass-button" onClick={handleSaveSkill}>
               Save
-            </Button>
+            </button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
