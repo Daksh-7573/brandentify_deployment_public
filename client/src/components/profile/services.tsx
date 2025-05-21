@@ -34,7 +34,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { NeoGlassSection } from "@/components/layout/neo-glass-layout";
+// Removed NeoGlassSection import as we're using direct div with neo-glass-card class
 
 export default function Services() {
   const { user } = useAuth();
