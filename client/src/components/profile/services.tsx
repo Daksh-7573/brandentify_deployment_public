@@ -11,7 +11,8 @@ import {
   MessageSquareQuote,
   Quote,
   AlertCircle,
-  Plus
+  Plus,
+  Pencil
 } from "lucide-react";
 import ServiceForm from "@/components/services/service-form";
 import {
@@ -256,9 +257,9 @@ export default function Services() {
     <>
       {/* General Professional Offering Section */}
       <NeoGlassSection className="mb-6">
-        <div className="flex justify-between items-center mb-4">
+        <div className="flex flex-row items-center justify-between space-y-0 pb-4 mb-4 border-b border-gray-800">
           <div>
-            <h2 className="text-xl font-semibold text-white">General Professional Offering</h2>
+            <h2 className="text-xl font-bold text-white">General Professional Offering</h2>
             <p className="text-sm text-gray-300">Overall description of your professional expertise</p>
           </div>
           <Button
@@ -267,7 +268,7 @@ export default function Services() {
             disabled={isPendingCreate || isPendingUpdate}
             onClick={() => setEditWhatIOfferDialogOpen(true)}
           >
-            <MessageSquareQuote className="h-3.5 w-3.5" />
+            <Pencil className="h-3.5 w-3.5" />
             <span>Edit Description</span>
           </Button>
         </div>
@@ -292,9 +293,9 @@ export default function Services() {
       
       {/* What I Offer Section */}
       <NeoGlassSection className="mb-6">
-        <div className="flex justify-between items-center mb-4">
+        <div className="flex flex-row items-center justify-between space-y-0 pb-4 mb-4 border-b border-gray-800">
           <div>
-            <h2 className="text-xl font-semibold text-white">What I Offer</h2>
+            <h2 className="text-xl font-bold text-white">What I Offer</h2>
             <p className="text-sm text-gray-300">Specific professional services I provide (max 6)</p>
           </div>
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
