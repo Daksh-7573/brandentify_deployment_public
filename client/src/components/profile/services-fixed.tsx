@@ -329,6 +329,7 @@ export default function Services() {
             </div>
           )}
         </div>
+      </div>
       </NeoGlassSection>
       
       {/* What I Offer as a completely separate section */}
@@ -364,7 +365,7 @@ export default function Services() {
           </Dialog>
         </div>
         
-        <div className="p-1">
+        <div>
           {/* Specific Services List */}
           {isLoading ? (
             <div className="flex justify-center py-6">
@@ -431,9 +432,10 @@ export default function Services() {
                   )}
                 </div>
                 
-                <div className="mt-2 flex items-center">
+                {/* Service status badge */}
+                <div className="mt-3 pt-2 border-t border-white/10">
                   <Badge 
-                    className={service.isActive ? 'bg-white/15 text-white hover:bg-white/20 border-none' : 'bg-slate-800/60 text-slate-400 border-none'}
+                    className={service.isActive ? 'bg-white/15 text-gray-200 hover:bg-white/20 border-none' : 'bg-gray-800/60 text-gray-400 border-none'}
                   >
                     {service.isActive ? 'Active' : 'Inactive'}
                   </Badge>
