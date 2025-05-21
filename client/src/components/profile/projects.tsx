@@ -957,18 +957,19 @@ export default function Projects() {
   };
 
   return (
-    <NeoGlassSection title="Project Showcase" className="flex-1">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex-1"></div>
-        <div className="flex items-center gap-2">
-          <button 
-            onClick={handleAdd} 
-            className="neo-glass-button flex items-center gap-1 py-1.5 px-3 whitespace-nowrap"
-          >
-            <Plus className="h-3.5 w-3.5" />
-            <span>Add Project</span>
-          </button>
+    <NeoGlassSection className="flex-1">
+      <div className="flex flex-row items-center justify-between space-y-0 pb-4 mb-4 border-b border-gray-800">
+        <div>
+          <h2 className="text-xl font-bold text-white">Project Showcase</h2>
+          <p className="text-sm text-gray-300">Highlight your best work and project achievements</p>
         </div>
+        <button 
+          onClick={handleAdd} 
+          className="neo-glass-button flex items-center gap-1 py-1.5 px-3 whitespace-nowrap"
+        >
+          <Plus className="h-3.5 w-3.5" />
+          <span>Add Project</span>
+        </button>
       </div>
       
       <div className="space-y-4">
@@ -1122,9 +1123,9 @@ export default function Projects() {
               ))}
             </div>
           ) : (
-            <div className="py-6 text-center">
-              <FolderKanban className="mx-auto h-10 w-10 text-gray-500/50" />
-              <p className="mt-2 text-gray-400">No projects yet. Create your first project showcase to highlight your work.</p>
+            <div className="flex flex-col items-center justify-center py-10 bg-slate-800/20 backdrop-blur-sm rounded-xl border border-white/10">
+              <FolderKanban className="h-12 w-12 text-gray-500/50 mb-3" />
+              <p className="text-gray-400 text-center max-w-md">No projects yet. Create your first project showcase to highlight your work.</p>
             </div>
           )}
         </div>
