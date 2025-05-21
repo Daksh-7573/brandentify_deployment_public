@@ -17,7 +17,9 @@ import {
   Image, 
   FileCode, 
   Check, 
-  Loader2, 
+  Loader2,
+  Plus,
+  Search as SearchIcon,
   Maximize2, 
   ChevronLeft, 
   ChevronRight, 
@@ -1508,11 +1510,13 @@ export default function IndustryPulsePage() {
               </div>
               <button
                 type="button"
-                className="neo-glass-button flex items-center gap-2 py-2 px-4"
+                className="neo-glass-button"
                 onClick={() => setLocation("/create-pulse")}
               >
-                <Plus className="h-4 w-4 mr-2" />
-                Create Pulse
+                <span className="flex items-center">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Create Pulse
+                </span>
               </button>
             </div>
             
@@ -1561,11 +1565,13 @@ export default function IndustryPulsePage() {
                       ) : (
                         <button
                           type="button"
-                          className="neo-glass-button flex items-center gap-2 py-2 px-4"
+                          className="neo-glass-button"
                           onClick={() => setLocation("/create-pulse")}
                         >
-                          <Plus className="h-4 w-4 mr-2" />
-                          Create Your First Pulse
+                          <span className="flex items-center">
+                            <Plus className="h-4 w-4 mr-2" />
+                            Create Your First Pulse
+                          </span>
                         </button>
                       )}
                     </CardContent>
