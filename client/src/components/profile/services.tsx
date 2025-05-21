@@ -261,20 +261,24 @@ export default function Services() {
             <h2 className="text-xl font-semibold text-white">General Professional Offering</h2>
             <p className="text-sm text-gray-300">Overall description of your professional expertise</p>
           </div>
-          <button
+          <Button
+            variant="ghost"
             className="neo-glass-button flex items-center gap-1 py-1.5 px-3 whitespace-nowrap"
             disabled={isPendingCreate || isPendingUpdate}
             onClick={() => setEditWhatIOfferDialogOpen(true)}
           >
             <MessageSquareQuote className="h-3.5 w-3.5" />
             <span>Edit Description</span>
-          </button>
+          </Button>
         </div>
         
         {whatIOffer ? (
-          <div className="neo-glass-card p-4 rounded-lg transition-all">
-            <Quote className="h-5 w-5 text-gray-400 mb-2" />
-            <p className="text-sm text-gray-300 whitespace-pre-line">{whatIOffer}</p>
+          <div className="neo-glass-card p-4 rounded-lg transition-all hover:translate-y-[-3px]">
+            <div className="flex items-center mb-2">
+              <Quote className="h-5 w-5 text-gray-300 mr-2" />
+              <h3 className="font-medium text-lg text-white">Professional Overview</h3>
+            </div>
+            <p className="text-sm text-gray-300 whitespace-pre-line ml-7">{whatIOffer}</p>
           </div>
         ) : (
           <div className="py-6 text-center">
@@ -295,13 +299,14 @@ export default function Services() {
           </div>
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
             <DialogTrigger asChild>
-              <button
+              <Button
+                variant="ghost"
                 className="neo-glass-button flex items-center gap-1 py-1.5 px-3 whitespace-nowrap"
                 disabled={services.length >= 6 || isPendingCreate || isPendingUpdate}
               >
                 <Plus className="h-3.5 w-3.5" />
                 <span>Add What I Offer</span>
-              </button>
+              </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[525px] max-h-[88vh] overflow-y-auto">
               <DialogHeader>
