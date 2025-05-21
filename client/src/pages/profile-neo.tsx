@@ -346,23 +346,23 @@ export default function ProfileNeo() {
                       setLocation('/portfolio/edit');
                     }}
                     id="portfolio-btn"
-                    className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-[#e0e0e0] to-[#ffffff] text-black font-medium text-sm transition-all duration-200 hover:shadow-lg hover:scale-105"
+                    className="neo-glass-button flex items-center gap-1 py-1.5 px-3 whitespace-nowrap"
                   >
-                    Portfolio
+                    <span>Portfolio</span>
                   </button>
                   <button 
                     onClick={() => setLocation('/resume-builder')}
-                    className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-[#e0e0e0] to-[#ffffff] text-black font-medium text-sm transition-all duration-200 hover:shadow-lg hover:scale-105"
+                    className="neo-glass-button flex items-center gap-1 py-1.5 px-3 whitespace-nowrap"
                   >
-                    <FileText className="w-4 h-4 mr-2" />
-                    Resume Builder
+                    <FileText className="w-4 h-4" />
+                    <span>Resume Builder</span>
                   </button>
                   <button 
                     onClick={() => setLocation('/career-capsule')}
-                    className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-[#e0e0e0] to-[#ffffff] text-black font-medium text-sm transition-all duration-200 hover:shadow-lg hover:scale-105"
+                    className="neo-glass-button flex items-center gap-1 py-1.5 px-3 whitespace-nowrap"
                   >
-                    <FileText className="w-4 h-4 mr-2" />
-                    Career Capsule
+                    <FileText className="w-4 h-4" />
+                    <span>Career Capsule</span>
                   </button>
                 </div>
               </div>
