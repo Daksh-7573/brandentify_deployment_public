@@ -382,20 +382,20 @@ export default function Services() {
                   key={service.id} 
                   className="neo-glass-card p-4 rounded-lg transition-all hover:translate-y-[-3px]"
                 >
-                <div className="flex justify-between items-start">
-                  <h3 className="font-medium text-base line-clamp-2 flex-1 text-white">{service.title}</h3>
-                  <div className="flex items-center space-x-1 ml-2">
-                    <button 
-                      className="text-slate-300 hover:text-white focus:outline-none rounded-full p-1 hover:bg-white/10"
-                      onClick={() => {
-                        setSelectedService(service);
-                        setIsEditDialogOpen(true);
-                      }}
-                    >
-                      <Edit className="h-3.5 w-3.5" />
-                    </button>
-                    <button 
-                      className="text-slate-300 hover:text-red-400 focus:outline-none rounded-full p-1 hover:bg-white/10"
+                  <div className="flex justify-between items-start">
+                    <h3 className="font-medium text-base line-clamp-2 flex-1 text-white">{service.title}</h3>
+                    <div className="flex items-center space-x-1 ml-2">
+                      <button 
+                        className="text-gray-300 hover:text-white focus:outline-none rounded-full p-1 hover:bg-gray-800/50"
+                        onClick={() => {
+                          setSelectedService(service);
+                          setIsEditDialogOpen(true);
+                        }}
+                      >
+                        <Edit className="h-3.5 w-3.5" />
+                      </button>
+                      <button 
+                        className="text-gray-300 hover:text-red-400 focus:outline-none rounded-full p-1 hover:bg-gray-800/50"
                       onClick={() => {
                         setSelectedService(service);
                         setIsDeleteDialogOpen(true);
@@ -408,15 +408,17 @@ export default function Services() {
                 
                 {/* Service description */}
                 {service.description && (
-                  <p className="mt-2 text-sm text-slate-300 line-clamp-2">
-                    {service.description}
-                  </p>
+                  <div className="mt-2">
+                    <p className="text-sm text-gray-300 line-clamp-2 whitespace-pre-line">
+                      {service.description}
+                    </p>
+                  </div>
                 )}
                 
                 {/* Display price information */}
                 <div className="mt-2">
                   {(service.priceUsd !== undefined && service.priceUsd !== null) && (
-                    <p className="text-sm font-medium text-white">
+                    <p className="text-sm font-medium text-gray-200">
                       {formatCurrency(service.priceUsd, 'USD')}
                       {service.isHourly ? '/hr' : ''}
                     </p>
