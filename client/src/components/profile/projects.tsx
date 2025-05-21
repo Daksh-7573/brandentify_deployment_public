@@ -1122,10 +1122,10 @@ export default function Projects() {
               ))}
             </div>
           ) : (
-            <div className="py-6 text-center border border-white/10 rounded-lg bg-slate-800/50 backdrop-blur-md shadow-xl shadow-black/5 neo-glass-card">
-              <FolderKanban className="mx-auto h-10 w-10 text-slate-300 mb-2" />
+            <div className="py-6 text-center neo-glass-card">
+              <FolderKanban className="mx-auto h-10 w-10 text-gray-400/50 mb-2" />
               <h3 className="text-lg font-medium mb-1 text-white">No projects yet</h3>
-              <p className="text-sm text-slate-300">
+              <p className="text-sm text-gray-400">
                 Create your first project showcase to highlight your work
               </p>
             </div>
