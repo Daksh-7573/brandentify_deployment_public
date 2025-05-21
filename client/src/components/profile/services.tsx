@@ -215,7 +215,7 @@ export default function Services() {
   return (
     <>
       {/* General Professional Offering Section */}
-      <div className="mb-6">
+      <div className="mb-6 neo-glass-card rounded-lg p-6 border border-gray-800 backdrop-blur-sm shadow-lg">
         <div className="flex flex-row items-center justify-between space-y-0 pb-4 mb-4 border-b border-gray-800">
           <div>
             <h2 className="text-xl font-bold text-white">General Professional Offering</h2>
@@ -251,7 +251,7 @@ export default function Services() {
       </div>
       
       {/* What I Offer Section */}
-      <div className="mb-6">
+      <div className="mb-6 neo-glass-card rounded-lg p-6 border border-gray-800 backdrop-blur-sm shadow-lg">
         <div className="flex flex-row items-center justify-between space-y-0 pb-4 mb-4 border-b border-gray-800">
           <div>
             <h2 className="text-xl font-bold text-white">What I Offer</h2>
