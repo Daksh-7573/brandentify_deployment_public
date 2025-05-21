@@ -1078,10 +1078,10 @@ export default function IndustryPulsePage() {
                 </div>
                 <button 
                   onClick={() => setLocation("/create-pulse")} 
-                  className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-[#e0e0e0] to-[#ffffff] text-black font-medium text-sm transition-all duration-200 hover:shadow-lg hover:scale-105"
+                  className="px-5 py-2 rounded-md bg-primary text-white hover:bg-opacity-90 shadow-sm font-medium transition-all flex items-center"
                 >
                   <MessageSquare className="w-4 h-4 mr-2" />
-                  Create Pulse
+                  <span>Create Pulse</span>
                 </button>
               </div>
               
@@ -1155,10 +1155,10 @@ export default function IndustryPulsePage() {
                         {activeTab === "musk-news" ? (
                           <button 
                             onClick={() => setActiveTab("all")} 
-                            className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-[#e0e0e0] to-[#ffffff] text-black font-medium text-sm transition-all duration-200 hover:shadow-lg hover:scale-105"
+                            className="px-5 py-2 rounded-md bg-primary text-white hover:bg-opacity-90 shadow-sm font-medium transition-all flex items-center"
                           >
                             <Newspaper className="w-4 h-4 mr-2" />
-                            View All Pulses
+                            <span>View All Pulses</span>
                           </button>
                         ) : (
                           <button 

@@ -622,15 +622,15 @@ export default function CreatePulsePage() {
                       type="button"
                       onClick={handleCreatePulse}
                       disabled={createPulseMutation.isPending}
-                      className="bg-white/20 text-white hover:bg-white/30 w-full md:w-auto"
+                      className="px-5 py-2 rounded-md bg-primary text-white hover:bg-opacity-90 shadow-sm font-medium transition-all flex items-center justify-center w-full md:w-auto"
                     >
                       {createPulseMutation.isPending ? (
                         <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Publishing...
+                          <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2"></div>
+                          <span>Publishing...</span>
                         </>
                       ) : (
-                        'Publish Pulse'
+                        <span>Publish Pulse</span>
                       )}
                     </Button>
                   </div>

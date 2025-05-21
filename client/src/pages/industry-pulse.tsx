@@ -17,9 +17,7 @@ import {
   Image, 
   FileCode, 
   Check, 
-  Loader2,
-  Plus,
-  Search as SearchIcon,
+  Loader2, 
   Maximize2, 
   ChevronLeft, 
   ChevronRight, 
@@ -1508,11 +1506,7 @@ export default function IndustryPulsePage() {
                   Discover insights, polls, and media from your professional network
                 </p>
               </div>
-              <Button 
-                onClick={() => setLocation("/create-pulse")}
-                className="neo-glass-button rounded-full"
-              >
-                <Plus className="h-4 w-4 mr-2" />
+              <Button onClick={() => setLocation("/create-pulse")}>
                 Create Pulse
               </Button>
             </div>
@@ -1560,11 +1554,7 @@ export default function IndustryPulsePage() {
                           View All Pulses
                         </Button>
                       ) : (
-                        <Button 
-                          onClick={() => setLocation("/create-pulse")}
-                          className="neo-glass-button rounded-full"
-                        >
-                          <Plus className="h-4 w-4 mr-2" />
+                        <Button onClick={() => setLocation("/create-pulse")}>
                           Create Your First Pulse
                         </Button>
                       )}
