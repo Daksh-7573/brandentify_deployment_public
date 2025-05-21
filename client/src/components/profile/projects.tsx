@@ -1119,13 +1119,13 @@ export default function Projects() {
               ))}
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center h-40 p-6 text-center border border-white/5 rounded-lg bg-slate-800/40 backdrop-blur-md">
-              <FolderKanban className="w-10 h-10 mb-4 text-slate-300" />
+            <div className="py-6 text-center border border-white/10 rounded-lg bg-slate-800/50 backdrop-blur-md shadow-xl shadow-black/5 neo-glass-card">
+              <FolderKanban className="mx-auto h-10 w-10 text-slate-300 mb-2" />
               <h3 className="text-lg font-medium mb-1 text-white">No projects yet</h3>
               <p className="text-sm text-slate-300 mb-4">
                 Create your first project showcase to highlight your work
               </p>
-              <Button onClick={handleAdd} className="gap-1 bg-slate-800/60 text-white hover:bg-slate-700/70">
+              <Button onClick={handleAdd} className="neo-glass-button gap-1 bg-slate-800/60 text-white hover:bg-slate-700/70">
                 <Plus className="w-4 h-4" />
                 Add New Project
               </Button>
