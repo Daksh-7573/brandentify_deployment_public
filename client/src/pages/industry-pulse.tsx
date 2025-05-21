@@ -1506,9 +1506,14 @@ export default function IndustryPulsePage() {
                   Discover insights, polls, and media from your professional network
                 </p>
               </div>
-              <Button onClick={() => setLocation("/create-pulse")}>
+              <button
+                type="button"
+                className="neo-glass-button flex items-center gap-2 py-2 px-4"
+                onClick={() => setLocation("/create-pulse")}
+              >
+                <Plus className="h-4 w-4 mr-2" />
                 Create Pulse
-              </Button>
+              </button>
             </div>
             
             <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab}>
@@ -1554,9 +1559,14 @@ export default function IndustryPulsePage() {
                           View All Pulses
                         </Button>
                       ) : (
-                        <Button onClick={() => setLocation("/create-pulse")}>
+                        <button
+                          type="button"
+                          className="neo-glass-button flex items-center gap-2 py-2 px-4"
+                          onClick={() => setLocation("/create-pulse")}
+                        >
+                          <Plus className="h-4 w-4 mr-2" />
                           Create Your First Pulse
-                        </Button>
+                        </button>
                       )}
                     </CardContent>
                   </Card>
