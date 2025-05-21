@@ -256,7 +256,7 @@ export default function Services() {
   return (
     <>
       {/* General Professional Offering Section */}
-      <NeoGlassSection className="mb-6">
+      <div className="mb-6">
         <div className="flex flex-row items-center justify-between space-y-0 pb-4 mb-4 border-b border-gray-800">
           <div>
             <h2 className="text-xl font-bold text-white">General Professional Offering</h2>
@@ -289,10 +289,10 @@ export default function Services() {
             </p>
           </div>
         )}
-      </NeoGlassSection>
+      </div>
       
       {/* What I Offer Section */}
-      <NeoGlassSection className="mb-6">
+      <div className="mb-6 neo-glass-card">
         <div className="flex flex-row items-center justify-between space-y-0 pb-4 mb-4 border-b border-gray-800">
           <div>
             <h2 className="text-xl font-bold text-white">What I Offer</h2>
@@ -410,7 +410,7 @@ export default function Services() {
             ))}
           </div>
         )}
-      </NeoGlassSection>
+      </div>
       
       {/* Edit What I Offer Dialog */}
       <Dialog open={isEditWhatIOfferDialogOpen} onOpenChange={setEditWhatIOfferDialogOpen}>
