@@ -311,18 +311,48 @@ export default function Services() {
         </Dialog>
       </div>
     
-      <div className="mt-4">
-        {/* Specific Services List */}
-        <div>
-          
+      {/* General Professional Offering Section - Moved to the top as separate card */}
+      <NeoGlassSection className="mt-4 mb-6">
+        <div className="flex justify-between items-center mb-3">
+          <h3 className="text-base font-semibold text-white">General Professional Offering</h3>
+          <Button
+            size="sm"
+            className="neo-glass-button flex items-center gap-1 py-1.5 px-3 whitespace-nowrap"
+            disabled={isPendingCreate || isPendingUpdate}
+            onClick={() => setEditWhatIOfferDialogOpen(true)}
+          >
+            <MessageSquareQuote className="h-3.5 w-3.5" />
+            <span>Edit Description</span>
+          </Button>
+        </div>
+        
+        {whatIOffer ? (
+          <div className="py-3">
+            <Quote className="h-5 w-5 text-gray-400 mb-2" />
+            <p className="text-sm text-gray-300 whitespace-pre-line">{whatIOffer}</p>
+          </div>
+        ) : (
+          <div className="py-6 text-center">
+            <AlertCircle className="mx-auto h-10 w-10 text-gray-500/50" />
+            <p className="mt-2 text-gray-400">
+              Add a general description of your professional services.
+            </p>
+          </div>
+        )}
+      </NeoGlassSection>
+      
+      {/* What I Offer Services Section */}
+      <NeoGlassSection className="mt-4">
+        <div className="mb-4">
+          {/* Specific Services List */}
           {isLoading ? (
             <div className="flex justify-center py-6">
               <Loader2 className="h-6 w-6 animate-spin text-white" />
             </div>
           ) : !services || !Array.isArray(services) || services.length === 0 ? (
-            <div className="py-6 text-center border border-white/10 rounded-lg bg-slate-800/50 backdrop-blur-md shadow-xl shadow-black/5 neo-glass-card">
-              <Package className="mx-auto h-10 w-10 text-slate-300 mb-2" />
-              <p className="mt-2 text-slate-300">No offerings added yet.</p>
+            <div className="py-6 text-center">
+              <Package className="mx-auto h-10 w-10 text-gray-500/50" />
+              <p className="mt-2 text-gray-400">No specific offerings added yet.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -390,37 +420,7 @@ export default function Services() {
             </div>
           )}
         </div>
-        
-        {/* What I Offer content - general description */}
-        <div className="mt-8">
-          <div className="flex justify-between items-center mb-3">
-            <h3 className="text-base font-semibold text-white">General Professional Offering</h3>
-            <Button
-              size="sm"
-              className="neo-glass-button flex items-center gap-1 py-1.5 px-3 whitespace-nowrap"
-              disabled={isPendingCreate || isPendingUpdate}
-              onClick={() => setEditWhatIOfferDialogOpen(true)}
-            >
-              <MessageSquareQuote className="h-3.5 w-3.5" />
-              <span>Edit Description</span>
-            </Button>
-          </div>
-          
-          {whatIOffer ? (
-            <div className="border border-white/10 rounded-lg p-4 bg-slate-800/50 backdrop-blur-md shadow-xl shadow-black/5 neo-glass-card">
-              <Quote className="h-5 w-5 text-slate-300 mb-1" />
-              <p className="text-sm text-slate-300 whitespace-pre-line">{whatIOffer}</p>
-            </div>
-          ) : (
-            <div className="border border-dashed border-white/10 rounded-lg p-4 bg-slate-800/50 backdrop-blur-md text-center shadow-xl shadow-black/5 neo-glass-card">
-              <AlertCircle className="mx-auto h-8 w-8 text-slate-300/60 mb-2" />
-              <p className="text-sm text-slate-300">
-                Add a general description of your professional services.
-              </p>
-            </div>
-          )}
-        </div>
-      </div>
+      </NeoGlassSection>
 
       {/* Edit Service Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
