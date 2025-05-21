@@ -673,14 +673,14 @@ const Radar = () => {
                 
                 <Button 
                   variant="outline" 
-                  className="w-full bg-white/10 text-white hover:bg-white/20 border border-white/20 backdrop-blur-md shadow-md transition-all hover:scale-105"
+                  className="neo-glass-button flex items-center justify-center gap-2 py-2 px-4 w-full"
                   onClick={handleRefreshLocation}
                   disabled={locationStatus !== 'granted' || updateGeoLocationMutation.isPending}
                 >
                   {updateGeoLocationMutation.isPending ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                   ) : (
-                    <RefreshCw className="mr-2 h-4 w-4" />
+                    <RefreshCw className="h-4 w-4 mr-2" />
                   )}
                   Refresh Location
                 </Button>
