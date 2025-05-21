@@ -215,92 +215,95 @@ export default function Services() {
   return (
     <>
       {/* General Professional Offering Section */}
-      <div className="mb-6 neo-glass-card rounded-lg p-6 border border-gray-800 backdrop-blur-sm shadow-lg">
-        <div className="flex flex-row items-center justify-between space-y-0 pb-4 mb-4 border-b border-gray-800">
-          <div>
-            <h2 className="text-xl font-bold text-white">General Professional Offering</h2>
-            <p className="text-sm text-gray-300">Overall description of your professional expertise</p>
-          </div>
-          <Button
-            variant="ghost"
-            className="neo-glass-button flex items-center gap-1 py-1.5 px-3 whitespace-nowrap"
-            disabled={isPendingCreate || isPendingUpdate}
-            onClick={() => setEditWhatIOfferDialogOpen(true)}
-          >
-            <Pencil className="h-3.5 w-3.5" />
-            <span>Edit Description</span>
-          </Button>
-        </div>
-        
-        {whatIOffer ? (
-          <div className="transition-all">
-            <div className="flex items-center mb-2">
-              <Quote className="h-5 w-5 text-gray-300 mr-2" />
-              <h3 className="font-medium text-lg text-white">Professional Overview</h3>
+      <div className="mb-6">
+        <div className="bg-slate-900/60 rounded-lg p-6">
+          <div className="flex flex-row items-center justify-between space-y-0 pb-4 mb-4 border-b border-gray-800">
+            <div>
+              <h2 className="text-xl font-bold text-white">General Professional Offering</h2>
+              <p className="text-sm text-gray-300">Overall description of your professional expertise</p>
             </div>
-            <p className="text-sm text-gray-300 whitespace-pre-line ml-7">{whatIOffer}</p>
+            <Button
+              variant="ghost"
+              className="neo-glass-button flex items-center gap-1 py-1.5 px-3 whitespace-nowrap"
+              disabled={isPendingCreate || isPendingUpdate}
+              onClick={() => setEditWhatIOfferDialogOpen(true)}
+            >
+              <Pencil className="h-3.5 w-3.5" />
+              <span>Edit Description</span>
+            </Button>
           </div>
-        ) : (
-          <div className="py-6 text-center">
-            <AlertCircle className="mx-auto h-10 w-10 text-gray-400/50" />
-            <p className="mt-2 text-gray-400">
-              Add a general description of your professional services.
-            </p>
-          </div>
-        )}
+          
+          {whatIOffer ? (
+            <div className="transition-all">
+              <div className="flex items-center mb-2">
+                <Quote className="h-5 w-5 text-gray-300 mr-2" />
+                <h3 className="font-medium text-lg text-white">Professional Overview</h3>
+              </div>
+              <p className="text-sm text-gray-300 whitespace-pre-line ml-7">{whatIOffer}</p>
+            </div>
+          ) : (
+            <div className="py-6 text-center">
+              <AlertCircle className="mx-auto h-10 w-10 text-gray-400/50" />
+              <p className="mt-2 text-gray-400">
+                Add a general description of your professional services.
+              </p>
+            </div>
+          )}
+        </div>
       </div>
       
       {/* What I Offer Section */}
-      <div className="mb-6 neo-glass-card rounded-lg p-6 border border-gray-800 backdrop-blur-sm shadow-lg">
-        <div className="flex flex-row items-center justify-between space-y-0 pb-4 mb-4 border-b border-gray-800">
-          <div>
-            <h2 className="text-xl font-bold text-white">What I Offer</h2>
-            <p className="text-sm text-gray-300">Specific professional services I provide (max 6)</p>
+      <div className="mb-6">
+        <div className="bg-slate-900/60 rounded-lg p-6">
+          <div className="flex flex-row items-center justify-between space-y-0 pb-4 mb-4 border-b border-gray-800">
+            <div>
+              <h2 className="text-xl font-bold text-white">What I Offer</h2>
+              <p className="text-sm text-gray-300">Specific professional services I provide (max 6)</p>
+            </div>
+            <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+              <DialogTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="neo-glass-button flex items-center gap-1 py-1.5 px-3 whitespace-nowrap"
+                  disabled={services.length >= 6 || isPendingCreate || isPendingUpdate}
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                  <span>Add What I Offer</span>
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[525px] max-h-[88vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle>Add What I Offer</DialogTitle>
+                  <DialogDescription>
+                    Enter a professional service you offer (one at a time).
+                  </DialogDescription>
+                </DialogHeader>
+                <ServiceForm 
+                  onSubmit={handleCreate} 
+                  isPending={isPendingCreate}
+                  existingServicesCount={services.length}
+                />
+              </DialogContent>
+            </Dialog>
           </div>
-          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-            <DialogTrigger asChild>
-              <Button
-                variant="ghost"
-                className="neo-glass-button flex items-center gap-1 py-1.5 px-3 whitespace-nowrap"
-                disabled={services.length >= 6 || isPendingCreate || isPendingUpdate}
-              >
-                <Plus className="h-3.5 w-3.5" />
-                <span>Add What I Offer</span>
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[525px] max-h-[88vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle>Add What I Offer</DialogTitle>
-                <DialogDescription>
-                  Enter a professional service you offer (one at a time).
-                </DialogDescription>
-              </DialogHeader>
-              <ServiceForm 
-                onSubmit={handleCreate} 
-                isPending={isPendingCreate}
-                existingServicesCount={services.length}
-              />
-            </DialogContent>
-          </Dialog>
-        </div>
-        
-        {/* Specific Services List */}
-        {isLoading ? (
-          <div className="flex justify-center py-6">
-            <Loader2 className="h-6 w-6 animate-spin text-white" />
-          </div>
-        ) : !services || !Array.isArray(services) || services.length === 0 ? (
-          <div className="py-6 text-center">
-            <Package className="mx-auto h-10 w-10 text-gray-400/50" />
-            <p className="mt-2 text-gray-400">No specific offerings added yet.</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            {services.map((service) => (
-              <div 
-                key={service.id} 
-                className="p-4 rounded-lg border border-gray-800 bg-black/40 transition-all hover:translate-y-[-3px]"
-              >
+          
+          {/* Specific Services List */}
+          {isLoading ? (
+            <div className="flex justify-center py-6">
+              <Loader2 className="h-6 w-6 animate-spin text-white" />
+            </div>
+          ) : !services || !Array.isArray(services) || services.length === 0 ? (
+            <div className="py-6 text-center">
+              <Package className="mx-auto h-10 w-10 text-gray-400/50" />
+              <p className="mt-2 text-gray-400">No specific offerings added yet.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              {services.map((service) => (
+                <div 
+                  key={service.id} 
+                  className="p-4 rounded-lg border border-gray-800 bg-black/40 transition-all hover:translate-y-[-3px]"
+                >
                 <div className="flex justify-between items-start">
                   <h3 className="font-medium text-base line-clamp-2 flex-1 text-white">{service.title}</h3>
                   <div className="flex items-center space-x-1 ml-2">
