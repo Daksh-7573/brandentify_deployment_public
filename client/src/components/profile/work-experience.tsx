@@ -990,13 +990,13 @@ export default function WorkExperience() {
           <h2 className="text-xl font-bold text-white">Career Path</h2>
           <p className="text-sm text-gray-300">Add your professional experience</p>
         </div>
-        <Button
+        <button
           className="neo-glass-button flex items-center gap-1 py-1.5 px-3 whitespace-nowrap"
           onClick={openAddDialog}
         >
           <Plus className="h-3.5 w-3.5" />
           <span>Add Experience</span>
-        </Button>
+        </button>
       </div>
       <div className="p-1">
         {isLoading ? (

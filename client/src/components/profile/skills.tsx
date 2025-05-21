@@ -246,13 +246,13 @@ export default function Skills() {
             <h2 className="text-xl font-bold text-white">What I'm Good At</h2>
             <p className="text-sm text-gray-300">Add your professional skills and expertise levels</p>
           </div>
-          <Button
+          <button
             className="neo-glass-button flex items-center gap-1 py-1.5 px-3 whitespace-nowrap"
             onClick={handleOpenAddModal}
           >
             <Plus className="h-3.5 w-3.5" />
             <span>Add Skill</span>
-          </Button>
+          </button>
         </div>
         <div className="p-1">
           {isLoading ? (
