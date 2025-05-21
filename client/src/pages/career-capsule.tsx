@@ -349,10 +349,10 @@ export default function CareerCapsulePage() {
                     <div className="pt-2 border-t border-gray-700">
                       <Button 
                         variant="outline" 
-                        className="w-full px-5 py-2 rounded-md border border-gray-600 text-white hover:bg-white/5 shadow-sm font-medium transition-all flex items-center justify-center" 
+                        className="w-full neo-glass-button" 
                         onClick={() => handleViewDetails(goal.id)}
                       >
-                        <span>View Details</span>
+                        View Details
                       </Button>
                     </div>
                   </div>
@@ -371,12 +371,7 @@ export default function CareerCapsulePage() {
               Set 1-5 year career goals and get AI-generated milestones to help you achieve them.
               Track your progress and stay focused on your career development journey.
             </p>
-            <Button 
-              className="mt-6 px-5 py-2 rounded-md bg-primary text-white hover:bg-opacity-90 shadow-sm font-medium transition-all flex items-center"
-              onClick={() => setShowCreateDialog(true)}
-            >
-              <span>Get Started</span>
-            </Button>
+            <Button className="mt-6 neo-glass-button" onClick={() => setShowCreateDialog(true)}>Get Started</Button>
           </NeoGlassSection>
         )}
       </div>
@@ -510,23 +505,16 @@ export default function CareerCapsulePage() {
                 type="button" 
                 variant="outline" 
                 onClick={() => setShowCreateDialog(false)}
-                className="px-5 py-2 rounded-md border border-gray-600 text-white hover:bg-white/5 shadow-sm font-medium transition-all flex items-center"
+                className="neo-glass-button-outline"
               >
                 Cancel
               </Button>
               <Button 
                 type="submit" 
                 disabled={isSubmitting}
-                className="px-5 py-2 rounded-md bg-primary text-white hover:bg-opacity-90 shadow-sm font-medium transition-all flex items-center justify-center"
+                className="neo-glass-button"
               >
-                {isSubmitting ? (
-                  <>
-                    <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2"></div>
-                    <span>Creating...</span>
-                  </>
-                ) : (
-                  <span>Create Goal</span>
-                )}
+                {isSubmitting ? "Creating..." : "Create Goal"}
               </Button>
             </DialogFooter>
           </form>

@@ -1237,13 +1237,9 @@ export default function ResumeEditor() {
             <FileText className="h-5 w-5" />
             Resume Editor
           </CardTitle>
-          <Button 
-            variant="outline" 
-            onClick={updateFromProfile}
-            className="px-4 py-2 rounded-md border border-gray-600 text-white hover:bg-white/5 shadow-sm font-medium transition-all flex items-center"
-          >
+          <Button variant="outline" size="sm" onClick={updateFromProfile}>
             <RefreshCw className="h-4 w-4 mr-2" />
-            <span>Update from Profile</span>
+            Update from Profile
           </Button>
         </div>
         <CardDescription>
@@ -1406,14 +1402,8 @@ export default function ResumeEditor() {
               <TabsContent value="experience" className="space-y-6">
                 <div className="flex justify-between items-center">
                   <h3 className="text-lg font-medium">Work Experience</h3>
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    onClick={addExperience}
-                    className="px-4 py-2 rounded-md border border-gray-600 text-white hover:bg-white/5 shadow-sm font-medium transition-all flex items-center"
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    <span>Add Experience</span>
+                  <Button type="button" variant="outline" size="sm" onClick={addExperience}>
+                    Add Experience
                   </Button>
                 </div>
                 
@@ -1569,13 +1559,8 @@ export default function ResumeEditor() {
                     <p className="text-sm text-muted-foreground mb-4">
                       Add your professional experience to showcase your career growth.
                     </p>
-                    <Button 
-                      type="button" 
-                      onClick={addExperience}
-                      className="px-5 py-2 rounded-md bg-primary text-white hover:bg-opacity-90 shadow-sm font-medium transition-all flex items-center"
-                    >
-                      <Plus className="h-4 w-4 mr-2" />
-                      <span>Add Experience</span>
+                    <Button type="button" onClick={addExperience}>
+                      Add Experience
                     </Button>
                   </div>
                 )}
@@ -1585,14 +1570,8 @@ export default function ResumeEditor() {
               <TabsContent value="education" className="space-y-6">
                 <div className="flex justify-between items-center">
                   <h3 className="text-lg font-medium">Education</h3>
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    onClick={addEducation}
-                    className="px-4 py-2 rounded-md border border-gray-600 text-white hover:bg-white/5 shadow-sm font-medium transition-all flex items-center"
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    <span>Add Education</span>
+                  <Button type="button" variant="outline" size="sm" onClick={addEducation}>
+                    Add Education
                   </Button>
                 </div>
                 
@@ -1780,13 +1759,8 @@ export default function ResumeEditor() {
                     <p className="text-sm text-muted-foreground mb-4">
                       Add your educational background to highlight your academic achievements.
                     </p>
-                    <Button 
-                      type="button" 
-                      onClick={addEducation}
-                      className="px-5 py-2 rounded-md bg-primary text-white hover:bg-opacity-90 shadow-sm font-medium transition-all flex items-center"
-                    >
-                      <Plus className="h-4 w-4 mr-2" />
-                      <span>Add Education</span>
+                    <Button type="button" onClick={addEducation}>
+                      Add Education
                     </Button>
                   </div>
                 )}
@@ -1796,14 +1770,8 @@ export default function ResumeEditor() {
               <TabsContent value="skills" className="space-y-6">
                 <div className="flex justify-between items-center">
                   <h3 className="text-lg font-medium">Skills</h3>
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    onClick={addSkill}
-                    className="px-4 py-2 rounded-md border border-gray-600 text-white hover:bg-white/5 shadow-sm font-medium transition-all flex items-center"
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    <span>Add Skill</span>
+                  <Button type="button" variant="outline" size="sm" onClick={addSkill}>
+                    Add Skill
                   </Button>
                 </div>
                 
@@ -1886,13 +1854,8 @@ export default function ResumeEditor() {
                     <p className="text-sm text-muted-foreground mb-4">
                       Add your professional skills to showcase your expertise.
                     </p>
-                    <Button 
-                      type="button" 
-                      onClick={addSkill}
-                      className="px-5 py-2 rounded-md bg-primary text-white hover:bg-opacity-90 shadow-sm font-medium transition-all flex items-center"
-                    >
-                      <Plus className="h-4 w-4 mr-2" />
-                      <span>Add Skill</span>
+                    <Button type="button" onClick={addSkill}>
+                      Add Skill
                     </Button>
                   </div>
                 )}
@@ -1902,14 +1865,8 @@ export default function ResumeEditor() {
               <TabsContent value="projects" className="space-y-6">
                 <div className="flex justify-between items-center">
                   <h3 className="text-lg font-medium">Projects</h3>
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    onClick={addProject}
-                    className="px-4 py-2 rounded-md border border-gray-600 text-white hover:bg-white/5 shadow-sm font-medium transition-all flex items-center"
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    <span>Add Project</span>
+                  <Button type="button" variant="outline" size="sm" onClick={addProject}>
+                    Add Project
                   </Button>
                 </div>
                 
@@ -2050,13 +2007,8 @@ export default function ResumeEditor() {
                     <p className="text-sm text-muted-foreground mb-4">
                       Add your projects to showcase your portfolio work.
                     </p>
-                    <Button 
-                      type="button" 
-                      onClick={addProject}
-                      className="px-5 py-2 rounded-md bg-primary text-white hover:bg-opacity-90 shadow-sm font-medium transition-all flex items-center"
-                    >
-                      <Plus className="h-4 w-4 mr-2" />
-                      <span>Add Project</span>
+                    <Button type="button" onClick={addProject}>
+                      Add Project
                     </Button>
                   </div>
                 )}
@@ -2093,14 +2045,14 @@ export default function ResumeEditor() {
                 variant="outline" 
                 type="button" 
                 onClick={handleBack}
-                className="px-5 py-2 rounded-md border border-gray-600 text-white hover:bg-white/5 shadow-sm font-medium transition-all flex items-center"
+                className="flex items-center gap-2"
               >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                <span>Back</span>
+                <ArrowLeft className="h-4 w-4" />
+                Back
               </Button>
               <Button 
                 type="button" 
-                className="px-5 py-2 rounded-md bg-primary text-white hover:bg-opacity-90 shadow-sm font-medium transition-all flex items-center justify-center"
+                className="flex items-center gap-2"
                 disabled={isSaving}
                 onClick={async () => {
                   console.log("Manual save triggered");
