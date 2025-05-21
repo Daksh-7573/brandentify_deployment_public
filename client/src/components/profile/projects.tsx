@@ -961,8 +961,8 @@ export default function Projects() {
       <div className="flex items-center justify-between mb-4">
         <div className="flex-1"></div>
         <div className="flex items-center gap-2">
-          <Button onClick={handleAdd} className="neo-glass-button">
-            <Plus className="h-3.5 w-3.5 mr-1" />
+          <Button onClick={handleAdd} variant="secondary" size="sm" className="h-8 gap-1 bg-slate-800/60 text-white hover:bg-slate-700/70">
+            <Plus className="w-4 h-4" />
             Add Project
           </Button>
         </div>

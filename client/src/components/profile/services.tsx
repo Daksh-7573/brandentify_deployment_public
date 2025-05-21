@@ -287,10 +287,11 @@ export default function Services() {
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogTrigger asChild>
             <Button
-              className="neo-glass-button"
+              size="sm"
+              className="h-8 gap-1 bg-slate-800/60 text-white hover:bg-slate-700/70"
               disabled={services.length >= 6 || isPendingCreate || isPendingUpdate}
             >
-              <Plus className="h-3.5 w-3.5 mr-1" />
+              <Plus className="h-3.5 w-3.5" />
               Add What I Offer
             </Button>
           </DialogTrigger>
