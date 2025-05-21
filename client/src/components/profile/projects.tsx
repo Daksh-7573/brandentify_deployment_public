@@ -2714,6 +2714,6 @@ export default function Projects() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </NeoGlassSection>
+    </div>
   );
 }
