@@ -488,29 +488,31 @@ export default function ProfileNeo() {
               </div>
             </NeoGlassSection>
             
-            {/* Work Experience */}
+            {/* 2. Professional Overview (Services - first section) */}
             <NeoGlassSection className="mb-6">
-              <WorkExperience userFirebaseId={user.uid} userNumericId={userData?.id} />
+              <Services userFirebaseId={user.uid} userNumericId={userData?.id} />
             </NeoGlassSection>
             
-            {/* Education */}
-            <NeoGlassSection className="mb-6">
-              <Education userFirebaseId={user.uid} userNumericId={userData?.id} />
-            </NeoGlassSection>
-            
-            {/* Skills */}
+            {/* 3. What I'm Good At (Skills) */}
             <NeoGlassSection className="mb-6">
               <Skills userFirebaseId={user.uid} userNumericId={userData?.id} />
             </NeoGlassSection>
             
-            {/* Projects */}
+            {/* 4. Specific Services are included in the Services component */}
+            
+            {/* 5. Project Showcase */}
             <NeoGlassSection className="mb-6">
               <Projects userFirebaseId={user.uid} userNumericId={userData?.id} />
             </NeoGlassSection>
             
-            {/* Services */}
+            {/* 6. Career Path (Work Experience) */}
             <NeoGlassSection className="mb-6">
-              <Services userFirebaseId={user.uid} userNumericId={userData?.id} />
+              <WorkExperience userFirebaseId={user.uid} userNumericId={userData?.id} />
+            </NeoGlassSection>
+            
+            {/* 7. Academic Background (Education) */}
+            <NeoGlassSection className="mb-6">
+              <Education userFirebaseId={user.uid} userNumericId={userData?.id} />
             </NeoGlassSection>
             
             {/* Account Actions */}
