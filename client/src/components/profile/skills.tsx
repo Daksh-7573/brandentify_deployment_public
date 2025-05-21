@@ -266,7 +266,7 @@ export default function Skills() {
               {skills.map((skill) => (
                 <div 
                   key={skill.id} 
-                  className="neo-glass-card p-4 rounded-lg transition-all hover:translate-y-[-3px]"
+                  className="p-4 rounded-lg border border-gray-800 bg-black/40 transition-all hover:translate-y-[-3px]"
                 >
                   <div className="flex justify-between items-start">
                     <h3 className="font-medium text-base line-clamp-2 flex-1 text-white">{skill.name}</h3>
