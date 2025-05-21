@@ -983,7 +983,7 @@ export default function Projects() {
         ) : displayProjects && displayProjects.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {displayProjects.map((project) => (
-              <div key={project.id} className="border border-white/10 rounded-lg overflow-hidden bg-slate-800/50 backdrop-blur-md shadow-xl shadow-black/5 neo-glass-card group relative">
+              <div key={project.id} className="border border-white/10 rounded-lg overflow-hidden bg-slate-800/50 backdrop-blur-md shadow-xl shadow-black/5 group relative">
                 {/* Project Thumbnail */}
                 <div className="relative w-full aspect-square bg-slate-900/70 flex items-center justify-center overflow-hidden">
                   {project.thumbnailUrl ? (
