@@ -961,7 +961,7 @@ export default function Projects() {
       <div className="flex items-center justify-between mb-4">
         <div className="flex-1"></div>
         <div className="flex items-center gap-2">
-          <Button onClick={handleAdd} className="neo-glass-button flex items-center gap-1 py-1.5 px-3 whitespace-nowrap" style={{ background: "rgba(81, 69, 205, 0.9)" }}>
+          <Button onClick={handleAdd} className="neo-glass-button flex items-center gap-1 py-1.5 px-3 whitespace-nowrap">
             <Plus className="w-4 h-4" />
             <span>Add Project</span>
           </Button>
