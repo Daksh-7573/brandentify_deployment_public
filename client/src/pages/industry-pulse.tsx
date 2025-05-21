@@ -1510,7 +1510,7 @@ export default function IndustryPulsePage() {
               </div>
               <button
                 type="button"
-                className="neo-glass-button"
+                className="neo-glass-button flex items-center gap-2 py-2 px-4"
                 onClick={() => setLocation("/create-pulse")}
               >
                 <span className="flex items-center">
@@ -1565,7 +1565,7 @@ export default function IndustryPulsePage() {
                       ) : (
                         <button
                           type="button"
-                          className="neo-glass-button"
+                          className="neo-glass-button flex items-center gap-2 py-2 px-4"
                           onClick={() => setLocation("/create-pulse")}
                         >
                           <span className="flex items-center">
