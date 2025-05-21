@@ -1155,7 +1155,7 @@ export default function IndustryPulsePage() {
                         {activeTab === "musk-news" ? (
                           <button 
                             onClick={() => setActiveTab("all")} 
-                            className="px-5 py-2 rounded-md bg-primary text-white hover:bg-opacity-90 shadow-sm font-medium transition-all flex items-center"
+                            className="neo-glass-button flex items-center gap-2 py-2 px-4"
                           >
                             <Newspaper className="w-4 h-4 mr-2" />
                             <span>View All Pulses</span>
@@ -1163,7 +1163,7 @@ export default function IndustryPulsePage() {
                         ) : (
                           <button 
                             onClick={() => setLocation("/create-pulse")} 
-                            className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-[#e0e0e0] to-[#ffffff] text-black font-medium text-sm transition-all duration-200 hover:shadow-lg hover:scale-105"
+                            className="neo-glass-button flex items-center gap-2 py-2 px-4"
                           >
                             <MessageSquare className="w-4 h-4 mr-2" />
                             Create Your First Pulse
