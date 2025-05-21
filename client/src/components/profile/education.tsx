@@ -600,11 +600,11 @@ export default function Education() {
           <p className="text-sm text-gray-300">Add your academic journey</p>
         </div>
         <Button
-          className="neo-glass-button"
+          className="neo-glass-button flex items-center gap-1 py-1.5 px-3 whitespace-nowrap"
           onClick={handleAddEducation}
         >
-          <Plus className="h-3.5 w-3.5 mr-1" />
-          Add Education
+          <Plus className="h-3.5 w-3.5" />
+          <span>Add Education</span>
         </Button>
       </div>
       
