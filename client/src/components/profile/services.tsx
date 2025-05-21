@@ -34,7 +34,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-// Removed NeoGlassSection import as we're using direct div with neo-glass-card class
+import { NeoGlassSection } from "@/components/layout/neo-glass-layout";
 
 export default function Services() {
   const { user } = useAuth();
@@ -256,7 +256,7 @@ export default function Services() {
   return (
     <>
       {/* General Professional Offering Section */}
-      <div className="mb-6 neo-glass-card">
+      <NeoGlassSection className="mb-6">
         <div className="flex flex-row items-center justify-between space-y-0 pb-4 mb-4 border-b border-gray-800">
           <div>
             <h2 className="text-xl font-bold text-white">General Professional Offering</h2>
@@ -289,10 +289,10 @@ export default function Services() {
             </p>
           </div>
         )}
-      </div>
+      </NeoGlassSection>
       
       {/* What I Offer Section */}
-      <div className="mb-6 neo-glass-card">
+      <NeoGlassSection className="mb-6">
         <div className="flex flex-row items-center justify-between space-y-0 pb-4 mb-4 border-b border-gray-800">
           <div>
             <h2 className="text-xl font-bold text-white">What I Offer</h2>
@@ -410,7 +410,7 @@ export default function Services() {
             ))}
           </div>
         )}
-      </div>
+      </NeoGlassSection>
       
       {/* Edit What I Offer Dialog */}
       <Dialog open={isEditWhatIOfferDialogOpen} onOpenChange={setEditWhatIOfferDialogOpen}>
