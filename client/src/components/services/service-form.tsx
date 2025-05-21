@@ -41,27 +41,30 @@ type FormValues = z.infer<typeof formSchema>;
 
 interface ServiceFormProps {
   service?: Service;
+  initialData?: Service | null;
   onSubmit: (data: any) => void; // Use any to allow us to transform the data before submission
   isPending: boolean;
   existingServicesCount?: number;
 }
 
-export default function ServiceForm({ service, onSubmit, isPending, existingServicesCount = 0 }: ServiceFormProps) {
+export default function ServiceForm({ service, initialData, onSubmit, isPending, existingServicesCount = 0 }: ServiceFormProps) {
+  // Use initialData if provided, otherwise fall back to service
+  const serviceData = initialData || service;
   // Maximum allowed services (6)
   const MAX_SERVICES = 6;
-  const isEditing = !!service;
+  const isEditing = !!serviceData;
   const canAddService = isEditing || existingServicesCount < MAX_SERVICES;
   
   // Prepare default values for all form fields
   const defaultValues = {
-    title: service?.title || "",
-    description: service?.description || "",
-    currency: service ? (service.priceUsd ? "USD" : "INR") : "USD",
+    title: serviceData?.title || "",
+    description: serviceData?.description || "",
+    currency: serviceData ? (serviceData.priceUsd ? "USD" : "INR") : "USD",
     // Convert string price to numeric for form schema compatibility
-    price: service ? (service.priceUsd ? parseFloat(service.priceUsd.toString()) : 
-                      service.priceInr ? parseFloat(service.priceInr.toString()) : null) : null,
-    isHourly: service?.isHourly || false,
-    isActive: service?.isActive !== false,
+    price: serviceData ? (serviceData.priceUsd ? parseFloat(serviceData.priceUsd.toString()) : 
+                      serviceData.priceInr ? parseFloat(serviceData.priceInr.toString()) : null) : null,
+    isHourly: serviceData?.isHourly || false,
+    isActive: serviceData?.isActive !== false,
   };
   
   const form = useForm<FormValues>({

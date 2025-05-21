@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useProfileServices } from "@/hooks/use-profile-services";
-import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { 
@@ -30,6 +29,16 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+
+// Helper function to format currency
+const formatCurrency = (amount: number, currency: string) => {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(amount);
+};
 
 export default function Services({ userFirebaseId, userNumericId }: { userFirebaseId: string; userNumericId?: number }) {
   // State for directly managing data and loading states
@@ -62,184 +71,83 @@ export default function Services({ userFirebaseId, userNumericId }: { userFireba
   const fetchServicesData = async () => {
     if (!userNumericId) return;
     
-    setRefreshCount(prev => prev + 1);
-    setIsLoading(true);
-    setError(null);
-    
     try {
-      const cacheBuster = `?t=${Date.now()}&r=${refreshCount}`;
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 8000);
-      
-      const response = await fetch(`/api/users/${userNumericId}/profile-services${cacheBuster}`, {
-        headers: {
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache',
-          'Expires': '0'
-        },
-        signal: controller.signal
-      });
-      
-      clearTimeout(timeoutId);
+      setIsLoading(true);
+      const response = await fetch(`/api/services?userId=${userNumericId}`);
       
       if (!response.ok) {
-        throw new Error(`Server responded with ${response.status}: ${response.statusText}`);
+        throw new Error(`Failed to fetch services: ${response.status} ${response.statusText}`);
       }
       
       const data = await response.json();
-      
-      // Save to localStorage as a fallback
-      try {
-        localStorage.setItem('services_data_backup', JSON.stringify(data));
-        localStorage.setItem('services_data_timestamp', Date.now().toString());
-      } catch (cacheErr) {
-        console.warn('Could not cache data in localStorage:', cacheErr);
-      }
-      
-      // Validate and set data
-      if (data && typeof data === 'object') {
-        if ('whatIOffer' in data && typeof data.whatIOffer === 'string') {
-          setWhatIOffer(data.whatIOffer);
-        }
-        
-        if ('services' in data && Array.isArray(data.services)) {
-          setServices(data.services);
-        } else if (services.length === 0) {
-          setServices([]);
-        }
-      } else {
-        throw new Error('Invalid response format');
-      }
-    } catch (err: any) {
-      setError(err as Error);
-      
-      // Try to recover from localStorage
-      if (err.name === 'AbortError' || (err.message && err.message.includes('Server responded with'))) {
-        try {
-          const cachedData = localStorage.getItem('services_data_backup');
-          const timestamp = localStorage.getItem('services_data_timestamp');
-          
-          if (cachedData && timestamp) {
-            const parsedTimestamp = parseInt(timestamp, 10);
-            const now = Date.now();
-            const isFresh = (now - parsedTimestamp) < 1000 * 60 * 30; // 30 minutes
-            
-            if (isFresh) {
-              const data = JSON.parse(cachedData);
-              
-              if (data.whatIOffer) setWhatIOffer(data.whatIOffer);
-              if (Array.isArray(data.services)) setServices(data.services);
-            }
-          }
-        } catch (recoveryErr) {
-          console.error('Recovery from cache failed:', recoveryErr);
-        }
-      }
+      setServices(data);
+      setError(null);
+    } catch (err) {
+      console.error("Error fetching services:", err);
+      setError(err instanceof Error ? err : new Error(String(err)));
     } finally {
       setIsLoading(false);
     }
   };
   
-  // Fetch data on component mount
+  // Effect to load data on mount and when refreshCount changes
   useEffect(() => {
-    if (userNumericId) {
-      fetchServicesData();
-    }
-  }, [userNumericId]);
-  
-  // Use services from the hook when they become available
-  useEffect(() => {
-    if (hookServices && Array.isArray(hookServices) && hookServices.length > 0) {
+    // Prefer the hook data if available
+    if (hookServices) {
       setServices(hookServices);
-      setIsLoading(false);
+      setIsLoading(isLoadingFromHook);
+      return;
     }
     
-    if (hookWhatIOffer) {
-      setWhatIOffer(hookWhatIOffer);
-    }
-  }, [hookServices, hookWhatIOffer]);
+    // Fall back to direct fetch if hook data isn't available
+    fetchServicesData();
+  }, [hookServices, isLoadingFromHook, userNumericId, refreshCount]);
   
-  const handleCreate = (formData: any) => {
-    if (!userNumericId) return;
-    
-    const serviceData = {
-      ...formData,
-      userId: userNumericId
-    };
-    
+  // Function to handle service creation
+  const handleCreate = async (formData: any) => {
     try {
-      createService(serviceData);
-      
-      // Force a refresh after creation
-      setTimeout(() => {
-        fetchServicesData();
-      }, 1000);
-      
+      await createService({
+        ...formData,
+        userId: userNumericId
+      });
       setIsCreateDialogOpen(false);
+      // Force a refresh
+      setRefreshCount(prev => prev + 1);
     } catch (err) {
-      // Ensure dialog is closed even on error
-      setIsCreateDialogOpen(false);
+      console.error("Error creating service:", err);
     }
   };
   
-  const handleUpdate = (formData: any) => {
-    if (!selectedService || !userNumericId) return;
-    
-    updateService({
-      id: selectedService.id,
-      data: {
-        ...formData,
-        userId: userNumericId // Ensure userId is always included
-      }
-    });
-    
-    // Force a refresh after update
-    setTimeout(() => {
-      fetchServicesData();
-    }, 1000);
-    
-    setIsEditDialogOpen(false);
-  };
-  
-  const handleDelete = () => {
+  // Function to handle service update
+  const handleUpdate = async (formData: any) => {
     if (!selectedService) return;
     
-    deleteService(selectedService.id);
-    
-    // Force a refresh after deletion
-    setTimeout(() => {
-      fetchServicesData();
-    }, 1000);
-    
-    setIsDeleteDialogOpen(false);
+    try {
+      await updateService({
+        ...formData,
+        id: selectedService.id,
+        userId: userNumericId
+      });
+      setIsEditDialogOpen(false);
+      // Force a refresh
+      setRefreshCount(prev => prev + 1);
+    } catch (err) {
+      console.error("Error updating service:", err);
+    }
   };
   
-  const formatCurrency = (amount: number | null, currency: 'INR' | 'USD') => {
-    if (amount === null) return '';
+  // Function to handle service deletion
+  const handleDelete = async () => {
+    if (!selectedService) return;
     
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: currency,
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    }).format(amount);
-  };
-  
-  const handleUpdateWhatIOffer = (whatIOffer: string) => {
-    if (!userNumericId) return;
-    
-    // Call the update service method with whatIOffer field
-    updateService({
-      id: -1, // Special ID that indicates we're updating the whatIOffer field
-      data: { whatIOffer } 
-    });
-    
-    // Force a refresh to get the updated data
-    setTimeout(() => {
-      fetchServicesData();
-    }, 1000);
-    
-    setEditWhatIOfferDialogOpen(false);
+    try {
+      await deleteService(selectedService.id);
+      setIsDeleteDialogOpen(false);
+      // Force a refresh
+      setRefreshCount(prev => prev + 1);
+    } catch (err) {
+      console.error("Error deleting service:", err);
+    }
   };
   
   return (
@@ -361,6 +269,8 @@ export default function Services({ userFirebaseId, userNumericId }: { userFireba
           ))}
         </div>
       )}
+      
+      {/* Edit Service Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="sm:max-w-[525px] max-h-[88vh] overflow-y-auto">
           <DialogHeader>
@@ -369,32 +279,30 @@ export default function Services({ userFirebaseId, userNumericId }: { userFireba
               Update your professional service details.
             </DialogDescription>
           </DialogHeader>
-          {selectedService && (
-            <ServiceForm 
-              onSubmit={handleUpdate} 
-              isPending={isPendingUpdate}
-              existingServicesCount={services.length}
-              initialData={selectedService}
-            />
-          )}
+          <ServiceForm 
+            onSubmit={handleUpdate} 
+            isPending={isPendingUpdate}
+            existingServicesCount={services.length}
+            initialData={selectedService}
+          />
         </DialogContent>
       </Dialog>
       
-      {/* Delete Confirmation Dialog */}
+      {/* Delete Service Dialog */}
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the service
-              from your profile.
+              This will permanently delete the service "{selectedService?.title}".
+              This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction 
-              className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
+            <AlertDialogAction
               onClick={handleDelete}
+              className="bg-red-500 hover:bg-red-600 text-white"
               disabled={isPendingDelete}
             >
               {isPendingDelete && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
