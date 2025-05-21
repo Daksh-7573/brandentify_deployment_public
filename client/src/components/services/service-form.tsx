@@ -356,16 +356,16 @@ export default function ServiceForm({ service, onSubmit, isPending, existingServ
         
         <Button 
           type="submit" 
-          className="w-full bg-gradient-to-r from-primary to-indigo-600 hover:from-primary/90 hover:to-indigo-700 text-white shadow-sm" 
+          className="neo-glass-button w-full flex items-center justify-center gap-2 py-2 px-4" 
           disabled={isPending}
         >
           {isPending ? (
             <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              {service ? "Updating..." : "Creating..."}
+              <Loader2 className="h-4 w-4 animate-spin" />
+              <span>{service ? "Updating..." : "Creating..."}</span>
             </>
           ) : (
-            service ? "Update Service" : "Create Service"
+            <span>{service ? "Update Service" : "Create Service"}</span>
           )}
         </Button>
       </form>
