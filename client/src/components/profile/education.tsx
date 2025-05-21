@@ -593,7 +593,7 @@ export default function Education() {
   }));
   
   return (
-    <NeoGlassSection className="mb-6">
+    <div className="mb-6">
       <div className="flex flex-row items-center justify-between space-y-0 pb-4 mb-4 border-b border-gray-800">
         <div>
           <h2 className="text-xl font-bold text-white">Academic Background</h2>
@@ -1079,6 +1079,6 @@ export default function Education() {
           </Form>
         </DialogContent>
       </Dialog>
-    </NeoGlassSection>
+    </div>
   );
 }
