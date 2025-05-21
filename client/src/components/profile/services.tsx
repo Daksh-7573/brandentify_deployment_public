@@ -288,7 +288,7 @@ export default function Services() {
           <DialogTrigger asChild>
             <Button
               size="sm"
-              className="neo-glass-button flex items-center gap-1 py-1.5 px-3 whitespace-nowrap"
+              className="neo-glass-button flex items-center gap-1 py-1.5 px-3 whitespace-nowrap bg-slate-800/60 text-white hover:bg-slate-700/70"
               disabled={services.length >= 6 || isPendingCreate || isPendingUpdate}
             >
               <Plus className="h-3.5 w-3.5" />
@@ -397,7 +397,7 @@ export default function Services() {
             <h3 className="text-base font-semibold text-white">General Professional Offering</h3>
             <Button
               size="sm"
-              className="neo-glass-button flex items-center gap-1 py-1.5 px-3 whitespace-nowrap"
+              className="neo-glass-button flex items-center gap-1 py-1.5 px-3 whitespace-nowrap bg-slate-800/60 text-white hover:bg-slate-700/70"
               disabled={isPendingCreate || isPendingUpdate}
               onClick={() => setEditWhatIOfferDialogOpen(true)}
             >
