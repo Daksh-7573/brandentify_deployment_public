@@ -362,6 +362,7 @@ export default function ProfileNeo() {
                   <button 
                     onClick={() => setLocation('/career-capsule')}
                     className="neo-glass-button flex items-center gap-1 py-1.5 px-3 whitespace-nowrap"
+                    style={{ background: "rgba(81, 69, 205, 0.9)" }}
                   >
                     <FileText className="w-4 h-4" />
                     <span>Career Capsule</span>
