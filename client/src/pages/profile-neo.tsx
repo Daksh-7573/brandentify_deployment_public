@@ -417,9 +417,10 @@ export default function ProfileNeo() {
                           <h3 className="text-lg font-medium text-white">About Me</h3>
                           <button
                             onClick={() => setShowEditAboutDialog(true)}
-                            className="text-white/60 hover:text-white transition-colors"
+                            className="neo-glass-button flex items-center gap-1 py-1 px-2 text-xs"
                           >
-                            <Edit className="h-4 w-4" />
+                            <Edit className="h-3.5 w-3.5 mr-1" />
+                            Edit
                           </button>
                         </div>
                         <p className="text-white/80 text-sm">
@@ -433,9 +434,10 @@ export default function ProfileNeo() {
                           <h3 className="text-lg font-medium text-white">Industry & Domain</h3>
                           <button
                             onClick={() => setShowIndustryDialog(true)}
-                            className="text-white/60 hover:text-white transition-colors"
+                            className="neo-glass-button flex items-center gap-1 py-1 px-2 text-xs"
                           >
-                            <Edit className="h-4 w-4" />
+                            <Edit className="h-3.5 w-3.5 mr-1" />
+                            Edit
                           </button>
                         </div>
                         <div className="flex flex-wrap gap-2">
@@ -465,9 +467,10 @@ export default function ProfileNeo() {
                           <h3 className="text-lg font-medium text-white">I am looking for</h3>
                           <button
                             onClick={() => setShowLookingForDialog(true)}
-                            className="text-white/60 hover:text-white transition-colors"
+                            className="neo-glass-button flex items-center gap-1 py-1 px-2 text-xs"
                           >
-                            <Edit className="h-4 w-4" />
+                            <Edit className="h-3.5 w-3.5 mr-1" />
+                            Edit
                           </button>
                         </div>
                         <div className="flex flex-wrap gap-2">
