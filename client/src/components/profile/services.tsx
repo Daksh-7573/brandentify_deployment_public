@@ -255,12 +255,12 @@ export default function Services() {
   
   return (
     <>
-      {/* General Professional Offering Section */}
+      {/* General Professional Overview Section */}
       <div className="mb-6 neo-glass-card">
         <div className="flex flex-row items-center justify-between space-y-0 pb-4 mb-4 border-b border-gray-800">
           <div>
-            <h2 className="text-xl font-bold text-white">General Professional Offering</h2>
-            <p className="text-sm text-gray-300">Overall description of your professional expertise</p>
+            <h2 className="text-xl font-bold text-white">Professional Overview</h2>
+            <p className="text-sm text-gray-300">General description of your expertise</p>
           </div>
           <Button
             variant="ghost"
@@ -277,7 +277,7 @@ export default function Services() {
           <div className="transition-all">
             <div className="flex items-center mb-2">
               <Quote className="h-5 w-5 text-gray-300 mr-2" />
-              <h3 className="font-medium text-lg text-white">Professional Overview</h3>
+              <h3 className="font-medium text-lg text-white">About My Services</h3>
             </div>
             <p className="text-sm text-gray-300 whitespace-pre-line ml-7">{whatIOffer}</p>
           </div>
@@ -285,18 +285,18 @@ export default function Services() {
           <div className="py-6 text-center">
             <AlertCircle className="mx-auto h-10 w-10 text-gray-400/50" />
             <p className="mt-2 text-gray-400">
-              Add a general description of your professional services.
+              Add a general description of your professional expertise and services.
             </p>
           </div>
         )}
       </div>
       
-      {/* What I Offer Section */}
+      {/* Specific Services Section */}
       <div className="mb-6 neo-glass-card">
         <div className="flex flex-row items-center justify-between space-y-0 pb-4 mb-4 border-b border-gray-800">
           <div>
-            <h2 className="text-xl font-bold text-white">What I Offer</h2>
-            <p className="text-sm text-gray-300">Specific professional services I provide (max 6)</p>
+            <h2 className="text-xl font-bold text-white">Specific Services</h2>
+            <p className="text-sm text-gray-300">Individual professional services I provide (max 6)</p>
           </div>
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
             <DialogTrigger asChild>
@@ -306,14 +306,14 @@ export default function Services() {
                 disabled={services.length >= 6 || isPendingCreate || isPendingUpdate}
               >
                 <Plus className="h-3.5 w-3.5" />
-                <span>Add What I Offer</span>
+                <span>Add Service</span>
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[525px] max-h-[88vh] overflow-y-auto">
               <DialogHeader>
-                <DialogTitle>Add What I Offer</DialogTitle>
+                <DialogTitle>Add New Service</DialogTitle>
                 <DialogDescription>
-                  Enter a professional service you offer (one at a time).
+                  Enter a specific professional service you offer (one at a time).
                 </DialogDescription>
               </DialogHeader>
               <ServiceForm 
@@ -412,11 +412,11 @@ export default function Services() {
         )}
       </div>
       
-      {/* Edit What I Offer Dialog */}
+      {/* Edit Professional Overview Dialog */}
       <Dialog open={isEditWhatIOfferDialogOpen} onOpenChange={setEditWhatIOfferDialogOpen}>
         <DialogContent className="sm:max-w-[525px]">
           <DialogHeader>
-            <DialogTitle>Edit General Professional Offering</DialogTitle>
+            <DialogTitle>Edit Professional Overview</DialogTitle>
             <DialogDescription>
               Describe your overall professional services and expertise.
             </DialogDescription>
@@ -430,7 +430,7 @@ export default function Services() {
                 id="whatIOffer"
                 rows={5}
                 className="w-full p-3 bg-slate-800/50 border border-slate-700 rounded-lg text-white"
-                placeholder="Describe your professional services..."
+                placeholder="Describe your professional expertise and services..."
                 value={whatIOffer || ''}
                 onChange={(e) => setWhatIOffer(e.target.value)}
               />
