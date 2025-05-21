@@ -34,7 +34,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { NeoGlassSection } from "@/components/layout/neo-glass-layout";
 
 export default function Services() {
   const { user } = useAuth();
@@ -51,50 +50,36 @@ export default function Services() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isEditWhatIOfferDialogOpen, setEditWhatIOfferDialogOpen] = useState(false);
-  const [selectedService, setSelectedService] = useState<Service | null>(null);
-
-  // Track refresh count to help debug and break cache
-  const [refreshCount, setRefreshCount] = useState(0);
+  const [selectedService, setSelectedService] = useState<any>(null);
   
-  // Use the unified hook for data and mutations
+  // Get API methods from the hook
   const { 
-    services: hookServices,
-    whatIOffer: hookWhatIOffer,
     createService, 
     updateService, 
     deleteService, 
-    isPendingCreate,
-    isPendingUpdate,
+    isPendingCreate, 
+    isPendingUpdate, 
     isPendingDelete,
-    isLoading: isLoadingFromHook
   } = useProfileServices();
   
-  // Function to directly fetch the data with improved error handling
+  // Fetch services data on mount and when userNumericId changes
+  useEffect(() => {
+    if (userNumericId) {
+      fetchServicesData();
+    }
+  }, [userNumericId]);
+
   const fetchServicesData = async () => {
     if (!userNumericId) return;
     
-    setRefreshCount(prev => prev + 1);
     setIsLoading(true);
-    setError(null);
     
     try {
-      const cacheBuster = `?t=${Date.now()}&r=${refreshCount}`;
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 8000);
-      
-      const response = await fetch(`/api/users/${userNumericId}/profile-services${cacheBuster}`, {
-        headers: {
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache',
-          'Expires': '0'
-        },
-        signal: controller.signal
-      });
-      
-      clearTimeout(timeoutId);
+      // Fetch from API directly
+      const response = await fetch(`/api/users/${userNumericId}/services`);
       
       if (!response.ok) {
-        throw new Error(`Server responded with ${response.status}: ${response.statusText}`);
+        throw new Error(`Server responded with status: ${response.status}`);
       }
       
       const data = await response.json();
@@ -151,52 +136,26 @@ export default function Services() {
     }
   };
   
-  // Fetch data on component mount
-  useEffect(() => {
-    if (userNumericId) {
-      fetchServicesData();
-    }
-  }, [userNumericId]);
-  
-  // Use services from the hook when they become available
-  useEffect(() => {
-    if (hookServices && Array.isArray(hookServices) && hookServices.length > 0) {
-      setServices(hookServices);
-      setIsLoading(false);
-    }
-    
-    if (hookWhatIOffer) {
-      setWhatIOffer(hookWhatIOffer);
-    }
-  }, [hookServices, hookWhatIOffer]);
-  
-  const handleCreate = (formData: any) => {
+  const handleCreate = async (formData: any) => {
     if (!userNumericId) return;
     
-    const serviceData = {
+    await createService({
       ...formData,
       userId: userNumericId
-    };
+    });
     
-    try {
-      createService(serviceData);
-      
-      // Force a refresh after creation
-      setTimeout(() => {
-        fetchServicesData();
-      }, 1000);
-      
-      setIsCreateDialogOpen(false);
-    } catch (err) {
-      // Ensure dialog is closed even on error
-      setIsCreateDialogOpen(false);
-    }
+    // Force a refresh after creation
+    setTimeout(() => {
+      fetchServicesData();
+    }, 1000);
+    
+    setIsCreateDialogOpen(false);
   };
   
-  const handleUpdate = (formData: any) => {
-    if (!selectedService || !userNumericId) return;
+  const handleUpdate = async (formData: any) => {
+    if (!userNumericId || !selectedService) return;
     
-    updateService({
+    await updateService({
       id: selectedService.id,
       data: {
         ...formData,
@@ -478,16 +437,14 @@ export default function Services() {
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the service
-              from your profile.
+              This will permanently delete this service from your profile.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction 
-              className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
               onClick={handleDelete}
-              disabled={isPendingDelete}
+              className="bg-red-500 hover:bg-red-600"
             >
               {isPendingDelete && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Delete
