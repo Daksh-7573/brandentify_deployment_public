@@ -240,7 +240,7 @@ export default function Skills() {
   
   return (
     <>
-      <NeoGlassSection className="mb-6">
+      <div className="mb-6">
         <div className="flex flex-row items-center justify-between space-y-0 pb-4 mb-4 border-b border-gray-800">
           <div>
             <h2 className="text-xl font-bold text-white">What I'm Good At</h2>
@@ -312,7 +312,7 @@ export default function Skills() {
             </div>
           )}
         </div>
-      </NeoGlassSection>
+      </div>
       
       {/* Add/Edit Skill Modal */}
       <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
