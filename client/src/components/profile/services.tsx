@@ -279,42 +279,11 @@ export default function Services() {
   };
   
   return (
-    <NeoGlassSection title="What I Offer" className="mb-6">
-      <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <div>
-          <p className="text-sm text-slate-300">Professional services I provide (max 6)</p>
-        </div>
-        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-          <DialogTrigger asChild>
-            <Button
-              size="sm"
-              className="neo-glass-button flex items-center gap-1 py-1.5 px-3 whitespace-nowrap"
-              disabled={services.length >= 6 || isPendingCreate || isPendingUpdate}
-            >
-              <Plus className="h-3.5 w-3.5" />
-              <span>Add What I Offer</span>
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[525px] max-h-[88vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>Add What I Offer</DialogTitle>
-              <DialogDescription>
-                Enter a professional service you offer (one at a time).
-              </DialogDescription>
-            </DialogHeader>
-            <ServiceForm 
-              onSubmit={handleCreate} 
-              isPending={isPendingCreate}
-              existingServicesCount={services.length}
-            />
-          </DialogContent>
-        </Dialog>
-      </div>
-    
-      {/* General Professional Offering Section - Moved to the top as separate card */}
-      <NeoGlassSection className="mt-4 mb-6">
-        <div className="flex justify-between items-center mb-3">
-          <h3 className="text-base font-semibold text-white">General Professional Offering</h3>
+    <>
+      {/* General Professional Offering Section as a completely separate section */}
+      <NeoGlassSection title="General Professional Offering" className="mb-6">
+        <div className="flex justify-between items-center pb-2">
+          <p className="text-sm text-slate-300">Overall description of your professional expertise</p>
           <Button
             size="sm"
             className="neo-glass-button flex items-center gap-1 py-1.5 px-3 whitespace-nowrap"
@@ -341,22 +310,50 @@ export default function Services() {
         )}
       </NeoGlassSection>
       
-      {/* What I Offer Services Section */}
-      <NeoGlassSection className="mt-4">
-        <div className="mb-4">
-          {/* Specific Services List */}
-          {isLoading ? (
-            <div className="flex justify-center py-6">
-              <Loader2 className="h-6 w-6 animate-spin text-white" />
-            </div>
-          ) : !services || !Array.isArray(services) || services.length === 0 ? (
-            <div className="py-6 text-center">
-              <Package className="mx-auto h-10 w-10 text-gray-500/50" />
-              <p className="mt-2 text-gray-400">No specific offerings added yet.</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              {services.map((service) => (
+      {/* What I Offer as a completely separate section */}
+      <NeoGlassSection title="What I Offer" className="mb-6">
+        <div className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <p className="text-sm text-slate-300">Specific professional services I provide (max 6)</p>
+          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+            <DialogTrigger asChild>
+              <Button
+                size="sm"
+                className="neo-glass-button flex items-center gap-1 py-1.5 px-3 whitespace-nowrap"
+                disabled={services.length >= 6 || isPendingCreate || isPendingUpdate}
+              >
+                <Plus className="h-3.5 w-3.5" />
+                <span>Add What I Offer</span>
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[525px] max-h-[88vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Add What I Offer</DialogTitle>
+                <DialogDescription>
+                  Enter a professional service you offer (one at a time).
+                </DialogDescription>
+              </DialogHeader>
+              <ServiceForm 
+                onSubmit={handleCreate} 
+                isPending={isPendingCreate}
+                existingServicesCount={services.length}
+              />
+            </DialogContent>
+          </Dialog>
+        </div>
+        
+        {/* Specific Services List */}
+        {isLoading ? (
+          <div className="flex justify-center py-6">
+            <Loader2 className="h-6 w-6 animate-spin text-white" />
+          </div>
+        ) : !services || !Array.isArray(services) || services.length === 0 ? (
+          <div className="py-6 text-center">
+            <Package className="mx-auto h-10 w-10 text-gray-500/50" />
+            <p className="mt-2 text-gray-400">No specific offerings added yet.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4">
+            {services.map((service) => (
                 <div 
                   key={service.id} 
                   className="border border-white/10 rounded-lg p-4 bg-slate-800/50 backdrop-blur-md transition-all hover:bg-slate-700/50 shadow-xl shadow-black/5 neo-glass-card"
