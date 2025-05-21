@@ -984,7 +984,7 @@ export default function WorkExperience() {
   });
   
   return (
-    <NeoGlassSection className="mb-6">
+    <div className="mb-6">
       <div className="flex flex-row items-center justify-between space-y-0 pb-4 mb-4 border-b border-gray-800">
         <div>
           <h2 className="text-xl font-bold text-white">Career Path</h2>
@@ -1012,7 +1012,7 @@ export default function WorkExperience() {
         ) : (
           <div className="space-y-4">
             {sortedExperiences.map((experience: any) => (
-              <div key={experience.id} className="neo-glass-card p-4 rounded-lg transition-all hover:translate-y-[-3px]">
+              <div key={experience.id} className="p-4 rounded-lg border border-gray-800 bg-black/40 transition-all hover:translate-y-[-3px]">
                 <div className="flex justify-between items-start">
                   <div>
                     <h3 className="font-medium text-white">{experience.title}</h3>
@@ -1754,6 +1754,6 @@ export default function WorkExperience() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </NeoGlassSection>
+    </div>
   );
 }
