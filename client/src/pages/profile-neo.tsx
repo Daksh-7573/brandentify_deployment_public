@@ -520,10 +520,10 @@ export default function ProfileNeo() {
                 <div className="flex flex-wrap gap-4">
                   <button
                     onClick={() => signOut()}
-                    className="inline-flex items-center px-4 py-2 rounded-full bg-white/10 border border-white/20 text-white font-medium text-sm transition-all duration-200 hover:bg-white/20"
+                    className="neo-glass-button flex items-center gap-1 py-1.5 px-3 whitespace-nowrap"
                   >
-                    <i className="fas fa-sign-out-alt mr-2"></i>
-                    Sign Out
+                    <i className="fas fa-sign-out-alt"></i>
+                    <span>Sign Out</span>
                   </button>
                 </div>
               </div>
