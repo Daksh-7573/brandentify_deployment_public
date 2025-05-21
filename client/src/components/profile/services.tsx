@@ -304,74 +304,75 @@ export default function Services() {
                   key={service.id} 
                   className="p-4 rounded-lg border border-gray-800 bg-black/40 transition-all hover:translate-y-[-3px]"
                 >
-                <div className="flex justify-between items-start">
-                  <h3 className="font-medium text-base line-clamp-2 flex-1 text-white">{service.title}</h3>
-                  <div className="flex items-center space-x-1 ml-2">
-                    <button 
-                      className="text-gray-300 hover:text-white focus:outline-none rounded-full p-1 hover:bg-gray-800/50"
-                      onClick={() => {
-                        setSelectedService(service);
-                        setIsEditDialogOpen(true);
-                      }}
+                  <div className="flex justify-between items-start">
+                    <h3 className="font-medium text-base line-clamp-2 flex-1 text-white">{service.title}</h3>
+                    <div className="flex items-center space-x-1 ml-2">
+                      <button 
+                        className="text-gray-300 hover:text-white focus:outline-none rounded-full p-1 hover:bg-gray-800/50"
+                        onClick={() => {
+                          setSelectedService(service);
+                          setIsEditDialogOpen(true);
+                        }}
+                      >
+                        <Edit className="h-3.5 w-3.5" />
+                      </button>
+                      <button 
+                        className="text-gray-300 hover:text-red-400 focus:outline-none rounded-full p-1 hover:bg-gray-800/50"
+                        onClick={() => {
+                          setSelectedService(service);
+                          setIsDeleteDialogOpen(true);
+                        }}
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                  
+                  {/* Service description */}
+                  {service.description && (
+                    <p className="mt-2 text-sm text-gray-300 line-clamp-2">
+                      {service.description}
+                    </p>
+                  )}
+                  
+                  {/* Display price information */}
+                  <div className="mt-2">
+                    {(service.priceUsd !== undefined && service.priceUsd !== null) && (
+                      <p className="text-sm font-medium text-white">
+                        {formatCurrency(service.priceUsd, 'USD')}
+                        {service.isHourly ? '/hr' : ''}
+                      </p>
+                    )}
+                    {(service.priceInr !== undefined && service.priceInr !== null) && (
+                      <p className="text-sm font-medium text-white">
+                        {formatCurrency(service.priceInr, 'INR')}
+                        {service.isHourly ? '/hr' : ''}
+                      </p>
+                    )}
+                  </div>
+                  
+                  <div className="mt-2 flex items-center">
+                    <Badge 
+                      className={service.isActive ? 'bg-white/15 text-white hover:bg-white/20 border-none' : 'bg-gray-800/60 text-gray-400 border-none'}
                     >
-                      <Edit className="h-3.5 w-3.5" />
-                    </button>
-                    <button 
-                      className="text-gray-300 hover:text-red-400 focus:outline-none rounded-full p-1 hover:bg-gray-800/50"
-                      onClick={() => {
-                        setSelectedService(service);
-                        setIsDeleteDialogOpen(true);
-                      }}
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </button>
+                      {service.isActive ? 'Active' : 'Inactive'}
+                    </Badge>
+                    {service.isRemote && (
+                      <Badge className="bg-white/15 text-white hover:bg-white/20 border-none ml-2">
+                        Remote
+                      </Badge>
+                    )}
+                    {service.category && (
+                      <Badge className="bg-white/15 text-white hover:bg-white/20 border-none ml-2">
+                        {service.category.charAt(0).toUpperCase() + service.category.slice(1)}
+                      </Badge>
+                    )}
                   </div>
                 </div>
-                
-                {/* Service description */}
-                {service.description && (
-                  <p className="mt-2 text-sm text-gray-300 line-clamp-2">
-                    {service.description}
-                  </p>
-                )}
-                
-                {/* Display price information */}
-                <div className="mt-2">
-                  {(service.priceUsd !== undefined && service.priceUsd !== null) && (
-                    <p className="text-sm font-medium text-white">
-                      {formatCurrency(service.priceUsd, 'USD')}
-                      {service.isHourly ? '/hr' : ''}
-                    </p>
-                  )}
-                  {(service.priceInr !== undefined && service.priceInr !== null) && (
-                    <p className="text-sm font-medium text-white">
-                      {formatCurrency(service.priceInr, 'INR')}
-                      {service.isHourly ? '/hr' : ''}
-                    </p>
-                  )}
-                </div>
-                
-                <div className="mt-2 flex items-center">
-                  <Badge 
-                    className={service.isActive ? 'bg-white/15 text-white hover:bg-white/20 border-none' : 'bg-gray-800/60 text-gray-400 border-none'}
-                  >
-                    {service.isActive ? 'Active' : 'Inactive'}
-                  </Badge>
-                  {service.isRemote && (
-                    <Badge className="bg-white/15 text-white hover:bg-white/20 border-none ml-2">
-                      Remote
-                    </Badge>
-                  )}
-                  {service.category && (
-                    <Badge className="bg-white/15 text-white hover:bg-white/20 border-none ml-2">
-                      {service.category.charAt(0).toUpperCase() + service.category.slice(1)}
-                    </Badge>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+              ))}
+            </div>
+          )}
+        </div>
       </div>
       
       {/* Edit What I Offer Dialog */}
