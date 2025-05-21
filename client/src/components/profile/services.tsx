@@ -254,9 +254,9 @@ export default function Services() {
   };
   
   return (
-    <>
+    <div className="p-4">
       {/* General Professional Overview Section */}
-      <div className="mb-6 neo-glass-card">
+      <div className="mb-8">
         <div className="flex flex-row items-center justify-between space-y-0 pb-4 mb-4 border-b border-gray-800">
           <div>
             <h2 className="text-xl font-bold text-white">Professional Overview</h2>
@@ -292,7 +292,7 @@ export default function Services() {
       </div>
       
       {/* Specific Services Section */}
-      <div className="mb-6 neo-glass-card">
+      <div>
         <div className="flex flex-row items-center justify-between space-y-0 pb-4 mb-4 border-b border-gray-800">
           <div>
             <h2 className="text-xl font-bold text-white">Specific Services</h2>
@@ -495,6 +495,6 @@ export default function Services() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </>
+    </div>
   );
 }
