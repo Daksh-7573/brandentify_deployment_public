@@ -1078,9 +1078,9 @@ export default function IndustryPulsePage() {
                 </div>
                 <button 
                   onClick={() => setLocation("/create-pulse")} 
-                  className="px-5 py-2 rounded-md bg-primary text-white hover:bg-opacity-90 shadow-sm font-medium transition-all flex items-center"
+                  className="neo-glass-button flex items-center gap-2 py-2 px-4"
                 >
-                  <MessageSquare className="w-4 h-4 mr-2" />
+                  <MessageSquare className="h-4 w-4 mr-2" />
                   <span>Create Pulse</span>
                 </button>
               </div>
