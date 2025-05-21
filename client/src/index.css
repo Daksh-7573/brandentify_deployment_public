@@ -3,6 +3,7 @@
 @import './styles/neo-glass-main.css';
 @import './styles/neo-glass-theme.css';
 @import './styles/neo-glass-spotify.css';
+@import './styles/button-override.css'; /* Added our new button override styles */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
