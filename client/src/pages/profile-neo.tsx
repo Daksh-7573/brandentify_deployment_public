@@ -789,6 +789,29 @@ export default function ProfileNeo() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      
+      {/* Edit Personal Info Dialog */}
+      <Dialog open={showEditPersonalInfoDialog} onOpenChange={setShowEditPersonalInfoDialog}>
+        <DialogContent className="neo-glass-card border-0 max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-white">Edit Personal Information</DialogTitle>
+          </DialogHeader>
+          {userData && (
+            <EditPersonalInfo
+              userData={userData}
+              onCancel={() => setShowEditPersonalInfoDialog(false)}
+              onSave={() => {
+                setShowEditPersonalInfoDialog(false);
+                queryClient.invalidateQueries({ queryKey: ['/api/users', user.uid] });
+                toast({
+                  title: "Personal information updated",
+                  description: "Your profile information has been updated successfully.",
+                });
+              }}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
