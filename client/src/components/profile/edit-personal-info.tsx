@@ -43,6 +43,8 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
   
   const [phoneCountryCode, setPhoneCountryCode] = useState(countryCode);
   const [phoneNumber, setPhoneNumber] = useState(number);
+  const [jobTitle, setJobTitle] = useState(userData.title || "");
+  const [location, setLocation] = useState(userData.location || "");
   const [isLoading, setIsLoading] = useState(false);
   
   const handleSave = async () => {
@@ -59,7 +61,9 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
         url: `/api/users/${userData.id}`,
         method: 'PUT',
         data: {
-          phoneNumber: formattedPhoneNumber
+          phoneNumber: formattedPhoneNumber,
+          title: jobTitle.trim() || null,
+          location: location.trim() || null
         }
       });
       
@@ -120,6 +124,39 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
             placeholder="Your phone number"
           />
         </div>
+      </div>
+      
+      {/* Job Title */}
+      <div className="space-y-2">
+        <label htmlFor="jobTitle" className="text-sm font-medium flex items-center gap-2">
+          <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+          </svg>
+          Job Title
+        </label>
+        <Input
+          id="jobTitle"
+          value={jobTitle}
+          onChange={(e) => setJobTitle(e.target.value)}
+          placeholder="Your professional title (e.g. Senior Developer)"
+        />
+      </div>
+      
+      {/* Location */}
+      <div className="space-y-2">
+        <label htmlFor="location" className="text-sm font-medium flex items-center gap-2">
+          <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+            <circle cx="12" cy="10" r="3"></circle>
+          </svg>
+          Location
+        </label>
+        <Input
+          id="location"
+          value={location}
+          onChange={(e) => setLocation(e.target.value)}
+          placeholder="Your location (e.g. San Francisco, CA)"
+        />
       </div>
       
       {/* Profile URL (read-only) */}
