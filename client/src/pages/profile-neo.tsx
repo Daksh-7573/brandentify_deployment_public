@@ -402,16 +402,16 @@ export default function ProfileNeo() {
                       </button>
                     </div>
                     
-                    <div className="text-center mt-4 relative pb-8">
+                    <div className="text-center mt-4 relative group">
                       <h2 className="text-xl font-bold text-white">{userData?.name}</h2>
                       <p className="text-white/80 text-sm">{userData?.title || "Add your job title"}</p>
                       <p className="text-white/60 text-xs mt-1">{userData?.location || "Add your location"}</p>
                       <button
                         onClick={() => setShowEditPersonalInfoDialog(true)}
-                        className="absolute bottom-0 left-1/2 transform -translate-x-1/2 mt-2 px-2 py-1 rounded text-white/60 hover:text-white transition-colors text-xs flex items-center gap-1"
+                        className="absolute top-0 right-0 p-1.5 rounded-full bg-black/40 opacity-0 group-hover:opacity-100 text-white/80 hover:text-white hover:bg-black/60 transition-all duration-200"
                         title="Edit Personal Information"
                       >
-                        <Edit className="h-3 w-3" /> Edit Details
+                        <Edit className="h-3.5 w-3.5" />
                       </button>
                     </div>
                   </div>
