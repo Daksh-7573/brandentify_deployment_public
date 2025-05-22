@@ -1,7 +1,9 @@
 import React, { useState } from "react";
-import { Mail, Phone, Globe } from "lucide-react";
+import { Mail, Phone, Globe, Briefcase, MapPin, Building, Book } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { useQueryClient } from "@tanstack/react-query";
@@ -13,6 +15,36 @@ interface EditPersonalInfoProps {
   onCancel: () => void;
   onSave: () => void;
 }
+
+const industries = [
+  "Technology",
+  "Healthcare",
+  "Finance",
+  "Education",
+  "Manufacturing",
+  "Retail",
+  "Media",
+  "Hospitality",
+  "Government",
+  "Consulting",
+  "Non-profit",
+  "Other"
+];
+
+const domains = [
+  "Software Development",
+  "Data Science",
+  "Design",
+  "Marketing",
+  "Sales",
+  "Customer Service",
+  "Human Resources",
+  "Finance",
+  "Operations",
+  "Research",
+  "Product Management",
+  "Other"
+];
 
 const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({ 
   userData, 
@@ -41,10 +73,15 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
   
   const { countryCode, number } = parsePhoneNumber(userData.phoneNumber);
   
+  const [name, setName] = useState(userData.name || "");
   const [phoneCountryCode, setPhoneCountryCode] = useState(countryCode);
   const [phoneNumber, setPhoneNumber] = useState(number);
   const [jobTitle, setJobTitle] = useState(userData.title || "");
   const [location, setLocation] = useState(userData.location || "");
+  const [aboutMe, setAboutMe] = useState(userData.aboutMe || "");
+  const [industry, setIndustry] = useState(userData.industry || "");
+  const [domain, setDomain] = useState(userData.domain || "");
+  const [lookingFor, setLookingFor] = useState(userData.lookingFor || "");
   const [isLoading, setIsLoading] = useState(false);
   
   const handleSave = async () => {
@@ -61,19 +98,25 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
         url: `/api/users/${userData.id}`,
         method: 'PUT',
         data: {
+          name: name.trim() || null,
           phoneNumber: formattedPhoneNumber,
           title: jobTitle.trim() || null,
-          location: location.trim() || null
+          location: location.trim() || null,
+          aboutMe: aboutMe.trim() || null,
+          industry: industry || null,
+          domain: domain || null,
+          lookingFor: lookingFor.trim() || null
         }
       });
       
       // Invalidate related queries to refetch the updated data
       queryClient.invalidateQueries({ queryKey: [`/api/users/${userData.id}`] });
       queryClient.invalidateQueries({ queryKey: ['/api/users/by-username', userData.username] });
+      queryClient.invalidateQueries({ queryKey: ['/api/users', userData.username] });
       
       toast({
         title: "Personal information updated",
-        description: "Your contact information has been saved successfully.",
+        description: "Your profile information has been saved successfully.",
       });
       
       onSave();
@@ -90,7 +133,24 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
   };
   
   return (
-    <div className="w-full space-y-4">
+    <div className="w-full space-y-4 max-h-[70vh] overflow-y-auto pr-2">
+      {/* Full Name */}
+      <div className="space-y-2">
+        <label htmlFor="name" className="text-sm font-medium flex items-center gap-2">
+          <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          Full Name
+        </label>
+        <Input
+          id="name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Your full name"
+        />
+      </div>
+      
       {/* Email (read-only) */}
       <div className="space-y-2">
         <label htmlFor="email" className="text-sm font-medium flex items-center gap-2">
@@ -129,9 +189,7 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
       {/* Job Title */}
       <div className="space-y-2">
         <label htmlFor="jobTitle" className="text-sm font-medium flex items-center gap-2">
-          <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
-          </svg>
+          <Briefcase className="h-4 w-4" />
           Job Title
         </label>
         <Input
@@ -145,10 +203,7 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
       {/* Location */}
       <div className="space-y-2">
         <label htmlFor="location" className="text-sm font-medium flex items-center gap-2">
-          <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-            <circle cx="12" cy="10" r="3"></circle>
-          </svg>
+          <MapPin className="h-4 w-4" />
           Location
         </label>
         <Input
@@ -156,6 +211,76 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
           value={location}
           onChange={(e) => setLocation(e.target.value)}
           placeholder="Your location (e.g. San Francisco, CA)"
+        />
+      </div>
+
+      {/* Industry */}
+      <div className="space-y-2">
+        <label htmlFor="industry" className="text-sm font-medium flex items-center gap-2">
+          <Building className="h-4 w-4" />
+          Industry
+        </label>
+        <Select value={industry} onValueChange={setIndustry}>
+          <SelectTrigger id="industry">
+            <SelectValue placeholder="Select your industry" />
+          </SelectTrigger>
+          <SelectContent>
+            {industries.map((ind) => (
+              <SelectItem key={ind} value={ind}>{ind}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Domain/Specialty */}
+      <div className="space-y-2">
+        <label htmlFor="domain" className="text-sm font-medium flex items-center gap-2">
+          <Book className="h-4 w-4" />
+          Domain/Specialty
+        </label>
+        <Select value={domain} onValueChange={setDomain}>
+          <SelectTrigger id="domain">
+            <SelectValue placeholder="Select your domain" />
+          </SelectTrigger>
+          <SelectContent>
+            {domains.map((dom) => (
+              <SelectItem key={dom} value={dom}>{dom}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      
+      {/* About Me */}
+      <div className="space-y-2">
+        <label htmlFor="aboutMe" className="text-sm font-medium flex items-center gap-2">
+          <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+          </svg>
+          About Me
+        </label>
+        <Textarea
+          id="aboutMe"
+          value={aboutMe}
+          onChange={(e) => setAboutMe(e.target.value)}
+          placeholder="Write a brief introduction about yourself"
+          rows={4}
+        />
+      </div>
+
+      {/* Looking For */}
+      <div className="space-y-2">
+        <label htmlFor="lookingFor" className="text-sm font-medium flex items-center gap-2">
+          <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 20v-8m0 0V4m0 8h8m-8 0H4"></path>
+          </svg>
+          Looking For
+        </label>
+        <Textarea
+          id="lookingFor"
+          value={lookingFor}
+          onChange={(e) => setLookingFor(e.target.value)}
+          placeholder="What are you looking for professionally? (e.g. collaborations, new opportunities, etc.)"
+          rows={3}
         />
       </div>
       
@@ -169,7 +294,7 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
           brandentifier.com/@{userData.name ? userData.name.replace(/\s+/g, '') : userData.username}
         </div>
         <p className="text-xs text-muted-foreground">
-          Your profile URL is based on your username and cannot be changed
+          Your profile URL is based on your name and cannot be changed
         </p>
       </div>
       
