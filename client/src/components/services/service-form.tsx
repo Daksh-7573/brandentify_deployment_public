@@ -262,7 +262,7 @@ export default function ServiceForm({ service, initialData, onSubmit, isPending,
                             { value: 'USD', label: 'USD (US Dollar)' },
                             { value: 'INR', label: 'INR (Indian Rupee)' }
                           ]}
-                          className="neo-glass-select"
+                          className="bg-white/5 border-white/10 text-white backdrop-blur-sm hover:bg-white/10 transition-all neo-glass-select"
                         />
                       </div>
                     </FormControl>
@@ -321,7 +321,7 @@ export default function ServiceForm({ service, initialData, onSubmit, isPending,
             control={form.control}
             name="isHourly"
             render={({ field }) => (
-              <FormItem className="flex flex-row items-center justify-between rounded-lg border border-white/10 bg-black/30 backdrop-blur-sm p-4 transition-all hover:border-white/20">
+              <FormItem className="flex flex-row items-center justify-between rounded-lg border border-white/10 bg-black/30 backdrop-blur-sm p-4 transition-all hover:bg-white/5 hover:border-blue-500/20 hover:shadow-neo">
                 <div className="space-y-0.5">
                   <FormLabel className="text-white text-base">Hourly Rate</FormLabel>
                   <FormDescription className="text-gray-300 text-xs">
@@ -332,7 +332,7 @@ export default function ServiceForm({ service, initialData, onSubmit, isPending,
                   <Switch
                     checked={field.value}
                     onCheckedChange={field.onChange}
-                    className="neo-glass-switch data-[state=checked]:bg-blue-600"
+                    className="neo-glass-switch data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-500/50 border-white/20 bg-black/50"
                   />
                 </FormControl>
               </FormItem>
@@ -344,7 +344,7 @@ export default function ServiceForm({ service, initialData, onSubmit, isPending,
           control={form.control}
           name="isActive"
           render={({ field }) => (
-            <FormItem className="flex flex-row items-center justify-between rounded-lg border border-white/10 bg-black/30 backdrop-blur-sm p-4 transition-all hover:border-white/20">
+            <FormItem className="flex flex-row items-center justify-between rounded-lg border border-white/10 bg-black/30 backdrop-blur-sm p-4 transition-all hover:bg-white/5 hover:border-blue-500/20 hover:shadow-neo">
               <div className="space-y-0.5">
                 <FormLabel className="text-white text-base">Active Status</FormLabel>
                 <FormDescription className="text-gray-300 text-xs">
@@ -355,7 +355,7 @@ export default function ServiceForm({ service, initialData, onSubmit, isPending,
                 <Switch
                   checked={field.value}
                   onCheckedChange={field.onChange}
-                  className="neo-glass-switch data-[state=checked]:bg-blue-600"
+                  className="neo-glass-switch data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-500/50 border-white/20 bg-black/50"
                 />
               </FormControl>
             </FormItem>
