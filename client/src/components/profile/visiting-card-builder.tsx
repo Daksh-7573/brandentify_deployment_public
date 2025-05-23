@@ -260,18 +260,18 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
               onValueChange={handleTabChange}
               className="w-full"
             >
-              <TabsList className="grid grid-cols-3 mb-6 neo-glass-card bg-black/30 border border-white/10">
-                <TabsTrigger value="professional-renewed" className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white hover:bg-white/10">Professional</TabsTrigger>
-                <TabsTrigger value="3d-animated" className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white hover:bg-white/10">3D</TabsTrigger>
-                <TabsTrigger value="holographic" className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white hover:bg-white/10">Holographic</TabsTrigger>
+              <TabsList className="grid grid-cols-3 mb-6 neo-glass-card bg-gradient-to-br from-black/40 to-black/80 border border-white/10 p-1 rounded-lg">
+                <TabsTrigger value="professional-renewed" className="text-white data-[state=active]:bg-gradient-to-r data-[state=active]:from-white/10 data-[state=active]:to-white/20 data-[state=active]:text-white hover:bg-white/5 rounded px-3 py-1.5">Professional</TabsTrigger>
+                <TabsTrigger value="3d-animated" className="text-white data-[state=active]:bg-gradient-to-r data-[state=active]:from-white/10 data-[state=active]:to-white/20 data-[state=active]:text-white hover:bg-white/5 rounded px-3 py-1.5">3D</TabsTrigger>
+                <TabsTrigger value="holographic" className="text-white data-[state=active]:bg-gradient-to-r data-[state=active]:from-white/10 data-[state=active]:to-white/20 data-[state=active]:text-white hover:bg-white/5 rounded px-3 py-1.5">Holographic</TabsTrigger>
               </TabsList>
-              <TabsList className="grid grid-cols-3 mb-6 neo-glass-card bg-black/30 border border-white/10">
-                <TabsTrigger value="neoglow" className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white hover:bg-white/10">NeoGlow</TabsTrigger>
-                <TabsTrigger value="creative" className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white hover:bg-white/10">Creative</TabsTrigger>
-                <TabsTrigger value="artistic" className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white hover:bg-white/10">Artistic</TabsTrigger>
+              <TabsList className="grid grid-cols-3 mb-6 neo-glass-card bg-gradient-to-br from-black/40 to-black/80 border border-white/10 p-1 rounded-lg">
+                <TabsTrigger value="neoglow" className="text-white data-[state=active]:bg-gradient-to-r data-[state=active]:from-white/10 data-[state=active]:to-white/20 data-[state=active]:text-white hover:bg-white/5 rounded px-3 py-1.5">NeoGlow</TabsTrigger>
+                <TabsTrigger value="creative" className="text-white data-[state=active]:bg-gradient-to-r data-[state=active]:from-white/10 data-[state=active]:to-white/20 data-[state=active]:text-white hover:bg-white/5 rounded px-3 py-1.5">Creative</TabsTrigger>
+                <TabsTrigger value="artistic" className="text-white data-[state=active]:bg-gradient-to-r data-[state=active]:from-white/10 data-[state=active]:to-white/20 data-[state=active]:text-white hover:bg-white/5 rounded px-3 py-1.5">Artistic</TabsTrigger>
               </TabsList>
-              <TabsList className="grid grid-cols-3 mb-6 neo-glass-card bg-black/30 border border-white/10">
-                <TabsTrigger value="quantum" className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white hover:bg-white/10">Quantum Tech</TabsTrigger>
+              <TabsList className="grid grid-cols-3 mb-6 neo-glass-card bg-gradient-to-br from-black/40 to-black/80 border border-white/10 p-1 rounded-lg">
+                <TabsTrigger value="quantum" className="text-white data-[state=active]:bg-gradient-to-r data-[state=active]:from-white/10 data-[state=active]:to-white/20 data-[state=active]:text-white hover:bg-white/5 rounded px-3 py-1.5">Quantum Tech</TabsTrigger>
               </TabsList>
               
               {/* Individual tab contents for more details on each style */}
