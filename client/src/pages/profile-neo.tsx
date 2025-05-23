@@ -360,11 +360,11 @@ export default function ProfileNeo() {
                     <span>Resume Builder</span>
                   </button>
                   <button 
-                    onClick={() => setLocation('/career-capsule')}
+                    onClick={() => setLocation('/quantum-card')}
                     className="neo-glass-button flex items-center gap-1 py-1.5 px-3 whitespace-nowrap"
                   >
                     <FileText className="w-4 h-4" />
-                    <span>Career Capsule</span>
+                    <span>Quantum Card</span>
                   </button>
                 </div>
               </div>
