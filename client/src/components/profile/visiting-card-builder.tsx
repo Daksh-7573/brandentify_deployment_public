@@ -261,17 +261,17 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
               className="w-full"
             >
               <TabsList className="grid grid-cols-3 mb-6 bg-transparent border-0">
-                <TabsTrigger value="professional-renewed" className="text-white data-[state=active]:bg-white/15 data-[state=active]:text-white hover:bg-white/5 rounded">Professional</TabsTrigger>
-                <TabsTrigger value="3d-animated" className="text-white data-[state=active]:bg-white/15 data-[state=active]:text-white hover:bg-white/5 rounded">3D</TabsTrigger>
-                <TabsTrigger value="holographic" className="text-white data-[state=active]:bg-white/15 data-[state=active]:text-white hover:bg-white/5 rounded">Holographic</TabsTrigger>
+                <TabsTrigger value="professional-renewed" className="text-white data-[state=active]:text-white data-[state=active]:font-medium hover:text-white/80 rounded">Professional</TabsTrigger>
+                <TabsTrigger value="3d-animated" className="text-white data-[state=active]:text-white data-[state=active]:font-medium hover:text-white/80 rounded">3D</TabsTrigger>
+                <TabsTrigger value="holographic" className="text-white data-[state=active]:text-white data-[state=active]:font-medium hover:text-white/80 rounded">Holographic</TabsTrigger>
               </TabsList>
               <TabsList className="grid grid-cols-3 mb-6 bg-transparent border-0">
-                <TabsTrigger value="neoglow" className="text-white data-[state=active]:bg-white/15 data-[state=active]:text-white hover:bg-white/5 rounded">NeoGlow</TabsTrigger>
-                <TabsTrigger value="creative" className="text-white data-[state=active]:bg-white/15 data-[state=active]:text-white hover:bg-white/5 rounded">Creative</TabsTrigger>
-                <TabsTrigger value="artistic" className="text-white data-[state=active]:bg-white/15 data-[state=active]:text-white hover:bg-white/5 rounded">Artistic</TabsTrigger>
+                <TabsTrigger value="neoglow" className="text-white data-[state=active]:text-white data-[state=active]:font-medium hover:text-white/80 rounded">NeoGlow</TabsTrigger>
+                <TabsTrigger value="creative" className="text-white data-[state=active]:text-white data-[state=active]:font-medium hover:text-white/80 rounded">Creative</TabsTrigger>
+                <TabsTrigger value="artistic" className="text-white data-[state=active]:text-white data-[state=active]:font-medium hover:text-white/80 rounded">Artistic</TabsTrigger>
               </TabsList>
               <TabsList className="grid grid-cols-3 mb-6 bg-transparent border-0">
-                <TabsTrigger value="quantum" className="text-white data-[state=active]:bg-white/15 data-[state=active]:text-white hover:bg-white/5 rounded">Quantum Tech</TabsTrigger>
+                <TabsTrigger value="quantum" className="text-white data-[state=active]:text-white data-[state=active]:font-medium hover:text-white/80 rounded">Quantum Tech</TabsTrigger>
               </TabsList>
               
               {/* Individual tab contents for more details on each style */}
