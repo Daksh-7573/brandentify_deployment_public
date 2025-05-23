@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "wouter";
 import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
+import Header from "@/components/layout/header";
+import { UserData } from "@/types/user";
 
 export default function QuantumCardPage() {
   const { user } = useAuth();
@@ -43,40 +45,43 @@ export default function QuantumCardPage() {
 
   return (
     <div className="min-h-screen bg-black text-white">
-      <NeoGlassLayout>
-        <div className="container mx-auto px-4 py-8">
-          <div className="mb-8">
-            <div className="flex items-center gap-4 mb-6">
-              <Button variant="ghost" asChild className="text-white hover:bg-white/10">
-                <Link href="/profile">
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Back to Profile
-                </Link>
-              </Button>
+      <Header />
+      <div className="pt-20"> {/* Add padding to account for fixed header */}
+        <NeoGlassLayout>
+          <div className="container mx-auto px-4 py-8">
+            <div className="mb-8">
+              <div className="flex items-center gap-4 mb-6">
+                <Button variant="ghost" asChild className="text-white hover:bg-white/10">
+                  <Link href="/profile">
+                    <ArrowLeft className="h-4 w-4 mr-2" />
+                    Back to Profile
+                  </Link>
+                </Button>
+              </div>
+              
+              <div className="text-center mb-8">
+                <h1 className="text-3xl font-bold mb-2">Your Quantum Card</h1>
+                <p className="text-white/70 text-lg">
+                  Create and customize your professional digital visiting card
+                </p>
+              </div>
             </div>
-            
-            <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold mb-2">Your Quantum Card</h1>
-              <p className="text-white/70 text-lg">
-                Create and customize your professional digital visiting card
-              </p>
-            </div>
-          </div>
 
-          <NeoGlassSection>
-            <div className="p-6">
-              <VisitingCardBuilder 
-                userData={userData || {}}
-                selectedCardType={(userData as any)?.visitingCardType || 'quantum'}
-                onCardTypeSelect={(cardType) => {
-                  // Handle card type selection if needed
-                  console.log('Selected card type:', cardType);
-                }}
-              />
-            </div>
-          </NeoGlassSection>
-        </div>
-      </NeoGlassLayout>
+            <NeoGlassSection>
+              <div className="p-6">
+                <VisitingCardBuilder 
+                  userData={userData as any}
+                  selectedCardType={(userData as any)?.visitingCardType || 'quantum'}
+                  onCardTypeSelect={(cardType) => {
+                    // Handle card type selection if needed
+                    console.log('Selected card type:', cardType);
+                  }}
+                />
+              </div>
+            </NeoGlassSection>
+          </div>
+        </NeoGlassLayout>
+      </div>
     </div>
   );
 }
