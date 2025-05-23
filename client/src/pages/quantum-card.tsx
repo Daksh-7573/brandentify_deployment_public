@@ -4,7 +4,7 @@ import VisitingCardBuilder from "@/components/profile/visiting-card-builder";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "wouter";
-import NeoGlassLayout, { NeoGlassSection } from "@/components/layout/neo-glass-layout";
+import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
 
 export default function QuantumCardPage() {
   const { user } = useAuth();
@@ -66,8 +66,8 @@ export default function QuantumCardPage() {
           <NeoGlassSection>
             <div className="p-6">
               <VisitingCardBuilder 
-                userData={userData}
-                selectedCardType={userData.visitingCardType || 'quantum'}
+                userData={userData || {}}
+                selectedCardType={(userData as any)?.visitingCardType || 'quantum'}
                 onCardTypeSelect={(cardType) => {
                   // Handle card type selection if needed
                   console.log('Selected card type:', cardType);

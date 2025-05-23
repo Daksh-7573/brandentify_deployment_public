@@ -55,6 +55,7 @@ import FeedTestPage from "@/pages/feed-test";
 import CareerQuestsPage from "@/pages/career-quests";
 import BrandQuestsPage from "@/pages/brand-quests";
 import CareerCapsulePage from "@/pages/career-capsule"; // Career Capsule feature (renamed from Roadmap)
+import QuantumCardPage from "@/pages/quantum-card"; // Quantum Card digital visiting card feature
 import OnboardingPage from "@/pages/onboarding";
 import EditProfilePage from "@/pages/edit-profile";
 import MuskTestingPage from "@/pages/musk-testing";
@@ -288,9 +289,9 @@ function Router() {
       <Route path="/career-capsule">
         <ProtectedRoute path="/career-capsule" component={CareerCapsulePage} />
       </Route>
-      {/* Quantum Card route - points to the same component as Career Capsule */}
+      {/* Quantum Card route - dedicated digital visiting card feature */}
       <Route path="/quantum-card">
-        <ProtectedRoute path="/quantum-card" component={CareerCapsulePage} />
+        <ProtectedRoute path="/quantum-card" component={QuantumCardPage} />
       </Route>
       {/* Replaced with Career Capsule - keeping both routes for backward compatibility */}
       <Route path="/career-roadmap">
