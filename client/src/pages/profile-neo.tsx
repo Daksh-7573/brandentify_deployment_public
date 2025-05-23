@@ -179,7 +179,15 @@ export default function ProfileNeo() {
   });
   
   // Profile picture functionality
-  const { profilePictureUrl, isUploading, openProfilePictureDialog, uploadProgress } = useProfilePicture(user.uid);
+  const { 
+    profilePictureUrl, 
+    isUploading, 
+    uploadProgress, 
+    openProfilePictureDialog,
+    showProfilePictureDialog,
+    closeProfilePictureDialog,
+    updateProfilePicture
+  } = useProfilePicture(user.uid);
   
   // Update about me mutation
   const updateAboutMeMutation = useMutation({
@@ -1009,6 +1017,14 @@ export default function ProfileNeo() {
           )}
         </DialogContent>
       </Dialog>
+      {/* Add Profile Picture Dialog component */}
+      <ProfilePictureDialog 
+        userId={user.uid}
+        open={showProfilePictureDialog}
+        onOpenChange={closeProfilePictureDialog}
+        currentPhotoURL={profilePictureUrl}
+        onSave={updateProfilePicture}
+      />
     </div>
   );
 }
