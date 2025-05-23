@@ -815,9 +815,27 @@ export default function ProfileNeo() {
               Update your profile details
             </p>
           </DialogHeader>
-          {userData && (
+          {userData && !isUserDataLoading && (
             <EditPersonalInfo
-              userData={userData}
+              userData={{
+                id: userData.id || 0,
+                username: userData.username || user.uid,
+                name: userData.name || "",
+                email: userData.email || "",
+                photoURL: userData.photoURL || null,
+                title: userData.title || null,
+                aboutMe: userData.aboutMe || null,
+                location: userData.location || null, 
+                industry: userData.industry || null,
+                domain: userData.domain || null,
+                lookingFor: userData.lookingFor || null,
+                phoneNumber: userData.phoneNumber || null,
+                whatIOffer: userData.whatIOffer || null,
+                emailVerified: userData.emailVerified || false,
+                profileCompleted: userData.profileCompleted || false,
+                visitingCardType: userData.visitingCardType || null,
+                createdAt: userData.createdAt || null
+              }}
               onCancel={() => setShowEditPersonalInfoDialog(false)}
               onSave={() => {
                 setShowEditPersonalInfoDialog(false);
@@ -829,6 +847,11 @@ export default function ProfileNeo() {
                 });
               }}
             />
+          )}
+          {isUserDataLoading && (
+            <div className="flex items-center justify-center p-6">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+            </div>
           )}
         </DialogContent>
       </Dialog>
