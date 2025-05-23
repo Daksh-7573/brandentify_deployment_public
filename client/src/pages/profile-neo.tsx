@@ -808,7 +808,7 @@ export default function ProfileNeo() {
       
       {/* Edit Personal Info Dialog */}
       <Dialog open={showEditPersonalInfoDialog} onOpenChange={setShowEditPersonalInfoDialog}>
-        <DialogContent className="bg-zinc-900/90 border border-white/10 shadow-xl max-w-3xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="bg-zinc-900/90 border border-white/10 shadow-xl max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-white text-xl">Edit Personal Information</DialogTitle>
             <p className="text-white/70 text-sm mt-1">
@@ -816,111 +816,96 @@ export default function ProfileNeo() {
             </p>
           </DialogHeader>
           
-          {/* Loading indicator */}
           {isUserDataLoading && (
             <div className="flex items-center justify-center p-6">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
             </div>
           )}
           
-          {/* Form content - directly implemented here */}
-          {userData && !isUserDataLoading && (
-            <div className="w-full space-y-4 max-h-[70vh] overflow-y-auto pr-2 mt-4">
-              {/* Full Name */}
+          {!isUserDataLoading && (
+            <div className="w-full space-y-4 mt-4 px-1">
+              {/* Name */}
               <div className="space-y-2">
-                <label htmlFor="name" className="text-sm font-medium flex items-center gap-2 text-white">
-                  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="12" cy="7" r="4"></circle>
+                <label htmlFor="name" className="text-sm font-medium text-white flex items-center gap-2">
+                  <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+                    <path d="M7.5 0.875C5.49797 0.875 3.875 2.49797 3.875 4.5C3.875 6.15288 4.98124 7.54738 6.49373 7.96351C5.2997 8.24035 4.27557 8.89088 3.51333 9.77542C2.62779 10.8034 2.12516 12.0768 2.07552 13.3824C2.07142 13.458 2.07982 13.5342 2.10036 13.6069C2.12091 13.6796 2.15317 13.7472 2.19555 13.8059C2.23793 13.8646 2.28963 13.9134 2.34798 13.9495C2.40634 13.9857 2.47048 14.0084 2.53679 14.0165C2.60309 14.0247 2.67071 14.0181 2.73483 13.9971C2.79895 13.9761 2.85773 13.9412 2.90828 13.8941C2.95883 13.8469 3.00012 13.79 3.03011 13.7267C3.06011 13.6634 3.07826 13.5949 3.0842 13.5251C3.138 12.0492 3.69078 10.9225 4.54571 10.1229C5.39452 9.32964 6.53176 8.9375 7.5 8.9375C8.46824 8.9375 9.60548 9.32964 10.4543 10.1229C11.3092 10.9225 11.862 12.0492 11.9158 13.5251C11.9232 13.6389 11.967 13.7437 12.0403 13.825C12.1137 13.9062 12.2131 13.9588 12.3222 13.9739C12.4313 13.989 12.5429 13.9652 12.636 13.9072C12.7292 13.8493 12.7978 13.761 12.829 13.6559C12.8603 13.5509 12.8525 13.4369 12.8068 13.3371C12.7612 13.2373 12.6799 13.1582 12.5778 13.1144C12.4756 13.0706 12.3598 13.0651 12.2534 13.0991C12.2255 13.108 12.198 13.1185 12.1709 13.1305C12.1179 12.0798 11.6782 10.9328 10.8849 10.0336C10.1592 9.20742 9.18834 8.61863 8.12832 8.41365C9.30031 7.84017 10.125 6.30183 10.125 4.5C10.125 2.49797 8.50203 0.875 6.5 0.875H7.5Z" fill="currentColor" />
                   </svg>
                   Full Name
                 </label>
                 <Input
                   id="name"
-                  value={userData.name || ""}
-                  onChange={(e) => {
-                    // Handle name change
-                  }}
+                  defaultValue={userData?.name || ""}
                   placeholder="Your full name"
-                  className="bg-white/10 border-white/20 text-white"
+                  className="bg-black/20 border-white/20 text-white"
                 />
               </div>
               
               {/* Email (read-only) */}
               <div className="space-y-2">
-                <label htmlFor="email" className="text-sm font-medium flex items-center gap-2 text-white">
+                <label htmlFor="email" className="text-sm font-medium text-white flex items-center gap-2">
                   <Mail className="h-4 w-4" />
                   Email
                 </label>
                 <Input
                   id="email"
-                  value={userData.email || ""}
+                  defaultValue={userData?.email || ""}
                   disabled
                   readOnly
-                  className="bg-white/5 border-white/10 text-white/70"
+                  className="bg-black/30 border-white/10 text-white/70"
                 />
                 <p className="text-xs text-white/50">Email cannot be changed</p>
               </div>
               
               {/* Phone Number */}
               <div className="space-y-2">
-                <label htmlFor="phoneNumber" className="text-sm font-medium flex items-center gap-2 text-white">
+                <label htmlFor="phoneNumber" className="text-sm font-medium text-white flex items-center gap-2">
                   <Phone className="h-4 w-4" />
                   Phone Number
                 </label>
                 <Input
                   id="phoneNumber"
-                  value={userData.phoneNumber || ""}
-                  onChange={(e) => {
-                    // Handle phone change
-                  }}
+                  defaultValue={userData?.phoneNumber || ""}
                   placeholder="Your phone number"
-                  className="bg-white/10 border-white/20 text-white"
+                  className="bg-black/20 border-white/20 text-white"
                 />
               </div>
               
               {/* Job Title */}
               <div className="space-y-2">
-                <label htmlFor="jobTitle" className="text-sm font-medium flex items-center gap-2 text-white">
+                <label htmlFor="jobTitle" className="text-sm font-medium text-white flex items-center gap-2">
                   <Briefcase className="h-4 w-4" />
                   Job Title
                 </label>
                 <Input
                   id="jobTitle"
-                  value={userData.title || ""}
-                  onChange={(e) => {
-                    // Handle title change
-                  }}
+                  defaultValue={userData?.title || ""}
                   placeholder="Your professional title (e.g. Senior Developer)"
-                  className="bg-white/10 border-white/20 text-white"
+                  className="bg-black/20 border-white/20 text-white"
                 />
               </div>
               
               {/* Location */}
               <div className="space-y-2">
-                <label htmlFor="location" className="text-sm font-medium flex items-center gap-2 text-white">
+                <label htmlFor="location" className="text-sm font-medium text-white flex items-center gap-2">
                   <MapPin className="h-4 w-4" />
                   Location
                 </label>
                 <Input
                   id="location"
-                  value={userData.location || ""}
-                  onChange={(e) => {
-                    // Handle location change
-                  }}
+                  defaultValue={userData?.location || ""}
                   placeholder="Your location (e.g. San Francisco, CA)"
-                  className="bg-white/10 border-white/20 text-white"
+                  className="bg-black/20 border-white/20 text-white"
                 />
               </div>
             
               {/* Industry */}
               <div className="space-y-2">
-                <label htmlFor="industry" className="text-sm font-medium flex items-center gap-2 text-white">
+                <label htmlFor="industry" className="text-sm font-medium text-white flex items-center gap-2">
                   <Building className="h-4 w-4" />
                   Industry
                 </label>
-                <Select defaultValue={userData.industry || ""}>
-                  <SelectTrigger id="industry" className="bg-white/10 border-white/20 text-white">
+                <Select defaultValue={userData?.industry || ""}>
+                  <SelectTrigger id="industry" className="bg-black/20 border-white/20 text-white">
                     <SelectValue placeholder="Select your industry" />
                   </SelectTrigger>
                   <SelectContent className="bg-zinc-900 border-white/20 text-white">
@@ -933,12 +918,12 @@ export default function ProfileNeo() {
             
               {/* Domain/Specialty */}
               <div className="space-y-2">
-                <label htmlFor="domain" className="text-sm font-medium flex items-center gap-2 text-white">
+                <label htmlFor="domain" className="text-sm font-medium text-white flex items-center gap-2">
                   <Book className="h-4 w-4" />
                   Domain/Specialty
                 </label>
-                <Select defaultValue={userData.domain || ""}>
-                  <SelectTrigger id="domain" className="bg-white/10 border-white/20 text-white">
+                <Select defaultValue={userData?.domain || ""}>
+                  <SelectTrigger id="domain" className="bg-black/20 border-white/20 text-white">
                     <SelectValue placeholder="Select your domain" />
                   </SelectTrigger>
                   <SelectContent className="bg-zinc-900 border-white/20 text-white">
@@ -951,7 +936,7 @@ export default function ProfileNeo() {
               
               {/* About Me */}
               <div className="space-y-2">
-                <label htmlFor="aboutMe" className="text-sm font-medium flex items-center gap-2 text-white">
+                <label htmlFor="aboutMe" className="text-sm font-medium text-white flex items-center gap-2">
                   <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
                   </svg>
@@ -959,19 +944,16 @@ export default function ProfileNeo() {
                 </label>
                 <Textarea
                   id="aboutMe"
-                  value={userData.aboutMe || ""}
-                  onChange={(e) => {
-                    // Handle about me change
-                  }}
+                  defaultValue={userData?.aboutMe || ""}
                   placeholder="Write a brief introduction about yourself"
                   rows={4}
-                  className="bg-white/10 border-white/20 text-white"
+                  className="bg-black/20 border-white/20 text-white"
                 />
               </div>
             
               {/* Looking For */}
               <div className="space-y-2">
-                <label htmlFor="lookingFor" className="text-sm font-medium flex items-center gap-2 text-white">
+                <label htmlFor="lookingFor" className="text-sm font-medium text-white flex items-center gap-2">
                   <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M12 20v-8m0 0V4m0 8h8m-8 0H4"></path>
                   </svg>
@@ -979,24 +961,21 @@ export default function ProfileNeo() {
                 </label>
                 <Textarea
                   id="lookingFor"
-                  value={userData.lookingFor || ""}
-                  onChange={(e) => {
-                    // Handle looking for change
-                  }}
+                  defaultValue={userData?.lookingFor || ""}
                   placeholder="What are you looking for professionally? (e.g. collaborations, new opportunities, etc.)"
                   rows={3}
-                  className="bg-white/10 border-white/20 text-white"
+                  className="bg-black/20 border-white/20 text-white"
                 />
               </div>
               
               {/* Profile URL (read-only) */}
               <div className="space-y-2">
-                <label className="text-sm font-medium flex items-center gap-2 text-white">
+                <label className="text-sm font-medium text-white flex items-center gap-2">
                   <Globe className="h-4 w-4" />
                   Profile URL
                 </label>
-                <div className="text-sm border rounded-md p-2 bg-white/5 border-white/10 text-white/80">
-                  brandentifier.com/@{userData.name ? userData.name.replace(/\s+/g, '') : userData.username}
+                <div className="text-sm border rounded-md p-2 bg-black/20 border-white/10 text-white/80">
+                  brandentifier.com/@{userData?.name ? userData.name.replace(/\s+/g, '') : userData?.username}
                 </div>
                 <p className="text-xs text-white/50">
                   Your profile URL is based on your name and cannot be changed
@@ -1016,7 +995,6 @@ export default function ProfileNeo() {
                   onClick={() => {
                     setShowEditPersonalInfoDialog(false);
                     queryClient.invalidateQueries({ queryKey: ['/api/users', user.uid] });
-                    queryClient.invalidateQueries({ queryKey: ['/api/users/Unvhj38FHSg36vbagvGL8MvDJuL2'] });
                     toast({
                       title: "Personal information updated",
                       description: "Your profile information has been updated successfully.",
