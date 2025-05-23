@@ -288,6 +288,10 @@ function Router() {
       <Route path="/career-capsule">
         <ProtectedRoute path="/career-capsule" component={CareerCapsulePage} />
       </Route>
+      {/* Quantum Card route - points to the same component as Career Capsule */}
+      <Route path="/quantum-card">
+        <ProtectedRoute path="/quantum-card" component={CareerCapsulePage} />
+      </Route>
       {/* Replaced with Career Capsule - keeping both routes for backward compatibility */}
       <Route path="/career-roadmap">
         <ProtectedRoute path="/career-roadmap" component={CareerCapsulePage} />
