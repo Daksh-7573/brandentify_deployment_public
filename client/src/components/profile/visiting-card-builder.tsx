@@ -260,62 +260,78 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
               onValueChange={handleTabChange}
               className="w-full"
             >
-              <TabsList className="grid grid-cols-3 mb-6 transparent-tabs">
-                <TabsTrigger value="professional-renewed" className="card-tab">Professional</TabsTrigger>
-                <TabsTrigger value="3d-animated" className="card-tab">3D</TabsTrigger>
-                <TabsTrigger value="holographic" className="card-tab">Holographic</TabsTrigger>
+              <TabsList className="grid grid-cols-3 mb-6 bg-transparent border-0">
+                <TabsTrigger value="professional-renewed" className="text-white data-[state=active]:text-white data-[state=active]:font-medium hover:text-white/80 rounded">Professional</TabsTrigger>
+                <TabsTrigger value="3d-animated" className="text-white data-[state=active]:text-white data-[state=active]:font-medium hover:text-white/80 rounded">3D</TabsTrigger>
+                <TabsTrigger value="holographic" className="text-white data-[state=active]:text-white data-[state=active]:font-medium hover:text-white/80 rounded">Holographic</TabsTrigger>
               </TabsList>
-              <TabsList className="grid grid-cols-3 mb-6 transparent-tabs">
-                <TabsTrigger value="neoglow" className="card-tab">NeoGlow</TabsTrigger>
-                <TabsTrigger value="creative" className="card-tab">Creative</TabsTrigger>
-                <TabsTrigger value="artistic" className="card-tab">Artistic</TabsTrigger>
+              <TabsList className="grid grid-cols-3 mb-6 bg-transparent border-0">
+                <TabsTrigger value="neoglow" className="text-white data-[state=active]:text-white data-[state=active]:font-medium hover:text-white/80 rounded">NeoGlow</TabsTrigger>
+                <TabsTrigger value="creative" className="text-white data-[state=active]:text-white data-[state=active]:font-medium hover:text-white/80 rounded">Creative</TabsTrigger>
+                <TabsTrigger value="artistic" className="text-white data-[state=active]:text-white data-[state=active]:font-medium hover:text-white/80 rounded">Artistic</TabsTrigger>
               </TabsList>
-              <TabsList className="grid grid-cols-3 mb-6 transparent-tabs">
-                <TabsTrigger value="quantum" className="card-tab">Quantum Tech</TabsTrigger>
+              <TabsList className="grid grid-cols-3 mb-6 bg-transparent border-0">
+                <TabsTrigger value="quantum" className="text-white data-[state=active]:text-white data-[state=active]:font-medium hover:text-white/80 rounded">Quantum Tech</TabsTrigger>
               </TabsList>
               
-              {/* Finalize card button section */}
-              <div className="mt-6 neo-glass-card border border-white/10 p-6 rounded-lg">
-                {isFinalized ? (
-                  <div className="space-y-3">
-                    <div className="flex flex-col items-center justify-center p-3 bg-green-900/20 border border-green-800 rounded-lg">
-                      <div className="flex items-center mb-1 text-green-400">
-                        <Check className="h-4 w-4 mr-1" />
-                        <span className="text-sm font-medium">Quantum Card Finalized</span>
-                      </div>
-                      <p className="text-xs text-green-400/80 text-center">
-                        This card style is set as your public Quantum Card
-                      </p>
-                    </div>
-                    
-                    {/* Prominent share button for finalized cards */}
-                    <Button 
-                      className="w-full neo-glass-button text-white hover:bg-white/10 flex items-center justify-center"
-                      onClick={handleShare}
-                    >
-                      <Share2 className="h-4 w-4 mr-2" />
-                      Share this Quantum Card
-                    </Button>
-                  </div>
-                ) : (
-                  <Button 
-                    className="w-full neo-glass-button text-white hover:bg-white/10"
-                    onClick={handleFinalizeCard}
-                    disabled={isSaving}
-                  >
-                    {isSaving ? (
-                      <>
-                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        Saving...
-                      </>
-                    ) : (
-                      <>
-                        Make This My Quantum Card
-                      </>
-                    )}
-                  </Button>
-                )}
-              </div>
+              {/* Individual tab contents for more details on each style */}
+              {CARD_TYPES.map((type) => (
+                <TabsContent key={type.id} value={type.id}>
+                  <Card className="mt-4 neo-glass-card border border-white/10">
+                    <CardContent className="pt-6 text-white">
+                      <h5 className="font-medium mb-2">{type.name}</h5>
+                      <p className="text-sm text-white/70">{type.description}</p>
+                      
+                      {/* Card features section removed as requested */}
+                      
+                      {/* Finalize card button */}
+                      {type.id === activeTab && (
+                        <div className="mt-6">
+                          {isFinalized ? (
+                            <div className="space-y-3">
+                              <div className="flex flex-col items-center justify-center p-3 bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800 rounded-lg">
+                                <div className="flex items-center mb-1 text-green-600 dark:text-green-400">
+                                  <Check className="h-4 w-4 mr-1" />
+                                  <span className="text-sm font-medium">Quantum Card Finalized</span>
+                                </div>
+                                <p className="text-xs text-green-600/80 dark:text-green-400/80 text-center">
+                                  This card style is set as your public Quantum Card
+                                </p>
+                              </div>
+                              
+                              {/* Prominent share button for finalized cards */}
+                              <Button 
+                                className="w-full neo-glass-button text-white hover:bg-white/10 flex items-center justify-center"
+                                onClick={handleShare}
+                              >
+                                <Share2 className="h-4 w-4 mr-2" />
+                                Share this Quantum Card
+                              </Button>
+                            </div>
+                          ) : (
+                            <Button 
+                              className="w-full neo-glass-button text-white hover:bg-white/10"
+                              onClick={handleFinalizeCard}
+                              disabled={isSaving}
+                            >
+                              {isSaving ? (
+                                <>
+                                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                  Saving...
+                                </>
+                              ) : (
+                                <>
+                                  Make This My Quantum Card
+                                </>
+                              )}
+                            </Button>
+                          )}
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+              ))}
             </Tabs>
           </div>
         </div>
