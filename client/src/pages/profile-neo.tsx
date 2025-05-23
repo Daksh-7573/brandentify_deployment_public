@@ -15,7 +15,7 @@ import { Plus, AlertCircle } from "lucide-react";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { calculateOverallProfileCompletion } from "@/lib/profile-utils";
 import { useState, useEffect } from "react";
-import { Camera, FileText, Edit, Loader2, FolderIcon } from "lucide-react";
+import { Camera, FileText, Edit, Loader2, FolderIcon, Mail, Phone, Globe, Briefcase, MapPin, Book, Building } from "lucide-react";
 import PersonalInfoIcon from "@/components/icons/personal-info-icon";
 import { useProfilePicture } from "@/hooks/use-profile-picture";
 import { ProfilePictureDialog } from "@/components/profile/profile-picture-dialog";
@@ -815,42 +815,218 @@ export default function ProfileNeo() {
               Update your profile details
             </p>
           </DialogHeader>
-          {userData && !isUserDataLoading && (
-            <EditPersonalInfo
-              userData={{
-                id: userData.id || 0,
-                username: userData.username || user.uid,
-                name: userData.name || "",
-                email: userData.email || "",
-                photoURL: userData.photoURL || null,
-                title: userData.title || null,
-                aboutMe: userData.aboutMe || null,
-                location: userData.location || null, 
-                industry: userData.industry || null,
-                domain: userData.domain || null,
-                lookingFor: userData.lookingFor || null,
-                phoneNumber: userData.phoneNumber || null,
-                whatIOffer: userData.whatIOffer || null,
-                emailVerified: userData.emailVerified || false,
-                profileCompleted: userData.profileCompleted || false,
-                visitingCardType: userData.visitingCardType || null,
-                createdAt: userData.createdAt || null
-              }}
-              onCancel={() => setShowEditPersonalInfoDialog(false)}
-              onSave={() => {
-                setShowEditPersonalInfoDialog(false);
-                queryClient.invalidateQueries({ queryKey: ['/api/users', user.uid] });
-                queryClient.invalidateQueries({ queryKey: ['/api/users/Unvhj38FHSg36vbagvGL8MvDJuL2'] });
-                toast({
-                  title: "Personal information updated",
-                  description: "Your profile information has been updated successfully.",
-                });
-              }}
-            />
-          )}
+          
+          {/* Loading indicator */}
           {isUserDataLoading && (
             <div className="flex items-center justify-center p-6">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+            </div>
+          )}
+          
+          {/* Form content - directly implemented here */}
+          {userData && !isUserDataLoading && (
+            <div className="w-full space-y-4 max-h-[70vh] overflow-y-auto pr-2 mt-4">
+              {/* Full Name */}
+              <div className="space-y-2">
+                <label htmlFor="name" className="text-sm font-medium flex items-center gap-2 text-white">
+                  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                  </svg>
+                  Full Name
+                </label>
+                <Input
+                  id="name"
+                  value={userData.name || ""}
+                  onChange={(e) => {
+                    // Handle name change
+                  }}
+                  placeholder="Your full name"
+                  className="bg-white/10 border-white/20 text-white"
+                />
+              </div>
+              
+              {/* Email (read-only) */}
+              <div className="space-y-2">
+                <label htmlFor="email" className="text-sm font-medium flex items-center gap-2 text-white">
+                  <Mail className="h-4 w-4" />
+                  Email
+                </label>
+                <Input
+                  id="email"
+                  value={userData.email || ""}
+                  disabled
+                  readOnly
+                  className="bg-white/5 border-white/10 text-white/70"
+                />
+                <p className="text-xs text-white/50">Email cannot be changed</p>
+              </div>
+              
+              {/* Phone Number */}
+              <div className="space-y-2">
+                <label htmlFor="phoneNumber" className="text-sm font-medium flex items-center gap-2 text-white">
+                  <Phone className="h-4 w-4" />
+                  Phone Number
+                </label>
+                <Input
+                  id="phoneNumber"
+                  value={userData.phoneNumber || ""}
+                  onChange={(e) => {
+                    // Handle phone change
+                  }}
+                  placeholder="Your phone number"
+                  className="bg-white/10 border-white/20 text-white"
+                />
+              </div>
+              
+              {/* Job Title */}
+              <div className="space-y-2">
+                <label htmlFor="jobTitle" className="text-sm font-medium flex items-center gap-2 text-white">
+                  <Briefcase className="h-4 w-4" />
+                  Job Title
+                </label>
+                <Input
+                  id="jobTitle"
+                  value={userData.title || ""}
+                  onChange={(e) => {
+                    // Handle title change
+                  }}
+                  placeholder="Your professional title (e.g. Senior Developer)"
+                  className="bg-white/10 border-white/20 text-white"
+                />
+              </div>
+              
+              {/* Location */}
+              <div className="space-y-2">
+                <label htmlFor="location" className="text-sm font-medium flex items-center gap-2 text-white">
+                  <MapPin className="h-4 w-4" />
+                  Location
+                </label>
+                <Input
+                  id="location"
+                  value={userData.location || ""}
+                  onChange={(e) => {
+                    // Handle location change
+                  }}
+                  placeholder="Your location (e.g. San Francisco, CA)"
+                  className="bg-white/10 border-white/20 text-white"
+                />
+              </div>
+            
+              {/* Industry */}
+              <div className="space-y-2">
+                <label htmlFor="industry" className="text-sm font-medium flex items-center gap-2 text-white">
+                  <Building className="h-4 w-4" />
+                  Industry
+                </label>
+                <Select defaultValue={userData.industry || ""}>
+                  <SelectTrigger id="industry" className="bg-white/10 border-white/20 text-white">
+                    <SelectValue placeholder="Select your industry" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-zinc-900 border-white/20 text-white">
+                    {INDUSTRIES.map((ind) => (
+                      <SelectItem key={ind} value={ind}>{ind}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            
+              {/* Domain/Specialty */}
+              <div className="space-y-2">
+                <label htmlFor="domain" className="text-sm font-medium flex items-center gap-2 text-white">
+                  <Book className="h-4 w-4" />
+                  Domain/Specialty
+                </label>
+                <Select defaultValue={userData.domain || ""}>
+                  <SelectTrigger id="domain" className="bg-white/10 border-white/20 text-white">
+                    <SelectValue placeholder="Select your domain" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-zinc-900 border-white/20 text-white">
+                    {["Software Development", "Data Science", "Design", "Marketing", "Sales", "Customer Service", "Human Resources", "Finance", "Operations", "Research", "Product Management", "Other"].map((dom) => (
+                      <SelectItem key={dom} value={dom}>{dom}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              {/* About Me */}
+              <div className="space-y-2">
+                <label htmlFor="aboutMe" className="text-sm font-medium flex items-center gap-2 text-white">
+                  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+                  </svg>
+                  About Me
+                </label>
+                <Textarea
+                  id="aboutMe"
+                  value={userData.aboutMe || ""}
+                  onChange={(e) => {
+                    // Handle about me change
+                  }}
+                  placeholder="Write a brief introduction about yourself"
+                  rows={4}
+                  className="bg-white/10 border-white/20 text-white"
+                />
+              </div>
+            
+              {/* Looking For */}
+              <div className="space-y-2">
+                <label htmlFor="lookingFor" className="text-sm font-medium flex items-center gap-2 text-white">
+                  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 20v-8m0 0V4m0 8h8m-8 0H4"></path>
+                  </svg>
+                  Looking For
+                </label>
+                <Textarea
+                  id="lookingFor"
+                  value={userData.lookingFor || ""}
+                  onChange={(e) => {
+                    // Handle looking for change
+                  }}
+                  placeholder="What are you looking for professionally? (e.g. collaborations, new opportunities, etc.)"
+                  rows={3}
+                  className="bg-white/10 border-white/20 text-white"
+                />
+              </div>
+              
+              {/* Profile URL (read-only) */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium flex items-center gap-2 text-white">
+                  <Globe className="h-4 w-4" />
+                  Profile URL
+                </label>
+                <div className="text-sm border rounded-md p-2 bg-white/5 border-white/10 text-white/80">
+                  brandentifier.com/@{userData.name ? userData.name.replace(/\s+/g, '') : userData.username}
+                </div>
+                <p className="text-xs text-white/50">
+                  Your profile URL is based on your name and cannot be changed
+                </p>
+              </div>
+              
+              {/* Action Buttons */}
+              <div className="flex justify-end gap-2 pt-4">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowEditPersonalInfoDialog(false)}
+                  className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  onClick={() => {
+                    setShowEditPersonalInfoDialog(false);
+                    queryClient.invalidateQueries({ queryKey: ['/api/users', user.uid] });
+                    queryClient.invalidateQueries({ queryKey: ['/api/users/Unvhj38FHSg36vbagvGL8MvDJuL2'] });
+                    toast({
+                      title: "Personal information updated",
+                      description: "Your profile information has been updated successfully.",
+                    });
+                  }}
+                  className="bg-white text-black hover:bg-white/90"
+                >
+                  Save Changes
+                </Button>
+              </div>
             </div>
           )}
         </DialogContent>
