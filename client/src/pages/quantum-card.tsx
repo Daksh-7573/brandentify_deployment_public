@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useUser } from "@/contexts/user-context";
+import { useAuth } from "@/hooks/use-auth";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Download, Share2, Info, BadgeCheck, Loader2 } from "lucide-react";
+import { Download, Share2, Info, BadgeCheck, Loader2, FileText } from "lucide-react";
 import QuantumCard from "@/components/profile/cards/quantum-card";
-import NeoGlassLayout from "@/components/ui/neo-glass-layout";
-import NeoGlassSection from "@/components/ui/neo-glass-section";
+import { Link, useLocation } from "wouter";
 import { UserData } from '@/types/user';
-import { Link } from "wouter";
 
 // Card type options
 const CARD_TYPES = [
