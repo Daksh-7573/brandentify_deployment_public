@@ -232,10 +232,10 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
         </div>
       </div>
       
-      <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-6">
+      <div className="neo-glass-card border border-white/10 rounded-lg p-6">
         <div className="text-sm mb-4 flex items-start">
-          <Info className="h-4 w-4 text-gray-500 mr-2 mt-0.5" />
-          <span className="text-gray-600 dark:text-gray-400">
+          <Info className="h-4 w-4 text-white/70 mr-2 mt-0.5" />
+          <span className="text-white/70">
             Your Quantum Card is automatically created based on your profile information. Select a style that best represents you.
           </span>
         </div>
@@ -260,27 +260,27 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
               onValueChange={handleTabChange}
               className="w-full"
             >
-              <TabsList className="grid grid-cols-3 mb-6">
-                <TabsTrigger value="professional-renewed">Professional</TabsTrigger>
-                <TabsTrigger value="3d-animated">3D</TabsTrigger>
-                <TabsTrigger value="holographic">Holographic</TabsTrigger>
+              <TabsList className="grid grid-cols-3 mb-6 neo-glass-card bg-black/30 border border-white/10">
+                <TabsTrigger value="professional-renewed" className="neo-glass-button data-[state=active]:bg-white/10 data-[state=active]:text-white">Professional</TabsTrigger>
+                <TabsTrigger value="3d-animated" className="neo-glass-button data-[state=active]:bg-white/10 data-[state=active]:text-white">3D</TabsTrigger>
+                <TabsTrigger value="holographic" className="neo-glass-button data-[state=active]:bg-white/10 data-[state=active]:text-white">Holographic</TabsTrigger>
               </TabsList>
-              <TabsList className="grid grid-cols-3 mb-6">
-                <TabsTrigger value="neoglow">NeoGlow</TabsTrigger>
-                <TabsTrigger value="creative">Creative</TabsTrigger>
-                <TabsTrigger value="artistic">Artistic</TabsTrigger>
+              <TabsList className="grid grid-cols-3 mb-6 neo-glass-card bg-black/30 border border-white/10">
+                <TabsTrigger value="neoglow" className="neo-glass-button data-[state=active]:bg-white/10 data-[state=active]:text-white">NeoGlow</TabsTrigger>
+                <TabsTrigger value="creative" className="neo-glass-button data-[state=active]:bg-white/10 data-[state=active]:text-white">Creative</TabsTrigger>
+                <TabsTrigger value="artistic" className="neo-glass-button data-[state=active]:bg-white/10 data-[state=active]:text-white">Artistic</TabsTrigger>
               </TabsList>
-              <TabsList className="grid grid-cols-3 mb-6">
-                <TabsTrigger value="quantum">Quantum Tech</TabsTrigger>
+              <TabsList className="grid grid-cols-3 mb-6 neo-glass-card bg-black/30 border border-white/10">
+                <TabsTrigger value="quantum" className="neo-glass-button data-[state=active]:bg-white/10 data-[state=active]:text-white">Quantum Tech</TabsTrigger>
               </TabsList>
               
               {/* Individual tab contents for more details on each style */}
               {CARD_TYPES.map((type) => (
                 <TabsContent key={type.id} value={type.id}>
-                  <Card className="mt-4">
-                    <CardContent className="pt-6">
+                  <Card className="mt-4 neo-glass-card border border-white/10">
+                    <CardContent className="pt-6 text-white">
                       <h5 className="font-medium mb-2">{type.name}</h5>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">{type.description}</p>
+                      <p className="text-sm text-white/70">{type.description}</p>
                       
                       {/* Card features section removed as requested */}
                       
