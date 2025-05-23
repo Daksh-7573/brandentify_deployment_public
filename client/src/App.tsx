@@ -246,16 +246,6 @@ function Router() {
           );
         }} />
       </Route>
-      <Route path="/quantum-card">
-        <ProtectedRoute path="/quantum-card" component={() => {
-          const QuantumCardPage = lazy(() => import('@/pages/quantum-card'));
-          return (
-            <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div></div>}>
-              <QuantumCardPage />
-            </Suspense>
-          );
-        }} />
-      </Route>
       <Route path="/resume-editor">
         {/* Explicitly using the fixed version to avoid hook ordering issues */}
         <ProtectedRoute path="/resume-editor" component={ResumeEditor} />
