@@ -51,7 +51,7 @@ export default function QuantumCardPage() {
           <div className="container mx-auto px-4 py-8">
             <div className="mb-8">
               <div className="flex items-center gap-4 mb-6">
-                <Button variant="ghost" asChild className="text-white hover:bg-white/10">
+                <Button variant="ghost" asChild className="neo-glass-button text-white hover:bg-white/10">
                   <Link href="/profile">
                     <ArrowLeft className="h-4 w-4 mr-2" />
                     Back to Profile
@@ -60,14 +60,14 @@ export default function QuantumCardPage() {
               </div>
               
               <div className="text-center mb-8">
-                <h1 className="text-3xl font-bold mb-2">Quantum Card</h1>
+                <h1 className="text-3xl font-bold mb-2 text-white bg-clip-text bg-gradient-to-r from-white to-white/80">Quantum Card</h1>
                 <p className="text-white/70 text-lg">
                   Create and customize your professional digital visiting card
                 </p>
               </div>
             </div>
 
-            <NeoGlassSection>
+            <NeoGlassSection className="neo-glass-card border border-white/10 shadow-lg">
               <div className="p-6">
                 <VisitingCardBuilder 
                   userData={userData as any}
