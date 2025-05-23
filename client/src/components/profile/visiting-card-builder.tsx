@@ -212,18 +212,18 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
         </div>
         <div className="ml-auto flex gap-2">
           <Button 
-            variant="outline" 
+            variant="ghost" 
             size="sm" 
-            className="flex items-center gap-1"
+            className="neo-glass-button text-white hover:bg-white/10 flex items-center gap-1"
             onClick={handleDownload}
           >
             <Download className="h-4 w-4" />
             <span>Download</span>
           </Button>
           <Button 
-            variant="outline" 
+            variant="ghost" 
             size="sm" 
-            className="flex items-center gap-1"
+            className="neo-glass-button text-white hover:bg-white/10 flex items-center gap-1"
             onClick={handleShare}
           >
             <Share2 className="h-4 w-4" />
@@ -301,7 +301,7 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
                               
                               {/* Prominent share button for finalized cards */}
                               <Button 
-                                className="w-full bg-blue-600 hover:bg-blue-700 flex items-center justify-center"
+                                className="w-full neo-glass-button text-white hover:bg-white/10 flex items-center justify-center"
                                 onClick={handleShare}
                               >
                                 <Share2 className="h-4 w-4 mr-2" />
@@ -310,7 +310,7 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
                             </div>
                           ) : (
                             <Button 
-                              className="w-full bg-blue-600 hover:bg-blue-700"
+                              className="w-full neo-glass-button text-white hover:bg-white/10"
                               onClick={handleFinalizeCard}
                               disabled={isSaving}
                             >
