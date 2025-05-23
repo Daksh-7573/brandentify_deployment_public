@@ -260,18 +260,18 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
               onValueChange={handleTabChange}
               className="w-full"
             >
-              <TabsList className="grid grid-cols-3 mb-6 dark-tabs-list">
-                <TabsTrigger value="professional-renewed" className="dark-tabs-trigger">Professional</TabsTrigger>
-                <TabsTrigger value="3d-animated" className="dark-tabs-trigger">3D</TabsTrigger>
-                <TabsTrigger value="holographic" className="dark-tabs-trigger">Holographic</TabsTrigger>
+              <TabsList className="grid grid-cols-3 mb-6 transparent-tabs">
+                <TabsTrigger value="professional-renewed" className="card-tab">Professional</TabsTrigger>
+                <TabsTrigger value="3d-animated" className="card-tab">3D</TabsTrigger>
+                <TabsTrigger value="holographic" className="card-tab">Holographic</TabsTrigger>
               </TabsList>
-              <TabsList className="grid grid-cols-3 mb-6 dark-tabs-list">
-                <TabsTrigger value="neoglow" className="dark-tabs-trigger">NeoGlow</TabsTrigger>
-                <TabsTrigger value="creative" className="dark-tabs-trigger">Creative</TabsTrigger>
-                <TabsTrigger value="artistic" className="dark-tabs-trigger">Artistic</TabsTrigger>
+              <TabsList className="grid grid-cols-3 mb-6 transparent-tabs">
+                <TabsTrigger value="neoglow" className="card-tab">NeoGlow</TabsTrigger>
+                <TabsTrigger value="creative" className="card-tab">Creative</TabsTrigger>
+                <TabsTrigger value="artistic" className="card-tab">Artistic</TabsTrigger>
               </TabsList>
-              <TabsList className="grid grid-cols-3 mb-6 dark-tabs-list">
-                <TabsTrigger value="quantum" className="dark-tabs-trigger">Quantum Tech</TabsTrigger>
+              <TabsList className="grid grid-cols-3 mb-6 transparent-tabs">
+                <TabsTrigger value="quantum" className="card-tab">Quantum Tech</TabsTrigger>
               </TabsList>
               
               {/* Finalize card button section */}
