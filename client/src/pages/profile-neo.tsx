@@ -24,7 +24,8 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogFooter
+  DialogFooter,
+  DialogDescription
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -810,9 +811,9 @@ export default function ProfileNeo() {
         <DialogContent className="bg-zinc-900/90 border border-white/10 shadow-xl max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-white text-xl">Edit Personal Information</DialogTitle>
-            <DialogDescription className="text-white/70">
+            <p className="text-white/70 text-sm mt-1">
               Update your profile details
-            </DialogDescription>
+            </p>
           </DialogHeader>
           {userData && (
             <EditPersonalInfo
