@@ -182,9 +182,9 @@ export default function ServiceForm({ service, initialData, onSubmit, isPending,
   // If we can't add more services and we're not editing an existing one, show a message
   if (!canAddService && !isEditing) {
     return (
-      <div className="p-4 text-center border rounded-md">
-        <p className="text-amber-600 font-medium">Maximum of 6 services reached</p>
-        <p className="text-muted-foreground mt-1 text-sm">
+      <div className="p-5 text-center border border-amber-500/30 rounded-lg bg-amber-500/10 backdrop-blur-sm shadow-neo">
+        <p className="text-amber-400 font-medium">Maximum of 6 services reached</p>
+        <p className="text-gray-300 mt-2 text-sm">
           Please delete an existing service before adding a new one.
         </p>
       </div>
@@ -193,24 +193,25 @@ export default function ServiceForm({ service, initialData, onSubmit, isPending,
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 pb-2">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-5 pb-2">
         
         <FormField
           control={form.control}
           name="title"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Service Title*</FormLabel>
-              <FormDescription className="text-xs mb-2">
+              <FormLabel className="text-white text-base">Service Title*</FormLabel>
+              <FormDescription className="text-gray-300 text-xs mb-2">
                 Enter a single professional service you offer.
               </FormDescription>
               <FormControl>
                 <Input
                   placeholder="Enter your service title..."
+                  className="neo-glass-input bg-white/5 border-white/10 backdrop-blur-sm focus:ring-blue-500/40 focus:border-blue-500/40 text-white transition-all"
                   {...field}
                 />
               </FormControl>
-              <FormMessage />
+              <FormMessage className="text-red-400" />
             </FormItem>
           )}
         />
@@ -220,19 +221,19 @@ export default function ServiceForm({ service, initialData, onSubmit, isPending,
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Description</FormLabel>
-              <FormDescription className="text-xs mb-2">
+              <FormLabel className="text-white text-base">Description</FormLabel>
+              <FormDescription className="text-gray-300 text-xs mb-2">
                 Enter a brief description of your service.
               </FormDescription>
               <FormControl>
                 <textarea
-                  className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="neo-glass-input flex w-full rounded-md border border-white/10 bg-white/5 backdrop-blur-sm px-3 py-2 text-white ring-offset-background placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40 focus-visible:border-blue-500/40 transition-all disabled:cursor-not-allowed disabled:opacity-50"
                   placeholder="Describe your service..."
                   rows={3}
                   {...field}
                 />
               </FormControl>
-              <FormMessage />
+              <FormMessage className="text-red-400" />
             </FormItem>
           )}
         />
@@ -240,8 +241,8 @@ export default function ServiceForm({ service, initialData, onSubmit, isPending,
 
         
         {/* Rate Fields */}
-        <div className="space-y-4 border rounded-lg p-4">
-          <h3 className="text-base font-medium">Pricing Details</h3>
+        <div className="space-y-4 border border-white/10 bg-white/5 backdrop-blur-sm rounded-lg p-5 shadow-neo transition-all hover:border-white/20">
+          <h3 className="text-white text-base font-medium">Pricing Details</h3>
           
           {/* Currency Selection */}
           <div className="grid grid-cols-2 gap-4">
@@ -251,7 +252,7 @@ export default function ServiceForm({ service, initialData, onSubmit, isPending,
                 name="currency"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Currency</FormLabel>
+                    <FormLabel className="text-white">Currency</FormLabel>
                     <FormControl>
                       <div className="w-full">
                         <CustomSelect 
@@ -261,10 +262,11 @@ export default function ServiceForm({ service, initialData, onSubmit, isPending,
                             { value: 'USD', label: 'USD (US Dollar)' },
                             { value: 'INR', label: 'INR (Indian Rupee)' }
                           ]}
+                          className="neo-glass-select"
                         />
                       </div>
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-red-400" />
                   </FormItem>
                 )}
               />
@@ -276,11 +278,12 @@ export default function ServiceForm({ service, initialData, onSubmit, isPending,
                 name="price"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Rate Amount</FormLabel>
+                    <FormLabel className="text-white">Rate Amount</FormLabel>
                     <FormControl>
                       <Input
                         type="text"
                         placeholder="Enter service price (e.g. 24.99)"
+                        className="neo-glass-input bg-white/5 border-white/10 backdrop-blur-sm focus:ring-blue-500/40 focus:border-blue-500/40 text-white transition-all"
                         value={field.value === null ? '' : field.value}
                         onChange={(e) => {
                           // Accept the raw input value for display
@@ -306,7 +309,7 @@ export default function ServiceForm({ service, initialData, onSubmit, isPending,
                         }}
                       />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-red-400" />
                   </FormItem>
                 )}
               />
@@ -318,10 +321,10 @@ export default function ServiceForm({ service, initialData, onSubmit, isPending,
             control={form.control}
             name="isHourly"
             render={({ field }) => (
-              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+              <FormItem className="flex flex-row items-center justify-between rounded-lg border border-white/10 bg-black/30 backdrop-blur-sm p-4 transition-all hover:border-white/20">
                 <div className="space-y-0.5">
-                  <FormLabel className="text-base">Hourly Rate</FormLabel>
-                  <FormDescription className="text-xs">
+                  <FormLabel className="text-white text-base">Hourly Rate</FormLabel>
+                  <FormDescription className="text-gray-300 text-xs">
                     Toggle on if you charge per hour, off for fixed rate
                   </FormDescription>
                 </div>
@@ -329,6 +332,7 @@ export default function ServiceForm({ service, initialData, onSubmit, isPending,
                   <Switch
                     checked={field.value}
                     onCheckedChange={field.onChange}
+                    className="neo-glass-switch data-[state=checked]:bg-blue-600"
                   />
                 </FormControl>
               </FormItem>
@@ -340,10 +344,10 @@ export default function ServiceForm({ service, initialData, onSubmit, isPending,
           control={form.control}
           name="isActive"
           render={({ field }) => (
-            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+            <FormItem className="flex flex-row items-center justify-between rounded-lg border border-white/10 bg-black/30 backdrop-blur-sm p-4 transition-all hover:border-white/20">
               <div className="space-y-0.5">
-                <FormLabel className="text-base">Active Status</FormLabel>
-                <FormDescription className="text-xs">
+                <FormLabel className="text-white text-base">Active Status</FormLabel>
+                <FormDescription className="text-gray-300 text-xs">
                   Is this service currently available?
                 </FormDescription>
               </div>
@@ -351,6 +355,7 @@ export default function ServiceForm({ service, initialData, onSubmit, isPending,
                 <Switch
                   checked={field.value}
                   onCheckedChange={field.onChange}
+                  className="neo-glass-switch data-[state=checked]:bg-blue-600"
                 />
               </FormControl>
             </FormItem>
@@ -359,7 +364,7 @@ export default function ServiceForm({ service, initialData, onSubmit, isPending,
         
         <Button 
           type="submit" 
-          className="neo-glass-button w-full flex items-center justify-center gap-2 py-2 px-4" 
+          className="neo-glass-button w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/30 text-white backdrop-blur-sm transition-all duration-300 hover:scale-[1.01] hover:shadow-neo" 
           disabled={isPending}
         >
           {isPending ? (
