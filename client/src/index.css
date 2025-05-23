@@ -401,6 +401,36 @@
   animation-delay: 1.5s;
 }
 
+/* Transparent Tabs for Quantum Card */
+.transparent-tabs {
+  background-color: transparent !important;
+  border: none !important;
+  padding: 4px !important;
+}
+
+.card-tab {
+  color: white !important;
+  font-weight: 500 !important;
+  transition: all 0.3s ease !important;
+}
+
+.card-tab[data-state="active"] {
+  color: white !important;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5) !important;
+  position: relative !important;
+}
+
+.card-tab[data-state="active"]::after {
+  content: "" !important;
+  position: absolute !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 2px !important;
+  background: linear-gradient(90deg, rgba(255,255,255,0.2), rgba(255,255,255,0.8), rgba(255,255,255,0.2)) !important;
+  border-radius: 2px !important;
+}
+
 @layer base {
   * {
     @apply border-border;
