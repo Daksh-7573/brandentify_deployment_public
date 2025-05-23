@@ -260,18 +260,18 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
               onValueChange={handleTabChange}
               className="w-full"
             >
-              <TabsList className="mb-6 grid grid-cols-3 bg-muted p-1 rounded-md">
-                <TabsTrigger value="professional-renewed">Professional</TabsTrigger>
-                <TabsTrigger value="3d-animated">3D</TabsTrigger>
-                <TabsTrigger value="holographic">Holographic</TabsTrigger>
+              <TabsList className="mb-6 bg-background/10 backdrop-blur-md border border-white/10 p-1 rounded-md">
+                <TabsTrigger value="professional-renewed" className="flex-1 data-[state=active]:bg-white/10">Professional</TabsTrigger>
+                <TabsTrigger value="3d-animated" className="flex-1 data-[state=active]:bg-white/10">3D</TabsTrigger>
+                <TabsTrigger value="holographic" className="flex-1 data-[state=active]:bg-white/10">Holographic</TabsTrigger>
               </TabsList>
-              <TabsList className="mb-6 grid grid-cols-3 bg-muted p-1 rounded-md">
-                <TabsTrigger value="neoglow">NeoGlow</TabsTrigger>
-                <TabsTrigger value="creative">Creative</TabsTrigger>
-                <TabsTrigger value="artistic">Artistic</TabsTrigger>
+              <TabsList className="mb-6 bg-background/10 backdrop-blur-md border border-white/10 p-1 rounded-md">
+                <TabsTrigger value="neoglow" className="flex-1 data-[state=active]:bg-white/10">NeoGlow</TabsTrigger>
+                <TabsTrigger value="creative" className="flex-1 data-[state=active]:bg-white/10">Creative</TabsTrigger>
+                <TabsTrigger value="artistic" className="flex-1 data-[state=active]:bg-white/10">Artistic</TabsTrigger>
               </TabsList>
-              <TabsList className="mb-6 grid grid-cols-3 bg-muted p-1 rounded-md">
-                <TabsTrigger value="quantum">Quantum Tech</TabsTrigger>
+              <TabsList className="mb-6 bg-background/10 backdrop-blur-md border border-white/10 p-1 rounded-md">
+                <TabsTrigger value="quantum" className="flex-1 data-[state=active]:bg-white/10">Quantum Tech</TabsTrigger>
               </TabsList>
               
               {/* Individual tab contents for more details on each style */}
