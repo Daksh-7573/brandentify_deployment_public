@@ -60,7 +60,7 @@ export default function QuantumCardPage() {
               </div>
               
               <div className="text-center mb-8">
-                <h1 className="text-3xl font-bold mb-2">Your Quantum Card</h1>
+                <h1 className="text-3xl font-bold mb-2">Quantum Card</h1>
                 <p className="text-white/70 text-lg">
                   Create and customize your professional digital visiting card
                 </p>
