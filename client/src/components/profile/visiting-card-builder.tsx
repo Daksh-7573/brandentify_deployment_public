@@ -261,17 +261,17 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
               className="w-full"
             >
               <TabsList className="grid grid-cols-3 mb-6 neo-glass-card bg-black/30 border border-white/10">
-                <TabsTrigger value="professional-renewed" className="neo-glass-button data-[state=active]:bg-white/10 data-[state=active]:text-white">Professional</TabsTrigger>
-                <TabsTrigger value="3d-animated" className="neo-glass-button data-[state=active]:bg-white/10 data-[state=active]:text-white">3D</TabsTrigger>
-                <TabsTrigger value="holographic" className="neo-glass-button data-[state=active]:bg-white/10 data-[state=active]:text-white">Holographic</TabsTrigger>
+                <TabsTrigger value="professional-renewed" className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white hover:bg-white/10">Professional</TabsTrigger>
+                <TabsTrigger value="3d-animated" className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white hover:bg-white/10">3D</TabsTrigger>
+                <TabsTrigger value="holographic" className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white hover:bg-white/10">Holographic</TabsTrigger>
               </TabsList>
               <TabsList className="grid grid-cols-3 mb-6 neo-glass-card bg-black/30 border border-white/10">
-                <TabsTrigger value="neoglow" className="neo-glass-button data-[state=active]:bg-white/10 data-[state=active]:text-white">NeoGlow</TabsTrigger>
-                <TabsTrigger value="creative" className="neo-glass-button data-[state=active]:bg-white/10 data-[state=active]:text-white">Creative</TabsTrigger>
-                <TabsTrigger value="artistic" className="neo-glass-button data-[state=active]:bg-white/10 data-[state=active]:text-white">Artistic</TabsTrigger>
+                <TabsTrigger value="neoglow" className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white hover:bg-white/10">NeoGlow</TabsTrigger>
+                <TabsTrigger value="creative" className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white hover:bg-white/10">Creative</TabsTrigger>
+                <TabsTrigger value="artistic" className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white hover:bg-white/10">Artistic</TabsTrigger>
               </TabsList>
               <TabsList className="grid grid-cols-3 mb-6 neo-glass-card bg-black/30 border border-white/10">
-                <TabsTrigger value="quantum" className="neo-glass-button data-[state=active]:bg-white/10 data-[state=active]:text-white">Quantum Tech</TabsTrigger>
+                <TabsTrigger value="quantum" className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white hover:bg-white/10">Quantum Tech</TabsTrigger>
               </TabsList>
               
               {/* Individual tab contents for more details on each style */}
