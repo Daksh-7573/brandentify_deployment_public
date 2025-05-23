@@ -10,6 +10,8 @@ import { useProfilePicture } from "@/hooks/use-profile-picture";
 import { useAuth } from "@/hooks/use-auth";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { useMutation } from "@tanstack/react-query";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 
 interface ProfilePictureDialogProps {
   userId?: number | string; // Optional userId, will use hook's default if not provided
@@ -31,9 +33,71 @@ export function ProfilePictureDialog({
   const { toast } = useToast();
   const [isUploading, setIsUploading] = useState(false);
   
+  console.log("ProfilePictureDialog rendered with open:", open);
+  
   // Use the profile picture mutation hook with the provided userId or the authenticated user's ID
   const actualUserId = userId || (authUser?.id ?? 1);
-  const profilePictureMutation = useProfilePicture(actualUserId);
+  // Make a direct mutation with useMutation to upload the profile picture
+  const profilePictureMutation = useMutation({
+    mutationFn: async (base64Image: string) => {
+      console.log(`Updating profile picture for user ID: ${actualUserId}`);
+      // Ensure we have a valid user ID
+      if (!actualUserId) {
+        throw new Error("Invalid user ID. Please log in again.");
+      }
+      
+      // Check image size before uploading
+      const imageSizeInBytes = base64Image.length * 0.75; // Approximate size conversion from base64 to bytes
+      const maxSizeInBytes = 5 * 1024 * 1024; // 5MB limit
+      
+      if (imageSizeInBytes > maxSizeInBytes) {
+        throw new Error("Image size exceeds 5MB limit. Please upload a smaller image.");
+      }
+      
+      try {
+        // Log information for debugging
+        console.log("Starting profile picture upload...");
+        console.log("Image size (bytes):", imageSizeInBytes);
+        
+        // Send only the photoURL update to the API using the new API request format
+        const res = await apiRequest({
+          method: 'PUT',
+          url: `/api/users/${actualUserId}`,
+          data: {
+            photoURL: base64Image
+          }
+        });
+        
+        console.log("Profile picture update successful");
+        return await res.json();
+      } catch (error) {
+        console.error("API request failed:", error);
+        throw new Error("Failed to update profile picture. Please try again.");
+      }
+    },
+    onSuccess: () => {
+      setIsUploading(false);
+      toast({
+        title: "Success!",
+        description: "Profile picture updated successfully",
+        variant: "default",
+      });
+      
+      // Force invalidate all user data queries
+      queryClient.invalidateQueries({ queryKey: [`/api/users/${actualUserId}`] });
+      
+      onOpenChange(false);
+    },
+    onError: (error: Error) => {
+      setIsUploading(false);
+      toast({
+        title: "Error!",
+        description: error.message || "Failed to update profile picture. Please try again.",
+        variant: "destructive",
+      });
+      console.error("Failed to update profile picture:", error);
+    }
+  });
 
   // Handle saving the updated profile picture
   const handleSaveProfilePicture = (base64Image: string) => {
@@ -52,26 +116,7 @@ export function ProfilePictureDialog({
       onOpenChange(false);
     } else {
       // Otherwise use the default mutation
-      profilePictureMutation.mutate(base64Image, {
-        onSuccess: () => {
-          setIsUploading(false);
-          toast({
-            title: "Success!",
-            description: "Profile picture updated successfully",
-            variant: "default",
-          });
-          onOpenChange(false);
-        },
-        onError: (error) => {
-          setIsUploading(false);
-          toast({
-            title: "Error!",
-            description: "Failed to update profile picture. Please try again.",
-            variant: "destructive",
-          });
-          console.error("Failed to update profile picture:", error);
-        }
-      });
+      profilePictureMutation.mutate(base64Image);
     }
   };
 

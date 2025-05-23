@@ -179,15 +179,8 @@ export default function ProfileNeo() {
   });
   
   // Profile picture functionality
-  const { 
-    profilePictureUrl, 
-    isUploading, 
-    uploadProgress, 
-    openProfilePictureDialog,
-    showProfilePictureDialog,
-    closeProfilePictureDialog,
-    updateProfilePicture
-  } = useProfilePicture(user.uid);
+  const [showProfileDialog, setShowProfileDialog] = useState(false);
+  const { profilePictureUrl, isUploading, uploadProgress, updateProfilePicture } = useProfilePicture(user.uid);
   
   // Update about me mutation
   const updateAboutMeMutation = useMutation({
@@ -404,7 +397,10 @@ export default function ProfileNeo() {
                         )}
                       </div>
                       <button 
-                        onClick={openProfilePictureDialog}
+                        onClick={() => {
+                          console.log("Camera button clicked");
+                          setShowProfileDialog(true);
+                        }}
                         className="absolute bottom-1 right-1 p-2 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm text-white hover:bg-white/20 transition-all"
                       >
                         <Camera className="h-4 w-4" />
@@ -1020,8 +1016,8 @@ export default function ProfileNeo() {
       {/* Add Profile Picture Dialog component */}
       <ProfilePictureDialog 
         userId={user.uid}
-        open={showProfilePictureDialog}
-        onOpenChange={closeProfilePictureDialog}
+        open={showProfileDialog}
+        onOpenChange={setShowProfileDialog}
         currentPhotoURL={profilePictureUrl}
         onSave={updateProfilePicture}
       />
