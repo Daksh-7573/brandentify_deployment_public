@@ -3,13 +3,14 @@ import { useQuery } from "@tanstack/react-query";
 import VisitingCardBuilder from "@/components/profile/visiting-card-builder";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
 import Header from "@/components/layout/header";
 import { UserData } from "@/types/user";
 
 export default function QuantumCardPage() {
   const { user } = useAuth();
+  const [_, navigate] = useLocation();
 
   // Fetch user data
   const { data: userData, isLoading } = useQuery({
@@ -60,7 +61,7 @@ export default function QuantumCardPage() {
                 </div>
                 <div className="flex items-center gap-4 mt-4 md:mt-0">
                   <Button
-                    onClick={() => window.location.href = '/profile'}
+                    onClick={() => navigate("/profile")}
                     variant="outline"
                     className="bg-white/10 border-white/20 text-white hover:bg-white/20"
                   >
@@ -83,8 +84,8 @@ export default function QuantumCardPage() {
                 />
               </div>
             </NeoGlassSection>
-          </div>
-        </NeoGlassLayout>
+          </NeoGlassLayout>
+        </div>
       </div>
     </div>
   );
