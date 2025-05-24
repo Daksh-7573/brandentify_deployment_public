@@ -44,26 +44,30 @@ export default function QuantumCardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="flex h-screen flex-col">
       <Header />
-      <div className="pt-20"> {/* Add padding to account for fixed header */}
-        <NeoGlassLayout>
-          <div className="container mx-auto px-4 py-8">
+      <div className="flex flex-1 overflow-hidden pt-16">
+        <div className="flex-1 overflow-auto">
+          <NeoGlassLayout className="mt-3 mx-6">
+            {/* Page Header */}
             <div className="mb-8">
-              <div className="flex items-center gap-4 mb-6">
-                <Button variant="ghost" asChild className="neo-glass-button text-white hover:bg-white/10">
-                  <Link href="/profile">
+              <div className="flex flex-col md:flex-row items-start md:items-center justify-between">
+                <div>
+                  <h1 className="text-3xl font-bold tracking-tight text-white">Quantum Card</h1>
+                  <p className="text-white/80 mt-1">
+                    Create and customize your professional digital visiting card
+                  </p>
+                </div>
+                <div className="flex items-center gap-4 mt-4 md:mt-0">
+                  <Button
+                    onClick={() => window.location.href = '/profile'}
+                    variant="outline"
+                    className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+                  >
                     <ArrowLeft className="h-4 w-4 mr-2" />
                     Back to Profile
-                  </Link>
-                </Button>
-              </div>
-              
-              <div className="text-center mb-8">
-                <h1 className="text-3xl font-bold mb-2 text-white bg-clip-text bg-gradient-to-r from-white to-white/80">Quantum Card</h1>
-                <p className="text-white/70 text-lg">
-                  Create and customize your professional digital visiting card
-                </p>
+                  </Button>
+                </div>
               </div>
             </div>
 
