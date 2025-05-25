@@ -41,7 +41,7 @@ const ProfessionalCardRenewed: React.FC<ProfessionalCardRenewedProps> = ({
                 <img 
                   src={userData.photoURL} 
                   alt={userData.name || "Profile"} 
-                  className="h-full w-full object-cover"
+                  className="h-full w-full object-contain"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
                     target.src = `https://ui-avatars.com/api/?name=${userData.name || "User"}&background=e2e8f0&color=475569&size=200`;
@@ -51,7 +51,7 @@ const ProfessionalCardRenewed: React.FC<ProfessionalCardRenewedProps> = ({
                 <img 
                   src={`https://ui-avatars.com/api/?name=${userData.name || "User"}&background=e2e8f0&color=475569&size=200`}
                   alt={userData.name || "Profile"}
-                  className="h-full w-full object-cover"
+                  className="h-full w-full object-contain"
                 />
               )}
             </div>
