@@ -20,9 +20,9 @@ const QuantumCard: React.FC<QuantumCardProps> = ({ userData, isLoading = false }
       </div>
 
       {/* Glassmorphism card container with angled edges */}
-      <div className="absolute inset-0 m-2 bg-white/5 backdrop-blur-sm rounded-lg shadow-xl border border-white/10 z-10 overflow-hidden transform" style={{clipPath: "polygon(0 0, 100% 0, 95% 100%, 5% 100%)"}}>
+      <div className="absolute inset-0 m-2 bg-white/5 backdrop-blur-sm rounded-lg shadow-xl border border-white/10 z-10 overflow-hidden transform" style={{clipPath: "polygon(0 0, 100% 0, 97% 100%, 3% 100%)"}}>
         {/* Glowing border effect */}
-        <div className="absolute inset-0 border-2 border-cyan-500/20 rounded-lg z-20 pointer-events-none glow-border"></div>
+        <div className="absolute inset-0 border-2 border-cyan-500/30 rounded-lg z-20 pointer-events-none shadow-[0_0_15px_rgba(34,211,238,0.2)]"></div>
       
         {/* Card content */}
         <div className="relative flex flex-col h-full w-full z-30 p-4">
@@ -42,14 +42,15 @@ const QuantumCard: React.FC<QuantumCardProps> = ({ userData, isLoading = false }
           <div className="flex flex-col items-center mb-6 mt-4">
             {/* Hexagonal profile picture frame with glow */}
             <div className="relative mb-3">
-              <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 to-purple-500 blur-md rounded-full"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 to-purple-500 blur-md rounded-full opacity-70"></div>
+              <div className="absolute inset-0 animate-pulse-slow opacity-60 bg-gradient-to-r from-blue-500/30 to-purple-500/30 blur-md rounded-full"></div>
               <div className="h-24 w-24 rounded-full p-1 bg-gradient-to-r from-cyan-400 to-purple-500 relative">
-                <div className="h-full w-full rounded-full bg-gradient-to-r from-purple-900 to-blue-900 flex items-center justify-center overflow-hidden">
+                <div className="h-full w-full rounded-full bg-gradient-to-br from-[#0A1A3F] to-[#1F1B44] flex items-center justify-center overflow-hidden border border-white/20">
                   {userData.photoURL ? (
                     <img 
                       src={userData.photoURL} 
                       alt={userData.name || "Profile"} 
-                      className={`h-full w-full object-cover mix-blend-lighten ${isLoading ? 'opacity-50' : ''}`}
+                      className={`h-full w-full object-cover ${isLoading ? 'opacity-50' : ''}`}
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
                         target.src = "https://ui-avatars.com/api/?name=" + (userData.name || "User") + "&background=0D1117&color=60A5FA";
@@ -67,7 +68,7 @@ const QuantumCard: React.FC<QuantumCardProps> = ({ userData, isLoading = false }
             </div>
             
             {/* Name and title */}
-            <h2 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-blue-100 text-center">
+            <h2 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-blue-100 to-white text-center">
               {isLoading ? (
                 <span className="inline-block w-32 h-6 bg-blue-300/20 rounded animate-pulse"></span>
               ) : (
@@ -76,7 +77,7 @@ const QuantumCard: React.FC<QuantumCardProps> = ({ userData, isLoading = false }
             </h2>
             
             {/* Job title as a glowing neon chip */}
-            <div className="mt-1 px-3 py-1 rounded-full bg-blue-900/50 border border-blue-500/30 text-cyan-400 text-xs font-medium inline-flex items-center">
+            <div className="mt-1 px-3 py-1 rounded-full bg-blue-900/50 backdrop-blur-sm border border-blue-500/30 text-cyan-400 text-xs font-medium inline-flex items-center shadow-[0_0_10px_rgba(34,211,238,0.2)]">
               <Zap className="h-3 w-3 mr-1 text-cyan-400" />
               {isLoading ? (
                 <span className="inline-block w-24 h-3 bg-blue-300/20 rounded animate-pulse"></span>
@@ -94,12 +95,12 @@ const QuantumCard: React.FC<QuantumCardProps> = ({ userData, isLoading = false }
                 {isLoading ? (
                   <div className="w-28 h-6 bg-purple-900/20 border border-purple-500/30 rounded-md animate-pulse"></div>
                 ) : (
-                  <div className="flex items-center gap-2 py-1 px-2 bg-purple-900/20 border border-purple-500/30 rounded-md">
+                  <div className="flex items-center gap-2 py-1 px-3 bg-purple-900/30 backdrop-blur-sm border border-purple-500/40 rounded-full shadow-[0_0_10px_rgba(168,85,247,0.2)]">
                     <span className="flex h-2 w-2 relative">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-500 opacity-75"></span>
                       <span className="relative inline-flex rounded-full h-2 w-2 bg-purple-400"></span>
                     </span>
-                    <span className="text-purple-300 text-xs">
+                    <span className="text-purple-300 text-xs font-medium">
                       #{userData.domain === "all" ? "General" : userData.domain}
                     </span>
                   </div>
@@ -109,42 +110,42 @@ const QuantumCard: React.FC<QuantumCardProps> = ({ userData, isLoading = false }
             
             {/* Industry with holographic chip */}
             {(userData.industry || isLoading) && (
-              <div className="flex items-center gap-2 py-1">
-                <div className="w-6 h-6 flex items-center justify-center rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-500/30">
+              <div className="flex items-center gap-2 py-1.5 group">
+                <div className="w-6 h-6 flex items-center justify-center rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-500/30 group-hover:shadow-[0_0_8px_rgba(34,211,238,0.3)] transition-all duration-300">
                   <Building2 className="h-3 w-3 text-blue-400" />
                 </div>
                 {isLoading ? (
                   <span className="w-24 h-3 bg-blue-300/20 rounded animate-pulse"></span>
                 ) : (
-                  <span className="text-white/80">{userData.industry}</span>
+                  <span className="text-white/90 font-light tracking-wide">{userData.industry}</span>
                 )}
               </div>
             )}
             
             {/* Company */}
             {(userData.company || isLoading) && (
-              <div className="flex items-center gap-2 py-1">
-                <div className="w-6 h-6 flex items-center justify-center rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-500/30">
+              <div className="flex items-center gap-2 py-1.5 group">
+                <div className="w-6 h-6 flex items-center justify-center rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-500/30 group-hover:shadow-[0_0_8px_rgba(34,211,238,0.3)] transition-all duration-300">
                   <Briefcase className="h-3 w-3 text-blue-400" />
                 </div>
                 {isLoading ? (
                   <span className="w-28 h-3 bg-blue-300/20 rounded animate-pulse"></span>
                 ) : (
-                  <span className="text-white/80">{userData.company}</span>
+                  <span className="text-white/90 font-light tracking-wide">{userData.company}</span>
                 )}
               </div>
             )}
             
             {/* Location with pin */}
             {(userData.location || isLoading) && (
-              <div className="flex items-center gap-2 py-1">
-                <div className="w-6 h-6 flex items-center justify-center rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-500/30">
+              <div className="flex items-center gap-2 py-1.5 group">
+                <div className="w-6 h-6 flex items-center justify-center rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-500/30 group-hover:shadow-[0_0_8px_rgba(34,211,238,0.3)] transition-all duration-300">
                   <MapPin className="h-3 w-3 text-blue-400" />
                 </div>
                 {isLoading ? (
                   <span className="w-32 h-3 bg-blue-300/20 rounded animate-pulse"></span>
                 ) : (
-                  <span className="text-white/80">{userData.location}</span>
+                  <span className="text-white/90 font-light tracking-wide">{userData.location}</span>
                 )}
               </div>
             )}
@@ -152,38 +153,38 @@ const QuantumCard: React.FC<QuantumCardProps> = ({ userData, isLoading = false }
             {/* Contact section */}
             <div className="mt-4 pt-4 border-t border-white/10">
               {/* Email */}
-              <div className="flex items-center gap-2 py-1 transition-transform hover:translate-x-1">
-                <div className="w-6 h-6 flex items-center justify-center rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-500/30">
+              <div className="flex items-center gap-2 py-1.5 transition-all duration-300 hover:translate-x-1 group">
+                <div className="w-6 h-6 flex items-center justify-center rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-500/30 group-hover:shadow-[0_0_8px_rgba(34,211,238,0.3)]">
                   <Mail className="h-3 w-3 text-blue-400" />
                 </div>
                 {isLoading ? (
                   <span className="w-36 h-3 bg-blue-300/20 rounded animate-pulse"></span>
                 ) : (
-                  <span className="text-white/80 text-xs">{userData.email}</span>
+                  <span className="text-white/90 text-xs tracking-wide">{userData.email}</span>
                 )}
               </div>
               
               {/* Phone */}
-              <div className="flex items-center gap-2 py-1 transition-transform hover:translate-x-1">
-                <div className="w-6 h-6 flex items-center justify-center rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-500/30">
+              <div className="flex items-center gap-2 py-1.5 transition-all duration-300 hover:translate-x-1 group">
+                <div className="w-6 h-6 flex items-center justify-center rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-500/30 group-hover:shadow-[0_0_8px_rgba(34,211,238,0.3)]">
                   <Phone className="h-3 w-3 text-blue-400" />
                 </div>
                 {isLoading ? (
                   <span className="w-28 h-3 bg-blue-300/20 rounded animate-pulse"></span>
                 ) : (
-                  <span className="text-white/80 text-xs">{userData.phoneNumber || "Add phone number"}</span>
+                  <span className="text-white/90 text-xs tracking-wide">{userData.phoneNumber || "Add phone number"}</span>
                 )}
               </div>
               
               {/* Profile Link with barcode-style */}
-              <div className="flex items-center gap-2 py-1 transition-transform hover:translate-x-1">
-                <div className="w-6 h-6 flex items-center justify-center rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-500/30">
+              <div className="flex items-center gap-2 py-1.5 transition-all duration-300 hover:translate-x-1 group">
+                <div className="w-6 h-6 flex items-center justify-center rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-500/30 group-hover:shadow-[0_0_8px_rgba(34,211,238,0.3)]">
                   <Globe className="h-3 w-3 text-blue-400" />
                 </div>
                 {isLoading ? (
                   <span className="w-32 h-3 bg-blue-300/20 rounded animate-pulse"></span>
                 ) : (
-                  <span className="text-cyan-400 text-xs">{profileLink}</span>
+                  <span className="text-cyan-400 text-xs tracking-wide font-medium">{profileLink}</span>
                 )}
               </div>
             </div>
@@ -191,8 +192,8 @@ const QuantumCard: React.FC<QuantumCardProps> = ({ userData, isLoading = false }
           
           {/* Footer with share button */}
           <div className="mt-4 mb-2 flex justify-center">
-            <div className={`px-4 py-1 rounded-full bg-blue-900/30 text-cyan-400 text-xs font-medium inline-flex items-center border border-blue-500/20 ${isLoading ? 'opacity-50' : 'hover:bg-blue-800/40 transition-colors cursor-pointer'}`}>
-              <Share2 className="h-3 w-3 mr-1 text-cyan-400" />
+            <div className={`px-4 py-1.5 rounded-full bg-gradient-to-r from-blue-900/40 to-cyan-900/40 backdrop-blur-md text-cyan-400 text-xs font-medium inline-flex items-center border border-blue-500/30 shadow-[0_0_10px_rgba(34,211,238,0.15)] ${isLoading ? 'opacity-50' : 'hover:bg-blue-800/40 hover:shadow-[0_0_15px_rgba(34,211,238,0.3)] transition-all duration-300 cursor-pointer'}`}>
+              <Share2 className="h-3 w-3 mr-2 text-cyan-400" />
               <span>Share Quantum Card</span>
             </div>
           </div>
