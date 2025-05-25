@@ -481,7 +481,7 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
               >
                 {/* Email */}
                 <div 
-                  className="text-sm text-gray-300 overflow-hidden mx-auto cursor-pointer hover:text-gray-100 hover:underline transition-colors duration-200 flex items-center gap-2 pl-2 border-l-2"
+                  className="text-sm text-gray-300 overflow-hidden mx-auto cursor-pointer hover:text-gray-100 hover:underline transition-colors duration-200 pl-2 border-l-2"
                   style={{ borderColor: `${colors.electricBlue}50` }}
                   onClick={() => {
                     if (userData.email) {
@@ -492,13 +492,12 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
                   }}
                   title={userData.email ? "Click to copy" : "No email available"}
                 >
-                  <Mail className="h-3 w-3" style={{ color: colors.electricBlue }} />
                   <div className="break-words">{userData.email || "Add email address"}</div>
                 </div>
                 
                 {/* Phone Number */}
                 <div 
-                  className="text-sm text-gray-300 overflow-hidden mx-auto cursor-pointer hover:text-gray-100 hover:underline transition-colors duration-200 flex items-center gap-2 pl-2 border-l-2"
+                  className="text-sm text-gray-300 overflow-hidden mx-auto cursor-pointer hover:text-gray-100 hover:underline transition-colors duration-200 pl-2 border-l-2"
                   style={{ borderColor: `${colors.electricBlue}50` }}
                   onClick={() => {
                     if (userData.phoneNumber) {
@@ -509,13 +508,12 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
                   }}
                   title={userData.phoneNumber ? "Click to copy" : "No phone number available"}
                 >
-                  <Phone className="h-3 w-3" style={{ color: colors.electricBlue }} />
                   <div className="break-words">{userData.phoneNumber || "Add phone number"}</div>
                 </div>
                 
                 {/* Profile Link */}
                 <div 
-                  className="text-sm text-gray-300 overflow-hidden mx-auto cursor-pointer hover:text-gray-100 hover:underline transition-colors duration-200 flex items-center gap-2 pl-2 border-l-2"
+                  className="text-sm text-gray-300 overflow-hidden mx-auto cursor-pointer hover:text-gray-100 hover:underline transition-colors duration-200 pl-2 border-l-2"
                   style={{ borderColor: `${colors.electricBlue}50` }}
                   onClick={() => {
                     navigator.clipboard.writeText(profileLink);
@@ -524,7 +522,6 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
                   }}
                   title="Click to copy"
                 >
-                  <ExternalLink className="h-3 w-3" style={{ color: colors.electricBlue }} />
                   <div className="break-words">{profileLink || "Add website"}</div>
                 </div>
               </div>
