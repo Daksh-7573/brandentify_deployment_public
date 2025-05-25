@@ -477,6 +477,7 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
                   boxShadow: "0 2px 5px rgba(0,0,0,0.05)",
                   transform: hoveredSection === 'email' ? 'translateX(3px)' : 'translateX(0)',
                   transition: "transform 0.3s ease",
+                  borderLeft: `2px solid ${creativeColors.coral}`,
                 }}
                 onMouseEnter={() => setHoveredSection('email')}
                 onMouseLeave={() => setHoveredSection(null)}
@@ -486,6 +487,7 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
                     className="w-6 h-6 rounded-full flex items-center justify-center"
                     style={{
                       backgroundColor: creativeColors.coral,
+                      filter: `drop-shadow(0 0 3px ${creativeColors.coral}80)`,
                       animation: hoveredSection === 'email' ? 'pulse 1.5s infinite' : 'none'
                     }}
                   >
@@ -507,33 +509,37 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
               </div>
               
               {/* Phone with pulse animation */}
-              {userData.phoneNumber && (
-                <div 
-                  className="flex items-center justify-between px-2 py-1.5 rounded-lg"
-                  style={{
-                    backgroundColor: "white",
-                    border: "1px solid rgba(0,0,0,0.05)",
-                    boxShadow: "0 2px 5px rgba(0,0,0,0.05)",
-                    transform: hoveredSection === 'phone' ? 'translateX(3px)' : 'translateX(0)',
-                    transition: "transform 0.3s ease",
-                  }}
-                  onMouseEnter={() => setHoveredSection('phone')}
-                  onMouseLeave={() => setHoveredSection(null)}
-                >
-                  <div className="flex items-center gap-2">
-                    <div 
-                      className="w-6 h-6 rounded-full flex items-center justify-center"
-                      style={{
-                        backgroundColor: creativeColors.violet,
-                        animation: hoveredSection === 'phone' ? 'buzz 0.3s infinite' : 'none'
-                      }}
-                    >
-                      <Phone className="h-3 w-3 text-white" />
-                    </div>
-                    <span className="text-xs truncate max-w-[140px] font-medium">
-                      {userData.phoneNumber}
-                    </span>
+              <div 
+                className="flex items-center justify-between px-2 py-1.5 rounded-lg"
+                style={{
+                  backgroundColor: "white",
+                  border: "1px solid rgba(0,0,0,0.05)",
+                  boxShadow: "0 2px 5px rgba(0,0,0,0.05)",
+                  transform: hoveredSection === 'phone' ? 'translateX(3px)' : 'translateX(0)',
+                  transition: "transform 0.3s ease",
+                  borderLeft: `2px solid ${creativeColors.violet}`,
+                }}
+                onMouseEnter={() => setHoveredSection('phone')}
+                onMouseLeave={() => setHoveredSection(null)}
+              >
+                <div className="flex items-center gap-2">
+                  <div 
+                    className="w-6 h-6 rounded-full flex items-center justify-center"
+                    style={{
+                      backgroundColor: creativeColors.violet,
+                      filter: `drop-shadow(0 0 3px ${creativeColors.violet}80)`,
+                      animation: hoveredSection === 'phone' ? 'buzz 0.3s infinite' : 'none'
+                    }}
+                  >
+                    <Phone className="h-3 w-3 text-white" />
                   </div>
+                  <span className="text-xs truncate max-w-[140px] font-medium" style={{
+                    color: userData.phoneNumber ? creativeColors.darkText : "#999"
+                  }}>
+                    {userData.phoneNumber || "Add phone number"}
+                  </span>
+                </div>
+                {userData.phoneNumber && (
                   <button
                     className="p-1 rounded hover:bg-gray-100 transition-colors"
                     onClick={(e) => {
@@ -543,8 +549,8 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
                   >
                     <Copy className="h-3 w-3 text-gray-600" />
                   </button>
-                </div>
-              )}
+                )}
+              </div>
               
               {/* Website/Profile Link */}
               <div 
@@ -555,6 +561,7 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
                   boxShadow: "0 2px 5px rgba(0,0,0,0.05)",
                   transform: hoveredSection === 'website' ? 'translateX(3px)' : 'translateX(0)',
                   transition: "transform 0.3s ease",
+                  borderLeft: `2px solid ${creativeColors.skyBlue}`,
                 }}
                 onMouseEnter={() => setHoveredSection('website')}
                 onMouseLeave={() => setHoveredSection(null)}
@@ -564,6 +571,7 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
                     className="w-6 h-6 rounded-full flex items-center justify-center"
                     style={{
                       backgroundColor: creativeColors.skyBlue,
+                      filter: `drop-shadow(0 0 3px ${creativeColors.skyBlue}80)`,
                     }}
                   >
                     <svg 
