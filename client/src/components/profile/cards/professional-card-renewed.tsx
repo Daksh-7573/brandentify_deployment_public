@@ -24,13 +24,13 @@ const ProfessionalCardRenewed: React.FC<ProfessionalCardRenewedProps> = ({
   const profileURL = `brandentifier.com/${userData.name?.replace(/\s+/g, '').toLowerCase() || 'myprofile'}`;
   
   return (
-    <div className="professional-card bg-white dark:bg-slate-800 w-full h-full rounded-xl overflow-visible shadow-xl border border-gray-200 dark:border-gray-700 flex flex-col backdrop-blur-sm bg-opacity-80 dark:bg-opacity-80">
+    <div className="professional-card bg-white dark:bg-slate-800 w-full h-full rounded-xl overflow-visible shadow-xl border border-blue-200/50 dark:border-blue-800/30 flex flex-col backdrop-blur-sm bg-opacity-90 dark:bg-opacity-90 transition-all duration-300 hover:shadow-blue-200/30 dark:hover:shadow-blue-700/20">
       {/* Card Header with Profile Photo */}
       <div className="bg-gradient-to-r from-blue-600 to-blue-800 h-28 relative overflow-hidden">
         {/* Neo-Glass Header Background Effects */}
         <div className="absolute inset-0 opacity-30">
-          <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-blue-300 blur-xl"></div>
-          <div className="absolute -bottom-4 -left-10 w-32 h-32 rounded-full bg-purple-300 blur-xl"></div>
+          <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-blue-300 blur-xl animate-pulse-slow"></div>
+          <div className="absolute -bottom-4 -left-10 w-32 h-32 rounded-full bg-purple-300 blur-xl animate-pulse-slow-delay"></div>
         </div>
         
         {/* Profile Photo */}
@@ -145,8 +145,11 @@ const ProfessionalCardRenewed: React.FC<ProfessionalCardRenewedProps> = ({
         </div>
       </div>
       
-      {/* Card Footer - Empty */}
-      <div className="bg-gray-50 dark:bg-gray-900 py-2 px-4 text-center">
+      {/* Card Footer with Neo-Glass styling */}
+      <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 dark:from-blue-600/20 dark:to-purple-600/20 py-3 px-4 text-center border-t border-blue-100 dark:border-blue-900">
+        <span className="text-xs text-blue-600/70 dark:text-blue-400/70 font-medium tracking-wide">
+          Professional Card
+        </span>
       </div>
     </div>
   );
