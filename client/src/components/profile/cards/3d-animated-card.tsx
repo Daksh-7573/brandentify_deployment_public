@@ -481,35 +481,42 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
               >
                 {/* Email */}
                 <div 
-                  className="text-sm text-gray-300 overflow-hidden mx-auto cursor-pointer hover:text-gray-100 hover:underline transition-colors duration-200"
+                  className="text-sm text-gray-300 overflow-hidden mx-auto cursor-pointer hover:text-gray-100 hover:underline transition-colors duration-200 flex items-center gap-2 pl-2 border-l-2"
+                  style={{ borderColor: `${colors.electricBlue}50` }}
                   onClick={() => {
-                    navigator.clipboard.writeText(userData.email);
-                    setCopySuccess('Email copied to clipboard!');
-                    setTimeout(() => setCopySuccess(''), 2000);
+                    if (userData.email) {
+                      navigator.clipboard.writeText(userData.email);
+                      setCopySuccess('Email copied to clipboard!');
+                      setTimeout(() => setCopySuccess(''), 2000);
+                    }
                   }}
-                  title="Click to copy"
+                  title={userData.email ? "Click to copy" : "No email available"}
                 >
-                  <div className="break-words">{userData.email}</div>
+                  <Mail className="h-3 w-3" style={{ color: colors.electricBlue }} />
+                  <div className="break-words">{userData.email || "Add email address"}</div>
                 </div>
                 
                 {/* Phone Number */}
-                {userData.phoneNumber && (
-                  <div 
-                    className="text-sm text-gray-300 overflow-hidden mx-auto cursor-pointer hover:text-gray-100 hover:underline transition-colors duration-200"
-                    onClick={() => {
-                      navigator.clipboard.writeText(userData.phoneNumber || '');
+                <div 
+                  className="text-sm text-gray-300 overflow-hidden mx-auto cursor-pointer hover:text-gray-100 hover:underline transition-colors duration-200 flex items-center gap-2 pl-2 border-l-2"
+                  style={{ borderColor: `${colors.electricBlue}50` }}
+                  onClick={() => {
+                    if (userData.phoneNumber) {
+                      navigator.clipboard.writeText(userData.phoneNumber);
                       setCopySuccess('Phone number copied to clipboard!');
                       setTimeout(() => setCopySuccess(''), 2000);
-                    }}
-                    title="Click to copy"
-                  >
-                    <div className="break-words">{userData.phoneNumber}</div>
-                  </div>
-                )}
+                    }
+                  }}
+                  title={userData.phoneNumber ? "Click to copy" : "No phone number available"}
+                >
+                  <Phone className="h-3 w-3" style={{ color: colors.electricBlue }} />
+                  <div className="break-words">{userData.phoneNumber || "Add phone number"}</div>
+                </div>
                 
                 {/* Profile Link */}
                 <div 
-                  className="text-sm text-gray-300 overflow-hidden mx-auto cursor-pointer hover:text-gray-100 hover:underline transition-colors duration-200"
+                  className="text-sm text-gray-300 overflow-hidden mx-auto cursor-pointer hover:text-gray-100 hover:underline transition-colors duration-200 flex items-center gap-2 pl-2 border-l-2"
+                  style={{ borderColor: `${colors.electricBlue}50` }}
                   onClick={() => {
                     navigator.clipboard.writeText(profileLink);
                     setCopySuccess('Profile link copied to clipboard!');
@@ -517,7 +524,8 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
                   }}
                   title="Click to copy"
                 >
-                  <div className="break-words">{profileLink}</div>
+                  <ExternalLink className="h-3 w-3" style={{ color: colors.electricBlue }} />
+                  <div className="break-words">{profileLink || "Add website"}</div>
                 </div>
               </div>
             </div>
