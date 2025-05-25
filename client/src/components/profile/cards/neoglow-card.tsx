@@ -590,36 +590,37 @@ const NeoGlowCard: React.FC<NeoGlowCardProps> = ({ userData }) => {
             </div>
             
             {/* Phone */}
-            {userData.phoneNumber && (
-              <div 
-                className="flex items-center justify-between px-3 py-1 rounded-md"
-                style={{
-                  backgroundColor: colors.panelBg,
-                  transform: `translateY(${hoveredSection === 'phone' ? '-2px' : '0'})`,
-                  transition: "transform 0.3s ease",
-                }}
-                onMouseEnter={() => setHoveredSection('phone')}
-                onMouseLeave={() => setHoveredSection(null)}
-              >
-                <div className="flex items-center gap-2">
-                  <Phone 
-                    className="h-4 w-4 flex-shrink-0"
-                    style={{
-                      color: colors.cyberBlue,
-                      filter: `drop-shadow(0 0 3px ${colors.cyberBlue}80)`,
-                      animation: hoveredSection === 'phone' ? 'shake 0.8s ease-in-out infinite' : 'none',
-                    }}
-                  />
-                  <span 
-                    className="text-sm truncate max-w-[150px]"
-                    style={{
-                      color: colors.textSecondary,
-                    }}
-                  >
-                    {userData.phoneNumber}
-                  </span>
-                </div>
-                
+            <div 
+              className="flex items-center justify-between px-3 py-1 rounded-md"
+              style={{
+                backgroundColor: colors.panelBg,
+                transform: `translateY(${hoveredSection === 'phone' ? '-2px' : '0'})`,
+                transition: "transform 0.3s ease",
+                borderLeft: `2px solid ${colors.cyberBlue}`,
+              }}
+              onMouseEnter={() => setHoveredSection('phone')}
+              onMouseLeave={() => setHoveredSection(null)}
+            >
+              <div className="flex items-center gap-2">
+                <Phone 
+                  className="h-4 w-4 flex-shrink-0"
+                  style={{
+                    color: colors.cyberBlue,
+                    filter: `drop-shadow(0 0 3px ${colors.cyberBlue}80)`,
+                    animation: hoveredSection === 'phone' ? 'shake 0.8s ease-in-out infinite' : 'none',
+                  }}
+                />
+                <span 
+                  className="text-sm truncate max-w-[150px]"
+                  style={{
+                    color: userData.phoneNumber ? colors.textSecondary : colors.textMuted,
+                  }}
+                >
+                  {userData.phoneNumber || "Add phone number"}
+                </span>
+              </div>
+              
+              {userData.phoneNumber && (
                 <button
                   className="p-1 rounded hover:bg-black/20 transition-colors"
                   onClick={(e) => {
@@ -635,8 +636,8 @@ const NeoGlowCard: React.FC<NeoGlowCardProps> = ({ userData }) => {
                     style={{ color: colors.textMuted }}
                   />
                 </button>
-              </div>
-            )}
+              )}
+            </div>
             
             {/* Profile Link */}
             <div 
