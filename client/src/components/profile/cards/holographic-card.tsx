@@ -386,7 +386,7 @@ const HolographicCard: React.FC<HolographicCardProps> = ({ userData }) => {
             <div className="flex items-center gap-2">
               <Mail className="h-4 w-4 text-cyan-400" />
               <span className="text-xs text-cyan-100 truncate max-w-[150px]">
-                {userData.email}
+                {userData.email || "Add email address"}
               </span>
             </div>
             <button 
@@ -401,25 +401,25 @@ const HolographicCard: React.FC<HolographicCardProps> = ({ userData }) => {
           </div>
           
           {/* Phone Number */}
-          {userData.phoneNumber && (
-            <div 
-              className="flex items-center justify-between gap-2 px-3 py-2 rounded-md group"
-              style={{
-                background: "rgba(56, 189, 248, 0.1)",
-                backdropFilter: "blur(4px)",
-                border: "1px solid rgba(56, 189, 248, 0.2)",
-                transition: "transform 0.2s, background 0.2s",
-                transform: isHovered ? "translateX(0)" : "translateX(-100%)",
-                opacity: isHovered ? 1 : 0,
-                transitionDelay: "0.05s"
-              }}
-            >
-              <div className="flex items-center gap-2">
-                <Phone className="h-4 w-4 text-cyan-400" />
-                <span className="text-xs text-cyan-100 truncate max-w-[150px]">
-                  {userData.phoneNumber}
-                </span>
-              </div>
+          <div 
+            className="flex items-center justify-between gap-2 px-3 py-2 rounded-md group"
+            style={{
+              background: "rgba(56, 189, 248, 0.1)",
+              backdropFilter: "blur(4px)",
+              border: "1px solid rgba(56, 189, 248, 0.2)",
+              transition: "transform 0.2s, background 0.2s",
+              transform: isHovered ? "translateX(0)" : "translateX(-100%)",
+              opacity: isHovered ? 1 : 0,
+              transitionDelay: "0.05s"
+            }}
+          >
+            <div className="flex items-center gap-2">
+              <Phone className="h-4 w-4 text-cyan-400" />
+              <span className="text-xs text-cyan-100 truncate max-w-[150px]">
+                {userData.phoneNumber || "Add phone number"}
+              </span>
+            </div>
+            {userData.phoneNumber && (
               <button 
                 className="p-1 rounded-full hover:bg-cyan-500/20 transition-colors"
                 onClick={(e) => {
@@ -429,8 +429,8 @@ const HolographicCard: React.FC<HolographicCardProps> = ({ userData }) => {
               >
                 <Copy className="h-3 w-3 text-cyan-400" />
               </button>
-            </div>
-          )}
+            )}
+          </div>
           
           {/* Profile Link */}
           <div 
@@ -448,7 +448,7 @@ const HolographicCard: React.FC<HolographicCardProps> = ({ userData }) => {
             <div className="flex items-center gap-2">
               <ExternalLink className="h-4 w-4 text-cyan-400" />
               <span className="text-xs text-cyan-100 truncate max-w-[150px]">
-                {profileLink}
+                {profileLink || "Add website"}
               </span>
             </div>
             <button 
