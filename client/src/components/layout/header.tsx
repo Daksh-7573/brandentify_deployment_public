@@ -298,11 +298,11 @@ export default function Header() {
                   <div className="h-8 w-8 rounded-full overflow-hidden bg-primary/5 flex items-center justify-center border border-primary/10 shadow-sm group-hover:shadow-md transition-all">
                     <img 
                       className="h-full w-full object-cover" 
-                      src={photoURL || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(username || 'User')}`} 
+                      src={photoURL || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(userData?.name || 'User')}`} 
                       alt="User profile"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
-                        target.src = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(username || 'User')}`;
+                        target.src = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(userData?.name || 'User')}`;
                       }}
                     />
                   </div>
