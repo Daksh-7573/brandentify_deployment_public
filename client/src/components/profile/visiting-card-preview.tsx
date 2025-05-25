@@ -7,6 +7,7 @@ import NeoGlowCard from "./cards/neoglow-card";
 import CreativeCard from "./cards/creative-card";
 import ArtisticCard from "./cards/artistic-card";
 import QuantumCard from "./cards/quantum-card";
+import ProfessionalCardRenewed from "./cards/professional-card-renewed";
 
 interface VisitingCardPreviewProps {
   userData: UserData;
@@ -77,13 +78,12 @@ const VisitingCardPreview: React.FC<VisitingCardPreviewProps> = ({
     );
   }
   
-  // Redirect to Quantum card if professional-renewed is selected
+  // For professional-renewed card style, use the specialized component
   if (cardType === "professional-renewed") {
     return (
       <CardWrapper>
-        <QuantumCard 
+        <ProfessionalCardRenewed 
           userData={userData}
-          isLoading={isLoading}
         />
       </CardWrapper>
     );
