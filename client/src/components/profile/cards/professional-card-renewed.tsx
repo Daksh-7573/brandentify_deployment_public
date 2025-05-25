@@ -24,9 +24,9 @@ const ProfessionalCardRenewed: React.FC<ProfessionalCardRenewedProps> = ({
   const profileURL = `brandentifier.com/${userData.name?.replace(/\s+/g, '').toLowerCase() || 'myprofile'}`;
   
   return (
-    <div className="professional-card bg-white dark:bg-slate-800 w-full h-full rounded-xl overflow-visible shadow-xl border border-blue-200/50 dark:border-blue-800/30 flex flex-col backdrop-blur-sm bg-opacity-90 dark:bg-opacity-90 transition-all duration-300 hover:shadow-blue-200/30 dark:hover:shadow-blue-700/20">
+    <div className="professional-card bg-white dark:bg-slate-800 w-full h-full rounded-2xl overflow-visible shadow-xl border border-blue-200/50 dark:border-blue-800/30 flex flex-col backdrop-blur-sm bg-opacity-90 dark:bg-opacity-90 transition-all duration-300 hover:shadow-blue-200/30 dark:hover:shadow-blue-700/20">
       {/* Card Header with Profile Photo */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-800 h-28 relative overflow-hidden">
+      <div className="bg-gradient-to-r from-blue-600 to-blue-800 h-28 relative overflow-hidden rounded-t-2xl">
         {/* Neo-Glass Header Background Effects */}
         <div className="absolute inset-0 opacity-30">
           <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-blue-300 blur-xl animate-pulse-slow"></div>
@@ -34,7 +34,7 @@ const ProfessionalCardRenewed: React.FC<ProfessionalCardRenewedProps> = ({
         </div>
         
         {/* Profile Photo */}
-        <div className="absolute left-1/2 transform -translate-x-1/2 top-14 z-10">
+        <div className="absolute left-1/2 transform -translate-x-1/2 top-16 z-10">
           <div className="relative">
             <div className="h-24 w-24 rounded-full border-4 border-white dark:border-slate-800 bg-white dark:bg-slate-700 overflow-hidden shadow-lg flex items-center justify-center">
               {userData.photoURL ? (
