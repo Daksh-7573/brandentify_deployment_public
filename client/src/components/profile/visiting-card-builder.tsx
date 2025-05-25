@@ -10,6 +10,7 @@ import { apiRequest } from "@/lib/queryClient";
 
 // Card type options
 const CARD_TYPES = [
+  { id: "professional-renewed", name: "Professional", description: "Modern professional design with sleek UI elements" },
   { id: "quantum", name: "Quantum Tech", description: "Futuristic tech-inspired holographic design for tech professionals" },
   { id: "3d-animated", name: "3D Animated", description: "Interactive 3D hover effects" },
   { id: "holographic", name: "Holographic Glass", description: "Modern transparent design" },
@@ -30,7 +31,7 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
   onCardTypeSelect,
 }) => {
   // Set default card type if none selected
-  const [activeTab, setActiveTab] = useState(selectedCardType || "professional-renewed");
+  const [activeTab, setActiveTab] = useState(selectedCardType || "neoglow");
   const [isSaving, setIsSaving] = useState(false);
   const [isFinalized, setIsFinalized] = useState(selectedCardType === userData.visitingCardType);
   const [isLoading, setIsLoading] = useState(true);
@@ -259,8 +260,7 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
               onValueChange={handleTabChange}
               className="w-full"
             >
-              <TabsList className="grid grid-cols-3 mb-6 dark-tabs-list">
-                <TabsTrigger value="professional-renewed" className="dark-tabs-trigger">Professional</TabsTrigger>
+              <TabsList className="grid grid-cols-2 mb-6 dark-tabs-list">
                 <TabsTrigger value="3d-animated" className="dark-tabs-trigger">3D</TabsTrigger>
                 <TabsTrigger value="holographic" className="dark-tabs-trigger">Holographic</TabsTrigger>
               </TabsList>

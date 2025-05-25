@@ -202,25 +202,27 @@ const ArtisticCard: React.FC<ArtisticCardProps> = ({ userData }) => {
                     onMouseEnter={() => setHoveredSection('profile')}
                     onMouseLeave={() => setHoveredSection(null)}
                   >
-                    {userData.photoURL ? (
-                      <img 
-                        src={userData.photoURL} 
-                        alt={userData.name || "Profile"}
-                        className="h-full w-full object-cover"
-                        style={{ borderRadius: "inherit" }}
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          target.src = "https://ui-avatars.com/api/?name=" + (userData.name || "User") + "&background=e6e6e6&color=5a5a5a";
-                        }}
-                      />
-                    ) : (
-                      <img 
-                        src={`https://ui-avatars.com/api/?name=${userData.name || "User"}&background=e6e6e6&color=5a5a5a`}
-                        alt={userData.name || "Profile"} 
-                        className="h-full w-full object-cover"
-                        style={{ borderRadius: "inherit" }}
-                      />
-                    )}
+                    <div className="h-full w-full bg-amber-50/30 relative flex items-center justify-center" style={{ borderRadius: "inherit" }}>
+                      {userData.photoURL ? (
+                        <img 
+                          src={userData.photoURL} 
+                          alt={userData.name || "Profile"}
+                          className="h-full w-full object-cover"
+                          style={{ borderRadius: "inherit" }}
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.name || "User")}&background=e6e6e6&color=5a5a5a&size=200`;
+                          }}
+                        />
+                      ) : (
+                        <img 
+                          src={`https://ui-avatars.com/api/?name=${encodeURIComponent(userData.name || "User")}&background=e6e6e6&color=5a5a5a&size=200`}
+                          alt={userData.name || "Profile"} 
+                          className="h-full w-full object-cover"
+                          style={{ borderRadius: "inherit" }}
+                        />
+                      )}
+                    </div>
                     
                     {/* Sketch effect border */}
                     <div 
