@@ -32,43 +32,44 @@ const ProfessionalCardRenewed: React.FC<ProfessionalCardRenewedProps> = ({
           <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-blue-300 blur-xl animate-pulse-slow"></div>
           <div className="absolute -bottom-4 -left-10 w-32 h-32 rounded-full bg-purple-300 blur-xl animate-pulse-slow-delay"></div>
         </div>
-        
-        {/* Profile Photo */}
-        <div className="absolute left-1/2 transform -translate-x-1/2 top-16 z-10">
-          <div className="relative">
-            <div className="h-24 w-24 rounded-full border-4 border-white dark:border-slate-800 bg-white dark:bg-slate-700 shadow-lg">
-              {userData.photoURL ? (
-                <div className="h-full w-full flex items-center justify-center overflow-hidden">
-                  <img 
-                    src={userData.photoURL} 
-                    alt={userData.name || "Profile"} 
-                    className="min-h-full min-w-full object-cover"
-                    style={{ objectPosition: "center" }}
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.src = `https://ui-avatars.com/api/?name=${userData.name || "User"}&background=e2e8f0&color=475569&size=200`;
-                    }}
-                  />
-                </div>
-              ) : (
-                <div className="h-full w-full flex items-center justify-center overflow-hidden">
-                  <img 
-                    src={`https://ui-avatars.com/api/?name=${userData.name || "User"}&background=e2e8f0&color=475569&size=200`}
-                    alt={userData.name || "Profile"}
-                    className="min-h-full min-w-full object-cover"
-                    style={{ objectPosition: "center" }}
-                  />
-                </div>
-              )}
-            </div>
-            
-            {/* Verification badge */}
-            {isIndustryLeader && (
-              <div className="absolute bottom-0 right-0 bg-blue-500 text-white p-1 rounded-full shadow-md">
-                <BadgeCheck className="h-5 w-5 drop-shadow-md" />
+
+      </div>
+
+      {/* Profile Photo - positioned to overlap header and white section */}
+      <div className="absolute left-1/2 transform -translate-x-1/2 -top-12 z-50">
+        <div className="relative">
+          <div className="h-24 w-24 rounded-full border-4 border-white dark:border-slate-800 bg-white dark:bg-slate-700 shadow-lg">
+            {userData.photoURL ? (
+              <div className="h-full w-full flex items-center justify-center overflow-hidden rounded-full">
+                <img 
+                  src={userData.photoURL} 
+                  alt={userData.name || "Profile"} 
+                  className="min-h-full min-w-full object-cover"
+                  style={{ objectPosition: "center" }}
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.src = `https://ui-avatars.com/api/?name=${userData.name || "User"}&background=e2e8f0&color=475569&size=200`;
+                  }}
+                />
+              </div>
+            ) : (
+              <div className="h-full w-full flex items-center justify-center overflow-hidden rounded-full">
+                <img 
+                  src={`https://ui-avatars.com/api/?name=${userData.name || "User"}&background=e2e8f0&color=475569&size=200`}
+                  alt={userData.name || "Profile"}
+                  className="min-h-full min-w-full object-cover"
+                  style={{ objectPosition: "center" }}
+                />
               </div>
             )}
           </div>
+          
+          {/* Verification badge */}
+          {isIndustryLeader && (
+            <div className="absolute bottom-0 right-0 bg-blue-500 text-white p-1 rounded-full shadow-md">
+              <BadgeCheck className="h-5 w-5 drop-shadow-md" />
+            </div>
+          )}
         </div>
       </div>
 
