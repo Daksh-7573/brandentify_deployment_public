@@ -493,8 +493,10 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
                   >
                     <Mail className="h-3 w-3 text-white" />
                   </div>
-                  <span className="text-xs truncate max-w-[140px] font-medium">
-                    {userData.email}
+                  <span className="text-xs truncate max-w-[140px] font-medium" style={{
+                    color: userData.email ? creativeColors.darkText : "#999"
+                  }}>
+                    {userData.email || "Add email address"}
                   </span>
                 </div>
                 <button
@@ -594,8 +596,10 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
                       <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
                     </svg>
                   </div>
-                  <span className="text-xs truncate max-w-[140px] font-medium">
-                    {profileLink}
+                  <span className="text-xs truncate max-w-[140px] font-medium" style={{
+                    color: profileLink ? creativeColors.darkText : "#999"
+                  }}>
+                    {profileLink || "Add website"}
                   </span>
                 </div>
                 <button
