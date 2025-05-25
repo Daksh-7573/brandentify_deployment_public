@@ -142,9 +142,9 @@ const NeoGlowCard: React.FC<NeoGlowCardProps> = ({ userData }) => {
         backgroundColor: colors.bgCard,
         boxShadow: `0 20px 30px -10px rgba(0, 0, 0, 0.5),
                     inset 0 0 0 1px ${colors.border},
-                    0 0 20px ${colors.teal}20`,
+                    0 0 25px ${colors.teal}40`,
         transform: `perspective(1000px) rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`,
-        transition: "transform 0.2s ease-out",
+        transition: "all 0.3s ease-out",
       }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
@@ -217,11 +217,12 @@ const NeoGlowCard: React.FC<NeoGlowCardProps> = ({ userData }) => {
             <div 
               className="absolute inset-0 rounded-full"
               style={{
-                transform: "scale(1.05)",
-                background: `radial-gradient(circle, transparent 55%, ${colors.teal} 75%, transparent 75%)`,
-                opacity: hoveredSection === 'profile' ? 0.9 : 0.4,
-                animation: "pulse 3s infinite alternate ease-in-out",
+                transform: "scale(1.08)",
+                background: `radial-gradient(circle, transparent 55%, ${colors.teal} 75%, transparent 80%)`,
+                opacity: hoveredSection === 'profile' ? 0.9 : 0.5,
+                animation: "pulse 4s infinite alternate ease-in-out",
                 transition: "opacity 0.5s ease",
+                filter: "blur(1px)",
               }}
             />
             
@@ -229,21 +230,24 @@ const NeoGlowCard: React.FC<NeoGlowCardProps> = ({ userData }) => {
             <div 
               className="absolute inset-0 rounded-full"
               style={{
-                boxShadow: `0 0 10px ${colors.teal}80, inset 0 0 2px ${colors.teal}`,
+                boxShadow: `0 0 15px ${colors.teal}90, inset 0 0 3px ${colors.teal}`,
                 opacity: hoveredSection === 'profile' ? 1 : 0.8,
-                transform: "scale(1.02)",
+                transform: "scale(1.03)",
                 animation: "rotate 15s linear infinite",
                 transition: "opacity 0.3s ease",
               }}
             />
             
             {/* Avatar Container */}
-            <div className="absolute inset-0 rounded-full overflow-hidden flex items-center justify-center">
+            <div className="absolute inset-0 rounded-full overflow-hidden flex items-center justify-center border border-white/10">
               {userData.photoURL ? (
                 <img 
                   src={userData.photoURL}
                   alt={userData.name || "Profile"}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover transition-transform duration-300"
+                  style={{
+                    transform: hoveredSection === 'profile' ? 'scale(1.05)' : 'scale(1)',
+                  }}
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
                     target.src = `https://ui-avatars.com/api/?name=${userData.name || "User"}&background=${colors.bgNavy.substring(1)}&color=${colors.teal.substring(1)}`;
@@ -253,15 +257,20 @@ const NeoGlowCard: React.FC<NeoGlowCardProps> = ({ userData }) => {
                 <img 
                   src={`https://ui-avatars.com/api/?name=${userData.name || "User"}&background=${colors.bgNavy.substring(1)}&color=${colors.teal.substring(1)}`}
                   alt={userData.name || "Profile"}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover transition-transform duration-300"
+                  style={{
+                    transform: hoveredSection === 'profile' ? 'scale(1.05)' : 'scale(1)',
+                  }}
                 />
               )}
               
               {/* Additional Overlay Glow */}
               <div 
-                className="absolute inset-0"
+                className="absolute inset-0 backdrop-blur-[1px]"
                 style={{
                   background: `radial-gradient(circle at 30% 30%, transparent 65%, ${colors.glassOverlay} 100%)`,
+                  opacity: hoveredSection === 'profile' ? 0.6 : 0.4,
+                  transition: "opacity 0.3s ease",
                 }}
               />
             </div>
@@ -300,15 +309,16 @@ const NeoGlowCard: React.FC<NeoGlowCardProps> = ({ userData }) => {
             onMouseLeave={() => setHoveredSection(null)}
           >
             <h2 
-              className="text-xl font-bold mb-1"
+              className="text-xl font-bold mb-2"
               style={{
                 color: colors.textPrimary,
                 fontFamily: "'Space Grotesk', 'Sora', sans-serif",
                 textShadow: hoveredSection === 'name' 
-                  ? `0 0 10px ${colors.teal}, 0 0 20px ${colors.teal}60`
-                  : `0 0 5px ${colors.teal}80`,
+                  ? `0 0 15px ${colors.teal}, 0 0 30px ${colors.teal}60`
+                  : `0 0 8px ${colors.teal}60`,
                 letterSpacing: "0.05em",
-                transition: "text-shadow 0.3s ease",
+                transition: "all 0.3s ease",
+                transform: hoveredSection === 'name' ? 'scale(1.02)' : 'scale(1)',
               }}
             >
               {userData.name || "YOUR NAME"}
@@ -316,18 +326,21 @@ const NeoGlowCard: React.FC<NeoGlowCardProps> = ({ userData }) => {
             
             {/* Job Title in Glowing Pill */}
             <div 
-              className="inline-block px-3 py-1 rounded-full"
+              className="inline-block px-4 py-1.5 rounded-full backdrop-blur-sm"
               style={{
-                background: `linear-gradient(90deg, ${colors.bgNavy}, ${colors.bgCard})`,
+                background: `linear-gradient(90deg, ${colors.bgNavy}CC, ${colors.bgCard}CC)`,
                 border: `1px solid ${colors.border}`,
-                boxShadow: `0 0 10px ${colors.teal}40`,
+                boxShadow: `0 0 12px ${colors.teal}50`,
+                transition: "all 0.3s ease",
+                transform: hoveredSection === 'name' ? 'scale(1.05)' : 'scale(1)',
               }}
             >
               <p 
                 className="text-sm font-medium"
                 style={{
-                  color: colors.textSecondary,
-                  textShadow: `0 0 5px ${colors.teal}60`,
+                  color: hoveredSection === 'name' ? colors.teal : colors.textSecondary,
+                  textShadow: `0 0 8px ${colors.teal}70`,
+                  transition: "color 0.3s ease",
                 }}
               >
                 {userData.title || "ADD DESIGNATION"}
@@ -338,12 +351,18 @@ const NeoGlowCard: React.FC<NeoGlowCardProps> = ({ userData }) => {
         
         {/* Glow Divider */}
         <div 
-          className="w-full h-px mb-5"
+          className="w-full h-[1px] mb-5 relative"
           style={{
             background: `linear-gradient(90deg, transparent, ${colors.teal}, transparent)`,
-            boxShadow: `0 0 8px ${colors.teal}80`,
+            boxShadow: `0 0 10px ${colors.teal}`,
           }}
-        />
+        >
+          <div className="absolute inset-0 blur-sm opacity-70"
+            style={{
+              background: `linear-gradient(90deg, transparent, ${colors.teal}, transparent)`,
+            }}
+          />
+        </div>
         
         {/* Industry & Domain Tags Section */}
         <div className="mb-5">
@@ -352,19 +371,21 @@ const NeoGlowCard: React.FC<NeoGlowCardProps> = ({ userData }) => {
             {industryTags.length > 0 && industryTags.slice(0, 2).map((tag, index) => (
               <div 
                 key={`industry-${index}`}
-                className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium"
+                className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium backdrop-blur-sm"
                 style={{
-                  backgroundColor: `${colors.bgNavy}`,
+                  backgroundColor: `${colors.bgNavy}CC`,
                   color: index === 0 ? colors.teal : colors.cyberBlue,
-                  border: `1px solid ${index === 0 ? colors.teal : colors.cyberBlue}40`,
-                  boxShadow: `0 0 8px ${index === 0 ? colors.teal : colors.cyberBlue}30`,
-                  transform: `translateY(${hoveredSection === `tag-${index}` ? '-2px' : '0'})`,
-                  transition: "all 0.2s ease",
+                  border: `1px solid ${index === 0 ? colors.teal : colors.cyberBlue}60`,
+                  boxShadow: hoveredSection === `tag-${index}` ? 
+                    `0 0 12px ${index === 0 ? colors.teal : colors.cyberBlue}70` :
+                    `0 0 8px ${index === 0 ? colors.teal : colors.cyberBlue}40`,
+                  transform: `translateY(${hoveredSection === `tag-${index}` ? '-2px' : '0'}) scale(${hoveredSection === `tag-${index}` ? '1.05' : '1'})`,
+                  transition: "all 0.3s ease",
                 }}
                 onMouseEnter={() => setHoveredSection(`tag-${index}`)}
                 onMouseLeave={() => setHoveredSection(null)}
               >
-                <Hash className="h-3 w-3 mr-1 opacity-70" />
+                <Hash className="h-3 w-3 mr-1 opacity-80" />
                 {tag.trim()}
               </div>
             ))}
@@ -372,19 +393,21 @@ const NeoGlowCard: React.FC<NeoGlowCardProps> = ({ userData }) => {
             {/* Domain Tag */}
             {userData.domain && (
               <div 
-                className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium"
+                className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium backdrop-blur-sm"
                 style={{
-                  backgroundColor: `${colors.bgNavy}`,
+                  backgroundColor: `${colors.bgNavy}CC`,
                   color: colors.magenta,
-                  border: `1px solid ${colors.magenta}40`,
-                  boxShadow: `0 0 8px ${colors.magenta}30`,
-                  transform: `translateY(${hoveredSection === 'domain-tag' ? '-2px' : '0'})`,
-                  transition: "all 0.2s ease",
+                  border: `1px solid ${colors.magenta}60`,
+                  boxShadow: hoveredSection === 'domain-tag' ? 
+                    `0 0 12px ${colors.magenta}70` :
+                    `0 0 8px ${colors.magenta}40`,
+                  transform: `translateY(${hoveredSection === 'domain-tag' ? '-2px' : '0'}) scale(${hoveredSection === 'domain-tag' ? '1.05' : '1'})`,
+                  transition: "all 0.3s ease",
                 }}
                 onMouseEnter={() => setHoveredSection('domain-tag')}
                 onMouseLeave={() => setHoveredSection(null)}
               >
-                <Hash className="h-3 w-3 mr-1 opacity-70" />
+                <Hash className="h-3 w-3 mr-1 opacity-80" />
                 {userData.domain}
               </div>
             )}
