@@ -547,6 +547,7 @@ const ArtisticCard: React.FC<ArtisticCardProps> = ({ userData }) => {
                       className="w-6 h-6 rounded-full flex items-center justify-center"
                       style={{
                         backgroundColor: artisticColors.mint,
+                        filter: `drop-shadow(0 0 3px ${artisticColors.mint}80)`,
                       }}
                     >
                       <Mail className="h-3 w-3 text-white" />
@@ -579,7 +580,7 @@ const ArtisticCard: React.FC<ArtisticCardProps> = ({ userData }) => {
               </div>
               
               {/* Phone - Stamped label */}
-                <div 
+              <div 
                   className="relative"
                   style={{
                     transform: hoveredSection === 'phone' 
@@ -603,6 +604,7 @@ const ArtisticCard: React.FC<ArtisticCardProps> = ({ userData }) => {
                         className="w-6 h-6 rounded-full flex items-center justify-center"
                         style={{
                           backgroundColor: artisticColors.navy,
+                          filter: `drop-shadow(0 0 3px ${artisticColors.navy}80)`,
                           animation: hoveredSection === 'phone' ? 'pulse 0.8s infinite' : 'none'
                         }}
                       >
@@ -665,6 +667,7 @@ const ArtisticCard: React.FC<ArtisticCardProps> = ({ userData }) => {
                       className="w-6 h-6 rounded-full flex items-center justify-center"
                       style={{
                         backgroundColor: artisticColors.rust,
+                        filter: `drop-shadow(0 0 3px ${artisticColors.rust}80)`,
                       }}
                     >
                       <svg 
@@ -691,9 +694,10 @@ const ArtisticCard: React.FC<ArtisticCardProps> = ({ userData }) => {
                       className="text-xs truncate max-w-[140px] font-medium"
                       style={{
                         fontFamily: "'Sriracha', cursive",
+                        color: profileLink ? artisticColors.inkBlack : "#999"
                       }}
                     >
-                      {profileLink}
+                      {profileLink || "Add website"}
                     </span>
                   </div>
                   <button
