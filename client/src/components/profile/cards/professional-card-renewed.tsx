@@ -36,7 +36,7 @@ const ProfessionalCardRenewed: React.FC<ProfessionalCardRenewedProps> = ({
         {/* Profile Photo */}
         <div className="absolute left-1/2 transform -translate-x-1/2 top-14 z-10">
           <div className="relative">
-            <div className="h-24 w-24 rounded-full border-4 border-white dark:border-slate-800 bg-white dark:bg-slate-700 overflow-hidden shadow-lg">
+            <div className="h-24 w-24 rounded-full border-4 border-white dark:border-slate-800 bg-white dark:bg-slate-700 overflow-hidden shadow-lg flex items-center justify-center">
               {userData.photoURL ? (
                 <img 
                   src={userData.photoURL} 
@@ -44,12 +44,12 @@ const ProfessionalCardRenewed: React.FC<ProfessionalCardRenewedProps> = ({
                   className="h-full w-full object-cover"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
-                    target.src = `https://ui-avatars.com/api/?name=${userData.name || "User"}&background=e2e8f0&color=475569`;
+                    target.src = `https://ui-avatars.com/api/?name=${userData.name || "User"}&background=e2e8f0&color=475569&size=200`;
                   }}
                 />
               ) : (
                 <img 
-                  src={`https://ui-avatars.com/api/?name=${userData.name || "User"}&background=e2e8f0&color=475569`}
+                  src={`https://ui-avatars.com/api/?name=${userData.name || "User"}&background=e2e8f0&color=475569&size=200`}
                   alt={userData.name || "Profile"}
                   className="h-full w-full object-cover"
                 />
@@ -145,12 +145,7 @@ const ProfessionalCardRenewed: React.FC<ProfessionalCardRenewedProps> = ({
         </div>
       </div>
       
-      {/* Card Footer with Neo-Glass styling */}
-      <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 dark:from-blue-600/20 dark:to-purple-600/20 py-3 px-4 text-center border-t border-blue-100 dark:border-blue-900">
-        <span className="text-xs text-blue-600/70 dark:text-blue-400/70 font-medium tracking-wide">
-          Professional Card
-        </span>
-      </div>
+      {/* No footer as requested */}
     </div>
   );
 };
