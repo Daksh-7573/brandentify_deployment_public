@@ -10,7 +10,6 @@ import { apiRequest } from "@/lib/queryClient";
 
 // Card type options
 const CARD_TYPES = [
-  { id: "professional-renewed", name: "Professional", description: "Modern professional design with sleek UI elements" },
   { id: "quantum", name: "Quantum Tech", description: "Futuristic tech-inspired holographic design for tech professionals" },
   { id: "3d-animated", name: "3D Animated", description: "Interactive 3D hover effects" },
   { id: "holographic", name: "Holographic Glass", description: "Modern transparent design" },
