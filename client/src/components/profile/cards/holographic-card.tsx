@@ -211,24 +211,26 @@ const HolographicCard: React.FC<HolographicCardProps> = ({ userData }) => {
                 }}
               />
               
-              {/* Profile image */}
-              {userData.photoURL ? (
-                <img 
-                  src={userData.photoURL} 
-                  alt={userData.name || "Profile"} 
-                  className="h-full w-full object-cover relative z-10"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.src = "https://ui-avatars.com/api/?name=" + (userData.name || "User") + "&background=22d3ee&color=fff";
-                  }}
-                />
-              ) : (
-                <img 
-                  src={`https://ui-avatars.com/api/?name=${userData.name || "User"}&background=22d3ee&color=fff`}
-                  alt={userData.name || "Profile"}
-                  className="h-full w-full object-cover relative z-10"
-                />
-              )}
+              {/* Profile image with improved handling */}
+              <div className="h-full w-full bg-sky-500/20 relative z-10 flex items-center justify-center">
+                {userData.photoURL ? (
+                  <img 
+                    src={userData.photoURL} 
+                    alt={userData.name || "Profile"} 
+                    className="h-full w-full object-cover"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.name || "User")}&background=22d3ee&color=fff&size=200`;
+                    }}
+                  />
+                ) : (
+                  <img 
+                    src={`https://ui-avatars.com/api/?name=${encodeURIComponent(userData.name || "User")}&background=22d3ee&color=fff&size=200`}
+                    alt={userData.name || "Profile"}
+                    className="h-full w-full object-cover"
+                  />
+                )}
+              </div>
               
               {/* Reflective effect */}
               <div 
