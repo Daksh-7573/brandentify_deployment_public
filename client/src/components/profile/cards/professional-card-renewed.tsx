@@ -36,23 +36,29 @@ const ProfessionalCardRenewed: React.FC<ProfessionalCardRenewedProps> = ({
         {/* Profile Photo */}
         <div className="absolute left-1/2 transform -translate-x-1/2 top-16 z-10">
           <div className="relative">
-            <div className="h-24 w-24 rounded-full border-4 border-white dark:border-slate-800 bg-white dark:bg-slate-700 overflow-hidden shadow-lg flex items-center justify-center">
+            <div className="h-24 w-24 rounded-full border-4 border-white dark:border-slate-800 bg-white dark:bg-slate-700 shadow-lg">
               {userData.photoURL ? (
-                <img 
-                  src={userData.photoURL} 
-                  alt={userData.name || "Profile"} 
-                  className="h-full w-full object-contain"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.src = `https://ui-avatars.com/api/?name=${userData.name || "User"}&background=e2e8f0&color=475569&size=200`;
-                  }}
-                />
+                <div className="h-full w-full flex items-center justify-center overflow-hidden">
+                  <img 
+                    src={userData.photoURL} 
+                    alt={userData.name || "Profile"} 
+                    className="min-h-full min-w-full object-cover"
+                    style={{ objectPosition: "center" }}
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = `https://ui-avatars.com/api/?name=${userData.name || "User"}&background=e2e8f0&color=475569&size=200`;
+                    }}
+                  />
+                </div>
               ) : (
-                <img 
-                  src={`https://ui-avatars.com/api/?name=${userData.name || "User"}&background=e2e8f0&color=475569&size=200`}
-                  alt={userData.name || "Profile"}
-                  className="h-full w-full object-contain"
-                />
+                <div className="h-full w-full flex items-center justify-center overflow-hidden">
+                  <img 
+                    src={`https://ui-avatars.com/api/?name=${userData.name || "User"}&background=e2e8f0&color=475569&size=200`}
+                    alt={userData.name || "Profile"}
+                    className="min-h-full min-w-full object-cover"
+                    style={{ objectPosition: "center" }}
+                  />
+                </div>
               )}
             </div>
             
