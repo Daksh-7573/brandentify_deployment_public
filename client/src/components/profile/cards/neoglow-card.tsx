@@ -415,11 +415,13 @@ const NeoGlowCard: React.FC<NeoGlowCardProps> = ({ userData }) => {
             {/* More industries indicator */}
             {industryTags.length > 2 && (
               <div 
-                className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium"
+                className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium backdrop-blur-sm"
                 style={{
-                  backgroundColor: colors.bgNavy,
-                  color: colors.textMuted,
+                  backgroundColor: `${colors.bgNavy}CC`,
+                  color: colors.textSecondary,
                   border: `1px solid ${colors.border}`,
+                  boxShadow: `0 0 8px ${colors.teal}20`,
+                  transition: "all 0.3s ease",
                 }}
               >
                 +{industryTags.length - 2} more
