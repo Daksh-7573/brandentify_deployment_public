@@ -30,7 +30,7 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
   onCardTypeSelect,
 }) => {
   // Set default card type if none selected
-  const [activeTab, setActiveTab] = useState(selectedCardType || "neoglow");
+  const [activeTab, setActiveTab] = useState(selectedCardType || "professional-renewed");
   const [isSaving, setIsSaving] = useState(false);
   const [isFinalized, setIsFinalized] = useState(selectedCardType === userData.visitingCardType);
   const [isLoading, setIsLoading] = useState(true);
@@ -259,7 +259,8 @@ const VisitingCardBuilder: React.FC<VisitingCardBuilderProps> = ({
               onValueChange={handleTabChange}
               className="w-full"
             >
-              <TabsList className="grid grid-cols-2 mb-6 dark-tabs-list">
+              <TabsList className="grid grid-cols-3 mb-6 dark-tabs-list">
+                <TabsTrigger value="professional-renewed" className="dark-tabs-trigger">Professional</TabsTrigger>
                 <TabsTrigger value="3d-animated" className="dark-tabs-trigger">3D</TabsTrigger>
                 <TabsTrigger value="holographic" className="dark-tabs-trigger">Holographic</TabsTrigger>
               </TabsList>
