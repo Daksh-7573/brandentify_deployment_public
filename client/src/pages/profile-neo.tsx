@@ -378,11 +378,15 @@ export default function ProfileNeo() {
                   {/* Profile Image */}
                   <div className="flex-shrink-0 flex flex-col items-center">
                     <div className="relative group">
-                      <div className="w-32 h-32 rounded-full overflow-hidden border-2 border-white/20 bg-black/30 backdrop-blur-md">
+                      <div className="w-32 h-32 rounded-full overflow-hidden border-2 border-white/20 bg-black/30 backdrop-blur-md shadow-lg">
                         <img 
-                          src={profilePictureUrl || "https://api.dicebear.com/7.x/initials/svg?seed=" + userData?.name} 
+                          src={profilePictureUrl || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(userData?.name || 'User')}`} 
                           alt={userData?.name || "Profile"} 
                           className="w-full h-full object-cover"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.src = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(userData?.name || 'User')}`;
+                          }}
                         />
                         {isUploading && (
                           <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/50 text-white">

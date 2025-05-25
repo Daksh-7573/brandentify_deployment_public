@@ -78,17 +78,7 @@ const VisitingCardPreview: React.FC<VisitingCardPreviewProps> = ({
     );
   }
   
-  // For professional card style, use the redesigned component
-  if (cardType === "professional-renewed") {
-    return (
-      <CardWrapper>
-        <ProfessionalCardRenewed 
-          userData={userData} 
-          isIndustryLeader={userData.username === "elonmusk"} 
-        />
-      </CardWrapper>
-    );
-  }
+  // Removed Professional Card option as per requirements
   
   // For quantum card style, use the specialized component
   if (cardType === "quantum") {
