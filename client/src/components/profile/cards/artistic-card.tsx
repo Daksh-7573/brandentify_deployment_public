@@ -551,8 +551,10 @@ const ArtisticCard: React.FC<ArtisticCardProps> = ({ userData }) => {
                     >
                       <Mail className="h-3 w-3 text-white" />
                     </div>
-                    <span className="text-xs truncate max-w-[140px] font-medium">
-                      {userData.email}
+                    <span className="text-xs truncate max-w-[140px] font-medium" style={{
+                      color: userData.email ? artisticColors.inkBlack : "#999"
+                    }}>
+                      {userData.email || "Add email address"}
                     </span>
                   </div>
                   <button
@@ -577,7 +579,6 @@ const ArtisticCard: React.FC<ArtisticCardProps> = ({ userData }) => {
               </div>
               
               {/* Phone - Stamped label */}
-              {userData.phoneNumber && (
                 <div 
                   className="relative"
                   style={{
@@ -607,8 +608,10 @@ const ArtisticCard: React.FC<ArtisticCardProps> = ({ userData }) => {
                       >
                         <Phone className="h-3 w-3 text-white" />
                       </div>
-                      <span className="text-xs truncate max-w-[140px] font-medium">
-                        {userData.phoneNumber}
+                      <span className="text-xs truncate max-w-[140px] font-medium" style={{
+                        color: userData.phoneNumber ? artisticColors.inkBlack : "#999"
+                      }}>
+                        {userData.phoneNumber || "Add phone number"}
                       </span>
                     </div>
                     <button
@@ -632,7 +635,6 @@ const ArtisticCard: React.FC<ArtisticCardProps> = ({ userData }) => {
                     }}
                   />
                 </div>
-              )}
               
               {/* Website/Profile Link - Notebook paper */}
               <div 
