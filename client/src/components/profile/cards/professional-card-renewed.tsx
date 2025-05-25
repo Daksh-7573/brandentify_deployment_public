@@ -36,7 +36,7 @@ const ProfessionalCardRenewed: React.FC<ProfessionalCardRenewedProps> = ({
       </div>
 
       {/* Profile Photo - positioned to overlap header and white section */}
-      <div className="absolute left-1/2 transform -translate-x-1/2 -top-12 z-50">
+      <div className="absolute left-1/2 transform -translate-x-1/2 top-16 z-50">
         <div className="relative">
           <div className="h-24 w-24 rounded-full border-4 border-white dark:border-slate-800 bg-white dark:bg-slate-700 shadow-lg">
             {userData.photoURL ? (
