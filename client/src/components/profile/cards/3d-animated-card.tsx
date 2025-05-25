@@ -245,23 +245,25 @@ const ThreeDAnimatedCard: React.FC<ThreeDAnimatedCardProps> = ({ userData }) => 
                   boxShadow: `0 0 20px ${colors.electricBlue}40`,
                 }}
               >
-                {userData.photoURL ? (
-                  <img 
-                    src={userData.photoURL} 
-                    alt={userData.name || "Profile"} 
-                    className="h-full w-full object-cover"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.src = `https://ui-avatars.com/api/?name=${userData.name || "User"}&background=1e293b&color=38bdf8`;
-                    }}
-                  />
-                ) : (
-                  <img 
-                    src={`https://ui-avatars.com/api/?name=${userData.name || "User"}&background=1e293b&color=38bdf8`}
-                    alt={userData.name || "Profile"}
-                    className="h-full w-full object-cover"
-                  />
-                )}
+                <div className="h-full w-full bg-sky-900/20 relative z-10 flex items-center justify-center">
+                  {userData.photoURL ? (
+                    <img 
+                      src={userData.photoURL} 
+                      alt={userData.name || "Profile"} 
+                      className="h-full w-full object-cover"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.name || "User")}&background=1e293b&color=38bdf8&size=200`;
+                      }}
+                    />
+                  ) : (
+                    <img 
+                      src={`https://ui-avatars.com/api/?name=${encodeURIComponent(userData.name || "User")}&background=1e293b&color=38bdf8&size=200`}
+                      alt={userData.name || "Profile"}
+                      className="h-full w-full object-cover"
+                    />
+                  )}
+                </div>
                 
                 {/* Light reflection overlay */}
                 <div 

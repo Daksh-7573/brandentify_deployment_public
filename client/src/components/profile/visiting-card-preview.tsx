@@ -6,6 +6,7 @@ import HolographicCard from "./cards/holographic-card";
 import NeoGlowCard from "./cards/neoglow-card";
 import CreativeCard from "./cards/creative-card";
 import ArtisticCard from "./cards/artistic-card";
+import ProfessionalCardRenewed from "./cards/professional-card-renewed";
 import QuantumCard from "./cards/quantum-card";
 
 interface VisitingCardPreviewProps {
@@ -77,17 +78,7 @@ const VisitingCardPreview: React.FC<VisitingCardPreviewProps> = ({
     );
   }
   
-  // Redirect to Quantum card if professional-renewed is selected
-  if (cardType === "professional-renewed") {
-    return (
-      <CardWrapper>
-        <QuantumCard 
-          userData={userData}
-          isLoading={isLoading}
-        />
-      </CardWrapper>
-    );
-  }
+  // Removed Professional Card option as per requirements
   
   // For quantum card style, use the specialized component
   if (cardType === "quantum") {
@@ -111,30 +102,26 @@ const VisitingCardPreview: React.FC<VisitingCardPreviewProps> = ({
       `}>
         {/* Card header */}
         <div className={`h-24 ${cardType === "minimalist" ? "bg-gradient-to-r from-blue-600 to-blue-800" : "bg-transparent"} relative`}>
-          {/* Profile picture with Neo-Glass styling */}
+          {/* Profile picture */}
           <div className="absolute left-1/2 transform -translate-x-1/2 top-12">
-            <div className="relative">
-              <div className="h-20 w-20 rounded-full border-4 border-white/80 dark:border-slate-900/80 overflow-hidden bg-white dark:bg-slate-800 flex items-center justify-center shadow-lg backdrop-blur-sm">
-                {userData.photoURL ? (
-                  <img 
-                    src={userData.photoURL} 
-                    alt={userData.name || "Profile"} 
-                    className="h-full w-full object-cover"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.src = "https://ui-avatars.com/api/?name=" + (userData.name || "User");
-                    }}
-                  />
-                ) : (
-                  <img 
-                    src={`https://ui-avatars.com/api/?name=${userData.name || "User"}`}
-                    alt={userData.name || "Profile"}
-                    className="h-full w-full object-cover"
-                  />
-                )}
-              </div>
-              {/* Neo-Glass glow effect */}
-              <div className="absolute -inset-1 bg-blue-500/20 rounded-full blur-md -z-10"></div>
+            <div className="h-20 w-20 rounded-full border-4 border-white dark:border-slate-900 overflow-hidden bg-white dark:bg-slate-800 flex items-center justify-center">
+              {userData.photoURL ? (
+                <img 
+                  src={userData.photoURL} 
+                  alt={userData.name || "Profile"} 
+                  className="h-full w-full object-cover"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.src = "https://ui-avatars.com/api/?name=" + (userData.name || "User");
+                  }}
+                />
+              ) : (
+                <img 
+                  src={`https://ui-avatars.com/api/?name=${userData.name || "User"}`}
+                  alt={userData.name || "Profile"}
+                  className="h-full w-full object-cover"
+                />
+              )}
             </div>
           </div>
         </div>
