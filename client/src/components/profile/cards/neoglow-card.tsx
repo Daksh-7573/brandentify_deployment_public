@@ -550,6 +550,7 @@ const NeoGlowCard: React.FC<NeoGlowCardProps> = ({ userData }) => {
                 backgroundColor: colors.panelBg,
                 transform: `translateY(${hoveredSection === 'email' ? '-2px' : '0'})`,
                 transition: "transform 0.3s ease",
+                borderLeft: `2px solid ${colors.teal}`,
               }}
               onMouseEnter={() => setHoveredSection('email')}
               onMouseLeave={() => setHoveredSection(null)}
@@ -560,6 +561,7 @@ const NeoGlowCard: React.FC<NeoGlowCardProps> = ({ userData }) => {
                   style={{
                     color: colors.teal,
                     filter: `drop-shadow(0 0 3px ${colors.teal}80)`,
+                    animation: hoveredSection === 'email' ? 'shake 0.8s ease-in-out infinite' : 'none',
                   }}
                 />
                 <span 
@@ -646,6 +648,7 @@ const NeoGlowCard: React.FC<NeoGlowCardProps> = ({ userData }) => {
                 backgroundColor: colors.panelBg,
                 transform: `translateY(${hoveredSection === 'profile-link' ? '-2px' : '0'})`,
                 transition: "transform 0.3s ease",
+                borderLeft: `2px solid ${colors.magenta}`,
               }}
               onMouseEnter={() => setHoveredSection('profile-link')}
               onMouseLeave={() => setHoveredSection(null)}
@@ -656,6 +659,7 @@ const NeoGlowCard: React.FC<NeoGlowCardProps> = ({ userData }) => {
                   style={{
                     color: colors.magenta,
                     filter: `drop-shadow(0 0 3px ${colors.magenta}80)`,
+                    animation: hoveredSection === 'profile-link' ? 'shake 0.8s ease-in-out infinite' : 'none',
                   }}
                 />
                 <span 
