@@ -1099,7 +1099,7 @@ export default function WorkExperience() {
           
           <div className="grid gap-4 py-2">
             <div className="space-y-2">
-              <Label htmlFor="title" className="flex items-center">
+              <Label htmlFor="title" className="flex items-center text-white">
                 Job Title <span className="text-red-500 ml-1">*</span>
               </Label>
               <Input
@@ -1108,16 +1108,19 @@ export default function WorkExperience() {
                 placeholder="e.g. Software Engineer"
                 value={formData.title}
                 onChange={handleInputChange}
-                className={cn(formErrors.title ? "border-red-500" : "", "bg-gray-50")}
+                className={cn(
+                  formErrors.title ? "border-red-500" : "border-white/20", 
+                  "bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 rounded-md placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+                )}
                 disabled={createExperienceMutation.isPending}
               />
               {formErrors.title && (
-                <p className="text-sm text-red-500">Job title is required</p>
+                <p className="text-sm text-red-400">Job title is required</p>
               )}
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="company" className="flex items-center">
+              <Label htmlFor="company" className="flex items-center text-white">
                 Company <span className="text-red-500 ml-1">*</span>
               </Label>
               <Input
@@ -1126,16 +1129,19 @@ export default function WorkExperience() {
                 placeholder="e.g. Acme Corporation"
                 value={formData.company}
                 onChange={handleInputChange}
-                className={cn(formErrors.company ? "border-red-500" : "", "bg-gray-50")}
+                className={cn(
+                  formErrors.company ? "border-red-500" : "border-white/20", 
+                  "bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 rounded-md placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+                )}
                 disabled={createExperienceMutation.isPending}
               />
               {formErrors.company && (
-                <p className="text-sm text-red-500">Company name is required</p>
+                <p className="text-sm text-red-400">Company name is required</p>
               )}
             </div>
             
             <div className="space-y-2 relative">
-              <Label htmlFor="location">
+              <Label htmlFor="location" className="text-white">
                 Location
               </Label>
               <Input
@@ -1144,7 +1150,7 @@ export default function WorkExperience() {
                 placeholder="e.g. New York, NY"
                 value={formData.location}
                 onChange={handleInputChange}
-                className="bg-gray-50"
+                className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 rounded-md placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
                 disabled={createExperienceMutation.isPending}
               />
               
@@ -1168,7 +1174,7 @@ export default function WorkExperience() {
             
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="industry" className="flex items-center">
+                <Label htmlFor="industry" className="flex items-center text-white">
                   Industry <span className="text-red-500 ml-1">*</span>
                 </Label>
                 <Select
@@ -1176,7 +1182,10 @@ export default function WorkExperience() {
                   onValueChange={(value) => handleSelectChange('industry', value)}
                   disabled={createExperienceMutation.isPending}
                 >
-                  <SelectTrigger className={cn(formErrors.industry ? "border-red-500" : "", "bg-gray-50")}>
+                  <SelectTrigger className={cn(
+                    formErrors.industry ? "border-red-500" : "border-white/20", 
+                    "bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 rounded-md focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+                  )}>
                     <SelectValue placeholder="Select industry" />
                   </SelectTrigger>
                   <SelectContent>
@@ -1190,12 +1199,12 @@ export default function WorkExperience() {
                   </SelectContent>
                 </Select>
                 {formErrors.industry && (
-                  <p className="text-sm text-red-500">Industry is required</p>
+                  <p className="text-sm text-red-400">Industry is required</p>
                 )}
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="domain" className="flex items-center">
+                <Label htmlFor="domain" className="flex items-center text-white">
                   Domain <span className="text-red-500 ml-1">*</span>
                 </Label>
                 <Select
@@ -1203,7 +1212,10 @@ export default function WorkExperience() {
                   onValueChange={(value) => handleSelectChange('domain', value)}
                   disabled={!formData.industry || createExperienceMutation.isPending}
                 >
-                  <SelectTrigger className={cn(formErrors.domain ? "border-red-500" : "", "bg-gray-50")}>
+                  <SelectTrigger className={cn(
+                    formErrors.domain ? "border-red-500" : "border-white/20", 
+                    "bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 rounded-md focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+                  )}>
                     <SelectValue placeholder="Select domain" />
                   </SelectTrigger>
                   <SelectContent>
@@ -1217,14 +1229,14 @@ export default function WorkExperience() {
                   </SelectContent>
                 </Select>
                 {formErrors.domain && (
-                  <p className="text-sm text-red-500">Domain is required</p>
+                  <p className="text-sm text-red-400">Domain is required</p>
                 )}
               </div>
             </div>
             
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="startDate" className="flex items-center">
+                <Label htmlFor="startDate" className="flex items-center text-white">
                   Start Date <span className="text-red-500 ml-1">*</span>
                 </Label>
                 <Popover>
@@ -1233,8 +1245,8 @@ export default function WorkExperience() {
                       variant="outline"
                       className={cn(
                         "justify-start text-left font-normal w-full",
-                        formErrors.startDate ? "border-red-500" : "",
-                        "bg-gray-50"
+                        formErrors.startDate ? "border-red-500" : "border-white/20",
+                        "bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white shadow-md transition-all hover:border-white/30 h-12 py-3 px-3 rounded-md focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
                       )}
                       disabled={createExperienceMutation.isPending}
                     >
@@ -1252,13 +1264,13 @@ export default function WorkExperience() {
                   </PopoverContent>
                 </Popover>
                 {formErrors.startDate && (
-                  <p className="text-sm text-red-500">Start date is required</p>
+                  <p className="text-sm text-red-400">Start date is required</p>
                 )}
               </div>
               
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
-                  <Label htmlFor="endDate" className="flex items-center">
+                  <Label htmlFor="endDate" className="flex items-center text-white">
                     End Date {!formData.isCurrentlyWorking && <span className="text-red-500 ml-1">*</span>}
                   </Label>
                   <div className="flex items-center space-x-2 text-sm">
