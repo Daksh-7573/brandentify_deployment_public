@@ -15,7 +15,7 @@ import { Plus, AlertCircle } from "lucide-react";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { calculateOverallProfileCompletion } from "@/lib/profile-utils";
 import { useState, useEffect } from "react";
-import { Camera, FileText, Edit, Loader2, FolderIcon, Mail, Phone, Globe, Briefcase, MapPin, Book, Building } from "lucide-react";
+import { Camera, FileText, Edit, Loader2, FolderIcon, Mail, Phone, Globe, Briefcase, MapPin, Book, Building, User2, CreditCard } from "lucide-react";
 import PersonalInfoIcon from "@/components/icons/personal-info-icon";
 import { useProfilePicture } from "@/hooks/use-profile-picture";
 import { ProfilePictureDialog } from "@/components/profile/profile-picture-dialog";
@@ -351,7 +351,7 @@ export default function ProfileNeo() {
                     id="portfolio-btn"
                     className="neo-glass-button flex items-center gap-1 py-1.5 px-3 whitespace-nowrap"
                   >
-                    <FolderIcon className="w-4 h-4" />
+                    <User2 className="w-4 h-4" />
                     <span>Portfolio</span>
                   </button>
                   <button 
@@ -365,7 +365,7 @@ export default function ProfileNeo() {
                     onClick={() => setLocation('/quantum-card')}
                     className="neo-glass-button flex items-center gap-1 py-1.5 px-3 whitespace-nowrap"
                   >
-                    <FileText className="w-4 h-4" />
+                    <CreditCard className="w-4 h-4" />
                     <span>Quantum Card</span>
                   </button>
                 </div>
