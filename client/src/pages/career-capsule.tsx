@@ -481,14 +481,14 @@ export default function CareerCapsulePage() {
                 type="button" 
                 variant="outline" 
                 onClick={() => setShowCreateDialog(false)}
-                className="px-5 py-2 rounded-md border border-gray-600 text-white hover:bg-white/5 shadow-sm font-medium transition-all flex items-center"
+                className="neo-glass-button flex items-center gap-2 py-2 px-4"
               >
                 Cancel
               </Button>
               <Button 
                 type="submit" 
                 disabled={isSubmitting}
-                className="px-5 py-2 rounded-md bg-primary text-white hover:bg-opacity-90 shadow-sm font-medium transition-all flex items-center justify-center"
+                className="neo-glass-button flex items-center gap-2 py-2 px-4"
               >
                 {isSubmitting ? (
                   <>
