@@ -53,8 +53,11 @@
 }
 
 /* Smart Radar Input Field Styling - Force override */
-input.smart-radar-input {
+input.smart-radar-input,
+.skills-dialog input[type="text"],
+.skills-dialog input {
   background: rgba(18, 18, 18, 0.95) !important;
+  background-color: rgba(18, 18, 18, 0.95) !important;
   border: 1px solid rgba(255, 255, 255, 0.2) !important;
   backdrop-filter: blur(12px) !important;
   color: white !important;
@@ -62,17 +65,27 @@ input.smart-radar-input {
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
 }
 
-input.smart-radar-input:hover {
+input.smart-radar-input:hover,
+.skills-dialog input[type="text"]:hover,
+.skills-dialog input:hover {
   border-color: rgba(255, 255, 255, 0.3) !important;
+  background: rgba(18, 18, 18, 0.95) !important;
+  background-color: rgba(18, 18, 18, 0.95) !important;
 }
 
-input.smart-radar-input:focus {
+input.smart-radar-input:focus,
+.skills-dialog input[type="text"]:focus,
+.skills-dialog input:focus {
   outline: none !important;
   border-color: rgba(255, 255, 255, 0.3) !important;
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.3) !important;
+  background: rgba(18, 18, 18, 0.95) !important;
+  background-color: rgba(18, 18, 18, 0.95) !important;
 }
 
-input.smart-radar-input::placeholder {
+input.smart-radar-input::placeholder,
+.skills-dialog input[type="text"]::placeholder,
+.skills-dialog input::placeholder {
   color: rgba(255, 255, 255, 0.5) !important;
 }
 
