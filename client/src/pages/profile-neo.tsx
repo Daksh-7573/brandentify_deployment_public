@@ -408,32 +408,19 @@ export default function ProfileNeo() {
                       </button>
                     </div>
                     
-                    <div className="text-center mt-4 relative">
-                      <div 
-                        className="relative cursor-pointer" 
-                        onMouseEnter={() => {
-                          const editBtn = document.getElementById('edit-personal-info');
-                          if (editBtn) editBtn.style.opacity = '1';
-                        }}
-                        onMouseLeave={() => {
-                          const editBtn = document.getElementById('edit-personal-info');
-                          if (editBtn) editBtn.style.opacity = '0';
-                        }}
+                    <div className="text-center mt-4">
+                      <h2 className="text-xl font-bold text-white">{userData?.name}</h2>
+                      <p className="text-white/80 text-sm">{userData?.title || "Add your job title"}</p>
+                      <p className="text-white/60 text-xs mt-1">{userData?.location || "Add your location"}</p>
+                      
+                      {/* Edit Profile Button */}
+                      <button
+                        onClick={() => setShowEditPersonalInfoDialog(true)}
+                        className="mt-3 px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white text-sm hover:bg-white/20 transition-all duration-300 backdrop-blur-sm flex items-center gap-2 mx-auto"
                       >
-                        <h2 className="text-xl font-bold text-white">{userData?.name}</h2>
-                        <p className="text-white/80 text-sm">{userData?.title || "Add your job title"}</p>
-                        <p className="text-white/60 text-xs mt-1">{userData?.location || "Add your location"}</p>
-                        
-                        <button
-                          id="edit-personal-info"
-                          onClick={() => setShowEditPersonalInfoDialog(true)}
-                          className="absolute top-0 right-0 p-1.5 rounded-full bg-black/40 text-white/80 hover:text-white hover:bg-black/60 transition-colors"
-                          title="Edit Personal Information"
-                          style={{ opacity: 0, transition: 'opacity 0.2s ease' }}
-                        >
-                          <Edit className="h-3.5 w-3.5" />
-                        </button>
-                      </div>
+                        <Edit className="h-4 w-4" />
+                        Edit Profile Information
+                      </button>
                     </div>
                   </div>
                   
