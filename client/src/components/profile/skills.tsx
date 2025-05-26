@@ -329,8 +329,7 @@ export default function Skills() {
                 id="name"
                 value={newSkill.name}
                 onChange={(e) => setNewSkill({...newSkill, name: e.target.value})}
-                className="col-span-3 w-full h-10 px-3 py-2 border border-white/20 bg-[rgba(18,18,18,0.95)] backdrop-blur-md rounded-md text-white text-sm focus:outline-none focus:ring-1 focus:ring-white/30 placeholder:text-white/50 shadow-md transition-all hover:border-white/30"
-                style={{background: "rgba(18,18,18,0.95)"}}
+                className="col-span-3 w-full h-10 px-3 py-2 rounded-md text-sm smart-radar-input"
                 placeholder="e.g., JavaScript, Project Management, Public Speaking"
                 required
               />
