@@ -413,7 +413,7 @@ export default function CareerCapsulePage() {
                   id="goal-type"
                   value={goalType}
                   onChange={(e) => setGoalType(e.target.value as GoalType)}
-                  className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-10 px-3 rounded-md border appearance-none cursor-pointer focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+                  className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 pr-10 rounded-md border appearance-none cursor-pointer focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
                 >
                   <option value="position_change">Position Change</option>
                   <option value="skill_acquisition">Skill Acquisition</option>
@@ -441,7 +441,7 @@ export default function CareerCapsulePage() {
                   id="timeframe"
                   value={timeframe}
                   onChange={(e) => setTimeframe(e.target.value)}
-                  className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-10 px-3 rounded-md border appearance-none cursor-pointer focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+                  className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 pr-10 rounded-md border appearance-none cursor-pointer focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
                 >
                   <option value="1">1 year</option>
                   <option value="2">2 years</option>
