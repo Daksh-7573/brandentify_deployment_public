@@ -77,25 +77,21 @@ export default function AddService() {
   };
 
   return (
-    <div className="flex h-screen flex-col">
+    <div className="bg-gradient-to-b from-gray-900 to-black w-full min-h-screen">
       <Header />
-      <div className="flex flex-1 overflow-hidden pt-16">
-        <div className="flex-1 overflow-auto">
-          <NeoGlassLayout className="mt-3 mx-6">
+      <div className="container max-w-7xl mx-auto pt-24 pb-10 px-4 relative">
+        <NeoGlassLayout>
+          <div className="p-4 md:p-6">
             <div className="flex-1 max-w-4xl">
-              {/* Header Section matching Industry Pulse */}
-              <div className="mb-8 flex justify-between items-center">
-                <div>
-                  <h1 className="text-3xl font-bold tracking-tight text-white">Add New Service</h1>
-                  <p className="text-white/80 mt-1">
-                    Create a professional service offering to showcase your expertise and attract potential clients
-                  </p>
-                </div>
+              {/* Header Section matching Smart Radar */}
+              <h1 className="text-2xl sm:text-3xl font-bold text-white mb-6">Add New Service</h1>
+              
+              <div className="mb-6">
                 <button 
                   onClick={() => setLocation("/services")}
-                  className="neo-glass-button flex items-center gap-2 py-2 px-4"
+                  className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border border-white/20 shadow-md transition-all hover:border-white/30 px-4 py-2 rounded-lg flex items-center gap-2"
                 >
-                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  <ArrowLeft className="h-4 w-4" />
                   <span>Back to Services</span>
                 </button>
               </div>
@@ -119,7 +115,7 @@ export default function AddService() {
                               <Input
                                 placeholder="e.g., Custom Web Development"
                                 {...field}
-                                className="bg-white/10 border-white/20 text-white placeholder:text-gray-400 focus:border-purple-400 focus:ring-purple-400/20 backdrop-blur-sm"
+                                className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30"
                               />
                             </FormControl>
                             <FormMessage />
@@ -137,7 +133,7 @@ export default function AddService() {
                               <FormLabel className="text-white font-semibold">Category</FormLabel>
                               <Select onValueChange={field.onChange} defaultValue={field.value}>
                                 <FormControl>
-                                  <SelectTrigger className="bg-white/10 border-white/20 text-white focus:border-purple-400 focus:ring-purple-400/20 backdrop-blur-sm">
+                                  <SelectTrigger className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30">
                                     <SelectValue placeholder="Select a category" />
                                   </SelectTrigger>
                                 </FormControl>
