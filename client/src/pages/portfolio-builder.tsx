@@ -711,12 +711,13 @@ export default function PortfolioBuilder() {
               </div>
               
               <div className="flex justify-end mt-6">
-                <Button 
+                <button 
                   onClick={handleCreatePortfolio}
-                  className="flex items-center gap-2 bg-primary hover:bg-primary/90 text-white border-0 shadow-md"
+                  className="neo-glass-button flex items-center gap-2 py-2 px-4 whitespace-nowrap"
                 >
-                  <Bot className="h-4 w-4" /> Create with Musk AI
-                </Button>
+                  <Bot className="h-4 w-4" />
+                  <span>Create with Musk AI</span>
+                </button>
               </div>
             </NeoGlassSection>
           </div>
