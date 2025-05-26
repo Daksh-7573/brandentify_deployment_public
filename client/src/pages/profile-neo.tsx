@@ -804,12 +804,34 @@ export default function ProfileNeo() {
       {/* Edit Personal Info Dialog */}
       <Dialog open={showEditPersonalInfoDialog} onOpenChange={setShowEditPersonalInfoDialog}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-transparent border-none shadow-none p-0 m-0">
-          {userData && (
+          {isUserDataLoading ? (
+            <div className="flex items-center justify-center p-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+            </div>
+          ) : userData ? (
             <EditPersonalInfoNew
-              userData={userData}
+              userData={{
+                id: userData.id || 0,
+                username: userData.username || '',
+                name: userData.name || '',
+                email: userData.email || '',
+                phoneNumber: userData.phoneNumber || '',
+                title: userData.title || '',
+                location: userData.location || '',
+                industry: userData.industry || '',
+                domain: userData.domain || '',
+                aboutMe: userData.aboutMe || '',
+                lookingFor: userData.lookingFor || '',
+                photoURL: userData.photoURL || '',
+                whatIOffer: userData.whatIOffer || ''
+              }}
               onCancel={() => setShowEditPersonalInfoDialog(false)}
               onSave={() => setShowEditPersonalInfoDialog(false)}
             />
+          ) : (
+            <div className="p-8 text-white text-center">
+              Unable to load user data. Please try again.
+            </div>
           )}
         </DialogContent>
       </Dialog>
