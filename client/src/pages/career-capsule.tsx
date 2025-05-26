@@ -466,31 +466,7 @@ export default function CareerCapsulePage() {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Describe your career goal in detail..."
-                className="w-full min-h-[80px] px-3 py-2 rounded-md border appearance-none focus:outline-none resize-none"
-                style={{ 
-                  backgroundColor: 'rgba(18, 18, 18, 0.95) !important',
-                  backdropFilter: 'blur(12px)',
-                  color: 'white !important',
-                  borderColor: 'rgba(255, 255, 255, 0.2)',
-                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                  transition: 'all 0.2s ease'
-                }}
-                onFocus={(e) => {
-                  e.target.style.borderColor = 'rgba(255, 255, 255, 0.5)';
-                  e.target.style.boxShadow = '0 0 0 2px rgba(255, 255, 255, 0.3)';
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = 'rgba(255, 255, 255, 0.2)';
-                  e.target.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
-                }}
-                onMouseEnter={(e) => {
-                  e.target.style.borderColor = 'rgba(255, 255, 255, 0.3)';
-                }}
-                onMouseLeave={(e) => {
-                  if (document.activeElement !== e.target) {
-                    e.target.style.borderColor = 'rgba(255, 255, 255, 0.2)';
-                  }
-                }}
+                className="w-full min-h-[80px] px-3 py-2 rounded-md border focus:outline-none resize-none transition-all duration-200"
               />
             </div>
             
