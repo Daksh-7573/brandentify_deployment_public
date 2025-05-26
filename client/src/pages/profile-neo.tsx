@@ -8,7 +8,7 @@ import Skills from "@/components/profile/skills";
 import Projects from "@/components/profile/projects";
 import Services from "@/components/profile/services-new";
 import PersonalInfoSection from "@/components/profile/personal-info-section";
-import EditPersonalInfo from "@/components/profile/edit-personal-info";
+import EditPersonalInfoNew from "@/components/profile/edit-personal-info-new";
 import MuskButton from "@/components/musk/musk-button";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Plus, AlertCircle } from "lucide-react";
@@ -813,37 +813,15 @@ export default function ProfileNeo() {
       
       {/* Edit Personal Info Dialog */}
       <Dialog open={showEditPersonalInfoDialog} onOpenChange={setShowEditPersonalInfoDialog}>
-        <DialogContent className="bg-zinc-900/90 border border-white/10 shadow-xl max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="text-white text-xl">Edit Personal Information</DialogTitle>
-            <p className="text-white/70 text-sm mt-1">
-              Update your profile details
-            </p>
-          </DialogHeader>
-          
-          {isUserDataLoading && (
-            <div className="flex items-center justify-center p-6">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
-            </div>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-transparent border-none shadow-none p-0 m-0">
+          {userData && (
+            <EditPersonalInfoNew
+              userData={userData}
+              onCancel={() => setShowEditPersonalInfoDialog(false)}
+              onSave={() => setShowEditPersonalInfoDialog(false)}
+            />
           )}
-          
-          {!isUserDataLoading && (
-            <div className="w-full space-y-4 mt-4 px-1">
-              {/* Name */}
-              <div className="space-y-2">
-                <label htmlFor="name" className="text-sm font-medium text-white flex items-center gap-2">
-                  <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
-                    <path d="M7.5 0.875C5.49797 0.875 3.875 2.49797 3.875 4.5C3.875 6.15288 4.98124 7.54738 6.49373 7.96351C5.2997 8.24035 4.27557 8.89088 3.51333 9.77542C2.62779 10.8034 2.12516 12.0768 2.07552 13.3824C2.07142 13.458 2.07982 13.5342 2.10036 13.6069C2.12091 13.6796 2.15317 13.7472 2.19555 13.8059C2.23793 13.8646 2.28963 13.9134 2.34798 13.9495C2.40634 13.9857 2.47048 14.0084 2.53679 14.0165C2.60309 14.0247 2.67071 14.0181 2.73483 13.9971C2.79895 13.9761 2.85773 13.9412 2.90828 13.8941C2.95883 13.8469 3.00012 13.79 3.03011 13.7267C3.06011 13.6634 3.07826 13.5949 3.0842 13.5251C3.138 12.0492 3.69078 10.9225 4.54571 10.1229C5.39452 9.32964 6.53176 8.9375 7.5 8.9375C8.46824 8.9375 9.60548 9.32964 10.4543 10.1229C11.3092 10.9225 11.862 12.0492 11.9158 13.5251C11.9232 13.6389 11.967 13.7437 12.0403 13.825C12.1137 13.9062 12.2131 13.9588 12.3222 13.9739C12.4313 13.989 12.5429 13.9652 12.636 13.9072C12.7292 13.8493 12.7978 13.761 12.829 13.6559C12.8603 13.5509 12.8525 13.4369 12.8068 13.3371C12.7612 13.2373 12.6799 13.1582 12.5778 13.1144C12.4756 13.0706 12.3598 13.0651 12.2534 13.0991C12.2255 13.108 12.198 13.1185 12.1709 13.1305C12.1179 12.0798 11.6782 10.9328 10.8849 10.0336C10.1592 9.20742 9.18834 8.61863 8.12832 8.41365C9.30031 7.84017 10.125 6.30183 10.125 4.5C10.125 2.49797 8.50203 0.875 6.5 0.875H7.5Z" fill="currentColor" />
-                  </svg>
-                  Full Name
-                </label>
-                <Input
-                  id="name"
-                  defaultValue={userData?.name || ""}
-                  placeholder="Your full name"
-                  className="bg-black/20 border-white/20 text-white"
-                />
-              </div>
+
               
               {/* Email (read-only) */}
               <div className="space-y-2">
