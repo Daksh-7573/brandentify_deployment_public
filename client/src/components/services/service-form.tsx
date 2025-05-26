@@ -193,35 +193,29 @@ export default function ServiceForm({ service, initialData, onSubmit, isPending,
 
   return (
     <Form {...form}>
-      <div className="rounded-md p-4 my-4 border-2 border-blue-400 bg-blue-50 shadow-md">
-        <h3 className="font-bold text-blue-800 mb-3 text-center text-lg">
-          {serviceData ? "Update Service" : "Add New Service"}*
+      <div className="neo-glass-container p-6 my-4 border border-white/20 bg-black/30 backdrop-blur-md shadow-neo">
+        <h3 className="font-bold text-white mb-6 text-center text-xl">
+          {serviceData ? "Update Service" : "Add New Service"}
         </h3>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
           
           <FormField
             control={form.control}
             name="title"
             render={({ field }) => (
               <FormItem>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <FormLabel className="text-right font-bold text-blue-800">
-                    Title*:
-                  </FormLabel>
-                  <div className="col-span-3">
-                    <FormControl>
-                      <Input
-                        placeholder="Enter your service title..."
-                        className="w-full bg-white border-blue-400 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormDescription className="text-blue-600 text-xs mt-1">
-                      Enter a single professional service you offer.
-                    </FormDescription>
-                    <FormMessage className="text-red-600" />
-                  </div>
-                </div>
+                <FormLabel className="text-white text-base font-medium">Service Title*</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Enter your service title..."
+                    className="neo-glass-input bg-white/5 border-white/10 backdrop-blur-sm focus:ring-white/20 focus:border-white/30 text-white placeholder:text-white/50 transition-all"
+                    {...field}
+                  />
+                </FormControl>
+                <FormDescription className="text-white/70 text-xs mt-1">
+                  Enter a single professional service you offer.
+                </FormDescription>
+                <FormMessage className="text-red-400" />
               </FormItem>
             )}
           />
@@ -231,25 +225,19 @@ export default function ServiceForm({ service, initialData, onSubmit, isPending,
             name="description"
             render={({ field }) => (
               <FormItem>
-                <div className="grid grid-cols-4 items-start gap-4">
-                  <FormLabel className="text-right font-bold text-blue-800 pt-2">
-                    Description:
-                  </FormLabel>
-                  <div className="col-span-3">
-                    <FormControl>
-                      <textarea
-                        className="w-full bg-white border-blue-400 shadow-sm focus:ring-blue-500 focus:border-blue-500 rounded-md px-3 py-2"
-                        placeholder="Describe your service..."
-                        rows={3}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormDescription className="text-blue-600 text-xs mt-1">
-                      Enter a brief description of your service.
-                    </FormDescription>
-                    <FormMessage className="text-red-600" />
-                  </div>
-                </div>
+                <FormLabel className="text-white text-base font-medium">Description</FormLabel>
+                <FormControl>
+                  <textarea
+                    className="neo-glass-input flex w-full rounded-md border border-white/10 bg-white/5 backdrop-blur-sm px-3 py-2 text-white ring-offset-background placeholder:text-white/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:border-white/30 transition-all disabled:cursor-not-allowed disabled:opacity-50"
+                    placeholder="Describe your service..."
+                    rows={3}
+                    {...field}
+                  />
+                </FormControl>
+                <FormDescription className="text-white/70 text-xs mt-1">
+                  Enter a brief description of your service.
+                </FormDescription>
+                <FormMessage className="text-red-400" />
               </FormItem>
             )}
           />
@@ -257,84 +245,63 @@ export default function ServiceForm({ service, initialData, onSubmit, isPending,
 
         
           {/* Pricing Section */}
-          <div className="space-y-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <label className="text-right font-bold text-blue-800">Pricing:</label>
-              <div className="col-span-3 text-blue-600 text-sm">
-                Set your service pricing details
-              </div>
-            </div>
+          <div className="neo-glass-section border border-white/10 bg-white/5 backdrop-blur-sm rounded-lg p-5 space-y-4">
+            <h3 className="text-white text-lg font-medium mb-4">Pricing Details</h3>
             
             {/* Currency Selection */}
-            <div className="grid grid-cols-4 items-center gap-4">
-              <FormField
-                control={form.control}
-                name="currency"
-                render={({ field }) => (
-                  <FormItem className="col-span-4">
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <FormLabel className="text-right font-bold text-blue-800">
-                        Currency*:
-                      </FormLabel>
-                      <div className="col-span-3">
-                        <FormControl>
-                          <CustomSelect 
-                            value={field.value} 
-                            onValueChange={field.onChange}
-                            options={[
-                              { value: 'USD', label: 'USD (US Dollar)' },
-                              { value: 'INR', label: 'INR (Indian Rupee)' }
-                            ]}
-                            className="w-full bg-white border-blue-400 shadow-sm"
-                          />
-                        </FormControl>
-                        <FormMessage className="text-red-600" />
-                      </div>
-                    </div>
-                  </FormItem>
-                )}
-              />
-            </div>
+            <FormField
+              control={form.control}
+              name="currency"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-white text-base font-medium">Currency*</FormLabel>
+                  <FormControl>
+                    <CustomSelect 
+                      value={field.value} 
+                      onValueChange={field.onChange}
+                      options={[
+                        { value: 'USD', label: 'USD (US Dollar)' },
+                        { value: 'INR', label: 'INR (Indian Rupee)' }
+                      ]}
+                      className="neo-glass-select bg-white/5 border-white/10 text-white backdrop-blur-sm hover:bg-white/10 transition-all"
+                    />
+                  </FormControl>
+                  <FormMessage className="text-red-400" />
+                </FormItem>
+              )}
+            />
             
-            <div className="grid grid-cols-4 items-center gap-4">
-              <FormField
-                control={form.control}
-                name="price"
-                render={({ field }) => (
-                  <FormItem className="col-span-4">
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <FormLabel className="text-right font-bold text-blue-800">
-                        Amount:
-                      </FormLabel>
-                      <div className="col-span-3">
-                        <FormControl>
-                          <Input
-                            type="text"
-                            placeholder="Enter service price (e.g. 24.99)"
-                            className="w-full bg-white border-blue-400 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                            value={field.value === null ? '' : field.value}
-                            onChange={(e) => {
-                              const rawValue = e.target.value;
-                              if (rawValue === '') {
-                                field.onChange(null);
-                                return;
-                              }
-                              if (/^[0-9]*\.?[0-9]*$/.test(rawValue)) {
-                                const numValue = parseFloat(rawValue);
-                                if (!isNaN(numValue) || /^\d*\.$/.test(rawValue)) {
-                                  field.onChange(rawValue);
-                                }
-                              }
-                            }}
-                          />
-                        </FormControl>
-                        <FormMessage className="text-red-600" />
-                      </div>
-                    </div>
-                  </FormItem>
-                )}
-              />
-            </div>
+            <FormField
+              control={form.control}
+              name="price"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-white text-base font-medium">Rate Amount</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="text"
+                      placeholder="Enter service price (e.g. 24.99)"
+                      className="neo-glass-input bg-white/5 border-white/10 backdrop-blur-sm focus:ring-white/20 focus:border-white/30 text-white placeholder:text-white/50 transition-all"
+                      value={field.value === null ? '' : field.value}
+                      onChange={(e) => {
+                        const rawValue = e.target.value;
+                        if (rawValue === '') {
+                          field.onChange(null);
+                          return;
+                        }
+                        if (/^[0-9]*\.?[0-9]*$/.test(rawValue)) {
+                          const numValue = parseFloat(rawValue);
+                          if (!isNaN(numValue) || /^\d*\.$/.test(rawValue)) {
+                            field.onChange(rawValue);
+                          }
+                        }
+                      }}
+                    />
+                  </FormControl>
+                  <FormMessage className="text-red-400" />
+                </FormItem>
+              )}
+            />
           </div>
           
           {/* Rate Type */}
@@ -342,24 +309,20 @@ export default function ServiceForm({ service, initialData, onSubmit, isPending,
             control={form.control}
             name="isHourly"
             render={({ field }) => (
-              <FormItem>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <FormLabel className="text-right font-bold text-blue-800">
-                    Hourly Rate:
-                  </FormLabel>
-                  <div className="col-span-3 flex items-center gap-3">
-                    <FormControl>
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                        className="data-[state=checked]:bg-blue-600"
-                      />
-                    </FormControl>
-                    <FormDescription className="text-blue-600 text-xs">
-                      Toggle on if you charge per hour, off for fixed rate
-                    </FormDescription>
-                  </div>
+              <FormItem className="flex flex-row items-center justify-between rounded-lg border border-white/10 bg-black/30 backdrop-blur-sm p-4 transition-all hover:bg-white/5 hover:border-white/20">
+                <div className="space-y-0.5">
+                  <FormLabel className="text-white text-base font-medium">Hourly Rate</FormLabel>
+                  <FormDescription className="text-white/70 text-xs">
+                    Toggle on if you charge per hour, off for fixed rate
+                  </FormDescription>
                 </div>
+                <FormControl>
+                  <Switch
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                    className="neo-glass-switch data-[state=checked]:bg-white/20 data-[state=checked]:border-white/30 border-white/20 bg-black/50"
+                  />
+                </FormControl>
               </FormItem>
             )}
           />
@@ -368,47 +331,38 @@ export default function ServiceForm({ service, initialData, onSubmit, isPending,
             control={form.control}
             name="isActive"
             render={({ field }) => (
-              <FormItem>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <FormLabel className="text-right font-bold text-blue-800">
-                    Active Status:
-                  </FormLabel>
-                  <div className="col-span-3 flex items-center gap-3">
-                    <FormControl>
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                        className="data-[state=checked]:bg-blue-600"
-                      />
-                    </FormControl>
-                    <FormDescription className="text-blue-600 text-xs">
-                      Is this service currently available?
-                    </FormDescription>
-                  </div>
+              <FormItem className="flex flex-row items-center justify-between rounded-lg border border-white/10 bg-black/30 backdrop-blur-sm p-4 transition-all hover:bg-white/5 hover:border-white/20">
+                <div className="space-y-0.5">
+                  <FormLabel className="text-white text-base font-medium">Active Status</FormLabel>
+                  <FormDescription className="text-white/70 text-xs">
+                    Is this service currently available?
+                  </FormDescription>
                 </div>
+                <FormControl>
+                  <Switch
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                    className="neo-glass-switch data-[state=checked]:bg-white/20 data-[state=checked]:border-white/30 border-white/20 bg-black/50"
+                  />
+                </FormControl>
               </FormItem>
             )}
           />
           
-          <div className="grid grid-cols-4 items-center gap-4">
-            <div></div>
-            <div className="col-span-3">
-              <Button 
-                type="submit" 
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-4 rounded shadow-sm transition-all" 
-                disabled={isPending}
-              >
-                {isPending ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                    <span>{serviceData ? "Updating..." : "Creating..."}</span>
-                  </>
-                ) : (
-                  <span>{serviceData ? "Update Service" : "Create Service"}</span>
-                )}
-              </Button>
-            </div>
-          </div>
+          <Button 
+            type="submit" 
+            className="neo-glass-button w-full flex items-center justify-center gap-2 py-3 px-6 bg-white/10 hover:bg-white/20 border border-white/20 text-white backdrop-blur-sm transition-all duration-300 hover:scale-[1.01] hover:shadow-neo font-medium" 
+            disabled={isPending}
+          >
+            {isPending ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span>{serviceData ? "Updating..." : "Creating..."}</span>
+              </>
+            ) : (
+              <span>{serviceData ? "Update Service" : "Create Service"}</span>
+            )}
+          </Button>
         </form>
       </div>
     </Form>
