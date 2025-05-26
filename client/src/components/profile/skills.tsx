@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Loader2, Pencil, Trash2, Plus, Lightbulb } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { NeoGlassSection } from "@/components/layout/neo-glass-layout";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -316,7 +316,7 @@ export default function Skills() {
       
       {/* Add/Edit Skill Modal */}
       <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
-        <DialogContent className="sm:max-w-[550px] skills-dialog">
+        <DialogContent className="sm:max-w-[550px] border border-white/20 bg-[rgba(18,18,18,0.95)] backdrop-blur-md shadow-2xl skills-dialog">
           <DialogHeader>
             <DialogTitle className="text-white text-lg font-bold">{newSkill.id ? 'Edit What You\'re Good At' : 'Add What You\'re Good At'}</DialogTitle>
           </DialogHeader>
@@ -329,7 +329,7 @@ export default function Skills() {
                 id="name"
                 value={newSkill.name}
                 onChange={(e) => setNewSkill({...newSkill, name: e.target.value})}
-                className="col-span-3 neo-glass-input"
+                className="col-span-3 w-full h-10 px-3 py-2 rounded-md text-sm smart-radar-input"
                 placeholder="e.g., JavaScript, Project Management, Public Speaking"
                 required
               />
@@ -345,7 +345,7 @@ export default function Skills() {
                   onValueChange={handleLevelChange}
                   placeholder="Select level"
                   options={levelOptions}
-                  className="neo-glass-select"
+                  className="custom-select-smart-radar"
                 />
               </div>
             </div>

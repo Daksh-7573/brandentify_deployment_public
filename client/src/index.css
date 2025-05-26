@@ -52,97 +52,41 @@
   background: rgba(255, 255, 255, 0.1);
 }
 
-/* Neo-Glass Form Styling - Match Profile Page */
+/* Smart Radar Input Field Styling - Force override */
 input.smart-radar-input,
 .skills-dialog input[type="text"],
-.skills-dialog input,
-.skills-dialog .neo-glass-input {
-  background: var(--neo-glass-bg) !important;
-  background-color: var(--neo-glass-bg) !important;
-  border: 1px solid var(--neo-glass-border) !important;
-  backdrop-filter: blur(var(--neo-blur-medium)) !important;
-  color: var(--neo-white) !important;
+.skills-dialog input {
+  background: rgba(18, 18, 18, 0.95) !important;
+  background-color: rgba(18, 18, 18, 0.95) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  backdrop-filter: blur(12px) !important;
+  color: white !important;
   transition: all 0.2s ease !important;
-  box-shadow: 0 4px 6px -1px var(--neo-glass-shadow) !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
 }
 
 input.smart-radar-input:hover,
 .skills-dialog input[type="text"]:hover,
-.skills-dialog input:hover,
-.skills-dialog .neo-glass-input:hover {
-  border-color: var(--neo-glass-highlight) !important;
-  background: var(--neo-glass-bg) !important;
-  background-color: var(--neo-glass-bg) !important;
+.skills-dialog input:hover {
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  background: rgba(18, 18, 18, 0.95) !important;
+  background-color: rgba(18, 18, 18, 0.95) !important;
 }
 
 input.smart-radar-input:focus,
 .skills-dialog input[type="text"]:focus,
-.skills-dialog input:focus,
-.skills-dialog .neo-glass-input:focus {
+.skills-dialog input:focus {
   outline: none !important;
-  border-color: var(--neo-glass-highlight) !important;
-  box-shadow: 0 0 0 1px var(--neo-glass-highlight) !important;
-  background: var(--neo-glass-bg) !important;
-  background-color: var(--neo-glass-bg) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.3) !important;
+  background: rgba(18, 18, 18, 0.95) !important;
+  background-color: rgba(18, 18, 18, 0.95) !important;
 }
 
 input.smart-radar-input::placeholder,
 .skills-dialog input[type="text"]::placeholder,
-.skills-dialog input::placeholder,
-.skills-dialog .neo-glass-input::placeholder {
-  color: var(--neo-light-gray) !important;
-}
-
-/* Skills Dialog Styling */
-.skills-dialog {
-  background: var(--neo-glass-bg) !important;
-  border: 1px solid var(--neo-glass-border) !important;
-  backdrop-filter: blur(var(--neo-blur-medium)) !important;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
-  color: var(--neo-white) !important;
-}
-
-.skills-dialog .grid {
-  display: grid !important;
-}
-
-.skills-dialog .grid-cols-4 {
-  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-}
-
-.skills-dialog .col-span-3 {
-  grid-column: span 3 / span 3 !important;
-}
-
-/* Neo-Glass Input and Select for Skills Dialog */
-.skills-dialog .neo-glass-input {
-  background: var(--neo-glass-bg) !important;
-  border: 1px solid var(--neo-glass-border) !important;
-  color: var(--neo-white) !important;
-  backdrop-filter: blur(var(--neo-blur-light)) !important;
-}
-
-.skills-dialog .neo-glass-input::placeholder {
-  color: var(--neo-light-gray) !important;
-}
-
-.skills-dialog .neo-glass-input:hover {
-  border-color: var(--neo-accent) !important;
-}
-
-.skills-dialog .neo-glass-input:focus {
-  border-color: var(--neo-accent) !important;
-  box-shadow: 0 0 0 2px rgba(var(--neo-accent-rgb), 0.2) !important;
-}
-
-.skills-dialog .neo-glass-select {
-  background: var(--neo-glass-bg) !important;
-  border: 1px solid var(--neo-glass-border) !important;
-  color: var(--neo-white) !important;
-}
-
-.skills-dialog .neo-glass-select:hover {
-  border-color: var(--neo-accent) !important;
+.skills-dialog input::placeholder {
+  color: rgba(255, 255, 255, 0.5) !important;
 }
 
 /* Quantum Card Animations */
