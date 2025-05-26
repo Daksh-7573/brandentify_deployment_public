@@ -297,7 +297,7 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
           <Globe className="h-4 w-4" />
           Profile URL
         </label>
-        <div className="text-sm border rounded-md p-2 bg-[rgba(18,18,18,0.95)] border-white/20 text-white/80">
+        <div className="text-sm border rounded-md p-2 bg-[rgba(18,18,18,0.95)] backdrop-blur-md border-white/20 text-white/80 h-12 py-3 px-3 shadow-md">
           brandentifier.com/@{userData.name ? userData.name.replace(/\s+/g, '') : userData.username}
         </div>
         <p className="text-xs text-gray-400">
