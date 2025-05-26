@@ -60,6 +60,7 @@ import OnboardingPage from "@/pages/onboarding";
 import EditProfilePage from "@/pages/edit-profile";
 import MuskTestingPage from "@/pages/musk-testing";
 import ManageServicesPage from "@/pages/manage-services";
+import AddServicePage from "@/pages/add-service";
 // TestNowboardPage import removed as it's no longer needed
 import ChatPage from "@/pages/ChatPage"; // Chat messaging feature
 import PrivacyPage from "@/pages/privacy"; // Privacy & Data Control page
@@ -209,6 +210,9 @@ function Router() {
       </Route>
       <Route path="/services">
         <ProtectedRoute path="/services" component={ManageServicesPage} />
+      </Route>
+      <Route path="/add-service">
+        <ProtectedRoute path="/add-service" component={AddServicePage} />
       </Route>
       <Route path="/create-pulse">
         <ProtectedRoute path="/create-pulse" component={CreatePulsePage} />
