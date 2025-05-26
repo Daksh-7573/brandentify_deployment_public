@@ -53,23 +53,20 @@ export default function AddService() {
 
   const createServiceMutation = useMutation({
     mutationFn: async (data: ServiceFormData) => {
-      const response = await apiRequest("/api/services", {
-        method: "POST",
-        body: JSON.stringify(data),
-      });
-      return response;
+      const res = await apiRequest("POST", "/api/services", data);
+      return await res.json();
     },
     onSuccess: () => {
       toast({
-        title: "Success",
-        description: "Service created successfully!",
+        title: "Success!",
+        description: "Your service has been created successfully.",
       });
       setLocation("/services");
     },
-    onError: (error: any) => {
+    onError: () => {
       toast({
         title: "Error",
-        description: error.message || "Failed to create service",
+        description: "Failed to create service. Please try again.",
         variant: "destructive",
       });
     },
@@ -80,234 +77,232 @@ export default function AddService() {
   };
 
   return (
-    <div className="bg-gradient-to-b from-gray-900 to-black w-full min-h-screen">
+    <div className="flex h-screen flex-col">
       <Header />
-      <div className="container max-w-7xl mx-auto pt-24 pb-10 px-4 relative">
-        <NeoGlassLayout>
-          <div className="p-4 md:p-6">
-            {/* Header Section matching Smart Radar */}
-            <div className="mb-8 flex justify-between items-center">
-              <div>
-                <h1 className="text-2xl sm:text-3xl font-bold text-white mb-6">Add New Service</h1>
-                <p className="text-white/70 mb-4">
-                  Create a professional service offering to showcase your expertise and attract potential clients
-                </p>
+      <div className="flex flex-1 overflow-hidden pt-16">
+        <div className="flex-1 overflow-auto">
+          <NeoGlassLayout className="mt-3 mx-6">
+            <div className="flex-1 max-w-4xl">
+              {/* Header Section matching Industry Pulse */}
+              <div className="mb-8 flex justify-between items-center">
+                <div>
+                  <h1 className="text-3xl font-bold tracking-tight text-white">Add New Service</h1>
+                  <p className="text-white/80 mt-1">
+                    Create a professional service offering to showcase your expertise and attract potential clients
+                  </p>
+                </div>
+                <button 
+                  onClick={() => setLocation("/services")}
+                  className="neo-glass-button flex items-center gap-2 py-2 px-4"
+                >
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  <span>Back to Services</span>
+                </button>
               </div>
-              <button 
-                onClick={() => setLocation("/services")}
-                className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 rounded-md px-4 py-2 flex items-center gap-2"
-              >
-                <ArrowLeft className="h-4 w-4" />
-                <span>Back to Services</span>
-              </button>
-            </div>
 
-            {/* Main Form */}
-            <NeoGlassSection className="mb-6">
-              <div className="p-4">
-                <h2 className="text-xl font-semibold text-white flex items-center mb-2">
-                  <Target className="mr-2 h-5 w-5" />
-                  <span>Service Details</span>
-                </h2>
-                <p className="text-white/70 mb-4">
-                  Fill in the information about your service offering
-                </p>
+              {/* Main Form */}
+              <NeoGlassSection>
+                <div className="px-4 py-2">
+                  <h3 className="text-xl font-semibold mb-3 text-white">Service Details</h3>
+                  <p className="text-white/70 mb-6">Fill in the information about your service offering</p>
                   
-                <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                    {/* Service Title */}
-                    <FormField
-                      control={form.control}
-                      name="title"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white font-semibold">Service Title</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="e.g., Full-Stack Web Development"
-                              {...field}
-                              className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 focus:border-white/30 focus:ring-white/20"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    {/* Category */}
-                    <FormField
-                      control={form.control}
-                      name="category"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white font-semibold">Category</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                      {/* Service Title */}
+                      <FormField
+                        control={form.control}
+                        name="title"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-white font-semibold">Service Title</FormLabel>
                             <FormControl>
-                              <SelectTrigger className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 focus:border-white/30 focus:ring-white/20">
-                                <SelectValue placeholder="Select a category" />
-                              </SelectTrigger>
+                              <Input
+                                placeholder="e.g., Custom Web Development"
+                                {...field}
+                                className="bg-white/10 border-white/20 text-white placeholder:text-gray-400 focus:border-purple-400 focus:ring-purple-400/20 backdrop-blur-sm"
+                              />
                             </FormControl>
-                            <SelectContent>
-                              <SelectItem value="consulting">Consulting</SelectItem>
-                              <SelectItem value="development">Development</SelectItem>
-                              <SelectItem value="design">Design</SelectItem>
-                              <SelectItem value="marketing">Marketing</SelectItem>
-                              <SelectItem value="writing">Writing</SelectItem>
-                              <SelectItem value="coaching">Coaching</SelectItem>
-                              <SelectItem value="teaching">Teaching</SelectItem>
-                              <SelectItem value="other">Other</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    {/* Description */}
-                    <FormField
-                      control={form.control}
-                      name="description"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white font-semibold">Description</FormLabel>
-                          <FormControl>
-                            <Textarea
-                              placeholder="Describe your service in detail..."
-                              className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 focus:border-white/30 focus:ring-white/20 min-h-[120px]"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    {/* Pricing */}
-                    <FormField
-                      control={form.control}
-                      name="pricing"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white font-semibold">Pricing</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="e.g., $50/hour or $2,000 fixed price"
-                              {...field}
-                              className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 focus:border-white/30 focus:ring-white/20"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    {/* Duration */}
-                    <FormField
-                      control={form.control}
-                      name="duration"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white font-semibold">Duration</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="e.g., 2-4 weeks"
-                              {...field}
-                              className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 focus:border-white/30 focus:ring-white/20"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    {/* Deliverables */}
-                    <FormField
-                      control={form.control}
-                      name="deliverables"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white font-semibold">Deliverables</FormLabel>
-                          <FormControl>
-                            <Textarea
-                              placeholder="What will the client receive? List specific deliverables..."
-                              className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 focus:border-white/30 focus:ring-white/20 min-h-[100px]"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    {/* Action Buttons */}
-                    <div className="flex justify-end space-x-4 pt-6">
-                      <button
-                        type="button"
-                        onClick={() => setLocation("/services")}
-                        className="neo-glass-button-secondary flex items-center gap-2 py-2 px-4"
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        type="submit"
-                        disabled={createServiceMutation.isPending}
-                        className="neo-glass-button flex items-center gap-2 py-2 px-6"
-                      >
-                        {createServiceMutation.isPending ? (
-                          <>
-                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                            Creating...
-                          </>
-                        ) : (
-                          "Create Service"
+                            <FormMessage />
+                          </FormItem>
                         )}
-                      </button>
+                      />
+
+                      {/* Category and Duration Row */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <FormField
+                          control={form.control}
+                          name="category"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white font-semibold">Category</FormLabel>
+                              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormControl>
+                                  <SelectTrigger className="bg-white/10 border-white/20 text-white focus:border-purple-400 focus:ring-purple-400/20 backdrop-blur-sm">
+                                    <SelectValue placeholder="Select a category" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  <SelectItem value="consulting">Consulting</SelectItem>
+                                  <SelectItem value="development">Development</SelectItem>
+                                  <SelectItem value="design">Design</SelectItem>
+                                  <SelectItem value="marketing">Marketing</SelectItem>
+                                  <SelectItem value="writing">Writing</SelectItem>
+                                  <SelectItem value="coaching">Coaching</SelectItem>
+                                  <SelectItem value="teaching">Teaching</SelectItem>
+                                  <SelectItem value="other">Other</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="duration"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-white font-semibold">Duration</FormLabel>
+                              <FormControl>
+                                <Input
+                                  placeholder="e.g., 2-4 weeks"
+                                  {...field}
+                                  className="bg-white/10 border-white/20 text-white placeholder:text-gray-400 focus:border-purple-400 focus:ring-purple-400/20 backdrop-blur-sm"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+
+                      {/* Description */}
+                      <FormField
+                        control={form.control}
+                        name="description"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-white font-semibold">Description</FormLabel>
+                            <FormControl>
+                              <Textarea
+                                placeholder="Describe your service in detail..."
+                                className="bg-white/10 border-white/20 text-white placeholder:text-gray-400 focus:border-purple-400 focus:ring-purple-400/20 backdrop-blur-sm min-h-[120px]"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      {/* Pricing */}
+                      <FormField
+                        control={form.control}
+                        name="pricing"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-white font-semibold">Pricing</FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="e.g., $50/hour or $2,000 fixed price"
+                                {...field}
+                                className="bg-white/10 border-white/20 text-white placeholder:text-gray-400 focus:border-purple-400 focus:ring-purple-400/20 backdrop-blur-sm"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      {/* Deliverables */}
+                      <FormField
+                        control={form.control}
+                        name="deliverables"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-white font-semibold">Deliverables</FormLabel>
+                            <FormControl>
+                              <Textarea
+                                placeholder="What will the client receive? List specific deliverables..."
+                                className="bg-white/10 border-white/20 text-white placeholder:text-gray-400 focus:border-purple-400 focus:ring-purple-400/20 backdrop-blur-sm min-h-[100px]"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      {/* Action Buttons */}
+                      <div className="flex justify-end space-x-4 pt-6">
+                        <button
+                          type="button"
+                          onClick={() => setLocation("/services")}
+                          className="neo-glass-button-secondary flex items-center gap-2 py-2 px-4"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="submit"
+                          disabled={createServiceMutation.isPending}
+                          className="neo-glass-button flex items-center gap-2 py-2 px-6"
+                        >
+                          {createServiceMutation.isPending ? (
+                            <>
+                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                              Creating...
+                            </>
+                          ) : (
+                            "Create Service"
+                          )}
+                        </button>
+                      </div>
+                    </form>
+                  </Form>
+                </div>
+              </NeoGlassSection>
+
+              {/* Features Section */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+                <NeoGlassSection>
+                  <div className="p-2 text-center">
+                    <div className="inline-flex items-center justify-center w-12 h-12 bg-purple-500/20 border border-purple-400/30 rounded-full mb-4">
+                      <Sparkles className="w-6 h-6 text-purple-400" />
                     </div>
-                  </form>
-                </Form>
+                    <h3 className="font-semibold text-white mb-2">Professional Showcase</h3>
+                    <p className="text-sm text-white/70">
+                      Present your services in a professional and attractive format
+                    </p>
+                  </div>
+                </NeoGlassSection>
+
+                <NeoGlassSection>
+                  <div className="p-2 text-center">
+                    <div className="inline-flex items-center justify-center w-12 h-12 bg-pink-500/20 border border-pink-400/30 rounded-full mb-4">
+                      <Target className="w-6 h-6 text-pink-400" />
+                    </div>
+                    <h3 className="font-semibold text-white mb-2">Attract Clients</h3>
+                    <p className="text-sm text-white/70">
+                      Clear service descriptions help potential clients understand your offerings
+                    </p>
+                  </div>
+                </NeoGlassSection>
+
+                <NeoGlassSection>
+                  <div className="p-2 text-center">
+                    <div className="inline-flex items-center justify-center w-12 h-12 bg-orange-500/20 border border-orange-400/30 rounded-full mb-4">
+                      <Zap className="w-6 h-6 text-orange-400" />
+                    </div>
+                    <h3 className="font-semibold text-white mb-2">Easy Management</h3>
+                    <p className="text-sm text-white/70">
+                      Organize and manage all your services in one convenient location
+                    </p>
+                  </div>
+                </NeoGlassSection>
               </div>
-            </NeoGlassSection>
-
-            {/* Features Section */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-              <NeoGlassSection>
-                <div className="p-2 text-center">
-                  <div className="inline-flex items-center justify-center w-12 h-12 bg-purple-500/20 border border-purple-400/30 rounded-full mb-4">
-                    <Sparkles className="w-6 h-6 text-purple-400" />
-                  </div>
-                  <h3 className="font-semibold text-white mb-2">Professional Showcase</h3>
-                  <p className="text-sm text-white/70">
-                    Present your services in a professional and attractive format
-                  </p>
-                </div>
-              </NeoGlassSection>
-
-              <NeoGlassSection>
-                <div className="p-2 text-center">
-                  <div className="inline-flex items-center justify-center w-12 h-12 bg-pink-500/20 border border-pink-400/30 rounded-full mb-4">
-                    <Target className="w-6 h-6 text-pink-400" />
-                  </div>
-                  <h3 className="font-semibold text-white mb-2">Attract Clients</h3>
-                  <p className="text-sm text-white/70">
-                    Clear service descriptions help potential clients understand your offerings
-                  </p>
-                </div>
-              </NeoGlassSection>
-
-              <NeoGlassSection>
-                <div className="p-2 text-center">
-                  <div className="inline-flex items-center justify-center w-12 h-12 bg-orange-500/20 border border-orange-400/30 rounded-full mb-4">
-                    <Zap className="w-6 h-6 text-orange-400" />
-                  </div>
-                  <h3 className="font-semibold text-white mb-2">Easy Management</h3>
-                  <p className="text-sm text-white/70">
-                    Organize and manage all your services in one convenient location
-                  </p>
-                </div>
-              </NeoGlassSection>
             </div>
-          </div>
-        </NeoGlassLayout>
+          </NeoGlassLayout>
+        </div>
       </div>
     </div>
   );
