@@ -93,24 +93,25 @@ input.smart-radar-input::placeholder,
   color: var(--neo-light-gray) !important;
 }
 
-/* Fix dialog positioning - prevent movement on cursor hover */
+/* Skills Dialog Styling */
 .skills-dialog {
-  position: fixed !important;
-  top: 50% !important;
-  left: 50% !important;
-  transform: translate(-50%, -50%) !important;
-  z-index: 50 !important;
+  background: var(--neo-glass-bg) !important;
+  border: 1px solid var(--neo-glass-border) !important;
+  backdrop-filter: blur(var(--neo-blur-medium)) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+  color: var(--neo-white) !important;
 }
 
-.skills-dialog * {
-  pointer-events: auto !important;
+.skills-dialog .grid {
+  display: grid !important;
 }
 
-/* Prevent any transform animations on dialog */
-.skills-dialog,
-.skills-dialog > div {
-  transition: opacity 0.2s ease !important;
-  transform: translate(-50%, -50%) !important;
+.skills-dialog .grid-cols-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+}
+
+.skills-dialog .col-span-3 {
+  grid-column: span 3 / span 3 !important;
 }
 
 /* Quantum Card Animations */
