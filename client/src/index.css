@@ -55,6 +55,8 @@
 /* Neo-Glass Input Field Styling for Profile Forms */
 .neo-glass-card input[type="text"],
 .neo-glass-card input,
+.neo-glass-card select,
+.neo-glass-card button[role="combobox"],
 input.smart-radar-input {
   background: rgba(40, 40, 40, 0.6) !important;
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
@@ -67,6 +69,8 @@ input.smart-radar-input {
 
 .neo-glass-card input[type="text"]:hover,
 .neo-glass-card input:hover,
+.neo-glass-card select:hover,
+.neo-glass-card button[role="combobox"]:hover,
 input.smart-radar-input:hover {
   border-color: rgba(255, 255, 255, 0.2) !important;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5) !important;
@@ -74,6 +78,8 @@ input.smart-radar-input:hover {
 
 .neo-glass-card input[type="text"]:focus,
 .neo-glass-card input:focus,
+.neo-glass-card select:focus,
+.neo-glass-card button[role="combobox"]:focus,
 input.smart-radar-input:focus {
   outline: none !important;
   border-color: rgba(255, 255, 255, 0.3) !important;
