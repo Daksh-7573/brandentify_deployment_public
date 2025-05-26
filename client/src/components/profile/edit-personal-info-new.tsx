@@ -1,0 +1,398 @@
+import React, { useState } from "react";
+import { Mail, Phone, Globe, Briefcase, MapPin, Building, Book, User, X, Save } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
+import { useQueryClient } from "@tanstack/react-query";
+import { UserData } from "@/types/user";
+
+interface EditPersonalInfoProps {
+  userData: UserData;
+  onCancel: () => void;
+  onSave: () => void;
+}
+
+const industries = [
+  "Technology",
+  "Healthcare", 
+  "Finance",
+  "Education",
+  "Manufacturing",
+  "Retail",
+  "Media",
+  "Hospitality",
+  "Government",
+  "Consulting",
+  "Non-profit",
+  "Other"
+];
+
+const domains = [
+  "Software Development",
+  "Data Science",
+  "Design",
+  "Marketing",
+  "Sales",
+  "Customer Service",
+  "Project Management",
+  "Research",
+  "Operations",
+  "Finance & Accounting",
+  "Human Resources",
+  "Other"
+];
+
+const countryCodes = [
+  { code: "+1", country: "USA/Canada" },
+  { code: "+44", country: "UK" },
+  { code: "+91", country: "India" },
+  { code: "+61", country: "Australia" },
+  { code: "+49", country: "Germany" },
+  { code: "+33", country: "France" },
+  { code: "+81", country: "Japan" },
+  { code: "+86", country: "China" },
+  { code: "+65", country: "Singapore" },
+  { code: "+971", country: "UAE" },
+];
+
+const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCancel, onSave }) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  // Form state
+  const [name, setName] = useState(userData.name || "");
+  const [phoneNumber, setPhoneNumber] = useState(userData.phoneNumber?.replace(/^\+\d+\s/, "") || "");
+  const [phoneCountryCode, setPhoneCountryCode] = useState(
+    userData.phoneNumber?.match(/^\+\d+/)?.[0] || "+1"
+  );
+  const [jobTitle, setJobTitle] = useState(userData.title || "");
+  const [location, setLocation] = useState(userData.location || "");
+  const [industry, setIndustry] = useState(userData.industry || "");
+  const [domain, setDomain] = useState(userData.domain || "");
+  const [aboutMe, setAboutMe] = useState(userData.aboutMe || "");
+  const [lookingFor, setLookingFor] = useState(userData.lookingFor || "");
+  const [whatIOffer, setWhatIOffer] = useState(userData.whatIOffer || "");
+
+  const handleSave = async () => {
+    setIsLoading(true);
+    try {
+      const updateData = {
+        name: name.trim(),
+        phoneNumber: phoneNumber.trim() ? `${phoneCountryCode} ${phoneNumber.trim()}` : null,
+        title: jobTitle.trim() || null,
+        location: location.trim() || null,
+        industry: industry || null,
+        domain: domain || null,
+        aboutMe: aboutMe.trim() || null,
+        lookingFor: lookingFor.trim() || null,
+        whatIOffer: whatIOffer.trim() || null,
+      };
+
+      await apiRequest({
+        url: `/api/users/${userData.id}`,
+        method: 'PATCH',
+        data: updateData,
+      });
+
+      // Invalidate queries to refresh data
+      await queryClient.invalidateQueries({ queryKey: [`/api/users/${userData.username}`] });
+      await queryClient.invalidateQueries({ queryKey: [`/api/users/${userData.id}`] });
+
+      toast({
+        title: "Profile Updated",
+        description: "Your profile information has been successfully updated.",
+        variant: "default",
+      });
+
+      onSave();
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      toast({
+        title: "Update Failed",
+        description: "Failed to update profile. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="space-y-6 p-6 neo-glass-card backdrop-blur-xl bg-gradient-to-br from-white/10 to-white/5 border border-white/20 rounded-2xl shadow-2xl">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-3">
+          <div className="p-2 rounded-lg bg-white/10 backdrop-blur-sm">
+            <User className="h-5 w-5 text-white" />
+          </div>
+          <h2 className="text-xl font-semibold text-white">Edit Profile Information</h2>
+        </div>
+      </div>
+
+      {/* Form Fields */}
+      <div className="space-y-6">
+        {/* Full Name */}
+        <div className="space-y-2">
+          <label htmlFor="name" className="text-sm font-medium text-white flex items-center gap-2">
+            <User className="h-4 w-4" />
+            Full Name
+          </label>
+          <input
+            id="name"
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Enter your full name"
+            className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all duration-300 hover:border-white/30 hover:shadow-lg w-full h-10 px-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none focus:shadow-xl"
+          />
+        </div>
+
+        {/* Email (read-only) */}
+        <div className="space-y-2">
+          <label htmlFor="email" className="text-sm font-medium text-white flex items-center gap-2">
+            <Mail className="h-4 w-4" />
+            Email
+          </label>
+          <input
+            id="email"
+            type="email"
+            value={userData.email}
+            disabled
+            readOnly
+            className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white/70 border-white/20 shadow-md w-full h-10 px-3 rounded-md border cursor-not-allowed opacity-70"
+          />
+          <p className="text-xs text-white/50">Email cannot be changed</p>
+        </div>
+
+        {/* Phone Number */}
+        <div className="space-y-2">
+          <label htmlFor="phoneNumber" className="text-sm font-medium text-white flex items-center gap-2">
+            <Phone className="h-4 w-4" />
+            Phone Number
+          </label>
+          <div className="flex gap-2">
+            <div className="relative">
+              <select
+                value={phoneCountryCode}
+                onChange={(e) => setPhoneCountryCode(e.target.value)}
+                className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-[110px] h-10 px-3 pr-8 rounded-md border appearance-none cursor-pointer focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+              >
+                {countryCodes.map((country) => (
+                  <option key={country.code} value={country.code} className="bg-gray-800 text-white">
+                    {country.code}
+                  </option>
+                ))}
+              </select>
+              <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                <svg className="h-3 w-3 text-white/70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+              </div>
+            </div>
+            <input
+              id="phoneNumber"
+              type="tel"
+              value={phoneNumber}
+              onChange={(e) => setPhoneNumber(e.target.value)}
+              placeholder="Your phone number"
+              className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 flex-1 h-10 px-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+            />
+          </div>
+        </div>
+
+        {/* Job Title */}
+        <div className="space-y-2">
+          <label htmlFor="jobTitle" className="text-sm font-medium text-white flex items-center gap-2">
+            <Briefcase className="h-4 w-4" />
+            Job Title
+          </label>
+          <input
+            id="jobTitle"
+            type="text"
+            value={jobTitle}
+            onChange={(e) => setJobTitle(e.target.value)}
+            placeholder="Your professional title (e.g. Senior Developer)"
+            className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-10 px-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+          />
+        </div>
+
+        {/* Location */}
+        <div className="space-y-2">
+          <label htmlFor="location" className="text-sm font-medium text-white flex items-center gap-2">
+            <MapPin className="h-4 w-4" />
+            Location
+          </label>
+          <input
+            id="location"
+            type="text"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            placeholder="Your location (e.g. San Francisco, CA)"
+            className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-10 px-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+          />
+        </div>
+
+        {/* Industry */}
+        <div className="space-y-2">
+          <label htmlFor="industry" className="text-sm font-medium text-white flex items-center gap-2">
+            <Building className="h-4 w-4" />
+            Industry
+          </label>
+          <div className="relative">
+            <select
+              id="industry"
+              value={industry}
+              onChange={(e) => setIndustry(e.target.value)}
+              className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-10 px-3 pr-10 rounded-md border appearance-none cursor-pointer focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+            >
+              <option value="">Select your industry</option>
+              {industries.map((ind) => (
+                <option key={ind} value={ind} className="bg-gray-800 text-white">
+                  {ind}
+                </option>
+              ))}
+            </select>
+            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+              <svg className="h-4 w-4 text-white/70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        {/* Domain/Specialty */}
+        <div className="space-y-2">
+          <label htmlFor="domain" className="text-sm font-medium text-white flex items-center gap-2">
+            <Book className="h-4 w-4" />
+            Domain/Specialty
+          </label>
+          <div className="relative">
+            <select
+              id="domain"
+              value={domain}
+              onChange={(e) => setDomain(e.target.value)}
+              className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-10 px-3 pr-10 rounded-md border appearance-none cursor-pointer focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+            >
+              <option value="">Select your domain</option>
+              {domains.map((dom) => (
+                <option key={dom} value={dom} className="bg-gray-800 text-white">
+                  {dom}
+                </option>
+              ))}
+            </select>
+            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+              <svg className="h-4 w-4 text-white/70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        {/* About Me */}
+        <div className="space-y-2">
+          <label htmlFor="aboutMe" className="text-sm font-medium text-white flex items-center gap-2">
+            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+            </svg>
+            About Me
+          </label>
+          <textarea
+            id="aboutMe"
+            value={aboutMe}
+            onChange={(e) => setAboutMe(e.target.value)}
+            placeholder="Write a brief introduction about yourself"
+            rows={4}
+            className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full min-h-[80px] px-3 py-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none resize-none"
+          />
+        </div>
+
+        {/* Looking For */}
+        <div className="space-y-2">
+          <label htmlFor="lookingFor" className="text-sm font-medium text-white flex items-center gap-2">
+            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 20v-8m0 0V4m0 8h8m-8 0H4"></path>
+            </svg>
+            Looking For
+          </label>
+          <textarea
+            id="lookingFor"
+            value={lookingFor}
+            onChange={(e) => setLookingFor(e.target.value)}
+            placeholder="What are you looking for professionally? (e.g. collaborations, new opportunities, etc.)"
+            rows={3}
+            className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full min-h-[80px] px-3 py-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none resize-none"
+          />
+        </div>
+
+        {/* What I Offer */}
+        <div className="space-y-2">
+          <label htmlFor="whatIOffer" className="text-sm font-medium text-white flex items-center gap-2">
+            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-6"></path>
+              <path d="M2 7l10-5 10 5"></path>
+              <path d="M12 22v-10"></path>
+            </svg>
+            What I Offer
+          </label>
+          <textarea
+            id="whatIOffer"
+            value={whatIOffer}
+            onChange={(e) => setWhatIOffer(e.target.value)}
+            placeholder="What can you offer to others? (e.g. expertise, services, mentorship, etc.)"
+            rows={3}
+            className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full min-h-[80px] px-3 py-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none resize-none"
+          />
+        </div>
+
+        {/* Profile URL (read-only) */}
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-white flex items-center gap-2">
+            <Globe className="h-4 w-4" />
+            Profile URL
+          </label>
+          <input
+            type="text"
+            value={`${window.location.origin}/profile/${userData.username}`}
+            disabled
+            readOnly
+            className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white/70 border-white/20 shadow-md w-full h-10 px-3 rounded-md border cursor-not-allowed opacity-70"
+          />
+          <p className="text-xs text-white/50">
+            Your profile URL is based on your name and cannot be changed
+          </p>
+        </div>
+      </div>
+
+      {/* Action Buttons */}
+      <div className="flex space-x-3 justify-end pt-6 border-t border-white/10">
+        <button
+          onClick={onCancel}
+          disabled={isLoading}
+          className="neo-glass-button flex items-center gap-2 py-2.5 px-6 text-white bg-white/10 hover:bg-white/20 border border-white/20 hover:border-white/30 rounded-lg transition-all duration-200 backdrop-blur-sm"
+        >
+          <X className="h-4 w-4" />
+          Cancel
+        </button>
+        <button 
+          onClick={handleSave}
+          disabled={isLoading}
+          className="neo-glass-button flex items-center gap-2 py-2.5 px-6 text-white bg-gradient-to-r from-blue-500/20 to-purple-500/20 hover:from-blue-500/30 hover:to-purple-500/30 border border-white/20 hover:border-white/30 rounded-lg transition-all duration-200 backdrop-blur-sm shadow-lg"
+        >
+          {isLoading ? (
+            <>
+              <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></div>
+              Saving...
+            </>
+          ) : (
+            <>
+              <Save className="h-4 w-4" />
+              Save Changes
+            </>
+          )}
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default EditPersonalInfoNew;

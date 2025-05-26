@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import PersonalInfoSection from "@/components/profile/personal-info-section";
-import EditPersonalInfo from "@/components/profile/edit-personal-info";
+import EditPersonalInfoNew from "@/components/profile/edit-personal-info-new";
 import VisitingCardBuilder from "@/components/profile/visiting-card-builder";
 import { ArrowLeft } from "lucide-react";
 import { useLocation } from "wouter";
@@ -130,15 +130,9 @@ const PersonalDetailsPage: React.FC = () => {
 
       {/* Edit Personal Information Dialog */}
       <Dialog open={showEditPersonalInfo} onOpenChange={setShowEditPersonalInfo}>
-        <DialogContent className="max-w-2xl max-h-[80vh] overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 border-white/20 backdrop-blur-md">
-          <DialogHeader>
-            <DialogTitle className="text-white text-xl font-semibold">Edit Personal Information</DialogTitle>
-            <DialogDescription className="text-white/70">
-              Update your profile information and contact details
-            </DialogDescription>
-          </DialogHeader>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-transparent border-none shadow-none p-0 m-0">
           {userData && (
-            <EditPersonalInfo
+            <EditPersonalInfoNew
               userData={userData}
               onCancel={() => setShowEditPersonalInfo(false)}
               onSave={() => setShowEditPersonalInfo(false)}
