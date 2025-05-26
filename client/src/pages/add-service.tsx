@@ -77,34 +77,38 @@ export default function AddService() {
   };
 
   return (
-    <div className="flex h-screen flex-col">
+    <div className="bg-gradient-to-b from-gray-900 to-black w-full min-h-screen">
       <Header />
-      <div className="flex flex-1 overflow-hidden pt-16">
-        <div className="flex-1 overflow-auto">
-          <NeoGlassLayout className="mt-3 mx-6">
-            <div className="flex-1 max-w-4xl">
-              {/* Header Section matching Industry Pulse */}
-              <div className="mb-8 flex justify-between items-center">
-                <div>
-                  <h1 className="text-3xl font-bold tracking-tight text-white">Add New Service</h1>
-                  <p className="text-white/80 mt-1">
-                    Create a professional service offering to showcase your expertise and attract potential clients
-                  </p>
-                </div>
-                <button 
-                  onClick={() => setLocation("/services")}
-                  className="neo-glass-button flex items-center gap-2 py-2 px-4"
-                >
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  <span>Back to Services</span>
-                </button>
+      <div className="container max-w-7xl mx-auto pt-24 pb-10 px-4 relative">
+        <NeoGlassLayout>
+          <div className="p-4 md:p-6">
+            {/* Header Section matching Smart Radar */}
+            <div className="mb-8 flex justify-between items-center">
+              <div>
+                <h1 className="text-2xl sm:text-3xl font-bold text-white mb-6">Add New Service</h1>
+                <p className="text-white/70 mb-4">
+                  Create a professional service offering to showcase your expertise and attract potential clients
+                </p>
               </div>
+              <button 
+                onClick={() => setLocation("/services")}
+                className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 rounded-md px-4 py-2 flex items-center gap-2"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                <span>Back to Services</span>
+              </button>
+            </div>
 
-              {/* Main Form */}
-              <NeoGlassSection>
-                <div className="px-4 py-2">
-                  <h3 className="text-xl font-semibold mb-3 text-white">Service Details</h3>
-                  <p className="text-white/70 mb-6">Fill in the information about your service offering</p>
+            {/* Main Form */}
+            <NeoGlassSection className="mb-6">
+              <div className="p-4">
+                <h2 className="text-xl font-semibold text-white flex items-center mb-2">
+                  <Target className="mr-2 h-5 w-5" />
+                  <span>Service Details</span>
+                </h2>
+                <p className="text-white/70 mb-4">
+                  Fill in the information about your service offering
+                </p>
                   
                   <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -119,7 +123,7 @@ export default function AddService() {
                               <Input
                                 placeholder="e.g., Custom Web Development"
                                 {...field}
-                                className="bg-white/10 border-white/20 text-white placeholder:text-gray-400 focus:border-purple-400 focus:ring-purple-400/20 backdrop-blur-sm"
+                                className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 focus:border-white/30 focus:ring-white/20"
                               />
                             </FormControl>
                             <FormMessage />
@@ -137,7 +141,7 @@ export default function AddService() {
                               <FormLabel className="text-white font-semibold">Category</FormLabel>
                               <Select onValueChange={field.onChange} defaultValue={field.value}>
                                 <FormControl>
-                                  <SelectTrigger className="bg-white/10 border-white/20 text-white focus:border-purple-400 focus:ring-purple-400/20 backdrop-blur-sm">
+                                  <SelectTrigger className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 focus:border-white/30 focus:ring-white/20">
                                     <SelectValue placeholder="Select a category" />
                                   </SelectTrigger>
                                 </FormControl>
@@ -167,7 +171,7 @@ export default function AddService() {
                                 <Input
                                   placeholder="e.g., 2-4 weeks"
                                   {...field}
-                                  className="bg-white/10 border-white/20 text-white placeholder:text-gray-400 focus:border-purple-400 focus:ring-purple-400/20 backdrop-blur-sm"
+                                  className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 focus:border-white/30 focus:ring-white/20"
                                 />
                               </FormControl>
                               <FormMessage />
@@ -186,7 +190,7 @@ export default function AddService() {
                             <FormControl>
                               <Textarea
                                 placeholder="Describe your service in detail..."
-                                className="bg-white/10 border-white/20 text-white placeholder:text-gray-400 focus:border-purple-400 focus:ring-purple-400/20 backdrop-blur-sm min-h-[120px]"
+                                className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 focus:border-white/30 focus:ring-white/20 min-h-[120px]"
                                 {...field}
                               />
                             </FormControl>
@@ -206,7 +210,7 @@ export default function AddService() {
                               <Input
                                 placeholder="e.g., $50/hour or $2,000 fixed price"
                                 {...field}
-                                className="bg-white/10 border-white/20 text-white placeholder:text-gray-400 focus:border-purple-400 focus:ring-purple-400/20 backdrop-blur-sm"
+                                className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 focus:border-white/30 focus:ring-white/20"
                               />
                             </FormControl>
                             <FormMessage />
