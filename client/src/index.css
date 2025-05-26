@@ -114,6 +114,37 @@ input.smart-radar-input::placeholder,
   grid-column: span 3 / span 3 !important;
 }
 
+/* Neo-Glass Input and Select for Skills Dialog */
+.skills-dialog .neo-glass-input {
+  background: var(--neo-glass-bg) !important;
+  border: 1px solid var(--neo-glass-border) !important;
+  color: var(--neo-white) !important;
+  backdrop-filter: blur(var(--neo-blur-light)) !important;
+}
+
+.skills-dialog .neo-glass-input::placeholder {
+  color: var(--neo-light-gray) !important;
+}
+
+.skills-dialog .neo-glass-input:hover {
+  border-color: var(--neo-accent) !important;
+}
+
+.skills-dialog .neo-glass-input:focus {
+  border-color: var(--neo-accent) !important;
+  box-shadow: 0 0 0 2px rgba(var(--neo-accent-rgb), 0.2) !important;
+}
+
+.skills-dialog .neo-glass-select {
+  background: var(--neo-glass-bg) !important;
+  border: 1px solid var(--neo-glass-border) !important;
+  color: var(--neo-white) !important;
+}
+
+.skills-dialog .neo-glass-select:hover {
+  border-color: var(--neo-accent) !important;
+}
+
 /* Quantum Card Animations */
 @layer components {
   /* Liquid Loading Animation */

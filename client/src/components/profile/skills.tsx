@@ -329,7 +329,7 @@ export default function Skills() {
                 id="name"
                 value={newSkill.name}
                 onChange={(e) => setNewSkill({...newSkill, name: e.target.value})}
-                className="col-span-3 w-full h-10 px-3 py-2 rounded-md text-sm smart-radar-input"
+                className="col-span-3 neo-glass-input"
                 placeholder="e.g., JavaScript, Project Management, Public Speaking"
                 required
               />
@@ -345,7 +345,7 @@ export default function Skills() {
                   onValueChange={handleLevelChange}
                   placeholder="Select level"
                   options={levelOptions}
-                  className="custom-select-smart-radar"
+                  className="neo-glass-select"
                 />
               </div>
             </div>
