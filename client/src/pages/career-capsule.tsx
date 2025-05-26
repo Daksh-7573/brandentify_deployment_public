@@ -466,7 +466,7 @@ export default function CareerCapsulePage() {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Describe your career goal in detail..."
-                className="w-full min-h-[80px] px-3 py-2 rounded-md border focus:outline-none resize-none transition-all duration-200"
+                className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full min-h-[80px] px-3 py-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none resize-none"
               />
             </div>
             
