@@ -364,7 +364,7 @@ export default function ServiceForm({ service, initialData, onSubmit, isPending,
         
         <Button 
           type="submit" 
-          className="neo-glass-button w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/30 text-white backdrop-blur-sm transition-all duration-300 hover:scale-[1.01] hover:shadow-neo" 
+          className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 hover:bg-[rgba(18,18,18,0.98)]" 
           disabled={isPending}
         >
           {isPending ? (
