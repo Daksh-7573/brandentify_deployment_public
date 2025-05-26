@@ -109,9 +109,9 @@ export default function AddService() {
                       Fill in the information about your service offering
                     </p>
                   </div>
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <FormField
                       control={form.control}
                       name="title"
@@ -260,47 +260,43 @@ export default function AddService() {
                   </div>
                 </form>
               </Form>
-            </CardContent>
-          </Card>
-
-          {/* Features Section */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-            <Card className="border border-white/20 shadow-lg bg-white/10 backdrop-blur-sm">
-              <CardContent className="p-6 text-center">
-                <div className="inline-flex items-center justify-center w-12 h-12 bg-purple-500/20 border border-purple-400/30 rounded-full mb-4">
-                  <Sparkles className="w-6 h-6 text-purple-400" />
                 </div>
-                <h3 className="font-semibold text-white mb-2">Professional Showcase</h3>
-                <p className="text-sm text-gray-300">
-                  Present your services in a professional and attractive format
-                </p>
-              </CardContent>
-            </Card>
+              </NeoGlassSection>
 
-            <Card className="border border-white/20 shadow-lg bg-white/10 backdrop-blur-sm">
-              <CardContent className="p-6 text-center">
-                <div className="inline-flex items-center justify-center w-12 h-12 bg-pink-500/20 border border-pink-400/30 rounded-full mb-4">
-                  <Target className="w-6 h-6 text-pink-400" />
-                </div>
-                <h3 className="font-semibold text-white mb-2">Attract Clients</h3>
-                <p className="text-sm text-gray-300">
-                  Clear service descriptions help potential clients understand your offerings
-                </p>
-              </CardContent>
-            </Card>
+              {/* Features Section */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <NeoGlassSection className="text-center p-6">
+                  <div className="inline-flex items-center justify-center w-12 h-12 bg-purple-500/20 border border-purple-400/30 rounded-full mb-4">
+                    <Sparkles className="w-6 h-6 text-purple-400" />
+                  </div>
+                  <h3 className="font-semibold text-white mb-2">Professional Showcase</h3>
+                  <p className="text-sm text-white/70">
+                    Present your services in a professional and attractive format
+                  </p>
+                </NeoGlassSection>
 
-            <Card className="border border-white/20 shadow-lg bg-white/10 backdrop-blur-sm">
-              <CardContent className="p-6 text-center">
-                <div className="inline-flex items-center justify-center w-12 h-12 bg-orange-500/20 border border-orange-400/30 rounded-full mb-4">
-                  <Zap className="w-6 h-6 text-orange-400" />
-                </div>
-                <h3 className="font-semibold text-white mb-2">Easy Management</h3>
-                <p className="text-sm text-gray-300">
-                  Organize and manage all your services in one convenient location
-                </p>
-              </CardContent>
-            </Card>
-          </div>
+                <NeoGlassSection className="text-center p-6">
+                  <div className="inline-flex items-center justify-center w-12 h-12 bg-pink-500/20 border border-pink-400/30 rounded-full mb-4">
+                    <Target className="w-6 h-6 text-pink-400" />
+                  </div>
+                  <h3 className="font-semibold text-white mb-2">Attract Clients</h3>
+                  <p className="text-sm text-white/70">
+                    Clear service descriptions help potential clients understand your offerings
+                  </p>
+                </NeoGlassSection>
+
+                <NeoGlassSection className="text-center p-6">
+                  <div className="inline-flex items-center justify-center w-12 h-12 bg-orange-500/20 border border-orange-400/30 rounded-full mb-4">
+                    <Zap className="w-6 h-6 text-orange-400" />
+                  </div>
+                  <h3 className="font-semibold text-white mb-2">Easy Management</h3>
+                  <p className="text-sm text-white/70">
+                    Organize and manage all your services in one convenient location
+                  </p>
+                </NeoGlassSection>
+              </div>
+            </div>
+          </NeoGlassLayout>
         </div>
       </div>
     </div>
