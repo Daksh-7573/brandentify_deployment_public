@@ -231,7 +231,7 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
           Industry
         </label>
         <Select value={industry} onValueChange={setIndustry}>
-          <SelectTrigger id="industry" className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 rounded-md border focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none">
+          <SelectTrigger id="industry" className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-10 px-3 rounded-md border focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none">
             <SelectValue placeholder="Select your industry" className="text-white/50" />
           </SelectTrigger>
           <SelectContent>
@@ -249,7 +249,7 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
           Domain/Specialty
         </label>
         <Select value={domain} onValueChange={setDomain}>
-          <SelectTrigger id="domain" className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 rounded-md border focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none">
+          <SelectTrigger id="domain" className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-10 px-3 rounded-md border focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none">
             <SelectValue placeholder="Select your domain" className="text-white/50" />
           </SelectTrigger>
           <SelectContent>
