@@ -133,7 +133,7 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
   };
   
   return (
-    <div className="w-full space-y-6 max-h-[70vh] overflow-y-auto pr-2 py-2">
+    <div className="w-full space-y-6 max-h-[70vh] overflow-y-auto pr-2 py-2 career-capsule-scrollbar">
       {/* Full Name */}
       <div className="space-y-2">
         <label htmlFor="name" className="text-sm font-medium text-white flex items-center gap-2">
