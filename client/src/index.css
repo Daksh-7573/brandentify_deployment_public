@@ -105,19 +105,19 @@ input.smart-radar-input::placeholder {
   transform: translate(-50%, -50%) !important;
 }
 
-/* Reverse colors for Proficiency Level select field */
+/* Make Proficiency Level select field match the text input styling */
 .neo-glass-card select,
 .neo-glass-card button[role="combobox"] {
-  background: rgba(60, 60, 60, 0.8) !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5) !important;
+  background: rgba(40, 40, 40, 0.6) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4) !important;
 }
 
 .neo-glass-card select:hover,
 .neo-glass-card button[role="combobox"]:hover {
-  background: rgba(40, 40, 40, 0.6) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4) !important;
+  background: rgba(60, 60, 60, 0.8) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5) !important;
 }
 
 /* Quantum Card Animations */
