@@ -78,7 +78,7 @@ export default function AddService() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       <Header />
       
       <div className="container mx-auto px-4 py-8">
@@ -87,7 +87,7 @@ export default function AddService() {
           <div className="mb-8">
             <Button
               variant="ghost"
-              className="mb-4 text-purple-600 hover:text-purple-700"
+              className="mb-4 text-purple-400 hover:text-purple-300 bg-white/5 border border-white/10 backdrop-blur-sm"
               onClick={() => setLocation("/services")}
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
@@ -95,23 +95,23 @@ export default function AddService() {
             </Button>
             
             <div className="text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full mb-4">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full mb-4 shadow-lg">
                 <Plus className="w-8 h-8 text-white" />
               </div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-2">
                 Add New Service
               </h1>
-              <p className="text-gray-600 max-w-2xl mx-auto">
+              <p className="text-gray-300 max-w-2xl mx-auto">
                 Create a professional service offering to showcase your expertise and attract clients
               </p>
             </div>
           </div>
 
           {/* Main Form */}
-          <Card className="border-0 shadow-xl bg-white/70 backdrop-blur-sm">
+          <Card className="border border-white/20 shadow-2xl bg-white/10 backdrop-blur-md">
             <CardHeader className="text-center pb-6">
-              <CardTitle className="text-2xl font-bold text-gray-800">Service Details</CardTitle>
-              <CardDescription>
+              <CardTitle className="text-2xl font-bold text-white">Service Details</CardTitle>
+              <CardDescription className="text-gray-300">
                 Fill in the information about your service offering
               </CardDescription>
             </CardHeader>
@@ -125,12 +125,12 @@ export default function AddService() {
                       name="title"
                       render={({ field }) => (
                         <FormItem className="md:col-span-2">
-                          <FormLabel className="text-gray-700 font-semibold">Service Title</FormLabel>
+                          <FormLabel className="text-white font-semibold">Service Title</FormLabel>
                           <FormControl>
                             <Input
                               placeholder="e.g., Full-Stack Web Development"
                               {...field}
-                              className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                              className="border-white/20 bg-white/10 text-white placeholder:text-gray-400 focus:border-purple-400 focus:ring-purple-400/20 backdrop-blur-sm"
                             />
                           </FormControl>
                           <FormMessage />
@@ -143,10 +143,10 @@ export default function AddService() {
                       name="category"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-gray-700 font-semibold">Category</FormLabel>
+                          <FormLabel className="text-white font-semibold">Category</FormLabel>
                           <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl>
-                              <SelectTrigger className="border-gray-200 focus:border-purple-500">
+                              <SelectTrigger className="border-white/20 bg-white/10 text-white focus:border-purple-400 backdrop-blur-sm">
                                 <SelectValue placeholder="Select a category" />
                               </SelectTrigger>
                             </FormControl>
@@ -171,12 +171,12 @@ export default function AddService() {
                       name="duration"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-gray-700 font-semibold">Duration</FormLabel>
+                          <FormLabel className="text-white font-semibold">Duration</FormLabel>
                           <FormControl>
                             <Input
                               placeholder="e.g., 2-4 weeks"
                               {...field}
-                              className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                              className="border-white/20 bg-white/10 text-white placeholder:text-gray-400 focus:border-purple-400 focus:ring-purple-400/20 backdrop-blur-sm"
                             />
                           </FormControl>
                           <FormMessage />
@@ -190,11 +190,11 @@ export default function AddService() {
                     name="description"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-gray-700 font-semibold">Description</FormLabel>
+                        <FormLabel className="text-white font-semibold">Description</FormLabel>
                         <FormControl>
                           <Textarea
                             placeholder="Describe your service in detail..."
-                            className="border-gray-200 focus:border-purple-500 focus:ring-purple-500 min-h-[120px]"
+                            className="border-white/20 bg-white/10 text-white placeholder:text-gray-400 focus:border-purple-400 focus:ring-purple-400/20 backdrop-blur-sm min-h-[120px]"
                             {...field}
                           />
                         </FormControl>
@@ -208,12 +208,12 @@ export default function AddService() {
                     name="pricing"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-gray-700 font-semibold">Pricing</FormLabel>
+                        <FormLabel className="text-white font-semibold">Pricing</FormLabel>
                         <FormControl>
                           <Input
                             placeholder="e.g., $50/hour or $2,000 fixed price"
                             {...field}
-                            className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                            className="border-white/20 bg-white/10 text-white placeholder:text-gray-400 focus:border-purple-400 focus:ring-purple-400/20 backdrop-blur-sm"
                           />
                         </FormControl>
                         <FormMessage />
@@ -226,11 +226,11 @@ export default function AddService() {
                     name="deliverables"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-gray-700 font-semibold">Deliverables</FormLabel>
+                        <FormLabel className="text-white font-semibold">Deliverables</FormLabel>
                         <FormControl>
                           <Textarea
                             placeholder="What will the client receive? List specific deliverables..."
-                            className="border-gray-200 focus:border-purple-500 focus:ring-purple-500 min-h-[100px]"
+                            className="border-white/20 bg-white/10 text-white placeholder:text-gray-400 focus:border-purple-400 focus:ring-purple-400/20 backdrop-blur-sm min-h-[100px]"
                             {...field}
                           />
                         </FormControl>
@@ -244,14 +244,14 @@ export default function AddService() {
                       type="button"
                       variant="outline"
                       onClick={() => setLocation("/services")}
-                      className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                      className="border-white/20 bg-white/10 text-white hover:bg-white/20 backdrop-blur-sm"
                     >
                       Cancel
                     </Button>
                     <Button
                       type="submit"
                       disabled={createServiceMutation.isPending}
-                      className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8"
+                      className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 shadow-lg"
                     >
                       {createServiceMutation.isPending ? (
                         <>
@@ -273,37 +273,37 @@ export default function AddService() {
 
           {/* Features Section */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-            <Card className="border-0 shadow-lg bg-white/60 backdrop-blur-sm">
+            <Card className="border border-white/20 shadow-lg bg-white/10 backdrop-blur-sm">
               <CardContent className="p-6 text-center">
-                <div className="inline-flex items-center justify-center w-12 h-12 bg-purple-100 rounded-full mb-4">
-                  <Sparkles className="w-6 h-6 text-purple-600" />
+                <div className="inline-flex items-center justify-center w-12 h-12 bg-purple-500/20 border border-purple-400/30 rounded-full mb-4">
+                  <Sparkles className="w-6 h-6 text-purple-400" />
                 </div>
-                <h3 className="font-semibold text-gray-800 mb-2">Professional Showcase</h3>
-                <p className="text-sm text-gray-600">
+                <h3 className="font-semibold text-white mb-2">Professional Showcase</h3>
+                <p className="text-sm text-gray-300">
                   Present your services in a professional and attractive format
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="border-0 shadow-lg bg-white/60 backdrop-blur-sm">
+            <Card className="border border-white/20 shadow-lg bg-white/10 backdrop-blur-sm">
               <CardContent className="p-6 text-center">
-                <div className="inline-flex items-center justify-center w-12 h-12 bg-pink-100 rounded-full mb-4">
-                  <Target className="w-6 h-6 text-pink-600" />
+                <div className="inline-flex items-center justify-center w-12 h-12 bg-pink-500/20 border border-pink-400/30 rounded-full mb-4">
+                  <Target className="w-6 h-6 text-pink-400" />
                 </div>
-                <h3 className="font-semibold text-gray-800 mb-2">Attract Clients</h3>
-                <p className="text-sm text-gray-600">
+                <h3 className="font-semibold text-white mb-2">Attract Clients</h3>
+                <p className="text-sm text-gray-300">
                   Clear service descriptions help potential clients understand your offerings
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="border-0 shadow-lg bg-white/60 backdrop-blur-sm">
+            <Card className="border border-white/20 shadow-lg bg-white/10 backdrop-blur-sm">
               <CardContent className="p-6 text-center">
-                <div className="inline-flex items-center justify-center w-12 h-12 bg-orange-100 rounded-full mb-4">
-                  <Zap className="w-6 h-6 text-orange-600" />
+                <div className="inline-flex items-center justify-center w-12 h-12 bg-orange-500/20 border border-orange-400/30 rounded-full mb-4">
+                  <Zap className="w-6 h-6 text-orange-400" />
                 </div>
-                <h3 className="font-semibold text-gray-800 mb-2">Easy Management</h3>
-                <p className="text-sm text-gray-600">
+                <h3 className="font-semibold text-white mb-2">Easy Management</h3>
+                <p className="text-sm text-gray-300">
                   Organize and manage all your services in one convenient location
                 </p>
               </CardContent>
