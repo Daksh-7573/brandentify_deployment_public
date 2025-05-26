@@ -357,10 +357,10 @@ export default function Skills() {
               </Label>
               <div className="col-span-3 px-2">
                 <div className="mb-2 flex justify-between">
-                  <span className="text-xs text-gray-400">Beginner</span>
-                  <span className="text-xs text-gray-400">Intermediate</span>
-                  <span className="text-xs text-gray-400">Advanced</span>
-                  <span className="text-xs text-gray-400">Expert</span>
+                  <span className="text-xs text-white/60">Beginner</span>
+                  <span className="text-xs text-white/60">Intermediate</span>
+                  <span className="text-xs text-white/60">Advanced</span>
+                  <span className="text-xs text-white/60">Expert</span>
                 </div>
                 <Slider
                   value={[sliderValue]}
@@ -377,7 +377,7 @@ export default function Skills() {
                       style={{ width: `${sliderValue}%` }}
                     ></div>
                   </div>
-                  <span className="text-xs font-medium text-gray-300 ml-2">{sliderValue}%</span>
+                  <span className="text-xs font-medium text-white ml-2">{sliderValue}%</span>
                 </div>
               </div>
             </div>
