@@ -86,6 +86,15 @@ input.smart-radar-input::placeholder {
   color: rgba(255, 255, 255, 0.5) !important;
 }
 
+/* Prevent dialog from moving on hover */
+[role="dialog"].neo-glass-card {
+  transform: none !important;
+}
+
+[role="dialog"].neo-glass-card:hover {
+  transform: none !important;
+}
+
 /* Quantum Card Animations */
 @layer components {
   /* Liquid Loading Animation */
