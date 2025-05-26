@@ -207,7 +207,8 @@ export default function ServiceForm({ service, initialData, onSubmit, isPending,
               <FormControl>
                 <Input
                   placeholder="Enter your service title..."
-                  className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30"
+                  className="w-full h-10 px-3 py-2 border border-white/20 bg-[rgba(18,18,18,0.95)] backdrop-blur-md rounded-md text-white text-sm focus:outline-none focus:ring-1 focus:ring-white/30 placeholder:text-white/50 shadow-md transition-all hover:border-white/30"
+                  style={{background: "rgba(18,18,18,0.95)"}}
                   {...field}
                 />
               </FormControl>
@@ -227,7 +228,8 @@ export default function ServiceForm({ service, initialData, onSubmit, isPending,
               </FormDescription>
               <FormControl>
                 <textarea
-                  className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 flex w-full rounded-md px-3 py-2 ring-offset-background placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="w-full px-3 py-2 border border-white/20 bg-[rgba(18,18,18,0.95)] backdrop-blur-md rounded-md text-white text-sm focus:outline-none focus:ring-1 focus:ring-white/30 placeholder:text-white/50 shadow-md transition-all hover:border-white/30"
+                  style={{background: "rgba(18,18,18,0.95)"}}
                   placeholder="Describe your service..."
                   rows={3}
                   {...field}
@@ -283,7 +285,8 @@ export default function ServiceForm({ service, initialData, onSubmit, isPending,
                       <Input
                         type="text"
                         placeholder="Enter service price (e.g. 24.99)"
-                        className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30"
+                        className="w-full h-10 px-3 py-2 border border-white/20 bg-[rgba(18,18,18,0.95)] backdrop-blur-md rounded-md text-white text-sm focus:outline-none focus:ring-1 focus:ring-white/30 placeholder:text-white/50 shadow-md transition-all hover:border-white/30"
+                        style={{background: "rgba(18,18,18,0.95)"}}
                         value={field.value === null ? '' : field.value}
                         onChange={(e) => {
                           // Accept the raw input value for display
@@ -364,7 +367,7 @@ export default function ServiceForm({ service, initialData, onSubmit, isPending,
         
         <Button 
           type="submit" 
-          className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 hover:bg-[rgba(18,18,18,0.98)]" 
+          className="w-full flex items-center justify-center gap-2 py-2.5 px-4 border-white/20 bg-white/10 text-white hover:bg-white/20 backdrop-blur-md shadow-md transition-all hover:scale-105" 
           disabled={isPending}
         >
           {isPending ? (
