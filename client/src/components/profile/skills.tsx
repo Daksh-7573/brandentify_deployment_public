@@ -320,33 +320,43 @@ export default function Skills() {
           <DialogHeader>
             <DialogTitle className="text-white text-lg font-bold">{newSkill.id ? 'Edit What You\'re Good At' : 'Add What You\'re Good At'}</DialogTitle>
           </DialogHeader>
-          <div className="grid gap-5 py-5">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="name" className="text-right text-white">
+          <div className="space-y-6 py-5">
+            <div className="space-y-2">
+              <Label htmlFor="name" className="text-sm font-medium text-white">
                 What You're Good At*
               </Label>
               <Input
                 id="name"
                 value={newSkill.name}
                 onChange={(e) => setNewSkill({...newSkill, name: e.target.value})}
-                className="col-span-3 w-full h-10 px-3 py-2 rounded-md text-sm smart-radar-input"
+                className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
                 placeholder="e.g., JavaScript, Project Management, Public Speaking"
                 required
               />
             </div>
             
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="level" className="text-right text-white">
+            <div className="space-y-2">
+              <Label htmlFor="level" className="text-sm font-medium text-white">
                 Proficiency Level*
               </Label>
-              <div className="col-span-3">
-                <CustomSelect 
-                  value={newSkill.level || ''} 
-                  onValueChange={handleLevelChange}
-                  placeholder="Select level"
-                  options={levelOptions}
-                  className="custom-select-smart-radar"
-                />
+              <div className="relative">
+                <select
+                  id="level"
+                  value={newSkill.level || ''}
+                  onChange={(e) => handleLevelChange(e.target.value)}
+                  className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 pr-10 rounded-md border appearance-none cursor-pointer focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+                >
+                  <option value="">Select proficiency level</option>
+                  <option value="Beginner">Beginner</option>
+                  <option value="Intermediate">Intermediate</option>
+                  <option value="Advanced">Advanced</option>
+                  <option value="Expert">Expert</option>
+                </select>
+                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                  <svg className="h-4 w-4 text-white/70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                  </svg>
+                </div>
               </div>
             </div>
             
@@ -381,17 +391,17 @@ export default function Skills() {
               </div>
             </div>
           </div>
-          <DialogFooter>
+          <DialogFooter className="flex space-x-2 justify-end pt-4">
             <button 
               type="button" 
-              className="px-4 py-2 border border-white/20 bg-[rgba(18,18,18,0.95)] backdrop-blur-md rounded-md text-white text-sm font-medium hover:border-white/30 hover:bg-[rgba(30,30,30,0.95)] transition-all shadow-md"
+              className="neo-glass-button flex items-center gap-2 py-2 px-4"
               onClick={handleCloseModal}
             >
               Cancel
             </button>
             <button 
               type="button" 
-              className="px-4 py-2 border border-white/20 bg-[rgba(18,18,18,0.95)] backdrop-blur-md rounded-md text-white text-sm font-medium hover:border-white/30 hover:bg-[rgba(30,30,30,0.95)] transition-all shadow-md"
+              className="neo-glass-button flex items-center gap-2 py-2 px-4"
               onClick={handleSaveSkill}
             >
               Save

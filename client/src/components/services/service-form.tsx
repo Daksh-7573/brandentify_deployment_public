@@ -207,8 +207,7 @@ export default function ServiceForm({ service, initialData, onSubmit, isPending,
               <FormControl>
                 <Input
                   placeholder="Enter your service title..."
-                  className="w-full h-10 px-3 py-2 border border-white/20 bg-[rgba(18,18,18,0.95)] backdrop-blur-md rounded-md text-white text-sm focus:outline-none focus:ring-1 focus:ring-white/30 placeholder:text-white/50 shadow-md transition-all hover:border-white/30"
-                  style={{background: "rgba(18,18,18,0.95)"}}
+                  className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
                   {...field}
                 />
               </FormControl>
@@ -228,8 +227,7 @@ export default function ServiceForm({ service, initialData, onSubmit, isPending,
               </FormDescription>
               <FormControl>
                 <textarea
-                  className="w-full px-3 py-2 border border-white/20 bg-[rgba(18,18,18,0.95)] backdrop-blur-md rounded-md text-white text-sm focus:outline-none focus:ring-1 focus:ring-white/30 placeholder:text-white/50 shadow-md transition-all hover:border-white/30"
-                  style={{background: "rgba(18,18,18,0.95)"}}
+                  className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full min-h-[80px] px-3 py-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none resize-none"
                   placeholder="Describe your service..."
                   rows={3}
                   {...field}
