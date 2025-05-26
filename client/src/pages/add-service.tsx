@@ -102,16 +102,16 @@ export default function AddService() {
               </div>
 
               <NeoGlassSection className="mb-6">
-                <div className="space-y-6">
-                  <div className="text-center pb-6">
-                    <h2 className="text-2xl font-bold text-white mb-2">Service Details</h2>
-                    <p className="text-white/70">
-                      Fill in the information about your service offering
-                    </p>
-                  </div>
-                  <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="text-center pb-6">
+                  <h2 className="text-2xl font-bold text-white mb-2">Service Details</h2>
+                  <p className="text-white/70">
+                    Fill in the information about your service offering
+                  </p>
+                </div>
+                
+                <Form {...form}>
+                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <FormField
                       control={form.control}
                       name="title"
