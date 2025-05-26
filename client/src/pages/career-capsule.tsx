@@ -383,7 +383,7 @@ export default function CareerCapsulePage() {
 
       {/* Dialog for Create Goal */}
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-        <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto neo-glass-modal">
+        <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto neo-glass-card">
           <DialogHeader>
             <DialogTitle className="text-white">Create New Career Goal</DialogTitle>
             <DialogDescription className="text-gray-300">
@@ -400,7 +400,7 @@ export default function CareerCapsulePage() {
                 value={goalTitle}
                 onChange={(e) => setGoalTitle(e.target.value)}
                 placeholder="e.g. Become a Product Manager"
-                className="w-full h-10 px-3 rounded-md bg-[rgba(18,18,18,0.95)] backdrop-blur-md border border-white/20 text-white placeholder-gray-400 shadow-md hover:border-white/30 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none transition-all duration-200"
+                className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-10 px-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
               />
             </div>
             
@@ -413,7 +413,7 @@ export default function CareerCapsulePage() {
                   id="goal-type"
                   value={goalType}
                   onChange={(e) => setGoalType(e.target.value as GoalType)}
-                  className="w-full h-10 px-3 rounded-md bg-[rgba(18,18,18,0.95)] backdrop-blur-md border border-white/20 text-white shadow-md hover:border-white/30 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none transition-all duration-200 appearance-none cursor-pointer"
+                  className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-10 px-3 rounded-md border appearance-none cursor-pointer focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
                 >
                   <option value="position_change">Position Change</option>
                   <option value="skill_acquisition">Skill Acquisition</option>
@@ -441,7 +441,7 @@ export default function CareerCapsulePage() {
                   id="timeframe"
                   value={timeframe}
                   onChange={(e) => setTimeframe(e.target.value)}
-                  className="w-full h-10 px-3 rounded-md bg-[rgba(18,18,18,0.95)] backdrop-blur-md border border-white/20 text-white shadow-md hover:border-white/30 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none transition-all duration-200 appearance-none cursor-pointer"
+                  className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-10 px-3 rounded-md border appearance-none cursor-pointer focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
                 >
                   <option value="1">1 year</option>
                   <option value="2">2 years</option>
@@ -466,7 +466,7 @@ export default function CareerCapsulePage() {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Describe your career goal in detail..."
-                className="w-full min-h-[80px] px-3 py-2 rounded-md bg-[rgba(18,18,18,0.95)] backdrop-blur-md border border-white/20 text-white placeholder-gray-400 shadow-md hover:border-white/30 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none transition-all duration-200 resize-none"
+                className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full min-h-[80px] px-3 py-2 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none resize-none"
               />
             </div>
             
