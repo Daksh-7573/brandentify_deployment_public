@@ -400,7 +400,7 @@ export default function CareerCapsulePage() {
                 value={goalTitle}
                 onChange={(e) => setGoalTitle(e.target.value)}
                 placeholder="e.g. Become a Product Manager"
-                className="neo-glass-input w-full h-10 rounded-md"
+                className="w-full h-10 px-3 rounded-md bg-[rgba(18,18,18,0.95)] backdrop-blur-md border border-white/20 text-white placeholder-gray-400 shadow-md hover:border-white/30 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none transition-all duration-200"
               />
             </div>
             
@@ -409,41 +409,25 @@ export default function CareerCapsulePage() {
                 Goal Type
               </label>
               <div className="relative">
-                <div className="relative rounded-md shadow-sm">
-                  <button
-                    type="button"
-                    id="goal-type-button"
-                    onClick={() => document.getElementById('goal-type')?.click()}
-                    className="neo-glass-input w-full h-10 rounded-md text-white px-3 flex items-center justify-between"
-                    style={{ backgroundColor: "rgba(18, 18, 18, 0.95)" }}
-                  >
-                    {goalType === "position_change" && "Position Change"}
-                    {goalType === "skill_acquisition" && "Skill Acquisition"}
-                    {goalType === "promotion" && "Promotion"}
-                    {goalType === "industry_switch" && "Industry Switch"}
-                    {goalType === "entrepreneurship" && "Entrepreneurship"}
-                    {goalType === "certification" && "Certification"}
-                    {goalType === "education" && "Education"}
-                    {goalType === "custom" && "Custom"}
-                    <svg className="h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-                    </svg>
-                  </button>
-                  <select
-                    id="goal-type"
-                    value={goalType}
-                    onChange={(e) => setGoalType(e.target.value as GoalType)}
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                  >
-                    <option value="position_change">Position Change</option>
-                    <option value="skill_acquisition">Skill Acquisition</option>
-                    <option value="promotion">Promotion</option>
-                    <option value="industry_switch">Industry Switch</option>
-                    <option value="entrepreneurship">Entrepreneurship</option>
-                    <option value="certification">Certification</option>
-                    <option value="education">Education</option>
-                    <option value="custom">Custom</option>
-                  </select>
+                <select
+                  id="goal-type"
+                  value={goalType}
+                  onChange={(e) => setGoalType(e.target.value as GoalType)}
+                  className="w-full h-10 px-3 rounded-md bg-[rgba(18,18,18,0.95)] backdrop-blur-md border border-white/20 text-white shadow-md hover:border-white/30 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none transition-all duration-200 appearance-none cursor-pointer"
+                >
+                  <option value="position_change">Position Change</option>
+                  <option value="skill_acquisition">Skill Acquisition</option>
+                  <option value="promotion">Promotion</option>
+                  <option value="industry_switch">Industry Switch</option>
+                  <option value="entrepreneurship">Entrepreneurship</option>
+                  <option value="certification">Certification</option>
+                  <option value="education">Education</option>
+                  <option value="custom">Custom</option>
+                </select>
+                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                  <svg className="h-4 w-4 text-white/70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                  </svg>
                 </div>
               </div>
             </div>
@@ -453,35 +437,22 @@ export default function CareerCapsulePage() {
                 Timeframe (years)
               </label>
               <div className="relative">
-                <div className="relative rounded-md shadow-sm">
-                  <button
-                    type="button"
-                    id="timeframe-button"
-                    onClick={() => document.getElementById('timeframe')?.click()}
-                    className="neo-glass-input w-full h-10 rounded-md text-white px-3 flex items-center justify-between"
-                    style={{ backgroundColor: "rgba(18, 18, 18, 0.95)" }}
-                  >
-                    {timeframe === "1" && "1 year"}
-                    {timeframe === "2" && "2 years"}
-                    {timeframe === "3" && "3 years"}
-                    {timeframe === "4" && "4 years"}
-                    {timeframe === "5" && "5 years"}
-                    <svg className="h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-                    </svg>
-                  </button>
-                  <select
-                    id="timeframe"
-                    value={timeframe}
-                    onChange={(e) => setTimeframe(e.target.value)}
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                  >
-                    <option value="1">1 year</option>
-                    <option value="2">2 years</option>
-                    <option value="3">3 years</option>
-                    <option value="4">4 years</option>
-                    <option value="5">5 years</option>
-                  </select>
+                <select
+                  id="timeframe"
+                  value={timeframe}
+                  onChange={(e) => setTimeframe(e.target.value)}
+                  className="w-full h-10 px-3 rounded-md bg-[rgba(18,18,18,0.95)] backdrop-blur-md border border-white/20 text-white shadow-md hover:border-white/30 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none transition-all duration-200 appearance-none cursor-pointer"
+                >
+                  <option value="1">1 year</option>
+                  <option value="2">2 years</option>
+                  <option value="3">3 years</option>
+                  <option value="4">4 years</option>
+                  <option value="5">5 years</option>
+                </select>
+                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                  <svg className="h-4 w-4 text-white/70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                  </svg>
                 </div>
               </div>
             </div>
@@ -495,7 +466,7 @@ export default function CareerCapsulePage() {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Describe your career goal in detail..."
-                className="neo-glass-input w-full min-h-[80px] rounded-md"
+                className="w-full min-h-[80px] px-3 py-2 rounded-md bg-[rgba(18,18,18,0.95)] backdrop-blur-md border border-white/20 text-white placeholder-gray-400 shadow-md hover:border-white/30 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none transition-all duration-200 resize-none"
               />
             </div>
             
