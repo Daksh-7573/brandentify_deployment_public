@@ -351,6 +351,7 @@ export default function ProfileNeo() {
                     id="portfolio-btn"
                     className="neo-glass-button flex items-center gap-1 py-1.5 px-3 whitespace-nowrap"
                   >
+                    <FolderIcon className="w-4 h-4" />
                     <span>Portfolio</span>
                   </button>
                   <button 
