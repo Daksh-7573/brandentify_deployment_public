@@ -200,7 +200,7 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
           value={jobTitle}
           onChange={(e) => setJobTitle(e.target.value)}
           placeholder="Your professional title (e.g. Senior Developer)"
-          className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 pr-10 rounded-md border appearance-none cursor-pointer focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+          className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-10 px-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
         />
       </div>
       
@@ -215,7 +215,7 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
           value={location}
           onChange={(e) => setLocation(e.target.value)}
           placeholder="Your location (e.g. San Francisco, CA)"
-          className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 pr-10 rounded-md border appearance-none cursor-pointer focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+          className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-10 px-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
         />
       </div>
 
@@ -297,7 +297,7 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
           <Globe className="h-4 w-4" />
           Profile URL
         </label>
-        <div className="text-sm border rounded-md bg-[rgba(18,18,18,0.95)] backdrop-blur-md border-white/20 text-white/80 h-12 py-3 px-3 pr-10 shadow-md transition-all hover:border-white/30 flex items-center appearance-none cursor-pointer focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none">
+        <div className="text-sm border rounded-md bg-[rgba(18,18,18,0.95)] backdrop-blur-md border-white/20 text-white/80 h-10 py-3 px-3 shadow-md transition-all hover:border-white/30 flex items-center focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none">
           brandentifier.com/@{userData.name ? userData.name.replace(/\s+/g, '') : userData.username}
         </div>
         <p className="text-xs text-gray-400">
