@@ -1,71 +1,59 @@
-import { useState } from "react";
-import { Link, useLocation } from "wouter";
-import { ChevronLeft, Plus, Briefcase, DollarSign, Clock, User, MapPin } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { ArrowLeft, Plus, Sparkles, Zap, Target, Clock } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Header } from "@/components/header";
-import { NeoGlassLayout, NeoGlassSection } from "@/components/ui/neo-glass-layout";
+import Header from "@/components/layout/header";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
-import { useAuth } from "@/contexts/auth-context";
+import { useAuth } from "@/hooks/use-auth";
+import { useLocation } from "wouter";
 import { z } from "zod";
 import { cn } from "@/lib/utils";
 
 const serviceFormSchema = z.object({
   title: z.string().min(1, "Service title is required"),
-  description: z.string().min(10, "Description must be at least 10 characters"),
   category: z.enum(["consulting", "development", "design", "marketing", "writing", "coaching", "teaching", "other"]),
+  description: z.string().min(10, "Description must be at least 10 characters"),
   pricing: z.string().min(1, "Pricing information is required"),
   duration: z.string().min(1, "Duration is required"),
-  location: z.string().optional(),
-  deliverables: z.string().optional(),
+  deliverables: z.string().min(1, "Deliverables are required"),
 });
 
 type ServiceFormData = z.infer<typeof serviceFormSchema>;
 
-const serviceCategories = [
-  { value: "consulting", label: "Consulting", icon: Briefcase },
-  { value: "development", label: "Development", icon: User },
-  { value: "design", label: "Design", icon: User },
-  { value: "marketing", label: "Marketing", icon: User },
-  { value: "writing", label: "Writing", icon: User },
-  { value: "coaching", label: "Coaching", icon: User },
-  { value: "teaching", label: "Teaching", icon: User },
-  { value: "other", label: "Other", icon: User },
-];
-
 export default function AddService() {
-  const [, setLocation] = useLocation();
+  const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const { user } = useAuth();
-  const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [, setLocation] = useLocation();
 
   const form = useForm<ServiceFormData>({
     resolver: zodResolver(serviceFormSchema),
     defaultValues: {
       title: "",
-      description: "",
       category: "consulting",
+      description: "",
       pricing: "",
       duration: "",
-      location: "",
       deliverables: "",
     },
   });
 
   const createServiceMutation = useMutation({
     mutationFn: async (data: ServiceFormData) => {
-      return apiRequest(`/api/users/${user?.uid}/services`, {
+      return apiRequest("/api/services", {
         method: "POST",
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          ...data,
+          userId: user?.uid,
+        }),
       });
     },
     onSuccess: () => {
@@ -73,8 +61,8 @@ export default function AddService() {
         title: "Service Created",
         description: "Your service has been successfully created!",
       });
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${user?.uid}/services`] });
-      setLocation("/profile");
+      form.reset();
+      setLocation("/services");
     },
     onError: (error) => {
       toast({
@@ -90,73 +78,59 @@ export default function AddService() {
   };
 
   return (
-    <div className="min-h-screen bg-[url('/bg-dark-room.jpg')] bg-cover bg-center">
-      <div className="min-h-screen bg-black/50 backdrop-blur-sm">
-        <Header />
-        <div className="container mx-auto p-4 pt-16">
-          <div className="flex items-center mb-4">
-            <Link to="/profile" className="text-white hover:text-white/80 flex items-center">
-              <ChevronLeft className="h-5 w-5 mr-1" />
-              <span>Back to Profile</span>
-            </Link>
-          </div>
-          
-          <NeoGlassLayout>
-            <div className="w-full">
-              <div className="mb-6">
-                <h1 className="text-2xl font-bold text-white">Add New Service</h1>
-                <p className="text-white/70">Create a new service offering to share with your professional network</p>
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50">
+      <Header />
+      
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-4xl mx-auto">
+          {/* Header Section */}
+          <div className="mb-8">
+            <Button
+              variant="ghost"
+              className="mb-4 text-purple-600 hover:text-purple-700"
+              onClick={() => setLocation("/services")}
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Services
+            </Button>
+            
+            <div className="text-center">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full mb-4">
+                <Plus className="w-8 h-8 text-white" />
               </div>
-              
-              {/* Service Category Selection */}
-              <NeoGlassSection className="mb-6">
-                <h2 className="text-lg font-semibold text-white mb-4">Choose Service Category</h2>
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  {serviceCategories.map((category) => {
-                    const IconComponent = category.icon;
-                    return (
-                      <Card 
-                        key={category.value}
-                        className={cn(
-                          "cursor-pointer transition-all hover:shadow-md bg-[rgba(18,18,18,0.95)] text-white border-white/20",
-                          selectedCategory === category.value ? 'ring-2 ring-white/40' : ''
-                        )}
-                        onClick={() => {
-                          setSelectedCategory(category.value);
-                          form.setValue('category', category.value as any);
-                        }}
-                      >
-                        <CardContent className="p-4 flex flex-col items-center justify-center text-center">
-                          <IconComponent className={cn(
-                            "h-8 w-8 mb-2",
-                            selectedCategory === category.value ? 'text-white' : 'text-white/60'
-                          )} />
-                          <span className="text-sm font-medium">{category.label}</span>
-                        </CardContent>
-                      </Card>
-                    );
-                  })}
-                </div>
-              </NeoGlassSection>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
+                Add New Service
+              </h1>
+              <p className="text-gray-600 max-w-2xl mx-auto">
+                Create a professional service offering to showcase your expertise and attract clients
+              </p>
+            </div>
+          </div>
 
-              {/* Service Details Form */}
-              <NeoGlassSection>
-                <h2 className="text-lg font-semibold text-white mb-4">Service Details</h2>
-                
-                <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                    {/* Service Title */}
+          {/* Main Form */}
+          <Card className="border-0 shadow-xl bg-white/70 backdrop-blur-sm">
+            <CardHeader className="text-center pb-6">
+              <CardTitle className="text-2xl font-bold text-gray-800">Service Details</CardTitle>
+              <CardDescription>
+                Fill in the information about your service offering
+              </CardDescription>
+            </CardHeader>
+            
+            <CardContent className="space-y-6">
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <FormField
                       control={form.control}
                       name="title"
                       render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white">Service Title</FormLabel>
+                        <FormItem className="md:col-span-2">
+                          <FormLabel className="text-gray-700 font-semibold">Service Title</FormLabel>
                           <FormControl>
-                            <Input 
+                            <Input
                               placeholder="e.g., Full-Stack Web Development"
-                              className="bg-[rgba(18,18,18,0.95)] border-white/20 text-white placeholder:text-white/50"
-                              {...field} 
+                              {...field}
+                              className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
                             />
                           </FormControl>
                           <FormMessage />
@@ -164,144 +138,177 @@ export default function AddService() {
                       )}
                     />
 
-                    {/* Description */}
                     <FormField
                       control={form.control}
-                      name="description"
+                      name="category"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-white">Description</FormLabel>
-                          <FormControl>
-                            <Textarea 
-                              placeholder="Describe your service in detail..."
-                              className="bg-[rgba(18,18,18,0.95)] border-white/20 text-white placeholder:text-white/50 min-h-[100px]"
-                              {...field} 
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    {/* Pricing and Duration Row */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <FormField
-                        control={form.control}
-                        name="pricing"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-white flex items-center gap-2">
-                              <DollarSign className="h-4 w-4" />
-                              Pricing
-                            </FormLabel>
+                          <FormLabel className="text-gray-700 font-semibold">Category</FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl>
-                              <Input 
-                                placeholder="e.g., $50/hour or $500 fixed"
-                                className="bg-[rgba(18,18,18,0.95)] border-white/20 text-white placeholder:text-white/50"
-                                {...field} 
-                              />
+                              <SelectTrigger className="border-gray-200 focus:border-purple-500">
+                                <SelectValue placeholder="Select a category" />
+                              </SelectTrigger>
                             </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+                            <SelectContent>
+                              <SelectItem value="consulting">Consulting</SelectItem>
+                              <SelectItem value="development">Development</SelectItem>
+                              <SelectItem value="design">Design</SelectItem>
+                              <SelectItem value="marketing">Marketing</SelectItem>
+                              <SelectItem value="writing">Writing</SelectItem>
+                              <SelectItem value="coaching">Coaching</SelectItem>
+                              <SelectItem value="teaching">Teaching</SelectItem>
+                              <SelectItem value="other">Other</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                      <FormField
-                        control={form.control}
-                        name="duration"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-white flex items-center gap-2">
-                              <Clock className="h-4 w-4" />
-                              Duration
-                            </FormLabel>
-                            <FormControl>
-                              <Input 
-                                placeholder="e.g., 2-3 weeks"
-                                className="bg-[rgba(18,18,18,0.95)] border-white/20 text-white placeholder:text-white/50"
-                                {...field} 
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-
-                    {/* Location */}
                     <FormField
                       control={form.control}
-                      name="location"
+                      name="duration"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-white flex items-center gap-2">
-                            <MapPin className="h-4 w-4" />
-                            Location (Optional)
-                          </FormLabel>
+                          <FormLabel className="text-gray-700 font-semibold">Duration</FormLabel>
                           <FormControl>
-                            <Input 
-                              placeholder="e.g., Remote, New York, or Worldwide"
-                              className="bg-[rgba(18,18,18,0.95)] border-white/20 text-white placeholder:text-white/50"
-                              {...field} 
+                            <Input
+                              placeholder="e.g., 2-4 weeks"
+                              {...field}
+                              className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
                             />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
+                  </div>
 
-                    {/* Deliverables */}
-                    <FormField
-                      control={form.control}
-                      name="deliverables"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white">Deliverables (Optional)</FormLabel>
-                          <FormControl>
-                            <Textarea 
-                              placeholder="What will you deliver? e.g., Complete website, source code, documentation..."
-                              className="bg-[rgba(18,18,18,0.95)] border-white/20 text-white placeholder:text-white/50"
-                              {...field} 
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
+                  <FormField
+                    control={form.control}
+                    name="description"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-gray-700 font-semibold">Description</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            placeholder="Describe your service in detail..."
+                            className="border-gray-200 focus:border-purple-500 focus:ring-purple-500 min-h-[120px]"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="pricing"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-gray-700 font-semibold">Pricing</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="e.g., $50/hour or $2,000 fixed price"
+                            {...field}
+                            className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="deliverables"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-gray-700 font-semibold">Deliverables</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            placeholder="What will the client receive? List specific deliverables..."
+                            className="border-gray-200 focus:border-purple-500 focus:ring-purple-500 min-h-[100px]"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <div className="flex justify-end space-x-4 pt-6">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setLocation("/services")}
+                      className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      type="submit"
+                      disabled={createServiceMutation.isPending}
+                      className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8"
+                    >
+                      {createServiceMutation.isPending ? (
+                        <>
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                          Creating...
+                        </>
+                      ) : (
+                        <>
+                          <Plus className="w-4 h-4 mr-2" />
+                          Create Service
+                        </>
                       )}
-                    />
+                    </Button>
+                  </div>
+                </form>
+              </Form>
+            </CardContent>
+          </Card>
 
-                    {/* Submit Button */}
-                    <div className="flex justify-end gap-4 pt-4">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => setLocation("/profile")}
-                        className="bg-transparent border-white/20 text-white hover:bg-white/10"
-                      >
-                        Cancel
-                      </Button>
-                      <Button
-                        type="submit"
-                        disabled={createServiceMutation.isPending}
-                        className="neo-glass-button flex items-center gap-2"
-                      >
-                        {createServiceMutation.isPending ? (
-                          <>
-                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                            Creating...
-                          </>
-                        ) : (
-                          <>
-                            <Plus className="h-4 w-4" />
-                            Create Service
-                          </>
-                        )}
-                      </Button>
-                    </div>
-                  </form>
-                </Form>
-              </NeoGlassSection>
-            </div>
-          </NeoGlassLayout>
+          {/* Features Section */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+            <Card className="border-0 shadow-lg bg-white/60 backdrop-blur-sm">
+              <CardContent className="p-6 text-center">
+                <div className="inline-flex items-center justify-center w-12 h-12 bg-purple-100 rounded-full mb-4">
+                  <Sparkles className="w-6 h-6 text-purple-600" />
+                </div>
+                <h3 className="font-semibold text-gray-800 mb-2">Professional Showcase</h3>
+                <p className="text-sm text-gray-600">
+                  Present your services in a professional and attractive format
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-0 shadow-lg bg-white/60 backdrop-blur-sm">
+              <CardContent className="p-6 text-center">
+                <div className="inline-flex items-center justify-center w-12 h-12 bg-pink-100 rounded-full mb-4">
+                  <Target className="w-6 h-6 text-pink-600" />
+                </div>
+                <h3 className="font-semibold text-gray-800 mb-2">Attract Clients</h3>
+                <p className="text-sm text-gray-600">
+                  Clear service descriptions help potential clients understand your offerings
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="border-0 shadow-lg bg-white/60 backdrop-blur-sm">
+              <CardContent className="p-6 text-center">
+                <div className="inline-flex items-center justify-center w-12 h-12 bg-orange-100 rounded-full mb-4">
+                  <Zap className="w-6 h-6 text-orange-600" />
+                </div>
+                <h3 className="font-semibold text-gray-800 mb-2">Easy Management</h3>
+                <p className="text-sm text-gray-600">
+                  Organize and manage all your services in one convenient location
+                </p>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
     </div>
