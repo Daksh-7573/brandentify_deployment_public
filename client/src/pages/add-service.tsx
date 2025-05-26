@@ -257,10 +257,9 @@ export default function AddService() {
                         </>
                       )}
                     </Button>
-                  </div>
-                </form>
-              </Form>
-                </div>
+                    </div>
+                  </form>
+                </Form>
               </NeoGlassSection>
 
               {/* Features Section */}
