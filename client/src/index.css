@@ -8,6 +8,50 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Smart Radar Custom Select Styling */
+.custom-select-smart-radar button {
+  height: 40px;
+  padding: 8px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(18, 18, 18, 0.95);
+  backdrop-filter: blur(12px);
+  border-radius: 6px;
+  color: white;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.custom-select-smart-radar button:hover {
+  border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(30, 30, 30, 0.95);
+}
+
+.custom-select-smart-radar button:focus {
+  outline: none;
+  ring: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.custom-select-smart-radar .dropdown-content {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(18, 18, 18, 0.95);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+}
+
+.custom-select-smart-radar .dropdown-content > div {
+  background: rgba(18, 18, 18, 0.95);
+}
+
+.custom-select-smart-radar .dropdown-item {
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.custom-select-smart-radar .dropdown-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
 /* Quantum Card Animations */
 @layer components {
   /* Liquid Loading Animation */

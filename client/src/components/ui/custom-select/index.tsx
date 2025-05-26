@@ -57,7 +57,10 @@ export function CustomSelect({
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+        className={cn(
+          "flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+          className?.includes("custom-select-smart-radar") && "h-10 px-3 py-2 border border-white/20 bg-[rgba(18,18,18,0.95)] backdrop-blur-md rounded-md text-white text-sm focus:outline-none focus:ring-1 focus:ring-white/30 shadow-md transition-all hover:border-white/30"
+        )}
       >
         <span className="truncate">{displayText}</span>
         <ChevronDown className="h-4 w-4 opacity-50" />
@@ -65,14 +68,21 @@ export function CustomSelect({
 
       {/* Dropdown content */}
       {isOpen && (
-        <div className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md border bg-popover text-popover-foreground shadow-md">
+        <div className={cn(
+          "absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md border bg-popover text-popover-foreground shadow-md dropdown-content",
+          className?.includes("custom-select-smart-radar") && "border border-white/20 bg-[rgba(18,18,18,0.95)] backdrop-blur-md shadow-2xl"
+        )}>
           <div className="p-1">
             {options.map((option) => (
               <div
                 key={option.value}
                 className={cn(
-                  "relative flex w-full cursor-pointer select-none items-center rounded-sm py-3 pl-8 pr-2 text-sm outline-none transition-colors",
-                  option.value === selectedValue
+                  "relative flex w-full cursor-pointer select-none items-center rounded-sm py-3 pl-8 pr-2 text-sm outline-none transition-colors dropdown-item",
+                  className?.includes("custom-select-smart-radar") 
+                    ? option.value === selectedValue
+                      ? "bg-white/10 text-white"
+                      : "hover:bg-white/10 text-white"
+                    : option.value === selectedValue
                     ? "bg-accent text-accent-foreground"
                     : "hover:bg-accent hover:text-accent-foreground"
                 )}

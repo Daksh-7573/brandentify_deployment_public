@@ -322,7 +322,7 @@ export default function Skills() {
           </DialogHeader>
           <div className="grid gap-5 py-5">
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="name" className="text-right text-gray-300">
+              <Label htmlFor="name" className="text-right text-white">
                 What You're Good At*
               </Label>
               <Input
@@ -337,7 +337,7 @@ export default function Skills() {
             </div>
             
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="level" className="text-right text-gray-300">
+              <Label htmlFor="level" className="text-right text-white">
                 Proficiency Level*
               </Label>
               <div className="col-span-3">
@@ -346,13 +346,14 @@ export default function Skills() {
                   onValueChange={handleLevelChange}
                   placeholder="Select level"
                   options={levelOptions}
+                  className="custom-select-smart-radar"
                 />
               </div>
             </div>
             
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label className="text-right text-gray-300">
-                Proficiency Percentage <span className="text-xs text-gray-500">(auto-set based on level)</span>
+              <Label className="text-right text-white">
+                Proficiency Percentage <span className="text-xs text-white/60">(auto-set based on level)</span>
               </Label>
               <div className="col-span-3 px-2">
                 <div className="mb-2 flex justify-between">
