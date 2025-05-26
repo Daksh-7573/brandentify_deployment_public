@@ -126,10 +126,10 @@ export function ProfilePictureDialog({
       if (isUploading && !newOpen) return;
       onOpenChange(newOpen);
     }}>
-      <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto neo-glass-card">
         <DialogHeader>
-          <DialogTitle>Profile Picture</DialogTitle>
-          <DialogDescription>
+          <DialogTitle className="text-white text-lg font-bold">Profile Picture</DialogTitle>
+          <DialogDescription className="text-gray-300">
             Upload a professional photo that clearly shows your face
           </DialogDescription>
         </DialogHeader>
