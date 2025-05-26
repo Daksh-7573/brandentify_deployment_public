@@ -316,7 +316,7 @@ export default function Skills() {
       
       {/* Add/Edit Skill Modal */}
       <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
-        <DialogContent className="neo-glass-dialog sm:max-w-[550px] border border-gray-800">
+        <DialogContent className="sm:max-w-[550px] border border-white/20 bg-[rgba(18,18,18,0.95)] backdrop-blur-md shadow-2xl">
           <DialogHeader>
             <DialogTitle className="text-white text-lg font-bold">{newSkill.id ? 'Edit What You\'re Good At' : 'Add What You\'re Good At'}</DialogTitle>
           </DialogHeader>
@@ -329,7 +329,8 @@ export default function Skills() {
                 id="name"
                 value={newSkill.name}
                 onChange={(e) => setNewSkill({...newSkill, name: e.target.value})}
-                className="col-span-3 neo-glass-input bg-gray-900/60 text-white border-gray-700"
+                className="col-span-3 w-full h-10 px-3 py-2 border border-white/20 bg-[rgba(18,18,18,0.95)] backdrop-blur-md rounded-md text-white text-sm focus:outline-none focus:ring-1 focus:ring-white/30 placeholder:text-white/50 shadow-md transition-all hover:border-white/30"
+                style={{background: "rgba(18,18,18,0.95)"}}
                 placeholder="e.g., JavaScript, Project Management, Public Speaking"
                 required
               />
@@ -381,10 +382,18 @@ export default function Skills() {
             </div>
           </div>
           <DialogFooter>
-            <button type="button" className="neo-glass-button-secondary" onClick={handleCloseModal}>
+            <button 
+              type="button" 
+              className="px-4 py-2 border border-white/20 bg-[rgba(18,18,18,0.95)] backdrop-blur-md rounded-md text-white text-sm font-medium hover:border-white/30 hover:bg-[rgba(30,30,30,0.95)] transition-all shadow-md"
+              onClick={handleCloseModal}
+            >
               Cancel
             </button>
-            <button type="button" className="neo-glass-button" onClick={handleSaveSkill}>
+            <button 
+              type="button" 
+              className="px-4 py-2 border border-white/20 bg-[rgba(18,18,18,0.95)] backdrop-blur-md rounded-md text-white text-sm font-medium hover:border-white/30 hover:bg-[rgba(30,30,30,0.95)] transition-all shadow-md"
+              onClick={handleSaveSkill}
+            >
               Save
             </button>
           </DialogFooter>
