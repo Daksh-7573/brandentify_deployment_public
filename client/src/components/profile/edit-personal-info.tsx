@@ -148,7 +148,7 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Your full name"
-          className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+          className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 pr-10 rounded-md border appearance-none cursor-pointer focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
         />
       </div>
       
@@ -163,7 +163,7 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
           value={userData.email}
           disabled
           readOnly
-          className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white/70 border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none cursor-not-allowed"
+          className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white/70 border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 pr-10 rounded-md border appearance-none cursor-not-allowed focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
         />
         <p className="text-xs text-gray-400">Email cannot be changed</p>
       </div>
@@ -184,7 +184,7 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
             value={phoneNumber}
             onChange={(e) => setPhoneNumber(e.target.value)}
             placeholder="Your phone number"
-            className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+            className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 pr-10 rounded-md border appearance-none cursor-pointer focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
           />
         </div>
       </div>
@@ -200,7 +200,7 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
           value={jobTitle}
           onChange={(e) => setJobTitle(e.target.value)}
           placeholder="Your professional title (e.g. Senior Developer)"
-          className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+          className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 pr-10 rounded-md border appearance-none cursor-pointer focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
         />
       </div>
       
@@ -215,7 +215,7 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
           value={location}
           onChange={(e) => setLocation(e.target.value)}
           placeholder="Your location (e.g. San Francisco, CA)"
-          className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+          className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 pr-10 rounded-md border appearance-none cursor-pointer focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
         />
       </div>
 
@@ -226,7 +226,7 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
           Industry
         </label>
         <Select value={industry} onValueChange={setIndustry}>
-          <SelectTrigger id="industry" className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 rounded-md border focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none">
+          <SelectTrigger id="industry" className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 pr-10 rounded-md border appearance-none cursor-pointer focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none">
             <SelectValue placeholder="Select your industry" />
           </SelectTrigger>
           <SelectContent>
@@ -244,7 +244,7 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
           Domain/Specialty
         </label>
         <Select value={domain} onValueChange={setDomain}>
-          <SelectTrigger id="domain" className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 rounded-md border focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none">
+          <SelectTrigger id="domain" className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 pr-10 rounded-md border appearance-none cursor-pointer focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none">
             <SelectValue placeholder="Select your domain" />
           </SelectTrigger>
           <SelectContent>
