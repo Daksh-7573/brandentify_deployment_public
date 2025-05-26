@@ -1,9 +1,6 @@
 import React, { useState } from "react";
 import { Mail, Phone, Globe, Briefcase, MapPin, Building, Book } from "lucide-react";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { useQueryClient } from "@tanstack/react-query";
@@ -230,16 +227,26 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
           <Building className="h-4 w-4" />
           Industry
         </label>
-        <Select value={industry} onValueChange={setIndustry}>
-          <SelectTrigger id="industry" className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-10 px-3 rounded-md border focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none">
-            <SelectValue placeholder="Select your industry" className="text-white/50" />
-          </SelectTrigger>
-          <SelectContent>
+        <div className="relative">
+          <select
+            id="industry"
+            value={industry}
+            onChange={(e) => setIndustry(e.target.value)}
+            className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-10 px-3 pr-10 rounded-md border appearance-none cursor-pointer focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+          >
+            <option value="">Select your industry</option>
             {industries.map((ind) => (
-              <SelectItem key={ind} value={ind}>{ind}</SelectItem>
+              <option key={ind} value={ind} className="bg-gray-800 text-white">
+                {ind}
+              </option>
             ))}
-          </SelectContent>
-        </Select>
+          </select>
+          <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+            <svg className="h-4 w-4 text-white/70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+            </svg>
+          </div>
+        </div>
       </div>
 
       {/* Domain/Specialty */}
@@ -248,16 +255,26 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
           <Book className="h-4 w-4" />
           Domain/Specialty
         </label>
-        <Select value={domain} onValueChange={setDomain}>
-          <SelectTrigger id="domain" className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-10 px-3 rounded-md border focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none">
-            <SelectValue placeholder="Select your domain" className="text-white/50" />
-          </SelectTrigger>
-          <SelectContent>
+        <div className="relative">
+          <select
+            id="domain"
+            value={domain}
+            onChange={(e) => setDomain(e.target.value)}
+            className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-10 px-3 pr-10 rounded-md border appearance-none cursor-pointer focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+          >
+            <option value="">Select your domain</option>
             {domains.map((dom) => (
-              <SelectItem key={dom} value={dom}>{dom}</SelectItem>
+              <option key={dom} value={dom} className="bg-gray-800 text-white">
+                {dom}
+              </option>
             ))}
-          </SelectContent>
-        </Select>
+          </select>
+          <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+            <svg className="h-4 w-4 text-white/70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+            </svg>
+          </div>
+        </div>
       </div>
       
       {/* About Me */}
