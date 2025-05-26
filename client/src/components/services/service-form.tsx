@@ -182,10 +182,10 @@ export default function ServiceForm({ service, initialData, onSubmit, isPending,
   // If we can't add more services and we're not editing an existing one, show a message
   if (!canAddService && !isEditing) {
     return (
-      <div className="p-5 text-center border border-amber-500/30 rounded-lg bg-amber-500/10 backdrop-blur-sm shadow-neo">
-        <p className="text-amber-400 font-medium">Maximum of 6 services reached</p>
-        <p className="text-gray-300 mt-2 text-sm">
-          Please delete an existing service before adding a new one.
+      <div className="neo-glass-container p-6 text-center border border-white/20 bg-black/30 backdrop-blur-md shadow-neo rounded-lg">
+        <p className="text-white font-medium text-lg mb-3">Maximum Services Reached</p>
+        <p className="text-white/70 text-sm">
+          You can have up to 6 services. Please delete an existing service before adding a new one.
         </p>
       </div>
     );
@@ -193,7 +193,7 @@ export default function ServiceForm({ service, initialData, onSubmit, isPending,
 
   return (
     <Form {...form}>
-      <div className="neo-glass-container p-6 my-4 border border-white/20 bg-black/30 backdrop-blur-md shadow-neo">
+      <div className="neo-glass-container max-h-[80vh] overflow-y-auto scrollbar-thin scrollbar-track-white/5 scrollbar-thumb-white/20 hover:scrollbar-thumb-white/30 p-6 my-4 border border-white/20 bg-black/30 backdrop-blur-md shadow-neo">
         <h3 className="font-bold text-white mb-6 text-center text-xl">
           {serviceData ? "Update Service" : "Add New Service"}
         </h3>
