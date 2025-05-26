@@ -52,41 +52,45 @@
   background: rgba(255, 255, 255, 0.1);
 }
 
-/* Smart Radar Input Field Styling - Force override */
+/* Neo-Glass Form Styling - Match Profile Page */
 input.smart-radar-input,
 .skills-dialog input[type="text"],
-.skills-dialog input {
-  background: rgba(18, 18, 18, 0.95) !important;
-  background-color: rgba(18, 18, 18, 0.95) !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  backdrop-filter: blur(12px) !important;
-  color: white !important;
+.skills-dialog input,
+.skills-dialog .neo-glass-input {
+  background: var(--neo-glass-bg) !important;
+  background-color: var(--neo-glass-bg) !important;
+  border: 1px solid var(--neo-glass-border) !important;
+  backdrop-filter: blur(var(--neo-blur-medium)) !important;
+  color: var(--neo-white) !important;
   transition: all 0.2s ease !important;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 4px 6px -1px var(--neo-glass-shadow) !important;
 }
 
 input.smart-radar-input:hover,
 .skills-dialog input[type="text"]:hover,
-.skills-dialog input:hover {
-  border-color: rgba(255, 255, 255, 0.3) !important;
-  background: rgba(18, 18, 18, 0.95) !important;
-  background-color: rgba(18, 18, 18, 0.95) !important;
+.skills-dialog input:hover,
+.skills-dialog .neo-glass-input:hover {
+  border-color: var(--neo-glass-highlight) !important;
+  background: var(--neo-glass-bg) !important;
+  background-color: var(--neo-glass-bg) !important;
 }
 
 input.smart-radar-input:focus,
 .skills-dialog input[type="text"]:focus,
-.skills-dialog input:focus {
+.skills-dialog input:focus,
+.skills-dialog .neo-glass-input:focus {
   outline: none !important;
-  border-color: rgba(255, 255, 255, 0.3) !important;
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.3) !important;
-  background: rgba(18, 18, 18, 0.95) !important;
-  background-color: rgba(18, 18, 18, 0.95) !important;
+  border-color: var(--neo-glass-highlight) !important;
+  box-shadow: 0 0 0 1px var(--neo-glass-highlight) !important;
+  background: var(--neo-glass-bg) !important;
+  background-color: var(--neo-glass-bg) !important;
 }
 
 input.smart-radar-input::placeholder,
 .skills-dialog input[type="text"]::placeholder,
-.skills-dialog input::placeholder {
-  color: rgba(255, 255, 255, 0.5) !important;
+.skills-dialog input::placeholder,
+.skills-dialog .neo-glass-input::placeholder {
+  color: var(--neo-light-gray) !important;
 }
 
 /* Quantum Card Animations */
