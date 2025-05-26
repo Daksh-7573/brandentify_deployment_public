@@ -9,7 +9,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import Header from "@/components/layout/header";
-import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
@@ -79,39 +78,48 @@ export default function AddService() {
   };
 
   return (
-    <div className="flex h-screen flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       <Header />
-      <div className="flex flex-1 overflow-hidden pt-16">
-        <div className="flex-1 overflow-auto">
-          <NeoGlassLayout className="mt-3 mx-6">
-            <div className="flex-1 max-w-4xl">
-              <div className="mb-8 flex items-center">
-                <Button
-                  variant="ghost"
-                  onClick={() => setLocation("/services")}
-                  className="text-white hover:text-white/80 hover:bg-white/10 p-2 mr-4"
-                >
-                  <ArrowLeft className="h-5 w-5" />
-                </Button>
-                <div>
-                  <h1 className="text-3xl font-bold tracking-tight text-white">Add New Service</h1>
-                  <p className="text-white/80 mt-1">
-                    Create a professional service offering to showcase your expertise and attract clients
-                  </p>
-                </div>
+      
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-4xl mx-auto">
+          {/* Header Section */}
+          <div className="mb-8">
+            <Button
+              variant="ghost"
+              className="mb-4 text-purple-400 hover:text-purple-300 bg-white/5 border border-white/10 backdrop-blur-sm"
+              onClick={() => setLocation("/services")}
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Services
+            </Button>
+            
+            <div className="text-center">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full mb-4 shadow-lg">
+                <Plus className="w-8 h-8 text-white" />
               </div>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-2">
+                Add New Service
+              </h1>
+              <p className="text-gray-300 max-w-2xl mx-auto">
+                Create a professional service offering to showcase your expertise and attract clients
+              </p>
+            </div>
+          </div>
 
-              <NeoGlassSection className="mb-6">
-                <div className="text-center pb-6">
-                  <h2 className="text-2xl font-bold text-white mb-2">Service Details</h2>
-                  <p className="text-white/70">
-                    Fill in the information about your service offering
-                  </p>
-                </div>
-                
-                <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Main Form */}
+          <Card className="border border-white/10 shadow-2xl bg-black/40 backdrop-blur-md">
+            <CardHeader className="text-center pb-6">
+              <CardTitle className="text-2xl font-bold text-white">Service Details</CardTitle>
+              <CardDescription className="text-gray-300">
+                Fill in the information about your service offering
+              </CardDescription>
+            </CardHeader>
+            
+            <CardContent className="space-y-6">
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <FormField
                       control={form.control}
                       name="title"
@@ -257,45 +265,50 @@ export default function AddService() {
                         </>
                       )}
                     </Button>
-                    </div>
-                  </form>
-                </Form>
-              </NeoGlassSection>
-
-              {/* Features Section */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <NeoGlassSection className="text-center p-6">
-                  <div className="inline-flex items-center justify-center w-12 h-12 bg-purple-500/20 border border-purple-400/30 rounded-full mb-4">
-                    <Sparkles className="w-6 h-6 text-purple-400" />
                   </div>
-                  <h3 className="font-semibold text-white mb-2">Professional Showcase</h3>
-                  <p className="text-sm text-white/70">
-                    Present your services in a professional and attractive format
-                  </p>
-                </NeoGlassSection>
+                </form>
+              </Form>
+            </CardContent>
+          </Card>
 
-                <NeoGlassSection className="text-center p-6">
-                  <div className="inline-flex items-center justify-center w-12 h-12 bg-pink-500/20 border border-pink-400/30 rounded-full mb-4">
-                    <Target className="w-6 h-6 text-pink-400" />
-                  </div>
-                  <h3 className="font-semibold text-white mb-2">Attract Clients</h3>
-                  <p className="text-sm text-white/70">
-                    Clear service descriptions help potential clients understand your offerings
-                  </p>
-                </NeoGlassSection>
+          {/* Features Section */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+            <Card className="border border-white/20 shadow-lg bg-white/10 backdrop-blur-sm">
+              <CardContent className="p-6 text-center">
+                <div className="inline-flex items-center justify-center w-12 h-12 bg-purple-500/20 border border-purple-400/30 rounded-full mb-4">
+                  <Sparkles className="w-6 h-6 text-purple-400" />
+                </div>
+                <h3 className="font-semibold text-white mb-2">Professional Showcase</h3>
+                <p className="text-sm text-gray-300">
+                  Present your services in a professional and attractive format
+                </p>
+              </CardContent>
+            </Card>
 
-                <NeoGlassSection className="text-center p-6">
-                  <div className="inline-flex items-center justify-center w-12 h-12 bg-orange-500/20 border border-orange-400/30 rounded-full mb-4">
-                    <Zap className="w-6 h-6 text-orange-400" />
-                  </div>
-                  <h3 className="font-semibold text-white mb-2">Easy Management</h3>
-                  <p className="text-sm text-white/70">
-                    Organize and manage all your services in one convenient location
-                  </p>
-                </NeoGlassSection>
-              </div>
-            </div>
-          </NeoGlassLayout>
+            <Card className="border border-white/20 shadow-lg bg-white/10 backdrop-blur-sm">
+              <CardContent className="p-6 text-center">
+                <div className="inline-flex items-center justify-center w-12 h-12 bg-pink-500/20 border border-pink-400/30 rounded-full mb-4">
+                  <Target className="w-6 h-6 text-pink-400" />
+                </div>
+                <h3 className="font-semibold text-white mb-2">Attract Clients</h3>
+                <p className="text-sm text-gray-300">
+                  Clear service descriptions help potential clients understand your offerings
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="border border-white/20 shadow-lg bg-white/10 backdrop-blur-sm">
+              <CardContent className="p-6 text-center">
+                <div className="inline-flex items-center justify-center w-12 h-12 bg-orange-500/20 border border-orange-400/30 rounded-full mb-4">
+                  <Zap className="w-6 h-6 text-orange-400" />
+                </div>
+                <h3 className="font-semibold text-white mb-2">Easy Management</h3>
+                <p className="text-sm text-gray-300">
+                  Organize and manage all your services in one convenient location
+                </p>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
     </div>
