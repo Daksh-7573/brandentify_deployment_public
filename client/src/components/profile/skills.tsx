@@ -316,7 +316,7 @@ export default function Skills() {
       
       {/* Add/Edit Skill Modal */}
       <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
-        <DialogContent className="sm:max-w-[550px] neo-glass-card skills-dialog">
+        <DialogContent className="sm:max-w-[550px] neo-glass-card skills-dialog fixed">
           <DialogHeader>
             <DialogTitle className="text-white text-lg font-bold">{newSkill.id ? 'Edit What You\'re Good At' : 'Add What You\'re Good At'}</DialogTitle>
           </DialogHeader>

@@ -93,6 +93,26 @@ input.smart-radar-input::placeholder,
   color: var(--neo-light-gray) !important;
 }
 
+/* Fix dialog positioning - prevent movement on cursor hover */
+.skills-dialog {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  z-index: 50 !important;
+}
+
+.skills-dialog * {
+  pointer-events: auto !important;
+}
+
+/* Prevent any transform animations on dialog */
+.skills-dialog,
+.skills-dialog > div {
+  transition: opacity 0.2s ease !important;
+  transform: translate(-50%, -50%) !important;
+}
+
 /* Quantum Card Animations */
 @layer components {
   /* Liquid Loading Animation */
