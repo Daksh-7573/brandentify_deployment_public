@@ -1,0 +1,232 @@
+# UI Styling Guidelines - Glassmorphic Form Standard
+
+## Overview
+Based on the "Create New Career Goal" form, this document defines the standard styling for all forms across the application to ensure visual consistency and premium user experience.
+
+## Core Design Philosophy
+- **Dark Glassmorphic Theme**: Semi-transparent dark backgrounds with blur effects
+- **White Text Hierarchy**: Clean white text for labels and inputs
+- **Elegant Interactions**: Smooth transitions and hover effects
+- **Premium Feel**: Professional, sophisticated appearance
+
+## 1. Form Container Styling
+
+### Dialog/Modal Container
+```css
+className="sm:max-w-[550px] neo-glass-card"
+```
+
+### Form Wrapper
+```css
+className="space-y-6 py-5"
+```
+
+## 2. Input Field Standards
+
+### Text Input Fields
+```css
+className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+```
+
+**Key Properties:**
+- Background: `rgba(18,18,18,0.95)` with `backdrop-blur-md`
+- Height: `h-12` (48px) for optimal text display
+- Padding: `py-3 px-3` for comfortable spacing
+- Border: `border-white/20` with hover state `border-white/30`
+- Focus: `focus:ring-2 focus:ring-white/30`
+
+### Textarea Fields
+```css
+className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full min-h-[80px] px-3 py-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none resize-none"
+```
+
+**Additional Properties:**
+- Minimum height: `min-h-[80px]`
+- Resize disabled: `resize-none`
+
+## 3. Dropdown/Select Standards
+
+### Select Container
+```html
+<div className="relative">
+  <select className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 pr-10 rounded-md border appearance-none cursor-pointer focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none">
+    <!-- Options -->
+  </select>
+  <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+    <svg className="h-4 w-4 text-white/70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+      <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+    </svg>
+  </div>
+</div>
+```
+
+**Key Properties:**
+- Same base styling as text inputs
+- Additional padding-right: `pr-10` for dropdown arrow
+- Remove default appearance: `appearance-none`
+- Custom dropdown arrow with `text-white/70`
+
+## 4. Label Standards
+
+### Form Labels
+```css
+className="text-sm font-medium text-white"
+```
+
+**Properties:**
+- Text size: `text-sm` (14px)
+- Weight: `font-medium`
+- Color: `text-white` (full white, not gray)
+
+### Field Container
+```css
+className="space-y-2"
+```
+
+## 5. Button Standards
+
+### Neo-Glass Buttons
+```css
+className="neo-glass-button flex items-center gap-2 py-2 px-4"
+```
+
+### Button Container
+```css
+className="flex space-x-2 justify-end pt-4"
+```
+
+## 6. Custom Scrollbar (Neo-Glass Scrollbar)
+
+### Applied automatically to `.neo-glass-card` elements:
+```css
+/* Webkit browsers */
+.neo-glass-card ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.neo-glass-card ::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  backdrop-filter: blur(4px);
+}
+
+.neo-glass-card ::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  transition: all 0.3s ease;
+}
+
+.neo-glass-card ::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.15));
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+}
+
+/* Firefox */
+.neo-glass-card {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2) rgba(255, 255, 255, 0.05);
+}
+```
+
+## 7. Animation & Transition Standards
+
+### Standard Transition
+```css
+transition-all duration-200
+```
+
+### Hover Effects
+- Border color: `hover:border-white/30`
+- Background: Maintain same transparency
+
+### Focus Effects
+- Border: `focus:border-white/50`
+- Ring: `focus:ring-2 focus:ring-white/30`
+- Outline: `focus:outline-none`
+
+## 8. Spacing Standards
+
+### Form Spacing
+- Between fields: `space-y-6`
+- Internal field spacing: `space-y-2`
+- Button area padding: `pt-4`
+
+### Input Padding
+- Vertical: `py-3` (12px)
+- Horizontal: `px-3` (12px)
+- Select right padding: `pr-10` (40px for dropdown arrow)
+
+## 9. Color Palette
+
+### Backgrounds
+- Primary input: `rgba(18,18,18,0.95)`
+- Blur effect: `backdrop-blur-md`
+
+### Borders
+- Default: `border-white/20` (20% opacity)
+- Hover: `border-white/30` (30% opacity)
+- Focus: `border-white/50` (50% opacity)
+
+### Text
+- Labels: `text-white` (100% white)
+- Placeholders: `placeholder-white/50` (50% opacity)
+- Dropdown arrow: `text-white/70` (70% opacity)
+
+### Shadows
+- Input shadow: `shadow-md`
+- Focus ring: `focus:ring-white/30`
+
+## 10. Implementation Example
+
+```jsx
+// Standard Form Field Structure
+<div className="space-y-2">
+  <label htmlFor="fieldName" className="text-sm font-medium text-white">
+    Field Label
+  </label>
+  <input
+    id="fieldName"
+    type="text"
+    placeholder="Enter value..."
+    className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+  />
+</div>
+
+// Standard Button Footer
+<div className="flex space-x-2 justify-end pt-4">
+  <button className="neo-glass-button flex items-center gap-2 py-2 px-4">
+    Cancel
+  </button>
+  <button className="neo-glass-button flex items-center gap-2 py-2 px-4">
+    Save
+  </button>
+</div>
+```
+
+## 11. Quality Checklist
+
+When implementing forms, ensure:
+- ✅ All inputs use the standard glassmorphic styling
+- ✅ Labels are white and properly sized
+- ✅ Dropdowns have custom arrows and proper text display
+- ✅ Buttons use neo-glass-button class
+- ✅ Spacing follows the standard guidelines
+- ✅ Hover and focus states are implemented
+- ✅ Form uses neo-glass-card container
+- ✅ Custom scrollbar is available when needed
+
+## 12. Browser Compatibility
+
+This styling is optimized for:
+- ✅ Chrome/Chromium browsers
+- ✅ Safari (WebKit)
+- ✅ Firefox (with fallback scrollbar)
+- ✅ Edge (Chromium-based)
+
+---
+
+*This guideline ensures consistent, premium form experiences across the entire application while maintaining the sophisticated glassmorphic design language.*
