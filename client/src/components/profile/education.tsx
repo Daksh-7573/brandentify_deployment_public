@@ -708,12 +708,12 @@ export default function Education() {
       
       {/* Education dialog for adding/editing */}
       <Dialog open={openDialog} onOpenChange={(open) => !open && setOpenDialog(false)}>
-        <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto neo-glass-card">
           <DialogHeader>
-            <DialogTitle>
+            <DialogTitle className="text-white text-lg font-bold">
               {editingEducation ? "Edit Academic Background" : "Add Academic Background"}
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-gray-300">
               {editingEducation 
                 ? "Update your academic background information below." 
                 : "Add your academic background information below."}
@@ -721,16 +721,20 @@ export default function Education() {
           </DialogHeader>
           
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 py-5">
               {/* Institution */}
               <FormField
                 control={form.control}
                 name="institution"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Institution*</FormLabel>
+                    <FormLabel className="text-sm font-medium text-white">Institution*</FormLabel>
                     <FormControl>
-                      <Input placeholder="Harvard University" {...field} />
+                      <Input 
+                        placeholder="Harvard University" 
+                        className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+                        {...field} 
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
