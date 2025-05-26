@@ -207,7 +207,7 @@ export default function ServiceForm({ service, initialData, onSubmit, isPending,
               <FormControl>
                 <Input
                   placeholder="Enter your service title..."
-                  className="neo-glass-input bg-white/5 border-white/10 backdrop-blur-sm focus:ring-blue-500/40 focus:border-blue-500/40 text-white transition-all"
+                  className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30"
                   {...field}
                 />
               </FormControl>
@@ -227,7 +227,7 @@ export default function ServiceForm({ service, initialData, onSubmit, isPending,
               </FormDescription>
               <FormControl>
                 <textarea
-                  className="neo-glass-input flex w-full rounded-md border border-white/10 bg-white/5 backdrop-blur-sm px-3 py-2 text-white ring-offset-background placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40 focus-visible:border-blue-500/40 transition-all disabled:cursor-not-allowed disabled:opacity-50"
+                  className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 flex w-full rounded-md px-3 py-2 ring-offset-background placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 disabled:cursor-not-allowed disabled:opacity-50"
                   placeholder="Describe your service..."
                   rows={3}
                   {...field}
@@ -241,7 +241,7 @@ export default function ServiceForm({ service, initialData, onSubmit, isPending,
 
         
         {/* Rate Fields */}
-        <div className="space-y-4 border border-white/10 bg-white/5 backdrop-blur-sm rounded-lg p-5 shadow-neo transition-all hover:border-white/20">
+        <div className="space-y-4 border border-white/20 bg-[rgba(18,18,18,0.95)] backdrop-blur-md rounded-lg p-5 shadow-md transition-all hover:border-white/30">
           <h3 className="text-white text-base font-medium">Pricing Details</h3>
           
           {/* Currency Selection */}
@@ -262,7 +262,7 @@ export default function ServiceForm({ service, initialData, onSubmit, isPending,
                             { value: 'USD', label: 'USD (US Dollar)' },
                             { value: 'INR', label: 'INR (Indian Rupee)' }
                           ]}
-                          className="bg-white/5 border-white/10 text-white backdrop-blur-sm hover:bg-white/10 transition-all neo-glass-select"
+                          className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30"
                         />
                       </div>
                     </FormControl>
@@ -283,7 +283,7 @@ export default function ServiceForm({ service, initialData, onSubmit, isPending,
                       <Input
                         type="text"
                         placeholder="Enter service price (e.g. 24.99)"
-                        className="neo-glass-input bg-white/5 border-white/10 backdrop-blur-sm focus:ring-blue-500/40 focus:border-blue-500/40 text-white transition-all"
+                        className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30"
                         value={field.value === null ? '' : field.value}
                         onChange={(e) => {
                           // Accept the raw input value for display
@@ -321,7 +321,7 @@ export default function ServiceForm({ service, initialData, onSubmit, isPending,
             control={form.control}
             name="isHourly"
             render={({ field }) => (
-              <FormItem className="flex flex-row items-center justify-between rounded-lg border border-white/10 bg-black/30 backdrop-blur-sm p-4 transition-all hover:bg-white/5 hover:border-blue-500/20 hover:shadow-neo">
+              <FormItem className="flex flex-row items-center justify-between rounded-lg border border-white/20 bg-[rgba(18,18,18,0.95)] backdrop-blur-md p-4 transition-all hover:border-white/30 shadow-md">
                 <div className="space-y-0.5">
                   <FormLabel className="text-white text-base">Hourly Rate</FormLabel>
                   <FormDescription className="text-gray-300 text-xs">
@@ -344,7 +344,7 @@ export default function ServiceForm({ service, initialData, onSubmit, isPending,
           control={form.control}
           name="isActive"
           render={({ field }) => (
-            <FormItem className="flex flex-row items-center justify-between rounded-lg border border-white/10 bg-black/30 backdrop-blur-sm p-4 transition-all hover:bg-white/5 hover:border-blue-500/20 hover:shadow-neo">
+            <FormItem className="flex flex-row items-center justify-between rounded-lg border border-white/20 bg-[rgba(18,18,18,0.95)] backdrop-blur-md p-4 transition-all hover:border-white/30 shadow-md">
               <div className="space-y-0.5">
                 <FormLabel className="text-white text-base">Active Status</FormLabel>
                 <FormDescription className="text-gray-300 text-xs">
