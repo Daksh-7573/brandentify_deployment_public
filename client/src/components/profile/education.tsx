@@ -708,12 +708,12 @@ export default function Education() {
       
       {/* Education dialog for adding/editing */}
       <Dialog open={openDialog} onOpenChange={(open) => !open && setOpenDialog(false)}>
-        <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto neo-glass-card">
+        <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="text-white text-lg font-bold">
+            <DialogTitle>
               {editingEducation ? "Edit Academic Background" : "Add Academic Background"}
             </DialogTitle>
-            <DialogDescription className="text-gray-300">
+            <DialogDescription>
               {editingEducation 
                 ? "Update your academic background information below." 
                 : "Add your academic background information below."}
@@ -721,20 +721,16 @@ export default function Education() {
           </DialogHeader>
           
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 py-5">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               {/* Institution */}
               <FormField
                 control={form.control}
                 name="institution"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-sm font-medium text-white">Institution*</FormLabel>
+                    <FormLabel>Institution*</FormLabel>
                     <FormControl>
-                      <Input 
-                        placeholder="Harvard University" 
-                        className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
-                        {...field} 
-                      />
+                      <Input placeholder="Harvard University" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -747,7 +743,7 @@ export default function Education() {
                 name="degree"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-sm font-medium text-white">Degree*</FormLabel>
+                    <FormLabel>Degree*</FormLabel>
                     <FormControl>
                       <DegreeCombobox
                         value={field.value || ""}
@@ -755,7 +751,7 @@ export default function Education() {
                         placeholder="Type or select a degree"
                       />
                     </FormControl>
-                    <FormDescription className="text-xs text-gray-400">
+                    <FormDescription>
                       Type to filter suggestions (e.g., "bach" for Bachelor degrees)
                     </FormDescription>
                     <FormMessage />
@@ -769,7 +765,7 @@ export default function Education() {
                 name="industry"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-sm font-medium text-white">Industry*</FormLabel>
+                    <FormLabel>Industry*</FormLabel>
                     <FormControl>
                       <Select
                         value={field.value}
@@ -778,7 +774,7 @@ export default function Education() {
                           setSelectedIndustry(value);
                         }}
                       >
-                        <SelectTrigger className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 rounded-md border focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none">
+                        <SelectTrigger className="w-full">
                           <SelectValue placeholder="Select an industry" />
                         </SelectTrigger>
                         <SelectContent>
@@ -801,15 +797,11 @@ export default function Education() {
                 name="field"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-sm font-medium text-white">Field of Study</FormLabel>
+                    <FormLabel>Field of Study</FormLabel>
                     <FormControl>
-                      <Input 
-                        placeholder="Computer Science" 
-                        className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
-                        {...field} 
-                      />
+                      <Input placeholder="Computer Science" {...field} />
                     </FormControl>
-                    <FormDescription className="text-xs text-gray-400">
+                    <FormDescription>
                       Your major, specialization, or concentration
                     </FormDescription>
                     <FormMessage />
@@ -823,13 +815,13 @@ export default function Education() {
                 name="location"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-sm font-medium text-white">Location</FormLabel>
+                    <FormLabel>Location</FormLabel>
                     <FormControl>
                       <Select
                         value={field.value}
                         onValueChange={field.onChange}
                       >
-                        <SelectTrigger className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 rounded-md border focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none">
+                        <SelectTrigger className="w-full">
                           <SelectValue placeholder="Select a location" />
                         </SelectTrigger>
                         <SelectContent>
@@ -853,7 +845,7 @@ export default function Education() {
                   name="domain"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-sm font-medium text-white">Domain</FormLabel>
+                      <FormLabel>Domain</FormLabel>
                       <FormControl>
                         <Select
                           value={field.value}
@@ -862,7 +854,7 @@ export default function Education() {
                             setSelectedDomain(value);
                           }}
                         >
-                          <SelectTrigger className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 rounded-md border focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none">
+                          <SelectTrigger className="w-full">
                             <SelectValue placeholder="Select a domain" />
                           </SelectTrigger>
                           <SelectContent>
@@ -874,7 +866,7 @@ export default function Education() {
                           </SelectContent>
                         </Select>
                       </FormControl>
-                      <FormDescription className="text-xs text-gray-400">
+                      <FormDescription>
                         The specific field within the selected industry
                       </FormDescription>
                       <FormMessage />
@@ -891,7 +883,7 @@ export default function Education() {
                   name="startDate"
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
-                      <FormLabel className="text-sm font-medium text-white">Start Date*</FormLabel>
+                      <FormLabel>Start Date*</FormLabel>
                       <Popover>
                         <PopoverTrigger asChild>
                           <FormControl>

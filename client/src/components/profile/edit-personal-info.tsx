@@ -133,10 +133,10 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
   };
   
   return (
-    <div className="w-full space-y-6 max-h-[70vh] overflow-y-auto pr-2 py-2 career-capsule-scrollbar">
+    <div className="w-full space-y-4 max-h-[70vh] overflow-y-auto pr-2">
       {/* Full Name */}
       <div className="space-y-2">
-        <label htmlFor="name" className="text-sm font-medium text-white flex items-center gap-2">
+        <label htmlFor="name" className="text-sm font-medium flex items-center gap-2">
           <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
             <circle cx="12" cy="7" r="4"></circle>
@@ -148,13 +148,12 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Your full name"
-          className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-10 px-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
         />
       </div>
       
       {/* Email (read-only) */}
       <div className="space-y-2">
-        <label htmlFor="email" className="text-sm font-medium text-white flex items-center gap-2">
+        <label htmlFor="email" className="text-sm font-medium flex items-center gap-2">
           <Mail className="h-4 w-4" />
           Email
         </label>
@@ -163,14 +162,13 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
           value={userData.email}
           disabled
           readOnly
-          className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white/70 border-white/20 shadow-md transition-all hover:border-white/30 w-full h-10 px-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none cursor-not-allowed"
         />
-        <p className="text-xs text-gray-400">Email cannot be changed</p>
+        <p className="text-xs text-muted-foreground">Email cannot be changed</p>
       </div>
       
       {/* Phone Number */}
       <div className="space-y-2">
-        <label htmlFor="phoneNumber" className="text-sm font-medium text-white flex items-center gap-2">
+        <label htmlFor="phoneNumber" className="text-sm font-medium flex items-center gap-2">
           <Phone className="h-4 w-4" />
           Phone Number
         </label>
@@ -184,14 +182,13 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
             value={phoneNumber}
             onChange={(e) => setPhoneNumber(e.target.value)}
             placeholder="Your phone number"
-            className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 flex-1 h-10 px-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
           />
         </div>
       </div>
       
       {/* Job Title */}
       <div className="space-y-2">
-        <label htmlFor="jobTitle" className="text-sm font-medium text-white flex items-center gap-2">
+        <label htmlFor="jobTitle" className="text-sm font-medium flex items-center gap-2">
           <Briefcase className="h-4 w-4" />
           Job Title
         </label>
@@ -200,13 +197,12 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
           value={jobTitle}
           onChange={(e) => setJobTitle(e.target.value)}
           placeholder="Your professional title (e.g. Senior Developer)"
-          className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-10 px-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
         />
       </div>
       
       {/* Location */}
       <div className="space-y-2">
-        <label htmlFor="location" className="text-sm font-medium text-white flex items-center gap-2">
+        <label htmlFor="location" className="text-sm font-medium flex items-center gap-2">
           <MapPin className="h-4 w-4" />
           Location
         </label>
@@ -215,18 +211,17 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
           value={location}
           onChange={(e) => setLocation(e.target.value)}
           placeholder="Your location (e.g. San Francisco, CA)"
-          className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-10 px-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
         />
       </div>
 
       {/* Industry */}
       <div className="space-y-2">
-        <label htmlFor="industry" className="text-sm font-medium text-white flex items-center gap-2">
+        <label htmlFor="industry" className="text-sm font-medium flex items-center gap-2">
           <Building className="h-4 w-4" />
           Industry
         </label>
         <Select value={industry} onValueChange={setIndustry}>
-          <SelectTrigger id="industry" className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 pr-10 rounded-md border appearance-none cursor-pointer focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none">
+          <SelectTrigger id="industry">
             <SelectValue placeholder="Select your industry" />
           </SelectTrigger>
           <SelectContent>
@@ -239,12 +234,12 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
 
       {/* Domain/Specialty */}
       <div className="space-y-2">
-        <label htmlFor="domain" className="text-sm font-medium text-white flex items-center gap-2">
+        <label htmlFor="domain" className="text-sm font-medium flex items-center gap-2">
           <Book className="h-4 w-4" />
           Domain/Specialty
         </label>
         <Select value={domain} onValueChange={setDomain}>
-          <SelectTrigger id="domain" className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 pr-10 rounded-md border appearance-none cursor-pointer focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none">
+          <SelectTrigger id="domain">
             <SelectValue placeholder="Select your domain" />
           </SelectTrigger>
           <SelectContent>
@@ -257,7 +252,7 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
       
       {/* About Me */}
       <div className="space-y-2">
-        <label htmlFor="aboutMe" className="text-sm font-medium text-white flex items-center gap-2">
+        <label htmlFor="aboutMe" className="text-sm font-medium flex items-center gap-2">
           <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
           </svg>
@@ -269,13 +264,12 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
           onChange={(e) => setAboutMe(e.target.value)}
           placeholder="Write a brief introduction about yourself"
           rows={4}
-          className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full py-3 px-3 pr-10 rounded-md border appearance-none cursor-pointer focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none resize-none"
         />
       </div>
 
       {/* Looking For */}
       <div className="space-y-2">
-        <label htmlFor="lookingFor" className="text-sm font-medium text-white flex items-center gap-2">
+        <label htmlFor="lookingFor" className="text-sm font-medium flex items-center gap-2">
           <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M12 20v-8m0 0V4m0 8h8m-8 0H4"></path>
           </svg>
@@ -287,40 +281,38 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
           onChange={(e) => setLookingFor(e.target.value)}
           placeholder="What are you looking for professionally? (e.g. collaborations, new opportunities, etc.)"
           rows={3}
-          className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full py-3 px-3 pr-10 rounded-md border appearance-none cursor-pointer focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none resize-none"
         />
       </div>
       
       {/* Profile URL (read-only) */}
       <div className="space-y-2">
-        <label className="text-sm font-medium text-white flex items-center gap-2">
+        <label className="text-sm font-medium flex items-center gap-2">
           <Globe className="h-4 w-4" />
           Profile URL
         </label>
-        <div className="text-sm border rounded-md bg-[rgba(18,18,18,0.95)] backdrop-blur-md border-white/20 text-white/80 h-10 py-3 px-3 shadow-md transition-all hover:border-white/30 flex items-center focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none">
+        <div className="text-sm border rounded-md p-2 bg-muted/20">
           brandentifier.com/@{userData.name ? userData.name.replace(/\s+/g, '') : userData.username}
         </div>
-        <p className="text-xs text-gray-400">
+        <p className="text-xs text-muted-foreground">
           Your profile URL is based on your name and cannot be changed
         </p>
       </div>
       
       {/* Action Buttons */}
-      <div className="flex justify-end gap-2 pt-4">
-        <button
-          className="neo-glass-button-outline"
+      <div className="flex justify-end gap-2 pt-2">
+        <Button
+          variant="outline"
           onClick={onCancel}
           disabled={isLoading}
         >
           Cancel
-        </button>
-        <button 
-          className="neo-glass-button"
+        </Button>
+        <Button 
           onClick={handleSave}
           disabled={isLoading}
         >
           {isLoading ? "Saving..." : "Save Changes"}
-        </button>
+        </Button>
       </div>
     </div>
   );

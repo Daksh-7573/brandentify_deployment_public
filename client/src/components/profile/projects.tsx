@@ -1154,18 +1154,14 @@ export default function Projects() {
                       name="title"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-white">Title*</FormLabel>
+                          <FormLabel>Title*</FormLabel>
                           <FormControl>
-                            <Input 
-                              placeholder="Project title" 
-                              {...field}
-                              className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
-                            />
+                            <Input placeholder="Project title" {...field} />
                           </FormControl>
-                          <FormDescription className="text-gray-400">
+                          <FormDescription>
                             Enter a clear, descriptive title for your project
                           </FormDescription>
-                          <FormMessage className="text-red-400" />
+                          <FormMessage />
                         </FormItem>
                       )}
                     />
@@ -1175,18 +1171,18 @@ export default function Projects() {
                       name="description"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-white">Description*</FormLabel>
+                          <FormLabel>Description*</FormLabel>
                           <FormControl>
                             <Textarea 
                               placeholder="Describe your project, its objectives, and outcome" 
                               {...field}
-                              className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full py-3 px-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none resize-none min-h-[120px]"
+                              className="min-h-[120px]"
                             />
                           </FormControl>
-                          <FormDescription className="text-gray-400">
+                          <FormDescription>
                             Provide details about your project (max 500 characters)
                           </FormDescription>
-                          <FormMessage className="text-red-400" />
+                          <FormMessage />
                         </FormItem>
                       )}
                     />
@@ -1197,18 +1193,14 @@ export default function Projects() {
                         name="category"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-white">Category*</FormLabel>
+                            <FormLabel>Category*</FormLabel>
                             <FormControl>
-                              <Input 
-                                placeholder="e.g. Web Development" 
-                                {...field}
-                                className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
-                              />
+                              <Input placeholder="e.g. Web Development" {...field} />
                             </FormControl>
-                            <FormDescription className="text-gray-400">
+                            <FormDescription>
                               Project category or type
                             </FormDescription>
-                            <FormMessage className="text-red-400" />
+                            <FormMessage />
                           </FormItem>
                         )}
                       />
@@ -1218,7 +1210,7 @@ export default function Projects() {
                         name="industry"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-white">Industry</FormLabel>
+                            <FormLabel>Industry</FormLabel>
                             <FormControl>
                               <IndustryCombobox 
                                 value={field.value || ''}
@@ -1226,10 +1218,10 @@ export default function Projects() {
                                 placeholder="Select or type an industry"
                               />
                             </FormControl>
-                            <FormDescription className="text-gray-400">
+                            <FormDescription>
                               Industry the project belongs to
                             </FormDescription>
-                            <FormMessage className="text-red-400" />
+                            <FormMessage />
                           </FormItem>
                         )}
                       />

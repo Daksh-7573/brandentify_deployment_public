@@ -363,9 +363,9 @@ export default function ServiceForm({ service, initialData, onSubmit, isPending,
           )}
         />
         
-        <button 
+        <Button 
           type="submit" 
-          className="neo-glass-button w-full flex items-center justify-center gap-2" 
+          className="w-full flex items-center justify-center gap-2 py-2.5 px-4 border-white/20 bg-white/10 text-white hover:bg-white/20 backdrop-blur-md shadow-md transition-all hover:scale-105" 
           disabled={isPending}
         >
           {isPending ? (
@@ -376,7 +376,7 @@ export default function ServiceForm({ service, initialData, onSubmit, isPending,
           ) : (
             <span>{serviceData ? "Update Service" : "Create Service"}</span>
           )}
-        </button>
+        </Button>
       </form>
     </Form>
   );
