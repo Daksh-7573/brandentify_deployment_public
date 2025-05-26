@@ -143,8 +143,9 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
           </svg>
           Full Name
         </label>
-        <Input
+        <input
           id="name"
+          type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Your full name"
@@ -158,8 +159,9 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
           <Mail className="h-4 w-4" />
           Email
         </label>
-        <Input
+        <input
           id="email"
+          type="email"
           value={userData.email}
           disabled
           readOnly
@@ -179,8 +181,9 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
             value={phoneCountryCode} 
             onChange={setPhoneCountryCode} 
           />
-          <Input
+          <input
             id="phoneNumber"
+            type="tel"
             value={phoneNumber}
             onChange={(e) => setPhoneNumber(e.target.value)}
             placeholder="Your phone number"
@@ -195,8 +198,9 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
           <Briefcase className="h-4 w-4" />
           Job Title
         </label>
-        <Input
+        <input
           id="jobTitle"
+          type="text"
           value={jobTitle}
           onChange={(e) => setJobTitle(e.target.value)}
           placeholder="Your professional title (e.g. Senior Developer)"
@@ -210,8 +214,9 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
           <MapPin className="h-4 w-4" />
           Location
         </label>
-        <Input
+        <input
           id="location"
+          type="text"
           value={location}
           onChange={(e) => setLocation(e.target.value)}
           placeholder="Your location (e.g. San Francisco, CA)"
@@ -263,7 +268,7 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
           </svg>
           About Me
         </label>
-        <Textarea
+        <textarea
           id="aboutMe"
           value={aboutMe}
           onChange={(e) => setAboutMe(e.target.value)}
@@ -281,7 +286,7 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
           </svg>
           Looking For
         </label>
-        <Textarea
+        <textarea
           id="lookingFor"
           value={lookingFor}
           onChange={(e) => setLookingFor(e.target.value)}
