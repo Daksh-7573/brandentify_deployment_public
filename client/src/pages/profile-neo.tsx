@@ -417,14 +417,12 @@ export default function ProfileNeo() {
                       <button
                         onClick={() => {
                           console.log("Edit Profile Information button clicked!");
-                          console.log("Current dialog state:", showEditPersonalInfoDialog);
                           setShowEditPersonalInfoDialog(true);
-                          console.log("Dialog state after setting to true:", true);
                         }}
                         className="mt-3 px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white text-sm hover:bg-white/20 transition-all duration-300 backdrop-blur-sm flex items-center gap-2 mx-auto"
                       >
                         <Edit className="h-4 w-4" />
-                        Edit Profile Information {showEditPersonalInfoDialog ? "(Dialog Open)" : "(Dialog Closed)"}
+                        Edit Profile Information
                       </button>
                     </div>
                   </div>
