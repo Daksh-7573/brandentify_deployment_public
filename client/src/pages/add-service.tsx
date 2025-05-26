@@ -108,7 +108,7 @@ export default function AddService() {
           </div>
 
           {/* Main Form */}
-          <Card className="border border-white/20 shadow-2xl bg-white/10 backdrop-blur-md">
+          <Card className="border border-white/10 shadow-2xl bg-black/40 backdrop-blur-md">
             <CardHeader className="text-center pb-6">
               <CardTitle className="text-2xl font-bold text-white">Service Details</CardTitle>
               <CardDescription className="text-gray-300">
