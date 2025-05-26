@@ -163,7 +163,7 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
           value={userData.email}
           disabled
           readOnly
-          className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white/70 border-white/20 shadow-md w-full h-12 py-3 px-3 rounded-md border cursor-not-allowed"
+          className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white/70 border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none cursor-not-allowed"
         />
         <p className="text-xs text-gray-400">Email cannot be changed</p>
       </div>
@@ -297,7 +297,7 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
           <Globe className="h-4 w-4" />
           Profile URL
         </label>
-        <div className="text-sm border rounded-md p-2 bg-[rgba(18,18,18,0.95)] backdrop-blur-md border-white/20 text-white/80 h-12 py-3 px-3 shadow-md">
+        <div className="text-sm border rounded-md bg-[rgba(18,18,18,0.95)] backdrop-blur-md border-white/20 text-white/80 h-12 py-3 px-3 shadow-md flex items-center">
           brandentifier.com/@{userData.name ? userData.name.replace(/\s+/g, '') : userData.username}
         </div>
         <p className="text-xs text-gray-400">
