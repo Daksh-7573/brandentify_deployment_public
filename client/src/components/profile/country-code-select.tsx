@@ -28,18 +28,17 @@ const countryCodes = [
 
 const CountryCodeSelect: React.FC<CountryCodeSelectProps> = ({ value, onChange }) => {
   return (
-    <Select value={value} onValueChange={onChange}>
-      <SelectTrigger className="w-[110px]">
-        <SelectValue placeholder="Code" />
-      </SelectTrigger>
-      <SelectContent>
-        {countryCodes.map((country) => (
-          <SelectItem key={country.code} value={country.code}>
-            {country.code} {country.country}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
+    <select 
+      value={value} 
+      onChange={(e) => onChange(e.target.value)}
+      className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-[110px] h-12 py-3 px-3 rounded-md border focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+    >
+      {countryCodes.map((country) => (
+        <option key={country.code} value={country.code} className="bg-gray-800 text-white">
+          {country.code}
+        </option>
+      ))}
+    </select>
   );
 };
 

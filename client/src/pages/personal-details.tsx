@@ -127,6 +127,25 @@ const PersonalDetailsPage: React.FC = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Edit Personal Information Dialog */}
+      <Dialog open={showEditPersonalInfo} onOpenChange={setShowEditPersonalInfo}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 border-white/20 backdrop-blur-md">
+          <DialogHeader>
+            <DialogTitle className="text-white text-xl font-semibold">Edit Personal Information</DialogTitle>
+            <DialogDescription className="text-white/70">
+              Update your profile information and contact details
+            </DialogDescription>
+          </DialogHeader>
+          {userData && (
+            <EditPersonalInfo
+              userData={userData}
+              onCancel={() => setShowEditPersonalInfo(false)}
+              onSave={() => setShowEditPersonalInfo(false)}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
