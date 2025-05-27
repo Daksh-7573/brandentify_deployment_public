@@ -293,6 +293,63 @@ select.neo-glass-input option {
   gap: 1.5rem;
 }
 
+/* Custom Scrollbar - Glassmorphic Style */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: rgba(18, 18, 18, 0.2);
+  border-radius: 4px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+*::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.4);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+*::-webkit-scrollbar-thumb:active {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+*::-webkit-scrollbar-corner {
+  background: rgba(18, 18, 18, 0.2);
+}
+
+/* For form containers and dialogs */
+.neo-glass-panel *::-webkit-scrollbar-track,
+.neo-glass-card *::-webkit-scrollbar-track {
+  background: rgba(40, 40, 40, 0.3);
+}
+
+.neo-glass-panel *::-webkit-scrollbar-thumb,
+.neo-glass-card *::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.neo-glass-panel *::-webkit-scrollbar-thumb:hover,
+.neo-glass-card *::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .neo-glass-container {
