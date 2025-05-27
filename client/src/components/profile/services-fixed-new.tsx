@@ -271,10 +271,10 @@ export default function Services() {
                 <span>Add Service</span>
               </button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[525px] max-h-[88vh] overflow-y-auto bg-transparent">
+            <DialogContent className="sm:max-w-[525px] max-h-[88vh] overflow-y-auto bg-[rgba(18,18,18,0.95)] backdrop-blur-md border border-white/20 shadow-xl">
               <DialogHeader>
-                <DialogTitle>Add Service</DialogTitle>
-                <DialogDescription>
+                <DialogTitle className="text-white">Add Service</DialogTitle>
+                <DialogDescription className="text-gray-300">
                   Enter a professional service you offer (one at a time).
                 </DialogDescription>
               </DialogHeader>
