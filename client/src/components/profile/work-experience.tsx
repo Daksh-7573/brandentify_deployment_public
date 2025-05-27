@@ -379,7 +379,15 @@ export default function WorkExperience() {
                       name="startDate"
                       value={formData.startDate ? format(formData.startDate, 'yyyy-MM-dd') : ''}
                       onChange={(e) => setFormData(prev => ({ ...prev, startDate: e.target.value ? new Date(e.target.value) : undefined }))}
-                      className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 rounded-md border focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+                      className="w-full h-12 py-3 px-3 rounded-md border transition-all focus:outline-none"
+                      style={{
+                        background: 'rgba(18,18,18,0.95)',
+                        backdropFilter: 'blur(12px)',
+                        border: '1px solid rgba(255,255,255,0.2)',
+                        color: 'white',
+                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                        colorScheme: 'dark'
+                      }}
                       required
                     />
                   </div>
@@ -394,7 +402,15 @@ export default function WorkExperience() {
                       name="endDate"
                       value={formData.endDate ? format(formData.endDate, 'yyyy-MM-dd') : ''}
                       onChange={(e) => setFormData(prev => ({ ...prev, endDate: e.target.value ? new Date(e.target.value) : undefined }))}
-                      className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 rounded-md border focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+                      className="w-full h-12 py-3 px-3 rounded-md border transition-all focus:outline-none"
+                      style={{
+                        background: 'rgba(18,18,18,0.95)',
+                        backdropFilter: 'blur(12px)',
+                        border: '1px solid rgba(255,255,255,0.2)',
+                        color: 'white',
+                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                        colorScheme: 'dark'
+                      }}
                     />
                   </div>
                 </div>
