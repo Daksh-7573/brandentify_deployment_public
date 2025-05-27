@@ -380,9 +380,9 @@ export default function Skills() {
                   className="mb-3"
                 />
                 <div className="flex justify-between items-center">
-                  <div className="w-full bg-gray-800/80 rounded-full h-1.5 mb-2">
+                  <div className="w-full bg-[rgba(18,18,18,0.95)] backdrop-blur-md border border-white/20 rounded-full h-2 mb-2 shadow-md">
                     <div 
-                      className={`${getColor(sliderValue)} h-1.5 rounded-full`} 
+                      className={`${getColor(sliderValue)} h-2 rounded-full backdrop-blur-sm shadow-sm`} 
                       style={{ width: `${sliderValue}%` }}
                     ></div>
                   </div>
