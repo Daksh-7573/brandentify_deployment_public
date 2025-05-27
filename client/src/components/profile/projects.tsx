@@ -1555,9 +1555,6 @@ export default function Projects() {
               </Tabs>
               
               <DialogFooter>
-                <Button type="button" variant="outline" onClick={() => setIsAddModalOpen(false)}>
-                  Cancel
-                </Button>
                 <Button type="submit">
                   Save Showcase
                 </Button>

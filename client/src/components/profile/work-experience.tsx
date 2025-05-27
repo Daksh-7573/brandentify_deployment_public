@@ -439,21 +439,7 @@ export default function WorkExperience() {
                 </div>
 
                 {/* Form Action Buttons */}
-                <div className="flex justify-end gap-3 pt-6 border-t border-white/10">
-                  <button
-                    type="button"
-                    onClick={() => setShowAddDialog(false)}
-                    className="px-6 py-3 rounded-md transition-all focus:outline-none focus:ring-2 focus:ring-white/30"
-                    style={{
-                      background: 'rgba(18,18,18,0.95)',
-                      backdropFilter: 'blur(12px)',
-                      border: '1px solid rgba(255,255,255,0.2)',
-                      color: 'white',
-                      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-                    }}
-                  >
-                    Cancel
-                  </button>
+                <div className="flex justify-end pt-6 border-t border-white/10">
                   <button
                     type="submit"
                     disabled={createExperienceMutation.isPending}

@@ -393,14 +393,7 @@ export default function Skills() {
               </div>
             </div>
           </div>
-          <DialogFooter className="flex space-x-2 justify-end pt-4">
-            <button 
-              type="button" 
-              className="neo-glass-button flex items-center gap-2 py-2 px-4"
-              onClick={handleCloseModal}
-            >
-              Cancel
-            </button>
+          <DialogFooter className="flex justify-end pt-4">
             <button 
               type="button" 
               className="neo-glass-button flex items-center gap-2 py-2 px-4"
