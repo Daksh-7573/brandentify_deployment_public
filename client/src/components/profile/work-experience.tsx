@@ -268,15 +268,35 @@ export default function WorkExperience() {
                     value={formData.location} 
                     onValueChange={(value) => setFormData(prev => ({ ...prev, location: value }))}
                   >
-                    <SelectTrigger className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 rounded-md border focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none">
-                      <SelectValue placeholder="Select location..." className="text-white placeholder-white/50" />
+                    <SelectTrigger 
+                      className="w-full h-12 py-3 px-3 rounded-md border transition-all focus:outline-none"
+                      style={{
+                        background: 'rgba(18,18,18,0.95)',
+                        backdropFilter: 'blur(12px)',
+                        border: '1px solid rgba(255,255,255,0.2)',
+                        color: 'white',
+                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                      }}
+                    >
+                      <SelectValue placeholder="Select location..." style={{ color: 'white' }} />
                     </SelectTrigger>
-                    <SelectContent className="bg-[rgba(18,18,18,0.98)] backdrop-blur-xl border-white/20 shadow-2xl">
+                    <SelectContent 
+                      style={{
+                        background: 'rgba(40,40,40,0.98)',
+                        backdropFilter: 'blur(20px)',
+                        border: '1px solid rgba(255,255,255,0.3)',
+                        boxShadow: '0 20px 25px -5px rgba(0,0,0,0.7)'
+                      }}
+                    >
                       {workExperienceLocations.map((location) => (
                         <SelectItem 
                           key={location} 
                           value={location}
-                          className="text-white hover:bg-white/10 focus:bg-white/10 cursor-pointer transition-colors"
+                          className="cursor-pointer transition-colors"
+                          style={{
+                            color: 'rgba(255,255,255,0.9)',
+                            padding: '12px 16px'
+                          }}
                         >
                           {location}
                         </SelectItem>
@@ -294,15 +314,35 @@ export default function WorkExperience() {
                     value={formData.industry} 
                     onValueChange={(value) => setFormData(prev => ({ ...prev, industry: value }))}
                   >
-                    <SelectTrigger className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 rounded-md border focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none">
-                      <SelectValue placeholder="Select industry..." className="text-white placeholder-white/50" />
+                    <SelectTrigger 
+                      className="w-full h-12 py-3 px-3 rounded-md border transition-all focus:outline-none"
+                      style={{
+                        background: 'rgba(18,18,18,0.95)',
+                        backdropFilter: 'blur(12px)',
+                        border: '1px solid rgba(255,255,255,0.2)',
+                        color: 'white',
+                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                      }}
+                    >
+                      <SelectValue placeholder="Select industry..." style={{ color: 'white' }} />
                     </SelectTrigger>
-                    <SelectContent className="bg-[rgba(18,18,18,0.98)] backdrop-blur-xl border-white/20 shadow-2xl">
+                    <SelectContent 
+                      style={{
+                        background: 'rgba(40,40,40,0.98)',
+                        backdropFilter: 'blur(20px)',
+                        border: '1px solid rgba(255,255,255,0.3)',
+                        boxShadow: '0 20px 25px -5px rgba(0,0,0,0.7)'
+                      }}
+                    >
                       {industryOptions.map((option) => (
                         <SelectItem 
                           key={option.key} 
                           value={option.value}
-                          className="text-white hover:bg-white/10 focus:bg-white/10 cursor-pointer transition-colors"
+                          className="cursor-pointer transition-colors"
+                          style={{
+                            color: 'rgba(255,255,255,0.9)',
+                            padding: '12px 16px'
+                          }}
                         >
                           {option.label}
                         </SelectItem>
