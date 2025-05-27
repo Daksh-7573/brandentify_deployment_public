@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -20,7 +20,7 @@ interface Project {
   updatedAt?: string | null;
 }
 
-export default function ProjectsFixed() {
+const ProjectsFixed = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('details');
   const projectForm = useForm();
@@ -181,4 +181,6 @@ export default function ProjectsFixed() {
       </Dialog>
     </div>
   );
-}
+};
+
+export default ProjectsFixed;
