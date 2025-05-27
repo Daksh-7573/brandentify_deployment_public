@@ -371,14 +371,16 @@ export default function Skills() {
                   <span className="text-xs text-white/60">Advanced</span>
                   <span className="text-xs text-white/60">Expert</span>
                 </div>
-                <Slider
-                  value={[sliderValue]}
-                  min={0}
-                  max={100}
-                  step={1}
-                  onValueChange={handleSliderChange}
-                  className="mb-3"
-                />
+                <div className="mb-3">
+                  <Slider
+                    value={[sliderValue]}
+                    min={0}
+                    max={100}
+                    step={1}
+                    onValueChange={handleSliderChange}
+                    className="[&_[role=slider]]:bg-[rgba(18,18,18,0.95)] [&_[role=slider]]:backdrop-blur-md [&_[role=slider]]:border-white/30 [&_[role=slider]]:border-2 [&_[role=slider]]:shadow-md [&>.relative>.absolute]:bg-white/70 [&>.relative]:bg-[rgba(18,18,18,0.7)] [&>.relative]:backdrop-blur-sm [&>.relative]:border [&>.relative]:border-white/20"
+                  />
+                </div>
                 <div className="flex justify-between items-center">
                   <div className="w-full bg-[rgba(18,18,18,0.95)] backdrop-blur-md border border-white/20 rounded-full h-2 mb-2 shadow-md">
                     <div 
