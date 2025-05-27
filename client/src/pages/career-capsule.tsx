@@ -382,9 +382,9 @@ export default function CareerCapsulePage() {
         )}
       </div>
 
-      {/* Dialog for Create Goal */}
+      {/* NEW GLASS UI DIALOG FOR CREATE GOAL */}
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-        <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto neo-glass-card border border-white/20">
+        <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto neo-glass-card border border-blue-400/30 shadow-2xl backdrop-blur-xl">
           <DialogHeader>
             <DialogTitle className="text-white text-xl font-semibold">✨ Create New Career Goal</DialogTitle>
             <DialogDescription className="text-gray-300">
