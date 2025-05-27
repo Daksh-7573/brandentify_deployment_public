@@ -269,11 +269,15 @@ export default function WorkExperience() {
                     onValueChange={(value) => setFormData(prev => ({ ...prev, location: value }))}
                   >
                     <SelectTrigger className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 rounded-md border focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none">
-                      <SelectValue placeholder="Select location..." />
+                      <SelectValue placeholder="Select location..." className="text-white placeholder-white/50" />
                     </SelectTrigger>
-                    <SelectContent className="bg-gray-900 border-gray-700">
+                    <SelectContent className="bg-[rgba(18,18,18,0.98)] backdrop-blur-xl border-white/20 shadow-2xl">
                       {workExperienceLocations.map((location) => (
-                        <SelectItem key={location} value={location}>
+                        <SelectItem 
+                          key={location} 
+                          value={location}
+                          className="text-white hover:bg-white/10 focus:bg-white/10 cursor-pointer transition-colors"
+                        >
                           {location}
                         </SelectItem>
                       ))}
@@ -291,11 +295,15 @@ export default function WorkExperience() {
                     onValueChange={(value) => setFormData(prev => ({ ...prev, industry: value }))}
                   >
                     <SelectTrigger className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 rounded-md border focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none">
-                      <SelectValue placeholder="Select industry..." />
+                      <SelectValue placeholder="Select industry..." className="text-white placeholder-white/50" />
                     </SelectTrigger>
-                    <SelectContent className="bg-gray-900 border-gray-700">
+                    <SelectContent className="bg-[rgba(18,18,18,0.98)] backdrop-blur-xl border-white/20 shadow-2xl">
                       {industryOptions.map((option) => (
-                        <SelectItem key={option.key} value={option.value}>
+                        <SelectItem 
+                          key={option.key} 
+                          value={option.value}
+                          className="text-white hover:bg-white/10 focus:bg-white/10 cursor-pointer transition-colors"
+                        >
                           {option.label}
                         </SelectItem>
                       ))}
