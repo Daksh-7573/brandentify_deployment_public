@@ -218,8 +218,7 @@ export default function WorkExperience() {
                    scrollbarColor: 'rgba(255,255,255,0.3) transparent'
                  }}>
               <DialogHeader>
-                <DialogTitle className="text-white flex items-center gap-2">
-                  <Briefcase className="h-5 w-5" />
+                <DialogTitle className="text-white">
                   Add Career Path
                 </DialogTitle>
               </DialogHeader>
