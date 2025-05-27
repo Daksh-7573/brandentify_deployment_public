@@ -1092,6 +1092,8 @@ export default function Education() {
               </DialogFooter>
             </form>
           </Form>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
