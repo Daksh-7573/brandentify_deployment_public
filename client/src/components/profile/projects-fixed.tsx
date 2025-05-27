@@ -87,7 +87,7 @@ const ProjectsFixed = () => {
                       <input
                         {...projectForm.register('title')}
                         placeholder="Enter project title..."
-                        className="w-full px-4 py-3 bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border border-white/20 rounded-md shadow-md transition-all hover:border-white/30 focus:border-white/40 focus:ring-2 focus:ring-white/30 focus:outline-none placeholder-white/50"
+                        className="neo-glass-input"
                       />
                     </div>
 
@@ -100,7 +100,7 @@ const ProjectsFixed = () => {
                         {...projectForm.register('description')}
                         placeholder="Describe your project..."
                         rows={4}
-                        className="w-full px-4 py-3 bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border border-white/20 rounded-md shadow-md transition-all hover:border-white/30 focus:border-white/40 focus:ring-2 focus:ring-white/30 focus:outline-none placeholder-white/50 resize-none"
+                        className="neo-glass-input resize-none"
                       />
                     </div>
 
@@ -111,7 +111,7 @@ const ProjectsFixed = () => {
                       </label>
                       <select
                         {...projectForm.register('category')}
-                        className="w-full px-4 py-3 bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border border-white/20 rounded-md shadow-md transition-all hover:border-white/30 focus:border-white/40 focus:ring-2 focus:ring-white/30 focus:outline-none"
+                        className="neo-glass-input"
                       >
                         <option value="">Select category...</option>
                         <option value="web">Web Development</option>
@@ -129,7 +129,7 @@ const ProjectsFixed = () => {
                       <input
                         {...projectForm.register('industry')}
                         placeholder="Enter industry..."
-                        className="w-full px-4 py-3 bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border border-white/20 rounded-md shadow-md transition-all hover:border-white/30 focus:border-white/40 focus:ring-2 focus:ring-white/30 focus:outline-none placeholder-white/50"
+                        className="neo-glass-input"
                       />
                     </div>
 
@@ -141,7 +141,7 @@ const ProjectsFixed = () => {
                       <input
                         {...projectForm.register('projectUrl')}
                         placeholder="https://example.com"
-                        className="w-full px-4 py-3 bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border border-white/20 rounded-md shadow-md transition-all hover:border-white/30 focus:border-white/40 focus:ring-2 focus:ring-white/30 focus:outline-none placeholder-white/50"
+                        className="neo-glass-input"
                       />
                     </div>
                   </div>
