@@ -1358,21 +1358,23 @@ export default function WorkExperience() {
               </div>
             </div>
             
-            <div className="space-y-2">
-              <Label htmlFor="keyResponsibilities">
+            <div className="space-y-3">
+              <Label htmlFor="keyResponsibilities" className="text-white font-medium flex items-center">
+                <Briefcase className="w-4 h-4 mr-2" />
                 Key Responsibilities
+                <span className="text-white/60 text-xs ml-2">(Optional - up to 10)</span>
               </Label>
               
-              {/* Responsibilities list */}
+              {/* Responsibilities list with glass styling */}
               {formData.keyResponsibilities.length > 0 && (
                 <ul className="space-y-2 mb-3">
                   {formData.keyResponsibilities.map((responsibility, index) => (
-                    <li key={index} className="flex items-center bg-gray-50 rounded-md p-2 text-sm">
-                      <span className="flex-1">{responsibility}</span>
+                    <li key={index} className="flex items-center bg-black/40 backdrop-blur-md border border-white/20 rounded-lg p-3 text-sm transition-all hover:bg-black/60">
+                      <span className="flex-1 text-white">{responsibility}</span>
                       <Button
                         size="icon"
                         variant="ghost"
-                        className="h-7 w-7 text-destructive"
+                        className="h-7 w-7 text-red-400 hover:text-red-300 hover:bg-red-500/20"
                         onClick={() => {
                           setFormData(prev => ({
                             ...prev,
@@ -1389,7 +1391,7 @@ export default function WorkExperience() {
                 </ul>
               )}
               
-              {/* Add new responsibility */}
+              {/* Add new responsibility with glass styling */}
               <div className="flex space-x-2">
                 <Input
                   id="newResponsibility"
@@ -1397,7 +1399,7 @@ export default function WorkExperience() {
                   placeholder="e.g. Led a team of 5 developers"
                   value={newResponsibilityInput}
                   onChange={(e) => setNewResponsibilityInput(e.target.value)}
-                  className="bg-gray-50 flex-1"
+                  className="bg-black/40 border-white/20 text-white placeholder:text-white/60 backdrop-blur-md focus:border-white/40 focus:bg-black/60 transition-all flex-1"
                   disabled={createExperienceMutation.isPending || formData.keyResponsibilities.length >= 10}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && newResponsibilityInput.trim()) {
@@ -1413,6 +1415,7 @@ export default function WorkExperience() {
                 <Button
                   type="button"
                   variant="outline"
+                  className="bg-black/40 border-white/20 text-white hover:bg-white/20 backdrop-blur-md transition-all"
                   disabled={!newResponsibilityInput.trim() || createExperienceMutation.isPending || formData.keyResponsibilities.length >= 10}
                   onClick={() => {
                     if (newResponsibilityInput.trim()) {
@@ -1429,7 +1432,7 @@ export default function WorkExperience() {
               </div>
               
               {formData.keyResponsibilities.length >= 10 && (
-                <p className="text-sm text-amber-600 flex items-center mt-1">
+                <p className="text-sm text-amber-400 flex items-center mt-1">
                   <AlertCircle className="h-3.5 w-3.5 mr-1.5" />
                   Maximum of 10 responsibilities reached
                 </p>
@@ -1437,10 +1440,11 @@ export default function WorkExperience() {
             </div>
           </div>
           
-          <DialogFooter>
-            <button
+          <DialogFooter className="flex gap-3 pt-6">
+            <Button
               type="button"
-              className="neo-glass-button bg-gray-800 hover:bg-gray-700"
+              variant="outline"
+              className="bg-black/40 border-white/20 text-white hover:bg-white/20 backdrop-blur-md transition-all flex-1"
               onClick={() => {
                 setShowAddDialog(false);
                 resetForm();
@@ -1448,15 +1452,25 @@ export default function WorkExperience() {
               disabled={createExperienceMutation.isPending}
             >
               Cancel
-            </button>
-            <button 
+            </Button>
+            <Button 
               type="button" 
-              className="neo-glass-button"
+              className="bg-white text-black hover:bg-white/90 backdrop-blur-md transition-all flex-1 font-medium"
               onClick={handleAddSubmit}
               disabled={createExperienceMutation.isPending}
             >
-              {createExperienceMutation.isPending ? "Adding..." : "Add Career Path"}
-            </button>
+              {createExperienceMutation.isPending ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin mr-2" />
+                  Adding...
+                </>
+              ) : (
+                <>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Career Path
+                </>
+              )}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
