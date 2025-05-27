@@ -303,6 +303,11 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
             placeholder="Write a brief introduction about yourself"
             rows={4}
             className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full min-h-[80px] px-3 py-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none resize-none"
+            style={{ 
+              backgroundColor: 'rgba(18,18,18,0.95)', 
+              color: 'white',
+              backdropFilter: 'blur(12px)'
+            }}
           />
         </div>
 
@@ -321,6 +326,11 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
             placeholder="What are you looking for professionally? (e.g. collaborations, new opportunities, etc.)"
             rows={3}
             className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full min-h-[80px] px-3 py-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none resize-none"
+            style={{ 
+              backgroundColor: 'rgba(18,18,18,0.95)', 
+              color: 'white',
+              backdropFilter: 'blur(12px)'
+            }}
           />
         </div>
 
@@ -341,6 +351,11 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
             placeholder="What can you offer to others? (e.g. expertise, services, mentorship, etc.)"
             rows={3}
             className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full min-h-[80px] px-3 py-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none resize-none"
+            style={{ 
+              backgroundColor: 'rgba(18,18,18,0.95)', 
+              color: 'white',
+              backdropFilter: 'blur(12px)'
+            }}
           />
         </div>
 
