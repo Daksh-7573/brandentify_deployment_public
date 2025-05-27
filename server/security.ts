@@ -458,23 +458,23 @@ function sanitizeLogsMiddleware(req: Request, res: Response, next: NextFunction)
   const originalConsoleLog = console.log;
   const originalConsoleError = console.error;
   
-  // Override console.log to sanitize PII
-  console.log = function(...args) {
-    const sanitizedArgs = args.map((arg) => {
-      if (typeof arg === 'string') {
-        // Sanitize email addresses
-        return arg.replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g, '[EMAIL]')
-          // Sanitize phone numbers
-          .replace(/(\+\d{1,3})?[\s.-]?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}/g, '[PHONE]')
-          // Sanitize credit card numbers
-          .replace(/\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}/g, '[CARD]');
-      }
-      return arg;
-    });
-    
-    // Call the original console.log with sanitized arguments
-    originalConsoleLog.apply(console, sanitizedArgs);
-  };
+  // Temporarily disable console.log override to prevent infinite recursion
+  // console.log = function(...args) {
+  //   const sanitizedArgs = args.map((arg) => {
+  //     if (typeof arg === 'string') {
+  //       // Sanitize email addresses
+  //       return arg.replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g, '[EMAIL]')
+  //         // Sanitize phone numbers
+  //         .replace(/(\+\d{1,3})?[\s.-]?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}/g, '[PHONE]')
+  //         // Sanitize credit card numbers
+  //         .replace(/\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}/g, '[CARD]');
+  //     }
+  //     return arg;
+  //   });
+  //   
+  //   // Call the original console.log with sanitized arguments
+  //   originalConsoleLog.apply(console, sanitizedArgs);
+  // };
   
   // Comment out the console.error override temporarily to fix recursive stack overflow
   /* 
