@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useForm } from 'react-hook-form';
-import { Plus, Upload, X } from 'lucide-react';
+import { Plus, Upload, X, FolderKanban } from 'lucide-react';
 
 interface Project {
   id: number;
@@ -31,17 +31,23 @@ const ProjectsFixed = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="flex-1">
       {/* Header */}
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Showcase Projects</h2>
-        <Button 
+      <div className="flex flex-row items-center justify-between space-y-0 pb-4 mb-4 border-b border-gray-800">
+        <div>
+          <h2 className="text-xl font-bold text-white flex items-center">
+            <FolderKanban className="h-5 w-5 mr-2 text-blue-400" />
+            Project Showcase
+          </h2>
+          <p className="text-sm text-gray-300">Highlight your best work and project achievements</p>
+        </div>
+        <button 
           onClick={() => setIsAddModalOpen(true)}
-          className="flex items-center gap-2"
+          className="neo-glass-button flex items-center gap-2 py-1.5 px-3 whitespace-nowrap"
         >
-          <Plus className="h-4 w-4" />
-          Add Showcase
-        </Button>
+          <Plus className="h-3.5 w-3.5" />
+          <span>Add Showcase</span>
+        </button>
       </div>
 
       {/* Projects List - Empty State */}
