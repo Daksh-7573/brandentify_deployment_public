@@ -309,6 +309,206 @@ export default function CareerCapsulePage() {
           </NeoGlassSection>
         )}
       </div>
+
+      {/* Create Goal Dialog */}
+      <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Create New Career Goal</DialogTitle>
+            <DialogDescription>
+              Set up a new career goal with AI-powered milestone generation.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Title */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Goal Title</label>
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="e.g., Become a Senior Software Engineer"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
+            </div>
+
+            {/* Goal Type */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Goal Type</label>
+              <select
+                value={goalType}
+                onChange={(e) => setGoalType(e.target.value as GoalType)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              >
+                <option value="position_change">Position Change</option>
+                <option value="skill_acquisition">Skill Acquisition</option>
+                <option value="promotion">Promotion</option>
+                <option value="industry_switch">Industry Switch</option>
+                <option value="entrepreneurship">Entrepreneurship</option>
+                <option value="certification">Certification</option>
+                <option value="education">Education</option>
+                <option value="custom">Custom</option>
+              </select>
+            </div>
+
+            {/* Description */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Description</label>
+              <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Describe your career goal in detail..."
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none h-24"
+              />
+            </div>
+
+            {/* Timeframe */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Timeframe</label>
+              <select
+                value={timeframe}
+                onChange={(e) => setTimeframe(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              >
+                <option value="1">1 year</option>
+                <option value="2">2 years</option>
+                <option value="3">3 years</option>
+                <option value="4">4 years</option>
+                <option value="5">5 years</option>
+              </select>
+            </div>
+
+            {/* Target Date (Optional) */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Target Date (Optional)</label>
+              <input
+                type="date"
+                value={targetDate}
+                onChange={(e) => setTargetDate(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowCreateDialog(false)}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    Creating...
+                  </>
+                ) : (
+                  "Create Goal"
+                )}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Success Dialog */}
+      <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-center">Goal Created Successfully!</DialogTitle>
+            <DialogDescription className="text-center">
+              Your career goal has been added and Musk AI will help you achieve it.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="text-center py-4">
+            <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
+            <p className="text-sm text-gray-600">
+              You can view and manage your goals in the dashboard.
+            </p>
+          </div>
+          <DialogFooter>
+            <Button 
+              onClick={() => setShowSuccessDialog(false)}
+              className="w-full"
+            >
+              Continue
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Goal Details Dialog */}
+      <Dialog open={showDetailsDialog} onOpenChange={setShowDetailsDialog}>
+        <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Target className="h-5 w-5" />
+              {goalDetails?.goal?.title}
+            </DialogTitle>
+            <DialogDescription>
+              {goalDetails?.goal?.goalType && getGoalTypeText(goalDetails.goal.goalType)} • {goalDetails?.goal?.timeframe} year timeline
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-6">
+            {/* Goal Overview */}
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <h4 className="font-medium mb-2">Goal Description</h4>
+              <p className="text-sm text-gray-600">
+                {goalDetails?.goal?.description || 'No description provided'}
+              </p>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowDetailsDialog(false)}
+            >
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Delete Career Goal</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this career goal? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowDeleteDialog(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDeleteCapsule}
+              disabled={isDeleting}
+            >
+              {isDeleting ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  Deleting...
+                </>
+              ) : (
+                "Delete Goal"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </PageLayout>
   );
 }
