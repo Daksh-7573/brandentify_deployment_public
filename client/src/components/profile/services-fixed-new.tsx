@@ -13,7 +13,7 @@ import {
   AlertCircle,
   Plus
 } from "lucide-react";
-import ServiceForm from "@/components/services/service-form";
+import ServiceFormGlass from "@/components/services/service-form-glass";
 import {
   Dialog,
   DialogContent,
@@ -303,14 +303,14 @@ export default function Services() {
                 <span>Add What I Offer</span>
               </button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[525px] max-h-[88vh] overflow-y-auto">
+            <DialogContent className="sm:max-w-[525px] max-h-[88vh] overflow-y-auto bg-transparent">
               <DialogHeader>
                 <DialogTitle>Add What I Offer</DialogTitle>
                 <DialogDescription>
                   Enter a professional service you offer (one at a time).
                 </DialogDescription>
               </DialogHeader>
-              <ServiceForm 
+              <ServiceFormGlass 
                 onSubmit={handleCreate} 
                 isPending={isPendingCreate}
                 existingServicesCount={services.length}
@@ -448,7 +448,7 @@ export default function Services() {
       
       {/* Edit Service Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="sm:max-w-[525px] max-h-[88vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-[525px] max-h-[88vh] overflow-y-auto bg-transparent">
           <DialogHeader>
             <DialogTitle>Edit Service</DialogTitle>
             <DialogDescription>
@@ -456,7 +456,7 @@ export default function Services() {
             </DialogDescription>
           </DialogHeader>
           {selectedService && (
-            <ServiceForm 
+            <ServiceFormGlass 
               onSubmit={handleUpdate} 
               isPending={isPendingUpdate}
               existingServicesCount={services.length}
