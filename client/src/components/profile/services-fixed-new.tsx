@@ -298,17 +298,17 @@ export default function Services() {
             <p className="mt-2 text-gray-400">No specific offerings added yet.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {services.map((service) => (
               <div 
                 key={service.id} 
-                className="neo-glass-card p-4 rounded-lg transition-all hover:translate-y-[-3px]"
+                className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md border border-white/20 rounded-lg p-5 shadow-xl transition-all hover:shadow-2xl hover:border-white/30 hover:transform hover:scale-[1.02] group"
               >
                 <div className="flex justify-between items-start">
                   <h3 className="font-medium text-base line-clamp-2 flex-1 text-white">{service.title}</h3>
-                  <div className="flex items-center space-x-1 ml-2">
+                  <div className="flex items-center space-x-2 ml-2">
                     <button 
-                      className="text-gray-300 hover:text-white focus:outline-none rounded-full p-1 hover:bg-gray-800/50"
+                      className="text-white/70 hover:text-white hover:bg-white/10 backdrop-blur-sm border border-white/20 rounded-md p-2 transition-all hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white/30"
                       onClick={() => {
                         setSelectedService(service);
                         setIsEditDialogOpen(true);
@@ -317,7 +317,7 @@ export default function Services() {
                       <Edit className="h-3.5 w-3.5" />
                     </button>
                     <button 
-                      className="text-gray-300 hover:text-red-400 focus:outline-none rounded-full p-1 hover:bg-gray-800/50"
+                      className="text-white/70 hover:text-red-300 hover:bg-red-500/10 backdrop-blur-sm border border-white/20 hover:border-red-400/30 rounded-md p-2 transition-all hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-400/30"
                       onClick={() => {
                         setSelectedService(service);
                         setIsDeleteDialogOpen(true);
@@ -336,18 +336,24 @@ export default function Services() {
                 )}
                 
                 {/* Display price information */}
-                <div className="mt-2">
+                <div className="mt-3 pt-3 border-t border-white/10">
                   {(service.priceUsd !== undefined && service.priceUsd !== null) && (
-                    <p className="text-sm font-medium text-white">
-                      {formatCurrency(service.priceUsd, 'USD')}
-                      {service.isHourly ? '/hr' : ''}
-                    </p>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-white/60">Price</span>
+                      <span className="text-sm font-semibold text-white bg-white/10 px-2 py-1 rounded-md backdrop-blur-sm">
+                        {formatCurrency(service.priceUsd, 'USD')}
+                        {service.isHourly ? '/hr' : ''}
+                      </span>
+                    </div>
                   )}
                   {(service.priceInr !== undefined && service.priceInr !== null) && (
-                    <p className="text-sm font-medium text-white">
-                      {formatCurrency(service.priceInr, 'INR')}
-                      {service.isHourly ? '/hr' : ''}
-                    </p>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-white/60">Price</span>
+                      <span className="text-sm font-semibold text-white bg-white/10 px-2 py-1 rounded-md backdrop-blur-sm">
+                        {formatCurrency(service.priceInr, 'INR')}
+                        {service.isHourly ? '/hr' : ''}
+                      </span>
+                    </div>
                   )}
                 </div>
                 
