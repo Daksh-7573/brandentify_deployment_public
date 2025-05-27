@@ -1089,19 +1089,18 @@ export default function WorkExperience() {
       
       {/* Add Experience Dialog */}
       <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
-        <DialogContent className="neo-glass-card border-0 md:max-w-lg max-h-[90vh] overflow-y-auto">
+        <DialogContent className="md:max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="text-white text-xl font-semibold">Add Career Path</DialogTitle>
-            <DialogDescription className="text-white/80">
-              Add details about your professional experience to showcase your career journey
+            <DialogTitle>Add Career Path</DialogTitle>
+            <DialogDescription>
+              Add details about your professional experience
             </DialogDescription>
           </DialogHeader>
           
-          <div className="grid gap-6 py-4">
-            <div className="space-y-3">
-              <Label htmlFor="title" className="flex items-center text-white font-medium">
-                <Briefcase className="w-4 h-4 mr-2" />
-                Job Title <span className="text-red-400 ml-1">*</span>
+          <div className="grid gap-4 py-2">
+            <div className="space-y-2">
+              <Label htmlFor="title" className="flex items-center">
+                Job Title <span className="text-red-500 ml-1">*</span>
               </Label>
               <Input
                 id="title"
@@ -1109,24 +1108,17 @@ export default function WorkExperience() {
                 placeholder="e.g. Software Engineer"
                 value={formData.title}
                 onChange={handleInputChange}
-                className={cn(
-                  formErrors.title ? "border-red-500/50" : "border-white/20", 
-                  "bg-black/40 border-white/20 text-white placeholder:text-white/60 backdrop-blur-md focus:border-white/40 focus:bg-black/60 transition-all"
-                )}
+                className={cn(formErrors.title ? "border-red-500" : "", "bg-gray-50")}
                 disabled={createExperienceMutation.isPending}
               />
               {formErrors.title && (
-                <p className="text-sm text-red-400 flex items-center">
-                  <AlertCircle className="w-3 h-3 mr-1" />
-                  Job title is required
-                </p>
+                <p className="text-sm text-red-500">Job title is required</p>
               )}
             </div>
             
-            <div className="space-y-3">
-              <Label htmlFor="company" className="flex items-center text-white font-medium">
-                <Building className="w-4 h-4 mr-2" />
-                Company <span className="text-red-400 ml-1">*</span>
+            <div className="space-y-2">
+              <Label htmlFor="company" className="flex items-center">
+                Company <span className="text-red-500 ml-1">*</span>
               </Label>
               <Input
                 id="company"
@@ -1134,23 +1126,16 @@ export default function WorkExperience() {
                 placeholder="e.g. Acme Corporation"
                 value={formData.company}
                 onChange={handleInputChange}
-                className={cn(
-                  formErrors.company ? "border-red-500/50" : "border-white/20", 
-                  "bg-black/40 border-white/20 text-white placeholder:text-white/60 backdrop-blur-md focus:border-white/40 focus:bg-black/60 transition-all"
-                )}
+                className={cn(formErrors.company ? "border-red-500" : "", "bg-gray-50")}
                 disabled={createExperienceMutation.isPending}
               />
               {formErrors.company && (
-                <p className="text-sm text-red-400 flex items-center">
-                  <AlertCircle className="w-3 h-3 mr-1" />
-                  Company name is required
-                </p>
+                <p className="text-sm text-red-500">Company name is required</p>
               )}
             </div>
             
-            <div className="space-y-3 relative">
-              <Label htmlFor="location" className="text-white font-medium flex items-center">
-                <MapPin className="w-4 h-4 mr-2" />
+            <div className="space-y-2 relative">
+              <Label htmlFor="location">
                 Location
               </Label>
               <Input
@@ -1159,18 +1144,18 @@ export default function WorkExperience() {
                 placeholder="e.g. New York, NY"
                 value={formData.location}
                 onChange={handleInputChange}
-                className="bg-black/40 border-white/20 text-white placeholder:text-white/60 backdrop-blur-md focus:border-white/40 focus:bg-black/60 transition-all"
+                className="bg-gray-50"
                 disabled={createExperienceMutation.isPending}
               />
               
-              {/* Location suggestions with glass styling */}
+              {/* Location suggestions */}
               {locationSuggestions.length > 0 && (
-                <div className="absolute z-10 mt-1 w-full bg-black/80 backdrop-blur-md rounded-lg shadow-lg border border-white/20 max-h-60 overflow-auto">
-                  <ul className="py-2">
+                <div className="absolute z-10 mt-1 w-full bg-white rounded-md shadow-lg border max-h-60 overflow-auto">
+                  <ul className="py-1">
                     {locationSuggestions.map((suggestion, index) => (
                       <li 
                         key={`suggestion-${index}`}
-                        className="px-4 py-2 text-sm text-white hover:bg-white/20 cursor-pointer transition-colors"
+                        className="px-3 py-2 text-sm hover:bg-gray-100 cursor-pointer"
                         onClick={() => handleSuggestionSelect(suggestion)}
                       >
                         {suggestion}
@@ -1182,30 +1167,22 @@ export default function WorkExperience() {
             </div>
             
             <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-3">
-                <Label htmlFor="industry" className="flex items-center text-white font-medium">
-                  <TagIcon className="w-4 h-4 mr-2" />
-                  Industry <span className="text-red-400 ml-1">*</span>
+              <div className="space-y-2">
+                <Label htmlFor="industry" className="flex items-center">
+                  Industry <span className="text-red-500 ml-1">*</span>
                 </Label>
                 <Select
                   value={formData.industry}
                   onValueChange={(value) => handleSelectChange('industry', value)}
                   disabled={createExperienceMutation.isPending}
                 >
-                  <SelectTrigger className={cn(
-                    formErrors.industry ? "border-red-500/50" : "border-white/20", 
-                    "bg-black/40 border-white/20 text-white backdrop-blur-md hover:bg-black/60 transition-all"
-                  )}>
-                    <SelectValue placeholder="Select industry" className="text-white/60" />
+                  <SelectTrigger className={cn(formErrors.industry ? "border-red-500" : "", "bg-gray-50")}>
+                    <SelectValue placeholder="Select industry" />
                   </SelectTrigger>
-                  <SelectContent className="bg-black/95 backdrop-blur-md border-white/20 shadow-xl">
+                  <SelectContent>
                     <SelectGroup>
                       {industryOptions.map(option => (
-                        <SelectItem 
-                          key={option.key} 
-                          value={option.value} 
-                          className="text-white hover:bg-white/10 focus:bg-white/20 data-[highlighted]:bg-white/20 cursor-pointer"
-                        >
+                        <SelectItem key={option.key} value={option.value}>
                           {option.label}
                         </SelectItem>
                       ))}
@@ -1213,37 +1190,26 @@ export default function WorkExperience() {
                   </SelectContent>
                 </Select>
                 {formErrors.industry && (
-                  <p className="text-sm text-red-400 flex items-center">
-                    <AlertCircle className="w-3 h-3 mr-1" />
-                    Industry is required
-                  </p>
+                  <p className="text-sm text-red-500">Industry is required</p>
                 )}
               </div>
               
-              <div className="space-y-3">
-                <Label htmlFor="domain" className="flex items-center text-white font-medium">
-                  <TagIcon className="w-4 h-4 mr-2" />
-                  Domain <span className="text-red-400 ml-1">*</span>
+              <div className="space-y-2">
+                <Label htmlFor="domain" className="flex items-center">
+                  Domain <span className="text-red-500 ml-1">*</span>
                 </Label>
                 <Select
                   value={formData.domain}
                   onValueChange={(value) => handleSelectChange('domain', value)}
                   disabled={!formData.industry || createExperienceMutation.isPending}
                 >
-                  <SelectTrigger className={cn(
-                    formErrors.domain ? "border-red-500/50" : "border-white/20", 
-                    "bg-black/40 border-white/20 text-white backdrop-blur-md hover:bg-black/60 transition-all"
-                  )}>
-                    <SelectValue placeholder="Select domain" className="text-white/60" />
+                  <SelectTrigger className={cn(formErrors.domain ? "border-red-500" : "", "bg-gray-50")}>
+                    <SelectValue placeholder="Select domain" />
                   </SelectTrigger>
-                  <SelectContent className="bg-black/95 backdrop-blur-md border-white/20 shadow-xl">
+                  <SelectContent>
                     <SelectGroup>
                       {formData.industry && getDomainOptionsForIndustry(formData.industry).map(option => (
-                        <SelectItem 
-                          key={option.key} 
-                          value={option.value} 
-                          className="text-white hover:bg-white/10 focus:bg-white/20 data-[highlighted]:bg-white/20 cursor-pointer"
-                        >
+                        <SelectItem key={option.key} value={option.value}>
                           {option.label}
                         </SelectItem>
                       ))}
@@ -1251,19 +1217,15 @@ export default function WorkExperience() {
                   </SelectContent>
                 </Select>
                 {formErrors.domain && (
-                  <p className="text-sm text-red-400 flex items-center">
-                    <AlertCircle className="w-3 h-3 mr-1" />
-                    Domain is required
-                  </p>
+                  <p className="text-sm text-red-500">Domain is required</p>
                 )}
               </div>
             </div>
             
             <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-3">
-                <Label htmlFor="startDate" className="flex items-center text-white font-medium">
-                  <CalendarIcon className="w-4 h-4 mr-2" />
-                  Start Date <span className="text-red-400 ml-1">*</span>
+              <div className="space-y-2">
+                <Label htmlFor="startDate" className="flex items-center">
+                  Start Date <span className="text-red-500 ml-1">*</span>
                 </Label>
                 <Popover>
                   <PopoverTrigger asChild>
@@ -1271,38 +1233,33 @@ export default function WorkExperience() {
                       variant="outline"
                       className={cn(
                         "justify-start text-left font-normal w-full",
-                        formErrors.startDate ? "border-red-500/50" : "border-white/20",
-                        "bg-black/40 border-white/20 text-white backdrop-blur-md hover:bg-black/60 transition-all"
+                        formErrors.startDate ? "border-red-500" : "",
+                        "bg-gray-50"
                       )}
                       disabled={createExperienceMutation.isPending}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {formData.startDate ? formatDate(formData.startDate) : "Select start date"}
+                      {formData.startDate ? formatDate(formData.startDate) : "Select date"}
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0 bg-black/90 backdrop-blur-md border-white/20">
+                  <PopoverContent className="w-auto p-0">
                     <Calendar
                       mode="single"
                       selected={formData.startDate}
                       onSelect={(date) => handleDateChange('startDate', date)}
                       initialFocus
-                      className="text-white"
                     />
                   </PopoverContent>
                 </Popover>
                 {formErrors.startDate && (
-                  <p className="text-sm text-red-400 flex items-center">
-                    <AlertCircle className="w-3 h-3 mr-1" />
-                    Start date is required
-                  </p>
+                  <p className="text-sm text-red-500">Start date is required</p>
                 )}
               </div>
               
-              <div className="space-y-3">
+              <div className="space-y-2">
                 <div className="flex justify-between items-center">
-                  <Label htmlFor="endDate" className="flex items-center text-white font-medium">
-                    <CalendarIcon className="w-4 h-4 mr-2" />
-                    End Date {!formData.isCurrentlyWorking && <span className="text-red-400 ml-1">*</span>}
+                  <Label htmlFor="endDate" className="flex items-center">
+                    End Date {!formData.isCurrentlyWorking && <span className="text-red-500 ml-1">*</span>}
                   </Label>
                   <div className="flex items-center space-x-2 text-sm">
                     <Switch
@@ -1322,9 +1279,8 @@ export default function WorkExperience() {
                         }));
                       }}
                       disabled={createExperienceMutation.isPending}
-                      className="data-[state=checked]:bg-white data-[state=unchecked]:bg-black/40 border-white/20"
                     />
-                    <Label htmlFor="current-job" className="cursor-pointer text-white text-sm">Current job</Label>
+                    <Label htmlFor="current-job" className="cursor-pointer">Current job</Label>
                   </div>
                 </div>
                 
@@ -1335,54 +1291,48 @@ export default function WorkExperience() {
                         variant="outline"
                         className={cn(
                           "justify-start text-left font-normal w-full",
-                          formErrors.endDate ? "border-red-500/50" : "border-white/20",
-                          "bg-black/40 border-white/20 text-white backdrop-blur-md hover:bg-black/60 transition-all"
+                          formErrors.endDate ? "border-red-500" : "",
+                          "bg-gray-50"
                         )}
                         disabled={createExperienceMutation.isPending || formData.isCurrentlyWorking}
                       >
                         <CalendarIcon className="mr-2 h-4 w-4" />
-                        {formData.endDate ? formatDate(formData.endDate) : "Select end date"}
+                        {formData.endDate ? formatDate(formData.endDate) : "Select date"}
                       </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0 bg-black/90 backdrop-blur-md border-white/20">
+                    <PopoverContent className="w-auto p-0">
                       <Calendar
                         mode="single"
                         selected={formData.endDate}
                         onSelect={(date) => handleDateChange('endDate', date)}
                         initialFocus
                         disabled={(date) => formData.startDate ? date < formData.startDate : false}
-                        className="text-white"
                       />
                     </PopoverContent>
                   </Popover>
                 )}
                 
                 {formErrors.endDate && !formData.isCurrentlyWorking && (
-                  <p className="text-sm text-red-400 flex items-center">
-                    <AlertCircle className="w-3 h-3 mr-1" />
-                    End date is required
-                  </p>
+                  <p className="text-sm text-red-500">End date is required</p>
                 )}
               </div>
             </div>
             
-            <div className="space-y-3">
-              <Label htmlFor="keyResponsibilities" className="text-white font-medium flex items-center">
-                <Briefcase className="w-4 h-4 mr-2" />
+            <div className="space-y-2">
+              <Label htmlFor="keyResponsibilities">
                 Key Responsibilities
-                <span className="text-white/60 text-xs ml-2">(Optional - up to 10)</span>
               </Label>
               
-              {/* Responsibilities list with glass styling */}
+              {/* Responsibilities list */}
               {formData.keyResponsibilities.length > 0 && (
                 <ul className="space-y-2 mb-3">
                   {formData.keyResponsibilities.map((responsibility, index) => (
-                    <li key={index} className="flex items-center bg-black/40 backdrop-blur-md border border-white/20 rounded-lg p-3 text-sm transition-all hover:bg-black/60">
-                      <span className="flex-1 text-white">{responsibility}</span>
+                    <li key={index} className="flex items-center bg-gray-50 rounded-md p-2 text-sm">
+                      <span className="flex-1">{responsibility}</span>
                       <Button
                         size="icon"
                         variant="ghost"
-                        className="h-7 w-7 text-red-400 hover:text-red-300 hover:bg-red-500/20"
+                        className="h-7 w-7 text-destructive"
                         onClick={() => {
                           setFormData(prev => ({
                             ...prev,
@@ -1399,7 +1349,7 @@ export default function WorkExperience() {
                 </ul>
               )}
               
-              {/* Add new responsibility with glass styling */}
+              {/* Add new responsibility */}
               <div className="flex space-x-2">
                 <Input
                   id="newResponsibility"
@@ -1407,7 +1357,7 @@ export default function WorkExperience() {
                   placeholder="e.g. Led a team of 5 developers"
                   value={newResponsibilityInput}
                   onChange={(e) => setNewResponsibilityInput(e.target.value)}
-                  className="bg-black/40 border-white/20 text-white placeholder:text-white/60 backdrop-blur-md focus:border-white/40 focus:bg-black/60 transition-all flex-1"
+                  className="bg-gray-50 flex-1"
                   disabled={createExperienceMutation.isPending || formData.keyResponsibilities.length >= 10}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && newResponsibilityInput.trim()) {
@@ -1423,7 +1373,6 @@ export default function WorkExperience() {
                 <Button
                   type="button"
                   variant="outline"
-                  className="bg-black/40 border-white/20 text-white hover:bg-white/20 backdrop-blur-md transition-all"
                   disabled={!newResponsibilityInput.trim() || createExperienceMutation.isPending || formData.keyResponsibilities.length >= 10}
                   onClick={() => {
                     if (newResponsibilityInput.trim()) {
@@ -1440,7 +1389,7 @@ export default function WorkExperience() {
               </div>
               
               {formData.keyResponsibilities.length >= 10 && (
-                <p className="text-sm text-amber-400 flex items-center mt-1">
+                <p className="text-sm text-amber-600 flex items-center mt-1">
                   <AlertCircle className="h-3.5 w-3.5 mr-1.5" />
                   Maximum of 10 responsibilities reached
                 </p>
@@ -1448,11 +1397,10 @@ export default function WorkExperience() {
             </div>
           </div>
           
-          <DialogFooter className="flex gap-3 pt-6">
-            <Button
+          <DialogFooter>
+            <button
               type="button"
-              variant="outline"
-              className="bg-black/40 border-white/20 text-white hover:bg-white/20 backdrop-blur-md transition-all flex-1"
+              className="neo-glass-button bg-gray-800 hover:bg-gray-700"
               onClick={() => {
                 setShowAddDialog(false);
                 resetForm();
@@ -1460,25 +1408,15 @@ export default function WorkExperience() {
               disabled={createExperienceMutation.isPending}
             >
               Cancel
-            </Button>
-            <Button 
+            </button>
+            <button 
               type="button" 
-              className="bg-white text-black hover:bg-white/90 backdrop-blur-md transition-all flex-1 font-medium"
+              className="neo-glass-button"
               onClick={handleAddSubmit}
               disabled={createExperienceMutation.isPending}
             >
-              {createExperienceMutation.isPending ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin mr-2" />
-                  Adding...
-                </>
-              ) : (
-                <>
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add Career Path
-                </>
-              )}
-            </Button>
+              {createExperienceMutation.isPending ? "Adding..." : "Add Career Path"}
+            </button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
