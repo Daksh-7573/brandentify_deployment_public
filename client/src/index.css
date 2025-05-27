@@ -37,26 +37,38 @@
   box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3) !important;
 }
 
+/* Dropdown icon styling */
+.neo-glass-card [data-radix-select-trigger] svg {
+  color: rgba(255, 255, 255, 0.8) !important;
+  fill: rgba(255, 255, 255, 0.8) !important;
+}
+
+.neo-glass-card [data-radix-select-trigger]:hover svg {
+  color: rgba(255, 255, 255, 1) !important;
+  fill: rgba(255, 255, 255, 1) !important;
+}
+
 [data-radix-select-content] {
-  background: rgba(18, 18, 18, 0.98) !important;
+  background: rgba(40, 40, 40, 0.98) !important;
   backdrop-filter: blur(20px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.7) !important;
 }
 
 [data-radix-select-item] {
-  color: white !important;
+  color: rgba(255, 255, 255, 0.9) !important;
   transition: all 0.2s ease !important;
+  padding: 12px 16px !important;
 }
 
 [data-radix-select-item]:hover,
 [data-radix-select-item][data-highlighted] {
-  background: rgba(255, 255, 255, 0.1) !important;
+  background: rgba(255, 255, 255, 0.15) !important;
   color: white !important;
 }
 
 [data-radix-select-item]:focus {
-  background: rgba(255, 255, 255, 0.1) !important;
+  background: rgba(255, 255, 255, 0.15) !important;
   color: white !important;
 }
 
