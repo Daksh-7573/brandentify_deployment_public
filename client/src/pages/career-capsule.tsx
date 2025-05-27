@@ -386,9 +386,9 @@ export default function CareerCapsulePage() {
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
         <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto neo-glass-card border border-blue-400/30 shadow-2xl backdrop-blur-xl">
           <DialogHeader>
-            <DialogTitle className="text-white text-xl font-semibold">✨ Create New Career Goal</DialogTitle>
-            <DialogDescription className="text-gray-300">
-              Set your career goals with a 1-5 year timeframe and get AI-generated milestones to guide your journey.
+            <DialogTitle className="text-white text-2xl font-bold">🎯 Create New Career Goal</DialogTitle>
+            <DialogDescription className="text-blue-200">
+              Define your career aspirations with our advanced glass UI interface and get AI-powered milestone recommendations.
             </DialogDescription>
           </DialogHeader>
           
