@@ -92,20 +92,10 @@ const industryOptions = [
 ];
 
 export default function WorkExperience() {
-  const { user, isDemoMode } = useAuth();
   const { toast } = useToast();
   
-  // Get user ID (use demo ID if in demo mode)
-  const userId = isDemoMode ? 1 : (user?.uid || null);
-  
-  // Get user data from profile page
-  const { data: userData } = useQuery<any>({
-    queryKey: [`/api/users/${userId}`],
-    enabled: !!userId,
-  });
-  
-  // Get the numeric user ID from the fetched user data
-  const userNumericId = userData?.id || user?.id || 2;
+  // Use demo user ID for now
+  const userNumericId = 2;
   
   // State for form management
   const [showAddDialog, setShowAddDialog] = useState(false);
@@ -124,7 +114,7 @@ export default function WorkExperience() {
   // Queries and mutations
   const queryClient = useQueryClient();
 
-  const { data: experiences = [], isLoading } = useQuery({
+  const { data: experiences = [], isLoading } = useQuery<any[]>({
     queryKey: [`/api/users/${userNumericId}/experiences`],
     enabled: !!userNumericId
   });
@@ -405,14 +395,14 @@ export default function WorkExperience() {
 
       {/* Experience List */}
       <div className="space-y-4">
-        {experiences.length === 0 ? (
+        {(experiences as any[]).length === 0 ? (
           <div className="text-center py-8 text-gray-500">
             <Briefcase className="w-12 h-12 mx-auto mb-4 opacity-50" />
             <p>No career experiences added yet.</p>
             <p className="text-sm">Click "Add Career Path" to get started!</p>
           </div>
         ) : (
-          experiences.map((experience: any) => (
+          (experiences as any[]).map((experience: any) => (
             <div key={experience.id} className="neo-glass-card p-6 rounded-lg">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
