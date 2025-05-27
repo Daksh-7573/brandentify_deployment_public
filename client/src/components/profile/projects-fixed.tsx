@@ -180,17 +180,7 @@ const ProjectsFixed = () => {
                       </div>
                     </div>
 
-                    {/* Media URLs */}
-                    <div className="space-y-2">
-                      <label className="text-white font-medium text-sm">
-                        Media URLs (Screenshots, Videos)
-                      </label>
-                      <textarea
-                        placeholder="Enter URLs separated by commas&#10;https://example.com/image1.jpg,&#10;https://example.com/video1.mp4"
-                        className="neo-glass-input resize-none h-24"
-                      />
-                      <p className="text-white/50 text-xs">Separate multiple URLs with commas</p>
-                    </div>
+
                   </div>
                 </TabsContent>
 
@@ -295,17 +285,7 @@ const ProjectsFixed = () => {
                       </button>
                     </div>
 
-                    {/* Recognition/Awards */}
-                    <div className="space-y-2">
-                      <label className="text-white font-medium text-sm flex items-center gap-2">
-                        <Award className="h-4 w-4" />
-                        Recognition & Awards
-                      </label>
-                      <textarea
-                        placeholder="Any awards, recognition, or special mentions for this project..."
-                        className="neo-glass-input resize-none h-20"
-                      />
-                    </div>
+
                   </div>
                 </TabsContent>
               </Tabs>
