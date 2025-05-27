@@ -2224,14 +2224,7 @@ export default function Projects() {
                 </Tabs>
                 
                 {/* Form Action Buttons */}
-                <div className="flex justify-end gap-3 pt-6 border-t border-white/10">
-                  <button
-                    type="button"
-                    onClick={() => setIsAddModalOpen(false)}
-                    className="px-6 py-3 bg-[rgba(40,40,40,0.8)] backdrop-blur-md text-white border border-white/20 rounded-md shadow-md transition-all hover:bg-[rgba(60,60,60,0.9)] hover:border-white/30 focus:outline-none focus:ring-2 focus:ring-white/30"
-                  >
-                    Cancel
-                  </button>
+                <div className="flex justify-end pt-6 border-t border-white/10">
                   <button
                     type="submit"
                     className="px-6 py-3 neo-glass-button text-white font-medium rounded-md shadow-lg transition-all hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-white/30"
