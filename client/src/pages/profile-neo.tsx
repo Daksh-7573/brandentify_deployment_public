@@ -572,7 +572,7 @@ export default function ProfileNeo() {
             
             {/* 5. Project Showcase */}
             <NeoGlassSection className="mb-6">
-              <Projects userFirebaseId={user.uid} userNumericId={userData?.id} />
+              <ProjectsFixed />
             </NeoGlassSection>
             
             {/* 6. Career Path (Work Experience) */}
