@@ -171,6 +171,13 @@ export default function ProfileNeo() {
   // Get user profile data
   const { data: userData, isLoading: isUserDataLoading } = useQuery({
     queryKey: ['/api/users', user.uid],
+    queryFn: async () => {
+      const response = await fetch(`/api/users/${user.uid}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch user data');
+      }
+      return response.json();
+    }
   });
   
   // Query for user's industries and domain preferences
