@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useForm } from 'react-hook-form';
-import { Plus, Upload, X, FolderKanban } from 'lucide-react';
+import { Plus, Upload, X, FolderKanban, Users, MessageSquare, Award } from 'lucide-react';
 
 interface Project {
   id: number;
@@ -158,21 +158,154 @@ const ProjectsFixed = () => {
                 </TabsContent>
 
                 <TabsContent value="media" className="space-y-6 pt-6">
-                  <div className="text-center py-8">
-                    <Upload className="h-12 w-12 text-white/50 mx-auto mb-4" />
-                    <p className="text-white/70">Media upload functionality</p>
+                  <div className="space-y-6">
+                    {/* Thumbnail Upload */}
+                    <div className="space-y-2">
+                      <label className="text-white font-medium text-sm flex items-center gap-2">
+                        <Upload className="h-4 w-4" />
+                        Project Thumbnail
+                      </label>
+                      <div className="border-2 border-dashed border-white/30 rounded-lg p-6 bg-white/5 backdrop-blur-sm hover:border-white/50 transition-colors">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          id="thumbnail-upload"
+                        />
+                        <label htmlFor="thumbnail-upload" className="cursor-pointer block text-center">
+                          <Upload className="h-8 w-8 text-white/50 mx-auto mb-2" />
+                          <p className="text-white/70 text-sm">Click to upload thumbnail</p>
+                          <p className="text-white/50 text-xs mt-1">PNG, JPG up to 5MB</p>
+                        </label>
+                      </div>
+                    </div>
+
+                    {/* Media URLs */}
+                    <div className="space-y-2">
+                      <label className="text-white font-medium text-sm">
+                        Media URLs (Screenshots, Videos)
+                      </label>
+                      <textarea
+                        placeholder="Enter URLs separated by commas&#10;https://example.com/image1.jpg,&#10;https://example.com/video1.mp4"
+                        className="neo-glass-input resize-none h-24"
+                      />
+                      <p className="text-white/50 text-xs">Separate multiple URLs with commas</p>
+                    </div>
                   </div>
                 </TabsContent>
 
                 <TabsContent value="team" className="space-y-6 pt-6">
-                  <div className="text-center py-8">
-                    <p className="text-white/70">Team management functionality</p>
+                  <div className="space-y-6">
+                    {/* Team Members */}
+                    <div className="space-y-4">
+                      <label className="text-white font-medium text-sm flex items-center gap-2">
+                        <Users className="h-4 w-4" />
+                        Team Members
+                      </label>
+                      
+                      {/* Team Member 1 */}
+                      <div className="space-y-3 p-4 rounded-lg bg-white/5 backdrop-blur-sm border border-white/10">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <label className="text-white/80 text-sm">Name</label>
+                            <input
+                              placeholder="Team member name"
+                              className="neo-glass-input"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <label className="text-white/80 text-sm">Role</label>
+                            <input
+                              placeholder="e.g., Designer, Developer"
+                              className="neo-glass-input"
+                            />
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-white/80 text-sm">LinkedIn/Portfolio</label>
+                          <input
+                            placeholder="https://linkedin.com/in/username"
+                            className="neo-glass-input"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Add Team Member Button */}
+                      <button
+                        type="button"
+                        className="w-full p-3 border-2 border-dashed border-white/30 rounded-lg bg-white/5 backdrop-blur-sm hover:border-white/50 hover:bg-white/10 transition-all text-white/70 text-sm flex items-center justify-center gap-2"
+                      >
+                        <Plus className="h-4 w-4" />
+                        Add Team Member
+                      </button>
+                    </div>
                   </div>
                 </TabsContent>
 
                 <TabsContent value="endorsements" className="space-y-6 pt-6">
-                  <div className="text-center py-8">
-                    <p className="text-white/70">Client endorsements functionality</p>
+                  <div className="space-y-6">
+                    {/* Client Testimonials */}
+                    <div className="space-y-4">
+                      <label className="text-white font-medium text-sm flex items-center gap-2">
+                        <MessageSquare className="h-4 w-4" />
+                        Client Testimonials
+                      </label>
+                      
+                      {/* Testimonial 1 */}
+                      <div className="space-y-4 p-4 rounded-lg bg-white/5 backdrop-blur-sm border border-white/10">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <label className="text-white/80 text-sm">Client Name</label>
+                            <input
+                              placeholder="Client or company name"
+                              className="neo-glass-input"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <label className="text-white/80 text-sm">Position</label>
+                            <input
+                              placeholder="e.g., CEO, Marketing Director"
+                              className="neo-glass-input"
+                            />
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-white/80 text-sm">Testimonial</label>
+                          <textarea
+                            placeholder="What did the client say about your work?"
+                            className="neo-glass-input resize-none h-20"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-white/80 text-sm">Company/LinkedIn</label>
+                          <input
+                            placeholder="https://company.com or LinkedIn profile"
+                            className="neo-glass-input"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Add Testimonial Button */}
+                      <button
+                        type="button"
+                        className="w-full p-3 border-2 border-dashed border-white/30 rounded-lg bg-white/5 backdrop-blur-sm hover:border-white/50 hover:bg-white/10 transition-all text-white/70 text-sm flex items-center justify-center gap-2"
+                      >
+                        <Plus className="h-4 w-4" />
+                        Add Testimonial
+                      </button>
+                    </div>
+
+                    {/* Recognition/Awards */}
+                    <div className="space-y-2">
+                      <label className="text-white font-medium text-sm flex items-center gap-2">
+                        <Award className="h-4 w-4" />
+                        Recognition & Awards
+                      </label>
+                      <textarea
+                        placeholder="Any awards, recognition, or special mentions for this project..."
+                        className="neo-glass-input resize-none h-20"
+                      />
+                    </div>
                   </div>
                 </TabsContent>
               </Tabs>
