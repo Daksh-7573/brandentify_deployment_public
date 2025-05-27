@@ -1089,105 +1089,153 @@ export default function WorkExperience() {
       
       {/* Add Experience Dialog - Glass UI Design */}
       <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
-        <DialogContent 
-          className="border-0 p-0 max-w-4xl max-h-[95vh] overflow-hidden"
-          style={{ background: 'transparent' }}
-        >
-          {/* Glass Container with Stunning Effects */}
-          <div 
-            className="relative p-8 rounded-3xl overflow-hidden"
-            style={{
-              background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.8) 50%, rgba(15, 23, 42, 0.9) 100%)',
-              backdropFilter: 'blur(25px)',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-              boxShadow: '0 25px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
-            }}
-          >
-            
-            {/* Animated Gradient Background */}
-            <div className="absolute inset-0 rounded-2xl overflow-hidden">
-              <div className="absolute inset-0 opacity-20"
-                   style={{
-                     background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(139, 92, 246, 0.3), rgba(236, 72, 153, 0.3))',
-                     animation: 'gradient-shift 8s ease-in-out infinite'
-                   }} />
-            </div>
+        <DialogContent className="sm:max-w-[550px] neo-glass-card">
+          <div className="space-y-6 py-5">
+            <DialogHeader>
+              <DialogTitle className="text-white flex items-center gap-2">
+                <Briefcase className="h-5 w-5" />
+                Add Career Path
+              </DialogTitle>
+            </DialogHeader>
 
-            {/* Header Section */}
-            <div className="relative z-10 mb-8">
-              <div className="flex items-center space-x-4 mb-2">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500/20 to-purple-600/20 backdrop-blur-sm border border-white/10 flex items-center justify-center">
-                  <Briefcase className="w-6 h-6 text-blue-400" />
+            <form onSubmit={handleAddSubmit} className="space-y-4">
+              {/* Job Title */}
+              <div className="space-y-2">
+                <label htmlFor="jobTitle" className="text-sm font-medium text-white">
+                  Job Title
+                </label>
+                <input
+                  id="jobTitle"
+                  type="text"
+                  name="jobTitle"
+                  value={formData.jobTitle || ''}
+                  onChange={handleInputChange}
+                  placeholder="Enter job title..."
+                  className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+                  required
+                />
+              </div>
+
+              {/* Company */}
+              <div className="space-y-2">
+                <label htmlFor="company" className="text-sm font-medium text-white">
+                  Company
+                </label>
+                <input
+                  id="company"
+                  type="text"
+                  name="company"
+                  value={formData.company || ''}
+                  onChange={handleInputChange}
+                  placeholder="Enter company name..."
+                  className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+                  required
+                />
+              </div>
+
+              {/* Location */}
+              <div className="space-y-2">
+                <label htmlFor="location" className="text-sm font-medium text-white">
+                  Location
+                </label>
+                <Select 
+                  value={formData.location || ''} 
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, location: value }))}
+                >
+                  <SelectTrigger className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 rounded-md border focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none">
+                    <SelectValue placeholder="Select location..." />
+                  </SelectTrigger>
+                  <SelectContent className="bg-gray-900 border-gray-700">
+                    {workExperienceLocations.map((location) => (
+                      <SelectItem key={location} value={location}>
+                        {location}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Domain */}
+              <div className="space-y-2">
+                <label htmlFor="domain" className="text-sm font-medium text-white">
+                  Domain
+                </label>
+                <input
+                  id="domain"
+                  type="text"
+                  name="domain"
+                  value={formData.domain || ''}
+                  onChange={handleInputChange}
+                  placeholder="Enter domain..."
+                  className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+                />
+              </div>
+
+              {/* Date Fields */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label htmlFor="startDate" className="text-sm font-medium text-white">
+                    Start Date
+                  </label>
+                  <input
+                    id="startDate"
+                    type="date"
+                    name="startDate"
+                    value={formData.startDate || ''}
+                    onChange={handleInputChange}
+                    className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 rounded-md border focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+                    required
+                  />
                 </div>
-                <div>
-                  <h2 className="text-2xl font-bold text-white mb-1">Add Career Path</h2>
-                  <p className="text-white/70 text-sm">Build your professional journey with detailed experience</p>
+
+                <div className="space-y-2">
+                  <label htmlFor="endDate" className="text-sm font-medium text-white">
+                    End Date
+                  </label>
+                  <input
+                    id="endDate"
+                    type="date"
+                    name="endDate"
+                    value={formData.endDate || ''}
+                    onChange={handleInputChange}
+                    className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 rounded-md border focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+                  />
                 </div>
               </div>
-            </div>
-            
-            {/* Form Content */}
-            <div className="relative z-10 space-y-6">
-              {/* Job Title & Company Row */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-3">
-                  <label className="flex items-center text-white/90 text-sm font-medium">
-                    <Building className="w-4 h-4 mr-2 text-blue-400" />
-                    Job Title <span className="text-red-400 ml-1">*</span>
-                  </label>
-                  <div className="relative">
-                    <input
-                      id="title"
-                      name="title"
-                      placeholder="e.g. Senior Software Engineer"
-                      value={formData.title}
-                      onChange={handleInputChange}
-                      disabled={createExperienceMutation.isPending}
-                      className={cn(
-                        "w-full px-4 py-3 rounded-xl text-white placeholder-white/50 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400/50",
-                        "bg-white/10 backdrop-blur-md border border-white/20",
-                        "hover:bg-white/15 focus:bg-white/15",
-                        formErrors.title ? "border-red-400/50 ring-2 ring-red-400/30" : ""
-                      )}
-                    />
-                    {formErrors.title && (
-                      <p className="text-red-400 text-xs mt-2 flex items-center">
-                        <AlertCircle className="w-3 h-3 mr-1" />
-                        Job title is required
-                      </p>
-                    )}
-                  </div>
-                </div>
-                
-                <div className="space-y-3">
-                  <label className="flex items-center text-white/90 text-sm font-medium">
-                    <Building className="w-4 h-4 mr-2 text-purple-400" />
-                    Company <span className="text-red-400 ml-1">*</span>
-                  </label>
-                  <div className="relative">
-                    <input
-                      id="company"
-                      name="company"
-                      placeholder="e.g. Apple Inc."
-                      value={formData.company}
-                      onChange={handleInputChange}
-                      disabled={createExperienceMutation.isPending}
-                      className={cn(
-                        "w-full px-4 py-3 rounded-xl text-white placeholder-white/50 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-purple-400/50",
-                        "bg-white/10 backdrop-blur-md border border-white/20",
-                        "hover:bg-white/15 focus:bg-white/15",
-                        formErrors.company ? "border-red-400/50 ring-2 ring-red-400/30" : ""
-                      )}
-                    />
-                    {formErrors.company && (
-                      <p className="text-red-400 text-xs mt-2 flex items-center">
-                        <AlertCircle className="w-3 h-3 mr-1" />
-                        Company name is required
-                      </p>
-                    )}
-                  </div>
-                </div>
+
+              {/* Key Responsibilities */}
+              <div className="space-y-2">
+                <label htmlFor="keyResponsibilities" className="text-sm font-medium text-white">
+                  Key Responsibilities
+                </label>
+                <textarea
+                  id="keyResponsibilities"
+                  name="keyResponsibilities"
+                  value={formData.keyResponsibilities || ''}
+                  onChange={handleInputChange}
+                  placeholder="Describe your main responsibilities and achievements..."
+                  rows={4}
+                  className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full py-3 px-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none resize-none"
+                />
               </div>
+
+              {/* Form Action Buttons */}
+              <div className="flex justify-end gap-3 pt-6 border-t border-white/10">
+                <button
+                  type="button"
+                  onClick={() => setShowAddDialog(false)}
+                  className="px-6 py-3 bg-[rgba(40,40,40,0.8)] backdrop-blur-md text-white border border-white/20 rounded-md shadow-md transition-all hover:bg-[rgba(60,60,60,0.9)] hover:border-white/30 focus:outline-none focus:ring-2 focus:ring-white/30"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-6 py-3 neo-glass-button text-white font-medium rounded-md shadow-lg transition-all hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-white/30"
+                >
+                  Add Career Path
+                </button>
+              </div>
+            </form>
 
               {/* Location Field */}
               <div className="space-y-3 relative">
