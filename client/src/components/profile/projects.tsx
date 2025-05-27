@@ -1560,6 +1560,7 @@ export default function Projects() {
                 </Button>
               </DialogFooter>
           </form>
+          </div>
         </DialogContent>
       </Dialog>
       
@@ -2242,8 +2243,7 @@ export default function Projects() {
             </Form>
           </div>
         </DialogContent>
-        </Dialog>
-      )}
+      </Dialog>
       
       {/* Detail View Modal */}
       {currentProject && (
@@ -2706,6 +2706,7 @@ export default function Projects() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      )}
     </div>
   );
 }
