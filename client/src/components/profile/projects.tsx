@@ -967,7 +967,9 @@ export default function Projects() {
         </div>
         <Button 
           onClick={handleAdd} 
-          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow-sm"
+          variant="default"
+          size="default"
+          className="flex items-center gap-2"
         >
           <Plus className="h-4 w-4" />
           <span>Add Project</span>
