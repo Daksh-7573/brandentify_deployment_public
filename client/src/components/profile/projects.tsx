@@ -1137,8 +1137,7 @@ export default function Projects() {
             <DialogTitle className="text-white text-xl font-semibold">Add Showcase</DialogTitle>
           </DialogHeader>
           
-          <div className="space-y-6 py-5">
-            <form onSubmit={projectForm.handleSubmit(onProjectSubmit)} className="space-y-6">
+          <form onSubmit={projectForm.handleSubmit(onProjectSubmit)} className="space-y-6 py-5">
               <Tabs defaultValue="details" value={activeTab} onValueChange={setActiveTab}>
                 <TabsList className="w-full bg-[rgba(18,18,18,0.7)] backdrop-blur-md border-white/20">
                   <TabsTrigger value="details" className="flex-1 text-white data-[state=active]:bg-white/20">Details</TabsTrigger>
@@ -1556,8 +1555,8 @@ export default function Projects() {
                   Save Showcase
                 </Button>
               </DialogFooter>
-            </form>
-          </DialogContent>
+          </form>
+        </DialogContent>
       </Dialog>
       
       {/* Edit Project Modal */}
@@ -2236,7 +2235,6 @@ export default function Projects() {
                   </button>
                 </div>
               </form>
-            </div>
           </DialogContent>
         </Dialog>
       )}
