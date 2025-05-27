@@ -2235,6 +2235,7 @@ export default function Projects() {
                   </button>
                 </div>
               </form>
+            </Form>
           </DialogContent>
         </Dialog>
       )}
