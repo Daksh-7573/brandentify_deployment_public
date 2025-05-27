@@ -957,23 +957,21 @@ export default function Projects() {
 
   return (
     <div className="flex-1">
-      <div className="flex flex-row items-center justify-between space-y-0 pb-4 mb-6">
+      <div className="flex flex-row items-center justify-between space-y-0 pb-4 mb-4 border-b border-gray-800">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 flex items-center">
-            <FolderKanban className="h-6 w-6 mr-3 text-blue-600" />
-            Showcase Projects
+          <h2 className="text-xl font-bold text-white flex items-center">
+            <FolderKanban className="h-5 w-5 mr-2 text-blue-400" />
+            Project Showcase
           </h2>
-          <p className="text-sm text-gray-600 mt-1">Highlight your best work and project achievements</p>
+          <p className="text-sm text-gray-300">Highlight your best work and project achievements</p>
         </div>
-        <Button 
+        <button 
           onClick={handleAdd} 
-          variant="default"
-          size="default"
-          className="flex items-center gap-2"
+          className="neo-glass-button flex items-center gap-2 py-1.5 px-3 whitespace-nowrap"
         >
-          <Plus className="h-4 w-4" />
-          <span>Add Project</span>
-        </Button>
+          <Plus className="h-3.5 w-3.5" />
+          <span>Add Showcase</span>
+        </button>
       </div>
       
       <div className="space-y-4">
