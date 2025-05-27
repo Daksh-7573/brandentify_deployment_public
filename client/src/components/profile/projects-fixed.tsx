@@ -35,8 +35,7 @@ const ProjectsFixed = () => {
       {/* Header */}
       <div className="flex flex-row items-center justify-between space-y-0 pb-4 mb-4 border-b border-gray-800">
         <div>
-          <h2 className="text-xl font-bold text-white flex items-center">
-            <FolderKanban className="h-5 w-5 mr-2 text-blue-400" />
+          <h2 className="text-xl font-bold text-white">
             Project Showcase
           </h2>
           <p className="text-sm text-gray-300">Highlight your best work and project achievements</p>
@@ -52,7 +51,10 @@ const ProjectsFixed = () => {
 
       {/* Projects List - Empty State */}
       <div className="text-center py-8">
-        <p className="text-gray-500">No projects yet. Add your first showcase project!</p>
+        <div className="flex flex-col items-center">
+          <FolderKanban className="h-12 w-12 text-blue-400 mb-4" />
+          <p className="text-gray-300">No projects yet. Add your first showcase project!</p>
+        </div>
       </div>
 
       {/* Add Project Modal */}
