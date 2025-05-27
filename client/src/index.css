@@ -18,6 +18,48 @@
   }
 }
 
+/* Glass UI Select Component Overrides */
+.neo-glass-card [data-radix-select-trigger] {
+  background: rgba(18, 18, 18, 0.95) !important;
+  backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
+  height: 48px !important;
+}
+
+.neo-glass-card [data-radix-select-trigger]:hover {
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  background: rgba(30, 30, 30, 0.95) !important;
+}
+
+.neo-glass-card [data-radix-select-trigger]:focus {
+  border-color: rgba(255, 255, 255, 0.5) !important;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3) !important;
+}
+
+[data-radix-select-content] {
+  background: rgba(18, 18, 18, 0.98) !important;
+  backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5) !important;
+}
+
+[data-radix-select-item] {
+  color: white !important;
+  transition: all 0.2s ease !important;
+}
+
+[data-radix-select-item]:hover,
+[data-radix-select-item][data-highlighted] {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: white !important;
+}
+
+[data-radix-select-item]:focus {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: white !important;
+}
+
 /* Smart Radar Custom Select Styling */
 .custom-select-smart-radar button {
   height: 40px;
