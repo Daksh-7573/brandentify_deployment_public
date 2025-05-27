@@ -111,13 +111,21 @@ const ProjectsFixed = () => {
                       </label>
                       <select
                         {...projectForm.register('category')}
-                        className="neo-glass-input"
+                        className="neo-glass-input h-11 pr-8"
+                        style={{
+                          backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='rgba(255,255,255,0.5)' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
+                          backgroundPosition: 'right 0.5rem center',
+                          backgroundRepeat: 'no-repeat',
+                          backgroundSize: '1.5em 1.5em',
+                          paddingRight: '2.5rem',
+                          appearance: 'none'
+                        }}
                       >
-                        <option value="">Select category...</option>
-                        <option value="web">Web Development</option>
-                        <option value="mobile">Mobile App</option>
-                        <option value="design">Design</option>
-                        <option value="other">Other</option>
+                        <option value="" style={{backgroundColor: '#1a1a1a', color: 'white'}}>Select category...</option>
+                        <option value="web" style={{backgroundColor: '#1a1a1a', color: 'white'}}>Web Development</option>
+                        <option value="mobile" style={{backgroundColor: '#1a1a1a', color: 'white'}}>Mobile App</option>
+                        <option value="design" style={{backgroundColor: '#1a1a1a', color: 'white'}}>Design</option>
+                        <option value="other" style={{backgroundColor: '#1a1a1a', color: 'white'}}>Other</option>
                       </select>
                     </div>
 
