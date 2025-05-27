@@ -1132,163 +1132,145 @@ export default function Projects() {
       
       {/* Add Project Modal */}
       <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
-        <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-[550px] neo-glass-card bg-transparent">
           <DialogHeader>
-            <DialogTitle>Add Showcase</DialogTitle>
+            <DialogTitle className="text-white text-xl font-semibold">Add Showcase</DialogTitle>
           </DialogHeader>
           
-          <Form {...projectForm}>
-            <form onSubmit={projectForm.handleSubmit(onProjectSubmit)} className="space-y-4">
+          <div className="space-y-6 py-5">
+            <form onSubmit={projectForm.handleSubmit(onProjectSubmit)} className="space-y-6">
               <Tabs defaultValue="details" value={activeTab} onValueChange={setActiveTab}>
-                <TabsList className="w-full">
-                  <TabsTrigger value="details" className="flex-1">Details</TabsTrigger>
-                  <TabsTrigger value="media" className="flex-1">Media</TabsTrigger>
-                  <TabsTrigger value="team" className="flex-1">Team</TabsTrigger>
-                  <TabsTrigger value="endorsements" className="flex-1">Clients</TabsTrigger>
+                <TabsList className="w-full bg-[rgba(18,18,18,0.7)] backdrop-blur-md border-white/20">
+                  <TabsTrigger value="details" className="flex-1 text-white data-[state=active]:bg-white/20">Details</TabsTrigger>
+                  <TabsTrigger value="media" className="flex-1 text-white data-[state=active]:bg-white/20">Media</TabsTrigger>
+                  <TabsTrigger value="team" className="flex-1 text-white data-[state=active]:bg-white/20">Team</TabsTrigger>
+                  <TabsTrigger value="endorsements" className="flex-1 text-white data-[state=active]:bg-white/20">Clients</TabsTrigger>
                 </TabsList>
                 
-                <TabsContent value="details" className="space-y-4 pt-4">
-                  <div className="space-y-4">
-                    <FormField
-                      control={projectForm.control}
-                      name="title"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Title*</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Project title" {...field} />
-                          </FormControl>
-                          <FormDescription>
-                            Enter a clear, descriptive title for your project
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={projectForm.control}
-                      name="description"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Description*</FormLabel>
-                          <FormControl>
-                            <Textarea 
-                              placeholder="Describe your project, its objectives, and outcome" 
-                              {...field}
-                              className="min-h-[120px]"
-                            />
-                          </FormControl>
-                          <FormDescription>
-                            Provide details about your project (max 500 characters)
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <div className="grid grid-cols-2 gap-4">
-                      <FormField
-                        control={projectForm.control}
-                        name="category"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Category*</FormLabel>
-                            <FormControl>
-                              <Input placeholder="e.g. Web Development" {...field} />
-                            </FormControl>
-                            <FormDescription>
-                              Project category or type
-                            </FormDescription>
-                            <FormMessage />
-                          </FormItem>
-                        )}
+                <TabsContent value="details" className="space-y-6 pt-6">
+                  <div className="space-y-6">
+                    {/* Project Title */}
+                    <div className="space-y-2">
+                      <label htmlFor="project-title" className="text-sm font-medium text-white flex items-center gap-2">
+                        <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                          <polyline points="14,2 14,8 20,8"></polyline>
+                          <line x1="16" y1="13" x2="8" y2="13"></line>
+                          <line x1="16" y1="17" x2="8" y2="17"></line>
+                          <polyline points="10,9 9,9 8,9"></polyline>
+                        </svg>
+                        Project Title*
+                      </label>
+                      <input
+                        id="project-title"
+                        type="text"
+                        placeholder="Enter project title..."
+                        {...projectForm.register('title')}
+                        className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
                       />
-                      
-                      <FormField
-                        control={projectForm.control}
-                        name="industry"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Industry</FormLabel>
-                            <FormControl>
-                              <IndustryCombobox 
-                                value={field.value || ''}
-                                onChange={field.onChange}
-                                placeholder="Select or type an industry"
-                              />
-                            </FormControl>
-                            <FormDescription>
-                              Industry the project belongs to
-                            </FormDescription>
-                            <FormMessage />
-                          </FormItem>
-                        )}
+                      <p className="text-gray-400 text-xs">Enter a clear, descriptive title for your project.</p>
+                    </div>
+                    
+                    {/* Project Description */}
+                    <div className="space-y-2">
+                      <label htmlFor="project-description" className="text-sm font-medium text-white flex items-center gap-2">
+                        <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                          <path d="m18.5 2.5 a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
+                        Project Description*
+                      </label>
+                      <textarea
+                        id="project-description"
+                        placeholder="Describe your project, its objectives, and outcome..."
+                        rows={4}
+                        {...projectForm.register('description')}
+                        className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full min-h-[120px] px-3 py-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none resize-none"
                       />
+                      <p className="text-gray-400 text-xs">Provide details about your project (max 500 characters).</p>
                     </div>
                     
                     <div className="grid grid-cols-2 gap-4">
-                      <FormField
-                        control={projectForm.control}
-                        name="startDate"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Date*</FormLabel>
-                            <Popover>
-                              <PopoverTrigger asChild>
-                                <FormControl>
-                                  <Button
-                                    variant={"outline"}
-                                    className={cn(
-                                      "pl-3 text-left font-normal",
-                                      !field.value && "text-muted-foreground"
-                                    )}
-                                  >
-                                    {field.value ? (
-                                      format(field.value, "PPP")
-                                    ) : (
-                                      <span>Pick a date</span>
-                                    )}
-                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                  </Button>
-                                </FormControl>
-                              </PopoverTrigger>
-                              <PopoverContent className="w-auto p-0" align="start">
-                                <Calendar
-                                  mode="single"
-                                  selected={new Date(field.value)}
-                                  onSelect={(date) => field.onChange(format(date || new Date(), 'yyyy-MM-dd'))}
-                                  disabled={(date) =>
-                                    date > new Date() || date < new Date("1900-01-01")
-                                  }
-                                  initialFocus
-                                />
-                              </PopoverContent>
-                            </Popover>
-                            <FormDescription>
-                              When was the project completed?
-                            </FormDescription>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+                      {/* Project Category */}
+                      <div className="space-y-2">
+                        <label htmlFor="project-category" className="text-sm font-medium text-white flex items-center gap-2">
+                          <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <path d="M16 10a4 4 0 0 1-8 0"></path>
+                          </svg>
+                          Category*
+                        </label>
+                        <input
+                          id="project-category"
+                          type="text"
+                          placeholder="e.g. Web Development"
+                          {...projectForm.register('category')}
+                          className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+                        />
+                        <p className="text-gray-400 text-xs">Project category or type.</p>
+                      </div>
                       
-                      <FormField
-                        control={projectForm.control}
-                        name="projectUrl"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Project URL*</FormLabel>
-                            <FormControl>
-                              <Input placeholder="https://example.com" {...field} />
-                            </FormControl>
-                            <FormDescription>
-                              Link to the live project or repository
-                            </FormDescription>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+                      {/* Project Industry */}
+                      <div className="space-y-2">
+                        <label htmlFor="project-industry" className="text-sm font-medium text-white flex items-center gap-2">
+                          <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M3 21h18"></path>
+                            <path d="M5 21V7l8-4v18"></path>
+                            <path d="M19 21V11l-6-4"></path>
+                          </svg>
+                          Industry
+                        </label>
+                        <input
+                          id="project-industry"
+                          type="text"
+                          placeholder="e.g. Technology, Finance"
+                          {...projectForm.register('industry')}
+                          className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+                        />
+                        <p className="text-gray-400 text-xs">Industry the project belongs to.</p>
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-4">
+                      {/* Project Date */}
+                      <div className="space-y-2">
+                        <label htmlFor="project-date" className="text-sm font-medium text-white flex items-center gap-2">
+                          <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                          </svg>
+                          Project Date*
+                        </label>
+                        <input
+                          id="project-date"
+                          type="date"
+                          {...projectForm.register('startDate')}
+                          className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+                        />
+                        <p className="text-gray-400 text-xs">When was the project completed?</p>
+                      </div>
+                      
+                      {/* Project URL */}
+                      <div className="space-y-2">
+                        <label htmlFor="project-url" className="text-sm font-medium text-white flex items-center gap-2">
+                          <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                          </svg>
+                          Project URL*
+                        </label>
+                        <input
+                          id="project-url"
+                          type="url"
+                          placeholder="https://example.com"
+                          {...projectForm.register('projectUrl')}
+                          className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+                        />
+                        <p className="text-gray-400 text-xs">Link to the live project or repository.</p>
+                      </div>
                     </div>
                   </div>
                 </TabsContent>
@@ -2238,16 +2220,24 @@ export default function Projects() {
                   </TabsContent>
                 </Tabs>
                 
-                <DialogFooter>
-                  <Button type="button" variant="outline" onClick={() => setIsEditModalOpen(false)}>
+                {/* Form Action Buttons */}
+                <div className="flex justify-end gap-3 pt-6 border-t border-white/10">
+                  <button
+                    type="button"
+                    onClick={() => setIsAddModalOpen(false)}
+                    className="px-6 py-3 bg-[rgba(40,40,40,0.8)] backdrop-blur-md text-white border border-white/20 rounded-md shadow-md transition-all hover:bg-[rgba(60,60,60,0.9)] hover:border-white/30 focus:outline-none focus:ring-2 focus:ring-white/30"
+                  >
                     Cancel
-                  </Button>
-                  <Button type="submit">
-                    Update Showcase
-                  </Button>
-                </DialogFooter>
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-6 py-3 neo-glass-button text-white font-medium rounded-md shadow-lg transition-all hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-white/30"
+                  >
+                    Add Showcase
+                  </button>
+                </div>
               </form>
-            </Form>
+            </div>
           </DialogContent>
         </Dialog>
       )}
