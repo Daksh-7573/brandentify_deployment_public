@@ -1557,8 +1557,7 @@ export default function Projects() {
                 </Button>
               </DialogFooter>
             </form>
-          </Form>
-        </DialogContent>
+          </DialogContent>
       </Dialog>
       
       {/* Edit Project Modal */}
