@@ -159,28 +159,56 @@ const ProjectsFixed = () => {
 
                 <TabsContent value="media" className="space-y-6 pt-6">
                   <div className="space-y-6">
-                    {/* Thumbnail Upload */}
-                    <div className="space-y-2">
+                    {/* Project Images Upload */}
+                    <div className="space-y-4">
                       <label className="text-white font-medium text-sm flex items-center gap-2">
                         <Upload className="h-4 w-4" />
-                        Project Thumbnail
+                        Project Images (Up to 10)
                       </label>
+                      
+                      {/* Upload Area */}
                       <div className="border-2 border-dashed border-white/30 rounded-lg p-6 bg-white/5 backdrop-blur-sm hover:border-white/50 transition-colors">
                         <input
                           type="file"
                           accept="image/*"
+                          multiple
                           className="hidden"
-                          id="thumbnail-upload"
+                          id="images-upload"
                         />
-                        <label htmlFor="thumbnail-upload" className="cursor-pointer block text-center">
+                        <label htmlFor="images-upload" className="cursor-pointer block text-center">
                           <Upload className="h-8 w-8 text-white/50 mx-auto mb-2" />
-                          <p className="text-white/70 text-sm">Click to upload thumbnail</p>
-                          <p className="text-white/50 text-xs mt-1">PNG, JPG up to 5MB</p>
+                          <p className="text-white/70 text-sm">Click to upload images or drag & drop</p>
+                          <p className="text-white/50 text-xs mt-1">PNG, JPG up to 5MB each • Max 10 images</p>
                         </label>
                       </div>
+
+                      {/* Image Preview Grid */}
+                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                        {/* Placeholder for uploaded images */}
+                        <div className="aspect-square rounded-lg bg-white/5 backdrop-blur-sm border border-white/10 flex items-center justify-center group hover:bg-white/10 transition-colors">
+                          <div className="text-center">
+                            <Plus className="h-6 w-6 text-white/40 mx-auto mb-1" />
+                            <p className="text-white/40 text-xs">Add Image</p>
+                          </div>
+                        </div>
+                        
+                        {/* Example of how images will appear when uploaded */}
+                        {/* 
+                        <div className="aspect-square rounded-lg bg-white/5 backdrop-blur-sm border border-white/10 relative group overflow-hidden">
+                          <img src="image-url" alt="Project image" className="w-full h-full object-cover" />
+                          <button className="absolute top-2 right-2 p-1 bg-red-500/80 backdrop-blur-sm rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                            <X className="h-3 w-3 text-white" />
+                          </button>
+                        </div>
+                        */}
+                      </div>
+
+                      {/* Image Counter */}
+                      <div className="flex justify-between items-center text-sm">
+                        <span className="text-white/60">0 / 10 images uploaded</span>
+                        <span className="text-white/40">First image will be used as thumbnail</span>
+                      </div>
                     </div>
-
-
                   </div>
                 </TabsContent>
 
