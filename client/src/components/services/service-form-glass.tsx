@@ -146,7 +146,13 @@ export default function ServiceFormGlass({
               }
             }}
             placeholder="Enter your service title..."
-            className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 px-3 py-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+            className="!bg-[rgba(18,18,18,0.95)] !backdrop-blur-md !text-white !border-white/20 shadow-md transition-all hover:!border-white/30 w-full h-12 px-3 py-3 rounded-md border !placeholder-white/50 focus:!border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+            style={{ 
+              backgroundColor: 'rgba(18,18,18,0.95) !important', 
+              color: 'white !important',
+              backdropFilter: 'blur(12px)',
+              border: '1px solid rgba(255,255,255,0.2) !important'
+            }}
           />
           {errors.title && (
             <p className="text-red-400 text-sm">{errors.title}</p>
@@ -197,7 +203,13 @@ export default function ServiceFormGlass({
                 <select
                   value={currency}
                   onChange={(e) => setCurrency(e.target.value)}
-                  className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 px-3 pr-10 rounded-md border appearance-none cursor-pointer focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+                  className="!bg-[rgba(18,18,18,0.95)] !backdrop-blur-md !text-white !border-white/20 shadow-md transition-all hover:!border-white/30 w-full h-12 px-3 pr-10 rounded-md border appearance-none cursor-pointer focus:!border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+                  style={{ 
+                    backgroundColor: 'rgba(18,18,18,0.95) !important', 
+                    color: 'white !important',
+                    backdropFilter: 'blur(12px)',
+                    border: '1px solid rgba(255,255,255,0.2) !important'
+                  }}
                 >
                   <option value="USD" className="bg-gray-800 text-white">USD (US Dollar)</option>
                   <option value="INR" className="bg-gray-800 text-white">INR (Indian Rupee)</option>
@@ -218,7 +230,13 @@ export default function ServiceFormGlass({
                 value={price}
                 onChange={(e) => handlePriceChange(e.target.value)}
                 placeholder="Enter service price (e.g. 24.99)"
-                className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 px-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+                className="!bg-[rgba(18,18,18,0.95)] !backdrop-blur-md !text-white !border-white/20 shadow-md transition-all hover:!border-white/30 w-full h-12 px-3 rounded-md border !placeholder-white/50 focus:!border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+                style={{ 
+                  backgroundColor: 'rgba(18,18,18,0.95) !important', 
+                  color: 'white !important',
+                  backdropFilter: 'blur(12px)',
+                  border: '1px solid rgba(255,255,255,0.2) !important'
+                }}
               />
               {errors.price && (
                 <p className="text-red-400 text-sm">{errors.price}</p>
