@@ -3,6 +3,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { Pencil, Plus, Trash2, Calendar as CalendarIcon, GraduationCap, Building, MapPin, BookOpen, Briefcase, AlertCircle } from "lucide-react";
 import * as z from "zod";
 import { formatDate } from "@/lib/utils";
+import { format } from "date-fns";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { NeoGlassSection } from "@/components/layout/neo-glass-layout";
@@ -902,35 +903,22 @@ export default function Education() {
                         <CalendarIcon className="h-4 w-4" />
                         Start Date
                       </FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              variant={"outline"}
-                              className={cn(
-                                "neo-glass-input w-full justify-start text-left font-normal h-12",
-                                !field.value && "text-white/50"
-                              )}
-                            >
-                              <CalendarIcon className="mr-2 h-4 w-4" />
-                              {field.value ? (
-                                formatDate(field.value)
-                              ) : (
-                                "Select start date"
-                              )}
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0">
-                          <Calendar
-                            mode="single"
-                            selected={field.value}
-                            onSelect={field.onChange}
-                            fromYear={1950}
-                            toYear={2030}
-                          />
-                        </PopoverContent>
-                      </Popover>
+                      <FormControl>
+                        <input
+                          type="date"
+                          value={field.value ? format(field.value, 'yyyy-MM-dd') : ''}
+                          onChange={(e) => field.onChange(e.target.value ? new Date(e.target.value) : undefined)}
+                          className="w-full h-12 py-3 px-3 rounded-md border transition-all focus:outline-none"
+                          style={{
+                            background: 'rgba(18,18,18,0.95)',
+                            backdropFilter: 'blur(12px)',
+                            border: '1px solid rgba(255,255,255,0.2)',
+                            color: 'white',
+                            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                            colorScheme: 'dark'
+                          }}
+                        />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -947,35 +935,22 @@ export default function Education() {
                           <CalendarIcon className="h-4 w-4" />
                           End Date
                         </FormLabel>
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <FormControl>
-                              <Button
-                                variant={"outline"}
-                                className={cn(
-                                  "neo-glass-input w-full justify-start text-left font-normal h-12",
-                                  !field.value && "text-white/50"
-                                )}
-                              >
-                                <CalendarIcon className="mr-2 h-4 w-4" />
-                                {field.value ? (
-                                  formatDate(field.value)
-                                ) : (
-                                  "Select end date"
-                                )}
-                              </Button>
-                            </FormControl>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0">
-                            <Calendar
-                              mode="single"
-                              selected={field.value}
-                              onSelect={field.onChange}
-                              fromYear={1950}
-                              toYear={2030}
-                            />
-                          </PopoverContent>
-                        </Popover>
+                        <FormControl>
+                          <input
+                            type="date"
+                            value={field.value ? format(field.value, 'yyyy-MM-dd') : ''}
+                            onChange={(e) => field.onChange(e.target.value ? new Date(e.target.value) : undefined)}
+                            className="w-full h-12 py-3 px-3 rounded-md border transition-all focus:outline-none"
+                            style={{
+                              background: 'rgba(18,18,18,0.95)',
+                              backdropFilter: 'blur(12px)',
+                              border: '1px solid rgba(255,255,255,0.2)',
+                              color: 'white',
+                              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                              colorScheme: 'dark'
+                            }}
+                          />
+                        </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
