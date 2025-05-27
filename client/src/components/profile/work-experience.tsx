@@ -427,7 +427,14 @@ export default function WorkExperience() {
                     onChange={handleInputChange}
                     placeholder="Describe your main responsibilities and achievements..."
                     rows={4}
-                    className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full py-3 px-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none resize-none"
+                    className="w-full py-3 px-3 rounded-md border transition-all focus:outline-none resize-none"
+                    style={{
+                      background: 'rgba(18,18,18,0.95)',
+                      backdropFilter: 'blur(12px)',
+                      border: '1px solid rgba(255,255,255,0.2)',
+                      color: 'white',
+                      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                    }}
                   />
                 </div>
 
