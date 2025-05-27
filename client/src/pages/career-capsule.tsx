@@ -382,43 +382,127 @@ export default function CareerCapsulePage() {
         )}
       </div>
 
-      {/* NEW GLASS UI DIALOG FOR CREATE GOAL */}
+      {/* Create Goal Dialog */}
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-        <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto neo-glass-card border border-blue-400/30 shadow-2xl backdrop-blur-xl">
+        <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
-            <DialogTitle className="text-white text-2xl font-bold">🎯 Create New Career Goal</DialogTitle>
-            <DialogDescription className="text-blue-200">
-              Define your career aspirations with our advanced glass UI interface and get AI-powered milestone recommendations.
+            <DialogTitle>Create New Career Goal</DialogTitle>
+            <DialogDescription>
+              Set a new career goal with a clear target and timeframe.
             </DialogDescription>
           </DialogHeader>
           
-          <form onSubmit={handleSubmit}>
-            <Tabs defaultValue="basics" className="w-full">
-              <TabsList className="grid w-full grid-cols-3 mb-6 bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg p-1">
-                <TabsTrigger 
-                  value="basics" 
-                  className="text-white/70 data-[state=active]:text-white data-[state=active]:bg-white/10 data-[state=active]:backdrop-blur-sm rounded-md transition-all duration-200 font-medium"
-                >
-                  <Target className="h-4 w-4 mr-2" />
-                  Goal Basics
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="details" 
-                  className="text-white/70 data-[state=active]:text-white data-[state=active]:bg-white/10 data-[state=active]:backdrop-blur-sm rounded-md transition-all duration-200 font-medium"
-                >
-                  <FileText className="h-4 w-4 mr-2" />
-                  Details
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="timeline" 
-                  className="text-white/70 data-[state=active]:text-white data-[state=active]:bg-white/10 data-[state=active]:backdrop-blur-sm rounded-md transition-all duration-200 font-medium"
-                >
-                  <Calendar className="h-4 w-4 mr-2" />
-                  Timeline
-                </TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="basics" className="space-y-6 pt-6">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Goal Title */}
+            <div className="space-y-2">
+              <label htmlFor="goalTitle" className="block text-sm font-medium">
+                Goal Title <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                id="goalTitle"
+                placeholder="e.g., Become a Senior Software Engineer"
+                value={goalTitle}
+                onChange={(e) => setGoalTitle(e.target.value)}
+                required
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            
+            {/* Goal Type */}
+            <div className="space-y-2">
+              <label htmlFor="goalType" className="block text-sm font-medium">
+                Goal Type <span className="text-red-500">*</span>
+              </label>
+              <select
+                id="goalType"
+                value={goalType}
+                onChange={(e) => setGoalType(e.target.value as GoalType)}
+                required
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="position_change">Position Change</option>
+                <option value="skill_acquisition">Skill Acquisition</option>
+                <option value="promotion">Promotion</option>
+                <option value="industry_switch">Industry Switch</option>
+                <option value="entrepreneurship">Entrepreneurship</option>
+                <option value="relocation">Relocation</option>
+                <option value="education">Education</option>
+                <option value="certification">Certification</option>
+                <option value="custom">Custom</option>
+              </select>
+            </div>
+            
+            {/* Description */}
+            <div className="space-y-2">
+              <label htmlFor="description" className="block text-sm font-medium">
+                Description <span className="text-gray-500">(Optional)</span>
+              </label>
+              <textarea
+                id="description"
+                placeholder="Describe your career goal in detail..."
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                rows={3}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+              />
+            </div>
+            
+            {/* Timeframe */}
+            <div className="space-y-2">
+              <label htmlFor="timeframe" className="block text-sm font-medium">
+                Timeframe <span className="text-red-500">*</span>
+              </label>
+              <select
+                id="timeframe"
+                value={timeframe}
+                onChange={(e) => setTimeframe(e.target.value)}
+                required
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="1">1 Year</option>
+                <option value="2">2 Years</option>
+                <option value="3">3 Years</option>
+                <option value="4">4 Years</option>
+                <option value="5">5 Years</option>
+              </select>
+            </div>
+            
+            {/* Target Date */}
+            <div className="space-y-2">
+              <label htmlFor="targetDate" className="block text-sm font-medium">
+                Specific Target Date <span className="text-gray-500">(Optional)</span>
+              </label>
+              <input
+                type="date"
+                id="targetDate"
+                value={targetDate}
+                onChange={(e) => setTargetDate(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <p className="text-xs text-gray-500">
+                Leave blank to auto-calculate based on timeframe selection
+              </p>
+            </div>
+            
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowCreateDialog(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? 'Creating...' : 'Create Goal'}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
                 <div className="space-y-6">
                   {/* Goal Title */}
                   <div className="space-y-2">
