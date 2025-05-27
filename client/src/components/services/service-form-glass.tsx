@@ -127,7 +127,7 @@ export default function ServiceFormGlass({
   }
 
   return (
-    <div className="space-y-6 p-6 bg-transparent">
+    <div className="space-y-6 p-6 bg-[rgba(18,18,18,0.95)] backdrop-blur-md border border-white/20 rounded-lg shadow-xl">
       <form onSubmit={handleSubmit} className="space-y-6">
         
         {/* Service Title */}
