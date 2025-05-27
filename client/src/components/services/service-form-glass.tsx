@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Loader2, DollarSign, Package, Clock, CheckCircle } from "lucide-react";
+import { Loader2, DollarSign, Package, Clock, CheckCircle, MessageSquareQuote } from "lucide-react";
 import { Service } from "@shared/schema";
 
 interface ServiceFormGlassProps {
@@ -160,7 +160,35 @@ export default function ServiceFormGlass({
           <p className="text-gray-400 text-xs">Enter a single professional service you offer.</p>
         </div>
 
-
+        {/* Service Description */}
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-white flex items-center gap-2">
+            <MessageSquareQuote className="h-4 w-4" />
+            Service Description (Optional)
+          </label>
+          <textarea
+            value={description}
+            onChange={(e) => {
+              setDescription(e.target.value);
+              if (errors.description) {
+                setErrors(prev => ({ ...prev, description: "" }));
+              }
+            }}
+            placeholder="Describe your service in detail..."
+            rows={4}
+            className="!bg-[rgba(18,18,18,0.95)] !backdrop-blur-md !text-white !border-white/20 shadow-md transition-all hover:!border-white/30 w-full px-3 py-3 rounded-md border !placeholder-white/50 focus:!border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none resize-none"
+            style={{ 
+              backgroundColor: 'rgba(18,18,18,0.95) !important', 
+              color: 'white !important',
+              backdropFilter: 'blur(12px)',
+              border: '1px solid rgba(255,255,255,0.2) !important'
+            }}
+          />
+          {errors.description && (
+            <p className="text-red-400 text-sm">{errors.description}</p>
+          )}
+          <p className="text-gray-400 text-xs">Add details about what your service includes and how you can help clients.</p>
+        </div>
 
         {/* Pricing Section */}
         <div className="space-y-4 border border-white/20 bg-[rgba(18,18,18,0.95)] backdrop-blur-md rounded-lg p-5 shadow-md transition-all hover:border-white/30">
@@ -253,12 +281,12 @@ export default function ServiceFormGlass({
         <button
           type="submit"
           disabled={isPending}
-          className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-md bg-white/10 text-white border border-white/20 backdrop-blur-md shadow-md transition-all hover:bg-white/20 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+          className="w-full neo-glass-button text-white font-medium py-3 px-4 rounded-md shadow-lg transition-all hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-white/30 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isPending ? (
             <>
-              <Loader2 className="h-4 w-4 animate-spin" />
-              <span>{serviceData ? "Updating..." : "Creating..."}</span>
+              <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              <span>{serviceData ? "Updating..." : "Adding..."}</span>
             </>
           ) : (
             <span>{serviceData ? "Update Service" : "Add Service"}</span>
