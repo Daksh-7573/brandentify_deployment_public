@@ -89,6 +89,28 @@
   color: white !important;
 }
 
+/* Glass UI Textarea Styling */
+.neo-glass-card textarea {
+  background: rgba(18, 18, 18, 0.95) !important;
+  backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+}
+
+.neo-glass-card textarea:hover {
+  border-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+.neo-glass-card textarea:focus {
+  border-color: rgba(255, 255, 255, 0.5) !important;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3) !important;
+}
+
+.neo-glass-card textarea::placeholder {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
 /* Smart Radar Custom Select Styling */
 .custom-select-smart-radar button {
   height: 40px;
