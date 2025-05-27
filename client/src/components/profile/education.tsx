@@ -689,13 +689,34 @@ export default function Education() {
                     </div>
                   )}
                   
-                  {education.skillsAcquired && education.skillsAcquired.length > 0 && (
+                  {education.skillsAcquired && (() => {
+                    // Parse skillsAcquired if it's a string, otherwise use as array
+                    let skills = education.skillsAcquired;
+                    if (typeof skills === 'string') {
+                      try {
+                        skills = JSON.parse(skills);
+                      } catch (e) {
+                        skills = [];
+                      }
+                    }
+                    return Array.isArray(skills) && skills.length > 0;
+                  })() && (
                     <div className="mt-2 ml-7">
                       <h4 className="text-xs font-medium text-white mb-1">Skills & Achievements</h4>
                       <ul className="list-disc pl-4 text-sm space-y-1 text-gray-300">
-                        {education.skillsAcquired.map((skill, i) => (
-                          <li key={i}>{skill}</li>
-                        ))}
+                        {(() => {
+                          let skills = education.skillsAcquired;
+                          if (typeof skills === 'string') {
+                            try {
+                              skills = JSON.parse(skills);
+                            } catch (e) {
+                              skills = [];
+                            }
+                          }
+                          return Array.isArray(skills) ? skills.map((skill: string, i: number) => (
+                            <li key={i}>{skill}</li>
+                          )) : null;
+                        })()}
                       </ul>
                     </div>
                   )}
