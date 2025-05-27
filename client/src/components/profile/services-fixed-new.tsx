@@ -268,12 +268,12 @@ export default function Services() {
                 disabled={services.length >= 6 || isPendingCreate || isPendingUpdate}
               >
                 <Plus className="h-3.5 w-3.5" />
-                <span>Add What I Offer</span>
+                <span>Add Service</span>
               </button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[525px] max-h-[88vh] overflow-y-auto bg-transparent">
               <DialogHeader>
-                <DialogTitle>Add What I Offer</DialogTitle>
+                <DialogTitle>Add Service</DialogTitle>
                 <DialogDescription>
                   Enter a professional service you offer (one at a time).
                 </DialogDescription>
