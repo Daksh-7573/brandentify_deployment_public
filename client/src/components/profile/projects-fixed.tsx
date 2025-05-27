@@ -70,11 +70,11 @@ const ProjectsFixed = () => {
           }}>
             <form onSubmit={projectForm.handleSubmit(onProjectSubmit)} className="space-y-6 py-5">
               <Tabs defaultValue="details" value={activeTab} onValueChange={setActiveTab}>
-                <TabsList className="w-full bg-[rgba(18,18,18,0.7)] backdrop-blur-md border-white/20">
-                  <TabsTrigger value="details" className="flex-1 text-white data-[state=active]:bg-white/20">Details</TabsTrigger>
-                  <TabsTrigger value="media" className="flex-1 text-white data-[state=active]:bg-white/20">Media</TabsTrigger>
-                  <TabsTrigger value="team" className="flex-1 text-white data-[state=active]:bg-white/20">Team</TabsTrigger>
-                  <TabsTrigger value="endorsements" className="flex-1 text-white data-[state=active]:bg-white/20">Clients</TabsTrigger>
+                <TabsList className="w-full bg-black/30 backdrop-blur-xl border border-white/10 rounded-lg p-1">
+                  <TabsTrigger value="details" className="flex-1 text-gray-300 data-[state=active]:bg-white/10 data-[state=active]:text-white data-[state=active]:border data-[state=active]:border-white/20 rounded-md transition-all duration-200">Details</TabsTrigger>
+                  <TabsTrigger value="media" className="flex-1 text-gray-300 data-[state=active]:bg-white/10 data-[state=active]:text-white data-[state=active]:border data-[state=active]:border-white/20 rounded-md transition-all duration-200">Media</TabsTrigger>
+                  <TabsTrigger value="team" className="flex-1 text-gray-300 data-[state=active]:bg-white/10 data-[state=active]:text-white data-[state=active]:border data-[state=active]:border-white/20 rounded-md transition-all duration-200">Team</TabsTrigger>
+                  <TabsTrigger value="endorsements" className="flex-1 text-gray-300 data-[state=active]:bg-white/10 data-[state=active]:text-white data-[state=active]:border data-[state=active]:border-white/20 rounded-md transition-all duration-200">Clients</TabsTrigger>
                 </TabsList>
                 
                 <TabsContent value="details" className="space-y-6 pt-6">
