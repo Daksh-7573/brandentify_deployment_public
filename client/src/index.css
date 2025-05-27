@@ -8,6 +8,16 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Glass UI Form Animation */
+@keyframes gradient-shift {
+  0%, 100% {
+    transform: translateX(0%);
+  }
+  50% {
+    transform: translateX(100%);
+  }
+}
+
 /* Smart Radar Custom Select Styling */
 .custom-select-smart-radar button {
   height: 40px;

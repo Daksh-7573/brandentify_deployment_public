@@ -1089,15 +1089,20 @@ export default function WorkExperience() {
       
       {/* Add Experience Dialog - Glass UI Design */}
       <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
-        <DialogContent className="md:max-w-2xl max-h-[95vh] overflow-y-auto border-0 bg-transparent p-0">
-          {/* Glass Container */}
-          <div className="relative p-8 rounded-2xl"
-               style={{
-                 background: 'rgba(15, 23, 42, 0.85)',
-                 backdropFilter: 'blur(20px)',
-                 border: '1px solid rgba(255, 255, 255, 0.1)',
-                 boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
-               }}>
+        <DialogContent 
+          className="border-0 p-0 max-w-4xl max-h-[95vh] overflow-hidden"
+          style={{ background: 'transparent' }}
+        >
+          {/* Glass Container with Stunning Effects */}
+          <div 
+            className="relative p-8 rounded-3xl overflow-hidden"
+            style={{
+              background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.8) 50%, rgba(15, 23, 42, 0.9) 100%)',
+              backdropFilter: 'blur(25px)',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
+              boxShadow: '0 25px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
+            }}
+          >
             
             {/* Animated Gradient Background */}
             <div className="absolute inset-0 rounded-2xl overflow-hidden">
