@@ -127,12 +127,12 @@ export default function ServiceFormGlass({
   }
 
   return (
-    <div className="space-y-6 p-6 bg-[rgba(18,18,18,0.95)] backdrop-blur-md border border-white/20 rounded-lg shadow-xl">
+    <div className="space-y-6">
       <form onSubmit={handleSubmit} className="space-y-6">
         
         {/* Service Title */}
         <div className="space-y-2">
-          <label className="text-sm font-medium text-white flex items-center gap-2">
+          <label className="text-white font-medium text-sm flex items-center gap-2">
             <Package className="h-4 w-4" />
             Service Title*
           </label>
@@ -146,25 +146,18 @@ export default function ServiceFormGlass({
               }
             }}
             placeholder="Enter your service title..."
-            className="!bg-[rgba(18,18,18,0.95)] !backdrop-blur-md !text-white !border-white/20 shadow-md transition-all hover:!border-white/30 w-full h-12 px-3 py-3 rounded-md border !placeholder-white/50 focus:!border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
-            style={{ 
-              backgroundColor: 'rgba(18,18,18,0.95) !important', 
-              color: 'white !important',
-              backdropFilter: 'blur(12px)',
-              border: '1px solid rgba(255,255,255,0.2) !important'
-            }}
+            className="neo-glass-input"
           />
           {errors.title && (
             <p className="text-red-400 text-sm">{errors.title}</p>
           )}
-          <p className="text-gray-400 text-xs">Enter a single professional service you offer.</p>
         </div>
 
         {/* Service Description */}
         <div className="space-y-2">
-          <label className="text-sm font-medium text-white flex items-center gap-2">
+          <label className="text-white font-medium text-sm flex items-center gap-2">
             <MessageSquareQuote className="h-4 w-4" />
-            Service Description (Optional)
+            Description
           </label>
           <textarea
             value={description}
@@ -174,25 +167,18 @@ export default function ServiceFormGlass({
                 setErrors(prev => ({ ...prev, description: "" }));
               }
             }}
-            placeholder="Describe your service in detail..."
+            placeholder="Describe your service..."
             rows={4}
-            className="!bg-[rgba(18,18,18,0.95)] !backdrop-blur-md !text-white !border-white/20 shadow-md transition-all hover:!border-white/30 w-full px-3 py-3 rounded-md border !placeholder-white/50 focus:!border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none resize-none"
-            style={{ 
-              backgroundColor: 'rgba(18,18,18,0.95) !important', 
-              color: 'white !important',
-              backdropFilter: 'blur(12px)',
-              border: '1px solid rgba(255,255,255,0.2) !important'
-            }}
+            className="neo-glass-input resize-none"
           />
           {errors.description && (
             <p className="text-red-400 text-sm">{errors.description}</p>
           )}
-          <p className="text-gray-400 text-xs">Add details about what your service includes and how you can help clients.</p>
         </div>
 
         {/* Pricing Section */}
-        <div className="space-y-4 border border-white/20 bg-[rgba(18,18,18,0.95)] backdrop-blur-md rounded-lg p-5 shadow-md transition-all hover:border-white/30">
-          <h3 className="text-white text-base font-medium flex items-center gap-2">
+        <div className="space-y-4 p-4 rounded-lg bg-white/5 backdrop-blur-sm border border-white/10">
+          <h3 className="text-white font-medium text-sm flex items-center gap-2">
             <DollarSign className="h-4 w-4" />
             Pricing Details
           </h3>
@@ -200,45 +186,36 @@ export default function ServiceFormGlass({
           <div className="grid grid-cols-2 gap-4">
             {/* Currency Selection */}
             <div className="space-y-2">
-              <label className="text-sm font-medium text-white">Currency</label>
-              <div className="relative">
-                <select
-                  value={currency}
-                  onChange={(e) => setCurrency(e.target.value)}
-                  className="!bg-[rgba(18,18,18,0.95)] !backdrop-blur-md !text-white !border-white/20 shadow-md transition-all hover:!border-white/30 w-full h-12 px-3 pr-10 rounded-md border appearance-none cursor-pointer focus:!border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
-                  style={{ 
-                    backgroundColor: 'rgba(18,18,18,0.95) !important', 
-                    color: 'white !important',
-                    backdropFilter: 'blur(12px)',
-                    border: '1px solid rgba(255,255,255,0.2) !important'
-                  }}
-                >
-                  <option value="USD" className="bg-gray-800 text-white">USD (US Dollar)</option>
-                  <option value="INR" className="bg-gray-800 text-white">INR (Indian Rupee)</option>
-                </select>
-                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                  <svg className="h-4 w-4 text-white/70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-                  </svg>
-                </div>
-              </div>
+              <label className="text-white/80 text-sm">Currency</label>
+              <select
+                value={currency}
+                onChange={(e) => setCurrency(e.target.value)}
+                className="neo-glass-input h-12 px-4 py-3"
+                style={{
+                  backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='rgba(255,255,255,0.5)' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
+                  backgroundPosition: 'right 1rem center',
+                  backgroundRepeat: 'no-repeat',
+                  backgroundSize: '1.5em 1.5em',
+                  paddingRight: '3rem',
+                  paddingLeft: '1rem',
+                  appearance: 'none',
+                  lineHeight: '1.5'
+                }}
+              >
+                <option value="USD" style={{backgroundColor: '#1a1a1a', color: 'white'}}>USD (US Dollar)</option>
+                <option value="INR" style={{backgroundColor: '#1a1a1a', color: 'white'}}>INR (Indian Rupee)</option>
+              </select>
             </div>
 
             {/* Price Amount */}
             <div className="space-y-2">
-              <label className="text-sm font-medium text-white">Rate Amount</label>
+              <label className="text-white/80 text-sm">Rate Amount</label>
               <input
                 type="text"
                 value={price}
                 onChange={(e) => handlePriceChange(e.target.value)}
-                placeholder="Enter service price (e.g. 24.99)"
-                className="!bg-[rgba(18,18,18,0.95)] !backdrop-blur-md !text-white !border-white/20 shadow-md transition-all hover:!border-white/30 w-full h-12 px-3 rounded-md border !placeholder-white/50 focus:!border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
-                style={{ 
-                  backgroundColor: 'rgba(18,18,18,0.95) !important', 
-                  color: 'white !important',
-                  backdropFilter: 'blur(12px)',
-                  border: '1px solid rgba(255,255,255,0.2) !important'
-                }}
+                placeholder="Enter service price..."
+                className="neo-glass-input"
               />
               {errors.price && (
                 <p className="text-red-400 text-sm">{errors.price}</p>
@@ -247,13 +224,13 @@ export default function ServiceFormGlass({
           </div>
 
           {/* Hourly Rate Toggle */}
-          <div className="flex items-center justify-between rounded-lg border border-white/20 bg-[rgba(18,18,18,0.95)] backdrop-blur-md p-4 transition-all hover:border-white/30 shadow-md">
+          <div className="flex items-center justify-between rounded-lg border border-white/10 bg-white/5 backdrop-blur-sm p-4 transition-all hover:border-white/30">
             <div className="space-y-0.5">
-              <div className="text-white text-base flex items-center gap-2">
+              <div className="text-white text-sm flex items-center gap-2">
                 <Clock className="h-4 w-4" />
                 Hourly Rate
               </div>
-              <p className="text-gray-300 text-xs">
+              <p className="text-white/60 text-xs">
                 Toggle on if you charge per hour, off for fixed rate
               </p>
             </div>

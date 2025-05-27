@@ -271,18 +271,26 @@ export default function Services() {
                 <span>Add Service</span>
               </button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[525px] max-h-[88vh] overflow-y-auto bg-[rgba(18,18,18,0.95)] backdrop-blur-md border border-white/20 shadow-xl">
+            <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-hidden neo-glass-card bg-transparent">
               <DialogHeader>
-                <DialogTitle className="text-white">Add Service</DialogTitle>
+                <DialogTitle className="text-white text-xl font-semibold">Add Service</DialogTitle>
                 <DialogDescription className="text-gray-300">
                   Enter a professional service you offer (one at a time).
                 </DialogDescription>
               </DialogHeader>
-              <ServiceFormGlass 
-                onSubmit={handleCreate} 
-                isPending={isPendingCreate}
-                existingServicesCount={services.length}
-              />
+              
+              <div className="max-h-[70vh] overflow-y-auto pr-2" style={{
+                scrollbarWidth: 'thin',
+                scrollbarColor: 'rgba(255,255,255,0.3) rgba(255,255,255,0.1)'
+              }}>
+                <div className="py-5">
+                  <ServiceFormGlass 
+                    onSubmit={handleCreate} 
+                    isPending={isPendingCreate}
+                    existingServicesCount={services.length}
+                  />
+                </div>
+              </div>
             </DialogContent>
           </Dialog>
         </div>
