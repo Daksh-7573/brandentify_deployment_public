@@ -1132,12 +1132,16 @@ export default function Projects() {
       
       {/* Add Project Modal */}
       <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
-        <DialogContent className="sm:max-w-[550px] neo-glass-card bg-transparent">
+        <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-hidden neo-glass-card bg-transparent">
           <DialogHeader>
             <DialogTitle className="text-white text-xl font-semibold">Add Showcase</DialogTitle>
           </DialogHeader>
           
-          <form onSubmit={projectForm.handleSubmit(onProjectSubmit)} className="space-y-6 py-5">
+          <div className="max-h-[70vh] overflow-y-auto pr-2" style={{
+            scrollbarWidth: 'thin',
+            scrollbarColor: 'rgba(255,255,255,0.3) rgba(255,255,255,0.1)'
+          }}>
+            <form onSubmit={projectForm.handleSubmit(onProjectSubmit)} className="space-y-6 py-5">
               <Tabs defaultValue="details" value={activeTab} onValueChange={setActiveTab}>
                 <TabsList className="w-full bg-[rgba(18,18,18,0.7)] backdrop-blur-md border-white/20">
                   <TabsTrigger value="details" className="flex-1 text-white data-[state=active]:bg-white/20">Details</TabsTrigger>
@@ -2236,7 +2240,8 @@ export default function Projects() {
                 </div>
               </form>
             </Form>
-          </DialogContent>
+          </div>
+        </DialogContent>
         </Dialog>
       )}
       
