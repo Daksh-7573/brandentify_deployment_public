@@ -957,34 +957,37 @@ export default function Projects() {
 
   return (
     <div className="flex-1">
-      <div className="flex flex-row items-center justify-between space-y-0 pb-4 mb-4 border-b border-gray-800">
+      <div className="flex flex-row items-center justify-between space-y-0 pb-4 mb-6">
         <div>
-          <h2 className="text-xl font-bold text-white">Project Showcase</h2>
-          <p className="text-sm text-gray-300">Highlight your best work and project achievements</p>
+          <h2 className="text-2xl font-bold text-gray-900 flex items-center">
+            <FolderKanban className="h-6 w-6 mr-3 text-blue-600" />
+            Showcase Projects
+          </h2>
+          <p className="text-sm text-gray-600 mt-1">Highlight your best work and project achievements</p>
         </div>
-        <button 
+        <Button 
           onClick={handleAdd} 
-          className="neo-glass-button flex items-center gap-1 py-1.5 px-3 whitespace-nowrap"
+          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow-sm"
         >
-          <Plus className="h-3.5 w-3.5" />
+          <Plus className="h-4 w-4" />
           <span>Add Project</span>
-        </button>
+        </Button>
       </div>
       
       <div className="space-y-4">
         {isLoading ? (
           <div className="flex items-center justify-center h-40">
             <div className="flex flex-col items-center">
-              <Loader2 className="w-6 h-6 text-white animate-spin mb-2" />
-              <p className="text-sm text-slate-300">Loading your project showcase...</p>
+              <Loader2 className="w-6 h-6 text-gray-400 animate-spin mb-2" />
+              <p className="text-sm text-gray-500">Loading your projects...</p>
             </div>
           </div>
         ) : displayProjects && displayProjects.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {displayProjects.map((project) => (
-              <div key={project.id} className="border border-white/10 rounded-lg overflow-hidden bg-slate-800/50 backdrop-blur-md shadow-xl shadow-black/5 group relative">
+              <div key={project.id} className="bg-white rounded-lg border shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden group">
                 {/* Project Thumbnail */}
-                <div className="relative w-full aspect-square bg-slate-900/70 flex items-center justify-center overflow-hidden">
+                <div className="relative w-full aspect-video bg-gray-100 flex items-center justify-center overflow-hidden">
                   {project.thumbnailUrl ? (
                     <img 
                       src={
@@ -1122,9 +1125,9 @@ export default function Projects() {
               ))}
             </div>
           ) : (
-            <div className="py-6 text-center">
-              <FolderKanban className="mx-auto h-10 w-10 text-gray-400/50" />
-              <p className="mt-2 text-gray-400">No projects yet. Create your first project showcase to highlight your work.</p>
+            <div className="py-8 text-center">
+              <FolderKanban className="mx-auto h-12 w-12 text-gray-400 mb-3" />
+              <p className="text-gray-500">No projects yet. Create your first project showcase to highlight your work.</p>
             </div>
           )}
         </div>
