@@ -160,33 +160,7 @@ export default function ServiceFormGlass({
           <p className="text-gray-400 text-xs">Enter a single professional service you offer.</p>
         </div>
 
-        {/* Description */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-white flex items-center gap-2">
-            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-              <polyline points="14,2 14,8 20,8"></polyline>
-              <line x1="16" y1="13" x2="8" y2="13"></line>
-              <line x1="16" y1="17" x2="8" y2="17"></line>
-              <polyline points="10,9 9,9 8,9"></polyline>
-            </svg>
-            Description
-          </label>
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Describe your service..."
-            rows={3}
-            className="!bg-[rgba(18,18,18,0.95)] !backdrop-blur-md !text-white !border-white/20 shadow-md transition-all hover:!border-white/30 w-full min-h-[80px] px-3 py-3 rounded-md border !placeholder-white/50 focus:!border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none resize-none"
-            style={{ 
-              backgroundColor: 'rgba(18,18,18,0.95) !important', 
-              color: 'white !important',
-              backdropFilter: 'blur(12px)',
-              border: '1px solid rgba(255,255,255,0.2) !important'
-            }}
-          />
-          <p className="text-gray-400 text-xs">Enter a brief description of your service.</p>
-        </div>
+
 
         {/* Pricing Section */}
         <div className="space-y-4 border border-white/20 bg-[rgba(18,18,18,0.95)] backdrop-blur-md rounded-lg p-5 shadow-md transition-all hover:border-white/30">
@@ -273,33 +247,7 @@ export default function ServiceFormGlass({
           </div>
         </div>
 
-        {/* Active Status Toggle */}
-        <div className="flex items-center justify-between rounded-lg border border-white/20 bg-[rgba(18,18,18,0.95)] backdrop-blur-md p-4 transition-all hover:border-white/30 shadow-md">
-          <div className="space-y-0.5">
-            <div className="text-white text-base flex items-center gap-2">
-              <CheckCircle className="h-4 w-4" />
-              Active Status
-            </div>
-            <p className="text-gray-300 text-xs">
-              Is this service currently available?
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={() => setIsActive(!isActive)}
-            className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-white/30 ${
-              isActive 
-                ? 'bg-blue-600 border-blue-500/50' 
-                : 'bg-black/50 border-white/20'
-            }`}
-          >
-            <span
-              className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-                isActive ? 'translate-x-5' : 'translate-x-0'
-              }`}
-            />
-          </button>
-        </div>
+
 
         {/* Submit Button */}
         <button
