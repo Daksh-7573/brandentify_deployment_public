@@ -211,8 +211,12 @@ export default function WorkExperience() {
           </DialogTrigger>
           
           {/* Add Experience Dialog - Beautiful Glass UI */}
-          <DialogContent className="sm:max-w-[550px] neo-glass-card">
-            <div className="space-y-6 py-5">
+          <DialogContent className="sm:max-w-[550px] neo-glass-card max-h-[90vh] overflow-hidden">
+            <div className="space-y-6 py-5 max-h-[85vh] overflow-y-auto overflow-x-hidden"
+                 style={{
+                   scrollbarWidth: 'thin',
+                   scrollbarColor: 'rgba(255,255,255,0.3) transparent'
+                 }}>
               <DialogHeader>
                 <DialogTitle className="text-white flex items-center gap-2">
                   <Briefcase className="h-5 w-5" />
