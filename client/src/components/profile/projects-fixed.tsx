@@ -70,11 +70,11 @@ const ProjectsFixed = () => {
           }}>
             <form onSubmit={projectForm.handleSubmit(onProjectSubmit)} className="space-y-6 py-5">
               <Tabs defaultValue="details" value={activeTab} onValueChange={setActiveTab}>
-                <TabsList className="w-full bg-black/30 backdrop-blur-xl border border-white/10 rounded-lg p-1">
-                  <TabsTrigger value="details" className="flex-1 text-gray-300 data-[state=active]:bg-white/10 data-[state=active]:text-white data-[state=active]:border data-[state=active]:border-white/20 rounded-md transition-all duration-200">Details</TabsTrigger>
-                  <TabsTrigger value="media" className="flex-1 text-gray-300 data-[state=active]:bg-white/10 data-[state=active]:text-white data-[state=active]:border data-[state=active]:border-white/20 rounded-md transition-all duration-200">Media</TabsTrigger>
-                  <TabsTrigger value="team" className="flex-1 text-gray-300 data-[state=active]:bg-white/10 data-[state=active]:text-white data-[state=active]:border data-[state=active]:border-white/20 rounded-md transition-all duration-200">Team</TabsTrigger>
-                  <TabsTrigger value="endorsements" className="flex-1 text-gray-300 data-[state=active]:bg-white/10 data-[state=active]:text-white data-[state=active]:border data-[state=active]:border-white/20 rounded-md transition-all duration-200">Clients</TabsTrigger>
+                <TabsList className="w-full mb-6 dark-tabs-list">
+                  <TabsTrigger value="details" className="flex-1 dark-tabs-trigger">Details</TabsTrigger>
+                  <TabsTrigger value="media" className="flex-1 dark-tabs-trigger">Media</TabsTrigger>
+                  <TabsTrigger value="team" className="flex-1 dark-tabs-trigger">Team</TabsTrigger>
+                  <TabsTrigger value="endorsements" className="flex-1 dark-tabs-trigger">Clients</TabsTrigger>
                 </TabsList>
                 
                 <TabsContent value="details" className="space-y-6 pt-6">
