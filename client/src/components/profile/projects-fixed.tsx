@@ -52,8 +52,8 @@ const ProjectsFixed = () => {
       {/* Projects List - Empty State */}
       <div className="text-center py-8">
         <div className="flex flex-col items-center">
-          <FolderKanban className="h-12 w-12 text-blue-400 mb-4" />
-          <p className="text-gray-300">No projects yet. Add your first showcase project!</p>
+          <FolderKanban className="h-12 w-12 text-white/60 mb-4" />
+          <p className="text-white/70">No projects yet. Add your first showcase project!</p>
         </div>
       </div>
 
