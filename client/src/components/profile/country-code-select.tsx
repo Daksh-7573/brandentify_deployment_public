@@ -31,8 +31,15 @@ const CountryCodeSelect: React.FC<CountryCodeSelectProps> = ({ value, onChange }
     <select 
       value={value} 
       onChange={(e) => onChange(e.target.value)}
-      className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-[110px] h-12 px-3 rounded-md border focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none text-sm leading-relaxed"
-      style={{ lineHeight: '1.5', paddingTop: '0.75rem', paddingBottom: '0.75rem' }}
+      className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-[130px] h-12 px-3 rounded-md border focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none text-sm leading-relaxed"
+      style={{ 
+        lineHeight: '1.5', 
+        paddingTop: '0.75rem', 
+        paddingBottom: '0.75rem',
+        fontSize: '14px',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap'
+      }}
     >
       {countryCodes.map((country) => (
         <option key={country.code} value={country.code} className="bg-gray-800 text-white">
