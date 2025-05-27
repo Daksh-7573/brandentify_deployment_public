@@ -1004,13 +1004,12 @@ export default function Education() {
                             placeholder="e.g., Statistical Analysis, Academic Scholarship"
                             value={newSkillInput}
                             onChange={(e) => setNewSkillInput(e.target.value)}
-                            className="flex-1"
+                            className="neo-glass-input flex-1"
                           />
                         </FormControl>
-                        <Button
+                        <button
                           type="button"
-                          size="sm"
-                          variant="secondary"
+                          className="px-4 py-2 neo-glass-button text-white font-medium rounded-md shadow-lg transition-all hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-white/30 disabled:opacity-50 disabled:cursor-not-allowed"
                           onClick={() => {
                             if (newSkillInput.trim()) {
                               const updatedSkills = [...field.value, newSkillInput.trim()];
@@ -1021,40 +1020,41 @@ export default function Education() {
                           }}
                           disabled={!newSkillInput.trim() || field.value.length >= 10}
                         >
+                          <Plus className="w-4 h-4 mr-1" />
                           Add
-                        </Button>
+                        </button>
                       </div>
 
                       {/* List of added skills */}
                       {field.value.length > 0 ? (
-                        <div className="border rounded-md p-3">
-                          <ul className="space-y-2">
+                        <div className="neo-glass-card p-4 rounded-md">
+                          <ul className="space-y-3">
                             {field.value.map((skill, index) => (
                               <li key={index} className="flex items-center justify-between group">
                                 <div className="flex items-start">
-                                  <BookOpen className="h-4 w-4 mt-0.5 mr-2 text-muted-foreground flex-shrink-0" />
-                                  <span className="text-sm">{skill}</span>
+                                  <BookOpen className="h-4 w-4 mt-0.5 mr-2 text-white/70 flex-shrink-0" />
+                                  <span className="text-sm text-white">{skill}</span>
                                 </div>
-                                <Button
+                                <button
                                   type="button"
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                                  className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity rounded-full hover:bg-white/10 flex items-center justify-center"
                                   onClick={() => {
                                     const updatedSkills = field.value.filter((_, i) => i !== index);
                                     field.onChange(updatedSkills);
                                     setSkillsAcquired(updatedSkills);
                                   }}
                                 >
-                                  <Trash2 className="h-3.5 w-3.5 text-destructive" />
-                                </Button>
+                                  <Trash2 className="h-3.5 w-3.5 text-red-400" />
+                                </button>
                               </li>
                             ))}
                           </ul>
                         </div>
                       ) : (
-                        <div className="text-sm text-muted-foreground text-center py-3 border border-dashed rounded-md">
-                          No skills or achievements added yet
+                        <div className="neo-glass-card p-6 text-center">
+                          <BookOpen className="w-8 h-8 mx-auto mb-3 text-white/50" />
+                          <p className="text-sm text-white/70">No skills or achievements added yet</p>
+                          <p className="text-xs text-white/50 mt-1">Add your academic achievements and skills above</p>
                         </div>
                       )}
                     </div>
