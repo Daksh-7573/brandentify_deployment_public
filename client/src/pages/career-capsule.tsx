@@ -503,49 +503,48 @@ export default function CareerCapsulePage() {
           </form>
         </DialogContent>
       </Dialog>
-                <div className="space-y-6">
-                  {/* Goal Title */}
-                  <div className="space-y-2">
-                    <label className="text-white font-medium text-sm flex items-center gap-2">
-                      <Target className="h-4 w-4" />
-                      Goal Title
-                    </label>
-                    <input
-                      value={goalTitle}
-                      onChange={(e) => setGoalTitle(e.target.value)}
-                      placeholder="e.g. Become a Product Manager"
-                      className="neo-glass-input"
-                      required
-                    />
-                  </div>
 
-                  {/* Goal Type */}
-                  <div className="space-y-2">
-                    <label className="text-white font-medium text-sm flex items-center gap-2">
-                      <Briefcase className="h-4 w-4" />
-                      Goal Type
-                    </label>
-                    <div className="relative">
-                      <select
-                        value={goalType}
-                        onChange={(e) => setGoalType(e.target.value as GoalType)}
-                        className="neo-glass-input appearance-none cursor-pointer pr-10"
-                        required
-                      >
-                        <option value="position_change">Position Change</option>
-                        <option value="skill_acquisition">Skill Acquisition</option>
-                        <option value="promotion">Promotion</option>
-                        <option value="industry_switch">Industry Switch</option>
-                        <option value="entrepreneurship">Entrepreneurship</option>
-                        <option value="certification">Certification</option>
-                        <option value="education">Education</option>
-                        <option value="custom">Custom</option>
-                      </select>
-                      <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-white/70 pointer-events-none" />
+      {/* Goals Display Section */}
+      {goals.length > 0 && (
+        <NeoGlassSection title="Your Career Goals" className="mb-8">
+          <div className="grid gap-4">
+            {goals.map((goal: CareerGoal) => (
+              <div key={goal.id} className="neo-glass-card p-6">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <h3 className="text-white font-semibold text-lg mb-2">{goal.title}</h3>
+                    <p className="text-blue-200 text-sm mb-3">{getGoalTypeText(goal.goalType)}</p>
+                    {goal.description && (
+                      <p className="text-gray-300 text-sm mb-4">{goal.description}</p>
+                    )}
+                    <div className="flex items-center gap-4 text-sm text-gray-400">
+                      <span>Timeline: {goal.timeframe} years</span>
+                      {goal.targetDate && (
+                        <span>Target: {new Date(goal.targetDate).toLocaleDateString()}</span>
+                      )}
                     </div>
                   </div>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setGoalDetails(goal);
+                        setShowDetailsDialog(true);
+                      }}
+                    >
+                      View Details
+                    </Button>
+                  </div>
                 </div>
-              </TabsContent>
+              </div>
+            ))}
+          </div>
+        </NeoGlassSection>
+      )}
+    </PageLayout>
+  );
+}
 
               <TabsContent value="details" className="space-y-6 pt-6">
                 <div className="space-y-6">
