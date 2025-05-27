@@ -898,22 +898,25 @@ export default function Education() {
                   name="startDate"
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
-                      <FormLabel>Start Date*</FormLabel>
+                      <FormLabel className="text-white font-medium text-sm flex items-center gap-2">
+                        <CalendarIcon className="h-4 w-4" />
+                        Start Date
+                      </FormLabel>
                       <Popover>
                         <PopoverTrigger asChild>
                           <FormControl>
                             <Button
                               variant={"outline"}
                               className={cn(
-                                "w-full justify-start text-left font-normal",
-                                !field.value && "text-muted-foreground"
+                                "neo-glass-input w-full justify-start text-left font-normal h-12",
+                                !field.value && "text-white/50"
                               )}
                             >
                               <CalendarIcon className="mr-2 h-4 w-4" />
                               {field.value ? (
                                 formatDate(field.value)
                               ) : (
-                                "Select date"
+                                "Select start date"
                               )}
                             </Button>
                           </FormControl>
@@ -940,22 +943,25 @@ export default function Education() {
                     name="endDate"
                     render={({ field }) => (
                       <FormItem className="flex flex-col">
-                        <FormLabel>End Date*</FormLabel>
+                        <FormLabel className="text-white font-medium text-sm flex items-center gap-2">
+                          <CalendarIcon className="h-4 w-4" />
+                          End Date
+                        </FormLabel>
                         <Popover>
                           <PopoverTrigger asChild>
                             <FormControl>
                               <Button
                                 variant={"outline"}
                                 className={cn(
-                                  "w-full justify-start text-left font-normal",
-                                  !field.value && "text-muted-foreground"
+                                  "neo-glass-input w-full justify-start text-left font-normal h-12",
+                                  !field.value && "text-white/50"
                                 )}
                               >
                                 <CalendarIcon className="mr-2 h-4 w-4" />
                                 {field.value ? (
                                   formatDate(field.value)
                                 ) : (
-                                  "Select date"
+                                  "Select end date"
                                 )}
                               </Button>
                             </FormControl>
@@ -982,10 +988,13 @@ export default function Education() {
                 control={form.control}
                 name="currentlyEnrolled"
                 render={({ field }) => (
-                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
-                    <div className="space-y-0.5">
-                      <FormLabel>Currently Enrolled</FormLabel>
-                      <FormDescription>
+                  <FormItem className="flex flex-row items-center justify-between neo-glass-card p-4">
+                    <div className="space-y-1">
+                      <FormLabel className="text-white font-medium text-sm flex items-center gap-2">
+                        <GraduationCap className="h-4 w-4" />
+                        Currently Enrolled
+                      </FormLabel>
+                      <FormDescription className="text-white/70 text-xs">
                         Are you currently studying at this institution?
                       </FormDescription>
                     </div>
@@ -998,6 +1007,7 @@ export default function Education() {
                             form.setValue("endDate", undefined, { shouldValidate: true });
                           }
                         }}
+                        className="data-[state=checked]:bg-white/20 data-[state=unchecked]:bg-white/10"
                       />
                     </FormControl>
                   </FormItem>
