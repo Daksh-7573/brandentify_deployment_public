@@ -708,17 +708,23 @@ export default function Education() {
       
       {/* Education dialog for adding/editing */}
       <Dialog open={openDialog} onOpenChange={(open) => !open && setOpenDialog(false)}>
-        <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-hidden neo-glass-card bg-transparent">
           <DialogHeader>
-            <DialogTitle>
+            <DialogTitle className="text-white text-xl font-semibold">
               {editingEducation ? "Edit Academic Background" : "Add Academic Background"}
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-gray-300">
               {editingEducation 
                 ? "Update your academic background information below." 
                 : "Add your academic background information below."}
             </DialogDescription>
           </DialogHeader>
+          
+          <div className="max-h-[70vh] overflow-y-auto pr-2" style={{
+            scrollbarWidth: 'thin',
+            scrollbarColor: 'rgba(255,255,255,0.3) rgba(255,255,255,0.1)'
+          }}>
+            <div className="py-5">
           
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -728,9 +734,12 @@ export default function Education() {
                 name="institution"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Institution*</FormLabel>
+                    <FormLabel className="text-white font-medium text-sm flex items-center gap-2">
+                      <Building className="h-4 w-4" />
+                      Institution
+                    </FormLabel>
                     <FormControl>
-                      <Input placeholder="Harvard University" {...field} />
+                      <Input placeholder="Harvard University" {...field} className="neo-glass-input" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -743,7 +752,10 @@ export default function Education() {
                 name="degree"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Degree*</FormLabel>
+                    <FormLabel className="text-white font-medium text-sm flex items-center gap-2">
+                      <GraduationCap className="h-4 w-4" />
+                      Degree
+                    </FormLabel>
                     <FormControl>
                       <DegreeCombobox
                         value={field.value || ""}
@@ -751,9 +763,6 @@ export default function Education() {
                         placeholder="Type or select a degree"
                       />
                     </FormControl>
-                    <FormDescription>
-                      Type to filter suggestions (e.g., "bach" for Bachelor degrees)
-                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -765,7 +774,10 @@ export default function Education() {
                 name="industry"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Industry*</FormLabel>
+                    <FormLabel className="text-white font-medium text-sm flex items-center gap-2">
+                      <Briefcase className="h-4 w-4" />
+                      Industry
+                    </FormLabel>
                     <FormControl>
                       <Select
                         value={field.value}
@@ -774,7 +786,7 @@ export default function Education() {
                           setSelectedIndustry(value);
                         }}
                       >
-                        <SelectTrigger className="w-full">
+                        <SelectTrigger className="neo-glass-input">
                           <SelectValue placeholder="Select an industry" />
                         </SelectTrigger>
                         <SelectContent>
@@ -797,13 +809,13 @@ export default function Education() {
                 name="field"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Field of Study</FormLabel>
+                    <FormLabel className="text-white font-medium text-sm flex items-center gap-2">
+                      <BookOpen className="h-4 w-4" />
+                      Field of Study
+                    </FormLabel>
                     <FormControl>
-                      <Input placeholder="Computer Science" {...field} />
+                      <Input placeholder="Computer Science" {...field} className="neo-glass-input" />
                     </FormControl>
-                    <FormDescription>
-                      Your major, specialization, or concentration
-                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -815,13 +827,16 @@ export default function Education() {
                 name="location"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Location</FormLabel>
+                    <FormLabel className="text-white font-medium text-sm flex items-center gap-2">
+                      <MapPin className="h-4 w-4" />
+                      Location
+                    </FormLabel>
                     <FormControl>
                       <Select
                         value={field.value}
                         onValueChange={field.onChange}
                       >
-                        <SelectTrigger className="w-full">
+                        <SelectTrigger className="neo-glass-input">
                           <SelectValue placeholder="Select a location" />
                         </SelectTrigger>
                         <SelectContent>
@@ -845,7 +860,10 @@ export default function Education() {
                   name="domain"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Domain</FormLabel>
+                      <FormLabel className="text-white font-medium text-sm flex items-center gap-2">
+                        <Building className="h-4 w-4" />
+                        Domain
+                      </FormLabel>
                       <FormControl>
                         <Select
                           value={field.value}
@@ -854,7 +872,7 @@ export default function Education() {
                             setSelectedDomain(value);
                           }}
                         >
-                          <SelectTrigger className="w-full">
+                          <SelectTrigger className="neo-glass-input">
                             <SelectValue placeholder="Select a domain" />
                           </SelectTrigger>
                           <SelectContent>
@@ -866,9 +884,6 @@ export default function Education() {
                           </SelectContent>
                         </Select>
                       </FormControl>
-                      <FormDescription>
-                        The specific field within the selected industry
-                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
