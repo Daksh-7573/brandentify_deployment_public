@@ -8,10 +8,11 @@ import { toast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, CheckCircle, CheckCircle2, AlertTriangle } from "lucide-react";
+import { Loader2, CheckCircle, CheckCircle2, AlertTriangle, Target, Calendar, FileText, Briefcase, ChevronDown } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { queryClient } from "@/lib/queryClient";
 import { NeoGlassSection } from "@/components/layout/neo-glass-layout";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 // Utility function to format dates
 const formatDate = (dateString: string) => {
@@ -381,124 +382,211 @@ export default function CareerCapsulePage() {
         )}
       </div>
 
-      {/* Dialog for Create Goal */}
+      {/* NEW GLASS UI DIALOG FOR CREATE GOAL */}
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-        <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto neo-glass-card">
+        <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto neo-glass-card border border-blue-400/30 shadow-2xl backdrop-blur-xl">
           <DialogHeader>
-            <DialogTitle className="text-white">Create New Career Goal</DialogTitle>
-            <DialogDescription className="text-gray-300">
-              Set your career goals with a 1-5 year timeframe and get AI-generated milestones.
+            <DialogTitle className="text-white text-2xl font-bold">🎯 Create New Career Goal</DialogTitle>
+            <DialogDescription className="text-blue-200">
+              Define your career aspirations with our advanced glass UI interface and get AI-powered milestone recommendations.
             </DialogDescription>
           </DialogHeader>
-          <form className="flex flex-col py-4 space-y-4" onSubmit={handleSubmit}>
-            <div className="space-y-2">
-              <label htmlFor="goal-title" className="text-sm font-medium text-white">
-                Goal Title
-              </label>
-              <input
-                id="goal-title"
-                value={goalTitle}
-                onChange={(e) => setGoalTitle(e.target.value)}
-                placeholder="e.g. Become a Product Manager"
-                className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-10 px-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <label htmlFor="goal-type" className="text-sm font-medium text-white">
-                Goal Type
-              </label>
-              <div className="relative">
-                <select
-                  id="goal-type"
-                  value={goalType}
-                  onChange={(e) => setGoalType(e.target.value as GoalType)}
-                  className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 pr-10 rounded-md border appearance-none cursor-pointer focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+          
+          <form onSubmit={handleSubmit}>
+            <Tabs defaultValue="basics" className="w-full">
+              <TabsList className="grid w-full grid-cols-3 mb-6 bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg p-1">
+                <TabsTrigger 
+                  value="basics" 
+                  className="text-white/70 data-[state=active]:text-white data-[state=active]:bg-white/10 data-[state=active]:backdrop-blur-sm rounded-md transition-all duration-200 font-medium"
                 >
-                  <option value="position_change">Position Change</option>
-                  <option value="skill_acquisition">Skill Acquisition</option>
-                  <option value="promotion">Promotion</option>
-                  <option value="industry_switch">Industry Switch</option>
-                  <option value="entrepreneurship">Entrepreneurship</option>
-                  <option value="certification">Certification</option>
-                  <option value="education">Education</option>
-                  <option value="custom">Custom</option>
-                </select>
-                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                  <svg className="h-4 w-4 text-white/70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-                  </svg>
-                </div>
-              </div>
-            </div>
-            
-            <div className="space-y-2">
-              <label htmlFor="timeframe" className="text-sm font-medium text-white">
-                Timeframe (years)
-              </label>
-              <div className="relative">
-                <select
-                  id="timeframe"
-                  value={timeframe}
-                  onChange={(e) => setTimeframe(e.target.value)}
-                  className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 py-3 px-3 pr-10 rounded-md border appearance-none cursor-pointer focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+                  <Target className="h-4 w-4 mr-2" />
+                  Goal Basics
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="details" 
+                  className="text-white/70 data-[state=active]:text-white data-[state=active]:bg-white/10 data-[state=active]:backdrop-blur-sm rounded-md transition-all duration-200 font-medium"
                 >
-                  <option value="1">1 year</option>
-                  <option value="2">2 years</option>
-                  <option value="3">3 years</option>
-                  <option value="4">4 years</option>
-                  <option value="5">5 years</option>
-                </select>
-                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                  <svg className="h-4 w-4 text-white/70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-                  </svg>
+                  <FileText className="h-4 w-4 mr-2" />
+                  Details
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="timeline" 
+                  className="text-white/70 data-[state=active]:text-white data-[state=active]:bg-white/10 data-[state=active]:backdrop-blur-sm rounded-md transition-all duration-200 font-medium"
+                >
+                  <Calendar className="h-4 w-4 mr-2" />
+                  Timeline
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="basics" className="space-y-6 pt-6">
+                <div className="space-y-6">
+                  {/* Goal Title */}
+                  <div className="space-y-2">
+                    <label className="text-white font-medium text-sm flex items-center gap-2">
+                      <Target className="h-4 w-4" />
+                      Goal Title
+                    </label>
+                    <input
+                      value={goalTitle}
+                      onChange={(e) => setGoalTitle(e.target.value)}
+                      placeholder="e.g. Become a Product Manager"
+                      className="neo-glass-input"
+                      required
+                    />
+                  </div>
+
+                  {/* Goal Type */}
+                  <div className="space-y-2">
+                    <label className="text-white font-medium text-sm flex items-center gap-2">
+                      <Briefcase className="h-4 w-4" />
+                      Goal Type
+                    </label>
+                    <div className="relative">
+                      <select
+                        value={goalType}
+                        onChange={(e) => setGoalType(e.target.value as GoalType)}
+                        className="neo-glass-input appearance-none cursor-pointer pr-10"
+                        required
+                      >
+                        <option value="position_change">Position Change</option>
+                        <option value="skill_acquisition">Skill Acquisition</option>
+                        <option value="promotion">Promotion</option>
+                        <option value="industry_switch">Industry Switch</option>
+                        <option value="entrepreneurship">Entrepreneurship</option>
+                        <option value="certification">Certification</option>
+                        <option value="education">Education</option>
+                        <option value="custom">Custom</option>
+                      </select>
+                      <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-white/70 pointer-events-none" />
+                    </div>
+                  </div>
                 </div>
+              </TabsContent>
+
+              <TabsContent value="details" className="space-y-6 pt-6">
+                <div className="space-y-6">
+                  {/* Description */}
+                  <div className="space-y-2">
+                    <label className="text-white font-medium text-sm flex items-center gap-2">
+                      <FileText className="h-4 w-4" />
+                      Description
+                    </label>
+                    <textarea
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      placeholder="Describe your career goal in detail. What do you want to achieve? Why is this important to you? What specific outcomes are you looking for?"
+                      className="neo-glass-input resize-none h-32"
+                    />
+                  </div>
+
+                  {/* AI Note */}
+                  <div className="p-4 rounded-lg bg-blue-500/10 border border-blue-500/20 backdrop-blur-sm">
+                    <div className="flex items-start gap-3">
+                      <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <CheckCircle className="h-4 w-4 text-blue-400" />
+                      </div>
+                      <div>
+                        <h4 className="text-white font-medium text-sm mb-1">AI-Powered Milestones</h4>
+                        <p className="text-gray-300 text-sm">
+                          Musk AI will automatically generate personalized milestones for your goal based on your goal type, timeframe, and description. These milestones will be tailored to your specific career path and industry.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="timeline" className="space-y-6 pt-6">
+                <div className="space-y-6">
+                  {/* Timeframe */}
+                  <div className="space-y-2">
+                    <label className="text-white font-medium text-sm flex items-center gap-2">
+                      <Calendar className="h-4 w-4" />
+                      Timeframe
+                    </label>
+                    <div className="relative">
+                      <select
+                        value={timeframe}
+                        onChange={(e) => setTimeframe(e.target.value)}
+                        className="neo-glass-input appearance-none cursor-pointer pr-10"
+                        required
+                      >
+                        <option value="1">1 year</option>
+                        <option value="2">2 years</option>
+                        <option value="3">3 years</option>
+                        <option value="4">4 years</option>
+                        <option value="5">5 years</option>
+                      </select>
+                      <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-white/70 pointer-events-none" />
+                    </div>
+                  </div>
+
+                  {/* Target Date (Optional) */}
+                  <div className="space-y-2">
+                    <label className="text-white font-medium text-sm flex items-center gap-2">
+                      <Calendar className="h-4 w-4" />
+                      Target Date (Optional)
+                    </label>
+                    <input
+                      type="date"
+                      value={targetDate}
+                      onChange={(e) => setTargetDate(e.target.value)}
+                      className="neo-glass-input"
+                    />
+                    <p className="text-white/60 text-xs">
+                      Leave blank to automatically calculate based on timeframe
+                    </p>
+                  </div>
+
+                  {/* Timeline Visualization */}
+                  <div className="p-4 rounded-lg bg-white/5 border border-white/10 backdrop-blur-sm">
+                    <h4 className="text-white font-medium text-sm mb-3">Timeline Preview</h4>
+                    <div className="flex items-center gap-4">
+                      <div className="text-center">
+                        <div className="w-3 h-3 rounded-full bg-blue-500 mb-1"></div>
+                        <span className="text-xs text-white/70">Start</span>
+                      </div>
+                      <div className="flex-1 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500"></div>
+                      <div className="text-center">
+                        <div className="w-3 h-3 rounded-full bg-purple-500 mb-1"></div>
+                        <span className="text-xs text-white/70">{timeframe} Year{parseInt(timeframe) > 1 ? 's' : ''}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </TabsContent>
+            </Tabs>
+
+            <DialogFooter className="flex justify-between items-center pt-6 border-t border-white/10 mt-6">
+              <div className="text-sm text-white/60">
+                All fields will be saved and you can edit them later
               </div>
-            </div>
-            
-            <div className="space-y-2">
-              <label htmlFor="description" className="text-sm font-medium text-white">
-                Description
-              </label>
-              <textarea
-                id="description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Describe your career goal in detail..."
-                className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full min-h-[80px] px-3 py-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none resize-none"
-              />
-            </div>
-            
-            <div className="mt-2 p-3 rounded-md neo-glass-highlight">
-              <p className="text-sm text-white">
-                <span className="font-medium text-white">Note:</span> AI milestones will be automatically generated for your goal based on its type and timeframe.
-              </p>
-            </div>
-            
-            <DialogFooter className="flex space-x-2 justify-end pt-4">
-              <Button 
-                type="button" 
-                variant="outline" 
-                onClick={() => setShowCreateDialog(false)}
-                className="neo-glass-button flex items-center gap-2 py-2 px-4"
-              >
-                Cancel
-              </Button>
-              <Button 
-                type="submit" 
-                disabled={isSubmitting}
-                className="neo-glass-button flex items-center gap-2 py-2 px-4"
-              >
-                {isSubmitting ? (
-                  <>
-                    <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2"></div>
-                    <span>Creating...</span>
-                  </>
-                ) : (
-                  <span>Create Goal</span>
-                )}
-              </Button>
+              <div className="flex gap-3">
+                <button 
+                  type="button" 
+                  onClick={() => setShowCreateDialog(false)}
+                  className="neo-glass-button flex items-center gap-2 py-2 px-4"
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit" 
+                  disabled={isSubmitting}
+                  className="neo-glass-button flex items-center gap-2 py-2 px-4 bg-blue-600/20 border-blue-500/30 hover:bg-blue-600/30"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></div>
+                      <span>Creating...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Target className="h-4 w-4" />
+                      <span>Create Goal</span>
+                    </>
+                  )}
+                </button>
+              </div>
             </DialogFooter>
           </form>
         </DialogContent>
