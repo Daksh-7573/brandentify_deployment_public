@@ -1236,26 +1236,193 @@ export default function WorkExperience() {
                 </button>
               </div>
             </form>
+          </div>
+        </DialogContent>
+      </Dialog>
 
-              {/* Location Field */}
-              <div className="space-y-3 relative">
-                <label className="flex items-center text-white/90 text-sm font-medium">
-                  <MapPin className="w-4 h-4 mr-2 text-emerald-400" />
-                  Location
-                </label>
-                <div className="relative">
-                  <input
-                    id="location"
-                    name="location"
-                    placeholder="e.g. San Francisco, CA"
-                    value={formData.location}
-                    onChange={handleInputChange}
-                    disabled={createExperienceMutation.isPending}
-                    className="w-full px-4 py-3 rounded-xl text-white placeholder-white/50 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-emerald-400/50 bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/15 focus:bg-white/15"
-                  />
-                  
-                  {/* Location suggestions with glass styling */}
-                  {locationSuggestions.length > 0 && (
+      {/* Edit Experience Dialog */}
+      <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
+        <DialogContent className="md:max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Edit Career Path</DialogTitle>
+            <DialogDescription>
+              Update details about your professional experience
+            </DialogDescription>
+          </DialogHeader>
+
+          <form onSubmit={handleEditSubmit} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="edit-title">Job Title</Label>
+                <Input
+                  id="edit-title"
+                  name="title"
+                  value={editFormData.title}
+                  onChange={handleEditInputChange}
+                  className="mt-1"
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="edit-company">Company</Label>
+                <Input
+                  id="edit-company"
+                  name="company"
+                  value={editFormData.company}
+                  onChange={handleEditInputChange}
+                  className="mt-1"
+                  required
+                />
+              </div>
+            </div>
+
+            <div>
+              <Label htmlFor="edit-location">Location</Label>
+              <Select
+                value={editFormData.location}
+                onValueChange={(value) => setEditFormData(prev => ({ ...prev, location: value }))}
+              >
+                <SelectTrigger className="mt-1">
+                  <SelectValue placeholder="Select location" />
+                </SelectTrigger>
+                <SelectContent>
+                  {workExperienceLocations.map((location) => (
+                    <SelectItem key={location} value={location}>
+                      {location}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="edit-industry">Industry</Label>
+                <Select
+                  value={editFormData.industry}
+                  onValueChange={(value) => setEditFormData(prev => ({ ...prev, industry: value, domain: "" }))}
+                >
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder="Select industry" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {industryOptions.map((option) => (
+                      <SelectItem key={option.key} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="edit-domain">Domain</Label>
+                <Select
+                  value={editFormData.domain}
+                  onValueChange={(value) => setEditFormData(prev => ({ ...prev, domain: value }))}
+                  disabled={!editFormData.industry}
+                >
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder="Select domain" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {editFormData.industry && getDomainOptionsForIndustry(editFormData.industry).map((option) => (
+                      <SelectItem key={option.key} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="edit-startDate">Start Date</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" className="w-full mt-1 justify-start text-left font-normal">
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {editFormData.startDate ? formatDate(editFormData.startDate) : "Pick start date"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <Calendar
+                      mode="single"
+                      selected={editFormData.startDate}
+                      onSelect={(date) => setEditFormData(prev => ({ ...prev, startDate: date }))}
+                      disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+              <div>
+                <Label htmlFor="edit-endDate">End Date</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" className="w-full mt-1 justify-start text-left font-normal">
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {editFormData.endDate ? formatDate(editFormData.endDate) : "Pick end date (optional)"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <Calendar
+                      mode="single"
+                      selected={editFormData.endDate}
+                      onSelect={(date) => setEditFormData(prev => ({ ...prev, endDate: date }))}
+                      disabled={(date) => date > new Date() || (editFormData.startDate && date < editFormData.startDate)}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+            </div>
+
+            <div>
+              <Label htmlFor="edit-keyResponsibilities">Key Responsibilities</Label>
+              <Textarea
+                id="edit-keyResponsibilities"
+                name="keyResponsibilities"
+                value={editFormData.keyResponsibilities.join('\n')}
+                onChange={(e) => {
+                  const lines = e.target.value.split('\n').filter(line => line.trim() !== '');
+                  setEditFormData(prev => ({ ...prev, keyResponsibilities: lines }));
+                }}
+                placeholder="Enter key responsibilities (one per line)"
+                className="mt-1"
+                rows={4}
+              />
+            </div>
+
+            <div className="flex justify-end gap-2 pt-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowEditDialog(false)}
+              >
+                Cancel
+              </Button>
+              <Button 
+                type="submit" 
+                disabled={updateExperienceMutation.isPending}
+                className="min-w-[100px]"
+              >
+                {updateExperienceMutation.isPending ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                    Updating...
+                  </>
+                ) : (
+                  "Update Experience"
+                )}
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
                     <div className="absolute z-20 mt-2 w-full rounded-xl backdrop-blur-md bg-slate-900/90 border border-white/20 shadow-2xl max-h-60 overflow-auto">
                       <ul className="py-2">
                         {locationSuggestions.map((suggestion, index) => (
