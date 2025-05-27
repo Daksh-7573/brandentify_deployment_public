@@ -43,7 +43,8 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from '@/hooks/use-toast';
+import { useAuth } from '@/lib/auth';
 
 // Form validation schema
 import { z } from 'zod';
