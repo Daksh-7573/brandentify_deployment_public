@@ -1198,10 +1198,14 @@ export default function WorkExperience() {
                   )}>
                     <SelectValue placeholder="Select industry" className="text-white/60" />
                   </SelectTrigger>
-                  <SelectContent className="bg-black/90 backdrop-blur-md border-white/20">
+                  <SelectContent className="bg-black/95 backdrop-blur-md border-white/20 shadow-xl">
                     <SelectGroup>
                       {industryOptions.map(option => (
-                        <SelectItem key={option.key} value={option.value} className="text-white hover:bg-white/20">
+                        <SelectItem 
+                          key={option.key} 
+                          value={option.value} 
+                          className="text-white hover:bg-white/10 focus:bg-white/20 data-[highlighted]:bg-white/20 cursor-pointer"
+                        >
                           {option.label}
                         </SelectItem>
                       ))}
@@ -1232,10 +1236,14 @@ export default function WorkExperience() {
                   )}>
                     <SelectValue placeholder="Select domain" className="text-white/60" />
                   </SelectTrigger>
-                  <SelectContent className="bg-black/90 backdrop-blur-md border-white/20">
+                  <SelectContent className="bg-black/95 backdrop-blur-md border-white/20 shadow-xl">
                     <SelectGroup>
                       {formData.industry && getDomainOptionsForIndustry(formData.industry).map(option => (
-                        <SelectItem key={option.key} value={option.value} className="text-white hover:bg-white/20">
+                        <SelectItem 
+                          key={option.key} 
+                          value={option.value} 
+                          className="text-white hover:bg-white/10 focus:bg-white/20 data-[highlighted]:bg-white/20 cursor-pointer"
+                        >
                           {option.label}
                         </SelectItem>
                       ))}
