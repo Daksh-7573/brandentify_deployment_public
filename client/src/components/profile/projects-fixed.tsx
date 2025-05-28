@@ -637,7 +637,7 @@ const ProjectsFixed = () => {
                 </div>
                 
                 {/* Project Info Grid */}
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-2 gap-4">
                   <div>
                     <h4 className="text-white font-medium mb-1">Category</h4>
                     <p className="text-gray-300">{selectedProject.category || 'Not specified'}</p>
@@ -646,30 +646,25 @@ const ProjectsFixed = () => {
                     <h4 className="text-white font-medium mb-1">Industry</h4>
                     <p className="text-gray-300">{selectedProject.industry || 'Not specified'}</p>
                   </div>
-                  <div>
-                    <h4 className="text-white font-medium mb-1">Start Date</h4>
-                    <p className="text-gray-300">
-                      {selectedProject.startDate ? new Date(selectedProject.startDate).toLocaleDateString() : 'Not specified'}
-                    </p>
-                  </div>
                 </div>
                 
                 {/* Team Members */}
-                {(selectedProject as any).teamMembers && (selectedProject as any).teamMembers.length > 0 && (
+                {(selectedProject as any).collaborators && (selectedProject as any).collaborators.length > 0 && (
                   <div>
                     <h3 className="text-white font-semibold mb-3">Team Members</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      {(selectedProject as any).teamMembers.map((member: any, index: number) => (
+                      {(selectedProject as any).collaborators.map((member: any, index: number) => (
                         <div key={index} className="p-3 rounded-lg bg-white/5 border border-white/10">
-                          <p className="text-white font-medium">{member.role}</p>
-                          {member.linkedin && (
+                          <p className="text-white font-medium">{member.role || 'Team Member'}</p>
+                          <p className="text-white/80 text-sm">{member.name || 'Collaborator'}</p>
+                          {member.profileLink && (
                             <a 
-                              href={member.linkedin} 
+                              href={member.profileLink} 
                               target="_blank" 
                               rel="noopener noreferrer"
                               className="text-blue-400 hover:text-blue-300 transition-colors text-sm"
                             >
-                              LinkedIn Profile
+                              View Profile
                             </a>
                           )}
                         </div>
@@ -679,10 +674,20 @@ const ProjectsFixed = () => {
                 )}
 
                 {/* Client Information */}
-                {(selectedProject as any).clientInfo && (
+                {(selectedProject as any).endorsements && (selectedProject as any).endorsements.length > 0 && (
                   <div>
-                    <h3 className="text-white font-semibold mb-2">Client</h3>
-                    <p className="text-gray-300">{(selectedProject as any).clientInfo}</p>
+                    <h3 className="text-white font-semibold mb-3">Client Information</h3>
+                    {(selectedProject as any).endorsements.map((client: any, index: number) => (
+                      <div key={index} className="p-3 rounded-lg bg-white/5 border border-white/10 mb-3">
+                        <p className="text-white font-medium">{client.clientName}</p>
+                        {client.clientTitle && client.clientCompany && (
+                          <p className="text-white/80 text-sm">{client.clientTitle} at {client.clientCompany}</p>
+                        )}
+                        {client.message && (
+                          <p className="text-gray-300 text-sm mt-2">"{client.message}"</p>
+                        )}
+                      </div>
+                    ))}
                   </div>
                 )}
 
