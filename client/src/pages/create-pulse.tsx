@@ -695,12 +695,57 @@ export default function CreatePulsePage() {
                           className="w-full px-3 py-2 text-gray-900 bg-white border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-base"
                         >
                           <option value="">Select a category</option>
-                          <option value="certification">🏆 Certification</option>
-                          <option value="launch">🚀 Launch</option>
-                          <option value="award">🥇 Award</option>
-                          <option value="project">🔧 Project</option>
-                          <option value="announcement">📢 Announcement</option>
-                          <option value="highlight">⚡ Highlight (expires in 24h)</option>
+                          {/* Technology Industry Categories */}
+                          {(pulseIndustry === 'Technology' || pulseIndustry === '') && (
+                            <>
+                              <option value="launch">🚀 Launch</option>
+                              <option value="project">🔧 Project</option>
+                              <option value="certification">🏆 Certification</option>
+                              <option value="announcement">📢 Announcement</option>
+                              <option value="highlight">⚡ Highlight (expires in 24h)</option>
+                            </>
+                          )}
+                          {/* Healthcare Industry Categories */}
+                          {pulseIndustry === 'Healthcare' && (
+                            <>
+                              <option value="certification">🏆 Certification</option>
+                              <option value="award">🥇 Award</option>
+                              <option value="announcement">📢 Announcement</option>
+                              <option value="project">🔧 Project</option>
+                              <option value="highlight">⚡ Highlight (expires in 24h)</option>
+                            </>
+                          )}
+                          {/* Education Industry Categories */}
+                          {pulseIndustry === 'Education' && (
+                            <>
+                              <option value="certification">🏆 Certification</option>
+                              <option value="award">🥇 Award</option>
+                              <option value="project">🔧 Project</option>
+                              <option value="announcement">📢 Announcement</option>
+                              <option value="highlight">⚡ Highlight (expires in 24h)</option>
+                            </>
+                          )}
+                          {/* Finance Industry Categories */}
+                          {pulseIndustry === 'Finance' && (
+                            <>
+                              <option value="certification">🏆 Certification</option>
+                              <option value="launch">🚀 Launch</option>
+                              <option value="announcement">📢 Announcement</option>
+                              <option value="project">🔧 Project</option>
+                              <option value="highlight">⚡ Highlight (expires in 24h)</option>
+                            </>
+                          )}
+                          {/* Default for other industries */}
+                          {pulseIndustry && !['Technology', 'Healthcare', 'Education', 'Finance'].includes(pulseIndustry) && (
+                            <>
+                              <option value="certification">🏆 Certification</option>
+                              <option value="launch">🚀 Launch</option>
+                              <option value="award">🥇 Award</option>
+                              <option value="project">🔧 Project</option>
+                              <option value="announcement">📢 Announcement</option>
+                              <option value="highlight">⚡ Highlight (expires in 24h)</option>
+                            </>
+                          )}
                         </select>
                       </div>
                     </div>
