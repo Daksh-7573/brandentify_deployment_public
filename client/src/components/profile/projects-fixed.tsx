@@ -49,10 +49,15 @@ const ProjectsFixed = () => {
     
     try {
       // Fetch fresh team members and client information from database
+      console.log(`Making API calls to /api/projects/${project.id}/collaborators and /api/projects/${project.id}/endorsements`);
+      
       const [collaboratorsResponse, endorsementsResponse] = await Promise.all([
         fetch(`/api/projects/${project.id}/collaborators`),
         fetch(`/api/projects/${project.id}/endorsements`)
       ]);
+      
+      console.log('Collaborators response status:', collaboratorsResponse.status, collaboratorsResponse.statusText);
+      console.log('Endorsements response status:', endorsementsResponse.status, endorsementsResponse.statusText);
       
       const collaborators = collaboratorsResponse.ok ? await collaboratorsResponse.json() : [];
       const endorsements = endorsementsResponse.ok ? await endorsementsResponse.json() : [];
