@@ -76,46 +76,35 @@ const ProjectsFixed = () => {
           return [];
         }
         
-        // For each project, add sample team members and client information
-        const enrichedProjects = projectsData.map((project: any) => {
-          // Add sample team members and client information for demonstration
-          let collaborators = [];
-          let endorsements = [];
-          
-          // Add team members for specific projects to show the feature working
-          if (project.id === 37) {
-            collaborators = [
-              { name: 'Sarah Johnson', role: 'UI/UX Designer', profileLink: 'https://linkedin.com/in/sarah-johnson' },
-              { name: 'Mike Chen', role: 'Backend Developer', profileLink: 'https://linkedin.com/in/mike-chen' }
-            ];
-            endorsements = [
-              { 
-                clientName: 'Emily Davis', 
-                clientTitle: 'Product Manager', 
-                clientCompany: 'TechCorp Solutions',
-                message: 'Outstanding work on our web platform. The team delivered exceptional results on time.'
-              }
-            ];
-          } else if (project.id === 35) {
-            collaborators = [
-              { name: 'Alex Rodriguez', role: 'Frontend Developer', profileLink: 'https://linkedin.com/in/alex-rodriguez' }
-            ];
-            endorsements = [
-              { 
-                clientName: 'Robert Kim', 
-                clientTitle: 'CTO', 
-                clientCompany: 'InnovateLab',
-                message: 'Highly recommend this developer for complex projects. Great attention to detail.'
-              }
-            ];
-          }
-          
-          return {
-            ...project,
-            collaborators,
-            endorsements
-          };
-        });
+        // Fetch team members and client information for each project from the database
+        const enrichedProjects = await Promise.all(
+          projectsData.map(async (project: any) => {
+            try {
+              // Fetch collaborators for this project
+              const collaboratorsResponse = await fetch(`/api/projects/${project.id}/collaborators`);
+              const collaborators = collaboratorsResponse.ok ? await collaboratorsResponse.json() : [];
+              
+              // Fetch endorsements for this project
+              const endorsementsResponse = await fetch(`/api/projects/${project.id}/endorsements`);
+              const endorsements = endorsementsResponse.ok ? await endorsementsResponse.json() : [];
+              
+              console.log(`Project ${project.id} - Collaborators:`, collaborators, 'Endorsements:', endorsements);
+              
+              return {
+                ...project,
+                collaborators,
+                endorsements
+              };
+            } catch (error) {
+              console.error(`Error fetching project data for project ${project.id}:`, error);
+              return {
+                ...project,
+                collaborators: [],
+                endorsements: []
+              };
+            }
+          })
+        );
         
         console.log('Final enriched projects:', enrichedProjects);
         return enrichedProjects;
