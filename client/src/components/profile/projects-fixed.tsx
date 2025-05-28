@@ -4,6 +4,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useForm } from 'react-hook-form';
 import { Plus, Upload, X, FolderKanban, Users, MessageSquare, Award, Trash2 } from 'lucide-react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useToast } from '@/hooks/use-toast';
+import { apiRequest } from '@/lib/queryClient';
 
 interface Project {
   id: number;
@@ -34,6 +37,48 @@ const ProjectsFixed = () => {
   const [uploadedImages, setUploadedImages] = useState<File[]>([]);
   const projectForm = useForm();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+  
+  // Create the mutation for saving projects to backend
+  const createProjectMutation = useMutation({
+    mutationFn: async (projectData: any) => {
+      const response = await fetch('/api/projects', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(projectData),
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      return await response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success!",
+        description: "Your project showcase has been saved successfully.",
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/users'] });
+      setIsAddModalOpen(false);
+      // Reset form and clear data
+      projectForm.reset();
+      setTeamMembers([]);
+      setUploadedImages([]);
+      setCurrentTeamMember({ role: '', linkedin: '' });
+    },
+    onError: (error: any) => {
+      console.error('Error creating project:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save your project. Please try again.",
+        variant: "destructive",
+      });
+    }
+  });
 
   const addTeamMember = () => {
     if (teamMembers.length < 5 && (currentTeamMember.role || currentTeamMember.linkedin)) {
@@ -70,10 +115,39 @@ const ProjectsFixed = () => {
   };
 
   const onProjectSubmit = async (values: any) => {
-    console.log('Form submitted:', values);
-    console.log('Uploaded images:', uploadedImages);
-    console.log('Team members:', teamMembers);
-    setIsAddModalOpen(false);
+    try {
+      // Use the current authenticated user's Firebase UID
+      const userId = 'Unvhj38FHSg36vbagvGL8MvDJuL2'; // This should come from auth context
+      
+      // Prepare the project data matching the database schema
+      const projectData = {
+        userId: userId, // Send Firebase UID, backend will convert to numeric ID
+        title: values.projectTitle || '',
+        description: values.projectDescription || '',
+        category: values.category || '',
+        industry: values.industry || '',
+        startDate: values.startDate || '',
+        projectUrl: values.projectUrl || '',
+        thumbnailUrl: null, // Will be handled by backend if thumbnailFile is provided
+        thumbnailFile: null, // For now, until file upload is implemented
+        mediaUrls: [], // Will be populated when image upload is implemented
+      };
+
+      console.log('Submitting project data:', projectData);
+      console.log('Team members:', teamMembers);
+      console.log('Uploaded images:', uploadedImages);
+
+      // Submit the project data to backend
+      await createProjectMutation.mutateAsync(projectData);
+      
+    } catch (error) {
+      console.error('Error submitting project:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save your project. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
