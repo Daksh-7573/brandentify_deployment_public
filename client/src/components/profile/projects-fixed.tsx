@@ -6,7 +6,6 @@ import { useForm } from 'react-hook-form';
 import { Plus, Upload, X, FolderKanban, Users, MessageSquare, Award, Trash2 } from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
-import { apiRequest } from '@/lib/queryClient';
 
 interface Project {
   id: number;
@@ -63,6 +62,7 @@ const ProjectsFixed = () => {
         description: "Your project showcase has been saved successfully.",
       });
       queryClient.invalidateQueries({ queryKey: ['/api/users'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/projects'] });
       setIsAddModalOpen(false);
       // Reset form and clear data
       projectForm.reset();
