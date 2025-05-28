@@ -696,41 +696,41 @@ export default function CreatePulsePage() {
                           <SelectTrigger className="w-full">
                             <SelectValue placeholder="Select a category" />
                           </SelectTrigger>
-                          <SelectContent className="bg-white border border-gray-200 shadow-lg z-50">
-                            <SelectItem value="certification" className="text-gray-900 hover:bg-gray-100">
-                              <div className="flex items-center gap-2">
-                                <BadgeCheck className="h-4 w-4" />
-                                <span>Certification</span>
+                          <SelectContent className="bg-white border border-gray-300 shadow-xl z-[100] max-h-60 overflow-y-auto">
+                            <SelectItem value="certification" className="text-gray-900 hover:bg-blue-50 focus:bg-blue-100 cursor-pointer py-3 px-3">
+                              <div className="flex items-center gap-3">
+                                <BadgeCheck className="h-5 w-5 text-blue-600" />
+                                <span className="font-medium">Certification</span>
                               </div>
                             </SelectItem>
-                            <SelectItem value="launch" className="text-gray-900 hover:bg-gray-100">
-                              <div className="flex items-center gap-2">
-                                <Rocket className="h-4 w-4" />
-                                <span>Launch</span>
+                            <SelectItem value="launch" className="text-gray-900 hover:bg-green-50 focus:bg-green-100 cursor-pointer py-3 px-3">
+                              <div className="flex items-center gap-3">
+                                <Rocket className="h-5 w-5 text-green-600" />
+                                <span className="font-medium">Launch</span>
                               </div>
                             </SelectItem>
-                            <SelectItem value="award" className="text-gray-900 hover:bg-gray-100">
-                              <div className="flex items-center gap-2">
-                                <Award className="h-4 w-4" />
-                                <span>Award</span>
+                            <SelectItem value="award" className="text-gray-900 hover:bg-yellow-50 focus:bg-yellow-100 cursor-pointer py-3 px-3">
+                              <div className="flex items-center gap-3">
+                                <Award className="h-5 w-5 text-yellow-600" />
+                                <span className="font-medium">Award</span>
                               </div>
                             </SelectItem>
-                            <SelectItem value="project" className="text-gray-900 hover:bg-gray-100">
-                              <div className="flex items-center gap-2">
-                                <Wrench className="h-4 w-4" />
-                                <span>Project</span>
+                            <SelectItem value="project" className="text-gray-900 hover:bg-purple-50 focus:bg-purple-100 cursor-pointer py-3 px-3">
+                              <div className="flex items-center gap-3">
+                                <Wrench className="h-5 w-5 text-purple-600" />
+                                <span className="font-medium">Project</span>
                               </div>
                             </SelectItem>
-                            <SelectItem value="announcement" className="text-gray-900 hover:bg-gray-100">
-                              <div className="flex items-center gap-2">
-                                <Bell className="h-4 w-4" />
-                                <span>Announcement</span>
+                            <SelectItem value="announcement" className="text-gray-900 hover:bg-orange-50 focus:bg-orange-100 cursor-pointer py-3 px-3">
+                              <div className="flex items-center gap-3">
+                                <Bell className="h-5 w-5 text-orange-600" />
+                                <span className="font-medium">Announcement</span>
                               </div>
                             </SelectItem>
-                            <SelectItem value="highlight" className="text-gray-900 hover:bg-gray-100">
-                              <div className="flex items-center gap-2">
-                                <Zap className="h-4 w-4" />
-                                <span>Highlight (expires in 24h)</span>
+                            <SelectItem value="highlight" className="text-gray-900 hover:bg-red-50 focus:bg-red-100 cursor-pointer py-3 px-3">
+                              <div className="flex items-center gap-3">
+                                <Zap className="h-5 w-5 text-red-600" />
+                                <span className="font-medium">Highlight (expires in 24h)</span>
                               </div>
                             </SelectItem>
                           </SelectContent>
