@@ -31,7 +31,9 @@ const ProjectsFixed = () => {
   const [activeTab, setActiveTab] = useState('details');
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [currentTeamMember, setCurrentTeamMember] = useState({ role: '', linkedin: '' });
+  const [uploadedImages, setUploadedImages] = useState<File[]>([]);
   const projectForm = useForm();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const addTeamMember = () => {
     if (teamMembers.length < 5 && (currentTeamMember.role || currentTeamMember.linkedin)) {
@@ -44,8 +46,33 @@ const ProjectsFixed = () => {
     setTeamMembers(teamMembers.filter(member => member.id !== id));
   };
 
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files) {
+      const newImages = Array.from(files).filter(file => {
+        // Validate file type
+        if (!file.type.startsWith('image/')) return false;
+        // Validate file size (5MB max)
+        if (file.size > 5 * 1024 * 1024) return false;
+        return true;
+      });
+
+      // Limit to 10 images total
+      const totalImages = uploadedImages.length + newImages.length;
+      const imagesToAdd = totalImages > 10 ? newImages.slice(0, 10 - uploadedImages.length) : newImages;
+      
+      setUploadedImages(prev => [...prev, ...imagesToAdd]);
+    }
+  };
+
+  const removeImage = (index: number) => {
+    setUploadedImages(prev => prev.filter((_, i) => i !== index));
+  };
+
   const onProjectSubmit = async (values: any) => {
     console.log('Form submitted:', values);
+    console.log('Uploaded images:', uploadedImages);
+    console.log('Team members:', teamMembers);
     setIsAddModalOpen(false);
   };
 
@@ -180,53 +207,93 @@ const ProjectsFixed = () => {
                   <div className="space-y-6">
                     {/* Project Images Upload */}
                     <div className="space-y-4">
-                      <label className="text-white font-medium text-sm flex items-center gap-2">
-                        <Upload className="h-4 w-4" />
-                        Project Images (Up to 10)
-                      </label>
+                      <div className="flex items-center justify-between">
+                        <label className="text-white font-medium text-sm flex items-center gap-2">
+                          <Upload className="h-4 w-4" />
+                          Project Images
+                        </label>
+                        <span className="text-white/60 text-xs">
+                          {uploadedImages.length} / 10 images
+                        </span>
+                      </div>
                       
                       {/* Upload Area */}
-                      <div className="border-2 border-dashed border-white/30 rounded-lg p-6 bg-white/5 backdrop-blur-sm hover:border-white/50 transition-colors">
-                        <input
-                          type="file"
-                          accept="image/*"
-                          multiple
-                          className="hidden"
-                          id="images-upload"
-                        />
-                        <label htmlFor="images-upload" className="cursor-pointer block text-center">
-                          <Upload className="h-8 w-8 text-white/50 mx-auto mb-2" />
-                          <p className="text-white/70 text-sm">Click to upload images or drag & drop</p>
-                          <p className="text-white/50 text-xs mt-1">PNG, JPG up to 5MB each • Max 10 images</p>
-                        </label>
-                      </div>
-
-                      {/* Image Preview Grid */}
-                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                        {/* Placeholder for uploaded images */}
-                        <div className="aspect-square rounded-lg bg-white/5 backdrop-blur-sm border border-white/10 flex items-center justify-center group hover:bg-white/10 transition-colors">
-                          <div className="text-center">
-                            <Plus className="h-6 w-6 text-white/40 mx-auto mb-1" />
-                            <p className="text-white/40 text-xs">Add Image</p>
+                      {uploadedImages.length < 10 && (
+                        <div className="border-2 border-dashed border-white/30 rounded-lg p-6 bg-white/5 backdrop-blur-sm hover:border-white/50 transition-colors">
+                          <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="image/*"
+                            multiple
+                            className="hidden"
+                            onChange={handleImageUpload}
+                          />
+                          <div 
+                            onClick={() => fileInputRef.current?.click()}
+                            className="cursor-pointer block text-center"
+                          >
+                            <Upload className="h-8 w-8 text-white/50 mx-auto mb-2" />
+                            <p className="text-white/70 text-sm">Click to upload images or drag & drop</p>
+                            <p className="text-white/50 text-xs mt-1">PNG, JPG up to 5MB each • Max 10 images</p>
                           </div>
                         </div>
-                        
-                        {/* Example of how images will appear when uploaded */}
-                        {/* 
-                        <div className="aspect-square rounded-lg bg-white/5 backdrop-blur-sm border border-white/10 relative group overflow-hidden">
-                          <img src="image-url" alt="Project image" className="w-full h-full object-cover" />
-                          <button className="absolute top-2 right-2 p-1 bg-red-500/80 backdrop-blur-sm rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
-                            <X className="h-3 w-3 text-white" />
-                          </button>
+                      )}
+
+                      {/* Uploaded Images Grid */}
+                      {uploadedImages.length > 0 && (
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                          {uploadedImages.map((image, index) => (
+                            <div key={index} className="aspect-square rounded-lg bg-white/5 backdrop-blur-sm border border-white/10 relative group overflow-hidden">
+                              <img 
+                                src={URL.createObjectURL(image)} 
+                                alt={`Project image ${index + 1}`} 
+                                className="w-full h-full object-cover" 
+                              />
+                              <button 
+                                onClick={() => removeImage(index)}
+                                className="absolute top-2 right-2 p-1 bg-red-500/80 backdrop-blur-sm rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500"
+                              >
+                                <X className="h-3 w-3 text-white" />
+                              </button>
+                              {index === 0 && (
+                                <div className="absolute bottom-2 left-2 px-2 py-1 bg-blue-500/80 backdrop-blur-sm rounded-full text-xs text-white">
+                                  Thumbnail
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                          
+                          {/* Add More Images Button */}
+                          {uploadedImages.length < 10 && (
+                            <div 
+                              onClick={() => fileInputRef.current?.click()}
+                              className="aspect-square rounded-lg bg-white/5 backdrop-blur-sm border border-white/10 flex items-center justify-center group hover:bg-white/10 transition-colors cursor-pointer"
+                            >
+                              <div className="text-center">
+                                <Plus className="h-6 w-6 text-white/40 mx-auto mb-1" />
+                                <p className="text-white/40 text-xs">Add More</p>
+                              </div>
+                            </div>
+                          )}
                         </div>
-                        */}
+                      )}
+
+                      {/* Image Counter and Info */}
+                      <div className="flex justify-between items-center text-sm">
+                        <span className="text-white/60">
+                          {uploadedImages.length === 0 ? 'No images uploaded' : `${uploadedImages.length} image(s) uploaded`}
+                        </span>
+                        {uploadedImages.length > 0 && (
+                          <span className="text-white/40">First image will be used as thumbnail</span>
+                        )}
                       </div>
 
-                      {/* Image Counter */}
-                      <div className="flex justify-between items-center text-sm">
-                        <span className="text-white/60">0 / 10 images uploaded</span>
-                        <span className="text-white/40">First image will be used as thumbnail</span>
-                      </div>
+                      {/* Maximum Reached Message */}
+                      {uploadedImages.length >= 10 && (
+                        <div className="p-3 rounded-lg bg-white/5 backdrop-blur-sm border border-white/10 text-center">
+                          <p className="text-white/60 text-sm">Maximum of 10 images reached</p>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </TabsContent>
