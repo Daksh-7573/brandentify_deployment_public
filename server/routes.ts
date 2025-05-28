@@ -2633,17 +2633,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // POST /api/pulses - Create a new pulse
   apiRouter.post("/pulses", async (req: Request, res: Response) => {
     try {
-      console.log('[POST /pulses] Creating new pulse:', req.body);
+      console.log('[POST /pulses] Creating new pulse:', JSON.stringify(req.body, null, 2));
       
       // Parse and validate the pulse data
+      console.log('[POST /pulses] Starting validation...');
       const pulseData = insertPulseSchema.parse(req.body);
+      console.log('[POST /pulses] Validation successful:', JSON.stringify(pulseData, null, 2));
       
       // Create the new pulse
+      console.log('[POST /pulses] Creating pulse in storage...');
       const newPulse = await storage.createPulse(pulseData);
-      
       console.log(`[POST /pulses] Created new pulse with ID: ${newPulse.id}`);
       
       // Get the user data to return with the response
+      console.log('[POST /pulses] Fetching user data...');
       const user = await storage.getUser(newPulse.userId);
       const pulseWithUser = {
         ...newPulse,
@@ -2653,6 +2656,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         } : undefined
       };
       
+      console.log('[POST /pulses] Pulse creation completed successfully');
       return res.status(201).json(pulseWithUser);
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -2663,6 +2667,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       } else {
         console.error('[POST /pulses] Error creating pulse:', error);
+        console.error('[POST /pulses] Error stack:', error.stack);
         res.status(500).json({ message: 'Error creating pulse' });
       }
     }
