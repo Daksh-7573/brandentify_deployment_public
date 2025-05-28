@@ -2216,6 +2216,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid project ID format" });
       }
       
+      console.log(`[GET /projects/${projectId}/collaborators] Fetching collaborators for project ${projectId}`);
+      
+      // Import the database connection from the top of the file
+      const { Pool } = await import('pg');
+      const pool = new Pool({
+        connectionString: process.env.DATABASE_URL,
+      });
+      
       // Fetch collaborators directly from database
       const result = await pool.query(
         'SELECT * FROM project_collaborators WHERE project_id = $1 ORDER BY created_at DESC',
@@ -2236,10 +2244,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         createdAt: row.created_at
       }));
       
-      console.log(`Found ${collaborators.length} collaborators for project ${projectId}`);
+      console.log(`[GET /projects/${projectId}/collaborators] Found ${collaborators.length} collaborators`);
       res.json(collaborators);
     } catch (error) {
-      console.error("Error fetching project collaborators:", error);
+      console.error(`[GET /projects/${projectId}/collaborators] Error:`, error);
       res.status(500).json({ message: "Internal server error" });
     }
   });
@@ -2358,6 +2366,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid project ID format" });
       }
       
+      console.log(`[GET /projects/${projectId}/endorsements] Fetching endorsements for project ${projectId}`);
+      
+      // Import the database connection
+      const { Pool } = await import('pg');
+      const pool = new Pool({
+        connectionString: process.env.DATABASE_URL,
+      });
+      
       // Fetch endorsements directly from database
       const result = await pool.query(
         'SELECT * FROM project_endorsements WHERE project_id = $1 ORDER BY created_at DESC',
@@ -2379,10 +2395,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         createdAt: row.created_at
       }));
       
-      console.log(`Found ${endorsements.length} endorsements for project ${projectId}`);
+      console.log(`[GET /projects/${projectId}/endorsements] Found ${endorsements.length} endorsements`);
       res.json(endorsements);
     } catch (error) {
-      console.error("Error fetching project endorsements:", error);
+      console.error(`[GET /projects/${projectId}/endorsements] Error:`, error);
       res.status(500).json({ message: "Internal server error" });
     }
   });
