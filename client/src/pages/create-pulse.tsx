@@ -697,62 +697,16 @@ export default function CreatePulsePage() {
                         <select
                           value={pulseCategory}
                           onChange={(e) => setPulseCategory(e.target.value)}
-                          className="w-full px-3 py-3 text-gray-900 bg-white border-2 border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 text-base font-medium"
+                          className="w-full px-4 py-3 text-lg text-gray-900 bg-white border-2 border-gray-400 rounded-lg shadow-lg focus:border-blue-600 focus:ring-4 focus:ring-blue-200 font-semibold"
+                          style={{ minHeight: '50px', fontSize: '16px' }}
                         >
-                          <option value="" className="py-2">Select a category</option>
-                          
-                          {/* Show options based on selected industry */}
-                          {pulseIndustry === 'Technology' && (
-                            <>
-                              <option value="launch" className="py-2">🚀 Launch</option>
-                              <option value="project" className="py-2">🔧 Project</option>
-                              <option value="certification" className="py-2">🏆 Certification</option>
-                              <option value="announcement" className="py-2">📢 Announcement</option>
-                              <option value="highlight" className="py-2">⚡ Highlight (expires in 24h)</option>
-                            </>
-                          )}
-                          
-                          {pulseIndustry === 'Healthcare' && (
-                            <>
-                              <option value="certification" className="py-2">🏆 Certification</option>
-                              <option value="award" className="py-2">🥇 Award</option>
-                              <option value="announcement" className="py-2">📢 Announcement</option>
-                              <option value="project" className="py-2">🔧 Project</option>
-                              <option value="highlight" className="py-2">⚡ Highlight (expires in 24h)</option>
-                            </>
-                          )}
-                          
-                          {pulseIndustry === 'Education' && (
-                            <>
-                              <option value="certification" className="py-2">🏆 Certification</option>
-                              <option value="award" className="py-2">🥇 Award</option>
-                              <option value="project" className="py-2">🔧 Project</option>
-                              <option value="announcement" className="py-2">📢 Announcement</option>
-                              <option value="highlight" className="py-2">⚡ Highlight (expires in 24h)</option>
-                            </>
-                          )}
-                          
-                          {pulseIndustry === 'Finance' && (
-                            <>
-                              <option value="certification" className="py-2">🏆 Certification</option>
-                              <option value="launch" className="py-2">🚀 Launch</option>
-                              <option value="announcement" className="py-2">📢 Announcement</option>
-                              <option value="project" className="py-2">🔧 Project</option>
-                              <option value="highlight" className="py-2">⚡ Highlight (expires in 24h)</option>
-                            </>
-                          )}
-                          
-                          {/* Default options when no industry is selected or for other industries */}
-                          {(!pulseIndustry || !['Technology', 'Healthcare', 'Education', 'Finance'].includes(pulseIndustry)) && (
-                            <>
-                              <option value="certification" className="py-2">🏆 Certification</option>
-                              <option value="launch" className="py-2">🚀 Launch</option>
-                              <option value="award" className="py-2">🥇 Award</option>
-                              <option value="project" className="py-2">🔧 Project</option>
-                              <option value="announcement" className="py-2">📢 Announcement</option>
-                              <option value="highlight" className="py-2">⚡ Highlight (expires in 24h)</option>
-                            </>
-                          )}
+                          <option value="">Select a category</option>
+                          <option value="certification">🏆 Certification</option>
+                          <option value="launch">🚀 Launch</option>
+                          <option value="award">🥇 Award</option>
+                          <option value="project">🔧 Project</option>
+                          <option value="announcement">📢 Announcement</option>
+                          <option value="highlight">⚡ Highlight (expires in 24h)</option>
                         </select>
                       </div>
                     </div>
