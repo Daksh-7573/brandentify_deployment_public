@@ -104,6 +104,32 @@ const ProjectsFixed = () => {
     }
   });
 
+  const deleteProjectMutation = useMutation({
+    mutationFn: async (projectId: number) => {
+      const response = await fetch(`/api/projects/${projectId}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) throw new Error('Failed to delete project');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/users', userId, 'projects'] });
+      toast({
+        title: "Success!",
+        description: "Project deleted successfully.",
+      });
+      setSelectedProject(null);
+    },
+    onError: (error: any) => {
+      console.error('Error deleting project:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete project. Please try again.",
+        variant: "destructive",
+      });
+    }
+  });
+
   const addTeamMember = () => {
     if (teamMembers.length < 5 && (currentTeamMember.role || currentTeamMember.linkedin)) {
       setTeamMembers([...teamMembers, { ...currentTeamMember, id: Date.now() }]);
@@ -720,6 +746,17 @@ const ProjectsFixed = () => {
                       Visit Project
                     </a>
                   )}
+                  <button
+                    onClick={() => {
+                      if (confirm('Are you sure you want to delete this project? This action cannot be undone.')) {
+                        deleteProjectMutation.mutate(selectedProject.id);
+                      }
+                    }}
+                    className="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 font-medium rounded-md border border-red-500/30 transition-all flex items-center gap-2"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    Delete
+                  </button>
                   <button
                     onClick={() => setIsViewModalOpen(false)}
                     className="px-4 py-2 bg-white/10 text-white font-medium rounded-md hover:bg-white/20 transition-all"
