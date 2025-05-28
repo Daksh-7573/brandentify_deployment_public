@@ -4267,6 +4267,203 @@ export class MemStorage implements IStorage {
       return false;
     }
   }
+
+  // Service operations for DatabaseStorage
+  async getServicesByUserId(userId: number): Promise<Service[]> {
+    try {
+      console.log(`[db.getServicesByUserId] Looking for services with userId: ${userId}`);
+      
+      const result = await executeQuery(`
+        SELECT 
+          id, user_id as "userId", title, description, category,
+          price_inr as "priceInr", price_usd as "priceUsd", is_hourly as "isHourly",
+          features, image_url as "imageUrl", "order", is_active as "isActive",
+          created_at as "createdAt", updated_at as "updatedAt"
+        FROM services 
+        WHERE user_id = $1 
+        ORDER BY "order" ASC, created_at DESC
+      `, [userId]);
+      
+      console.log(`[db.getServicesByUserId] Found ${result.rows.length} services for user ${userId}`);
+      return result.rows;
+    } catch (error) {
+      console.error(`[db.getServicesByUserId] Error fetching services for user ${userId}:`, error);
+      return [];
+    }
+  }
+
+  async getServiceById(id: number): Promise<Service | undefined> {
+    try {
+      console.log(`[db.getServiceById] Looking up service with ID: ${id}`);
+      
+      const result = await executeQuery(`
+        SELECT 
+          id, user_id as "userId", title, description, category,
+          price_inr as "priceInr", price_usd as "priceUsd", is_hourly as "isHourly",
+          features, image_url as "imageUrl", "order", is_active as "isActive",
+          created_at as "createdAt", updated_at as "updatedAt"
+        FROM services 
+        WHERE id = $1
+      `, [id]);
+      
+      if (result.rows.length === 0) {
+        console.log(`[db.getServiceById] No service found with ID ${id}`);
+        return undefined;
+      }
+      
+      console.log(`[db.getServiceById] Found service with ID ${id}`);
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.getServiceById] Error fetching service with ID ${id}:`, error);
+      return undefined;
+    }
+  }
+
+  async createService(serviceData: InsertService): Promise<Service> {
+    try {
+      console.log(`[db.createService] Creating service for user ${serviceData.userId}`);
+      console.log(`[db.createService] Service data:`, JSON.stringify(serviceData, null, 2));
+      
+      const result = await executeQuery(`
+        INSERT INTO services (
+          user_id, title, description, category, price_inr, price_usd,
+          is_hourly, features, image_url, "order", is_active
+        ) VALUES (
+          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11
+        ) RETURNING 
+          id, user_id as "userId", title, description, category,
+          price_inr as "priceInr", price_usd as "priceUsd", is_hourly as "isHourly",
+          features, image_url as "imageUrl", "order", is_active as "isActive",
+          created_at as "createdAt", updated_at as "updatedAt"
+      `, [
+        serviceData.userId,
+        serviceData.title,
+        serviceData.description || null,
+        serviceData.category || "other",
+        serviceData.priceInr || null,
+        serviceData.priceUsd || null,
+        serviceData.isHourly || false,
+        JSON.stringify(serviceData.features || []),
+        serviceData.imageUrl || null,
+        serviceData.order || 0,
+        serviceData.isActive !== undefined ? serviceData.isActive : true
+      ]);
+      
+      console.log(`[db.createService] Created service with ID ${result.rows[0].id}`);
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.createService] Error creating service:`, error);
+      throw error;
+    }
+  }
+
+  async updateService(id: number, serviceData: Partial<Service>): Promise<Service | undefined> {
+    try {
+      console.log(`[db.updateService] Updating service with ID ${id}`);
+      
+      // Build the SET clause dynamically based on provided fields
+      let setClause = "";
+      const params: any[] = [];
+      let paramIndex = 1;
+      
+      if (serviceData.title !== undefined) {
+        setClause += `${setClause ? ", " : ""}title = $${paramIndex++}`;
+        params.push(serviceData.title);
+      }
+      
+      if (serviceData.description !== undefined) {
+        setClause += `${setClause ? ", " : ""}description = $${paramIndex++}`;
+        params.push(serviceData.description);
+      }
+      
+      if (serviceData.category !== undefined) {
+        setClause += `${setClause ? ", " : ""}category = $${paramIndex++}`;
+        params.push(serviceData.category);
+      }
+      
+      if (serviceData.priceInr !== undefined) {
+        setClause += `${setClause ? ", " : ""}price_inr = $${paramIndex++}`;
+        params.push(serviceData.priceInr);
+      }
+      
+      if (serviceData.priceUsd !== undefined) {
+        setClause += `${setClause ? ", " : ""}price_usd = $${paramIndex++}`;
+        params.push(serviceData.priceUsd);
+      }
+      
+      if (serviceData.isHourly !== undefined) {
+        setClause += `${setClause ? ", " : ""}is_hourly = $${paramIndex++}`;
+        params.push(serviceData.isHourly);
+      }
+      
+      if (serviceData.features !== undefined) {
+        setClause += `${setClause ? ", " : ""}features = $${paramIndex++}`;
+        params.push(JSON.stringify(serviceData.features));
+      }
+      
+      if (serviceData.imageUrl !== undefined) {
+        setClause += `${setClause ? ", " : ""}image_url = $${paramIndex++}`;
+        params.push(serviceData.imageUrl);
+      }
+      
+      if (serviceData.order !== undefined) {
+        setClause += `${setClause ? ", " : ""}"order" = $${paramIndex++}`;
+        params.push(serviceData.order);
+      }
+      
+      if (serviceData.isActive !== undefined) {
+        setClause += `${setClause ? ", " : ""}is_active = $${paramIndex++}`;
+        params.push(serviceData.isActive);
+      }
+      
+      // Always update the updated_at timestamp
+      setClause += `${setClause ? ", " : ""}updated_at = $${paramIndex++}`;
+      params.push(new Date());
+      
+      // Add the ID as the last parameter
+      params.push(id);
+      
+      const result = await executeQuery(`
+        UPDATE services
+        SET ${setClause}
+        WHERE id = $${paramIndex}
+        RETURNING 
+          id, user_id as "userId", title, description, category,
+          price_inr as "priceInr", price_usd as "priceUsd", is_hourly as "isHourly",
+          features, image_url as "imageUrl", "order", is_active as "isActive",
+          created_at as "createdAt", updated_at as "updatedAt"
+      `, params);
+      
+      if (result.rows.length === 0) {
+        console.log(`[db.updateService] No service found with ID ${id}`);
+        return undefined;
+      }
+      
+      console.log(`[db.updateService] Updated service with ID ${id}`);
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.updateService] Error updating service:`, error);
+      return undefined;
+    }
+  }
+
+  async deleteService(id: number): Promise<boolean> {
+    try {
+      console.log(`[db.deleteService] Deleting service with ID ${id}`);
+      
+      const result = await executeQuery(
+        `DELETE FROM services WHERE id = $1 RETURNING id`,
+        [id]
+      );
+      
+      const success = result.rowCount > 0;
+      console.log(`[db.deleteService] Service deletion ${success ? 'successful' : 'failed'} for ID ${id}`);
+      return success;
+    } catch (error) {
+      console.error(`[db.deleteService] Error deleting service with ID ${id}:`, error);
+      return false;
+    }
+  }
   
   // Goal Milestone operations
   async getGoalMilestonesByGoalId(goalId: number): Promise<GoalMilestone[]> {
