@@ -789,10 +789,10 @@ const ProjectsFixed = () => {
                   </div>
                 </div>
                 
-                {/* Team Members */}
-                {(selectedProject as any).collaborators && (selectedProject as any).collaborators.length > 0 && (
-                  <div>
-                    <h3 className="text-white font-semibold mb-3">Team Members</h3>
+                {/* Team Members - Show placeholder if no data yet */}
+                <div>
+                  <h3 className="text-white font-semibold mb-3">Team Members</h3>
+                  {(selectedProject as any).collaborators && (selectedProject as any).collaborators.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       {(selectedProject as any).collaborators.map((member: any, index: number) => (
                         <div key={index} className="p-3 rounded-lg bg-white/5 border border-white/10">
@@ -811,26 +811,36 @@ const ProjectsFixed = () => {
                         </div>
                       ))}
                     </div>
-                  </div>
-                )}
+                  ) : (
+                    <div className="p-4 rounded-lg bg-white/5 border border-white/10 border-dashed">
+                      <p className="text-white/60 text-sm text-center">No team members added yet</p>
+                    </div>
+                  )}
+                </div>
 
-                {/* Client Information */}
-                {(selectedProject as any).endorsements && (selectedProject as any).endorsements.length > 0 && (
-                  <div>
-                    <h3 className="text-white font-semibold mb-3">Client Information</h3>
-                    {(selectedProject as any).endorsements.map((client: any, index: number) => (
-                      <div key={index} className="p-3 rounded-lg bg-white/5 border border-white/10 mb-3">
-                        <p className="text-white font-medium">{client.clientName}</p>
-                        {client.clientTitle && client.clientCompany && (
-                          <p className="text-white/80 text-sm">{client.clientTitle} at {client.clientCompany}</p>
-                        )}
-                        {client.message && (
-                          <p className="text-gray-300 text-sm mt-2">"{client.message}"</p>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
+                {/* Client Information - Show placeholder if no data yet */}
+                <div>
+                  <h3 className="text-white font-semibold mb-3">Client Information</h3>
+                  {(selectedProject as any).endorsements && (selectedProject as any).endorsements.length > 0 ? (
+                    <div>
+                      {(selectedProject as any).endorsements.map((client: any, index: number) => (
+                        <div key={index} className="p-3 rounded-lg bg-white/5 border border-white/10 mb-3">
+                          <p className="text-white font-medium">{client.clientName}</p>
+                          {client.clientTitle && client.clientCompany && (
+                            <p className="text-white/80 text-sm">{client.clientTitle} at {client.clientCompany}</p>
+                          )}
+                          {client.message && (
+                            <p className="text-gray-300 text-sm mt-2">"{client.message}"</p>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="p-4 rounded-lg bg-white/5 border border-white/10 border-dashed">
+                      <p className="text-white/60 text-sm text-center">No client information added yet</p>
+                    </div>
+                  )}
+                </div>
 
                 {/* Media Gallery */}
                 {selectedProject.mediaUrls && selectedProject.mediaUrls.length > 0 && (
