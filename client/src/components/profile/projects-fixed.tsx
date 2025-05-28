@@ -58,7 +58,31 @@ const ProjectsFixed = () => {
       if (!response.ok) {
         throw new Error('Failed to fetch projects');
       }
-      return response.json();
+      const projectsData = await response.json();
+      
+      // For each project, fetch its collaborators and endorsements
+      const enrichedProjects = await Promise.all(projectsData.map(async (project: any) => {
+        try {
+          // Fetch collaborators
+          const collaboratorsResponse = await fetch(`/api/projects/${project.id}/collaborators`);
+          const collaborators = collaboratorsResponse.ok ? await collaboratorsResponse.json() : [];
+          
+          // Fetch endorsements (client information)
+          const endorsementsResponse = await fetch(`/api/projects/${project.id}/endorsements`);
+          const endorsements = endorsementsResponse.ok ? await endorsementsResponse.json() : [];
+          
+          return {
+            ...project,
+            collaborators,
+            endorsements
+          };
+        } catch (error) {
+          console.error(`Error fetching related data for project ${project.id}:`, error);
+          return project;
+        }
+      }));
+      
+      return enrichedProjects;
     }
   });
   
@@ -192,8 +216,7 @@ const ProjectsFixed = () => {
         projectUrl: values.projectUrl || '',
         thumbnailUrl: uploadedImages.length > 0 ? uploadedImages[0] : null, // Use first image as thumbnail
         mediaUrls: uploadedImages, // Include all uploaded images
-        teamMembers: teamMembers, // Include team members data
-        clientInfo: values.clientCompany || '', // Include client information
+        // Team members and client info will be saved separately to their respective tables
       };
 
       console.log('Submitting project data:', projectData);
@@ -201,7 +224,55 @@ const ProjectsFixed = () => {
       console.log('Uploaded images:', uploadedImages);
 
       // Submit the project data to backend
-      await createProjectMutation.mutateAsync(projectData);
+      const createdProject = await createProjectMutation.mutateAsync(projectData);
+      
+      // If project was created successfully and we have team members or client info, save them separately
+      if (createdProject && createdProject.id) {
+        const projectId = createdProject.id;
+        
+        // Save team members to project_collaborators table
+        if (teamMembers.length > 0) {
+          for (const member of teamMembers) {
+            try {
+              await fetch('/api/project-collaborators', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  projectId: projectId,
+                  role: member.role || 'Team Member',
+                  name: member.role || 'Collaborator', // Use role as name since there's no name field
+                  profileLink: member.linkedin || '#', // Use linkedin as profile link
+                }),
+              });
+            } catch (error) {
+              console.error('Error saving team member:', error);
+            }
+          }
+        }
+        
+        // Save client information to project_endorsements table
+        if (values.clientCompany) {
+          try {
+            await fetch('/api/project-endorsements', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                projectId: projectId,
+                clientName: values.clientName || 'Client',
+                clientTitle: values.clientTitle || '',
+                clientCompany: values.clientCompany,
+                message: values.clientMessage || '',
+              }),
+            });
+          } catch (error) {
+            console.error('Error saving client information:', error);
+          }
+        }
+      }
       
     } catch (error) {
       console.error('Error submitting project:', error);
