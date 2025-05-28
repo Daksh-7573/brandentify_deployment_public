@@ -250,7 +250,12 @@ const ProjectsFixed = () => {
                                 className="w-full h-full object-cover" 
                               />
                               <button 
-                                onClick={() => removeImage(index)}
+                                type="button"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  removeImage(index);
+                                }}
                                 className="absolute top-2 right-2 p-1 bg-red-500/80 backdrop-blur-sm rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500"
                               >
                                 <X className="h-3 w-3 text-white" />
