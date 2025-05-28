@@ -2256,6 +2256,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log(`[GET /projects/${projectId}/collaborators] Found ${collaborators.length} collaborators`);
       res.json(collaborators);
     } catch (error) {
+      const projectId = req.params.projectId;
       console.error(`[GET /projects/${projectId}/collaborators] Error:`, error);
       res.status(500).json({ message: "Internal server error" });
     }
