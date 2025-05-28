@@ -352,7 +352,7 @@ export const UnifiedProfileView: FC<UnifiedProfileViewProps> = ({ userId: propUs
                     <Card key={service.id}>
                       <CardContent className="p-6">
                         <h4 className="font-medium text-lg">{service.title}</h4>
-                        <Badge className="mt-1">{service.category}</Badge>
+
                         <p className="text-sm mt-3">{service.description}</p>
                         
                         {service.features && service.features.length > 0 && (

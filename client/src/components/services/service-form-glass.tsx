@@ -92,7 +92,6 @@ export default function ServiceFormGlass({
       description: description.trim() || undefined,
       isHourly,
       isActive,
-      category: "other",
       ...priceData,
       ...(serviceData ? { id: serviceData.id, userId: serviceData.userId } : {})
     };
