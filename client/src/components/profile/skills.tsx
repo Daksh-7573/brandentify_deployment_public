@@ -266,37 +266,37 @@ export default function Skills() {
               {skills.map((skill) => (
                 <div 
                   key={skill.id} 
-                  className="p-4 rounded-lg border border-gray-800 bg-black/40 transition-all hover:translate-y-[-3px]"
+                  className="neo-glass-card p-4 transition-all hover:translate-y-[-3px] hover:shadow-lg"
                 >
                   <div className="flex justify-between items-start">
                     <h3 className="font-medium text-base line-clamp-2 flex-1 text-white">{skill.name}</h3>
                     <div className="flex items-center space-x-1 ml-2">
                       <button 
                         onClick={() => handleEditSkill(skill)} 
-                        className="text-gray-300 hover:text-white focus:outline-none rounded-full p-1 hover:bg-gray-800/50"
+                        className="text-white/60 hover:text-white focus:outline-none rounded-full p-1 hover:bg-white/10 backdrop-blur-sm transition-all duration-200"
                       >
                         <Pencil className="h-3.5 w-3.5" />
                       </button>
                       <button 
                         onClick={() => handleDeleteSkill(skill.id)} 
-                        className="text-red-400 hover:text-red-300 focus:outline-none rounded-full p-1 hover:bg-red-900/20"
+                        className="text-red-300/70 hover:text-red-200 focus:outline-none rounded-full p-1 hover:bg-red-500/20 backdrop-blur-sm transition-all duration-200"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
                       </button>
                     </div>
                   </div>
                   <div className="mt-2">
-                    <span className="inline-block text-xs text-gray-300 px-2 py-0.5 rounded-full bg-gray-800/50 mb-2">
+                    <span className="inline-block text-xs text-white/80 px-2 py-0.5 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 mb-2">
                       {skill.level || 'No level set'}
                     </span>
                     <div className="mt-2">
                       <div className="flex items-center justify-between text-xs mb-1">
-                        <span className="text-gray-300">Proficiency Percentage</span>
-                        <span className="text-gray-300">{skill.proficiency}%</span>
+                        <span className="text-white/70">Proficiency</span>
+                        <span className="text-white/90 font-medium">{skill.proficiency}%</span>
                       </div>
-                      <div className="w-full bg-gray-800/80 rounded-full h-1.5">
+                      <div className="w-full bg-white/10 backdrop-blur-sm rounded-full h-1.5 border border-white/20">
                         <div 
-                          className={`${getColor(skill.proficiency)} h-1.5 rounded-full`} 
+                          className="bg-gradient-to-r from-white/60 to-white/80 h-1.5 rounded-full transition-all duration-300" 
                           style={{ width: `${skill.proficiency}%` }}
                         ></div>
                       </div>
