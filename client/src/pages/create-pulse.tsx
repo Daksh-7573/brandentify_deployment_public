@@ -38,6 +38,11 @@ export default function CreatePulsePage() {
   const videoInputRef = useRef<HTMLInputElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
 
+  // Reset category when industry changes
+  useEffect(() => {
+    setPulseCategory("");
+  }, [pulseIndustry]);
+
   // Create a mutation for submitting the pulse
   const createPulseMutation = useMutation({
     mutationFn: async (pulseData: InsertPulse) => {
