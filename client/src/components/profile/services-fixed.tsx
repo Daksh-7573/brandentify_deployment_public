@@ -296,10 +296,9 @@ export default function Services() {
   };
   
   return (
-    <>
-      {/* Removed redundant General Professional Offering section as requested */}
+    <div className="relative z-10">
       {/* What I Offer Section */}
-      <NeoGlassSection className="mb-6">
+      <NeoGlassSection className="mb-6 relative z-20">
         <div className="flex justify-between items-center mb-4">
           <div>
             <h2 className="text-xl font-semibold text-white">What I Offer</h2>
@@ -487,6 +486,6 @@ export default function Services() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </>
+    </div>
   );
 }
