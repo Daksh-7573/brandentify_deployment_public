@@ -1855,6 +1855,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       console.log(`[POST /projects] Processing with userId: ${req.body.userId}`);
       
+      // Check if user already has 6 projects (maximum limit)
+      const existingProjects = await storage.getProjectsByUserId(req.body.userId);
+      if (existingProjects.length >= 6) {
+        console.log(`[POST /projects] User ${req.body.userId} already has ${existingProjects.length} projects. Maximum is 6.`);
+        return res.status(400).json({ 
+          message: "Maximum of 6 projects allowed per user. Please delete an existing project before adding a new one." 
+        });
+      }
+      
       // Handle thumbnailFile if provided and create thumbnailUrl
       if (req.body.thumbnailFile && !req.body.thumbnailUrl) {
         const thumbnailUrl = getFileUrl(req.body.thumbnailFile);
