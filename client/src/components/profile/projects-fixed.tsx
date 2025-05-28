@@ -30,6 +30,8 @@ interface TeamMember {
 
 const ProjectsFixed = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [activeTab, setActiveTab] = useState('details');
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [currentTeamMember, setCurrentTeamMember] = useState({ role: '', linkedin: '' });
@@ -38,6 +40,12 @@ const ProjectsFixed = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const queryClient = useQueryClient();
   const { toast } = useToast();
+
+  // Handle viewing project details
+  const handleViewProject = (project: Project) => {
+    setSelectedProject(project);
+    setIsViewModalOpen(true);
+  };
 
   // Fetch projects from the backend
   const userId = 'Unvhj38FHSg36vbagvGL8MvDJuL2'; // This should come from auth context
@@ -198,49 +206,63 @@ const ProjectsFixed = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {projects.map((project: Project) => (
-            <div key={project.id} className="neo-glass-card p-6 rounded-lg border border-white/10 hover:border-white/20 transition-all">
-              <div className="flex items-start justify-between mb-4">
-                <h3 className="text-white font-semibold text-lg">{project.title || 'Untitled Project'}</h3>
-                <div className="flex gap-2">
-                  <button className="text-gray-400 hover:text-white transition-colors">
-                    <Award className="h-4 w-4" />
-                  </button>
-                </div>
+            <div key={project.id} className="neo-glass-card rounded-lg border border-white/10 hover:border-white/20 transition-all overflow-hidden cursor-pointer" onClick={() => handleViewProject(project)}>
+              {/* Project Thumbnail */}
+              <div className="relative h-48 bg-gradient-to-br from-gray-800/50 to-gray-900/50 overflow-hidden">
+                {project.thumbnailUrl ? (
+                  <img 
+                    src={project.thumbnailUrl} 
+                    alt={project.title || 'Project thumbnail'}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <FolderKanban className="h-16 w-16 text-gray-400/50" />
+                  </div>
+                )}
+                <div className="absolute inset-0 bg-black/20"></div>
               </div>
               
-              <p className="text-gray-300 text-sm mb-4 line-clamp-3">
-                {project.description || 'No description available'}
-              </p>
-              
-              <div className="space-y-2 mb-4">
-                {project.category && (
-                  <div className="flex items-center gap-2">
+              {/* Project Content */}
+              <div className="p-6">
+                <div className="flex items-start justify-between mb-4">
+                  <h3 className="text-white font-semibold text-lg">{project.title || 'Untitled Project'}</h3>
+                  <div className="flex gap-2">
+                    <button className="text-gray-400 hover:text-white transition-colors">
+                      <Award className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
+                
+                <p className="text-gray-300 text-sm mb-4 line-clamp-3">
+                  {project.description || 'No description available'}
+                </p>
+                
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {project.category && (
                     <span className="text-xs px-2 py-1 rounded-full bg-white/10 text-white">
                       {project.category}
                     </span>
-                  </div>
-                )}
-                {project.industry && (
-                  <div className="flex items-center gap-2">
+                  )}
+                  {project.industry && (
                     <span className="text-xs px-2 py-1 rounded-full bg-blue-500/20 text-blue-300">
                       {project.industry}
                     </span>
-                  </div>
-                )}
-              </div>
-              
-              <div className="flex items-center justify-between text-xs text-gray-400">
-                <span>{project.startDate ? new Date(project.startDate).toLocaleDateString() : 'No date'}</span>
-                {project.projectUrl && (
-                  <a 
-                    href={project.projectUrl} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-blue-400 hover:text-blue-300 transition-colors"
+                  )}
+                </div>
+                
+                <div className="flex items-center justify-between text-xs text-gray-400">
+                  <span>{project.startDate ? new Date(project.startDate).toLocaleDateString() : 'No date'}</span>
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleViewProject(project);
+                    }}
+                    className="text-blue-400 hover:text-blue-300 transition-colors font-medium"
                   >
-                    View Project
-                  </a>
-                )}
+                    View Details
+                  </button>
+                </div>
               </div>
             </div>
           ))}
@@ -564,6 +586,116 @@ const ProjectsFixed = () => {
               </div>
             </form>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* View Project Details Modal */}
+      <Dialog open={isViewModalOpen} onOpenChange={setIsViewModalOpen}>
+        <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-hidden neo-glass-card bg-transparent">
+          <DialogHeader>
+            <DialogTitle className="text-white text-xl font-semibold">
+              {selectedProject?.title || 'Project Details'}
+            </DialogTitle>
+          </DialogHeader>
+          
+          {selectedProject && (
+            <div className="max-h-[70vh] overflow-y-auto pr-2" style={{
+              scrollbarWidth: 'thin',
+              scrollbarColor: 'rgba(255,255,255,0.3) rgba(255,255,255,0.1)'
+            }}>
+              {/* Project Thumbnail */}
+              {selectedProject.thumbnailUrl && (
+                <div className="mb-6">
+                  <img 
+                    src={selectedProject.thumbnailUrl} 
+                    alt={selectedProject.title || 'Project thumbnail'}
+                    className="w-full h-64 object-cover rounded-lg"
+                  />
+                </div>
+              )}
+              
+              {/* Project Details */}
+              <div className="space-y-6">
+                {/* Description */}
+                <div>
+                  <h3 className="text-white font-semibold mb-2">Description</h3>
+                  <p className="text-gray-300 leading-relaxed">
+                    {selectedProject.description || 'No description available'}
+                  </p>
+                </div>
+                
+                {/* Project Info Grid */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <h4 className="text-white font-medium mb-1">Category</h4>
+                    <p className="text-gray-300">{selectedProject.category || 'Not specified'}</p>
+                  </div>
+                  <div>
+                    <h4 className="text-white font-medium mb-1">Industry</h4>
+                    <p className="text-gray-300">{selectedProject.industry || 'Not specified'}</p>
+                  </div>
+                  <div>
+                    <h4 className="text-white font-medium mb-1">Start Date</h4>
+                    <p className="text-gray-300">
+                      {selectedProject.startDate ? new Date(selectedProject.startDate).toLocaleDateString() : 'Not specified'}
+                    </p>
+                  </div>
+                  <div>
+                    <h4 className="text-white font-medium mb-1">Project URL</h4>
+                    {selectedProject.projectUrl ? (
+                      <a 
+                        href={selectedProject.projectUrl} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-blue-400 hover:text-blue-300 transition-colors break-all"
+                      >
+                        {selectedProject.projectUrl}
+                      </a>
+                    ) : (
+                      <p className="text-gray-300">Not specified</p>
+                    )}
+                  </div>
+                </div>
+                
+                {/* Media Gallery */}
+                {selectedProject.mediaUrls && selectedProject.mediaUrls.length > 0 && (
+                  <div>
+                    <h3 className="text-white font-semibold mb-3">Project Gallery</h3>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                      {(Array.isArray(selectedProject.mediaUrls) ? selectedProject.mediaUrls : []).map((url, index) => (
+                        <img 
+                          key={index}
+                          src={url} 
+                          alt={`Project media ${index + 1}`}
+                          className="w-full h-24 object-cover rounded-lg"
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                {/* Project Actions */}
+                <div className="flex gap-3 pt-4 border-t border-white/10">
+                  {selectedProject.projectUrl && (
+                    <a 
+                      href={selectedProject.projectUrl} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="px-4 py-2 neo-glass-button text-white font-medium rounded-md shadow-lg transition-all hover:shadow-xl"
+                    >
+                      Visit Project
+                    </a>
+                  )}
+                  <button
+                    onClick={() => setIsViewModalOpen(false)}
+                    className="px-4 py-2 bg-white/10 text-white font-medium rounded-md hover:bg-white/20 transition-all"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </div>
