@@ -297,40 +297,7 @@ export default function Services() {
   
   return (
     <>
-      {/* General Professional Offering Section */}
-      <NeoGlassSection className="mb-6">
-        <div className="flex justify-between items-center mb-4">
-          <div>
-            <h2 className="text-xl font-semibold text-white">General Professional Offering</h2>
-            <p className="text-sm text-gray-300">Overall description of your professional expertise</p>
-          </div>
-          <button
-            className="neo-glass-button flex items-center gap-1 py-1.5 px-3 whitespace-nowrap"
-            disabled={isPendingCreate || isPendingUpdate}
-            onClick={() => setEditWhatIOfferDialogOpen(true)}
-          >
-            <MessageSquareQuote className="h-3.5 w-3.5" />
-            <span>Edit Description</span>
-          </button>
-        </div>
-        
-        <div>
-          {whatIOffer ? (
-            <div className="neo-glass-card p-4 rounded-lg transition-all">
-              <Quote className="h-5 w-5 text-gray-400 mb-2" />
-              <p className="text-sm text-gray-300 whitespace-pre-line">{whatIOffer}</p>
-            </div>
-          ) : (
-            <div className="py-6 text-center">
-              <AlertCircle className="mx-auto h-10 w-10 text-gray-400/50" />
-              <p className="mt-2 text-gray-400">
-                Add a general description of your professional services.
-              </p>
-            </div>
-          )}
-        </div>
-      </NeoGlassSection>
-      
+      {/* Removed redundant General Professional Offering section as requested */}
       {/* What I Offer Section */}
       <NeoGlassSection className="mb-6">
         <div className="flex justify-between items-center mb-4">
