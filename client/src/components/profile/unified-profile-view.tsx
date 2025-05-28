@@ -161,7 +161,10 @@ export const UnifiedProfileView: FC<UnifiedProfileViewProps> = ({ userId: propUs
                   <p className="text-sm text-muted-foreground">{profileData.lookingFor || 'Not specified'}</p>
                 </div>
                 
-
+                <div>
+                  <h4 className="font-medium mb-2">What I Offer</h4>
+                  <p className="text-sm text-muted-foreground">{profileData.whatIOffer || 'Not specified'}</p>
+                </div>
               </div>
             </div>
           </TabsContent>
