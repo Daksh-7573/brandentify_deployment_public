@@ -270,25 +270,14 @@ const ProjectsFixed = () => {
                       </label>
                       
                       {/* Client Link */}
-                      <div className="space-y-4 p-4 rounded-lg bg-white/5 backdrop-blur-sm border border-white/10">
-                        <div className="space-y-2">
-                          <label className="text-white/80 text-sm">Client Profile Link</label>
-                          <input
-                            placeholder="https://brandentifier.replit.app/profile/username"
-                            className="neo-glass-input"
-                          />
-                          <p className="text-xs text-white/60">Add Brandentifier profile link of your client</p>
-                        </div>
+                      <div className="space-y-2">
+                        <label className="text-white/80 text-sm">Client Profile Link</label>
+                        <input
+                          placeholder="https://brandentifier.replit.app/profile/username"
+                          className="neo-glass-input"
+                        />
+                        <p className="text-xs text-white/60">Add Brandentifier profile link of your client</p>
                       </div>
-
-                      {/* Add Client Button */}
-                      <button
-                        type="button"
-                        className="w-full p-3 border-2 border-dashed border-white/30 rounded-lg bg-white/5 backdrop-blur-sm hover:border-white/50 hover:bg-white/10 transition-all text-white/70 text-sm flex items-center justify-center gap-2"
-                      >
-                        <Plus className="h-4 w-4" />
-                        Add Client
-                      </button>
                     </div>
 
                   </div>
