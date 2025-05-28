@@ -2521,8 +2521,10 @@ export class MemStorage implements IStorage {
       id,
       userId: insertPulse.userId,
       type: insertPulse.type,
+      category: insertPulse.category ?? null,
       title: insertPulse.title,
       content: insertPulse.content ?? null,
+      industry: insertPulse.industry ?? null,
       mediaType: insertPulse.mediaType ?? null,
       mediaUrls: insertPulse.mediaUrls ?? [],
       mediaLocalStorageKeys: insertPulse.mediaLocalStorageKeys ?? [],
@@ -2534,6 +2536,7 @@ export class MemStorage implements IStorage {
       shareCount: 0,
       comments: 0,
       isPublished: insertPulse.isPublished ?? true,
+      expiresAt: insertPulse.expiresAt ?? null,
       createdAt,
       updatedAt: createdAt
     };
