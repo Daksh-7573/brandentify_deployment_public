@@ -4441,6 +4441,65 @@ ${extractedText.substring(0, 5000)}
   });
 
   // Service routes
+  apiRouter.post("/profile-services", async (req: Request, res: Response) => {
+    try {
+      console.log(`[POST /profile-services] Received data:`, JSON.stringify(req.body, null, 2));
+      
+      // Check if we have a Firebase UID instead of numeric userId
+      if (typeof req.body.userId === 'string' && req.body.userId.length > 20) {
+        console.log(`[POST /profile-services] Received Firebase UID as userId: ${req.body.userId}`);
+        
+        // Look up the numeric userId for this Firebase UID
+        const user = await storage.getUserByUsername(req.body.userId);
+        
+        if (user) {
+          console.log(`[POST /profile-services] Found matching user with ID: ${user.id}`);
+          // Replace the Firebase UID with the numeric userId
+          req.body.userId = user.id;
+        } else {
+          console.log(`[POST /profile-services] No matching user found for Firebase UID: ${req.body.userId}`);
+          return res.status(404).json({ message: "User not found" });
+        }
+      }
+      
+      // Ensure userId is a number
+      if (typeof req.body.userId === 'string') {
+        req.body.userId = parseInt(req.body.userId, 10);
+        if (isNaN(req.body.userId)) {
+          console.error('[POST /profile-services] userId could not be parsed to a number');
+          return res.status(400).json({ message: "Invalid user ID format" });
+        }
+      }
+
+      console.log(`[POST /profile-services] Creating service for userId: ${req.body.userId}`);
+      
+      try {
+        const newService = await storage.createService(req.body);
+        console.log(`[POST /profile-services] Created service with ID: ${newService.id}`);
+        
+        return res.status(201).json({
+          service: newService,
+          success: true,
+          message: "Service created successfully"
+        });
+      } catch (createError) {
+        console.error('[POST /profile-services] Error creating service in database:', createError);
+        return res.status(500).json({
+          message: "Error creating service in database",
+          error: createError.message,
+          success: false
+        });
+      }
+    } catch (error) {
+      console.error("Error in profile-services endpoint:", error);
+      return res.status(500).json({ 
+        message: "Internal server error",
+        error: error.message,
+        success: false
+      });
+    }
+  });
+
   apiRouter.get("/users/:userId/services", async (req: Request, res: Response) => {
     try {
       const userIdParam = req.params.userId;
