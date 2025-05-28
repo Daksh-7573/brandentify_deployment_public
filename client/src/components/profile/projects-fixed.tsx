@@ -353,7 +353,7 @@ const ProjectsFixed = () => {
           </h2>
           <p className="text-sm text-gray-300">Highlight your best work and project achievements</p>
         </div>
-        {projectsData && projectsData.length >= 6 ? (
+        {projects && projects.length >= 6 ? (
           <div className="p-3 text-center border border-amber-500/30 rounded-lg bg-amber-500/10 backdrop-blur-sm shadow-neo">
             <p className="text-amber-400 font-medium text-sm">Maximum of 6 projects reached</p>
             <p className="text-gray-300 mt-1 text-xs">
