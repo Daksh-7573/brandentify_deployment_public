@@ -35,7 +35,7 @@ const ProjectsFixed = () => {
   const [activeTab, setActiveTab] = useState('details');
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [currentTeamMember, setCurrentTeamMember] = useState({ role: '', linkedin: '' });
-  const [uploadedImages, setUploadedImages] = useState<File[]>([]);
+  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const projectForm = useForm();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const queryClient = useQueryClient();
@@ -128,7 +128,15 @@ const ProjectsFixed = () => {
       const totalImages = uploadedImages.length + newImages.length;
       const imagesToAdd = totalImages > 10 ? newImages.slice(0, 10 - uploadedImages.length) : newImages;
       
-      setUploadedImages(prev => [...prev, ...imagesToAdd]);
+      // Convert files to data URLs for immediate display
+      imagesToAdd.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const dataUrl = e.target?.result as string;
+          setUploadedImages(prev => [...prev, dataUrl]);
+        };
+        reader.readAsDataURL(file);
+      });
     }
   };
 
@@ -150,9 +158,11 @@ const ProjectsFixed = () => {
         industry: values.industry || '',
         startDate: values.startDate || '',
         projectUrl: values.projectUrl || '',
-        thumbnailUrl: null, // Will be handled by backend if thumbnailFile is provided
+        thumbnailUrl: uploadedImages.length > 0 ? uploadedImages[0] : null, // Use first image as thumbnail
         thumbnailFile: null, // For now, until file upload is implemented
-        mediaUrls: [], // Will be populated when image upload is implemented
+        mediaUrls: uploadedImages, // Include all uploaded images
+        teamMembers: teamMembers, // Include team members data
+        clientInfo: values.clientCompany || '', // Include client information
       };
 
       console.log('Submitting project data:', projectData);
@@ -411,7 +421,7 @@ const ProjectsFixed = () => {
                           {uploadedImages.map((image, index) => (
                             <div key={index} className="aspect-square rounded-lg bg-white/5 backdrop-blur-sm border border-white/10 relative group overflow-hidden">
                               <img 
-                                src={URL.createObjectURL(image)} 
+                                src={image} 
                                 alt={`Project image ${index + 1}`} 
                                 className="w-full h-full object-cover" 
                               />
@@ -657,6 +667,38 @@ const ProjectsFixed = () => {
                   </div>
                 </div>
                 
+                {/* Team Members */}
+                {teamMembers && teamMembers.length > 0 && (
+                  <div>
+                    <h3 className="text-white font-semibold mb-3">Team Members</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {teamMembers.map((member, index) => (
+                        <div key={index} className="p-3 rounded-lg bg-white/5 border border-white/10">
+                          <p className="text-white font-medium">{member.role}</p>
+                          {member.linkedin && (
+                            <a 
+                              href={member.linkedin} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="text-blue-400 hover:text-blue-300 transition-colors text-sm"
+                            >
+                              LinkedIn Profile
+                            </a>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Client Information */}
+                {selectedProject.clientInfo && (
+                  <div>
+                    <h3 className="text-white font-semibold mb-2">Client</h3>
+                    <p className="text-gray-300">{selectedProject.clientInfo}</p>
+                  </div>
+                )}
+
                 {/* Media Gallery */}
                 {selectedProject.mediaUrls && selectedProject.mediaUrls.length > 0 && (
                   <div>
