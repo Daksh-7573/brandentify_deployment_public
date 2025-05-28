@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useForm } from 'react-hook-form';
-import { Plus, Upload, X, FolderKanban, Users, MessageSquare, Award } from 'lucide-react';
+import { Plus, Upload, X, FolderKanban, Users, MessageSquare, Award, Trash2 } from 'lucide-react';
 
 interface Project {
   id: number;
@@ -20,10 +20,29 @@ interface Project {
   updatedAt?: string | null;
 }
 
+interface TeamMember {
+  id: number;
+  role: string;
+  linkedin: string;
+}
+
 const ProjectsFixed = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('details');
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
+  const [currentTeamMember, setCurrentTeamMember] = useState({ role: '', linkedin: '' });
   const projectForm = useForm();
+
+  const addTeamMember = () => {
+    if (teamMembers.length < 5 && (currentTeamMember.role || currentTeamMember.linkedin)) {
+      setTeamMembers([...teamMembers, { ...currentTeamMember, id: Date.now() }]);
+      setCurrentTeamMember({ role: '', linkedin: '' });
+    }
+  };
+
+  const removeTeamMember = (id: number) => {
+    setTeamMembers(teamMembers.filter(member => member.id !== id));
+  };
 
   const onProjectSubmit = async (values: any) => {
     console.log('Form submitted:', values);
@@ -216,46 +235,79 @@ const ProjectsFixed = () => {
                   <div className="space-y-6">
                     {/* Team Members */}
                     <div className="space-y-4">
-                      <label className="text-white font-medium text-sm flex items-center gap-2">
-                        <Users className="h-4 w-4" />
-                        Team Members
-                      </label>
-                      
-                      {/* Team Member 1 */}
-                      <div className="space-y-3 p-4 rounded-lg bg-white/5 backdrop-blur-sm border border-white/10">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div className="space-y-2">
-                            <label className="text-white/80 text-sm">Name</label>
-                            <input
-                              placeholder="Team member name"
-                              className="neo-glass-input"
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <label className="text-white/80 text-sm">Role</label>
-                            <input
-                              placeholder="e.g., Designer, Developer"
-                              className="neo-glass-input"
-                            />
-                          </div>
-                        </div>
-                        <div className="space-y-2">
-                          <label className="text-white/80 text-sm">LinkedIn/Portfolio</label>
-                          <input
-                            placeholder="https://linkedin.com/in/username"
-                            className="neo-glass-input"
-                          />
-                        </div>
+                      <div className="flex items-center justify-between">
+                        <label className="text-white font-medium text-sm flex items-center gap-2">
+                          <Users className="h-4 w-4" />
+                          Team Members
+                        </label>
+                        <span className="text-white/60 text-xs">
+                          {teamMembers.length} / 5 members
+                        </span>
                       </div>
+                      
+                      {/* Added Team Members List */}
+                      {teamMembers.map((member) => (
+                        <div key={member.id} className="space-y-3 p-4 rounded-lg bg-white/10 backdrop-blur-sm border border-white/20">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1 space-y-2">
+                              <div className="text-white/90 font-medium">{member.role || 'Team Member'}</div>
+                              {member.linkedin && (
+                                <div className="text-white/70 text-sm break-all">{member.linkedin}</div>
+                              )}
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => removeTeamMember(member.id)}
+                              className="p-1 text-red-400 hover:text-red-300 hover:bg-red-500/20 rounded-full transition-colors"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
 
-                      {/* Add Team Member Button */}
-                      <button
-                        type="button"
-                        className="w-full p-3 border-2 border-dashed border-white/30 rounded-lg bg-white/5 backdrop-blur-sm hover:border-white/50 hover:bg-white/10 transition-all text-white/70 text-sm flex items-center justify-center gap-2"
-                      >
-                        <Plus className="h-4 w-4" />
-                        Add Team Member
-                      </button>
+                      {/* Add New Team Member Form */}
+                      {teamMembers.length < 5 && (
+                        <div className="space-y-4 p-4 rounded-lg bg-white/5 backdrop-blur-sm border border-white/10">
+                          <div className="space-y-4">
+                            <div className="space-y-2">
+                              <label className="text-white/80 text-sm">Role</label>
+                              <input
+                                value={currentTeamMember.role}
+                                onChange={(e) => setCurrentTeamMember({...currentTeamMember, role: e.target.value})}
+                                placeholder="e.g., Designer, Developer, Manager"
+                                className="neo-glass-input"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <label className="text-white/80 text-sm">LinkedIn/Portfolio</label>
+                              <input
+                                value={currentTeamMember.linkedin}
+                                onChange={(e) => setCurrentTeamMember({...currentTeamMember, linkedin: e.target.value})}
+                                placeholder="https://linkedin.com/in/username"
+                                className="neo-glass-input"
+                              />
+                            </div>
+                          </div>
+                          
+                          <button
+                            type="button"
+                            onClick={addTeamMember}
+                            disabled={!currentTeamMember.role && !currentTeamMember.linkedin}
+                            className="w-full p-3 neo-glass-button disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm flex items-center justify-center gap-2"
+                          >
+                            <Plus className="h-4 w-4" />
+                            Add Team Member
+                          </button>
+                        </div>
+                      )}
+
+                      {/* Maximum Reached Message */}
+                      {teamMembers.length >= 5 && (
+                        <div className="p-3 rounded-lg bg-white/5 backdrop-blur-sm border border-white/10 text-center">
+                          <p className="text-white/60 text-sm">Maximum of 5 team members reached</p>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </TabsContent>
