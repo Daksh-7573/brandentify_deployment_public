@@ -54,35 +54,76 @@ const ProjectsFixed = () => {
   const { data: projects = [], isLoading: isProjectsLoading } = useQuery({
     queryKey: ['/api/users', userId, 'projects'],
     queryFn: async () => {
-      const response = await fetch(`/api/users/${userId}/projects`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch projects');
-      }
-      const projectsData = await response.json();
-      
-      // For each project, fetch its collaborators and endorsements
-      const enrichedProjects = await Promise.all(projectsData.map(async (project: any) => {
-        try {
-          // Fetch collaborators
-          const collaboratorsResponse = await fetch(`/api/projects/${project.id}/collaborators`);
-          const collaborators = collaboratorsResponse.ok ? await collaboratorsResponse.json() : [];
-          
-          // Fetch endorsements (client information)
-          const endorsementsResponse = await fetch(`/api/projects/${project.id}/endorsements`);
-          const endorsements = endorsementsResponse.ok ? await endorsementsResponse.json() : [];
-          
-          return {
-            ...project,
-            collaborators,
-            endorsements
-          };
-        } catch (error) {
-          console.error(`Error fetching related data for project ${project.id}:`, error);
-          return project;
+      try {
+        const response = await fetch(`/api/users/${userId}/projects`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch projects');
         }
-      }));
-      
-      return enrichedProjects;
+        
+        let projectsData;
+        try {
+          projectsData = await response.json();
+        } catch (parseError) {
+          console.error('Error parsing projects response:', parseError);
+          return [];
+        }
+        
+        if (!Array.isArray(projectsData)) {
+          console.error('Projects data is not an array:', projectsData);
+          return [];
+        }
+        
+        // For each project, fetch its collaborators and endorsements
+        const enrichedProjects = await Promise.all(projectsData.map(async (project: any) => {
+          try {
+            console.log(`Fetching data for project ${project.id}`);
+            
+            // Fetch collaborators
+            let collaborators = [];
+            try {
+              const collaboratorsResponse = await fetch(`/api/projects/${project.id}/collaborators`);
+              if (collaboratorsResponse.ok) {
+                collaborators = await collaboratorsResponse.json();
+                console.log(`Found ${collaborators.length} collaborators for project ${project.id}`);
+              }
+            } catch (error) {
+              console.error(`Error fetching collaborators for project ${project.id}:`, error);
+            }
+            
+            // Fetch endorsements (client information)
+            let endorsements = [];
+            try {
+              const endorsementsResponse = await fetch(`/api/projects/${project.id}/endorsements`);
+              if (endorsementsResponse.ok) {
+                endorsements = await endorsementsResponse.json();
+                console.log(`Found ${endorsements.length} endorsements for project ${project.id}`);
+              }
+            } catch (error) {
+              console.error(`Error fetching endorsements for project ${project.id}:`, error);
+            }
+            
+            const enrichedProject = {
+              ...project,
+              collaborators,
+              endorsements
+            };
+            
+            console.log(`Enriched project ${project.id}:`, enrichedProject);
+            return enrichedProject;
+            
+          } catch (error) {
+            console.error(`Error fetching related data for project ${project.id}:`, error);
+            return project;
+          }
+        }));
+        
+        console.log('Final enriched projects:', enrichedProjects);
+        return enrichedProjects;
+        
+      } catch (error) {
+        console.error('Error in projects query:', error);
+        return [];
+      }
     }
   });
   
