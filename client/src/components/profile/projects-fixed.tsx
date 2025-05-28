@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useForm } from 'react-hook-form';
 import { Plus, Upload, X, FolderKanban, Users, MessageSquare, Award, Trash2 } from 'lucide-react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
 
 interface Project {
@@ -38,6 +38,19 @@ const ProjectsFixed = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const queryClient = useQueryClient();
   const { toast } = useToast();
+
+  // Fetch projects from the backend
+  const userId = 'Unvhj38FHSg36vbagvGL8MvDJuL2'; // This should come from auth context
+  const { data: projects = [], isLoading: isProjectsLoading } = useQuery({
+    queryKey: ['/api/users', userId, 'projects'],
+    queryFn: async () => {
+      const response = await fetch(`/api/users/${userId}/projects`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch projects');
+      }
+      return response.json();
+    }
+  });
   
   // Create the mutation for saving projects to backend
   const createProjectMutation = useMutation({
@@ -63,6 +76,7 @@ const ProjectsFixed = () => {
       });
       queryClient.invalidateQueries({ queryKey: ['/api/users'] });
       queryClient.invalidateQueries({ queryKey: ['/api/projects'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/users', userId, 'projects'] });
       setIsAddModalOpen(false);
       // Reset form and clear data
       projectForm.reset();
@@ -169,13 +183,69 @@ const ProjectsFixed = () => {
         </button>
       </div>
 
-      {/* Projects List - Empty State */}
-      <div className="text-center py-8">
-        <div className="flex flex-col items-center">
-          <FolderKanban className="h-10 w-10 text-gray-400/50 mb-4" />
-          <p className="text-gray-400">No projects yet. Add your first showcase project!</p>
+      {/* Projects List */}
+      {isProjectsLoading ? (
+        <div className="text-center py-8">
+          <p className="text-gray-400">Loading projects...</p>
         </div>
-      </div>
+      ) : projects.length === 0 ? (
+        <div className="text-center py-8">
+          <div className="flex flex-col items-center">
+            <FolderKanban className="h-10 w-10 text-gray-400/50 mb-4" />
+            <p className="text-gray-400">No projects yet. Add your first showcase project!</p>
+          </div>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {projects.map((project: Project) => (
+            <div key={project.id} className="neo-glass-card p-6 rounded-lg border border-white/10 hover:border-white/20 transition-all">
+              <div className="flex items-start justify-between mb-4">
+                <h3 className="text-white font-semibold text-lg">{project.title || 'Untitled Project'}</h3>
+                <div className="flex gap-2">
+                  <button className="text-gray-400 hover:text-white transition-colors">
+                    <Award className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+              
+              <p className="text-gray-300 text-sm mb-4 line-clamp-3">
+                {project.description || 'No description available'}
+              </p>
+              
+              <div className="space-y-2 mb-4">
+                {project.category && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs px-2 py-1 rounded-full bg-white/10 text-white">
+                      {project.category}
+                    </span>
+                  </div>
+                )}
+                {project.industry && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs px-2 py-1 rounded-full bg-blue-500/20 text-blue-300">
+                      {project.industry}
+                    </span>
+                  </div>
+                )}
+              </div>
+              
+              <div className="flex items-center justify-between text-xs text-gray-400">
+                <span>{project.startDate ? new Date(project.startDate).toLocaleDateString() : 'No date'}</span>
+                {project.projectUrl && (
+                  <a 
+                    href={project.projectUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-blue-400 hover:text-blue-300 transition-colors"
+                  >
+                    View Project
+                  </a>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Add Project Modal */}
       <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
