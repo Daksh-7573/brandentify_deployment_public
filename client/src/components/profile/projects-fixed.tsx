@@ -45,6 +45,9 @@ const ProjectsFixed = () => {
 
   // Handle viewing project details
   const handleViewProject = (project: Project) => {
+    console.log('Opening project details for:', project);
+    console.log('Project collaborators:', (project as any).collaborators);
+    console.log('Project endorsements:', (project as any).endorsements);
     setSelectedProject(project);
     setIsViewModalOpen(true);
   };
