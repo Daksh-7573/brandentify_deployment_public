@@ -114,11 +114,13 @@ const ProjectsFixed = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/users', userId, 'projects'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/projects'] });
+      setIsViewModalOpen(false); // Close the modal
+      setSelectedProject(null);
       toast({
         title: "Success!",
         description: "Project deleted successfully.",
       });
-      setSelectedProject(null);
     },
     onError: (error: any) => {
       console.error('Error deleting project:', error);
@@ -190,7 +192,7 @@ const ProjectsFixed = () => {
         thumbnailFile: null, // For now, until file upload is implemented
         mediaUrls: uploadedImages, // Include all uploaded images
         teamMembers: teamMembers, // Include team members data
-        clientInfo: currentClientInfo, // Include client information
+        clientInfo: values.clientCompany || '', // Include client information
       };
 
       console.log('Submitting project data:', projectData);
