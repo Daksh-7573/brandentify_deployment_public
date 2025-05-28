@@ -400,6 +400,67 @@ export default function Services() {
                 Cancel
               </Button>
               <Button 
+                onClick={() => handleUpdateWhatIOffer(whatIOffer || '')}
+                disabled={isPendingUpdate}
+              >
+                {isPendingUpdate ? 'Saving...' : 'Save Changes'}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Service Dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="sm:max-w-[525px] max-h-[88vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Edit Service</DialogTitle>
+            <DialogDescription>
+              Update your professional service details.
+            </DialogDescription>
+          </DialogHeader>
+          <ServiceFormGlass
+            onSubmit={(data) => {
+              if (selectedService) {
+                handleUpdate(data);
+              }
+            }}
+            isPending={isPendingUpdate}
+            allServices={services}
+            selectedService={selectedService}
+          />
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete your service.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (selectedService) {
+                  handleDelete(selectedService.id);
+                }
+              }}
+              disabled={isPendingDelete}
+            >
+              {isPendingDelete ? 'Deleting...' : 'Delete'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
+  );
+}
+              </Button>
+              <Button 
                 className="neo-glass-button" 
                 disabled={isPendingUpdate}
                 onClick={() => handleUpdateWhatIOffer(whatIOffer)}
