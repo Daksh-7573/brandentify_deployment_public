@@ -689,52 +689,128 @@ export default function CreatePulsePage() {
                           {pulseCategory === 'highlight' && <Zap className="h-4 w-4 text-blue-500" />}
                           <span>Pulse Category</span>
                         </Label>
-                        <Select
-                          value={pulseCategory}
-                          onValueChange={(value) => setPulseCategory(value)}
-                        >
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select a category" />
-                          </SelectTrigger>
-                          <SelectContent className="bg-white border border-gray-300 shadow-xl z-[100] max-h-60 overflow-y-auto">
-                            <SelectItem value="certification" className="text-gray-900 hover:bg-blue-50 focus:bg-blue-100 cursor-pointer py-3 px-3">
-                              <div className="flex items-center gap-3">
-                                <BadgeCheck className="h-5 w-5 text-blue-600" />
-                                <span className="font-medium">Certification</span>
-                              </div>
-                            </SelectItem>
-                            <SelectItem value="launch" className="text-gray-900 hover:bg-green-50 focus:bg-green-100 cursor-pointer py-3 px-3">
-                              <div className="flex items-center gap-3">
-                                <Rocket className="h-5 w-5 text-green-600" />
-                                <span className="font-medium">Launch</span>
-                              </div>
-                            </SelectItem>
-                            <SelectItem value="award" className="text-gray-900 hover:bg-yellow-50 focus:bg-yellow-100 cursor-pointer py-3 px-3">
-                              <div className="flex items-center gap-3">
-                                <Award className="h-5 w-5 text-yellow-600" />
-                                <span className="font-medium">Award</span>
-                              </div>
-                            </SelectItem>
-                            <SelectItem value="project" className="text-gray-900 hover:bg-purple-50 focus:bg-purple-100 cursor-pointer py-3 px-3">
-                              <div className="flex items-center gap-3">
-                                <Wrench className="h-5 w-5 text-purple-600" />
-                                <span className="font-medium">Project</span>
-                              </div>
-                            </SelectItem>
-                            <SelectItem value="announcement" className="text-gray-900 hover:bg-orange-50 focus:bg-orange-100 cursor-pointer py-3 px-3">
-                              <div className="flex items-center gap-3">
-                                <Bell className="h-5 w-5 text-orange-600" />
-                                <span className="font-medium">Announcement</span>
-                              </div>
-                            </SelectItem>
-                            <SelectItem value="highlight" className="text-gray-900 hover:bg-red-50 focus:bg-red-100 cursor-pointer py-3 px-3">
-                              <div className="flex items-center gap-3">
-                                <Zap className="h-5 w-5 text-red-600" />
-                                <span className="font-medium">Highlight (expires in 24h)</span>
-                              </div>
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
+                        <div className="relative">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const dropdown = document.getElementById('category-dropdown');
+                              if (dropdown) {
+                                dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+                              }
+                            }}
+                            className="w-full flex items-center justify-between px-3 py-2 text-left bg-white border border-gray-300 rounded-md shadow-sm hover:border-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                          >
+                            <span className="text-gray-900">
+                              {pulseCategory === 'certification' && (
+                                <div className="flex items-center gap-2">
+                                  <BadgeCheck className="h-4 w-4 text-blue-600" />
+                                  <span>Certification</span>
+                                </div>
+                              )}
+                              {pulseCategory === 'launch' && (
+                                <div className="flex items-center gap-2">
+                                  <Rocket className="h-4 w-4 text-green-600" />
+                                  <span>Launch</span>
+                                </div>
+                              )}
+                              {pulseCategory === 'award' && (
+                                <div className="flex items-center gap-2">
+                                  <Award className="h-4 w-4 text-yellow-600" />
+                                  <span>Award</span>
+                                </div>
+                              )}
+                              {pulseCategory === 'project' && (
+                                <div className="flex items-center gap-2">
+                                  <Wrench className="h-4 w-4 text-purple-600" />
+                                  <span>Project</span>
+                                </div>
+                              )}
+                              {pulseCategory === 'announcement' && (
+                                <div className="flex items-center gap-2">
+                                  <Bell className="h-4 w-4 text-orange-600" />
+                                  <span>Announcement</span>
+                                </div>
+                              )}
+                              {pulseCategory === 'highlight' && (
+                                <div className="flex items-center gap-2">
+                                  <Zap className="h-4 w-4 text-red-600" />
+                                  <span>Highlight (expires in 24h)</span>
+                                </div>
+                              )}
+                              {!pulseCategory && <span className="text-gray-500">Select a category</span>}
+                            </span>
+                            <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                            </svg>
+                          </button>
+                          
+                          <div
+                            id="category-dropdown"
+                            style={{ display: 'none' }}
+                            className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-md shadow-lg z-50 max-h-60 overflow-y-auto"
+                          >
+                            <div
+                              onClick={() => {
+                                setPulseCategory('certification');
+                                document.getElementById('category-dropdown')!.style.display = 'none';
+                              }}
+                              className="flex items-center gap-3 px-3 py-3 hover:bg-blue-50 cursor-pointer border-b border-gray-100"
+                            >
+                              <BadgeCheck className="h-5 w-5 text-blue-600" />
+                              <span className="font-medium text-gray-900">Certification</span>
+                            </div>
+                            <div
+                              onClick={() => {
+                                setPulseCategory('launch');
+                                document.getElementById('category-dropdown')!.style.display = 'none';
+                              }}
+                              className="flex items-center gap-3 px-3 py-3 hover:bg-green-50 cursor-pointer border-b border-gray-100"
+                            >
+                              <Rocket className="h-5 w-5 text-green-600" />
+                              <span className="font-medium text-gray-900">Launch</span>
+                            </div>
+                            <div
+                              onClick={() => {
+                                setPulseCategory('award');
+                                document.getElementById('category-dropdown')!.style.display = 'none';
+                              }}
+                              className="flex items-center gap-3 px-3 py-3 hover:bg-yellow-50 cursor-pointer border-b border-gray-100"
+                            >
+                              <Award className="h-5 w-5 text-yellow-600" />
+                              <span className="font-medium text-gray-900">Award</span>
+                            </div>
+                            <div
+                              onClick={() => {
+                                setPulseCategory('project');
+                                document.getElementById('category-dropdown')!.style.display = 'none';
+                              }}
+                              className="flex items-center gap-3 px-3 py-3 hover:bg-purple-50 cursor-pointer border-b border-gray-100"
+                            >
+                              <Wrench className="h-5 w-5 text-purple-600" />
+                              <span className="font-medium text-gray-900">Project</span>
+                            </div>
+                            <div
+                              onClick={() => {
+                                setPulseCategory('announcement');
+                                document.getElementById('category-dropdown')!.style.display = 'none';
+                              }}
+                              className="flex items-center gap-3 px-3 py-3 hover:bg-orange-50 cursor-pointer border-b border-gray-100"
+                            >
+                              <Bell className="h-5 w-5 text-orange-600" />
+                              <span className="font-medium text-gray-900">Announcement</span>
+                            </div>
+                            <div
+                              onClick={() => {
+                                setPulseCategory('highlight');
+                                document.getElementById('category-dropdown')!.style.display = 'none';
+                              }}
+                              className="flex items-center gap-3 px-3 py-3 hover:bg-red-50 cursor-pointer"
+                            >
+                              <Zap className="h-5 w-5 text-red-600" />
+                              <span className="font-medium text-gray-900">Highlight (expires in 24h)</span>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
                     
