@@ -2216,14 +2216,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid project ID format" });
       }
       
-      // Check if project exists
-      const existingProject = await storage.getProjectById(projectId);
+      // Fetch collaborators directly from database
+      const result = await pool.query(
+        'SELECT * FROM project_collaborators WHERE project_id = $1 ORDER BY created_at DESC',
+        [projectId]
+      );
       
-      if (!existingProject) {
-        return res.status(404).json({ message: "Project not found" });
-      }
+      const collaborators = result.rows.map(row => ({
+        id: row.id,
+        projectId: row.project_id,
+        name: row.name,
+        email: row.email,
+        role: row.role,
+        profileLink: row.profile_link,
+        userId: row.user_id,
+        inviteStatus: row.invite_status,
+        inviteToken: row.invite_token,
+        inviteExpires: row.invite_expires,
+        createdAt: row.created_at
+      }));
       
-      const collaborators = await storage.getProjectCollaboratorsByProjectId(projectId);
+      console.log(`Found ${collaborators.length} collaborators for project ${projectId}`);
       res.json(collaborators);
     } catch (error) {
       console.error("Error fetching project collaborators:", error);
@@ -2345,14 +2358,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid project ID format" });
       }
       
-      // Check if project exists
-      const existingProject = await storage.getProjectById(projectId);
+      // Fetch endorsements directly from database
+      const result = await pool.query(
+        'SELECT * FROM project_endorsements WHERE project_id = $1 ORDER BY created_at DESC',
+        [projectId]
+      );
       
-      if (!existingProject) {
-        return res.status(404).json({ message: "Project not found" });
-      }
+      const endorsements = result.rows.map(row => ({
+        id: row.id,
+        projectId: row.project_id,
+        clientName: row.client_name,
+        clientEmail: row.client_email,
+        clientTitle: row.client_title,
+        clientCompany: row.client_company,
+        message: row.message,
+        rating: row.rating,
+        isVerified: row.is_verified,
+        verificationToken: row.verification_token,
+        verificationExpires: row.verification_expires,
+        createdAt: row.created_at
+      }));
       
-      const endorsements = await storage.getProjectEndorsementsByProjectId(projectId);
+      console.log(`Found ${endorsements.length} endorsements for project ${projectId}`);
       res.json(endorsements);
     } catch (error) {
       console.error("Error fetching project endorsements:", error);
