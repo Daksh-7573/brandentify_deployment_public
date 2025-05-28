@@ -275,16 +275,15 @@ const ProjectsFixed = () => {
         if (teamMembers.length > 0) {
           for (const member of teamMembers) {
             try {
-              await fetch('/api/project-collaborators', {
+              await fetch(`/api/projects/${projectId}/collaborators`, {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                  projectId: projectId,
+                  name: member.role || 'Collaborator', // Use role as name
                   role: member.role || 'Team Member',
-                  name: member.role || 'Collaborator', // Use role as name since there's no name field
-                  profileLink: member.linkedin || '#', // Use linkedin as profile link
+                  profileLink: member.linkedin || null,
                 }),
               });
             } catch (error) {
@@ -296,7 +295,7 @@ const ProjectsFixed = () => {
         // Save client information to project_endorsements table
         if (values.clientCompany) {
           try {
-            await fetch('/api/project-endorsements', {
+            await fetch(`/api/projects/${projectId}/endorsements`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
