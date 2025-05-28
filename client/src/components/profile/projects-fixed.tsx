@@ -44,12 +44,37 @@ const ProjectsFixed = () => {
   const { toast } = useToast();
 
   // Handle viewing project details
-  const handleViewProject = (project: Project) => {
+  const handleViewProject = async (project: Project) => {
     console.log('Opening project details for:', project);
-    console.log('Project collaborators:', (project as any).collaborators);
-    console.log('Project endorsements:', (project as any).endorsements);
-    setSelectedProject(project);
-    setIsViewModalOpen(true);
+    
+    try {
+      // Fetch fresh team members and client information from database
+      const [collaboratorsResponse, endorsementsResponse] = await Promise.all([
+        fetch(`/api/projects/${project.id}/collaborators`),
+        fetch(`/api/projects/${project.id}/endorsements`)
+      ]);
+      
+      const collaborators = collaboratorsResponse.ok ? await collaboratorsResponse.json() : [];
+      const endorsements = endorsementsResponse.ok ? await endorsementsResponse.json() : [];
+      
+      console.log('Fresh project collaborators:', collaborators);
+      console.log('Fresh project endorsements:', endorsements);
+      
+      // Update project with fresh data
+      const updatedProject = {
+        ...project,
+        collaborators,
+        endorsements
+      };
+      
+      setSelectedProject(updatedProject);
+      setIsViewModalOpen(true);
+    } catch (error) {
+      console.error('Error fetching project details:', error);
+      // Fallback to existing project data
+      setSelectedProject(project);
+      setIsViewModalOpen(true);
+    }
   };
 
   // Fetch projects from the backend
