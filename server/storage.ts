@@ -2011,8 +2011,28 @@ export class MemStorage implements IStorage {
   
   // Project Collaborator operations
   async getProjectCollaboratorsByProjectId(projectId: number): Promise<ProjectCollaborator[]> {
-    return Array.from(this.projectCollaborators.values())
-      .filter(collaborator => collaborator.projectId === projectId);
+    try {
+      const result = await this.db.query(
+        'SELECT * FROM project_collaborators WHERE project_id = $1 ORDER BY created_at DESC',
+        [projectId]
+      );
+      return result.rows.map(row => ({
+        id: row.id,
+        projectId: row.project_id,
+        name: row.name,
+        email: row.email,
+        role: row.role,
+        profileLink: row.profile_link,
+        userId: row.user_id,
+        inviteStatus: row.invite_status,
+        inviteToken: row.invite_token,
+        inviteExpires: row.invite_expires,
+        createdAt: row.created_at
+      }));
+    } catch (error) {
+      console.error('Error fetching project collaborators:', error);
+      return [];
+    }
   }
   
   async getProjectCollaboratorById(id: number): Promise<ProjectCollaborator | undefined> {
@@ -2055,8 +2075,29 @@ export class MemStorage implements IStorage {
   
   // Project Endorsement operations
   async getProjectEndorsementsByProjectId(projectId: number): Promise<ProjectEndorsement[]> {
-    return Array.from(this.projectEndorsements.values())
-      .filter(endorsement => endorsement.projectId === projectId);
+    try {
+      const result = await this.db.query(
+        'SELECT * FROM project_endorsements WHERE project_id = $1 ORDER BY created_at DESC',
+        [projectId]
+      );
+      return result.rows.map(row => ({
+        id: row.id,
+        projectId: row.project_id,
+        clientName: row.client_name,
+        clientEmail: row.client_email,
+        clientTitle: row.client_title,
+        clientCompany: row.client_company,
+        message: row.message,
+        rating: row.rating,
+        isVerified: row.is_verified,
+        verificationToken: row.verification_token,
+        verificationExpires: row.verification_expires,
+        createdAt: row.created_at
+      }));
+    } catch (error) {
+      console.error('Error fetching project endorsements:', error);
+      return [];
+    }
   }
   
   async getProjectEndorsementById(id: number): Promise<ProjectEndorsement | undefined> {
