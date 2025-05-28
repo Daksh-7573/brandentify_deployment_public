@@ -122,8 +122,8 @@ const ProjectsFixed = () => {
       // Prepare the project data matching the database schema
       const projectData = {
         userId: userId, // Send Firebase UID, backend will convert to numeric ID
-        title: values.projectTitle || '',
-        description: values.projectDescription || '',
+        title: values.title || '',
+        description: values.description || '',
         category: values.category || '',
         industry: values.industry || '',
         startDate: values.startDate || '',
@@ -486,9 +486,10 @@ const ProjectsFixed = () => {
               <div className="flex justify-end pt-6 border-t border-white/10">
                 <button
                   type="submit"
-                  className="px-6 py-3 neo-glass-button text-white font-medium rounded-md shadow-lg transition-all hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-white/30"
+                  disabled={createProjectMutation.isPending}
+                  className="px-6 py-3 neo-glass-button text-white font-medium rounded-md shadow-lg transition-all hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-white/30 disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  Add Showcase
+                  {createProjectMutation.isPending ? 'Saving...' : 'Add Showcase'}
                 </button>
               </div>
             </form>
