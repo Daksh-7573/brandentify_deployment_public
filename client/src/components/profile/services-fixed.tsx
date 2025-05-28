@@ -429,23 +429,7 @@ export default function Services() {
                     )}
                   </div>
                   
-                  <div className="mt-2 flex items-center">
-                    <Badge 
-                      className={service.isActive ? 'bg-white/15 text-white hover:bg-white/20 border-none' : 'bg-gray-800/60 text-gray-400 border-none'}
-                    >
-                      {service.isActive ? 'Active' : 'Inactive'}
-                    </Badge>
-                    {service.isRemote && (
-                      <Badge className="bg-white/15 text-white hover:bg-white/20 border-none ml-2">
-                        Remote
-                      </Badge>
-                    )}
-                    {service.category && (
-                      <Badge className="bg-white/15 text-white hover:bg-white/20 border-none ml-2">
-                        {service.category.charAt(0).toUpperCase() + service.category.slice(1)}
-                      </Badge>
-                    )}
-                  </div>
+                  {/* Removed status and category badges as requested */}
                 </div>
               ))}
             </div>
