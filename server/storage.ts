@@ -9302,5 +9302,12 @@ export const storage = {
   getGoalProgressLogById: (id: number) => dbStorage.getGoalProgressLogById(id),
   createGoalProgressLog: (log: any) => dbStorage.createGoalProgressLog(log),
   updateGoalProgressLog: (id: number, data: any) => dbStorage.updateGoalProgressLog(id, data),
-  deleteGoalProgressLog: (id: number) => dbStorage.deleteGoalProgressLog(id)
+  deleteGoalProgressLog: (id: number) => dbStorage.deleteGoalProgressLog(id),
+  
+  // Service methods
+  getServicesByUserId: (userId: number) => dbStorage.getServicesByUserId(userId),
+  getServiceById: (id: number) => dbStorage.getServiceById(id),
+  createService: (service: InsertService) => dbStorage.createService(service),
+  updateService: (id: number, service: Partial<Service>) => dbStorage.updateService(id, service),
+  deleteService: (id: number) => dbStorage.deleteService(id)
 } as IStorage;
