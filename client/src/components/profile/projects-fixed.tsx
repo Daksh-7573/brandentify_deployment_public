@@ -74,7 +74,7 @@ const ProjectsFixed = () => {
                   <TabsTrigger value="details" className="flex-1 dark-tabs-trigger">Details</TabsTrigger>
                   <TabsTrigger value="media" className="flex-1 dark-tabs-trigger">Media</TabsTrigger>
                   <TabsTrigger value="team" className="flex-1 dark-tabs-trigger">Team</TabsTrigger>
-                  <TabsTrigger value="endorsements" className="flex-1 dark-tabs-trigger">Clients</TabsTrigger>
+                  <TabsTrigger value="endorsements" className="flex-1 dark-tabs-trigger">Client</TabsTrigger>
                 </TabsList>
                 
                 <TabsContent value="details" className="space-y-6 pt-6">
@@ -262,57 +262,34 @@ const ProjectsFixed = () => {
 
                 <TabsContent value="endorsements" className="space-y-6 pt-6">
                   <div className="space-y-6">
-                    {/* Client Testimonials */}
+                    {/* Client Information */}
                     <div className="space-y-4">
                       <label className="text-white font-medium text-sm flex items-center gap-2">
-                        <MessageSquare className="h-4 w-4" />
-                        Client Testimonials
+                        <Users className="h-4 w-4" />
+                        Client Information
                       </label>
                       
-                      {/* Testimonial 1 */}
+                      {/* Client Link */}
                       <div className="space-y-4 p-4 rounded-lg bg-white/5 backdrop-blur-sm border border-white/10">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div className="space-y-2">
-                            <label className="text-white/80 text-sm">Client Name</label>
-                            <input
-                              placeholder="Client or company name"
-                              className="neo-glass-input"
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <label className="text-white/80 text-sm">Position</label>
-                            <input
-                              placeholder="e.g., CEO, Marketing Director"
-                              className="neo-glass-input"
-                            />
-                          </div>
-                        </div>
                         <div className="space-y-2">
-                          <label className="text-white/80 text-sm">Testimonial</label>
-                          <textarea
-                            placeholder="What did the client say about your work?"
-                            className="neo-glass-input resize-none h-20"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <label className="text-white/80 text-sm">Company/LinkedIn</label>
+                          <label className="text-white/80 text-sm">Client Profile Link</label>
                           <input
-                            placeholder="https://company.com or LinkedIn profile"
+                            placeholder="https://brandentifier.replit.app/profile/username"
                             className="neo-glass-input"
                           />
+                          <p className="text-xs text-white/60">Add Brandentifier profile link of your client</p>
                         </div>
                       </div>
 
-                      {/* Add Testimonial Button */}
+                      {/* Add Client Button */}
                       <button
                         type="button"
                         className="w-full p-3 border-2 border-dashed border-white/30 rounded-lg bg-white/5 backdrop-blur-sm hover:border-white/50 hover:bg-white/10 transition-all text-white/70 text-sm flex items-center justify-center gap-2"
                       >
                         <Plus className="h-4 w-4" />
-                        Add Testimonial
+                        Add Client
                       </button>
                     </div>
-
 
                   </div>
                 </TabsContent>
