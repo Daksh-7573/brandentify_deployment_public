@@ -559,9 +559,7 @@ export default function ProfileNeo() {
             </NeoGlassSection>
             
             {/* Specific Services as a separate section */}
-            <NeoGlassSection className="mb-6">
-              <Services userFirebaseId={user.uid} userNumericId={userData?.id} />
-            </NeoGlassSection>
+            <Services />
             
             {/* 3. What I'm Good At (Skills) */}
             <NeoGlassSection className="mb-6">
