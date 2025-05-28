@@ -18,6 +18,8 @@ interface Project {
   thumbnailUrl: string | null;
   mediaUrls: string[] | string | null;
   userId: number;
+  clientInfo?: string | null;
+  teamMembers?: TeamMember[] | null;
   createdAt?: string | null;
   updatedAt?: string | null;
 }
@@ -635,7 +637,7 @@ const ProjectsFixed = () => {
                 </div>
                 
                 {/* Project Info Grid */}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-3 gap-4">
                   <div>
                     <h4 className="text-white font-medium mb-1">Category</h4>
                     <p className="text-gray-300">{selectedProject.category || 'Not specified'}</p>
@@ -650,29 +652,14 @@ const ProjectsFixed = () => {
                       {selectedProject.startDate ? new Date(selectedProject.startDate).toLocaleDateString() : 'Not specified'}
                     </p>
                   </div>
-                  <div>
-                    <h4 className="text-white font-medium mb-1">Project URL</h4>
-                    {selectedProject.projectUrl ? (
-                      <a 
-                        href={selectedProject.projectUrl} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="text-blue-400 hover:text-blue-300 transition-colors break-all"
-                      >
-                        {selectedProject.projectUrl}
-                      </a>
-                    ) : (
-                      <p className="text-gray-300">Not specified</p>
-                    )}
-                  </div>
                 </div>
                 
                 {/* Team Members */}
-                {teamMembers && teamMembers.length > 0 && (
+                {(selectedProject as any).teamMembers && (selectedProject as any).teamMembers.length > 0 && (
                   <div>
                     <h3 className="text-white font-semibold mb-3">Team Members</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      {teamMembers.map((member, index) => (
+                      {(selectedProject as any).teamMembers.map((member: any, index: number) => (
                         <div key={index} className="p-3 rounded-lg bg-white/5 border border-white/10">
                           <p className="text-white font-medium">{member.role}</p>
                           {member.linkedin && (
@@ -692,10 +679,10 @@ const ProjectsFixed = () => {
                 )}
 
                 {/* Client Information */}
-                {selectedProject.clientInfo && (
+                {(selectedProject as any).clientInfo && (
                   <div>
                     <h3 className="text-white font-semibold mb-2">Client</h3>
-                    <p className="text-gray-300">{selectedProject.clientInfo}</p>
+                    <p className="text-gray-300">{(selectedProject as any).clientInfo}</p>
                   </div>
                 )}
 
