@@ -111,9 +111,9 @@ export default function CreatePulsePage() {
       userId: user.id,
       type: pulseType as any, // Type assertion to match enum
       title: pulseTitle,
-      content: pulseContent,
+      content: pulseContent || null,
       isPublished: true,
-      industry: pulseIndustry.trim() !== "" ? pulseIndustry : undefined
+      industry: pulseIndustry.trim() !== "" ? pulseIndustry : null
     };
     
     // Add type-specific data
@@ -696,38 +696,38 @@ export default function CreatePulsePage() {
                           <SelectTrigger className="w-full">
                             <SelectValue placeholder="Select a category" />
                           </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="certification">
+                          <SelectContent className="bg-white border border-gray-200 shadow-lg z-50">
+                            <SelectItem value="certification" className="text-gray-900 hover:bg-gray-100">
                               <div className="flex items-center gap-2">
                                 <BadgeCheck className="h-4 w-4" />
                                 <span>Certification</span>
                               </div>
                             </SelectItem>
-                            <SelectItem value="launch">
+                            <SelectItem value="launch" className="text-gray-900 hover:bg-gray-100">
                               <div className="flex items-center gap-2">
                                 <Rocket className="h-4 w-4" />
                                 <span>Launch</span>
                               </div>
                             </SelectItem>
-                            <SelectItem value="award">
+                            <SelectItem value="award" className="text-gray-900 hover:bg-gray-100">
                               <div className="flex items-center gap-2">
                                 <Award className="h-4 w-4" />
                                 <span>Award</span>
                               </div>
                             </SelectItem>
-                            <SelectItem value="project">
+                            <SelectItem value="project" className="text-gray-900 hover:bg-gray-100">
                               <div className="flex items-center gap-2">
                                 <Wrench className="h-4 w-4" />
                                 <span>Project</span>
                               </div>
                             </SelectItem>
-                            <SelectItem value="announcement">
+                            <SelectItem value="announcement" className="text-gray-900 hover:bg-gray-100">
                               <div className="flex items-center gap-2">
                                 <Bell className="h-4 w-4" />
                                 <span>Announcement</span>
                               </div>
                             </SelectItem>
-                            <SelectItem value="highlight">
+                            <SelectItem value="highlight" className="text-gray-900 hover:bg-gray-100">
                               <div className="flex items-center gap-2">
                                 <Zap className="h-4 w-4" />
                                 <span>Highlight (expires in 24h)</span>
@@ -949,10 +949,10 @@ export default function CreatePulsePage() {
                                     userId: user.id,
                                     type: "project" as any,
                                     title: pulseTitle,
-                                    content: pulseContent,
+                                    content: pulseContent || null,
                                     isPublished: true,
                                     projectId: selectedProject,
-                                    industry: pulseIndustry.trim() !== "" ? pulseIndustry : undefined
+                                    industry: pulseIndustry.trim() !== "" ? pulseIndustry : null
                                   });
                                 }}
                               >
