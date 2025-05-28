@@ -694,20 +694,90 @@ export default function CreatePulsePage() {
                           {pulseCategory === 'highlight' && <Zap className="h-4 w-4 text-blue-500" />}
                           <span>Pulse Category</span>
                         </Label>
-                        <select
-                          value={pulseCategory}
-                          onChange={(e) => setPulseCategory(e.target.value)}
-                          className="w-full px-4 py-3 text-lg text-gray-900 bg-white border-2 border-gray-400 rounded-lg shadow-lg focus:border-blue-600 focus:ring-4 focus:ring-blue-200 font-semibold"
-                          style={{ minHeight: '50px', fontSize: '16px' }}
-                        >
-                          <option value="">Select a category</option>
-                          <option value="certification">🏆 Certification</option>
-                          <option value="launch">🚀 Launch</option>
-                          <option value="award">🥇 Award</option>
-                          <option value="project">🔧 Project</option>
-                          <option value="announcement">📢 Announcement</option>
-                          <option value="highlight">⚡ Highlight (expires in 24h)</option>
-                        </select>
+                        <div className="relative">
+                          <div 
+                            onClick={() => {
+                              const menu = document.getElementById('category-menu');
+                              if (menu) {
+                                menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+                              }
+                            }}
+                            className="w-full px-4 py-4 text-lg text-gray-900 bg-white border-2 border-gray-400 rounded-lg shadow-lg cursor-pointer hover:border-blue-600 font-semibold flex items-center justify-between"
+                            style={{ minHeight: '56px' }}
+                          >
+                            <span>
+                              {pulseCategory === '' && 'Select a category'}
+                              {pulseCategory === 'certification' && '🏆 Certification'}
+                              {pulseCategory === 'launch' && '🚀 Launch'}
+                              {pulseCategory === 'award' && '🥇 Award'}
+                              {pulseCategory === 'project' && '🔧 Project'}
+                              {pulseCategory === 'announcement' && '📢 Announcement'}
+                              {pulseCategory === 'highlight' && '⚡ Highlight (expires in 24h)'}
+                            </span>
+                            <div className="text-2xl">⬇️</div>
+                          </div>
+                          
+                          <div 
+                            id="category-menu"
+                            style={{ display: 'none' }}
+                            className="absolute top-full left-0 right-0 mt-1 bg-white border-2 border-gray-400 rounded-lg shadow-xl z-50"
+                          >
+                            <div 
+                              onClick={() => {
+                                setPulseCategory('certification');
+                                document.getElementById('category-menu')!.style.display = 'none';
+                              }}
+                              className="px-4 py-3 text-lg font-semibold cursor-pointer hover:bg-blue-100 border-b border-gray-200"
+                            >
+                              🏆 Certification
+                            </div>
+                            <div 
+                              onClick={() => {
+                                setPulseCategory('launch');
+                                document.getElementById('category-menu')!.style.display = 'none';
+                              }}
+                              className="px-4 py-3 text-lg font-semibold cursor-pointer hover:bg-green-100 border-b border-gray-200"
+                            >
+                              🚀 Launch
+                            </div>
+                            <div 
+                              onClick={() => {
+                                setPulseCategory('award');
+                                document.getElementById('category-menu')!.style.display = 'none';
+                              }}
+                              className="px-4 py-3 text-lg font-semibold cursor-pointer hover:bg-yellow-100 border-b border-gray-200"
+                            >
+                              🥇 Award
+                            </div>
+                            <div 
+                              onClick={() => {
+                                setPulseCategory('project');
+                                document.getElementById('category-menu')!.style.display = 'none';
+                              }}
+                              className="px-4 py-3 text-lg font-semibold cursor-pointer hover:bg-purple-100 border-b border-gray-200"
+                            >
+                              🔧 Project
+                            </div>
+                            <div 
+                              onClick={() => {
+                                setPulseCategory('announcement');
+                                document.getElementById('category-menu')!.style.display = 'none';
+                              }}
+                              className="px-4 py-3 text-lg font-semibold cursor-pointer hover:bg-orange-100 border-b border-gray-200"
+                            >
+                              📢 Announcement
+                            </div>
+                            <div 
+                              onClick={() => {
+                                setPulseCategory('highlight');
+                                document.getElementById('category-menu')!.style.display = 'none';
+                              }}
+                              className="px-4 py-3 text-lg font-semibold cursor-pointer hover:bg-red-100"
+                            >
+                              ⚡ Highlight (expires in 24h)
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
                     
