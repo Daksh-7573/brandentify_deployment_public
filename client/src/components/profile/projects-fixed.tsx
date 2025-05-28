@@ -65,6 +65,7 @@ const ProjectsFixed = () => {
   // Create the mutation for saving projects to backend
   const createProjectMutation = useMutation({
     mutationFn: async (projectData: any) => {
+      console.log('Sending project data to API:', projectData);
       const response = await fetch('/api/projects', {
         method: 'POST',
         headers: {
@@ -74,7 +75,9 @@ const ProjectsFixed = () => {
       });
       
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        console.error('API Error Response:', errorText);
+        throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
       }
       
       return await response.json();
@@ -186,10 +189,8 @@ const ProjectsFixed = () => {
         description: values.description || '',
         category: values.category || '',
         industry: values.industry || '',
-        startDate: values.startDate || '',
         projectUrl: values.projectUrl || '',
         thumbnailUrl: uploadedImages.length > 0 ? uploadedImages[0] : null, // Use first image as thumbnail
-        thumbnailFile: null, // For now, until file upload is implemented
         mediaUrls: uploadedImages, // Include all uploaded images
         teamMembers: teamMembers, // Include team members data
         clientInfo: values.clientCompany || '', // Include client information
