@@ -2491,12 +2491,40 @@ export class MemStorage implements IStorage {
 
   // Pulse operations
   async getPulses(): Promise<Pulse[]> {
-    return Array.from(this.pulses.values())
-      .sort((a, b) => {
-        const timeA = a.createdAt ? a.createdAt.getTime() : 0;
-        const timeB = b.createdAt ? b.createdAt.getTime() : 0;
-        return timeB - timeA; // Sort newest first
-      });
+    console.log('[db.getPulses] Fetching all pulses from database');
+    try {
+      const result = await pool.query(`
+        SELECT * FROM pulses 
+        ORDER BY created_at DESC
+      `);
+      console.log(`[db.getPulses] Found ${result.rows.length} pulses`);
+      return result.rows.map(row => ({
+        id: row.id,
+        userId: row.user_id,
+        type: row.type,
+        category: row.category,
+        title: row.title,
+        content: row.content,
+        industry: row.industry,
+        mediaType: row.media_type,
+        mediaUrls: row.media_urls || [],
+        mediaLocalStorageKeys: row.media_local_storage_keys || [],
+        pollOptions: row.poll_options || [],
+        projectId: row.project_id,
+        likes: row.likes || 0,
+        insightfulCount: row.insightful_count || 0,
+        misinformedCount: row.misinformed_count || 0,
+        shareCount: row.share_count || 0,
+        comments: row.comments || 0,
+        isPublished: row.is_published ?? true,
+        expiresAt: row.expires_at,
+        createdAt: row.created_at,
+        updatedAt: row.updated_at
+      }));
+    } catch (error) {
+      console.error('[db.getPulses] Database error:', error);
+      throw error;
+    }
   }
   
   async getPulsesByUserId(userId: number): Promise<Pulse[]> {
