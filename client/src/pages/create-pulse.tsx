@@ -38,11 +38,6 @@ export default function CreatePulsePage() {
   const videoInputRef = useRef<HTMLInputElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
 
-  // Reset category when industry changes
-  useEffect(() => {
-    setPulseCategory("");
-  }, [pulseIndustry]);
-
   // Create a mutation for submitting the pulse
   const createPulseMutation = useMutation({
     mutationFn: async (pulseData: InsertPulse) => {
@@ -116,9 +111,9 @@ export default function CreatePulsePage() {
       userId: user.id,
       type: pulseType as any, // Type assertion to match enum
       title: pulseTitle,
-      content: pulseContent || null,
+      content: pulseContent,
       isPublished: true,
-      industry: pulseIndustry.trim() !== "" ? pulseIndustry : null
+      industry: pulseIndustry.trim() !== "" ? pulseIndustry : undefined
     };
     
     // Add type-specific data
@@ -694,105 +689,52 @@ export default function CreatePulsePage() {
                           {pulseCategory === 'highlight' && <Zap className="h-4 w-4 text-blue-500" />}
                           <span>Pulse Category</span>
                         </Label>
-                        {/* Industry-specific category dropdown */}
-                        <div className="relative">
-                          <div 
-                            onClick={() => {
-                              if (!pulseIndustry) {
-                                alert('Please select an industry first');
-                                return;
-                              }
-                              const menu = document.getElementById('category-menu');
-                              if (menu) {
-                                menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-                              }
-                            }}
-                            className={`w-full px-4 py-4 text-lg bg-white border-2 rounded-lg shadow-lg cursor-pointer font-semibold flex items-center justify-between ${
-                              !pulseIndustry 
-                                ? 'text-gray-400 border-gray-300 cursor-not-allowed' 
-                                : 'text-gray-900 border-gray-400 hover:border-blue-600'
-                            }`}
-                            style={{ minHeight: '56px' }}
-                          >
-                            <span>
-                              {pulseCategory === '' && (pulseIndustry ? 'Select a category' : 'Select industry first')}
-                              {pulseCategory === 'certification' && '🏆 Certification'}
-                              {pulseCategory === 'launch' && '🚀 Launch'}
-                              {pulseCategory === 'award' && '🥇 Award'}
-                              {pulseCategory === 'project' && '🔧 Project'}
-                              {pulseCategory === 'announcement' && '📢 Announcement'}
-                              {pulseCategory === 'breakthrough' && '💡 Breakthrough'}
-                              {pulseCategory === 'achievement' && '🎯 Achievement'}
-                              {pulseCategory === 'milestone' && '🚩 Milestone'}
-                              {pulseCategory === 'innovation' && '⚡ Innovation'}
-                              {pulseCategory === 'collaboration' && '🤝 Collaboration'}
-                              {pulseCategory === 'research' && '🔬 Research'}
-                              {pulseCategory === 'discovery' && '🔍 Discovery'}
-                            </span>
-                            <div className="text-2xl">⬇️</div>
-                          </div>
-                          
-                          <div 
-                            id="category-menu"
-                            style={{ display: 'none' }}
-                            className="absolute top-full left-0 right-0 mt-1 bg-white border-2 border-gray-400 rounded-lg shadow-xl z-50"
-                          >
-                            {/* Technology Categories */}
-                            {pulseIndustry === 'Technology' && (
-                              <>
-                                <div onClick={() => { setPulseCategory('launch'); document.getElementById('category-menu')!.style.display = 'none'; }} className="px-4 py-3 text-lg font-semibold cursor-pointer hover:bg-blue-100 border-b border-gray-200">🚀 Product Launch</div>
-                                <div onClick={() => { setPulseCategory('breakthrough'); document.getElementById('category-menu')!.style.display = 'none'; }} className="px-4 py-3 text-lg font-semibold cursor-pointer hover:bg-green-100 border-b border-gray-200">💡 Tech Breakthrough</div>
-                                <div onClick={() => { setPulseCategory('certification'); document.getElementById('category-menu')!.style.display = 'none'; }} className="px-4 py-3 text-lg font-semibold cursor-pointer hover:bg-purple-100 border-b border-gray-200">🏆 Certification</div>
-                                <div onClick={() => { setPulseCategory('project'); document.getElementById('category-menu')!.style.display = 'none'; }} className="px-4 py-3 text-lg font-semibold cursor-pointer hover:bg-orange-100 border-b border-gray-200">🔧 Open Source Project</div>
-                                <div onClick={() => { setPulseCategory('collaboration'); document.getElementById('category-menu')!.style.display = 'none'; }} className="px-4 py-3 text-lg font-semibold cursor-pointer hover:bg-yellow-100">🤝 Tech Collaboration</div>
-                              </>
-                            )}
-                            
-                            {/* Healthcare Categories */}
-                            {pulseIndustry === 'Healthcare' && (
-                              <>
-                                <div onClick={() => { setPulseCategory('research'); document.getElementById('category-menu')!.style.display = 'none'; }} className="px-4 py-3 text-lg font-semibold cursor-pointer hover:bg-blue-100 border-b border-gray-200">🔬 Medical Research</div>
-                                <div onClick={() => { setPulseCategory('breakthrough'); document.getElementById('category-menu')!.style.display = 'none'; }} className="px-4 py-3 text-lg font-semibold cursor-pointer hover:bg-green-100 border-b border-gray-200">💡 Healthcare Innovation</div>
-                                <div onClick={() => { setPulseCategory('certification'); document.getElementById('category-menu')!.style.display = 'none'; }} className="px-4 py-3 text-lg font-semibold cursor-pointer hover:bg-purple-100 border-b border-gray-200">🏆 Medical Certification</div>
-                                <div onClick={() => { setPulseCategory('discovery'); document.getElementById('category-menu')!.style.display = 'none'; }} className="px-4 py-3 text-lg font-semibold cursor-pointer hover:bg-red-100 border-b border-gray-200">🔍 Clinical Discovery</div>
-                                <div onClick={() => { setPulseCategory('collaboration'); document.getElementById('category-menu')!.style.display = 'none'; }} className="px-4 py-3 text-lg font-semibold cursor-pointer hover:bg-yellow-100">🤝 Medical Partnership</div>
-                              </>
-                            )}
-                            
-                            {/* Finance Categories */}
-                            {pulseIndustry === 'Finance' && (
-                              <>
-                                <div onClick={() => { setPulseCategory('launch'); document.getElementById('category-menu')!.style.display = 'none'; }} className="px-4 py-3 text-lg font-semibold cursor-pointer hover:bg-blue-100 border-b border-gray-200">🚀 Financial Product Launch</div>
-                                <div onClick={() => { setPulseCategory('achievement'); document.getElementById('category-menu')!.style.display = 'none'; }} className="px-4 py-3 text-lg font-semibold cursor-pointer hover:bg-green-100 border-b border-gray-200">🎯 Investment Achievement</div>
-                                <div onClick={() => { setPulseCategory('certification'); document.getElementById('category-menu')!.style.display = 'none'; }} className="px-4 py-3 text-lg font-semibold cursor-pointer hover:bg-purple-100 border-b border-gray-200">🏆 Financial Certification</div>
-                                <div onClick={() => { setPulseCategory('milestone'); document.getElementById('category-menu')!.style.display = 'none'; }} className="px-4 py-3 text-lg font-semibold cursor-pointer hover:bg-orange-100 border-b border-gray-200">🚩 Portfolio Milestone</div>
-                                <div onClick={() => { setPulseCategory('innovation'); document.getElementById('category-menu')!.style.display = 'none'; }} className="px-4 py-3 text-lg font-semibold cursor-pointer hover:bg-yellow-100">⚡ FinTech Innovation</div>
-                              </>
-                            )}
-                            
-                            {/* Education Categories */}
-                            {pulseIndustry === 'Education' && (
-                              <>
-                                <div onClick={() => { setPulseCategory('launch'); document.getElementById('category-menu')!.style.display = 'none'; }} className="px-4 py-3 text-lg font-semibold cursor-pointer hover:bg-blue-100 border-b border-gray-200">🚀 Course Launch</div>
-                                <div onClick={() => { setPulseCategory('achievement'); document.getElementById('category-menu')!.style.display = 'none'; }} className="px-4 py-3 text-lg font-semibold cursor-pointer hover:bg-green-100 border-b border-gray-200">🎯 Educational Achievement</div>
-                                <div onClick={() => { setPulseCategory('certification'); document.getElementById('category-menu')!.style.display = 'none'; }} className="px-4 py-3 text-lg font-semibold cursor-pointer hover:bg-purple-100 border-b border-gray-200">🏆 Teaching Certification</div>
-                                <div onClick={() => { setPulseCategory('research'); document.getElementById('category-menu')!.style.display = 'none'; }} className="px-4 py-3 text-lg font-semibold cursor-pointer hover:bg-red-100 border-b border-gray-200">🔬 Educational Research</div>
-                                <div onClick={() => { setPulseCategory('collaboration'); document.getElementById('category-menu')!.style.display = 'none'; }} className="px-4 py-3 text-lg font-semibold cursor-pointer hover:bg-yellow-100">🤝 Academic Partnership</div>
-                              </>
-                            )}
-                            
-                            {/* Default Categories for other industries */}
-                            {pulseIndustry && !['Technology', 'Healthcare', 'Finance', 'Education'].includes(pulseIndustry) && (
-                              <>
-                                <div onClick={() => { setPulseCategory('launch'); document.getElementById('category-menu')!.style.display = 'none'; }} className="px-4 py-3 text-lg font-semibold cursor-pointer hover:bg-blue-100 border-b border-gray-200">🚀 Launch</div>
-                                <div onClick={() => { setPulseCategory('achievement'); document.getElementById('category-menu')!.style.display = 'none'; }} className="px-4 py-3 text-lg font-semibold cursor-pointer hover:bg-green-100 border-b border-gray-200">🎯 Achievement</div>
-                                <div onClick={() => { setPulseCategory('certification'); document.getElementById('category-menu')!.style.display = 'none'; }} className="px-4 py-3 text-lg font-semibold cursor-pointer hover:bg-purple-100 border-b border-gray-200">🏆 Certification</div>
-                                <div onClick={() => { setPulseCategory('milestone'); document.getElementById('category-menu')!.style.display = 'none'; }} className="px-4 py-3 text-lg font-semibold cursor-pointer hover:bg-orange-100 border-b border-gray-200">🚩 Milestone</div>
-                                <div onClick={() => { setPulseCategory('collaboration'); document.getElementById('category-menu')!.style.display = 'none'; }} className="px-4 py-3 text-lg font-semibold cursor-pointer hover:bg-yellow-100">🤝 Collaboration</div>
-                              </>
-                            )}
-                          </div>
-                        </div>
+                        <Select
+                          value={pulseCategory}
+                          onValueChange={(value) => setPulseCategory(value)}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select a category" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="certification">
+                              <div className="flex items-center gap-2">
+                                <BadgeCheck className="h-4 w-4" />
+                                <span>Certification</span>
+                              </div>
+                            </SelectItem>
+                            <SelectItem value="launch">
+                              <div className="flex items-center gap-2">
+                                <Rocket className="h-4 w-4" />
+                                <span>Launch</span>
+                              </div>
+                            </SelectItem>
+                            <SelectItem value="award">
+                              <div className="flex items-center gap-2">
+                                <Award className="h-4 w-4" />
+                                <span>Award</span>
+                              </div>
+                            </SelectItem>
+                            <SelectItem value="project">
+                              <div className="flex items-center gap-2">
+                                <Wrench className="h-4 w-4" />
+                                <span>Project</span>
+                              </div>
+                            </SelectItem>
+                            <SelectItem value="announcement">
+                              <div className="flex items-center gap-2">
+                                <Bell className="h-4 w-4" />
+                                <span>Announcement</span>
+                              </div>
+                            </SelectItem>
+                            <SelectItem value="highlight">
+                              <div className="flex items-center gap-2">
+                                <Zap className="h-4 w-4" />
+                                <span>Highlight (expires in 24h)</span>
+                              </div>
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
                     </div>
                     
@@ -1007,10 +949,10 @@ export default function CreatePulsePage() {
                                     userId: user.id,
                                     type: "project" as any,
                                     title: pulseTitle,
-                                    content: pulseContent || null,
+                                    content: pulseContent,
                                     isPublished: true,
                                     projectId: selectedProject,
-                                    industry: pulseIndustry.trim() !== "" ? pulseIndustry : null
+                                    industry: pulseIndustry.trim() !== "" ? pulseIndustry : undefined
                                   });
                                 }}
                               >
