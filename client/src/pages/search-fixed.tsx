@@ -22,7 +22,7 @@ import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-l
 import { apiRequest, queryClient } from "@/lib/queryClient";
 
 // Constants for form options
-import { INDUSTRIES, DOMAINS_BY_INDUSTRY, LOOKING_FOR_OPTIONS, EXPERIENCE_LEVELS } from "@/lib/constants";
+import { INDUSTRIES, INDUSTRY_DOMAINS as DOMAINS_BY_INDUSTRY, LOOKING_FOR_OPTIONS, EXPERIENCE_LEVELS } from "@shared/constants";
 
 // Types for search
 type SearchCategory = "pulses" | "profiles" | "hashtags" | "smart-connect";

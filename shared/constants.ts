@@ -244,3 +244,25 @@ export const INDUSTRIES = [
   "Nonprofit",
   "Government"
 ];
+
+// Looking for options
+export const LOOKING_FOR_OPTIONS = [
+  "Job Opportunities",
+  "Networking",
+  "Mentorship",
+  "Collaboration",
+  "Investment",
+  "Learning",
+  "Career Advice",
+  "Business Partnerships"
+];
+
+// Experience levels
+export const EXPERIENCE_LEVELS = [
+  "Entry Level",
+  "Mid Level", 
+  "Senior Level",
+  "Executive Level",
+  "Intern",
+  "Student"
+];

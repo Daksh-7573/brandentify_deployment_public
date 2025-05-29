@@ -6,34 +6,7 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { cn } from "@/lib/utils";
 
 // Main industries list
-const INDUSTRIES = [
-  "Technology",
-  "Healthcare",
-  "Finance",
-  "Education",
-  "Manufacturing",
-  "Retail",
-  "Media & Entertainment",
-  "Construction",
-  "Transportation",
-  "Energy",
-  "Hospitality",
-  "Agriculture",
-  "Telecommunications",
-  "Real Estate",
-  "Consulting",
-  "Pharmaceuticals",
-  "Legal Services",
-  "Marketing & Advertising",
-  "Aerospace",
-  "Automotive",
-  "Biotechnology",
-  "Nonprofit",
-  "Government",
-  "Food & Beverage",
-  "Fashion",
-  "Arts & Design",
-];
+import { INDUSTRIES } from '@shared/constants';
 
 export interface IndustryComboboxProps {
   value: string;
