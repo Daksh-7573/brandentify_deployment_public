@@ -7011,6 +7011,79 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
+  // Pulse operations for DatabaseStorage
+  async getPulses(): Promise<Pulse[]> {
+    try {
+      console.log('[db.getPulses] Fetching all pulses');
+      
+      const result = await pool.query(`
+        SELECT 
+          id, user_id as "userId", type, category, title, content, industry, domain,
+          media_type as "mediaType", media_urls as "mediaUrls", 
+          media_local_storage_keys as "mediaLocalStorageKeys",
+          poll_options as "pollOptions", project_id as "projectId",
+          likes, insightful_count as "insightfulCount", 
+          misinformed_count as "misinformedCount", share_count as "shareCount",
+          comments, is_published as "isPublished", expires_at as "expiresAt",
+          created_at as "createdAt", updated_at as "updatedAt"
+        FROM pulses 
+        WHERE is_published = true 
+        ORDER BY created_at DESC
+      `);
+      
+      console.log(`[db.getPulses] Found ${result.rows.length} pulses`);
+      return result.rows;
+    } catch (error) {
+      console.error('[db.getPulses] Error fetching pulses:', error);
+      throw error;
+    }
+  }
+
+  async createPulse(insertPulse: InsertPulse): Promise<Pulse> {
+    try {
+      console.log('[db.createPulse] Creating new pulse:', insertPulse);
+      
+      const result = await pool.query(`
+        INSERT INTO pulses (
+          user_id, type, category, title, content, industry, domain,
+          media_type, media_urls, media_local_storage_keys, poll_options,
+          project_id, is_published, expires_at
+        ) VALUES (
+          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14
+        ) RETURNING 
+          id, user_id as "userId", type, category, title, content, industry, domain,
+          media_type as "mediaType", media_urls as "mediaUrls",
+          media_local_storage_keys as "mediaLocalStorageKeys",
+          poll_options as "pollOptions", project_id as "projectId",
+          likes, insightful_count as "insightfulCount",
+          misinformed_count as "misinformedCount", share_count as "shareCount",
+          comments, is_published as "isPublished", expires_at as "expiresAt",
+          created_at as "createdAt", updated_at as "updatedAt"
+      `, [
+        insertPulse.userId,
+        insertPulse.type,
+        insertPulse.category || null,
+        insertPulse.title,
+        insertPulse.content || null,
+        insertPulse.industry || null,
+        insertPulse.domain || null,
+        insertPulse.mediaType || null,
+        JSON.stringify(insertPulse.mediaUrls || []),
+        JSON.stringify(insertPulse.mediaLocalStorageKeys || []),
+        JSON.stringify(insertPulse.pollOptions || []),
+        insertPulse.projectId || null,
+        insertPulse.isPublished !== false,
+        insertPulse.expiresAt || null
+      ]);
+      
+      console.log(`[db.createPulse] Created pulse with ID: ${result.rows[0].id}`);
+      return result.rows[0];
+    } catch (error) {
+      console.error('[db.createPulse] Error creating pulse:', error);
+      throw error;
+    }
+  }
+
   async createUserXp(userXp: InsertUserXp): Promise<UserXp> {
     try {
       console.log(`[db.createUserXp] Creating XP record for user ${userXp.userId}`);
