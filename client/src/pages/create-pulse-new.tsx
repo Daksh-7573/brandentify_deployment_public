@@ -677,68 +677,26 @@ export default function CreatePulsePage() {
                     </div>
                   )}
 
-                  {/* Project Selection */}
+                  {/* Project Details */}
                   {pulseType === 'project' && (
                     <div className="space-y-4">
-                      <Tabs defaultValue="details" onValueChange={setActiveProjectTab} value={activeProjectTab}>
-                        <TabsList className="bg-[rgba(18,18,18,0.8)] border-white/10">
-                          <TabsTrigger 
-                            value="details" 
-                            onClick={() => setActiveProjectTab('details')}
-                            className={cn(
-                              activeProjectTab === 'details' ? 'bg-white/20 text-white' : 'text-white/70 data-[state=active]:text-white'
-                            )}
-                          >
-                            Create New
-                          </TabsTrigger>
-                          <TabsTrigger 
-                            value="select" 
-                            onClick={() => setActiveProjectTab('select')}
-                            className={cn(
-                              activeProjectTab === 'select' ? 'bg-white/20 text-white' : 'text-white/70 data-[state=active]:text-white'
-                            )}
-                          >
-                            Select Existing
-                          </TabsTrigger>
-                        </TabsList>
-                        
-                        <TabsContent value="details" className="mt-4">
-                          <ProjectForm 
-                            onSuccess={(project) => {
-                              setSelectedProject(project.id);
-                              toast({
-                                title: "Project Created",
-                                description: "Your project has been created and selected for this pulse.",
-                              });
-                            }}
-                            useDarkMode={true}
-                            className="neo-glass-input"
-                            closeModal={() => {}}
-                          />
-                        </TabsContent>
-                        
-                        <TabsContent value="select" className="mt-4">
-                          {user ? (
-                            <div className="space-y-2">
-                              <Label htmlFor="project-select" className="text-white">Select a Project</Label>
-                              <ProjectSelect 
-                                userId={user.id} 
-                                value={selectedProject} 
-                                onChange={setSelectedProject}
-                                className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20"
-                              />
-                            </div>
-                          ) : (
-                            <Alert variant="destructive">
-                              <AlertCircle className="h-4 w-4" />
-                              <AlertTitle>Authentication Required</AlertTitle>
-                              <AlertDescription>
-                                You must be logged in to select projects.
-                              </AlertDescription>
-                            </Alert>
-                          )}
-                        </TabsContent>
-                      </Tabs>
+                      <div className="space-y-2">
+                        <Label className="text-white">Project Details</Label>
+                        <p className="text-xs text-gray-400">Add your project details. This will also be saved to your profile.</p>
+                      </div>
+                      
+                      <ProjectForm 
+                        onSuccess={(project) => {
+                          setSelectedProject(project.id);
+                          toast({
+                            title: "Project Created",
+                            description: "Your project has been created and added to your profile.",
+                          });
+                        }}
+                        useDarkMode={true}
+                        className="neo-glass-input"
+                        closeModal={() => {}}
+                      />
                     </div>
                   )}
 

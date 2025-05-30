@@ -1016,127 +1016,71 @@ export default function CreatePulsePage() {
 
                 {pulseType === 'project' && (
                   <div className="space-y-6" data-pulse-type="assignment">
+                    <div className="space-y-2">
+                      <h3 className="text-lg font-medium text-green-700">Project Details</h3>
+                      <p className="text-sm text-muted-foreground">Add your project details. This will be saved to your profile and published as a pulse.</p>
+                    </div>
                     
-                    <Tabs value={activeProjectTab} onValueChange={setActiveProjectTab} className="mt-4">
-                      <TabsList className="grid w-full grid-cols-3 bg-green-50">
-                        <TabsTrigger value="details" className="data-[state=active]:bg-white data-[state=active]:text-green-700">Details</TabsTrigger>
-                        <TabsTrigger value="team" className="data-[state=active]:bg-white data-[state=active]:text-green-700">Team</TabsTrigger>
-                        <TabsTrigger value="endorsements" className="data-[state=active]:bg-white data-[state=active]:text-green-700">Endorsements</TabsTrigger>
-                      </TabsList>
-                      
-                      <TabsContent value="details" className="space-y-4 pt-4">
-                        {selectedProject ? (
-                          <div className="space-y-6">
-                            <div className="p-4 bg-green-50 border border-green-100 rounded-md">
-                              <h3 className="font-medium text-green-800">Assignment ready to publish!</h3>
-                              <p className="text-sm text-green-700 mt-1">
-                                Your assignment has been created and is ready to be published as a pulse.
-                              </p>
-                            </div>
-                            
-                            <div className="flex justify-end mt-6">
-                              <Button 
-                                type="button"
-                                className="px-6 bg-green-600 hover:bg-green-700 text-white"
-                                onClick={() => {
-                                  if (!user) {
-                                    toast({
-                                      title: "Error",
-                                      description: "You must be logged in to create a pulse",
-                                      variant: "destructive",
-                                    });
-                                    return;
-                                  }
-                                  
-                                  createPulseMutation.mutate({
-                                    userId: user.id,
-                                    type: "project" as any,
-                                    title: pulseTitle,
-                                    content: pulseContent,
-                                    isPublished: true,
-                                    projectId: selectedProject,
-                                    industry: pulseIndustry.trim() !== "" ? pulseIndustry : undefined
-                                  });
-                                }}
-                              >
-                                Publish Assignment
-                              </Button>
-                            </div>
-                          </div>
-                        ) : (
-                          <ProjectForm 
-                            onSuccess={(project) => {
-                              if (project && project.id) {
-                                setSelectedProject(project.id);
-                                
-                                // Auto-populate the pulse title, content, and industry
-                                setPulseTitle(project.title || "");
-                                setPulseContent(project.description || "");
-                                setPulseIndustry(project.industry || "");
-                                
-                                toast({
-                                  title: "Assignment created",
-                                  description: "Your assignment has been created successfully and added to your profile. You can now publish it as a pulse.",
-                                });
-                              }
-                            }}
-                          />
-                        )}
-                      </TabsContent>
-                      
-                      <TabsContent value="team" className="space-y-4 pt-4">
-                        <div className="space-y-4">
-                          <h3 className="text-sm font-medium">Add Team Member</h3>
-                          <div className="space-y-4 border rounded-lg p-4">
-                            <div className="space-y-2">
-                              <Label>Profile Link*</Label>
-                              <Input placeholder="https://brandentifier.replit.app/profile/username" disabled={!selectedProject} />
-                              <p className="text-xs text-muted-foreground">
-                                Add Brandentifier profile link to connect with users
-                              </p>
-                            </div>
-                            <Button size="sm" className="mt-2" disabled={!selectedProject}>
-                              Add Team Member
-                            </Button>
-                          </div>
-                          {!selectedProject && (
-                            <p className="text-sm text-amber-600">
-                              You need to create an assignment first before adding team members
+                    <div className="space-y-4 pt-4">
+                      {selectedProject ? (
+                        <div className="space-y-6">
+                          <div className="p-4 bg-green-50 border border-green-100 rounded-md">
+                            <h3 className="font-medium text-green-800">Assignment ready to publish!</h3>
+                            <p className="text-sm text-green-700 mt-1">
+                              Your assignment has been created and is ready to be published as a pulse.
                             </p>
-                          )}
-                        </div>
-                      </TabsContent>
-                      
-                      <TabsContent value="endorsements" className="space-y-4 pt-4">
-                        <div className="space-y-4">
-                          <h3 className="text-sm font-medium">Add Client</h3>
-                          <p className="text-sm text-muted-foreground">
-                            Add a client's profile link to invite them to endorse your assignment.
-                          </p>
-                          <div className="space-y-4 border rounded-lg p-4">
-                            <div className="space-y-2">
-                              <Label>Client Profile Link*</Label>
-                              <Input placeholder="https://brandentifier.replit.app/profile/username" disabled={!selectedProject} />
-                              <p className="text-xs text-muted-foreground">
-                                Add Brandentifier profile link of your client
-                              </p>
-                            </div>
+                          </div>
+                          
+                          <div className="flex justify-end mt-6">
                             <Button 
-                              size="sm" 
-                              className="mt-2"
-                              disabled={!selectedProject}
+                              type="button"
+                              className="px-6 bg-green-600 hover:bg-green-700 text-white"
+                              onClick={() => {
+                                if (!user) {
+                                  toast({
+                                    title: "Error",
+                                    description: "You must be logged in to create a pulse",
+                                    variant: "destructive",
+                                  });
+                                  return;
+                                }
+                                
+                                createPulseMutation.mutate({
+                                  userId: user.id,
+                                  type: "project" as any,
+                                  title: pulseTitle,
+                                  content: pulseContent,
+                                  isPublished: true,
+                                  projectId: selectedProject,
+                                  industry: pulseIndustry.trim() !== "" ? pulseIndustry : undefined
+                                });
+                              }}
                             >
-                              Add Client
+                              Publish Assignment
                             </Button>
                           </div>
-                          {!selectedProject && (
-                            <p className="text-xs text-amber-600 italic">
-                              You need to create an assignment first before requesting client endorsements.
-                            </p>
-                          )}
                         </div>
-                      </TabsContent>
-                    </Tabs>
+                      ) : (
+                        <ProjectForm 
+                          onSuccess={(project) => {
+                            if (project && project.id) {
+                              setSelectedProject(project.id);
+                              
+                              // Auto-populate the pulse title, content, and industry
+                              setPulseTitle(project.title || "");
+                              setPulseContent(project.description || "");
+                              setPulseIndustry(project.industry || "");
+                              
+                              toast({
+                                title: "Assignment created",
+                                description: "Your assignment has been created successfully and added to your profile. You can now publish it as a pulse.",
+                              });
+                            }
+                          }}
+                        />
+                      )}
+                    </div>
+
                   </div>
                 )}
               </CardContent>
