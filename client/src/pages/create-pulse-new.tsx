@@ -124,8 +124,8 @@ export default function CreatePulsePage() {
       title: pulseTitle,
       content: pulseContent,
       type: pulseType,
-      category: pulseCategory,
-      industry: pulseIndustry || "Technology", // Default to Technology if not specified
+      industry: pulseIndustry,
+      domain: pulseCategory, // Domain specialty within the industry
     };
     
     // Add type-specific data

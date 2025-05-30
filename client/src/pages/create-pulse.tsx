@@ -141,8 +141,8 @@ export default function CreatePulsePage() {
       // Set the proper media type
       pulseData.mediaType = mediaType as any; // Type assertion to match enum
       
-      // Set the pulse category
-      pulseData.category = pulseCategory as any; // Type assertion to match enum
+      // Set the domain (not category - category is for pulse type classification)
+      pulseData.domain = pulseCategory;
       
       // Calculate expires date for highlight category (24 hours from now)
       if (pulseCategory === 'highlight') {
