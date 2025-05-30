@@ -563,18 +563,32 @@ export default function CreatePulsePage() {
                         <Briefcase className="h-4 w-4 text-purple-500" />
                         <span>Industry</span>
                       </Label>
-                      <IndustryCombobox
-                        value={pulseIndustry}
-                        onChange={(value) => {
-                          setPulseIndustry(value);
-                          // Reset category when industry changes
-                          if (value !== pulseIndustry) {
-                            setPulseCategory("");
-                          }
-                        }}
-                        placeholder="Select or type an industry (e.g., Technology, Healthcare)"
-                        className="w-full border-purple-100"
-                      />
+                      <div className="relative">
+                        <select
+                          id="poll-industry"
+                          value={pulseIndustry}
+                          onChange={(e) => {
+                            setPulseIndustry(e.target.value);
+                            // Reset category when industry changes
+                            if (e.target.value !== pulseIndustry) {
+                              setPulseCategory("");
+                            }
+                          }}
+                          className="w-full h-10 px-3 pr-10 rounded-md border border-purple-100 appearance-none cursor-pointer focus:border-purple-500 focus:ring-2 focus:ring-purple-500/30 focus:outline-none text-sm"
+                        >
+                          <option value="">Select your industry</option>
+                          {INDUSTRIES.map((ind) => (
+                            <option key={ind} value={ind}>
+                              {ind}
+                            </option>
+                          ))}
+                        </select>
+                        <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                          <svg className="h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                          </svg>
+                        </div>
+                      </div>
                       <p className="text-xs text-muted-foreground">
                         Select your industry to help others find your trends
                       </p>
@@ -587,28 +601,29 @@ export default function CreatePulsePage() {
                           <Award className="h-4 w-4 text-purple-500" />
                           <span>Domain Specialty</span>
                         </Label>
-                        <Select value={pulseCategory} onValueChange={setPulseCategory}>
-                          <SelectTrigger className="w-full border-purple-100">
-                            <SelectValue placeholder="Select a domain specialty" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {INDUSTRY_DOMAINS[pulseIndustry]?.map((domain) => (
-                              <SelectItem key={domain} value={domain}>
-                                {domain}
-                              </SelectItem>
+                        <div className="relative">
+                          <select
+                            id="poll-domain"
+                            value={pulseCategory}
+                            onChange={(e) => setPulseCategory(e.target.value)}
+                            className="w-full h-10 px-3 pr-10 rounded-md border border-purple-100 appearance-none cursor-pointer focus:border-purple-500 focus:ring-2 focus:ring-purple-500/30 focus:outline-none text-sm"
+                          >
+                            <option value="">Select your domain specialty</option>
+                            {INDUSTRY_DOMAINS[pulseIndustry].map((dom) => (
+                              <option key={dom} value={dom}>
+                                {dom}
+                              </option>
                             ))}
-                          </SelectContent>
-                        </Select>
+                          </select>
+                          <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                            <svg className="h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                              <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                            </svg>
+                          </div>
+                        </div>
                         <p className="text-xs text-muted-foreground">
                           Choose your area of expertise within this industry
                         </p>
-                      </div>
-                    )}
-                    
-                    {/* Debug info - remove after fixing */}
-                    {pulseIndustry && (
-                      <div className="text-xs text-gray-500 mb-2">
-                        Debug: Industry "{pulseIndustry}", Available domains: {INDUSTRY_DOMAINS[pulseIndustry]?.length || 0}
                       </div>
                     )}
 
@@ -779,18 +794,32 @@ export default function CreatePulsePage() {
                         <Briefcase className="h-4 w-4 text-blue-500" />
                         <span>Industry</span>
                       </Label>
-                      <IndustryCombobox
-                        value={pulseIndustry}
-                        onChange={(value) => {
-                          setPulseIndustry(value);
-                          // Reset category when industry changes
-                          if (value !== pulseIndustry) {
-                            setPulseCategory("");
-                          }
-                        }}
-                        placeholder="Select or type an industry (e.g., Technology, Healthcare)"
-                        className="w-full"
-                      />
+                      <div className="relative">
+                        <select
+                          id="pulse-industry"
+                          value={pulseIndustry}
+                          onChange={(e) => {
+                            setPulseIndustry(e.target.value);
+                            // Reset category when industry changes
+                            if (e.target.value !== pulseIndustry) {
+                              setPulseCategory("");
+                            }
+                          }}
+                          className="w-full h-10 px-3 pr-10 rounded-md border appearance-none cursor-pointer focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30 focus:outline-none text-sm"
+                        >
+                          <option value="">Select your industry</option>
+                          {INDUSTRIES.map((ind) => (
+                            <option key={ind} value={ind}>
+                              {ind}
+                            </option>
+                          ))}
+                        </select>
+                        <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                          <svg className="h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                          </svg>
+                        </div>
+                      </div>
                       <p className="text-xs text-muted-foreground">
                         Select your industry to help others find your content
                       </p>
@@ -803,28 +832,29 @@ export default function CreatePulsePage() {
                           <Award className="h-4 w-4 text-blue-500" />
                           <span>Domain Specialty</span>
                         </Label>
-                        <Select value={pulseCategory} onValueChange={setPulseCategory}>
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select a domain specialty" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {INDUSTRY_DOMAINS[pulseIndustry]?.map((domain) => (
-                              <SelectItem key={domain} value={domain}>
-                                {domain}
-                              </SelectItem>
+                        <div className="relative">
+                          <select
+                            id="pulse-domain"
+                            value={pulseCategory}
+                            onChange={(e) => setPulseCategory(e.target.value)}
+                            className="w-full h-10 px-3 pr-10 rounded-md border appearance-none cursor-pointer focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30 focus:outline-none text-sm"
+                          >
+                            <option value="">Select your domain specialty</option>
+                            {INDUSTRY_DOMAINS[pulseIndustry].map((dom) => (
+                              <option key={dom} value={dom}>
+                                {dom}
+                              </option>
                             ))}
-                          </SelectContent>
-                        </Select>
+                          </select>
+                          <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                            <svg className="h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                              <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                            </svg>
+                          </div>
+                        </div>
                         <p className="text-xs text-muted-foreground">
                           Choose your area of expertise within this industry
                         </p>
-                      </div>
-                    )}
-                    
-                    {/* Debug info - remove after fixing */}
-                    {pulseIndustry && (
-                      <div className="text-xs text-gray-500 mb-2">
-                        Debug: Industry "{pulseIndustry}", Available domains: {INDUSTRY_DOMAINS[pulseIndustry]?.length || 0}
                       </div>
                     )}
                     <div className="space-y-2">

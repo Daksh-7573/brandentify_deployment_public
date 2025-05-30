@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { AlertCircle, BarChart, Video, Image, FileCode, Loader2, X, ChevronLeft } from "lucide-react";
+import { AlertCircle, BarChart, Video, Image, FileCode, Loader2, X, ChevronLeft, Briefcase, Award } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ProjectForm, { Project } from "@/components/shared/project-form";
@@ -397,38 +397,69 @@ export default function CreatePulsePage() {
                     />
                   </div>
                   
+                  {/* Industry Selection */}
                   <div className="space-y-2">
-                    <Label htmlFor="industry" className="text-white">Industry</Label>
-                    <IndustryCombobox 
-                      value={pulseIndustry} 
-                      onChange={(value) => {
-                        setPulseIndustry(value);
-                        // Reset category when industry changes
-                        if (value !== pulseIndustry) {
-                          setPulseCategory("");
-                        }
-                      }}
-                      className="neo-glass-input"
-                      useDarkMode={true}
-                    />
+                    <Label htmlFor="industry" className="text-white flex items-center gap-2">
+                      <Briefcase className="h-4 w-4" />
+                      Industry
+                    </Label>
+                    <div className="relative">
+                      <select
+                        id="industry"
+                        value={pulseIndustry}
+                        onChange={(e) => {
+                          setPulseIndustry(e.target.value);
+                          // Reset category when industry changes
+                          if (e.target.value !== pulseIndustry) {
+                            setPulseCategory("");
+                          }
+                        }}
+                        className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 px-3 pr-10 rounded-md border appearance-none cursor-pointer focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none text-sm leading-relaxed"
+                        style={{ lineHeight: '1.5', paddingTop: '0.75rem', paddingBottom: '0.75rem' }}
+                      >
+                        <option value="">Select your industry</option>
+                        {INDUSTRIES.map((ind) => (
+                          <option key={ind} value={ind} className="bg-gray-800 text-white">
+                            {ind}
+                          </option>
+                        ))}
+                      </select>
+                      <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                        <svg className="h-4 w-4 text-white/70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                    </div>
                   </div>
                   
                   {/* Domain/Specialty - Dynamic based on selected industry */}
                   {pulseIndustry && INDUSTRY_DOMAINS[pulseIndustry] && (
                     <div className="space-y-2">
-                      <Label htmlFor="category" className="text-white">Domain Specialty</Label>
-                      <Select value={pulseCategory} onValueChange={setPulseCategory}>
-                        <SelectTrigger className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20">
-                          <SelectValue placeholder="Select a domain specialty" />
-                        </SelectTrigger>
-                        <SelectContent className="neo-glass-input bg-[rgba(30,30,30,0.95)] text-white border-white/20">
-                          {INDUSTRY_DOMAINS[pulseIndustry].map((domain) => (
-                            <SelectItem key={domain} value={domain}>
-                              {domain}
-                            </SelectItem>
+                      <Label htmlFor="domain" className="text-white flex items-center gap-2">
+                        <Award className="h-4 w-4" />
+                        Domain Specialty
+                      </Label>
+                      <div className="relative">
+                        <select
+                          id="domain"
+                          value={pulseCategory}
+                          onChange={(e) => setPulseCategory(e.target.value)}
+                          className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 px-3 pr-10 rounded-md border appearance-none cursor-pointer focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none text-sm leading-relaxed"
+                          style={{ lineHeight: '1.5', paddingTop: '0.75rem', paddingBottom: '0.75rem' }}
+                        >
+                          <option value="">Select your domain specialty</option>
+                          {INDUSTRY_DOMAINS[pulseIndustry].map((dom) => (
+                            <option key={dom} value={dom} className="bg-gray-800 text-white">
+                              {dom}
+                            </option>
                           ))}
-                        </SelectContent>
-                      </Select>
+                        </select>
+                        <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                          <svg className="h-4 w-4 text-white/70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                          </svg>
+                        </div>
+                      </div>
                     </div>
                   )}
 
