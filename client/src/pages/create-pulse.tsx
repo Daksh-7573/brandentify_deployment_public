@@ -42,12 +42,8 @@ export default function CreatePulsePage() {
   // Create a mutation for submitting the pulse
   const createPulseMutation = useMutation({
     mutationFn: async (pulseData: InsertPulse) => {
-      const res = await apiRequest({
-        method: 'POST', 
-        url: '/api/pulses', 
-        data: pulseData
-      });
-      return res.json();
+      const res = await apiRequest('POST', '/api/pulses', pulseData);
+      return res;
     },
     onSuccess: () => {
       // Invalidate the pulses query to refresh the list
@@ -569,7 +565,13 @@ export default function CreatePulsePage() {
                       </Label>
                       <IndustryCombobox
                         value={pulseIndustry}
-                        onChange={setPulseIndustry}
+                        onChange={(value) => {
+                          setPulseIndustry(value);
+                          // Reset category when industry changes
+                          if (value !== pulseIndustry) {
+                            setPulseCategory("");
+                          }
+                        }}
                         placeholder="Select or type an industry (e.g., Technology, Healthcare)"
                         className="w-full border-purple-100"
                       />
@@ -577,6 +579,31 @@ export default function CreatePulsePage() {
                         Select your industry to help others find your trends
                       </p>
                     </div>
+
+                    {/* Domain/Specialty - Dynamic based on selected industry */}
+                    {pulseIndustry && INDUSTRY_DOMAINS[pulseIndustry] && (
+                      <div className="space-y-2 mb-6">
+                        <Label htmlFor="poll-domain" className="flex items-center gap-2">
+                          <Award className="h-4 w-4 text-purple-500" />
+                          <span>Domain Specialty</span>
+                        </Label>
+                        <Select value={pulseCategory} onValueChange={setPulseCategory}>
+                          <SelectTrigger className="w-full border-purple-100">
+                            <SelectValue placeholder="Select a domain specialty" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {INDUSTRY_DOMAINS[pulseIndustry].map((domain) => (
+                              <SelectItem key={domain} value={domain}>
+                                {domain}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <p className="text-xs text-muted-foreground">
+                          Choose your area of expertise within this industry
+                        </p>
+                      </div>
+                    )}
 
                     <div className="space-y-4">
                       <Label className="flex items-center gap-2">
@@ -747,7 +774,13 @@ export default function CreatePulsePage() {
                       </Label>
                       <IndustryCombobox
                         value={pulseIndustry}
-                        onChange={setPulseIndustry}
+                        onChange={(value) => {
+                          setPulseIndustry(value);
+                          // Reset category when industry changes
+                          if (value !== pulseIndustry) {
+                            setPulseCategory("");
+                          }
+                        }}
                         placeholder="Select or type an industry (e.g., Technology, Healthcare)"
                         className="w-full"
                       />
@@ -755,6 +788,31 @@ export default function CreatePulsePage() {
                         Select your industry to help others find your content
                       </p>
                     </div>
+
+                    {/* Domain/Specialty - Dynamic based on selected industry */}
+                    {pulseIndustry && INDUSTRY_DOMAINS[pulseIndustry] && (
+                      <div className="space-y-2 mb-6">
+                        <Label htmlFor="pulse-domain" className="flex items-center gap-2">
+                          <Award className="h-4 w-4 text-blue-500" />
+                          <span>Domain Specialty</span>
+                        </Label>
+                        <Select value={pulseCategory} onValueChange={setPulseCategory}>
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select a domain specialty" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {INDUSTRY_DOMAINS[pulseIndustry].map((domain) => (
+                              <SelectItem key={domain} value={domain}>
+                                {domain}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <p className="text-xs text-muted-foreground">
+                          Choose your area of expertise within this industry
+                        </p>
+                      </div>
+                    )}
                     <div className="space-y-2">
                       <Label htmlFor="media-title" className="flex items-center gap-2">
                         {mediaType === 'video' ? (
