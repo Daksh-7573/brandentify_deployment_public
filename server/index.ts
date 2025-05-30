@@ -60,6 +60,12 @@ app.use((req: Request, res: Response, next: NextFunction) => {
     return next();
   }
   
+  // Skip validation for media upload endpoints that have their own validation
+  const mediaUploadPaths = ['/api/pulses/upload-media', '/api/projects/upload-media'];
+  if (mediaUploadPaths.some(path => req.path.includes(path))) {
+    return next();
+  }
+  
   // Loop through all uploaded files to validate them
   const fileArray = Object.values(req.files as Record<string, any>).flat();
   
