@@ -31,9 +31,10 @@ export default function CreatePulsePage() {
   const [pulseCategory, setPulseCategory] = useState("");
   const [pulseIndustry, setPulseIndustry] = useState("");
   const [pollOptions, setPollOptions] = useState(["", ""]);
-  // Project tab state
-  const [activeProjectTab, setActiveProjectTab] = useState('details');
+  // Project tab state - new structure
+  const [activeProjectTab, setActiveProjectTab] = useState('project-details');
   const [selectedProject, setSelectedProject] = useState<number | null>(null);
+  const [projectUrl, setProjectUrl] = useState("");
   const [mediaUrls, setMediaUrls] = useState<string[]>([]);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const videoInputRef = useRef<HTMLInputElement>(null);
@@ -1016,71 +1017,224 @@ export default function CreatePulsePage() {
 
                 {pulseType === 'project' && (
                   <div className="space-y-6" data-pulse-type="assignment">
-                    <div className="space-y-2">
-                      <h3 className="text-lg font-medium text-green-700">Project Details</h3>
-                      <p className="text-sm text-muted-foreground">Add your project details. This will be saved to your profile and published as a pulse.</p>
-                    </div>
-                    
-                    <div className="space-y-4 pt-4">
-                      {selectedProject ? (
-                        <div className="space-y-6">
-                          <div className="p-4 bg-green-50 border border-green-100 rounded-md">
-                            <h3 className="font-medium text-green-800">Assignment ready to publish!</h3>
-                            <p className="text-sm text-green-700 mt-1">
-                              Your assignment has been created and is ready to be published as a pulse.
+                    <Tabs value={activeProjectTab} onValueChange={setActiveProjectTab} className="w-full">
+                      <TabsList className="grid w-full grid-cols-4 bg-green-50">
+                        <TabsTrigger value="project-details" className="data-[state=active]:bg-white data-[state=active]:text-green-700">
+                          Project Details
+                        </TabsTrigger>
+                        <TabsTrigger value="media" className="data-[state=active]:bg-white data-[state=active]:text-green-700">
+                          Media
+                        </TabsTrigger>
+                        <TabsTrigger value="team-members" className="data-[state=active]:bg-white data-[state=active]:text-green-700">
+                          Team Members
+                        </TabsTrigger>
+                        <TabsTrigger value="client" className="data-[state=active]:bg-white data-[state=active]:text-green-700">
+                          Client
+                        </TabsTrigger>
+                      </TabsList>
+
+                      {/* Project Details Tab */}
+                      <TabsContent value="project-details" className="space-y-4 pt-4">
+                        <div className="space-y-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="project-title" className="flex items-center gap-2">
+                              <FileCode className="h-4 w-4 text-green-500" />
+                              <span>Project Title</span>
+                            </Label>
+                            <Input
+                              id="project-title"
+                              placeholder="Enter your project title"
+                              value={pulseTitle}
+                              onChange={(e) => setPulseTitle(e.target.value)}
+                              className="border-green-100 focus-visible:ring-green-500"
+                              required
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label htmlFor="project-content" className="flex items-center gap-2">
+                              <AlertCircle className="h-4 w-4 text-green-500" />
+                              <span>Project Description</span>
+                            </Label>
+                            <Textarea
+                              id="project-content"
+                              placeholder="Describe your project, its goals, and key achievements..."
+                              value={pulseContent}
+                              onChange={(e) => setPulseContent(e.target.value)}
+                              className="resize-none border-green-100 focus-visible:ring-green-500"
+                              rows={4}
+                              required
+                            />
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <Label htmlFor="project-industry" className="flex items-center gap-2">
+                                <Briefcase className="h-4 w-4 text-green-500" />
+                                <span>Industry</span>
+                              </Label>
+                              <div className="relative">
+                                <select
+                                  id="project-industry"
+                                  value={pulseIndustry}
+                                  onChange={(e) => {
+                                    setPulseIndustry(e.target.value);
+                                    if (e.target.value !== pulseIndustry) {
+                                      setPulseCategory("");
+                                    }
+                                  }}
+                                  className="w-full h-10 px-3 pr-10 rounded-md border border-green-100 appearance-none cursor-pointer focus:border-green-500 focus:ring-2 focus:ring-green-500/30 focus:outline-none text-sm"
+                                  required
+                                >
+                                  <option value="">Select industry</option>
+                                  {INDUSTRIES.map((ind) => (
+                                    <option key={ind} value={ind}>
+                                      {ind}
+                                    </option>
+                                  ))}
+                                </select>
+                                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                  <svg className="h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                                  </svg>
+                                </div>
+                              </div>
+                            </div>
+
+                            {pulseIndustry && INDUSTRY_DOMAINS[pulseIndustry] && (
+                              <div className="space-y-2">
+                                <Label htmlFor="project-domain" className="flex items-center gap-2">
+                                  <Award className="h-4 w-4 text-green-500" />
+                                  <span>Domain Specialty</span>
+                                </Label>
+                                <div className="relative">
+                                  <select
+                                    id="project-domain"
+                                    value={pulseCategory}
+                                    onChange={(e) => setPulseCategory(e.target.value)}
+                                    className="w-full h-10 px-3 pr-10 rounded-md border border-green-100 appearance-none cursor-pointer focus:border-green-500 focus:ring-2 focus:ring-green-500/30 focus:outline-none text-sm"
+                                  >
+                                    <option value="">Select domain specialty</option>
+                                    {INDUSTRY_DOMAINS[pulseIndustry].map((dom) => (
+                                      <option key={dom} value={dom}>
+                                        {dom}
+                                      </option>
+                                    ))}
+                                  </select>
+                                  <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                    <svg className="h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                      <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                                    </svg>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label htmlFor="project-url" className="flex items-center gap-2">
+                              <Rocket className="h-4 w-4 text-green-500" />
+                              <span>Project URL</span>
+                            </Label>
+                            <Input
+                              id="project-url"
+                              placeholder="https://your-project-url.com"
+                              value={projectUrl}
+                              onChange={(e) => setProjectUrl(e.target.value)}
+                              className="border-green-100 focus-visible:ring-green-500"
+                              type="url"
+                            />
+                            <p className="text-xs text-muted-foreground">
+                              Link to your live project, GitHub repository, or portfolio page
                             </p>
                           </div>
-                          
-                          <div className="flex justify-end mt-6">
+
+                          <div className="flex justify-end pt-4">
                             <Button 
                               type="button"
-                              className="px-6 bg-green-600 hover:bg-green-700 text-white"
                               onClick={() => {
                                 if (!user) {
                                   toast({
                                     title: "Error",
-                                    description: "You must be logged in to create a pulse",
+                                    description: "You must be logged in to create a project",
                                     variant: "destructive",
                                   });
                                   return;
                                 }
-                                
+
+                                // Create project data
+                                const projectData = {
+                                  userId: user.id,
+                                  title: pulseTitle,
+                                  description: pulseContent,
+                                  industry: pulseIndustry,
+                                  domain: pulseCategory,
+                                  projectUrl: projectUrl,
+                                  isPublished: true
+                                };
+
+                                // Create project and then pulse
                                 createPulseMutation.mutate({
                                   userId: user.id,
                                   type: "project" as any,
                                   title: pulseTitle,
                                   content: pulseContent,
                                   isPublished: true,
-                                  projectId: selectedProject,
                                   industry: pulseIndustry.trim() !== "" ? pulseIndustry : undefined
                                 });
                               }}
+                              className="px-6 bg-green-600 hover:bg-green-700 text-white"
+                              disabled={!pulseTitle || !pulseContent || !pulseIndustry || createPulseMutation.isPending}
                             >
-                              Publish Assignment
+                              {createPulseMutation.isPending ? (
+                                <>
+                                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                  Creating...
+                                </>
+                              ) : (
+                                "Create & Publish Project"
+                              )}
                             </Button>
                           </div>
                         </div>
-                      ) : (
-                        <ProjectForm 
-                          onSuccess={(project) => {
-                            if (project && project.id) {
-                              setSelectedProject(project.id);
-                              
-                              // Auto-populate the pulse title, content, and industry
-                              setPulseTitle(project.title || "");
-                              setPulseContent(project.description || "");
-                              setPulseIndustry(project.industry || "");
-                              
-                              toast({
-                                title: "Assignment created",
-                                description: "Your assignment has been created successfully and added to your profile. You can now publish it as a pulse.",
-                              });
-                            }
-                          }}
-                        />
-                      )}
-                    </div>
+                      </TabsContent>
 
+                      {/* Media Tab */}
+                      <TabsContent value="media" className="space-y-4 pt-4">
+                        <div className="text-center py-8">
+                          <Image className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                          <h3 className="text-lg font-medium text-gray-700 mb-2">Media Upload Coming Soon</h3>
+                          <p className="text-sm text-muted-foreground">
+                            Project media upload functionality will be available in the next update.
+                            For now, you can add media through your project URL.
+                          </p>
+                        </div>
+                      </TabsContent>
+
+                      {/* Team Members Tab */}
+                      <TabsContent value="team-members" className="space-y-4 pt-4">
+                        <div className="text-center py-8">
+                          <FileCode className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                          <h3 className="text-lg font-medium text-gray-700 mb-2">Team Management Coming Soon</h3>
+                          <p className="text-sm text-muted-foreground">
+                            Team member management functionality will be available in the next update.
+                            You can mention team members in your project description for now.
+                          </p>
+                        </div>
+                      </TabsContent>
+
+                      {/* Client Tab */}
+                      <TabsContent value="client" className="space-y-4 pt-4">
+                        <div className="text-center py-8">
+                          <Award className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                          <h3 className="text-lg font-medium text-gray-700 mb-2">Client Endorsements Coming Soon</h3>
+                          <p className="text-sm text-muted-foreground">
+                            Client endorsement functionality will be available in the next update.
+                            You can mention client feedback in your project description for now.
+                          </p>
+                        </div>
+                      </TabsContent>
+                    </Tabs>
                   </div>
                 )}
               </CardContent>
