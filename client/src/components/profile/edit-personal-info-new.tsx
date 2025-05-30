@@ -1,45 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Mail, Phone, Globe, Briefcase, MapPin, Building, Book, User, X, Save } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { useQueryClient } from "@tanstack/react-query";
 import { UserData } from "@/types/user";
+import { INDUSTRIES, INDUSTRY_DOMAINS } from "@shared/constants";
 
 interface EditPersonalInfoProps {
   userData: UserData;
   onCancel: () => void;
   onSave: () => void;
 }
-
-const industries = [
-  "Technology",
-  "Healthcare", 
-  "Finance",
-  "Education",
-  "Manufacturing",
-  "Retail",
-  "Media",
-  "Hospitality",
-  "Government",
-  "Consulting",
-  "Non-profit",
-  "Other"
-];
-
-const domains = [
-  "Software Development",
-  "Data Science",
-  "Design",
-  "Marketing",
-  "Sales",
-  "Customer Service",
-  "Project Management",
-  "Research",
-  "Operations",
-  "Finance & Accounting",
-  "Human Resources",
-  "Other"
-];
 
 const countryCodes = [
   { code: "+1", country: "USA/Canada" },
@@ -243,12 +214,18 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
             <select
               id="industry"
               value={industry}
-              onChange={(e) => setIndustry(e.target.value)}
+              onChange={(e) => {
+                setIndustry(e.target.value);
+                // Reset domain when industry changes
+                if (e.target.value !== industry) {
+                  setDomain('');
+                }
+              }}
               className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 px-3 pr-10 rounded-md border appearance-none cursor-pointer focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none text-sm leading-relaxed"
               style={{ lineHeight: '1.5', paddingTop: '0.75rem', paddingBottom: '0.75rem' }}
             >
               <option value="">Select your industry</option>
-              {industries.map((ind) => (
+              {INDUSTRIES.map((ind) => (
                 <option key={ind} value={ind} className="bg-gray-800 text-white">
                   {ind}
                 </option>
@@ -262,34 +239,36 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
           </div>
         </div>
 
-        {/* Domain/Specialty */}
-        <div className="space-y-2">
-          <label htmlFor="domain" className="text-sm font-medium text-white flex items-center gap-2">
-            <Book className="h-4 w-4" />
-            Domain/Specialty
-          </label>
-          <div className="relative">
-            <select
-              id="domain"
-              value={domain}
-              onChange={(e) => setDomain(e.target.value)}
-              className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 px-3 pr-10 rounded-md border appearance-none cursor-pointer focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none text-sm leading-relaxed"
-              style={{ lineHeight: '1.5', paddingTop: '0.75rem', paddingBottom: '0.75rem' }}
-            >
-              <option value="">Select your domain</option>
-              {domains.map((dom) => (
-                <option key={dom} value={dom} className="bg-gray-800 text-white">
-                  {dom}
-                </option>
-              ))}
-            </select>
-            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-              <svg className="h-4 w-4 text-white/70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-              </svg>
+        {/* Domain/Specialty - Dynamic based on selected industry */}
+        {industry && INDUSTRY_DOMAINS[industry] && (
+          <div className="space-y-2">
+            <label htmlFor="domain" className="text-sm font-medium text-white flex items-center gap-2">
+              <Book className="h-4 w-4" />
+              Domain/Specialty
+            </label>
+            <div className="relative">
+              <select
+                id="domain"
+                value={domain}
+                onChange={(e) => setDomain(e.target.value)}
+                className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 px-3 pr-10 rounded-md border appearance-none cursor-pointer focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none text-sm leading-relaxed"
+                style={{ lineHeight: '1.5', paddingTop: '0.75rem', paddingBottom: '0.75rem' }}
+              >
+                <option value="">Select your domain specialty</option>
+                {INDUSTRY_DOMAINS[industry].map((dom) => (
+                  <option key={dom} value={dom} className="bg-gray-800 text-white">
+                    {dom}
+                  </option>
+                ))}
+              </select>
+              <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <svg className="h-4 w-4 text-white/70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* About Me */}
         <div className="space-y-2">
