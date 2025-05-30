@@ -516,6 +516,12 @@ export function validateFileUpload(file: any): { valid: boolean; message?: strin
     'image/png', 
     'image/gif', 
     'image/svg+xml',
+    'video/mp4',
+    'video/webm',
+    'video/ogg',
+    'video/avi',
+    'video/mov',
+    'video/quicktime',
     'application/pdf',
     'application/msword',
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
@@ -526,11 +532,12 @@ export function validateFileUpload(file: any): { valid: boolean; message?: strin
   // Define allowed file extensions
   const allowedExtensions = [
     '.jpg', '.jpeg', '.png', '.gif', '.svg',
+    '.mp4', '.webm', '.ogg', '.avi', '.mov',
     '.pdf', '.doc', '.docx', '.txt', '.csv'
   ];
   
-  // Max file size (10MB)
-  const maxSize = 10 * 1024 * 1024;
+  // Max file size (25MB for media uploads, 10MB for documents)
+  const maxSize = file.mimetype?.startsWith('video/') ? 25 * 1024 * 1024 : 10 * 1024 * 1024;
   
   // Check file type
   if (!allowedTypes.includes(file.mimetype)) {
