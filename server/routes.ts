@@ -2568,6 +2568,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
           return { valid: false, message: `File "${file.name}" must be an image or video file` };
         }
         
+        // Check file extension
+        const fileName = file.name || '';
+        const fileExtension = path.extname(fileName).toLowerCase();
+        
+        const allowedImageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.svg', '.webp'];
+        const allowedVideoExtensions = ['.mp4', '.webm', '.ogg', '.avi', '.mov'];
+        
+        if (isImage && !allowedImageExtensions.includes(fileExtension)) {
+          return { valid: false, message: `Image file "${file.name}" has unsupported extension. Allowed: ${allowedImageExtensions.join(', ')}` };
+        }
+        
+        if (isVideo && !allowedVideoExtensions.includes(fileExtension)) {
+          return { valid: false, message: `Video file "${file.name}" has unsupported extension. Allowed: ${allowedVideoExtensions.join(', ')}` };
+        }
+        
         // Check file size (20MB limit for images, 25MB for videos to accommodate 2 minutes)
         const maxSize = isVideo ? 25 * 1024 * 1024 : 20 * 1024 * 1024;
         if (file.size > maxSize) {
