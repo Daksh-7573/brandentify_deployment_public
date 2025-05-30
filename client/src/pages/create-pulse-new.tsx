@@ -43,12 +43,8 @@ export default function CreatePulsePage() {
   // Create a mutation for submitting the pulse
   const createPulseMutation = useMutation({
     mutationFn: async (pulseData: InsertPulse) => {
-      const res = await apiRequest({
-        method: 'POST', 
-        url: '/api/pulses', 
-        data: pulseData
-      });
-      return res.json();
+      const res = await apiRequest('POST', '/api/pulses', pulseData);
+      return res;
     },
     onSuccess: () => {
       // Show success toast
