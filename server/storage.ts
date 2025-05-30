@@ -2525,6 +2525,7 @@ export class MemStorage implements IStorage {
       title: insertPulse.title,
       content: insertPulse.content ?? null,
       industry: insertPulse.industry ?? null,
+      domain: insertPulse.domain ?? null,
       mediaType: insertPulse.mediaType ?? null,
       mediaUrls: insertPulse.mediaUrls ?? [],
       mediaLocalStorageKeys: insertPulse.mediaLocalStorageKeys ?? [],
@@ -2544,8 +2545,13 @@ export class MemStorage implements IStorage {
     this.pulses.set(id, pulse);
     
     // Extract and save hashtags from the content/description
-    if (insertPulse.content) {
-      await this.extractAndSaveHashtags(insertPulse.content, id);
+    try {
+      if (insertPulse.content) {
+        await this.extractAndSaveHashtags(insertPulse.content, id);
+      }
+    } catch (hashtagError) {
+      console.error('[createPulse] Error extracting hashtags:', hashtagError);
+      // Continue without hashtags rather than failing the pulse creation
     }
     
     return pulse;

@@ -2642,6 +2642,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Create the new pulse
       console.log('[POST /pulses] Creating pulse in storage...');
+      console.log('[POST /pulses] Pulse data being sent to storage:', JSON.stringify(pulseData, null, 2));
       const newPulse = await storage.createPulse(pulseData);
       console.log(`[POST /pulses] Created new pulse with ID: ${newPulse.id}`);
       
