@@ -69,7 +69,7 @@ export default function CreatePulsePage() {
 
         <div className="max-w-4xl mx-auto">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Create Pulse</h1>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Create Pulse - Enhanced</h1>
             <p className="text-gray-600">Share your thoughts, projects, or expertise with the professional community</p>
           </div>
 
