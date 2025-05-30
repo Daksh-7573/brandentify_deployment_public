@@ -180,44 +180,77 @@ export default function CreatePulsePage() {
     }
   };
   
-  // Handle image upload
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Handle media upload (images and videos)
+  const handleMediaUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
-    
-    // Check file count limit
-    if (files.length + uploadedFiles.length > 5) {
-      toast({
-        title: "Too Many Files",
-        description: "You can only upload up to 5 images.",
-        variant: "destructive",
-      });
-      return;
-    }
     
     // Convert FileList to Array for filtering
     const filesArray = Array.from(files);
     
+    // Check file count limit based on media type
+    if (mediaType === 'image') {
+      if (filesArray.length + uploadedFiles.length > 5) {
+        toast({
+          title: "Too Many Files",
+          description: "You can only upload up to 5 images.",
+          variant: "destructive",
+        });
+        return;
+      }
+    } else if (mediaType === 'video') {
+      if (filesArray.length > 1) {
+        toast({
+          title: "Video Limit",
+          description: "You can only upload one video at a time.",
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+    
     // Validate file types and sizes
     const validFiles = filesArray.filter(file => {
-      // Check file type
-      if (!file.type.startsWith('image/')) {
-        toast({
-          title: "Invalid File Type",
-          description: `"${file.name}" is not an image file.`,
-          variant: "destructive",
-        });
-        return false;
-      }
-      
-      // Check file size (20MB limit)
-      if (file.size > 20 * 1024 * 1024) {
-        toast({
-          title: "File Too Large",
-          description: `"${file.name}" exceeds the 20MB limit.`,
-          variant: "destructive",
-        });
-        return false;
+      if (mediaType === 'image') {
+        // Check image file type
+        if (!file.type.startsWith('image/')) {
+          toast({
+            title: "Invalid File Type",
+            description: `"${file.name}" is not an image file.`,
+            variant: "destructive",
+          });
+          return false;
+        }
+        
+        // Check image file size (20MB limit)
+        if (file.size > 20 * 1024 * 1024) {
+          toast({
+            title: "File Too Large",
+            description: `"${file.name}" exceeds the 20MB limit.`,
+            variant: "destructive",
+          });
+          return false;
+        }
+      } else if (mediaType === 'video') {
+        // Check video file type
+        if (!file.type.startsWith('video/')) {
+          toast({
+            title: "Invalid File Type",
+            description: `"${file.name}" is not a video file.`,
+            variant: "destructive",
+          });
+          return false;
+        }
+        
+        // Check video file size (25MB limit for 2 minutes)
+        if (file.size > 25 * 1024 * 1024) {
+          toast({
+            title: "File Too Large",
+            description: `"${file.name}" exceeds the 25MB limit. Please compress your video or reduce duration to 2 minutes.`,
+            variant: "destructive",
+          });
+          return false;
+        }
       }
       
       return true;
@@ -239,9 +272,10 @@ export default function CreatePulsePage() {
       });
       
       // Show uploading toast
+      const fileType = mediaType === 'video' ? 'video' : 'images';
       toast({
         title: "Uploading",
-        description: "Uploading images to the server...",
+        description: `Uploading ${fileType} to the server...`,
       });
       
       // Upload files to server
@@ -255,23 +289,24 @@ export default function CreatePulsePage() {
       }
       
       const data = await response.json();
-      console.log("Image upload successful:", data);
+      console.log("Media upload successful:", data);
       
       // Update mediaUrls with server URLs
       if (data.mediaUrls && data.mediaUrls.length > 0) {
         setMediaUrls(data.mediaUrls);
+        setUploadedFiles(validFiles);
         
         toast({
-          title: "Images uploaded",
-          description: "Image files uploaded successfully",
+          title: "Upload Complete",
+          description: `${fileType.charAt(0).toUpperCase() + fileType.slice(1)} uploaded successfully`,
         });
       }
     } catch (error) {
-      console.error("Error uploading images:", error);
+      console.error("Error uploading media:", error);
       
       toast({
         title: "Upload Error",
-        description: error instanceof Error ? error.message : "Failed to upload images",
+        description: error instanceof Error ? error.message : "Failed to upload media",
         variant: "destructive",
       });
     }
@@ -541,7 +576,7 @@ export default function CreatePulsePage() {
                               type="file"
                               accept="image/*"
                               multiple
-                              onChange={handleImageUpload}
+                              onChange={handleMediaUpload}
                               className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 file:bg-white/20 file:text-white file:hover:bg-white/30"
                             />
                             <p className="text-xs text-gray-400">Select up to 5 images (max 20MB each)</p>

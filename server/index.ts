@@ -13,9 +13,9 @@ import securityDashboardRoutes from "./security-dashboard";
 import { firebaseAuthRedirectHandler } from "./firebase-auth-handler";
 
 const app = express();
-// Increase body size limit to handle file uploads (10MB)
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: false, limit: '10mb' }));
+// Increase body size limit to handle file uploads (25MB)
+app.use(express.json({ limit: '25mb' }));
+app.use(express.urlencoded({ extended: false, limit: '25mb' }));
 
 // Firebase Auth Handler - detect and handle Firebase auth redirects early in the middleware stack
 app.use(firebaseAuthRedirectHandler);
@@ -44,7 +44,7 @@ app.use(requestTimeout);
 
 // Setup express-fileupload middleware with enhanced security
 app.use(fileUpload({
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB max file size
+  limits: { fileSize: 25 * 1024 * 1024 }, // 25MB max file size (to accommodate 20MB images + overhead)
   useTempFiles: true,
   tempFileDir: path.join(process.cwd(), 'tmp'),
   createParentPath: true,

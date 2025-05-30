@@ -2558,8 +2558,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Process files from the request (could be an array or single file)
       const mediaFiles = req.files.media;
       
+      // Helper function to validate media files
+      const validateMediaFile = (file: any): { valid: boolean; message?: string } => {
+        // Check file type (images and videos)
+        const isImage = file.mimetype && file.mimetype.startsWith('image/');
+        const isVideo = file.mimetype && file.mimetype.startsWith('video/');
+        
+        if (!isImage && !isVideo) {
+          return { valid: false, message: `File "${file.name}" must be an image or video file` };
+        }
+        
+        // Check file size (20MB limit for images, 25MB for videos to accommodate 2 minutes)
+        const maxSize = isVideo ? 25 * 1024 * 1024 : 20 * 1024 * 1024;
+        if (file.size > maxSize) {
+          const sizeLimit = isVideo ? '25MB' : '20MB';
+          return { valid: false, message: `File "${file.name}" exceeds ${sizeLimit} size limit` };
+        }
+        
+        return { valid: true };
+      };
+      
       if (Array.isArray(mediaFiles)) {
         // Handle multiple files
+        if (mediaFiles.length > 5) {
+          return res.status(400).json({ message: "Maximum 5 files allowed per upload" });
+        }
+        
+        // Validate all files first
+        for (const file of mediaFiles) {
+          const validation = validateMediaFile(file);
+          if (!validation.valid) {
+            return res.status(400).json({ message: validation.message });
+          }
+        }
+        
         for (let i = 0; i < mediaFiles.length; i++) {
           const file = mediaFiles[i];
           
@@ -2581,6 +2613,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 const fileUrl = getFileUrl(filename, 'media');
                 uploadedMediaUrls.push(fileUrl);
                 uploadedFileNames.push(filename);
+                console.log(`[POST /pulses/upload-media] Successfully uploaded: ${filename}`);
                 resolve();
               }
             });
@@ -2589,6 +2622,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } else if (mediaFiles) {
         // Handle single file
         const file = mediaFiles;
+        
+        // Validate single file
+        const validation = validateMediaFile(file);
+        if (!validation.valid) {
+          return res.status(400).json({ message: validation.message });
+        }
         
         // Generate unique filename
         const timestamp = Date.now();
@@ -2608,11 +2647,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
               const fileUrl = getFileUrl(filename, 'media');
               uploadedMediaUrls.push(fileUrl);
               uploadedFileNames.push(filename);
+              console.log(`[POST /pulses/upload-media] Successfully uploaded: ${filename}`);
               resolve();
             }
           });
         });
       }
+      
+      console.log(`[POST /pulses/upload-media] Upload completed. URLs: ${uploadedMediaUrls.join(', ')}`);
       
       // Return the uploaded media URLs
       res.status(200).json({
