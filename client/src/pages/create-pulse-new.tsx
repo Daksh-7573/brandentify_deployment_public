@@ -478,7 +478,10 @@ export default function CreatePulsePage() {
               
               <NeoGlassSection>
                 <div className="space-y-6">
-                  <div className="space-y-2">
+                  {/* Only show general form fields for non-project pulses */}
+                  {pulseType !== 'project' && (
+                  <>
+                    <div className="space-y-2">
                     <Label htmlFor="title" className="text-white">Title</Label>
                     <Input 
                       id="title" 
@@ -565,6 +568,7 @@ export default function CreatePulsePage() {
                         </div>
                       </div>
                     </div>
+                  </>
                   )}
 
                   {/* Poll Options */}
