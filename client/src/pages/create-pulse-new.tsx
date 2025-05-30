@@ -478,10 +478,7 @@ export default function CreatePulsePage() {
               
               <NeoGlassSection>
                 <div className="space-y-6">
-                  {/* Hide general form fields for project pulses to avoid duplication */}
-                  <div className={pulseType === 'project' ? 'hidden' : 'space-y-6'}>
-                    <div className="space-y-2">
-                        <Label htmlFor="title" className="text-white">Title</Label>
+                  {/* Form fields are now only in the project tabs to avoid duplication */}
                         <Input 
                           id="title" 
                           placeholder="Enter a title for your pulse" 
@@ -1057,7 +1054,6 @@ export default function CreatePulsePage() {
           </NeoGlassLayout>
         </div>
       </div>
-    </div>
     </div>
   );
 }
