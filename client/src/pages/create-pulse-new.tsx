@@ -614,11 +614,33 @@ export default function CreatePulsePage() {
                               id="video"
                               type="file"
                               accept="video/*"
-                              onChange={(e) => console.log(e.target.files)}
+                              onChange={handleMediaUpload}
                               className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 file:bg-white/20 file:text-white file:hover:bg-white/30"
                             />
-                            <p className="text-xs text-gray-400">Select a video file (max 100MB, 2.5 min)</p>
+                            <p className="text-xs text-gray-400">Select a video file (max 25MB, 2 minutes)</p>
                           </div>
+                          
+                          {/* Video Preview */}
+                          {mediaUrls.length > 0 && (
+                            <div className="mt-4">
+                              <div className="relative group">
+                                <video 
+                                  src={mediaUrls[0]} 
+                                  controls
+                                  className="w-full aspect-video object-cover rounded-md border border-white/20 bg-black/20" 
+                                />
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="icon"
+                                  className="absolute top-2 right-2 h-6 w-6 bg-black/60 text-white border-white/20 opacity-0 group-hover:opacity-100 transition-opacity"
+                                  onClick={() => removeMedia(0)}
+                                >
+                                  <X className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>
