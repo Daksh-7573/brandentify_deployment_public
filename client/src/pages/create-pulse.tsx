@@ -592,7 +592,7 @@ export default function CreatePulsePage() {
                             <SelectValue placeholder="Select a domain specialty" />
                           </SelectTrigger>
                           <SelectContent>
-                            {INDUSTRY_DOMAINS[pulseIndustry].map((domain) => (
+                            {INDUSTRY_DOMAINS[pulseIndustry]?.map((domain) => (
                               <SelectItem key={domain} value={domain}>
                                 {domain}
                               </SelectItem>
@@ -602,6 +602,13 @@ export default function CreatePulsePage() {
                         <p className="text-xs text-muted-foreground">
                           Choose your area of expertise within this industry
                         </p>
+                      </div>
+                    )}
+                    
+                    {/* Debug info - remove after fixing */}
+                    {pulseIndustry && (
+                      <div className="text-xs text-gray-500 mb-2">
+                        Debug: Industry "{pulseIndustry}", Available domains: {INDUSTRY_DOMAINS[pulseIndustry]?.length || 0}
                       </div>
                     )}
 
@@ -801,7 +808,7 @@ export default function CreatePulsePage() {
                             <SelectValue placeholder="Select a domain specialty" />
                           </SelectTrigger>
                           <SelectContent>
-                            {INDUSTRY_DOMAINS[pulseIndustry].map((domain) => (
+                            {INDUSTRY_DOMAINS[pulseIndustry]?.map((domain) => (
                               <SelectItem key={domain} value={domain}>
                                 {domain}
                               </SelectItem>
@@ -811,6 +818,13 @@ export default function CreatePulsePage() {
                         <p className="text-xs text-muted-foreground">
                           Choose your area of expertise within this industry
                         </p>
+                      </div>
+                    )}
+                    
+                    {/* Debug info - remove after fixing */}
+                    {pulseIndustry && (
+                      <div className="text-xs text-gray-500 mb-2">
+                        Debug: Industry "{pulseIndustry}", Available domains: {INDUSTRY_DOMAINS[pulseIndustry]?.length || 0}
                       </div>
                     )}
                     <div className="space-y-2">
