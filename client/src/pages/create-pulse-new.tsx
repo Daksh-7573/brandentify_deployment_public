@@ -480,32 +480,32 @@ export default function CreatePulsePage() {
                 <div className="space-y-6">
                   {/* Only show general form fields for non-project pulses */}
                   {pulseType !== 'project' && (
-                  <>
-                    <div className="space-y-2">
-                    <Label htmlFor="title" className="text-white">Title</Label>
-                    <Input 
-                      id="title" 
-                      placeholder="Enter a title for your pulse" 
-                      value={pulseTitle}
-                      onChange={(e) => setPulseTitle(e.target.value)}
-                      className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20"
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="content" className="text-white">Content</Label>
-                    <Textarea 
-                      id="content" 
-                      placeholder="What's on your mind? Share your professional thoughts, insights, or ask a question." 
-                      rows={4}
-                      value={pulseContent}
-                      onChange={(e) => setPulseContent(e.target.value)}
-                      className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20"
-                    />
-                  </div>
-                  
-                  {/* Industry Selection */}
-                  <div className="space-y-2">
+                    <>
+                      <div className="space-y-2">
+                        <Label htmlFor="title" className="text-white">Title</Label>
+                        <Input 
+                          id="title" 
+                          placeholder="Enter a title for your pulse" 
+                          value={pulseTitle}
+                          onChange={(e) => setPulseTitle(e.target.value)}
+                          className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20"
+                        />
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="content" className="text-white">Content</Label>
+                        <Textarea 
+                          id="content" 
+                          placeholder="What's on your mind? Share your professional thoughts, insights, or ask a question." 
+                          rows={4}
+                          value={pulseContent}
+                          onChange={(e) => setPulseContent(e.target.value)}
+                          className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20"
+                        />
+                      </div>
+                      
+                      {/* Industry Selection */}
+                      <div className="space-y-2">
                     <Label htmlFor="industry" className="text-white flex items-center gap-2">
                       <Briefcase className="h-4 w-4" />
                       Industry
@@ -568,7 +568,7 @@ export default function CreatePulsePage() {
                         </div>
                       </div>
                     </div>
-                  </>
+                    </>
                   )}
 
                   {/* Poll Options */}
