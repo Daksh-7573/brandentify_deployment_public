@@ -236,7 +236,7 @@ export default function Header() {
             {/* Create Pulse Button */}
             <button 
               className="neo-glass-button hidden sm:flex items-center gap-1 py-1.5 px-3 whitespace-nowrap"
-              onClick={() => setLocation('/create-pulse')}
+              onClick={() => setLocation('/create-pulse-new')}
             >
               <Zap className="h-4 w-4" />
               <span>Create Pulse</span>
@@ -486,7 +486,7 @@ export default function Header() {
               <button
                 className="neo-glass-button w-full mt-3 flex items-center justify-center gap-1 py-1.5 px-3 whitespace-nowrap"
                 onClick={() => {
-                  setLocation('/create-pulse');
+                  setLocation('/create-pulse-new');
                   setIsMobileMenuOpen(false);
                 }}
               >
