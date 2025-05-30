@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { AlertCircle, BarChart, Video, Image, FileCode, Loader2, X, ChevronLeft, Briefcase, Award } from "lucide-react";
+import { AlertCircle, BarChart, Video, Image, FileCode, Loader2, X, ChevronLeft, Briefcase, Award, ExternalLink } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ProjectForm, { Project } from "@/components/shared/project-form";
@@ -35,6 +35,7 @@ export default function CreatePulsePage() {
   // Project tab state
   const [activeProjectTab, setActiveProjectTab] = useState('details');
   const [selectedProject, setSelectedProject] = useState<number | null>(null);
+  const [projectUrl, setProjectUrl] = useState("");
   const [mediaUrls, setMediaUrls] = useState<string[]>([]);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const videoInputRef = useRef<HTMLInputElement>(null);
@@ -56,10 +57,14 @@ export default function CreatePulsePage() {
       // Reset form
       setPulseTitle("");
       setPulseContent("");
+      setPulseCategory("");
+      setPulseIndustry("");
+      setProjectUrl("");
       setPollOptions(["", ""]);
       setMediaUrls([]);
       setUploadedFiles([]);
       setSelectedProject(null);
+      setActiveProjectTab('details');
       
       // Invalidate pulse cache so user sees their new post
       queryClient.invalidateQueries({ queryKey: ["/api/pulses"] });
@@ -159,17 +164,50 @@ export default function CreatePulsePage() {
       pulseData.mediaUrls = mediaUrls;
     }
     else if (pulseType === 'project') {
-      // Validate project selection
-      if (!selectedProject) {
+      // For project pulses, create the project automatically
+      if (!pulseTitle.trim() || !pulseContent.trim() || !pulseIndustry) {
         toast({
-          title: "Project Required",
-          description: "Please select or create a project to feature in your pulse.",
+          title: "Project Details Required",
+          description: "Please fill in project title, description, and industry.",
           variant: "destructive",
         });
         return;
       }
       
-      pulseData.projectId = selectedProject;
+      try {
+        // Create the project first
+        const projectData = {
+          userId: user.id,
+          title: pulseTitle,
+          description: pulseContent,
+          industry: pulseIndustry,
+          category: pulseCategory || null,
+          projectUrl: projectUrl || null,
+          startDate: new Date().toISOString().split('T')[0], // Today's date
+          mediaUrls: mediaUrls.length > 0 ? mediaUrls : null,
+        };
+        
+        const projectResponse = await apiRequest('POST', '/api/projects', projectData);
+        const createdProject = await projectResponse.json();
+        
+        // Set the created project ID for the pulse
+        pulseData.projectId = createdProject.id;
+        setSelectedProject(createdProject.id);
+        
+        toast({
+          title: "Project Created",
+          description: "Your project has been saved to your profile and will be featured in this pulse.",
+        });
+        
+      } catch (error) {
+        console.error("Error creating project:", error);
+        toast({
+          title: "Project Creation Failed",
+          description: "Failed to create project. Please try again.",
+          variant: "destructive",
+        });
+        return;
+      }
     }
     
     // Submit the pulse
@@ -677,26 +715,320 @@ export default function CreatePulsePage() {
                     </div>
                   )}
 
-                  {/* Project Details */}
+                  {/* Enhanced Project Creation with Tabs */}
                   {pulseType === 'project' && (
                     <div className="space-y-4">
                       <div className="space-y-2">
-                        <Label className="text-white">Project Details</Label>
-                        <p className="text-xs text-gray-400">Add your project details. This will also be saved to your profile.</p>
+                        <Label className="text-white">Project Showcase</Label>
+                        <p className="text-xs text-gray-400">Create a comprehensive project showcase. This will be saved to your profile and published as a pulse.</p>
                       </div>
                       
-                      <ProjectForm 
-                        onSuccess={(project) => {
-                          setSelectedProject(project.id);
-                          toast({
-                            title: "Project Created",
-                            description: "Your project has been created and added to your profile.",
-                          });
-                        }}
-                        useDarkMode={true}
-                        className="neo-glass-input"
-                        closeModal={() => {}}
-                      />
+                      <Tabs defaultValue="details" value={activeProjectTab} onValueChange={setActiveProjectTab}>
+                        <TabsList className="w-full bg-[rgba(18,18,18,0.7)] backdrop-blur-md border-white/20">
+                          <TabsTrigger value="details" className="flex-1 text-white data-[state=active]:bg-white/20">Project Details</TabsTrigger>
+                          <TabsTrigger value="media" className="flex-1 text-white data-[state=active]:bg-white/20">Media</TabsTrigger>
+                          <TabsTrigger value="team" className="flex-1 text-white data-[state=active]:bg-white/20">Team Members</TabsTrigger>
+                          <TabsTrigger value="client" className="flex-1 text-white data-[state=active]:bg-white/20">Client</TabsTrigger>
+                        </TabsList>
+                        
+                        <TabsContent value="details" className="space-y-6 pt-6">
+                          <div className="space-y-6">
+                            {/* Project Title */}
+                            <div className="space-y-2">
+                              <Label htmlFor="project-title" className="text-white">Project Title*</Label>
+                              <Input
+                                id="project-title"
+                                placeholder="Enter your project title"
+                                value={pulseTitle}
+                                onChange={(e) => setPulseTitle(e.target.value)}
+                                className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20"
+                                required
+                              />
+                            </div>
+                            
+                            {/* Project Description */}
+                            <div className="space-y-2">
+                              <Label htmlFor="project-description" className="text-white">Project Description*</Label>
+                              <Textarea
+                                id="project-description"
+                                placeholder="Describe your project, challenges faced, and solutions implemented"
+                                value={pulseContent}
+                                onChange={(e) => setPulseContent(e.target.value)}
+                                className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 min-h-[120px]"
+                                required
+                              />
+                            </div>
+                            
+                            {/* Industry Selection */}
+                            <div className="space-y-2">
+                              <Label htmlFor="project-industry" className="text-white flex items-center gap-2">
+                                <Briefcase className="h-4 w-4" />
+                                Industry*
+                              </Label>
+                              <div className="relative">
+                                <select
+                                  id="project-industry"
+                                  value={pulseIndustry}
+                                  onChange={(e) => {
+                                    setPulseIndustry(e.target.value);
+                                    if (e.target.value !== pulseIndustry) {
+                                      setPulseCategory("");
+                                    }
+                                  }}
+                                  className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 px-3 pr-10 rounded-md border appearance-none cursor-pointer focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none text-sm leading-relaxed"
+                                  required
+                                >
+                                  <option value="">Select project industry</option>
+                                  {INDUSTRIES.map((ind) => (
+                                    <option key={ind} value={ind} className="bg-gray-800 text-white">
+                                      {ind}
+                                    </option>
+                                  ))}
+                                </select>
+                                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                  <svg className="h-4 w-4 text-white/70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                                  </svg>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            {/* Domain Specialty */}
+                            {pulseIndustry && INDUSTRY_DOMAINS[pulseIndustry] && (
+                              <div className="space-y-2">
+                                <Label htmlFor="project-domain" className="text-white flex items-center gap-2">
+                                  <Award className="h-4 w-4" />
+                                  Domain Specialty
+                                </Label>
+                                <div className="relative">
+                                  <select
+                                    id="project-domain"
+                                    value={pulseCategory}
+                                    onChange={(e) => setPulseCategory(e.target.value)}
+                                    className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 px-3 pr-10 rounded-md border appearance-none cursor-pointer focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none text-sm leading-relaxed"
+                                  >
+                                    <option value="">Select domain specialty</option>
+                                    {INDUSTRY_DOMAINS[pulseIndustry].map((dom) => (
+                                      <option key={dom} value={dom} className="bg-gray-800 text-white">
+                                        {dom}
+                                      </option>
+                                    ))}
+                                  </select>
+                                  <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                    <svg className="h-4 w-4 text-white/70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                      <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                                    </svg>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                            
+                            {/* Project URL */}
+                            <div className="space-y-2">
+                              <Label htmlFor="project-url" className="text-white flex items-center gap-2">
+                                <ExternalLink className="h-4 w-4" />
+                                Project URL
+                              </Label>
+                              <Input
+                                id="project-url"
+                                placeholder="https://your-project.com"
+                                type="url"
+                                value={projectUrl}
+                                onChange={(e) => setProjectUrl(e.target.value)}
+                                className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20"
+                              />
+                              <p className="text-xs text-gray-400">Link to live project or repository</p>
+                            </div>
+                          </div>
+                        </TabsContent>
+                        
+                        <TabsContent value="media" className="space-y-6 pt-6">
+                          <div className="space-y-6">
+                            <div className="space-y-2">
+                              <Label className="text-white">Project Media</Label>
+                              <p className="text-xs text-gray-400">Upload images and videos to showcase your project</p>
+                            </div>
+                            
+                            {/* Media Type Selection */}
+                            <div className="space-y-4">
+                              <div className="space-y-2">
+                                <Label className="text-white">Media Type</Label>
+                                <div className="flex gap-4">
+                                  <Button
+                                    type="button"
+                                    variant={mediaType === 'image' ? 'default' : 'outline'}
+                                    onClick={() => setMediaType('image')}
+                                    className={mediaType === 'image' ? 'bg-white/20 text-white hover:bg-white/30' : 'bg-[rgba(18,18,18,0.95)] text-white border-white/20 hover:bg-white/10'}
+                                  >
+                                    <Image className="mr-2 h-4 w-4" />
+                                    Images
+                                  </Button>
+                                  <Button
+                                    type="button"
+                                    variant={mediaType === 'video' ? 'default' : 'outline'}
+                                    onClick={() => setMediaType('video')}
+                                    className={mediaType === 'video' ? 'bg-white/20 text-white hover:bg-white/30' : 'bg-[rgba(18,18,18,0.95)] text-white border-white/20 hover:bg-white/10'}
+                                  >
+                                    <Video className="mr-2 h-4 w-4" />
+                                    Video
+                                  </Button>
+                                </div>
+                              </div>
+
+                              {mediaType === 'image' ? (
+                                <div className="space-y-2">
+                                  <Label htmlFor="project-images" className="text-white">Upload Images</Label>
+                                  <div className="flex flex-col space-y-2">
+                                    <Input
+                                      ref={imageInputRef}
+                                      id="project-images"
+                                      type="file"
+                                      accept="image/*"
+                                      multiple
+                                      onChange={handleMediaUpload}
+                                      className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 file:bg-white/20 file:text-white file:hover:bg-white/30"
+                                    />
+                                    <p className="text-xs text-gray-400">Select up to 10 images (max 25MB each)</p>
+                                  </div>
+                                  
+                                  {mediaUrls.length > 0 && (
+                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-4">
+                                      {mediaUrls.map((url, index) => (
+                                        <div key={index} className="relative group">
+                                          <img 
+                                            src={url} 
+                                            alt={`Preview ${index}`}
+                                            className="w-full aspect-video object-cover rounded-md border border-white/20" 
+                                          />
+                                          <Button
+                                            type="button"
+                                            variant="outline"
+                                            size="icon"
+                                            className="absolute top-2 right-2 h-6 w-6 bg-black/60 text-white border-white/20 opacity-0 group-hover:opacity-100 transition-opacity"
+                                            onClick={() => removeMedia(index)}
+                                          >
+                                            <X className="h-3 w-3" />
+                                          </Button>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  )}
+                                </div>
+                              ) : (
+                                <div className="space-y-2">
+                                  <Label htmlFor="project-video" className="text-white">Upload Video</Label>
+                                  <div className="flex flex-col space-y-2">
+                                    <Input
+                                      ref={videoInputRef}
+                                      id="project-video"
+                                      type="file"
+                                      accept="video/*"
+                                      onChange={handleMediaUpload}
+                                      className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 file:bg-white/20 file:text-white file:hover:bg-white/30"
+                                    />
+                                    <p className="text-xs text-gray-400">Select video file (max 120 seconds)</p>
+                                  </div>
+                                  
+                                  {mediaUrls.length > 0 && (
+                                    <div className="mt-4">
+                                      <div className="relative group border border-white/20 rounded-md overflow-hidden">
+                                        <video
+                                          src={mediaUrls[0]}
+                                          controls
+                                          className="w-full aspect-video object-cover"
+                                        />
+                                        <Button
+                                          type="button"
+                                          variant="outline"
+                                          size="icon"
+                                          className="absolute top-2 right-2 h-6 w-6 bg-black/60 text-white border-white/20 opacity-0 group-hover:opacity-100 transition-opacity"
+                                          onClick={() => removeMedia(0)}
+                                        >
+                                          <X className="h-3 w-3" />
+                                        </Button>
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </TabsContent>
+                        
+                        <TabsContent value="team" className="space-y-6 pt-6">
+                          <div className="space-y-4">
+                            <div className="space-y-2">
+                              <Label className="text-white">Team Members</Label>
+                              <p className="text-xs text-gray-400">Add team members who worked on this project</p>
+                            </div>
+                            
+                            <div className="space-y-4 border border-white/20 rounded-lg p-4 bg-[rgba(18,18,18,0.3)]">
+                              <div className="space-y-2">
+                                <Label htmlFor="team-profile" className="text-white">Profile Link*</Label>
+                                <Input
+                                  id="team-profile"
+                                  placeholder="https://brandentifier.replit.app/profile/username"
+                                  className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20"
+                                />
+                                <p className="text-xs text-gray-400">
+                                  Add Brandentifier profile link to connect with users
+                                </p>
+                              </div>
+                              <Button 
+                                size="sm" 
+                                className="bg-white/20 text-white hover:bg-white/30 border-white/20"
+                                disabled={!selectedProject}
+                              >
+                                Add Team Member
+                              </Button>
+                            </div>
+                            
+                            {!selectedProject && (
+                              <p className="text-sm text-amber-400">
+                                Complete project details first to add team members
+                              </p>
+                            )}
+                          </div>
+                        </TabsContent>
+                        
+                        <TabsContent value="client" className="space-y-6 pt-6">
+                          <div className="space-y-4">
+                            <div className="space-y-2">
+                              <Label className="text-white">Client Endorsement</Label>
+                              <p className="text-xs text-gray-400">
+                                Add a client's profile link to invite them to endorse your project
+                              </p>
+                            </div>
+                            
+                            <div className="space-y-4 border border-white/20 rounded-lg p-4 bg-[rgba(18,18,18,0.3)]">
+                              <div className="space-y-2">
+                                <Label htmlFor="client-profile" className="text-white">Client Profile Link*</Label>
+                                <Input
+                                  id="client-profile"
+                                  placeholder="https://brandentifier.replit.app/profile/username"
+                                  className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20"
+                                />
+                                <p className="text-xs text-gray-400">
+                                  Add Brandentifier profile link of your client
+                                </p>
+                              </div>
+                              <Button 
+                                size="sm" 
+                                className="bg-white/20 text-white hover:bg-white/30 border-white/20"
+                                disabled={!selectedProject}
+                              >
+                                Add Client
+                              </Button>
+                            </div>
+                            
+                            {!selectedProject && (
+                              <p className="text-sm text-amber-400">
+                                Complete project details first to request client endorsements
+                              </p>
+                            )}
+                          </div>
+                        </TabsContent>
+                      </Tabs>
                     </div>
                   )}
 
