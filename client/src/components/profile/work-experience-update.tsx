@@ -1,4 +1,4 @@
-import { INDUSTRIES, INDUSTRY_DOMAINS } from "@/pages/profile-neo";
+import { INDUSTRIES, INDUSTRY_DOMAINS } from "@shared/constants";
 import { popularLocations } from "@/data/locations";
 
 // Create a small update file with just the necessary functions that need to be added

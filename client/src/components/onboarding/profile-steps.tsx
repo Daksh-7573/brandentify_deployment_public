@@ -31,7 +31,7 @@ import {
   Phone, 
   FileText
 } from "lucide-react";
-import { INDUSTRIES, INDUSTRY_DOMAINS } from "@/pages/profile-neo";
+import { INDUSTRIES, INDUSTRY_DOMAINS } from "@shared/constants";
 import { calculateOverallProfileCompletion } from "@/lib/profile-utils";
 import { useProfilePicture } from "@/hooks/use-profile-picture";
 import { ProfilePictureDialog } from "@/components/profile/profile-picture-dialog";
