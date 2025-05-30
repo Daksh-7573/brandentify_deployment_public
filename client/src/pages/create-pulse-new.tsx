@@ -285,7 +285,18 @@ export default function CreatePulsePage() {
       });
       
       if (!response.ok) {
-        throw new Error(`Server returned ${response.status}: ${response.statusText}`);
+        let errorMessage = `Server returned ${response.status}: ${response.statusText}`;
+        try {
+          const errorData = await response.json();
+          if (errorData.message) {
+            errorMessage = errorData.message;
+          } else if (errorData.error) {
+            errorMessage = errorData.error;
+          }
+        } catch (parseError) {
+          console.warn("Could not parse error response:", parseError);
+        }
+        throw new Error(errorMessage);
       }
       
       const data = await response.json();
@@ -304,9 +315,29 @@ export default function CreatePulsePage() {
     } catch (error) {
       console.error("Error uploading media:", error);
       
+      // Clear any partial uploads on error
+      setMediaUrls([]);
+      setUploadedFiles([]);
+      
+      // Reset file inputs
+      if (imageInputRef.current) {
+        imageInputRef.current.value = '';
+      }
+      if (videoInputRef.current) {
+        videoInputRef.current.value = '';
+      }
+      
+      let errorMessage = "Failed to upload media";
+      
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (typeof error === 'object' && error !== null && 'message' in error) {
+        errorMessage = String(error.message);
+      }
+      
       toast({
         title: "Upload Error",
-        description: error instanceof Error ? error.message : "Failed to upload media",
+        description: errorMessage,
         variant: "destructive",
       });
     }
