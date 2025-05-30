@@ -297,7 +297,7 @@ export default function CreatePulsePage() {
         <Header />
         <div className="container mx-auto p-4 pt-16">
           <div className="flex items-center mb-4">
-            <Link to="/industry-pulse-new" className="text-white hover:text-white/80 flex items-center">
+            <Link to="/industry-pulse" className="text-white hover:text-white/80 flex items-center">
               <ChevronLeft className="h-5 w-5 mr-1" />
               <span>Back to Industry Pulse</span>
             </Link>

@@ -428,7 +428,7 @@ export default function CreatePulsePage() {
               <div className="neo-spotify-main w-full">
                 <div className="neo-spotify-header">
                   <div className="header-nav">
-                    <Link href="/industry-pulse-new">
+                    <Link href="/industry-pulse">
                       <button className="header-nav-btn">
                         <ChevronLeft className="w-4 h-4" />
                       </button>
