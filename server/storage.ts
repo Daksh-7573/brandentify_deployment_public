@@ -9391,5 +9391,9 @@ export const storage = {
   getServiceById: (id: number) => dbStorage.getServiceById(id),
   createService: (service: InsertService) => dbStorage.createService(service),
   updateService: (id: number, service: Partial<Service>) => dbStorage.updateService(id, service),
-  deleteService: (id: number) => dbStorage.deleteService(id)
+  deleteService: (id: number) => dbStorage.deleteService(id),
+  
+  // Pulse methods
+  getPulses: () => dbStorage.getPulses(),
+  createPulse: (pulse: InsertPulse) => dbStorage.createPulse(pulse)
 } as IStorage;
