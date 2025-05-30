@@ -16,6 +16,7 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { InsertPulse } from "@shared/schema";
 import { IndustryCombobox } from "@/components/ui/industry-combobox";
+import { INDUSTRIES, INDUSTRY_DOMAINS } from "@shared/constants";
 import { Link } from "wouter";
 import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
 import { cn } from "@/lib/utils";
@@ -28,7 +29,7 @@ export default function CreatePulsePage() {
   const [pulseContent, setPulseContent] = useState("");
   const [pulseType, setPulseType] = useState("poll"); // Options: 'poll' (Trends), 'media-pulse' (Insights), 'assignment' (Assignments)
   const [mediaType, setMediaType] = useState("image");
-  const [pulseCategory, setPulseCategory] = useState("highlight");
+  const [pulseCategory, setPulseCategory] = useState("");
   const [pulseIndustry, setPulseIndustry] = useState("");
   const [pollOptions, setPollOptions] = useState(["", ""]);
   // Project tab state
@@ -404,27 +405,36 @@ export default function CreatePulsePage() {
                     <Label htmlFor="industry" className="text-white">Industry</Label>
                     <IndustryCombobox 
                       value={pulseIndustry} 
-                      onChange={setPulseIndustry}
+                      onChange={(value) => {
+                        setPulseIndustry(value);
+                        // Reset category when industry changes
+                        if (value !== pulseIndustry) {
+                          setPulseCategory("");
+                        }
+                      }}
                       className="neo-glass-input"
                       useDarkMode={true}
                     />
                   </div>
                   
-                  <div className="space-y-2">
-                    <Label htmlFor="category" className="text-white">Category</Label>
-                    <Select onValueChange={setPulseCategory} defaultValue={pulseCategory}>
-                      <SelectTrigger className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20">
-                        <SelectValue placeholder="Select a category" />
-                      </SelectTrigger>
-                      <SelectContent className="neo-glass-input bg-[rgba(30,30,30,0.95)] text-white border-white/20">
-                        <SelectItem value="highlight">Highlight</SelectItem>
-                        <SelectItem value="opportunity">Opportunity</SelectItem>
-                        <SelectItem value="learning">Learning</SelectItem>
-                        <SelectItem value="warning">Warning</SelectItem>
-                        <SelectItem value="trending">Trending</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                  {/* Domain/Specialty - Dynamic based on selected industry */}
+                  {pulseIndustry && INDUSTRY_DOMAINS[pulseIndustry] && (
+                    <div className="space-y-2">
+                      <Label htmlFor="category" className="text-white">Domain Specialty</Label>
+                      <Select value={pulseCategory} onValueChange={setPulseCategory}>
+                        <SelectTrigger className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20">
+                          <SelectValue placeholder="Select a domain specialty" />
+                        </SelectTrigger>
+                        <SelectContent className="neo-glass-input bg-[rgba(30,30,30,0.95)] text-white border-white/20">
+                          {INDUSTRY_DOMAINS[pulseIndustry].map((domain) => (
+                            <SelectItem key={domain} value={domain}>
+                              {domain}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
 
                   {/* Poll Options */}
                   {pulseType === 'poll' && (

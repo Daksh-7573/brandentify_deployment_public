@@ -17,6 +17,7 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { InsertPulse } from "@shared/schema";
 import { IndustryCombobox } from "@/components/ui/industry-combobox";
+import { INDUSTRIES, INDUSTRY_DOMAINS } from "@shared/constants";
 import { Link } from "wouter";
 import "../styles/neo-glass-spotify.css";
 
@@ -27,7 +28,7 @@ export default function CreatePulsePage() {
   const [pulseContent, setPulseContent] = useState("");
   const [pulseType, setPulseType] = useState("poll"); // Options: 'poll' (Trends), 'media-pulse' (Insights), 'assignment' (Assignments)
   const [mediaType, setMediaType] = useState("image");
-  const [pulseCategory, setPulseCategory] = useState("highlight");
+  const [pulseCategory, setPulseCategory] = useState("");
   const [pulseIndustry, setPulseIndustry] = useState("");
   const [pollOptions, setPollOptions] = useState(["", ""]);
   // Project tab state
