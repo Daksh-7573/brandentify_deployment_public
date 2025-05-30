@@ -717,12 +717,14 @@ export default function CreatePulsePage() {
                           )}
                         </div>
                       )}
-                    </div>
-                  )}
+                  </div>
+                </NeoGlassSection>
+              )}
 
-                  {/* Enhanced Project Creation with Tabs */}
-                  {pulseType === 'project' && (
-                    <div className="space-y-4">
+              {/* Enhanced Project Creation with Tabs */}
+              {pulseType === 'project' && (
+                <NeoGlassSection>
+                  <div className="space-y-4">
                       <div className="space-y-2">
                         <Label className="text-white">Project Showcase</Label>
                         <p className="text-xs text-gray-400">Create a comprehensive project showcase. This will be saved to your profile and published as a pulse.</p>
@@ -1034,26 +1036,27 @@ export default function CreatePulsePage() {
                           </div>
                         </TabsContent>
                       </Tabs>
-                    </div>
-                  )}
-
-                  <div className="pt-4">
-                    <Button 
-                      type="button"
-                      onClick={handleCreatePulse}
-                      disabled={createPulseMutation.isPending}
-                      className="px-5 py-2 rounded-md bg-primary text-white hover:bg-opacity-90 shadow-sm font-medium transition-all flex items-center justify-center w-full md:w-auto"
-                    >
-                      {createPulseMutation.isPending ? (
-                        <>
-                          <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2"></div>
-                          <span>Publishing...</span>
-                        </>
-                      ) : (
-                        <span>Publish Pulse</span>
-                      )}
-                    </Button>
                   </div>
+                </NeoGlassSection>
+              )}
+
+              <NeoGlassSection>
+                <div className="pt-4">
+                  <Button 
+                    type="button"
+                    onClick={handleCreatePulse}
+                    disabled={createPulseMutation.isPending}
+                    className="px-5 py-2 rounded-md bg-primary text-white hover:bg-opacity-90 shadow-sm font-medium transition-all flex items-center justify-center w-full md:w-auto"
+                  >
+                    {createPulseMutation.isPending ? (
+                      <>
+                        <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2"></div>
+                        <span>Publishing...</span>
+                      </>
+                    ) : (
+                      <span>Publish Pulse</span>
+                    )}
+                  </Button>
                 </div>
               </NeoGlassSection>
             </div>
