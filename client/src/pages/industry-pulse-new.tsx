@@ -1067,9 +1067,8 @@ export default function IndustryPulsePage() {
         {/* Main content area */}
         <div className="flex-1 overflow-auto">
           <NeoGlassLayout className="mt-3 mx-6"> {/* Further reduced top margin to 3 (0.75rem) */}
-            <div className="flex gap-6">
-              {/* Main content */}
-              <div className="flex-1 max-w-4xl">
+            {/* Main content */}
+            <div className="flex-1 max-w-4xl">
               <div className="mb-8 flex justify-between items-center">
                 <div>
                   <h1 className="text-3xl font-bold tracking-tight text-white">Industry Pulse</h1>
@@ -1238,70 +1237,9 @@ export default function IndustryPulsePage() {
                   )}
                 </TabsContent>
               </Tabs>
-              </div>
-              
-              {/* Right Sidebar */}
-              <div className="w-80 flex-shrink-0">
-                <NeoGlassSection>
-                  <div className="space-y-6">
-                    {/* Quick Actions */}
-                    <div>
-                      <h3 className="text-lg font-semibold text-white mb-4">Quick Actions</h3>
-                      <div className="space-y-3">
-                        <button 
-                          onClick={() => setLocation("/create-pulse")}
-                          className="w-full neo-glass-button py-3 flex items-center gap-3 justify-center"
-                        >
-                          <MessageSquare className="h-4 w-4" />
-                          Create New Pulse
-                        </button>
-                        <button 
-                          onClick={() => setLocation("/dashboard")}
-                          className="w-full neo-glass-button py-3 flex items-center gap-3 justify-center"
-                        >
-                          <Users className="h-4 w-4" />
-                          View Dashboard
-                        </button>
-                      </div>
-                    </div>
-                    
-                    {/* Trending Topics */}
-                    <div>
-                      <h3 className="text-lg font-semibold text-white mb-4">Trending Topics</h3>
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2 p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors">
-                          <Flame className="h-4 w-4 text-orange-400" />
-                          <span className="text-white/90 text-sm">AI & Machine Learning</span>
-                        </div>
-                        <div className="flex items-center gap-2 p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors">
-                          <BarChart className="h-4 w-4 text-blue-400" />
-                          <span className="text-white/90 text-sm">Remote Work Solutions</span>
-                        </div>
-                        <div className="flex items-center gap-2 p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors">
-                          <FileCode className="h-4 w-4 text-green-400" />
-                          <span className="text-white/90 text-sm">Web Development</span>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    {/* Activity Summary */}
-                    <div>
-                      <h3 className="text-lg font-semibold text-white mb-4">Your Activity</h3>
-                      <div className="space-y-3">
-                        <div className="flex justify-between items-center p-3 rounded-lg bg-white/5">
-                          <span className="text-white/80 text-sm">Pulses Created</span>
-                          <span className="text-white font-semibold">{filteredPulses.length}</span>
-                        </div>
-                        <div className="flex justify-between items-center p-3 rounded-lg bg-white/5">
-                          <span className="text-white/80 text-sm">Active Tab</span>
-                          <span className="text-white font-semibold capitalize">{activeTab}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </NeoGlassSection>
-              </div>
             </div>
+            
+            {/* Nowboard Panel Sidebar removed as it's now integrated into quests */}
           </NeoGlassLayout>
         </div>
       </div>
