@@ -419,7 +419,7 @@ export default function CreatePulsePage() {
 
   return (
     <div className="min-h-screen bg-[url('/bg-dark-room.jpg')] bg-cover bg-center">
-      <div className="min-h-screen bg-black/50 backdrop-blur-sm">
+      <div className="min-h-screen bg-black/50 backdrop-blur-sm neo-glass-scroll-container">
         <Header />
         <div className="container mx-auto p-4 pt-24">
           <div className="flex items-center mb-6">
@@ -667,7 +667,7 @@ export default function CreatePulsePage() {
                               accept="image/*"
                               multiple
                               onChange={handleMediaUpload}
-                              className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 file:bg-white/20 file:text-white file:hover:bg-white/30 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0"
+                              className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 file:bg-white/20 file:text-white file:hover:bg-white/30 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 text-sm py-3"
                             />
                             <p className="text-xs text-gray-400">Select up to 5 images (max 20MB each)</p>
                           </div>
@@ -703,7 +703,7 @@ export default function CreatePulsePage() {
                               type="file"
                               accept="video/*"
                               onChange={handleMediaUpload}
-                              className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 file:bg-white/20 file:text-white file:hover:bg-white/30 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0"
+                              className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 file:bg-white/20 file:text-white file:hover:bg-white/30 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 text-sm py-3"
                             />
                             <p className="text-xs text-gray-400">Select a video file (max 25MB, 2 minutes)</p>
                           </div>
@@ -917,7 +917,7 @@ export default function CreatePulsePage() {
                                       accept="image/*"
                                       multiple
                                       onChange={handleMediaUpload}
-                                      className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 file:bg-white/20 file:text-white file:hover:bg-white/30 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0"
+                                      className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 file:bg-white/20 file:text-white file:hover:bg-white/30 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 text-sm py-3"
                                     />
                                     <p className="text-xs text-gray-400">Select up to 10 images (max 25MB each)</p>
                                   </div>
@@ -953,7 +953,7 @@ export default function CreatePulsePage() {
                                       type="file"
                                       accept="video/*"
                                       onChange={handleMediaUpload}
-                                      className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 file:bg-white/20 file:text-white file:hover:bg-white/30 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0"
+                                      className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 file:bg-white/20 file:text-white file:hover:bg-white/30 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 text-sm py-3"
                                     />
                                     <p className="text-xs text-gray-400">Select video file (max 120 seconds)</p>
                                   </div>
