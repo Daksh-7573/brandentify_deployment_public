@@ -734,11 +734,11 @@ export default function CreatePulsePage() {
                 </NeoGlassSection>
               )}
 
-              {/* Project Creation with Tabs */}
+              {/* Project Tabs Navigation */}
               {pulseType === 'project' && (
                 <NeoGlassSection>
                   <Tabs defaultValue="details" value={activeProjectTab} onValueChange={setActiveProjectTab}>
-                    <TabsList className="mb-6 dark-tabs-list">
+                    <TabsList className="mb-0 dark-tabs-list">
                       <TabsTrigger 
                         value="details" 
                         className="dark-tabs-trigger"
@@ -764,6 +764,14 @@ export default function CreatePulsePage() {
                         Client
                       </TabsTrigger>
                     </TabsList>
+                  </Tabs>
+                </NeoGlassSection>
+              )}
+
+              {/* Project Creation Content */}
+              {pulseType === 'project' && (
+                <NeoGlassSection>
+                  <Tabs defaultValue="details" value={activeProjectTab} onValueChange={setActiveProjectTab}>
                         
                         <TabsContent value="details" className="space-y-6 pt-6">
                           <div className="space-y-6">
