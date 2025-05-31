@@ -422,7 +422,7 @@ export default function CreatePulsePage() {
       <div className="min-h-screen bg-black/50 backdrop-blur-sm">
         <Header />
         <div className="flex flex-1 overflow-hidden pt-16">
-          <div className="flex-1 overflow-auto">
+          <div className="flex-1 overflow-auto neo-glass-scroll-container">
             <div className="container mx-auto p-4 pt-8">
               <div className="flex items-center mb-6">
                 <Link to="/industry-pulse" className="text-white hover:text-white/80 flex items-center">
