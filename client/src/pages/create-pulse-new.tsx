@@ -711,7 +711,41 @@ export default function CreatePulsePage() {
                 </NeoGlassSection>
               )}
 
-              {/* Enhanced Project Creation with Tabs */}
+              {/* Project Tab Navigation */}
+              {pulseType === 'project' && (
+                <NeoGlassSection>
+                  <Tabs defaultValue="details" value={activeProjectTab} onValueChange={setActiveProjectTab}>
+                    <TabsList className="mb-2 dark-tabs-list">
+                      <TabsTrigger 
+                        value="details" 
+                        className="dark-tabs-trigger"
+                      >
+                        Project Details
+                      </TabsTrigger>
+                      <TabsTrigger 
+                        value="media" 
+                        className="dark-tabs-trigger"
+                      >
+                        Media
+                      </TabsTrigger>
+                      <TabsTrigger 
+                        value="team" 
+                        className="dark-tabs-trigger"
+                      >
+                        Team Members
+                      </TabsTrigger>
+                      <TabsTrigger 
+                        value="client" 
+                        className="dark-tabs-trigger"
+                      >
+                        Client
+                      </TabsTrigger>
+                    </TabsList>
+                  </Tabs>
+                </NeoGlassSection>
+              )}
+
+              {/* Enhanced Project Creation Content */}
               {pulseType === 'project' && (
                 <NeoGlassSection>
                   <div className="space-y-4">
@@ -721,32 +755,6 @@ export default function CreatePulsePage() {
                       </div>
                       
                       <Tabs defaultValue="details" value={activeProjectTab} onValueChange={setActiveProjectTab}>
-                        <TabsList className="mb-6 dark-tabs-list">
-                          <TabsTrigger 
-                            value="details" 
-                            className="dark-tabs-trigger"
-                          >
-                            Project Details
-                          </TabsTrigger>
-                          <TabsTrigger 
-                            value="media" 
-                            className="dark-tabs-trigger"
-                          >
-                            Media
-                          </TabsTrigger>
-                          <TabsTrigger 
-                            value="team" 
-                            className="dark-tabs-trigger"
-                          >
-                            Team Members
-                          </TabsTrigger>
-                          <TabsTrigger 
-                            value="client" 
-                            className="dark-tabs-trigger"
-                          >
-                            Client
-                          </TabsTrigger>
-                        </TabsList>
                         
                         <TabsContent value="details" className="space-y-6 pt-6">
                           <div className="space-y-6">
