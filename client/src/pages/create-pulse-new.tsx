@@ -1003,7 +1003,7 @@ export default function CreatePulsePage() {
                               </div>
                               <Button 
                                 size="sm" 
-                                className="bg-white/20 text-white hover:bg-white/30 border-white/20"
+                                className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border border-white/20 hover:bg-white/10 hover:border-white/30 transition-all shadow-md disabled:opacity-50"
                                 disabled={!selectedProject}
                               >
                                 Add Team Member
@@ -1041,7 +1041,7 @@ export default function CreatePulsePage() {
                               </div>
                               <Button 
                                 size="sm" 
-                                className="bg-white/20 text-white hover:bg-white/30 border-white/20"
+                                className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border border-white/20 hover:bg-white/10 hover:border-white/30 transition-all shadow-md disabled:opacity-50"
                                 disabled={!selectedProject}
                               >
                                 Add Client
@@ -1066,7 +1066,7 @@ export default function CreatePulsePage() {
                     type="button"
                     onClick={handleCreatePulse}
                     disabled={createPulseMutation.isPending}
-                    className="px-5 py-2 rounded-md bg-primary text-white hover:bg-opacity-90 shadow-sm font-medium transition-all flex items-center justify-center w-full md:w-auto"
+                    className="px-5 py-2 rounded-md bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border border-white/20 hover:bg-white/10 hover:border-white/30 shadow-lg font-medium transition-all flex items-center justify-center w-full md:w-auto disabled:opacity-50"
                   >
                     {createPulseMutation.isPending ? (
                       <>
