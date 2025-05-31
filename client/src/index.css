@@ -1,3 +1,4 @@
+@import './styles/scrollbar-override.css';
 @import './styles/neopastel.css';
 @import './styles/lumos-animations.css';
 @import './styles/neo-glass-main.css';
@@ -7,6 +8,79 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Remove white scrollbar globally - Enhanced */
+html, body, *, div, main, section, article {
+  scrollbar-width: thin !important;
+  scrollbar-color: rgba(255, 255, 255, 0.4) rgba(0, 0, 0, 0.2) !important;
+}
+
+html::-webkit-scrollbar, body::-webkit-scrollbar, *::-webkit-scrollbar {
+  width: 10px !important;
+  height: 10px !important;
+  background: rgba(0, 0, 0, 0.2) !important;
+}
+
+html::-webkit-scrollbar-track, body::-webkit-scrollbar-track, *::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2) !important;
+  border-radius: 5px !important;
+}
+
+html::-webkit-scrollbar-thumb, body::-webkit-scrollbar-thumb, *::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.4) 0%, 
+    rgba(255, 255, 255, 0.3) 50%, 
+    rgba(255, 255, 255, 0.4) 100%) !important;
+  border-radius: 5px !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+}
+
+html::-webkit-scrollbar-thumb:hover, body::-webkit-scrollbar-thumb:hover, *::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.6) 0%, 
+    rgba(255, 255, 255, 0.5) 50%, 
+    rgba(255, 255, 255, 0.6) 100%) !important;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.3) !important;
+}
+
+html::-webkit-scrollbar-corner, body::-webkit-scrollbar-corner, *::-webkit-scrollbar-corner {
+  background: rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Fix file input styling globally */
+input[type="file"] {
+  padding: 12px 16px !important;
+  min-height: 48px !important;
+  line-height: 1.5 !important;
+  font-size: 14px !important;
+  overflow: visible !important;
+  white-space: nowrap !important;
+  text-overflow: ellipsis !important;
+}
+
+input[type="file"]::file-selector-button {
+  background: rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
+  border: none !important;
+  padding: 8px 16px !important;
+  border-radius: 6px !important;
+  margin-right: 12px !important;
+  cursor: pointer !important;
+  font-size: 14px !important;
+}
+
+input[type="file"]::-webkit-file-upload-button {
+  background: rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
+  border: none !important;
+  padding: 8px 16px !important;
+  border-radius: 6px !important;
+  margin-right: 12px !important;
+  cursor: pointer !important;
+  font-size: 14px !important;
+}
 
 /* Glass UI Form Animation */
 @keyframes gradient-shift {
@@ -726,50 +800,4 @@ input.smart-radar-input::placeholder {
     background-attachment: fixed;
     background-position: center;
   }
-}
-
-/* Global Glass UI Scrollbar - Comprehensive Override */
-html, body, *, *::before, *::after {
-  scrollbar-width: thin !important;
-  scrollbar-color: rgba(255, 255, 255, 0.3) transparent !important;
-}
-
-html::-webkit-scrollbar,
-body::-webkit-scrollbar,
-*::-webkit-scrollbar {
-  width: 6px !important;
-  height: 6px !important;
-  background: transparent !important;
-}
-
-html::-webkit-scrollbar-track,
-body::-webkit-scrollbar-track,
-*::-webkit-scrollbar-track {
-  background: transparent !important;
-  border: none !important;
-  border-radius: 0 !important;
-}
-
-html::-webkit-scrollbar-thumb,
-body::-webkit-scrollbar-thumb,
-*::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.3) !important;
-  border-radius: 3px !important;
-  border: none !important;
-  backdrop-filter: blur(8px) !important;
-  -webkit-backdrop-filter: blur(8px) !important;
-  transition: all 0.2s ease !important;
-}
-
-html::-webkit-scrollbar-thumb:hover,
-body::-webkit-scrollbar-thumb:hover,
-*::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.5) !important;
-  box-shadow: 0 0 4px rgba(255, 255, 255, 0.2) !important;
-}
-
-html::-webkit-scrollbar-corner,
-body::-webkit-scrollbar-corner,
-*::-webkit-scrollbar-corner {
-  background: transparent !important;
 }
