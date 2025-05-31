@@ -1,9 +1,40 @@
-/* Force override all scrollbar styling */
+/* Force override all scrollbar styling - Chrome/Safari specific */
 :root {
   --scrollbar-width: 10px;
   --scrollbar-track: rgba(0, 0, 0, 0.3);
   --scrollbar-thumb: rgba(255, 255, 255, 0.4);
   --scrollbar-thumb-hover: rgba(255, 255, 255, 0.6);
+}
+
+/* Hide default scrollbar completely first */
+* {
+  overflow: overlay !important;
+}
+
+/* Force Chrome/WebKit scrollbar styling */
+::-webkit-scrollbar {
+  width: 10px !important;
+  height: 10px !important;
+  background: rgba(0, 0, 0, 0.3) !important;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3) !important;
+  border-radius: 5px !important;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.4) !important;
+  border-radius: 5px !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.6) !important;
+}
+
+::-webkit-scrollbar-corner {
+  background: rgba(0, 0, 0, 0.3) !important;
 }
 
 /* Override all possible scrollbar selectors */
