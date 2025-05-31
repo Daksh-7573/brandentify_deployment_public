@@ -418,12 +418,11 @@ export default function CreatePulsePage() {
   };
 
   return (
-    <div className="flex h-screen flex-col bg-[url('/bg-dark-room.jpg')] bg-cover bg-center">
+    <div className="min-h-screen bg-[url('/bg-dark-room.jpg')] bg-cover bg-center">
       <div className="min-h-screen bg-black/50 backdrop-blur-sm">
         <Header />
-        <div className="flex flex-1 overflow-hidden pt-16">
-          <div className="flex-1 overflow-auto neo-glass-scroll-container">
-            <div className="container mx-auto p-4 pt-8">
+        <div className="pt-20 pb-4 px-4 overflow-y-auto neo-glass-scroll-container" style={{ height: 'calc(100vh - 4rem)' }}>
+          <div className="container mx-auto">
               <div className="flex items-center mb-6">
                 <Link to="/industry-pulse" className="text-white hover:text-white/80 flex items-center">
                   <ChevronLeft className="h-5 w-5 mr-1" />
