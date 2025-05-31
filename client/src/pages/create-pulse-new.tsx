@@ -631,8 +631,6 @@ export default function CreatePulsePage() {
                 </NeoGlassSection>
               )}
 
-
-
               {/* Project Tabs Navigation */}
               {pulseType === 'project' && (
                 <NeoGlassSection>
