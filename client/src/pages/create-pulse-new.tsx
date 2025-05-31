@@ -421,8 +421,8 @@ export default function CreatePulsePage() {
     <div className="min-h-screen bg-[url('/bg-dark-room.jpg')] bg-cover bg-center">
       <div className="min-h-screen bg-black/50 backdrop-blur-sm">
         <Header />
-        <div className="container mx-auto p-4 pt-16">
-          <div className="flex items-center mb-4">
+        <div className="container mx-auto p-4 pt-24">
+          <div className="flex items-center mb-6">
             <Link to="/industry-pulse" className="text-white hover:text-white/80 flex items-center">
               <ChevronLeft className="h-5 w-5 mr-1" />
               <span>Back to Industry Pulse</span>
@@ -667,7 +667,7 @@ export default function CreatePulsePage() {
                               accept="image/*"
                               multiple
                               onChange={handleMediaUpload}
-                              className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 file:bg-white/20 file:text-white file:hover:bg-white/30"
+                              className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 file:bg-white/20 file:text-white file:hover:bg-white/30 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0"
                             />
                             <p className="text-xs text-gray-400">Select up to 5 images (max 20MB each)</p>
                           </div>
@@ -703,7 +703,7 @@ export default function CreatePulsePage() {
                               type="file"
                               accept="video/*"
                               onChange={handleMediaUpload}
-                              className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 file:bg-white/20 file:text-white file:hover:bg-white/30"
+                              className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 file:bg-white/20 file:text-white file:hover:bg-white/30 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0"
                             />
                             <p className="text-xs text-gray-400">Select a video file (max 25MB, 2 minutes)</p>
                           </div>
