@@ -418,19 +418,21 @@ export default function CreatePulsePage() {
   };
 
   return (
-    <div className="min-h-screen bg-[url('/bg-dark-room.jpg')] bg-cover bg-center">
-      <div className="min-h-screen bg-black/50 backdrop-blur-sm overflow-y-auto">
+    <div className="flex h-screen flex-col bg-[url('/bg-dark-room.jpg')] bg-cover bg-center">
+      <div className="min-h-screen bg-black/50 backdrop-blur-sm">
         <Header />
-        <div className="container mx-auto p-4 pt-24">
-          <div className="flex items-center mb-6">
-            <Link to="/industry-pulse" className="text-white hover:text-white/80 flex items-center">
-              <ChevronLeft className="h-5 w-5 mr-1" />
-              <span>Back to Industry Pulse</span>
-            </Link>
-          </div>
-          
-          <NeoGlassLayout>
-            <div className="w-full">
+        <div className="flex flex-1 overflow-hidden pt-16">
+          <div className="flex-1 overflow-auto">
+            <div className="container mx-auto p-4 pt-8">
+              <div className="flex items-center mb-6">
+                <Link to="/industry-pulse" className="text-white hover:text-white/80 flex items-center">
+                  <ChevronLeft className="h-5 w-5 mr-1" />
+                  <span>Back to Industry Pulse</span>
+                </Link>
+              </div>
+              
+              <NeoGlassLayout>
+                <div className="w-full">
               <div className="mb-6">
                 <h1 className="text-2xl font-bold text-white">Create Pulse</h1>
                 <p className="text-white/70">Share your thoughts, projects, or expertise with the professional community</p>
@@ -1089,6 +1091,8 @@ export default function CreatePulsePage() {
               </NeoGlassSection>
             </div>
           </NeoGlassLayout>
+            </div>
+          </div>
         </div>
       </div>
     </div>
