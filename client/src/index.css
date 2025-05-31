@@ -8,6 +8,64 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Remove white scrollbar globally */
+* {
+  scrollbar-width: thin !important;
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent !important;
+}
+
+*::-webkit-scrollbar {
+  width: 8px !important;
+  background: transparent !important;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3) !important;
+  border-radius: 4px !important;
+  border: none !important;
+}
+
+*::-webkit-scrollbar-corner {
+  background: transparent !important;
+}
+
+/* Fix file input styling globally */
+input[type="file"] {
+  padding: 12px 16px !important;
+  min-height: 48px !important;
+  line-height: 1.5 !important;
+  font-size: 14px !important;
+  overflow: visible !important;
+  white-space: nowrap !important;
+  text-overflow: ellipsis !important;
+}
+
+input[type="file"]::file-selector-button {
+  background: rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
+  border: none !important;
+  padding: 8px 16px !important;
+  border-radius: 6px !important;
+  margin-right: 12px !important;
+  cursor: pointer !important;
+  font-size: 14px !important;
+}
+
+input[type="file"]::-webkit-file-upload-button {
+  background: rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
+  border: none !important;
+  padding: 8px 16px !important;
+  border-radius: 6px !important;
+  margin-right: 12px !important;
+  cursor: pointer !important;
+  font-size: 14px !important;
+}
+
 /* Glass UI Form Animation */
 @keyframes gradient-shift {
   0%, 100% {
