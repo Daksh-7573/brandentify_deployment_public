@@ -580,7 +580,7 @@ export default function CreatePulsePage() {
                           onClick={addPollOption}
                           variant="outline"
                           size="sm"
-                          className="bg-[rgba(18,18,18,0.95)] text-white border-white/20 hover:bg-white/10"
+                          className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 hover:bg-white/10 hover:border-white/30 transition-all shadow-md"
                           disabled={pollOptions.length >= 5}
                         >
                           Add Option
@@ -601,7 +601,7 @@ export default function CreatePulsePage() {
                               onClick={() => removePollOption(index)}
                               variant="ghost"
                               size="icon"
-                              className="bg-transparent text-white hover:bg-white/10"
+                              className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border border-white/20 hover:bg-red-500/20 hover:border-white/30 transition-all shadow-md"
                             >
                               <X className="h-4 w-4" />
                             </Button>
@@ -623,7 +623,7 @@ export default function CreatePulsePage() {
                             type="button"
                             variant={mediaType === 'image' ? 'default' : 'outline'}
                             onClick={() => setMediaType('image')}
-                            className={mediaType === 'image' ? 'bg-white/20 text-white hover:bg-white/30' : 'bg-[rgba(18,18,18,0.95)] text-white border-white/20 hover:bg-white/10'}
+                            className={mediaType === 'image' ? 'bg-white/20 backdrop-blur-md text-white hover:bg-white/30 border-white/30 transition-all shadow-md' : 'bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 hover:bg-white/10 hover:border-white/30 transition-all shadow-md'}
                           >
                             <Image className="mr-2 h-4 w-4" />
                             Images
@@ -632,7 +632,7 @@ export default function CreatePulsePage() {
                             type="button"
                             variant={mediaType === 'video' ? 'default' : 'outline'}
                             onClick={() => setMediaType('video')}
-                            className={mediaType === 'video' ? 'bg-white/20 text-white hover:bg-white/30' : 'bg-[rgba(18,18,18,0.95)] text-white border-white/20 hover:bg-white/10'}
+                            className={mediaType === 'video' ? 'bg-white/20 backdrop-blur-md text-white hover:bg-white/30 border-white/30 transition-all shadow-md' : 'bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 hover:bg-white/10 hover:border-white/30 transition-all shadow-md'}
                           >
                             <Video className="mr-2 h-4 w-4" />
                             Video
@@ -669,7 +669,7 @@ export default function CreatePulsePage() {
                                     type="button"
                                     variant="outline"
                                     size="icon"
-                                    className="absolute top-2 right-2 h-6 w-6 bg-black/60 text-white border-white/20 opacity-0 group-hover:opacity-100 transition-opacity"
+                                    className="absolute top-2 right-2 h-6 w-6 bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 hover:bg-red-500/20 hover:border-white/30 opacity-0 group-hover:opacity-100 transition-all shadow-md"
                                     onClick={() => removeMedia(index)}
                                   >
                                     <X className="h-3 w-3" />
@@ -707,7 +707,7 @@ export default function CreatePulsePage() {
                                   type="button"
                                   variant="outline"
                                   size="icon"
-                                  className="absolute top-2 right-2 h-6 w-6 bg-black/60 text-white border-white/20 opacity-0 group-hover:opacity-100 transition-opacity"
+                                  className="absolute top-2 right-2 h-6 w-6 bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 hover:bg-red-500/20 hover:border-white/30 opacity-0 group-hover:opacity-100 transition-all shadow-md"
                                   onClick={() => removeMedia(0)}
                                 >
                                   <X className="h-3 w-3" />
@@ -731,11 +731,31 @@ export default function CreatePulsePage() {
                       </div>
                       
                       <Tabs defaultValue="details" value={activeProjectTab} onValueChange={setActiveProjectTab}>
-                        <TabsList className="w-full bg-[rgba(18,18,18,0.7)] backdrop-blur-md border-white/20">
-                          <TabsTrigger value="details" className="flex-1 text-white data-[state=active]:bg-white/20">Project Details</TabsTrigger>
-                          <TabsTrigger value="media" className="flex-1 text-white data-[state=active]:bg-white/20">Media</TabsTrigger>
-                          <TabsTrigger value="team" className="flex-1 text-white data-[state=active]:bg-white/20">Team Members</TabsTrigger>
-                          <TabsTrigger value="client" className="flex-1 text-white data-[state=active]:bg-white/20">Client</TabsTrigger>
+                        <TabsList className="w-full bg-[rgba(18,18,18,0.95)] backdrop-blur-md border border-white/20 shadow-md">
+                          <TabsTrigger 
+                            value="details" 
+                            className="flex-1 text-white/70 hover:text-white hover:bg-white/10 data-[state=active]:bg-white/20 data-[state=active]:text-white transition-all"
+                          >
+                            Project Details
+                          </TabsTrigger>
+                          <TabsTrigger 
+                            value="media" 
+                            className="flex-1 text-white/70 hover:text-white hover:bg-white/10 data-[state=active]:bg-white/20 data-[state=active]:text-white transition-all"
+                          >
+                            Media
+                          </TabsTrigger>
+                          <TabsTrigger 
+                            value="team" 
+                            className="flex-1 text-white/70 hover:text-white hover:bg-white/10 data-[state=active]:bg-white/20 data-[state=active]:text-white transition-all"
+                          >
+                            Team Members
+                          </TabsTrigger>
+                          <TabsTrigger 
+                            value="client" 
+                            className="flex-1 text-white/70 hover:text-white hover:bg-white/10 data-[state=active]:bg-white/20 data-[state=active]:text-white transition-all"
+                          >
+                            Client
+                          </TabsTrigger>
                         </TabsList>
                         
                         <TabsContent value="details" className="space-y-6 pt-6">
