@@ -499,10 +499,10 @@ export default function CreatePulsePage() {
                 </div>
               </NeoGlassSection>
               
-              <NeoGlassSection>
-                <div className="space-y-6">
-                  {/* Form fields for non-project pulses only - project fields are in tabs */}
-                  {pulseType !== 'project' && (
+              {/* Form fields for non-project pulses only - project fields are in tabs */}
+              {pulseType !== 'project' && (
+                <NeoGlassSection>
+                  <div className="space-y-6">
                     <>
                       <div className="space-y-2">
                         <Label htmlFor="title" className="text-white">Title</Label>
@@ -587,10 +587,9 @@ export default function CreatePulsePage() {
                           </div>
                         </div>
                       )}
-                    </>
-                  )}
-                </div>
-              </NeoGlassSection>
+                  </div>
+                </NeoGlassSection>
+              )}
 
               {/* Poll Options */}
               {pulseType === 'poll' && (
