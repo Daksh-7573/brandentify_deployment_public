@@ -575,16 +575,14 @@ export default function CreatePulsePage() {
                   <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <Label className="text-white">Poll Options</Label>
-                        <Button
+                        <button
                           type="button"
                           onClick={addPollOption}
-                          variant="outline"
-                          size="sm"
-                          className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 hover:bg-white/10 hover:border-white/30 transition-all shadow-md"
+                          className="neo-glass-button"
                           disabled={pollOptions.length >= 5}
                         >
                           Add Option
-                        </Button>
+                        </button>
                       </div>
                       
                       {pollOptions.map((option, index) => (
@@ -596,15 +594,13 @@ export default function CreatePulsePage() {
                             className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20"
                           />
                           {pollOptions.length > 2 && (
-                            <Button
+                            <button
                               type="button"
                               onClick={() => removePollOption(index)}
-                              variant="ghost"
-                              size="icon"
-                              className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border border-white/20 hover:bg-red-500/20 hover:border-white/30 transition-all shadow-md"
+                              className="neo-glass-button neo-glass-icon-button"
                             >
                               <X className="h-4 w-4" />
-                            </Button>
+                            </button>
                           )}
                         </div>
                       ))}
@@ -619,24 +615,22 @@ export default function CreatePulsePage() {
                       <div className="space-y-2">
                         <Label className="text-white">Media Type</Label>
                         <div className="flex gap-4">
-                          <Button
+                          <button
                             type="button"
-                            variant={mediaType === 'image' ? 'default' : 'outline'}
                             onClick={() => setMediaType('image')}
-                            className={mediaType === 'image' ? 'bg-white/20 backdrop-blur-md text-white hover:bg-white/30 border-white/30 transition-all shadow-md' : 'bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 hover:bg-white/10 hover:border-white/30 transition-all shadow-md'}
+                            className={`neo-glass-button ${mediaType === 'image' ? 'primary' : 'secondary'}`}
                           >
                             <Image className="mr-2 h-4 w-4" />
                             Images
-                          </Button>
-                          <Button
+                          </button>
+                          <button
                             type="button"
-                            variant={mediaType === 'video' ? 'default' : 'outline'}
                             onClick={() => setMediaType('video')}
-                            className={mediaType === 'video' ? 'bg-white/20 backdrop-blur-md text-white hover:bg-white/30 border-white/30 transition-all shadow-md' : 'bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 hover:bg-white/10 hover:border-white/30 transition-all shadow-md'}
+                            className={`neo-glass-button ${mediaType === 'video' ? 'primary' : 'secondary'}`}
                           >
                             <Video className="mr-2 h-4 w-4" />
                             Video
-                          </Button>
+                          </button>
                         </div>
                       </div>
 
@@ -665,15 +659,13 @@ export default function CreatePulsePage() {
                                     alt={`Preview ${index}`}
                                     className="w-full aspect-video object-cover rounded-md border border-white/20" 
                                   />
-                                  <Button
+                                  <button
                                     type="button"
-                                    variant="outline"
-                                    size="icon"
-                                    className="absolute top-2 right-2 h-6 w-6 bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 hover:bg-red-500/20 hover:border-white/30 opacity-0 group-hover:opacity-100 transition-all shadow-md"
+                                    className="absolute top-2 right-2 h-6 w-6 neo-glass-button neo-glass-icon-button opacity-0 group-hover:opacity-100 transition-all"
                                     onClick={() => removeMedia(index)}
                                   >
                                     <X className="h-3 w-3" />
-                                  </Button>
+                                  </button>
                                 </div>
                               ))}
                             </div>
@@ -703,15 +695,13 @@ export default function CreatePulsePage() {
                                   controls
                                   className="w-full aspect-video object-cover rounded-md border border-white/20 bg-black/20" 
                                 />
-                                <Button
+                                <button
                                   type="button"
-                                  variant="outline"
-                                  size="icon"
-                                  className="absolute top-2 right-2 h-6 w-6 bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 hover:bg-red-500/20 hover:border-white/30 opacity-0 group-hover:opacity-100 transition-all shadow-md"
+                                  className="absolute top-2 right-2 h-6 w-6 neo-glass-button neo-glass-icon-button opacity-0 group-hover:opacity-100 transition-all"
                                   onClick={() => removeMedia(0)}
                                 >
                                   <X className="h-3 w-3" />
-                                </Button>
+                                </button>
                               </div>
                             </div>
                           )}
@@ -1001,13 +991,12 @@ export default function CreatePulsePage() {
                                   Add Brandentifier profile link to connect with users
                                 </p>
                               </div>
-                              <Button 
-                                size="sm" 
-                                className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border border-white/20 hover:bg-white/10 hover:border-white/30 transition-all shadow-md disabled:opacity-50"
+                              <button 
+                                className="neo-glass-button"
                                 disabled={!selectedProject}
                               >
                                 Add Team Member
-                              </Button>
+                              </button>
                             </div>
                             
                             {!selectedProject && (
@@ -1039,13 +1028,12 @@ export default function CreatePulsePage() {
                                   Add Brandentifier profile link of your client
                                 </p>
                               </div>
-                              <Button 
-                                size="sm" 
-                                className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border border-white/20 hover:bg-white/10 hover:border-white/30 transition-all shadow-md disabled:opacity-50"
+                              <button 
+                                className="neo-glass-button"
                                 disabled={!selectedProject}
                               >
                                 Add Client
-                              </Button>
+                              </button>
                             </div>
                             
                             {!selectedProject && (
@@ -1062,21 +1050,21 @@ export default function CreatePulsePage() {
 
               <NeoGlassSection>
                 <div className="pt-4">
-                  <Button 
+                  <button 
                     type="button"
                     onClick={handleCreatePulse}
                     disabled={createPulseMutation.isPending}
-                    className="px-5 py-2 rounded-md bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border border-white/20 hover:bg-white/10 hover:border-white/30 shadow-lg font-medium transition-all flex items-center justify-center w-full md:w-auto disabled:opacity-50"
+                    className="neo-glass-button primary w-full md:w-auto flex items-center justify-center gap-2"
                   >
                     {createPulseMutation.isPending ? (
                       <>
-                        <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2"></div>
+                        <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></div>
                         <span>Publishing...</span>
                       </>
                     ) : (
                       <span>Publish Pulse</span>
                     )}
-                  </Button>
+                  </button>
                 </div>
               </NeoGlassSection>
             </div>
