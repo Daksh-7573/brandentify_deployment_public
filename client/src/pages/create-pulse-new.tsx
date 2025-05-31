@@ -721,28 +721,28 @@ export default function CreatePulsePage() {
                       </div>
                       
                       <Tabs defaultValue="details" value={activeProjectTab} onValueChange={setActiveProjectTab}>
-                        <TabsList className="w-full bg-[rgba(18,18,18,0.95)] backdrop-blur-md border border-white/20 shadow-md">
+                        <TabsList className="neo-glass-tab-container">
                           <TabsTrigger 
                             value="details" 
-                            className="flex-1 text-white/70 hover:text-white hover:bg-white/10 data-[state=active]:bg-white/20 data-[state=active]:text-white transition-all"
+                            className="neo-glass-tab"
                           >
                             Project Details
                           </TabsTrigger>
                           <TabsTrigger 
                             value="media" 
-                            className="flex-1 text-white/70 hover:text-white hover:bg-white/10 data-[state=active]:bg-white/20 data-[state=active]:text-white transition-all"
+                            className="neo-glass-tab"
                           >
                             Media
                           </TabsTrigger>
                           <TabsTrigger 
                             value="team" 
-                            className="flex-1 text-white/70 hover:text-white hover:bg-white/10 data-[state=active]:bg-white/20 data-[state=active]:text-white transition-all"
+                            className="neo-glass-tab"
                           >
                             Team Members
                           </TabsTrigger>
                           <TabsTrigger 
                             value="client" 
-                            className="flex-1 text-white/70 hover:text-white hover:bg-white/10 data-[state=active]:bg-white/20 data-[state=active]:text-white transition-all"
+                            className="neo-glass-tab"
                           >
                             Client
                           </TabsTrigger>
@@ -871,24 +871,22 @@ export default function CreatePulsePage() {
                               <div className="space-y-2">
                                 <Label className="text-white">Media Type</Label>
                                 <div className="flex gap-4">
-                                  <Button
+                                  <button
                                     type="button"
-                                    variant={mediaType === 'image' ? 'default' : 'outline'}
                                     onClick={() => setMediaType('image')}
-                                    className={mediaType === 'image' ? 'bg-white/20 text-white hover:bg-white/30' : 'bg-[rgba(18,18,18,0.95)] text-white border-white/20 hover:bg-white/10'}
+                                    className={`neo-glass-button ${mediaType === 'image' ? 'primary' : 'secondary'}`}
                                   >
                                     <Image className="mr-2 h-4 w-4" />
                                     Images
-                                  </Button>
-                                  <Button
+                                  </button>
+                                  <button
                                     type="button"
-                                    variant={mediaType === 'video' ? 'default' : 'outline'}
                                     onClick={() => setMediaType('video')}
-                                    className={mediaType === 'video' ? 'bg-white/20 text-white hover:bg-white/30' : 'bg-[rgba(18,18,18,0.95)] text-white border-white/20 hover:bg-white/10'}
+                                    className={`neo-glass-button ${mediaType === 'video' ? 'primary' : 'secondary'}`}
                                   >
                                     <Video className="mr-2 h-4 w-4" />
                                     Video
-                                  </Button>
+                                  </button>
                                 </div>
                               </div>
 
@@ -917,15 +915,13 @@ export default function CreatePulsePage() {
                                             alt={`Preview ${index}`}
                                             className="w-full aspect-video object-cover rounded-md border border-white/20" 
                                           />
-                                          <Button
+                                          <button
                                             type="button"
-                                            variant="outline"
-                                            size="icon"
-                                            className="absolute top-2 right-2 h-6 w-6 bg-black/60 text-white border-white/20 opacity-0 group-hover:opacity-100 transition-opacity"
+                                            className="absolute top-2 right-2 h-6 w-6 neo-glass-button neo-glass-icon-button opacity-0 group-hover:opacity-100 transition-all"
                                             onClick={() => removeMedia(index)}
                                           >
                                             <X className="h-3 w-3" />
-                                          </Button>
+                                          </button>
                                         </div>
                                       ))}
                                     </div>
