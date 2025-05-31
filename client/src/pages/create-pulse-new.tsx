@@ -38,6 +38,8 @@ export default function CreatePulsePage() {
   const [projectUrl, setProjectUrl] = useState("");
   const [mediaUrls, setMediaUrls] = useState<string[]>([]);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const [teamMembers, setTeamMembers] = useState<string[]>([""]);
+  const [clientProfile, setClientProfile] = useState("");
   const videoInputRef = useRef<HTMLInputElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
 
@@ -65,6 +67,8 @@ export default function CreatePulsePage() {
       setUploadedFiles([]);
       setSelectedProject(null);
       setActiveProjectTab('details');
+      setTeamMembers([""]);
+      setClientProfile("");
       
       // Invalidate pulse cache so user sees their new post
       queryClient.invalidateQueries({ queryKey: ["/api/pulses"] });
@@ -216,6 +220,24 @@ export default function CreatePulsePage() {
     } catch (error) {
       console.error("Error in mutation:", error);
     }
+  };
+  
+  // Team member management functions
+  const addTeamMember = () => {
+    setTeamMembers([...teamMembers, ""]);
+  };
+  
+  const removeTeamMember = (index: number) => {
+    if (teamMembers.length > 1) {
+      const newTeamMembers = teamMembers.filter((_, i) => i !== index);
+      setTeamMembers(newTeamMembers);
+    }
+  };
+  
+  const updateTeamMember = (index: number, value: string) => {
+    const newTeamMembers = [...teamMembers];
+    newTeamMembers[index] = value;
+    setTeamMembers(newTeamMembers);
   };
   
   // Handle media upload (images and videos)
@@ -969,25 +991,38 @@ export default function CreatePulsePage() {
                               <p className="text-xs text-gray-400">Add team members who worked on this project</p>
                             </div>
                             
-                            <div className="space-y-4 border border-white/20 rounded-lg p-4 bg-[rgba(18,18,18,0.3)]">
-                              <div className="space-y-2">
-                                <Label htmlFor="team-profile" className="text-white">Profile Link*</Label>
-                                <Input
-                                  id="team-profile"
-                                  placeholder="https://brandentifier.replit.app/profile/username"
-                                  className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20"
-                                />
-                                <p className="text-xs text-gray-400">
-                                  Add Brandentifier profile link to connect with users
-                                </p>
+                            {teamMembers.map((member, index) => (
+                              <div key={index} className="space-y-4 border border-white/20 rounded-lg p-4 bg-[rgba(18,18,18,0.3)]">
+                                <div className="flex items-center gap-2">
+                                  <div className="flex-1 space-y-2">
+                                    <Label className="text-white">Team Member {index + 1}</Label>
+                                    <Input
+                                      placeholder="https://brandentifier.replit.app/profile/username"
+                                      value={member}
+                                      onChange={(e) => updateTeamMember(index, e.target.value)}
+                                      className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20"
+                                    />
+                                  </div>
+                                  {teamMembers.length > 1 && (
+                                    <button
+                                      type="button"
+                                      onClick={() => removeTeamMember(index)}
+                                      className="neo-glass-button neo-glass-icon-button mt-6"
+                                    >
+                                      <X className="h-4 w-4" />
+                                    </button>
+                                  )}
+                                </div>
                               </div>
-                              <button 
-                                className="neo-glass-button"
-                                disabled={!selectedProject}
-                              >
-                                Add Team Member
-                              </button>
-                            </div>
+                            ))}
+                            
+                            <button 
+                              type="button"
+                              onClick={addTeamMember}
+                              className="neo-glass-button w-full"
+                            >
+                              Add Team Member
+                            </button>
                             
                             {!selectedProject && (
                               <p className="text-sm text-amber-400">
@@ -1008,22 +1043,18 @@ export default function CreatePulsePage() {
                             
                             <div className="space-y-4 border border-white/20 rounded-lg p-4 bg-[rgba(18,18,18,0.3)]">
                               <div className="space-y-2">
-                                <Label htmlFor="client-profile" className="text-white">Client Profile Link*</Label>
+                                <Label htmlFor="client-profile" className="text-white">Client Profile Link</Label>
                                 <Input
                                   id="client-profile"
                                   placeholder="https://brandentifier.replit.app/profile/username"
+                                  value={clientProfile}
+                                  onChange={(e) => setClientProfile(e.target.value)}
                                   className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20"
                                 />
                                 <p className="text-xs text-gray-400">
                                   Add Brandentifier profile link of your client
                                 </p>
                               </div>
-                              <button 
-                                className="neo-glass-button"
-                                disabled={!selectedProject}
-                              >
-                                Add Client
-                              </button>
                             </div>
                             
                             {!selectedProject && (
