@@ -502,46 +502,50 @@
   color: rgba(255, 255, 255, 0.5);
 }
 
-/* File input specific styling */
-.neo-glass-input[type="file"] {
-  padding: 12px 16px;
-  min-height: 48px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+/* File input specific styling - comprehensive fix */
+input[type="file"] {
+  padding: 12px 16px !important;
+  min-height: 48px !important;
+  line-height: 1.4 !important;
+  font-size: 14px !important;
+  overflow: visible !important;
+  white-space: nowrap !important;
+  text-overflow: ellipsis !important;
 }
 
-.neo-glass-input[type="file"]::file-selector-button {
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 8px;
-  margin-right: 12px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-size: 14px;
+input[type="file"]::file-selector-button {
+  background: rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
+  border: none !important;
+  padding: 6px 12px !important;
+  border-radius: 6px !important;
+  margin-right: 8px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
 }
 
-.neo-glass-input[type="file"]::file-selector-button:hover {
-  background: rgba(255, 255, 255, 0.3);
+input[type="file"]::file-selector-button:hover {
+  background: rgba(255, 255, 255, 0.3) !important;
 }
 
 /* Webkit file input styling */
-.neo-glass-input[type="file"]::-webkit-file-upload-button {
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 8px;
-  margin-right: 12px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-size: 14px;
+input[type="file"]::-webkit-file-upload-button {
+  background: rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
+  border: none !important;
+  padding: 6px 12px !important;
+  border-radius: 6px !important;
+  margin-right: 8px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
 }
 
-.neo-glass-input[type="file"]::-webkit-file-upload-button:hover {
-  background: rgba(255, 255, 255, 0.3);
+input[type="file"]::-webkit-file-upload-button:hover {
+  background: rgba(255, 255, 255, 0.3) !important;
 }
 
 /* Musk chat component */
@@ -696,43 +700,39 @@
   pointer-events: none;
 }
 
-/* Glass UI Scrollbar */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.3) rgba(255, 255, 255, 0.1);
+/* Glass UI Scrollbar - Remove white bars */
+html, body, * {
+  scrollbar-width: thin !important;
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent !important;
 }
 
 *::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 8px !important;
+  height: 8px !important;
+  background: transparent !important;
 }
 
 *::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: transparent !important;
+  border-radius: 4px !important;
 }
 
 *::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.3);
-  border-radius: 4px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  transition: all 0.2s ease;
+  background: rgba(255, 255, 255, 0.3) !important;
+  border-radius: 4px !important;
+  border: none !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  transition: all 0.2s ease !important;
 }
 
 *::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.5);
-  border-color: rgba(255, 255, 255, 0.4);
-  box-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.5) !important;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.2) !important;
 }
 
 *::-webkit-scrollbar-corner {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: transparent !important;
 }
 
 /* Enhanced scrollbar for Create Pulse page */

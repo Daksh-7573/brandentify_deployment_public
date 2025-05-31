@@ -419,10 +419,7 @@ export default function CreatePulsePage() {
 
   return (
     <div className="min-h-screen bg-[url('/bg-dark-room.jpg')] bg-cover bg-center">
-      <div className="min-h-screen bg-black/50 backdrop-blur-sm overflow-y-auto" style={{
-        scrollbarWidth: 'thin',
-        scrollbarColor: 'rgba(255, 255, 255, 0.4) rgba(255, 255, 255, 0.15)'
-      }}>
+      <div className="min-h-screen bg-black/50 backdrop-blur-sm overflow-y-auto">
         <Header />
         <div className="container mx-auto p-4 pt-24">
           <div className="flex items-center mb-6">
