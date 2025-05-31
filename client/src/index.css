@@ -35,15 +35,16 @@
 
 /* Fix file input styling globally */
 input[type="file"] {
-  padding: 14px 16px !important;
-  min-height: 52px !important;
-  line-height: 1.4 !important;
+  padding: 16px !important;
+  min-height: 56px !important;
+  line-height: normal !important;
   font-size: 14px !important;
   overflow: visible !important;
   white-space: nowrap !important;
   text-overflow: ellipsis !important;
   display: flex !important;
   align-items: center !important;
+  box-sizing: border-box !important;
 }
 
 input[type="file"]::file-selector-button {

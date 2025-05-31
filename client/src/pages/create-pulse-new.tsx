@@ -918,7 +918,12 @@ export default function CreatePulsePage() {
                                       accept="image/*"
                                       multiple
                                       onChange={handleMediaUpload}
-                                      className="w-full h-12 px-4 bg-[rgba(18,18,18,0.95)] text-white border border-white/20 rounded-lg file:bg-white/20 file:text-white file:hover:bg-white/30 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0"
+                                      className="w-full min-h-[56px] px-4 py-3 bg-[rgba(18,18,18,0.95)] text-white border border-white/20 rounded-lg"
+                                      style={{
+                                        lineHeight: '1.5',
+                                        display: 'flex',
+                                        alignItems: 'center'
+                                      }}
                                     />
                                     <p className="text-xs text-gray-400">Select up to 10 images (max 25MB each)</p>
                                   </div>
@@ -954,7 +959,12 @@ export default function CreatePulsePage() {
                                       type="file"
                                       accept="video/*"
                                       onChange={handleMediaUpload}
-                                      className="w-full h-12 px-4 bg-[rgba(18,18,18,0.95)] text-white border border-white/20 rounded-lg file:bg-white/20 file:text-white file:hover:bg-white/30 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0"
+                                      className="w-full min-h-[56px] px-4 py-3 bg-[rgba(18,18,18,0.95)] text-white border border-white/20 rounded-lg"
+                                      style={{
+                                        lineHeight: '1.5',
+                                        display: 'flex',
+                                        alignItems: 'center'
+                                      }}
                                     />
                                     <p className="text-xs text-gray-400">Select video file (max 120 seconds)</p>
                                   </div>
