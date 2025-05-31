@@ -503,7 +503,6 @@ export default function CreatePulsePage() {
               {pulseType !== 'project' && (
                 <NeoGlassSection>
                   <div className="space-y-6">
-                    <>
                       <div className="space-y-2">
                         <Label htmlFor="title" className="text-white">Title</Label>
                         <Input 
