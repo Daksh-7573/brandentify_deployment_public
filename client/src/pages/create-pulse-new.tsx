@@ -721,28 +721,28 @@ export default function CreatePulsePage() {
                       </div>
                       
                       <Tabs defaultValue="details" value={activeProjectTab} onValueChange={setActiveProjectTab}>
-                        <TabsList className="neo-glass-tab-container">
+                        <TabsList className="mb-6 dark-tabs-list">
                           <TabsTrigger 
                             value="details" 
-                            className="neo-glass-tab"
+                            className="dark-tabs-trigger"
                           >
                             Project Details
                           </TabsTrigger>
                           <TabsTrigger 
                             value="media" 
-                            className="neo-glass-tab"
+                            className="dark-tabs-trigger"
                           >
                             Media
                           </TabsTrigger>
                           <TabsTrigger 
                             value="team" 
-                            className="neo-glass-tab"
+                            className="dark-tabs-trigger"
                           >
                             Team Members
                           </TabsTrigger>
                           <TabsTrigger 
                             value="client" 
-                            className="neo-glass-tab"
+                            className="dark-tabs-trigger"
                           >
                             Client
                           </TabsTrigger>
