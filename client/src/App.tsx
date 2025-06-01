@@ -74,6 +74,7 @@ import NeoGlassSpotifyDemoPage from "@/pages/neo-glass-demo-spotify"; // Spotify
 import NeoGlassFormDemoPage from "@/pages/neo-glass-form-demo"; // Neo-Glass Form UI demo
 import NeoGlassDemoMainPage from "@/pages/neo-glass-demo-main"; // Main platform styled Neo-Glass UI demo
 import NeoGlassSimplePage from "@/pages/neo-glass-simple"; // Simple Neo-Glass demo without dependencies
+import NowboardPage from "@/pages/nowboard"; // Nowboard - professional updates feed
 // Lazy load the SharedCardPage to improve performance and show loader immediately
 import { lazy, Suspense } from "react";
 const SharedCardPage = lazy(() => import("@/pages/shared-card"));
@@ -310,7 +311,10 @@ function Router() {
       <Route path="/musk-testing">
         <ProtectedRoute path="/musk-testing" component={MuskTestingPage} />
       </Route>
-      {/* Removed Test route for nowboard integration as it's now part of quests */}
+      {/* Nowboard - professional updates feed */}
+      <Route path="/nowboard">
+        <ProtectedRoute path="/nowboard" component={NowboardPage} />
+      </Route>
       {/* Messaging feature */}
       <Route path="/messages">
         <ProtectedRoute path="/messages" component={ChatPage} />
