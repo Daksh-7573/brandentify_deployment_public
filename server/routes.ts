@@ -5482,38 +5482,43 @@ ${extractedText.substring(0, 5000)}
   });
   
   apiRouter.delete("/pulse-reactions/:id", async (req: Request, res: Response) => {
+    console.log(`[DELETE /pulse-reactions/:id] Route handler executing`);
     try {
       const reactionId = parseInt(req.params.id);
+      console.log(`[DELETE /pulse-reactions/:id] Reaction ID: ${reactionId}`);
       
       if (isNaN(reactionId)) {
         return res.status(400).json({ message: "Invalid reaction ID format" });
       }
       
-      // Get reaction before deleting to know the user and reaction type
-      const reaction = await storage.getPulseReactionById(reactionId);
-      if (!reaction) {
+      // Simple delete without quota restoration for now - just to test basic functionality
+      const deleteResult = await pool.query(`
+        DELETE FROM pulse_reactions WHERE id = $1 RETURNING pulse_id, user_id, reaction_type
+      `, [reactionId]);
+      
+      if (deleteResult.rows.length === 0) {
+        console.log(`[DELETE /pulse-reactions/:id] Reaction not found`);
         return res.status(404).json({ message: "Reaction not found" });
       }
       
-      const result = await storage.deletePulseReaction(reactionId);
+      const { pulse_id, user_id, reaction_type } = deleteResult.rows[0];
+      console.log(`[DELETE /pulse-reactions/:id] Deleted reaction:`, { pulse_id, user_id, reaction_type });
       
-      if (!result) {
-        return res.status(404).json({ message: "Reaction not found" });
-      }
+      // Update pulse count
+      const countField = reaction_type === "insightful" ? "insightful_count" : "misinformed_count";
+      await pool.query(`
+        UPDATE pulses 
+        SET ${countField} = GREATEST(0, ${countField} - 1)
+        WHERE id = $1
+      `, [pulse_id]);
       
-      // Get updated quota data to return to client
-      const quotaData = await storage.checkReactionQuota(reaction.userId, reaction.reactionType);
+      console.log(`[DELETE /pulse-reactions/:id] Successfully deleted reaction and updated pulse count`);
       
       res.status(200).json({ 
-        message: "Reaction deleted successfully",
-        quota: {
-          used: quotaData.used,
-          remaining: quotaData.remaining,
-          max: quotaData.max
-        }
+        message: "Reaction deleted successfully"
       });
     } catch (error) {
-      console.error("Error deleting reaction:", error);
+      console.error(`[DELETE /pulse-reactions/:id] Error:`, error);
       res.status(500).json({ message: "Internal server error" });
     }
   });
