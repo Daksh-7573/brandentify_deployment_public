@@ -528,6 +528,14 @@ export const reactionTypeEnum = pgEnum("reaction_type", [
   "misinformed",
 ]);
 
+// Flag status enum for content flags
+export const flagStatusEnum = pgEnum("flag_status", [
+  "pending",
+  "reviewed",
+  "resolved",
+  "dismissed"
+]);
+
 // Pulses model for user-created content
 export const pulses = pgTable("pulses", {
   id: serial("id").primaryKey(),
@@ -573,6 +581,20 @@ export const pollVotes = pgTable("poll_votes", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Pulse flags model - tracks flagged inappropriate content
+export const pulseFlags = pgTable("pulse_flags", {
+  id: serial("id").primaryKey(),
+  pulseId: integer("pulse_id").references(() => pulses.id).notNull(),
+  reporterId: integer("reporter_id").references(() => users.id).notNull(),
+  reason: text("reason").notNull(), // Reason for flagging (inappropriate, spam, etc.)
+  description: text("description"), // Additional details from reporter
+  status: flagStatusEnum("status").default("pending"),
+  reviewedBy: integer("reviewed_by").references(() => users.id), // Admin who reviewed the flag
+  reviewNote: text("review_note"), // Note from admin during review
+  createdAt: timestamp("created_at").defaultNow(),
+  reviewedAt: timestamp("reviewed_at"),
+});
+
 // Insert schemas for Pulses
 export const insertPulseSchema = createInsertSchema(pulses).omit({
   id: true,
@@ -591,6 +613,15 @@ export const insertPulseCommentSchema = createInsertSchema(pulseComments).omit({
 export const insertPollVoteSchema = createInsertSchema(pollVotes).omit({
   id: true,
   createdAt: true
+});
+
+export const insertPulseFlagSchema = createInsertSchema(pulseFlags).omit({
+  id: true,
+  status: true,
+  reviewedBy: true,
+  reviewNote: true,
+  createdAt: true,
+  reviewedAt: true
 });
 
 // Export types for Pulses

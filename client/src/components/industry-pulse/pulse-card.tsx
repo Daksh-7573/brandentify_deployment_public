@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import PulseEngagementButton from "./pulse-engagement-button";
+import PulseMenu from "./pulse-menu";
 import { formatFeedDate } from "@/hooks/feed";
 
 interface PulseCardProps {
@@ -108,6 +109,11 @@ export default function PulseCard({
                   {formatFeedDate(pulse.createdAt)}
                 </p>
               </div>
+              <PulseMenu 
+                pulseId={pulse.id}
+                currentUserId={userId}
+                pulseCreatorId={pulse.userId}
+              />
             </div>
             
             {renderBadges()}
