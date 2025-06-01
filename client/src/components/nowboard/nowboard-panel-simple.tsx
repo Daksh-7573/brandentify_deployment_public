@@ -118,7 +118,7 @@ function InspiredButton({
       }`}
     >
       <LightbulbBrainIcon 
-        className="h-3 w-3" 
+        className="h-5 w-5" 
         filled={isInspired}
       />
       <span>{count}</span>
