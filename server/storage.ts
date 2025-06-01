@@ -2684,156 +2684,229 @@ export class MemStorage implements IStorage {
   
   // Pulse Reaction operations
   async getPulseReactionsByPulseId(pulseId: number): Promise<PulseReaction[]> {
-    return Array.from(this.pulseReactions.values())
-      .filter(reaction => reaction.pulseId === pulseId);
+    try {
+      const result = await pool.query(`
+        SELECT id, pulse_id as "pulseId", user_id as "userId", 
+               reaction_type as "reactionType", created_at as "createdAt"
+        FROM pulse_reactions 
+        WHERE pulse_id = $1 
+        ORDER BY created_at DESC
+      `, [pulseId]);
+      
+      return result.rows;
+    } catch (error) {
+      console.error('[db.getPulseReactionsByPulseId] Error:', error);
+      return [];
+    }
   }
   
   async getPulseReactionById(id: number): Promise<PulseReaction | undefined> {
-    return this.pulseReactions.get(id);
+    try {
+      const result = await pool.query(`
+        SELECT id, pulse_id as "pulseId", user_id as "userId", 
+               reaction_type as "reactionType", created_at as "createdAt"
+        FROM pulse_reactions 
+        WHERE id = $1
+      `, [id]);
+      
+      return result.rows[0] || undefined;
+    } catch (error) {
+      console.error('[db.getPulseReactionById] Error:', error);
+      return undefined;
+    }
   }
   
   async getPulseReactionByUserAndPulse(userId: number, pulseId: number, reactionType: "insightful" | "misinformed"): Promise<PulseReaction | undefined> {
-    return Array.from(this.pulseReactions.values())
-      .find(reaction => reaction.userId === userId && reaction.pulseId === pulseId && reaction.reactionType === reactionType);
+    try {
+      const result = await pool.query(`
+        SELECT id, pulse_id as "pulseId", user_id as "userId", 
+               reaction_type as "reactionType", created_at as "createdAt"
+        FROM pulse_reactions 
+        WHERE user_id = $1 AND pulse_id = $2 AND reaction_type = $3
+      `, [userId, pulseId, reactionType]);
+      
+      return result.rows[0] || undefined;
+    } catch (error) {
+      console.error('[db.getPulseReactionByUserAndPulse] Error:', error);
+      return undefined;
+    }
   }
   
   // Pulse Reaction operations implementation
   async createPulseReaction(insertReaction: InsertPulseReaction): Promise<PulseReaction> {
-    const id = this.currentPulseReactionId++;
-    const createdAt = new Date();
-    
-    const reaction: PulseReaction = {
-      ...insertReaction,
-      id,
-      createdAt
-    };
-    
-    this.pulseReactions.set(id, reaction);
-    
-    // Update the pulse reaction count
-    const pulse = this.pulses.get(insertReaction.pulseId);
-    if (pulse) {
-      if (insertReaction.reactionType === "insightful") {
-        this.pulses.set(pulse.id, {
-          ...pulse,
-          insightfulCount: (pulse.insightfulCount || 0) + 1
-        });
-      } else if (insertReaction.reactionType === "misinformed") {
-        this.pulses.set(pulse.id, {
-          ...pulse,
-          misinformedCount: (pulse.misinformedCount || 0) + 1
-        });
-      }
+    try {
+      console.log('[db.createPulseReaction] Creating reaction:', insertReaction);
+      
+      const result = await pool.query(`
+        INSERT INTO pulse_reactions (pulse_id, user_id, reaction_type)
+        VALUES ($1, $2, $3)
+        RETURNING id, pulse_id as "pulseId", user_id as "userId", 
+                  reaction_type as "reactionType", created_at as "createdAt"
+      `, [insertReaction.pulseId, insertReaction.userId, insertReaction.reactionType]);
+      
+      const reaction = result.rows[0];
+      
+      // Update the pulse reaction count
+      const countField = insertReaction.reactionType === "insightful" ? "insightful_count" : "misinformed_count";
+      await pool.query(`
+        UPDATE pulses 
+        SET ${countField} = ${countField} + 1 
+        WHERE id = $1
+      `, [insertReaction.pulseId]);
+      
+      console.log('[db.createPulseReaction] Created reaction:', reaction);
+      return reaction;
+    } catch (error) {
+      console.error('[db.createPulseReaction] Error:', error);
+      throw error;
     }
-    
-    return reaction;
   }
   
   async deletePulseReaction(id: number): Promise<boolean> {
-    const reaction = this.pulseReactions.get(id);
-    if (!reaction) return false;
-    
-    // Decrease the reaction count on the pulse
-    const pulse = this.pulses.get(reaction.pulseId);
-    if (pulse) {
-      if (reaction.reactionType === "insightful" && pulse.insightfulCount && pulse.insightfulCount > 0) {
-        this.pulses.set(pulse.id, {
-          ...pulse,
-          insightfulCount: pulse.insightfulCount - 1
-        });
-      } else if (reaction.reactionType === "misinformed" && pulse.misinformedCount && pulse.misinformedCount > 0) {
-        this.pulses.set(pulse.id, {
-          ...pulse,
-          misinformedCount: pulse.misinformedCount - 1
-        });
+    try {
+      // Get the reaction first to update the pulse count
+      const reactionResult = await pool.query(`
+        SELECT pulse_id, user_id, reaction_type FROM pulse_reactions WHERE id = $1
+      `, [id]);
+      
+      if (reactionResult.rows.length === 0) return false;
+      
+      const { pulse_id, user_id, reaction_type } = reactionResult.rows[0];
+      
+      // Delete the reaction
+      const deleteResult = await pool.query(`
+        DELETE FROM pulse_reactions WHERE id = $1
+      `, [id]);
+      
+      if (deleteResult.rowCount > 0) {
+        // Update the pulse reaction count
+        const countField = reaction_type === "insightful" ? "insightful_count" : "misinformed_count";
+        await pool.query(`
+          UPDATE pulses 
+          SET ${countField} = GREATEST(0, ${countField} - 1)
+          WHERE id = $1
+        `, [pulse_id]);
+        
+        // Restore the user's reaction quota when they remove a reaction
+        await this.decrementReactionQuota(user_id, reaction_type);
+        
+        return true;
       }
+      
+      return false;
+    } catch (error) {
+      console.error('[db.deletePulseReaction] Error:', error);
+      return false;
     }
-    
-    // Restore the user's reaction quota when they remove a reaction
-    if (reaction.userId && reaction.reactionType) {
-      await this.decrementReactionQuota(reaction.userId, reaction.reactionType);
-    }
-    
-    return this.pulseReactions.delete(id);
   }
   
   // User Reaction Quota operations
   async getUserReactionQuota(userId: number): Promise<UserReactionQuota | undefined> {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); // Set to beginning of day
-    
-    return Array.from(this.userReactionQuotas.values())
-      .find(quota => {
-        const quotaDate = new Date(quota.date);
-        quotaDate.setHours(0, 0, 0, 0);
-        return quota.userId === userId && quotaDate.getTime() === today.getTime();
-      });
+    try {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      const result = await pool.query(`
+        SELECT id, user_id as "userId", date, 
+               insightful_quota_used as "insightfulQuotaUsed",
+               misinformed_quota_used as "misinformedQuotaUsed",
+               insightful_quota_max as "insightfulQuotaMax",
+               misinformed_quota_max as "misinformedQuotaMax",
+               updated_at as "updatedAt"
+        FROM user_reaction_quotas 
+        WHERE user_id = $1 AND date = $2
+      `, [userId, today]);
+      
+      return result.rows[0] || undefined;
+    } catch (error) {
+      console.error('[db.getUserReactionQuota] Error:', error);
+      return undefined;
+    }
   }
   
   async getOrCreateUserReactionQuota(userId: number): Promise<UserReactionQuota> {
-    const existingQuota = await this.getUserReactionQuota(userId);
-    if (existingQuota) {
-      return existingQuota;
+    try {
+      const existingQuota = await this.getUserReactionQuota(userId);
+      if (existingQuota) {
+        return existingQuota;
+      }
+      
+      // Create a new quota for today
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      const result = await pool.query(`
+        INSERT INTO user_reaction_quotas (user_id, date, insightful_quota_used, misinformed_quota_used, insightful_quota_max, misinformed_quota_max)
+        VALUES ($1, $2, 0, 0, 10, 10)
+        RETURNING id, user_id as "userId", date, 
+                  insightful_quota_used as "insightfulQuotaUsed",
+                  misinformed_quota_used as "misinformedQuotaUsed",
+                  insightful_quota_max as "insightfulQuotaMax",
+                  misinformed_quota_max as "misinformedQuotaMax",
+                  updated_at as "updatedAt"
+      `, [userId, today]);
+      
+      return result.rows[0];
+    } catch (error) {
+      console.error('[db.getOrCreateUserReactionQuota] Error:', error);
+      throw error;
     }
-    
-    // Create a new quota for today
-    const id = this.currentUserReactionQuotaId++;
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    
-    const quota: UserReactionQuota = {
-      id,
-      userId,
-      date: today,
-      insightfulQuotaUsed: 0,
-      misinformedQuotaUsed: 0,
-      insightfulQuotaMax: 10,
-      misinformedQuotaMax: 10,
-      updatedAt: new Date()
-    };
-    
-    this.userReactionQuotas.set(id, quota);
-    return quota;
   }
   
   async incrementReactionQuota(userId: number, reactionType: "insightful" | "misinformed"): Promise<UserReactionQuota> {
-    const quota = await this.getOrCreateUserReactionQuota(userId);
-    
-    // Update the appropriate counter
-    if (reactionType === "insightful") {
-      const currentUsed = quota.insightfulQuotaUsed || 0;
-      quota.insightfulQuotaUsed = currentUsed + 1;
-    } else if (reactionType === "misinformed") {
-      const currentUsed = quota.misinformedQuotaUsed || 0;
-      quota.misinformedQuotaUsed = currentUsed + 1;
+    try {
+      await this.getOrCreateUserReactionQuota(userId); // Ensure quota exists
+      
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      const quotaField = reactionType === "insightful" ? "insightful_quota_used" : "misinformed_quota_used";
+      
+      const result = await pool.query(`
+        UPDATE user_reaction_quotas 
+        SET ${quotaField} = ${quotaField} + 1, updated_at = CURRENT_TIMESTAMP
+        WHERE user_id = $1 AND date = $2
+        RETURNING id, user_id as "userId", date, 
+                  insightful_quota_used as "insightfulQuotaUsed",
+                  misinformed_quota_used as "misinformedQuotaUsed",
+                  insightful_quota_max as "insightfulQuotaMax",
+                  misinformed_quota_max as "misinformedQuotaMax",
+                  updated_at as "updatedAt"
+      `, [userId, today]);
+      
+      return result.rows[0];
+    } catch (error) {
+      console.error('[db.incrementReactionQuota] Error:', error);
+      throw error;
     }
-    
-    quota.updatedAt = new Date();
-    this.userReactionQuotas.set(quota.id, quota);
-    
-    return quota;
   }
   
   async decrementReactionQuota(userId: number, reactionType: "insightful" | "misinformed"): Promise<UserReactionQuota> {
-    const quota = await this.getOrCreateUserReactionQuota(userId);
-    
-    // Update the appropriate counter (decrement only if greater than 0)
-    if (reactionType === "insightful") {
-      const currentUsed = quota.insightfulQuotaUsed || 0;
-      if (currentUsed > 0) {
-        quota.insightfulQuotaUsed = currentUsed - 1;
-      }
-    } else if (reactionType === "misinformed") {
-      const currentUsed = quota.misinformedQuotaUsed || 0;
-      if (currentUsed > 0) {
-        quota.misinformedQuotaUsed = currentUsed - 1;
-      }
+    try {
+      await this.getOrCreateUserReactionQuota(userId); // Ensure quota exists
+      
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      const quotaField = reactionType === "insightful" ? "insightful_quota_used" : "misinformed_quota_used";
+      
+      const result = await pool.query(`
+        UPDATE user_reaction_quotas 
+        SET ${quotaField} = GREATEST(0, ${quotaField} - 1), updated_at = CURRENT_TIMESTAMP
+        WHERE user_id = $1 AND date = $2
+        RETURNING id, user_id as "userId", date, 
+                  insightful_quota_used as "insightfulQuotaUsed",
+                  misinformed_quota_used as "misinformedQuotaUsed",
+                  insightful_quota_max as "insightfulQuotaMax",
+                  misinformed_quota_max as "misinformedQuotaMax",
+                  updated_at as "updatedAt"
+      `, [userId, today]);
+      
+      return result.rows[0];
+    } catch (error) {
+      console.error('[db.decrementReactionQuota] Error:', error);
+      throw error;
     }
-    
-    quota.updatedAt = new Date();
-    this.userReactionQuotas.set(quota.id, quota);
-    
-    return quota;
   }
   
   async checkReactionQuota(userId: number, reactionType: "insightful" | "misinformed"): Promise<{ 
