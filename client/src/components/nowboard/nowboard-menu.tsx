@@ -29,8 +29,6 @@ interface NowboardMenuProps {
 }
 
 export function NowboardMenu({ itemId, userId, currentUserId, onDeleted }: NowboardMenuProps) {
-  console.log('NowboardMenu rendered with:', { itemId, userId, currentUserId });
-  
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -87,19 +85,14 @@ export function NowboardMenu({ itemId, userId, currentUserId, onDeleted }: Nowbo
   };
 
   return (
-    <div className="flex-shrink-0">
+    <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button 
             variant="ghost" 
-            className="h-8 w-8 p-0 hover:bg-white/10 focus:bg-white/10 data-[state=open]:bg-white/10 text-white"
-            style={{ 
-              backgroundColor: 'transparent',
-              border: 'none',
-              color: '#ffffff'
-            }}
+            className="h-8 w-8 p-0 hover:bg-white/10 focus:bg-white/10 data-[state=open]:bg-white/10"
           >
-            <MoreHorizontal className="h-4 w-4" style={{ color: '#ffffff' }} />
+            <MoreHorizontal className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent 
@@ -186,6 +179,6 @@ export function NowboardMenu({ itemId, userId, currentUserId, onDeleted }: Nowbo
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+    </>
   );
 }
