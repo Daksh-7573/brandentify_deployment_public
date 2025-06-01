@@ -115,6 +115,8 @@ export default function NowboardPanel() {
   const { user } = useAuth();
   const userId = user?.id || 1; // Default to demo user if not logged in
   
+  console.log("NowboardPanel rendering - user:", user, "userId:", userId);
+  
   const [newItemContent, setNewItemContent] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<"growth" | "learning" | "launch" | "planning" | "collaboration" | "visibility">("learning");
   const [categoryFilter, setCategoryFilter] = useState<string | undefined>(undefined);
