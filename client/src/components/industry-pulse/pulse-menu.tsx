@@ -144,7 +144,7 @@ export default function PulseMenu({ pulseId, currentUserId, pulseCreatorId }: Pu
           {isCreator ? (
             <DropdownMenuItem 
               onClick={() => setShowDeleteDialog(true)} 
-              className="text-red-400 hover:text-red-300 hover:bg-red-500/20 focus:bg-red-500/20 focus:text-red-300 cursor-pointer rounded-md px-3 py-2 text-sm"
+              className="text-red-300 hover:text-red-200 hover:bg-red-500/20 focus:bg-red-500/20 focus:text-red-200 cursor-pointer rounded-md px-3 py-2 text-sm font-medium"
             >
               <Trash2 className="mr-2 h-4 w-4" />
               Delete Pulse
@@ -152,7 +152,7 @@ export default function PulseMenu({ pulseId, currentUserId, pulseCreatorId }: Pu
           ) : (
             <DropdownMenuItem 
               onClick={() => setShowFlagDialog(true)}
-              className="text-white hover:text-white hover:bg-white/10 focus:bg-white/10 focus:text-white cursor-pointer rounded-md px-3 py-2 text-sm"
+              className="text-white/90 hover:text-white hover:bg-white/10 focus:bg-white/10 focus:text-white cursor-pointer rounded-md px-3 py-2 text-sm font-medium"
             >
               <Flag className="mr-2 h-4 w-4" />
               Flag Pulse
