@@ -5484,23 +5484,43 @@ export class MemStorage implements IStorage {
   }
   
   async createNowboardItem(item: InsertNowboardItem): Promise<NowboardItem> {
-    const id = this.currentNowboardItemId++;
-    const createdAt = new Date();
-    
-    const newItem: NowboardItem = {
-      ...item,
-      id,
-      createdAt,
-      inspiredCount: 0,
-      visibility: item.visibility ?? 'public',
-      relatedSkills: item.relatedSkills ?? null,
-      relatedProject: item.relatedProject ?? null,
-      imageUrl: item.imageUrl ?? null,
-      updatedAt: createdAt
-    };
-    
-    this.nowboardItems.set(id, newItem);
-    return newItem;
+    try {
+      console.log('[db.createNowboardItem] Creating nowboard item:', item);
+      
+      const result = await pool.query(`
+        INSERT INTO nowboard_items (
+          user_id, content, category, visibility, 
+          related_skills, related_project, image_url
+        )
+        VALUES ($1, $2, $3, $4, $5, $6, $7)
+        RETURNING 
+          id,
+          user_id as "userId",
+          content,
+          category,
+          visibility,
+          inspired_count as "inspiredCount",
+          related_skills as "relatedSkills",
+          related_project as "relatedProject",
+          image_url as "imageUrl",
+          created_at as "createdAt",
+          updated_at as "updatedAt"
+      `, [
+        item.userId,
+        item.content,
+        item.category,
+        item.visibility || 'public',
+        item.relatedSkills || null,
+        item.relatedProject || null,
+        item.imageUrl || null
+      ]);
+      
+      console.log('[db.createNowboardItem] Created nowboard item with ID:', result.rows[0].id);
+      return result.rows[0];
+    } catch (error) {
+      console.error('[db.createNowboardItem] Error creating nowboard item:', error);
+      throw error;
+    }
   }
   
   async updateNowboardItem(id: number, item: Partial<NowboardItem>): Promise<NowboardItem | undefined> {
@@ -8846,14 +8866,15 @@ export class DatabaseStorage implements IStorage {
         SELECT 
           id,
           user_id as "userId",
-          type,
-          action,
           content,
-          link,
-          metadata,
+          category,
+          visibility,
+          inspired_count as "inspiredCount",
+          related_skills as "relatedSkills",
+          related_project as "relatedProject",
+          image_url as "imageUrl",
           created_at as "createdAt",
-          updated_at as "updatedAt",
-          is_active as "isActive"
+          updated_at as "updatedAt"
         FROM nowboard_items
         ORDER BY created_at DESC
         LIMIT 50
