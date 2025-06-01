@@ -2915,27 +2915,37 @@ export class MemStorage implements IStorage {
     used: number;
     max: number;
   }> {
-    const quota = await this.getOrCreateUserReactionQuota(userId);
-    
-    if (reactionType === "insightful") {
-      const used = quota.insightfulQuotaUsed || 0;
-      const max = quota.insightfulQuotaMax || 10;
-      const remaining = max - used;
+    try {
+      const quota = await this.getOrCreateUserReactionQuota(userId);
+      
+      if (reactionType === "insightful") {
+        const used = quota.insightfulQuotaUsed || 0;
+        const max = quota.insightfulQuotaMax || 10;
+        const remaining = max - used;
+        return {
+          hasQuotaRemaining: remaining > 0,
+          remaining,
+          used,
+          max
+        };
+      } else {
+        const used = quota.misinformedQuotaUsed || 0;
+        const max = quota.misinformedQuotaMax || 10;
+        const remaining = max - used;
+        return {
+          hasQuotaRemaining: remaining > 0,
+          remaining,
+          used,
+          max
+        };
+      }
+    } catch (error) {
+      console.error('[db.checkReactionQuota] Error:', error);
       return {
-        hasQuotaRemaining: remaining > 0,
-        remaining,
-        used,
-        max
-      };
-    } else {
-      const used = quota.misinformedQuotaUsed || 0;
-      const max = quota.misinformedQuotaMax || 10;
-      const remaining = max - used;
-      return {
-        hasQuotaRemaining: remaining > 0,
-        remaining,
-        used,
-        max
+        hasQuotaRemaining: false,
+        remaining: 0,
+        used: 10,
+        max: 10
       };
     }
   }
