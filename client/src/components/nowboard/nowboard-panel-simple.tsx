@@ -27,18 +27,29 @@ function LightbulbIcon({ className, filled }: { className?: string; filled?: boo
   return (
     <svg
       viewBox="0 0 24 24"
-      fill={filled ? "currentColor" : "none"}
+      fill="none"
       stroke="currentColor"
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
       className={className}
     >
-      <path d="M9 21h6" />
-      <path d="M12 17V9" />
-      <path d="M12 3c4.97 0 9 4.03 9 9 0 1.66-.45 3.21-1.24 4.54-.79 1.33-1.92 2.42-3.27 3.1-.68.34-1.45.36-2.19.36h-5.8c-.74 0-1.51-.02-2.19-.36-1.35-.68-2.48-1.77-3.27-3.1C3.45 15.21 3 13.66 3 12c0-4.97 4.03-9 9-9z" />
-      <path d="M9 18h6" />
-      {filled && <circle cx="12" cy="12" r="3" fill="currentColor" />}
+      {/* Lightbulb base */}
+      <rect x="9" y="18" width="6" height="2" rx="1" />
+      <rect x="10" y="20" width="4" height="1" rx="0.5" />
+      
+      {/* Main bulb shape */}
+      <path 
+        d="M15 10.5C15 7.5 13.5 5 12 5S9 7.5 9 10.5c0 1.5 0.5 2.5 1.5 3.5h3c1-1 1.5-2 1.5-3.5z"
+        fill={filled ? "currentColor" : "none"}
+      />
+      
+      {/* Simple filament lines */}
+      <path 
+        d="M10.5 9.5h3M10.5 11h3"
+        stroke={filled ? "rgba(255,255,255,0.8)" : "currentColor"}
+        strokeWidth="1"
+      />
     </svg>
   );
 }
@@ -95,14 +106,14 @@ function InspiredButton({
     <button
       onClick={() => toggleInspired.mutate()}
       disabled={toggleInspired.isPending}
-      className={`flex items-center gap-1.5 px-2 py-1 rounded-lg text-sm transition-colors hover:bg-white/10 ${
+      className={`flex items-center gap-2 px-3 py-2 rounded-lg text-base transition-colors hover:bg-white/10 ${
         isInspired 
           ? 'text-yellow-400' 
           : 'text-white/60 hover:text-white/80'
       }`}
     >
-      <LightbulbIcon 
-        className="h-5 w-5" 
+      <LightbulbBrainIcon 
+        className="h-6 w-6" 
         filled={isInspired}
       />
       <span className="font-medium">{count}</span>
