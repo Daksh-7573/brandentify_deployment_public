@@ -140,24 +140,31 @@ export default function PulseMenu({ pulseId, currentUserId, pulseCreatorId }: Pu
         <DropdownMenuContent 
           align="end"
           className="neo-glass-panel border-0 min-w-[160px] p-2"
+          style={{ backgroundColor: 'rgba(18, 18, 18, 0.9)', backdropFilter: 'blur(15px)' }}
         >
           {isCreator ? (
             <DropdownMenuItem 
               onClick={() => setShowDeleteDialog(true)} 
-              className="text-red-400 hover:text-red-300 hover:bg-red-500/30 focus:bg-red-500/30 focus:text-red-300 cursor-pointer rounded-md px-3 py-2 text-sm font-semibold flex items-center"
-              style={{ color: '#f87171' }}
+              className="cursor-pointer rounded-md px-3 py-2 text-sm font-semibold flex items-center hover:bg-red-500/30"
+              style={{ 
+                color: '#ff6b6b !important',
+                '--text-color': '#ff6b6b'
+              }}
             >
-              <Trash2 className="mr-2 h-4 w-4" style={{ color: '#f87171' }} />
-              Delete Pulse
+              <Trash2 className="mr-2 h-4 w-4" style={{ color: '#ff6b6b' }} />
+              <span style={{ color: '#ff6b6b' }}>Delete Pulse</span>
             </DropdownMenuItem>
           ) : (
             <DropdownMenuItem 
               onClick={() => setShowFlagDialog(true)}
-              className="text-white hover:text-white hover:bg-white/20 focus:bg-white/20 focus:text-white cursor-pointer rounded-md px-3 py-2 text-sm font-semibold flex items-center"
-              style={{ color: '#ffffff' }}
+              className="cursor-pointer rounded-md px-3 py-2 text-sm font-semibold flex items-center hover:bg-white/20"
+              style={{ 
+                color: '#ffffff !important',
+                '--text-color': '#ffffff'
+              }}
             >
               <Flag className="mr-2 h-4 w-4" style={{ color: '#ffffff' }} />
-              Flag Pulse
+              <span style={{ color: '#ffffff' }}>Flag Pulse</span>
             </DropdownMenuItem>
           )}
         </DropdownMenuContent>
