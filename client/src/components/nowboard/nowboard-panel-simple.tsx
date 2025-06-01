@@ -22,8 +22,8 @@ interface NowboardItem {
   };
 }
 
-// Simple Lightbulb Icon Component
-function LightbulbIcon({ className, filled }: { className?: string; filled?: boolean }) {
+// Custom Lightbulb-Brain Icon Component
+function LightbulbBrainIcon({ className, filled }: { className?: string; filled?: boolean }) {
   return (
     <svg
       viewBox="0 0 24 24"
@@ -44,12 +44,17 @@ function LightbulbIcon({ className, filled }: { className?: string; filled?: boo
         fill={filled ? "currentColor" : "none"}
       />
       
-      {/* Simple filament lines */}
+      {/* Brain-like patterns inside */}
       <path 
-        d="M10.5 9.5h3M10.5 11h3"
+        d="M10.5 8.5c0.5-0.5 1-0.5 1.5 0M10.5 10c0.5-0.3 1-0.3 1.5 0M10.5 11.5c0.5-0.3 1-0.3 1.5 0"
         stroke={filled ? "rgba(255,255,255,0.8)" : "currentColor"}
         strokeWidth="1"
       />
+      
+      {/* Neural connections */}
+      <circle cx="10.5" cy="9" r="0.5" fill={filled ? "rgba(255,255,255,0.9)" : "currentColor"} />
+      <circle cx="13.5" cy="9" r="0.5" fill={filled ? "rgba(255,255,255,0.9)" : "currentColor"} />
+      <circle cx="12" cy="11" r="0.5" fill={filled ? "rgba(255,255,255,0.9)" : "currentColor"} />
     </svg>
   );
 }
@@ -106,14 +111,14 @@ function InspiredButton({
     <button
       onClick={() => toggleInspired.mutate()}
       disabled={toggleInspired.isPending}
-      className={`flex items-center gap-2 px-3 py-2 rounded-lg text-base transition-colors hover:bg-white/10 ${
+      className={`flex items-center gap-1.5 px-2 py-1 rounded-lg text-sm transition-colors hover:bg-white/10 ${
         isInspired 
           ? 'text-yellow-400' 
           : 'text-white/60 hover:text-white/80'
       }`}
     >
       <LightbulbBrainIcon 
-        className="h-6 w-6" 
+        className="h-4 w-4" 
         filled={isInspired}
       />
       <span className="font-medium">{count}</span>
