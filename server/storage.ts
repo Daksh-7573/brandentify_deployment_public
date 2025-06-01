@@ -9019,6 +9019,360 @@ export class DatabaseStorage implements IStorage {
       return [];
     }
   }
+
+  async getNowboardItemById(id: number): Promise<NowboardItem | undefined> {
+    try {
+      console.log(`[db.getNowboardItemById] Fetching nowboard item with ID ${id}`);
+      
+      const result = await pool.query(`
+        SELECT 
+          ni.id,
+          ni.user_id as "userId",
+          ni.content,
+          ni.category,
+          ni.visibility,
+          ni.inspired_count as "inspiredCount",
+          ni.related_skills as "relatedSkills",
+          ni.related_project as "relatedProject",
+          ni.image_url as "imageUrl",
+          ni.created_at as "createdAt",
+          ni.updated_at as "updatedAt",
+          json_build_object(
+            'name', u.name,
+            'photoURL', u.photo_url
+          ) as "user"
+        FROM nowboard_items ni
+        LEFT JOIN users u ON ni.user_id = u.id
+        WHERE ni.id = $1
+      `, [id]);
+      
+      console.log(`[db.getNowboardItemById] Found ${result.rows.length} nowboard item for ID ${id}`);
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.getNowboardItemById] Error fetching nowboard item ${id}:`, error);
+      return undefined;
+    }
+  }
+
+  async getNowboardItemsByUserId(userId: number): Promise<NowboardItem[]> {
+    try {
+      console.log(`[db.getNowboardItemsByUserId] Fetching nowboard items for user ${userId}`);
+      
+      const result = await pool.query(`
+        SELECT 
+          ni.id,
+          ni.user_id as "userId",
+          ni.content,
+          ni.category,
+          ni.visibility,
+          ni.inspired_count as "inspiredCount",
+          ni.related_skills as "relatedSkills",
+          ni.related_project as "relatedProject",
+          ni.image_url as "imageUrl",
+          ni.created_at as "createdAt",
+          ni.updated_at as "updatedAt"
+        FROM nowboard_items ni
+        WHERE ni.user_id = $1
+        ORDER BY ni.created_at DESC
+      `, [userId]);
+      
+      console.log(`[db.getNowboardItemsByUserId] Found ${result.rows.length} nowboard items for user ${userId}`);
+      return result.rows;
+    } catch (error) {
+      console.error(`[db.getNowboardItemsByUserId] Error fetching nowboard items for user ${userId}:`, error);
+      return [];
+    }
+  }
+
+  async getNowboardItemsByCategory(category: string): Promise<NowboardItem[]> {
+    try {
+      console.log(`[db.getNowboardItemsByCategory] Fetching nowboard items for category ${category}`);
+      
+      const result = await pool.query(`
+        SELECT 
+          ni.id,
+          ni.user_id as "userId",
+          ni.content,
+          ni.category,
+          ni.visibility,
+          ni.inspired_count as "inspiredCount",
+          ni.related_skills as "relatedSkills",
+          ni.related_project as "relatedProject",
+          ni.image_url as "imageUrl",
+          ni.created_at as "createdAt",
+          ni.updated_at as "updatedAt",
+          json_build_object(
+            'name', u.name,
+            'photoURL', u.photo_url
+          ) as "user"
+        FROM nowboard_items ni
+        LEFT JOIN users u ON ni.user_id = u.id
+        WHERE ni.category = $1
+        ORDER BY ni.created_at DESC
+      `, [category]);
+      
+      console.log(`[db.getNowboardItemsByCategory] Found ${result.rows.length} nowboard items for category ${category}`);
+      return result.rows;
+    } catch (error) {
+      console.error(`[db.getNowboardItemsByCategory] Error fetching nowboard items for category ${category}:`, error);
+      return [];
+    }
+  }
+
+  async createNowboardItem(item: InsertNowboardItem): Promise<NowboardItem> {
+    try {
+      console.log(`[db.createNowboardItem] Creating nowboard item for user ${item.userId}`);
+      
+      const result = await pool.query(`
+        INSERT INTO nowboard_items (
+          user_id, content, category, visibility, related_skills, related_project, image_url
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7)
+        RETURNING 
+          id,
+          user_id as "userId",
+          content,
+          category,
+          visibility,
+          inspired_count as "inspiredCount",
+          related_skills as "relatedSkills",
+          related_project as "relatedProject",
+          image_url as "imageUrl",
+          created_at as "createdAt",
+          updated_at as "updatedAt"
+      `, [
+        item.userId,
+        item.content,
+        item.category,
+        item.visibility || 'public',
+        item.relatedSkills || null,
+        item.relatedProject || null,
+        item.imageUrl || null
+      ]);
+      
+      console.log(`[db.createNowboardItem] Created nowboard item with ID ${result.rows[0].id}`);
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.createNowboardItem] Error creating nowboard item:`, error);
+      throw new Error(`Failed to create nowboard item: ${error.message}`);
+    }
+  }
+
+  async updateNowboardItem(id: number, item: Partial<NowboardItem>): Promise<NowboardItem | undefined> {
+    try {
+      console.log(`[db.updateNowboardItem] Updating nowboard item with ID ${id}`);
+      
+      const updateFields = [];
+      const values = [];
+      let valueCounter = 1;
+      
+      // Build dynamic update query based on provided fields
+      for (const [key, value] of Object.entries(item)) {
+        if (value !== undefined && key !== 'id' && key !== 'createdAt') {
+          // Convert camelCase to snake_case for DB column names
+          const snakeKey = key.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
+          updateFields.push(`${snakeKey} = $${valueCounter}`);
+          values.push(value);
+          valueCounter++;
+        }
+      }
+      
+      if (updateFields.length === 0) {
+        console.log(`[db.updateNowboardItem] No fields to update for nowboard item with ID ${id}`);
+        return await this.getNowboardItemById(id);
+      }
+      
+      values.push(id); // Add ID as the last parameter
+      
+      const result = await pool.query(`
+        UPDATE nowboard_items
+        SET ${updateFields.join(', ')}, updated_at = NOW()
+        WHERE id = $${valueCounter}
+        RETURNING 
+          id,
+          user_id as "userId",
+          content,
+          category,
+          visibility,
+          inspired_count as "inspiredCount",
+          related_skills as "relatedSkills",
+          related_project as "relatedProject",
+          image_url as "imageUrl",
+          created_at as "createdAt",
+          updated_at as "updatedAt"
+      `, values);
+      
+      console.log(`[db.updateNowboardItem] Updated nowboard item with ID ${id}`);
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.updateNowboardItem] Error updating nowboard item ${id}:`, error);
+      throw new Error(`Failed to update nowboard item: ${error.message}`);
+    }
+  }
+
+  async deleteNowboardItem(id: number): Promise<boolean> {
+    try {
+      console.log(`[db.deleteNowboardItem] Deleting nowboard item with ID ${id}`);
+      
+      // First delete related inspired-by records
+      await pool.query(`DELETE FROM nowboard_inspired_by WHERE nowboard_item_id = $1`, [id]);
+      
+      // Then delete the nowboard item
+      const result = await pool.query(`DELETE FROM nowboard_items WHERE id = $1`, [id]);
+      
+      const deleted = result.rowCount > 0;
+      console.log(`[db.deleteNowboardItem] Deleted nowboard item with ID ${id}: ${deleted}`);
+      return deleted;
+    } catch (error) {
+      console.error(`[db.deleteNowboardItem] Error deleting nowboard item ${id}:`, error);
+      throw new Error(`Failed to delete nowboard item: ${error.message}`);
+    }
+  }
+
+  async getInspiredByForNowboardItem(itemId: number): Promise<any[]> {
+    try {
+      console.log(`[db.getInspiredByForNowboardItem] Fetching inspired-by records for item ${itemId}`);
+      
+      const result = await pool.query(`
+        SELECT 
+          nib.id,
+          nib.user_id as "userId",
+          nib.nowboard_item_id as "nowboardItemId",
+          nib.created_at as "createdAt",
+          json_build_object(
+            'name', u.name,
+            'photoURL', u.photo_url
+          ) as "user"
+        FROM nowboard_inspired_by nib
+        LEFT JOIN users u ON nib.user_id = u.id
+        WHERE nib.nowboard_item_id = $1
+        ORDER BY nib.created_at DESC
+      `, [itemId]);
+      
+      console.log(`[db.getInspiredByForNowboardItem] Found ${result.rows.length} inspired-by records for item ${itemId}`);
+      return result.rows;
+    } catch (error) {
+      console.error(`[db.getInspiredByForNowboardItem] Error fetching inspired-by records for item ${itemId}:`, error);
+      return [];
+    }
+  }
+
+  async markInspiredByNowboardItem(userId: number, itemId: number): Promise<any> {
+    try {
+      console.log(`[db.markInspiredByNowboardItem] User ${userId} marking item ${itemId} as inspired`);
+      
+      const result = await pool.query(`
+        INSERT INTO nowboard_inspired_by (user_id, nowboard_item_id)
+        VALUES ($1, $2)
+        ON CONFLICT (user_id, nowboard_item_id) DO NOTHING
+        RETURNING 
+          id,
+          user_id as "userId",
+          nowboard_item_id as "nowboardItemId",
+          created_at as "createdAt"
+      `, [userId, itemId]);
+      
+      // Update inspired count
+      await pool.query(`
+        UPDATE nowboard_items 
+        SET inspired_count = (
+          SELECT COUNT(*) FROM nowboard_inspired_by WHERE nowboard_item_id = $1
+        )
+        WHERE id = $1
+      `, [itemId]);
+      
+      console.log(`[db.markInspiredByNowboardItem] User ${userId} marked item ${itemId} as inspired`);
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.markInspiredByNowboardItem] Error marking item ${itemId} as inspired by user ${userId}:`, error);
+      throw new Error(`Failed to mark item as inspired: ${error.message}`);
+    }
+  }
+
+  async unmarkInspiredByNowboardItem(userId: number, itemId: number): Promise<boolean> {
+    try {
+      console.log(`[db.unmarkInspiredByNowboardItem] User ${userId} unmarking item ${itemId} as inspired`);
+      
+      const result = await pool.query(`
+        DELETE FROM nowboard_inspired_by 
+        WHERE user_id = $1 AND nowboard_item_id = $2
+      `, [userId, itemId]);
+      
+      // Update inspired count
+      await pool.query(`
+        UPDATE nowboard_items 
+        SET inspired_count = (
+          SELECT COUNT(*) FROM nowboard_inspired_by WHERE nowboard_item_id = $1
+        )
+        WHERE id = $1
+      `, [itemId]);
+      
+      const unmarked = result.rowCount > 0;
+      console.log(`[db.unmarkInspiredByNowboardItem] User ${userId} unmarked item ${itemId} as inspired: ${unmarked}`);
+      return unmarked;
+    } catch (error) {
+      console.error(`[db.unmarkInspiredByNowboardItem] Error unmarking item ${itemId} as inspired by user ${userId}:`, error);
+      throw new Error(`Failed to unmark item as inspired: ${error.message}`);
+    }
+  }
+
+  async isNowboardItemInspiredByUser(userId: number, itemId: number): Promise<boolean> {
+    try {
+      console.log(`[db.isNowboardItemInspiredByUser] Checking if user ${userId} inspired item ${itemId}`);
+      
+      const result = await pool.query(`
+        SELECT 1 FROM nowboard_inspired_by 
+        WHERE user_id = $1 AND nowboard_item_id = $2
+      `, [userId, itemId]);
+      
+      const isInspired = result.rows.length > 0;
+      console.log(`[db.isNowboardItemInspiredByUser] User ${userId} inspired item ${itemId}: ${isInspired}`);
+      return isInspired;
+    } catch (error) {
+      console.error(`[db.isNowboardItemInspiredByUser] Error checking if user ${userId} inspired item ${itemId}:`, error);
+      return false;
+    }
+  }
+
+  async getInspiredByForUserAndItem(userId: number, itemId: number): Promise<any | undefined> {
+    try {
+      console.log(`[db.getInspiredByForUserAndItem] Fetching inspired-by record for user ${userId} and item ${itemId}`);
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          user_id as "userId",
+          nowboard_item_id as "nowboardItemId",
+          created_at as "createdAt"
+        FROM nowboard_inspired_by 
+        WHERE user_id = $1 AND nowboard_item_id = $2
+      `, [userId, itemId]);
+      
+      console.log(`[db.getInspiredByForUserAndItem] Found ${result.rows.length} inspired-by record for user ${userId} and item ${itemId}`);
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.getInspiredByForUserAndItem] Error fetching inspired-by record for user ${userId} and item ${itemId}:`, error);
+      return undefined;
+    }
+  }
+
+  async getUserInspiredCount(userId: number): Promise<number> {
+    try {
+      console.log(`[db.getUserInspiredCount] Fetching inspired count for user ${userId}`);
+      
+      const result = await pool.query(`
+        SELECT COUNT(*) as count
+        FROM nowboard_inspired_by 
+        WHERE user_id = $1
+      `, [userId]);
+      
+      const count = parseInt(result.rows[0].count);
+      console.log(`[db.getUserInspiredCount] User ${userId} has inspired ${count} items`);
+      return count;
+    } catch (error) {
+      console.error(`[db.getUserInspiredCount] Error fetching inspired count for user ${userId}:`, error);
+      return 0;
+    }
+  }
   // Career Capsule operations
   async getUserCareerCapsule(userId: number): Promise<CareerCapsule[] | null> {
     console.log(`[db.getUserCareerCapsule] Looking for career capsules for user ${userId}`);
