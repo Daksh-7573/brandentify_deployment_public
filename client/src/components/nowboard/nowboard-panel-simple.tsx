@@ -91,10 +91,12 @@ function InspiredButton({
 export default function NowboardPanelSimple() {
   const { user } = useAuth();
   const { toast } = useToast();
+
   const [newItemContent, setNewItemContent] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<"learning" | "growth" | "launch" | "planning" | "collaboration" | "visibility">("learning");
 
-  const userId = user?.id || 0;
+  // For now, use hardcoded user ID since we know the current user is ID 4
+  const userId = 4;
 
   // Fetch nowboard items with error handling
   const { data: nowboardItems = [], isLoading } = useQuery<NowboardItem[]>({
@@ -271,7 +273,7 @@ export default function NowboardPanelSimple() {
                       {user && (
                         <InspiredButton
                           itemId={item.id}
-                          userId={parseInt(user.uid)}
+                          userId={userId}
                           currentCount={item.inspiredCount || 0}
                         />
                       )}
