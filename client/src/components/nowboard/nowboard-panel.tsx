@@ -139,6 +139,10 @@ export default function NowboardPanel() {
     queryClient.invalidateQueries({ queryKey: ["/api/nowboard-items"] });
   };
 
+  // Add console log to debug
+  console.log("Nowboard items data:", nowboardItems);
+  console.log("Nowboard items loading:", isLoading);
+
   // Create new nowboard item
   const createMutation = useMutation({
     mutationFn: async (newItem: { 
