@@ -51,7 +51,7 @@ export default function PulseEngagementButton({
   const Icon = () => {
     switch (type) {
       case "insightful": return <Flame className={`h-4 w-4 mr-1.5 ${styles.activeFill}`} />;
-      case "misinformed": return <AlertTriangle className={`h-4 w-4 mr-1.5 ${styles.activeFill}`} />;
+      case "misinformed": return <Lightbulb className={`h-4 w-4 mr-1.5 ${styles.activeFill}`} />;
       case "share": return <Share className={`h-4 w-4 mr-1.5 ${styles.activeFill}`} />;
       case "comment": return <MessageSquare className={`h-4 w-4 mr-1.5 ${styles.activeFill}`} />;
       default: return null;
