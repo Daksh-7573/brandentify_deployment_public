@@ -587,6 +587,7 @@ export default function CreatePulsePage() {
                           </div>
                         </div>
                       )}
+                    </>
                   </div>
                 </NeoGlassSection>
               )}
