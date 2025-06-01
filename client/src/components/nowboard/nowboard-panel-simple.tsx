@@ -22,8 +22,8 @@ interface NowboardItem {
   };
 }
 
-// Custom Lightbulb-Brain Icon Component
-function LightbulbBrainIcon({ className, filled }: { className?: string; filled?: boolean }) {
+// Simple Lightbulb Icon Component
+function LightbulbIcon({ className, filled }: { className?: string; filled?: boolean }) {
   return (
     <svg
       viewBox="0 0 24 24"
@@ -44,17 +44,12 @@ function LightbulbBrainIcon({ className, filled }: { className?: string; filled?
         fill={filled ? "currentColor" : "none"}
       />
       
-      {/* Brain-like patterns inside */}
+      {/* Simple filament lines */}
       <path 
-        d="M10.5 8.5c0.5-0.5 1-0.5 1.5 0M10.5 10c0.5-0.3 1-0.3 1.5 0M10.5 11.5c0.5-0.3 1-0.3 1.5 0"
+        d="M10.5 9.5h3M10.5 11h3"
         stroke={filled ? "rgba(255,255,255,0.8)" : "currentColor"}
         strokeWidth="1"
       />
-      
-      {/* Neural connections */}
-      <circle cx="10.5" cy="9" r="0.5" fill={filled ? "rgba(255,255,255,0.9)" : "currentColor"} />
-      <circle cx="13.5" cy="9" r="0.5" fill={filled ? "rgba(255,255,255,0.9)" : "currentColor"} />
-      <circle cx="12" cy="11" r="0.5" fill={filled ? "rgba(255,255,255,0.9)" : "currentColor"} />
     </svg>
   );
 }
