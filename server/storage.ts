@@ -7326,6 +7326,39 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
+  async getUserReactionQuota(userId: number): Promise<UserReactionQuota | undefined> {
+    try {
+      console.log(`[db.getUserReactionQuota] Getting quota for user: ${userId}`);
+      
+      // Get today's date at midnight for consistent quota tracking
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      const result = await pool.query(`
+        SELECT 
+          id, user_id as "userId", date, 
+          insightful_quota_used as "insightfulQuotaUsed",
+          misinformed_quota_used as "misinformedQuotaUsed",
+          insightful_quota_max as "insightfulQuotaMax",
+          misinformed_quota_max as "misinformedQuotaMax",
+          updated_at as "updatedAt"
+        FROM user_reaction_quotas 
+        WHERE user_id = $1 AND date = $2
+      `, [userId, today]);
+      
+      if (result.rows.length === 0) {
+        console.log(`[db.getUserReactionQuota] No quota found for user ${userId}`);
+        return undefined;
+      }
+      
+      console.log(`[db.getUserReactionQuota] Found quota for user ${userId}`);
+      return result.rows[0];
+    } catch (error) {
+      console.error('[db.getUserReactionQuota] Error getting quota:', error);
+      return undefined;
+    }
+  }
+
   async createUserXp(userXp: InsertUserXp): Promise<UserXp> {
     try {
       console.log(`[db.createUserXp] Creating XP record for user ${userXp.userId}`);
