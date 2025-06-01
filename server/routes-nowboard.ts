@@ -242,22 +242,31 @@ export function setupNowboardRoutes(router: Router, storage: IStorage) {
         userId: z.number()
       }).parse(req.body);
       
-      // Check if the user has already marked this item
-      const alreadyInspired = await storage.isNowboardItemInspiredByUser(validatedData.userId, itemId);
+      // Check if the user has already marked this item (direct database query)
+      const existingCheck = await pool.query(
+        'SELECT id FROM nowboard_inspired_by WHERE user_id = $1 AND nowboard_item_id = $2',
+        [validatedData.userId, itemId]
+      );
       
-      if (alreadyInspired) {
-        // Instead of just returning an error, return the existing inspired record
-        // This allows the client to handle conflicts gracefully
-        const existingInspired = await storage.getInspiredByForUserAndItem(validatedData.userId, itemId);
+      if (existingCheck.rows.length > 0) {
         return res.status(200).json({ 
           message: 'Already inspired',
           isConflict: true,
-          data: existingInspired,
           success: true
         });
       }
       
-      const inspired = await storage.markInspiredByNowboardItem(validatedData.userId, itemId);
+      // Insert the inspired record
+      const inspired = await pool.query(
+        'INSERT INTO nowboard_inspired_by (user_id, nowboard_item_id, created_at) VALUES ($1, $2, NOW()) RETURNING *',
+        [validatedData.userId, itemId]
+      );
+      
+      // Update the inspired count on the nowboard item
+      await pool.query(
+        'UPDATE nowboard_items SET inspired_count = inspired_count + 1 WHERE id = $1',
+        [itemId]
+      );
       res.status(201).json(inspired);
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -274,31 +283,51 @@ export function setupNowboardRoutes(router: Router, storage: IStorage) {
   });
 
   // Remove inspired-by mark from a Nowboard item
-  router.delete('/nowboard-items/:id/inspired-by/:userId', async (req: Request, res: Response) => {
+  router.delete('/nowboard-items/:id/inspired-by', async (req: Request, res: Response) => {
     try {
       const itemId = parseInt(req.params.id, 10);
-      const userId = parseInt(req.params.userId, 10);
-      
-      if (isNaN(itemId) || isNaN(userId)) {
-        return res.status(400).json({ message: 'Invalid IDs provided' });
+      if (isNaN(itemId)) {
+        return res.status(400).json({ message: 'Invalid Nowboard item ID' });
       }
       
-      // Check if the user has marked this item
-      const isInspired = await storage.isNowboardItemInspiredByUser(userId, itemId);
+      // Validate request body to ensure it has a userId
+      const validatedData = z.object({
+        userId: z.number()
+      }).parse(req.body);
       
-      if (!isInspired) {
+      // Check if the user has marked this item (direct database query)
+      const existingCheck = await pool.query(
+        'SELECT id FROM nowboard_inspired_by WHERE user_id = $1 AND nowboard_item_id = $2',
+        [validatedData.userId, itemId]
+      );
+      
+      if (existingCheck.rows.length === 0) {
         return res.status(404).json({ message: 'User has not marked this item as inspired' });
       }
       
-      const success = await storage.unmarkInspiredByNowboardItem(userId, itemId);
+      // Remove the inspired record
+      await pool.query(
+        'DELETE FROM nowboard_inspired_by WHERE user_id = $1 AND nowboard_item_id = $2',
+        [validatedData.userId, itemId]
+      );
       
-      if (success) {
-        res.json({ message: 'Inspired-by mark removed successfully' });
-      } else {
-        res.status(500).json({ message: 'Failed to remove inspired-by mark' });
-      }
+      // Update the inspired count on the nowboard item
+      await pool.query(
+        'UPDATE nowboard_items SET inspired_count = GREATEST(inspired_count - 1, 0) WHERE id = $1',
+        [itemId]
+      );
+      
+      res.json({ message: 'Inspired-by mark removed successfully' });
     } catch (error) {
-      console.error(`[DELETE /nowboard-items/${req.params.id}/inspired-by/${req.params.userId}]`, error);
+      if (error instanceof z.ZodError) {
+        console.error(`[DELETE /nowboard-items/${req.params.id}/inspired-by] Validation error`, error.errors);
+        return res.status(400).json({ 
+          message: 'Invalid data', 
+          errors: error.errors 
+        });
+      }
+      
+      console.error(`[DELETE /nowboard-items/${req.params.id}/inspired-by]`, error);
       res.status(500).json({ message: 'Error removing inspired-by mark' });
     }
   });
