@@ -22,6 +22,7 @@ import { useAuth } from "@/context/auth-context";
 import { useFeedAlgorithm, useFeedEngagement, formatFeedDate, getEngagementStyles } from "@/hooks/feed";
 import { NeoGlassSection } from "@/components/layout/neo-glass-layout";
 import BrandOfTheDay from "./brand-of-the-day";
+import { NowboardMenu } from "./nowboard-menu";
 
 // Button component for "Inspired" action
 function NowboardInspiredButton({ 
@@ -363,13 +364,20 @@ export default function NowboardPanel() {
                     </Avatar>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2">
-                        <p className="text-sm font-medium truncate text-white">{item.user?.name || "User"}</p>
-                        <Badge variant="outline" className="text-xs bg-white/10 border-white/20 text-white/80">
-                          <span className="flex items-center gap-1">
-                            {getCategoryIcon(item.category)}
-                            <span className="capitalize">{item.category}</span>
-                          </span>
-                        </Badge>
+                        <div className="flex items-center gap-2 flex-1 min-w-0">
+                          <p className="text-sm font-medium truncate text-white">{item.user?.name || "User"}</p>
+                          <Badge variant="outline" className="text-xs bg-white/10 border-white/20 text-white/80">
+                            <span className="flex items-center gap-1">
+                              {getCategoryIcon(item.category)}
+                              <span className="capitalize">{item.category}</span>
+                            </span>
+                          </Badge>
+                        </div>
+                        <NowboardMenu 
+                          itemId={item.id} 
+                          userId={item.userId} 
+                          currentUserId={userId}
+                        />
                       </div>
                       <p className="text-sm mt-1 text-white/80 leading-relaxed">{item.content}</p>
                       <div className="flex items-center justify-between text-xs text-white/60 mt-2">

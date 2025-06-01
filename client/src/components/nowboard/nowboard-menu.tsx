@@ -58,7 +58,7 @@ export function NowboardMenu({ itemId, userId, currentUserId, onDeleted }: Nowbo
   });
 
   const flagMutation = useMutation({
-    mutationFn: () => apiRequest(`/api/nowboard-items/${itemId}/flag`, 'POST'),
+    mutationFn: () => apiRequest('POST', `/api/nowboard-items/${itemId}/flag`),
     onSuccess: () => {
       toast({
         title: "Success",
@@ -105,8 +105,7 @@ export function NowboardMenu({ itemId, userId, currentUserId, onDeleted }: Nowbo
               onClick={() => setShowDeleteDialog(true)} 
               className="cursor-pointer rounded-md px-3 py-2 text-sm font-semibold flex items-center hover:bg-red-500/30"
               style={{ 
-                color: '#ff6b6b !important',
-                '--text-color': '#ff6b6b'
+                color: '#ff6b6b'
               }}
             >
               <Trash2 className="mr-2 h-4 w-4" style={{ color: '#ff6b6b' }} />
@@ -117,8 +116,7 @@ export function NowboardMenu({ itemId, userId, currentUserId, onDeleted }: Nowbo
               onClick={() => setShowFlagDialog(true)}
               className="cursor-pointer rounded-md px-3 py-2 text-sm font-semibold flex items-center hover:bg-white/20"
               style={{ 
-                color: '#ffffff !important',
-                '--text-color': '#ffffff'
+                color: '#ffffff'
               }}
             >
               <Flag className="mr-2 h-4 w-4" style={{ color: '#ffffff' }} />
