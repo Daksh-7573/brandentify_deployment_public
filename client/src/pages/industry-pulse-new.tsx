@@ -1208,6 +1208,12 @@ export default function IndustryPulsePage() {
                                   </div>
                                 </div>
                               </div>
+                              
+                              <PulseMenu 
+                                pulseId={pulse.id}
+                                currentUserId={user?.id || 0}
+                                pulseCreatorId={pulse.userId}
+                              />
                             </div>
                           </div>
                           <div className="px-4 py-2">
