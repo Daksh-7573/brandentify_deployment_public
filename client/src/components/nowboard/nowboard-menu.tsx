@@ -186,6 +186,6 @@ export function NowboardMenu({ itemId, userId, currentUserId, onDeleted }: Nowbo
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </>
+    </div>
   );
 }
