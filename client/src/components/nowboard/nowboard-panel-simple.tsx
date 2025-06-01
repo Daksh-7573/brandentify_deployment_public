@@ -45,7 +45,20 @@ export default function NowboardPanelSimple() {
       category: string;
       visibility: string;
     }) => {
-      return apiRequest('POST', '/api/nowboard-items', data);
+      const response = await fetch('/api/nowboard-items', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to create nowboard item');
+      }
+      
+      return response.json();
     },
     onSuccess: () => {
       setNewItemContent("");
