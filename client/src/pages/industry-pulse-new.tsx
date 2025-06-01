@@ -47,6 +47,7 @@ import {
   DialogFooter,
   DialogTrigger
 } from "@/components/ui/dialog";
+import NowboardPanel from "@/components/nowboard/nowboard-panel";
 import {
   Tooltip,
   TooltipContent,
@@ -1067,9 +1068,10 @@ export default function IndustryPulsePage() {
         {/* Main content area */}
         <div className="flex-1 overflow-auto">
           <NeoGlassLayout className="mt-3 mx-6"> {/* Further reduced top margin to 3 (0.75rem) */}
-            {/* Main content */}
-            <div className="flex-1 max-w-4xl">
-              <div className="mb-8 flex justify-between items-center">
+            <div className="flex gap-6">
+              {/* Main content */}
+              <div className="flex-1 max-w-4xl">
+                <div className="mb-8 flex justify-between items-center">
                 <div>
                   <h1 className="text-3xl font-bold tracking-tight text-white">Industry Pulse</h1>
                   <p className="text-white/80 mt-1">
@@ -1237,9 +1239,13 @@ export default function IndustryPulsePage() {
                   )}
                 </TabsContent>
               </Tabs>
+              </div>
+              
+              {/* Nowboard Panel Sidebar */}
+              <div className="w-80 flex-shrink-0">
+                <NowboardPanel />
+              </div>
             </div>
-            
-            {/* Nowboard Panel Sidebar removed as it's now integrated into quests */}
           </NeoGlassLayout>
         </div>
       </div>
