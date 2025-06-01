@@ -86,27 +86,40 @@ export function setupNowboardRoutes(router: Router, storage: IStorage) {
 
   // Create a new Nowboard item
   router.post('/nowboard-items', async (req: Request, res: Response) => {
+    console.log('[POST /nowboard-items] Route handler called');
+    console.log('[POST /nowboard-items] Request body:', req.body);
+    console.log('[POST /nowboard-items] Content-Type:', req.headers['content-type']);
+    
     try {
-      console.log('[POST /nowboard-items] Received request body:', JSON.stringify(req.body));
+      // Simple validation first
+      if (!req.body || typeof req.body !== 'object') {
+        console.error('[POST /nowboard-items] Invalid request body format');
+        return res.status(400).json({ message: 'Invalid request body' });
+      }
+
+      const { userId, content, category, visibility } = req.body;
       
-      // Validate request body against the Zod schema
-      const validatedData = insertNowboardItemSchema.parse(req.body);
-      console.log('[POST /nowboard-items] Validated data:', JSON.stringify(validatedData));
+      if (!userId || !content || !category) {
+        console.error('[POST /nowboard-items] Missing required fields:', { userId, content, category });
+        return res.status(400).json({ message: 'Missing required fields: userId, content, category' });
+      }
+
+      // Create the item with basic validation
+      const itemData = {
+        userId: parseInt(userId),
+        content: content.toString(),
+        category: category.toString(),
+        visibility: visibility || 'public'
+      };
+
+      console.log('[POST /nowboard-items] Creating item with data:', itemData);
+      const newItem = await storage.createNowboardItem(itemData);
+      console.log('[POST /nowboard-items] Item created successfully:', newItem);
       
-      const newItem = await storage.createNowboardItem(validatedData);
-      console.log('[POST /nowboard-items] Created item successfully:', JSON.stringify(newItem));
       res.status(201).json(newItem);
     } catch (error) {
-      if (error instanceof z.ZodError) {
-        console.error('[POST /nowboard-items] Validation error', JSON.stringify(error.errors, null, 2));
-        return res.status(400).json({ 
-          message: 'Invalid Nowboard item data', 
-          errors: error.errors 
-        });
-      }
-      
-      console.error('[POST /nowboard-items] Server error:', error);
-      res.status(500).json({ message: 'Error creating Nowboard item' });
+      console.error('[POST /nowboard-items] Error:', error);
+      res.status(500).json({ message: 'Error creating Nowboard item', error: error.message });
     }
   });
 
