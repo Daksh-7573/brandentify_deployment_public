@@ -47,7 +47,7 @@ import {
   DialogFooter,
   DialogTrigger
 } from "@/components/ui/dialog";
-import NowboardPanel from "@/components/nowboard/nowboard-panel";
+import NowboardPanelSimple from "@/components/nowboard/nowboard-panel-simple";
 import {
   Tooltip,
   TooltipContent,
@@ -1243,7 +1243,7 @@ export default function IndustryPulsePage() {
               
               {/* Nowboard Panel Sidebar */}
               <div className="w-80 flex-shrink-0">
-                <NowboardPanel />
+                <NowboardPanelSimple />
               </div>
             </div>
           </NeoGlassLayout>
