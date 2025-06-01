@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Flame, AlertTriangle, Share, MessageSquare } from "lucide-react";
+import { Flame, Lightbulb, Share, MessageSquare } from "lucide-react";
 import { useFeedEngagement, formatEngagementCount, getEngagementStyles } from "@/hooks/feed";
 
 interface PulseEngagementButtonProps {

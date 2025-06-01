@@ -5581,7 +5581,7 @@ ${extractedText.substring(0, 5000)}
                insightful_quota_max as "insightfulQuotaMax",
                misinformed_quota_used as "misinformedQuotaUsed",
                misinformed_quota_max as "misinformedQuotaMax",
-               last_reset_date as "lastResetDate"
+               date as "lastResetDate"
         FROM user_reaction_quotas 
         WHERE user_id = $1
       `, [userId]);
@@ -5591,14 +5591,14 @@ ${extractedText.substring(0, 5000)}
         // Create default quota if it doesn't exist
         const createResult = await pool.query(`
           INSERT INTO user_reaction_quotas (user_id, insightful_quota_used, insightful_quota_max, 
-                                          misinformed_quota_used, misinformed_quota_max, last_reset_date)
+                                          misinformed_quota_used, misinformed_quota_max, date)
           VALUES ($1, 0, 10, 0, 10, CURRENT_DATE)
           RETURNING user_id as "userId", 
                    insightful_quota_used as "insightfulQuotaUsed",
                    insightful_quota_max as "insightfulQuotaMax",
                    misinformed_quota_used as "misinformedQuotaUsed",
                    misinformed_quota_max as "misinformedQuotaMax",
-                   last_reset_date as "lastResetDate"
+                   date as "lastResetDate"
         `, [userId]);
         quota = createResult.rows[0];
       } else {
