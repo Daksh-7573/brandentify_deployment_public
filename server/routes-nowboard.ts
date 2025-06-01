@@ -391,6 +391,31 @@ export function setupNowboardRoutes(router: Router, storage: IStorage) {
     }
   });
 
+  // Flag a Nowboard item as inappropriate
+  router.post('/nowboard-items/:id/flag', async (req: Request, res: Response) => {
+    try {
+      const itemId = parseInt(req.params.id, 10);
+      if (isNaN(itemId)) {
+        return res.status(400).json({ message: 'Invalid Nowboard item ID' });
+      }
+
+      // Check if the item exists
+      const existingItem = await storage.getNowboardItemById(itemId);
+      if (!existingItem) {
+        return res.status(404).json({ message: 'Nowboard item not found' });
+      }
+
+      // For now, we'll just log the flag action
+      // In a real application, you might want to store flags in a separate table
+      console.log(`[FLAG] Nowboard item ${itemId} has been flagged for review`);
+      
+      res.json({ message: 'Nowboard item flagged successfully for review' });
+    } catch (error) {
+      console.error(`[POST /nowboard-items/${req.params.id}/flag]`, error);
+      res.status(500).json({ message: 'Error flagging Nowboard item' });
+    }
+  });
+
   console.log('Nowboard routes loaded');
   return router;
 }
