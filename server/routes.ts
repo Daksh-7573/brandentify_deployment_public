@@ -6704,113 +6704,113 @@ ${extractedText.substring(0, 5000)}
     });
   });
   
+  // Auto-deletion system routes
+  app.post('/api/flag/:itemType/:itemId', async (req: Request, res: Response) => {
+    try {
+      const { itemType, itemId } = req.params;
+      const { userId, reason } = req.body;
+      
+      if (!userId) {
+        return res.status(400).json({ message: 'User ID is required' });
+      }
+      
+      // Check if item exists
+      let itemExists = false;
+      if (itemType === 'pulse') {
+        const pulse = await storage.getPulseById?.(parseInt(itemId));
+        itemExists = !!pulse;
+      } else if (itemType === 'nowboard') {
+        const item = await storage.getNowboardItemById?.(parseInt(itemId));
+        itemExists = !!item;
+      }
+      
+      if (!itemExists) {
+        return res.status(404).json({ message: 'Item not found' });
+      }
+      
+      // Create flagged item entry which triggers auto-deletion check
+      const flaggedItem = await storage.createFlaggedItem({
+        itemType,
+        itemId: parseInt(itemId),
+        flaggedByUserId: userId,
+        reason: reason || 'Inappropriate content'
+      });
+      
+      console.log(`[FLAG] User ${userId} flagged ${itemType} ${itemId} with reason: ${reason}`);
+      
+      res.json({ 
+        success: true, 
+        message: 'Item flagged successfully',
+        flagId: flaggedItem.id
+      });
+    } catch (error) {
+      console.error(`[POST /api/flag/${req.params.itemType}/${req.params.itemId}] Error:`, error);
+      res.status(500).json({ message: 'Error flagging item' });
+    }
+  });
+
+  // Track item views for auto-deletion ratio calculations
+  app.post('/api/view/:itemType/:itemId', async (req: Request, res: Response) => {
+    try {
+      const { itemType, itemId } = req.params;
+      const { userId } = req.body;
+      
+      if (!userId) {
+        return res.status(400).json({ message: 'User ID is required' });
+      }
+      
+      // Create or update view tracking
+      const itemView = await storage.createItemView({
+        itemType,
+        itemId: parseInt(itemId),
+        userId
+      });
+      
+      res.json({ 
+        success: true, 
+        viewId: itemView.id 
+      });
+    } catch (error) {
+      console.error(`[POST /api/view/${req.params.itemType}/${req.params.itemId}] Error:`, error);
+      res.status(500).json({ message: 'Error tracking view' });
+    }
+  });
+
+  // Check user posting restrictions
+  app.get('/api/user/:userId/restrictions', async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const restrictions = await storage.checkUserPostingRestrictions(userId);
+      
+      res.json(restrictions);
+    } catch (error) {
+      console.error(`[GET /api/user/${req.params.userId}/restrictions] Error:`, error);
+      res.status(500).json({ message: 'Error checking user restrictions' });
+    }
+  });
+
+  // Get auto-deletion analytics for an item
+  app.get('/api/moderation/:itemType/:itemId/analytics', async (req: Request, res: Response) => {
+    try {
+      const { itemType, itemId } = req.params;
+      
+      const flags = await storage.getFlaggedItemsByItemId(itemType, parseInt(itemId));
+      const viewCount = await storage.getUniqueViewCountForItem(itemType, parseInt(itemId));
+      const autoDeleteCheck = await storage.checkAutoDeleteConditions(itemType, parseInt(itemId));
+      
+      res.json({
+        flags: flags.length,
+        uniqueFlags: new Set(flags.map(f => f.flaggedByUserId)).size,
+        views: viewCount,
+        flagToViewRatio: viewCount > 0 ? (flags.length / viewCount * 100).toFixed(1) : 0,
+        autoDeleteStatus: autoDeleteCheck
+      });
+    } catch (error) {
+      console.error(`[GET /api/moderation/${req.params.itemType}/${req.params.itemId}/analytics] Error:`, error);
+      res.status(500).json({ message: 'Error fetching moderation analytics' });
+    }
+  });
+
   console.log('WebSocket server initialized on path: /ws');
   return httpServer;
 }
-
-// Auto-deletion system routes
-app.post('/api/flag/:itemType/:itemId', async (req: Request, res: Response) => {
-  try {
-    const { itemType, itemId } = req.params;
-    const { userId, reason } = req.body;
-    
-    if (!userId) {
-      return res.status(400).json({ message: 'User ID is required' });
-    }
-    
-    // Check if item exists
-    let itemExists = false;
-    if (itemType === 'pulse') {
-      const pulse = await storage.getPulseById?.(parseInt(itemId));
-      itemExists = !!pulse;
-    } else if (itemType === 'nowboard') {
-      const item = await storage.getNowboardItemById?.(parseInt(itemId));
-      itemExists = !!item;
-    }
-    
-    if (!itemExists) {
-      return res.status(404).json({ message: 'Item not found' });
-    }
-    
-    // Create flagged item entry which triggers auto-deletion check
-    const flaggedItem = await storage.createFlaggedItem({
-      itemType,
-      itemId: parseInt(itemId),
-      flaggedByUserId: userId,
-      reason: reason || 'Inappropriate content'
-    });
-    
-    console.log(`[FLAG] User ${userId} flagged ${itemType} ${itemId} with reason: ${reason}`);
-    
-    res.json({ 
-      success: true, 
-      message: 'Item flagged successfully',
-      flagId: flaggedItem.id
-    });
-  } catch (error) {
-    console.error(`[POST /api/flag/${req.params.itemType}/${req.params.itemId}] Error:`, error);
-    res.status(500).json({ message: 'Error flagging item' });
-  }
-});
-
-// Track item views for auto-deletion ratio calculations
-router.post('/view/:itemType/:itemId', async (req: Request, res: Response) => {
-  try {
-    const { itemType, itemId } = req.params;
-    const { userId } = req.body;
-    
-    if (!userId) {
-      return res.status(400).json({ message: 'User ID is required' });
-    }
-    
-    // Create or update view tracking
-    const itemView = await storage.createItemView({
-      itemType,
-      itemId: parseInt(itemId),
-      userId
-    });
-    
-    res.json({ 
-      success: true, 
-      viewId: itemView.id 
-    });
-  } catch (error) {
-    console.error(`[POST /api/view/${req.params.itemType}/${req.params.itemId}] Error:`, error);
-    res.status(500).json({ message: 'Error tracking view' });
-  }
-});
-
-// Check user posting restrictions
-router.get('/user/:userId/restrictions', async (req: Request, res: Response) => {
-  try {
-    const userId = parseInt(req.params.userId);
-    const restrictions = await storage.checkUserPostingRestrictions(userId);
-    
-    res.json(restrictions);
-  } catch (error) {
-    console.error(`[GET /api/user/${req.params.userId}/restrictions] Error:`, error);
-    res.status(500).json({ message: 'Error checking user restrictions' });
-  }
-});
-
-// Get auto-deletion analytics for an item
-router.get('/moderation/:itemType/:itemId/analytics', async (req: Request, res: Response) => {
-  try {
-    const { itemType, itemId } = req.params;
-    
-    const flags = await storage.getFlaggedItemsByItemId(itemType, parseInt(itemId));
-    const viewCount = await storage.getUniqueViewCountForItem(itemType, parseInt(itemId));
-    const autoDeleteCheck = await storage.checkAutoDeleteConditions(itemType, parseInt(itemId));
-    
-    res.json({
-      flags: flags.length,
-      uniqueFlags: new Set(flags.map(f => f.flaggedByUserId)).size,
-      views: viewCount,
-      flagToViewRatio: viewCount > 0 ? (flags.length / viewCount * 100).toFixed(1) : 0,
-      autoDeleteStatus: autoDeleteCheck
-    });
-  } catch (error) {
-    console.error(`[GET /api/moderation/${req.params.itemType}/${req.params.itemId}/analytics] Error:`, error);
-    res.status(500).json({ message: 'Error fetching moderation analytics' });
-  }
-});
