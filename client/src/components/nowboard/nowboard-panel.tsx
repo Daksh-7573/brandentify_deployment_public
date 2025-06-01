@@ -295,26 +295,30 @@ export default function NowboardPanel() {
         
         <div className="pb-4 border-b border-white/10 mb-4">
           <form onSubmit={handleSubmit} className="space-y-3">
-            <textarea
+            <Textarea
               placeholder="Share what you're working on... (150 chars max)"
               value={newItemContent}
               onChange={(e) => setNewItemContent(e.target.value)}
-              className="neo-glass-input w-full min-h-[60px] resize-none text-sm"
+              className="resize-none text-sm min-h-[60px] bg-white/10 border-white/30 text-white placeholder:text-white/60 focus:bg-white/15 focus:border-white/50 focus:ring-white/30"
               maxLength={150}
             />
             <div className="flex gap-2">
-              <select
+              <Select
                 value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value as any)}
-                className="neo-glass-input w-[140px] h-8 text-sm"
+                onValueChange={(value) => setSelectedCategory(value as any)}
               >
-                <option value="learning">Learning</option>
-                <option value="growth">Growth</option>
-                <option value="launch">Launch</option>
-                <option value="planning">Planning</option>
-                <option value="collaboration">Collaboration</option>
-                <option value="visibility">Visibility</option>
-              </select>
+                <SelectTrigger className="w-[140px] h-8 bg-white/10 border-white/30 text-white hover:bg-white/15 focus:ring-white/30">
+                  <SelectValue placeholder="Category" />
+                </SelectTrigger>
+                <SelectContent className="bg-gray-900/95 backdrop-blur-xl border-white/20 text-white">
+                  <SelectItem value="learning" className="text-white hover:bg-white/10 focus:bg-white/10">Learning</SelectItem>
+                  <SelectItem value="growth" className="text-white hover:bg-white/10 focus:bg-white/10">Growth</SelectItem>
+                  <SelectItem value="launch" className="text-white hover:bg-white/10 focus:bg-white/10">Launch</SelectItem>
+                  <SelectItem value="planning" className="text-white hover:bg-white/10 focus:bg-white/10">Planning</SelectItem>
+                  <SelectItem value="collaboration" className="text-white hover:bg-white/10 focus:bg-white/10">Collaboration</SelectItem>
+                  <SelectItem value="visibility" className="text-white hover:bg-white/10 focus:bg-white/10">Visibility</SelectItem>
+                </SelectContent>
+              </Select>
               <button
                 type="submit"
                 className="neo-glass-button ml-auto"
