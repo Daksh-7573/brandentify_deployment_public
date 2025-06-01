@@ -34,21 +34,23 @@ function LightbulbIcon({ className, filled }: { className?: string; filled?: boo
       strokeLinejoin="round"
       className={className}
     >
-      {/* Lightbulb base */}
+      {/* Lightbulb base/screw */}
       <rect x="9" y="18" width="6" height="2" rx="1" />
       <rect x="10" y="20" width="4" height="1" rx="0.5" />
       
-      {/* Main bulb shape */}
-      <path 
-        d="M15 10.5C15 7.5 13.5 5 12 5S9 7.5 9 10.5c0 1.5 0.5 2.5 1.5 3.5h3c1-1 1.5-2 1.5-3.5z"
+      {/* Main bulb shape - simple circle */}
+      <circle 
+        cx="12" 
+        cy="12" 
+        r="5"
         fill={filled ? "currentColor" : "none"}
       />
       
-      {/* Simple filament lines */}
+      {/* Simple filament - single cross */}
       <path 
-        d="M10.5 9.5h3M10.5 11h3"
-        stroke={filled ? "rgba(255,255,255,0.8)" : "currentColor"}
-        strokeWidth="1"
+        d="M10 10l4 4M14 10l-4 4"
+        stroke={filled ? "rgba(255,255,255,0.7)" : "currentColor"}
+        strokeWidth="1.5"
       />
     </svg>
   );
@@ -112,8 +114,8 @@ function InspiredButton({
           : 'text-white/60 hover:text-white/80'
       }`}
     >
-      <LightbulbBrainIcon 
-        className="h-6 w-6" 
+      <LightbulbIcon 
+        className="h-4 w-4" 
         filled={isInspired}
       />
       <span className="font-medium">{count}</span>
