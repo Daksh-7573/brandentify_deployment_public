@@ -5456,12 +5456,15 @@ ${extractedText.substring(0, 5000)}
       
       // Validate the request body
       const reactionData = insertPulseReactionSchema.parse(req.body);
+      console.log(`[POST /pulse-reactions] Validated reaction data:`, reactionData);
       
       // Check if user has remaining quota
+      console.log(`[POST /pulse-reactions] Checking quota for user ${reactionData.userId}, reaction type: ${reactionData.reactionType}`);
       const quotaCheck = await storage.checkReactionQuota(
         reactionData.userId, 
         reactionData.reactionType as "insightful" | "misinformed"
       );
+      console.log(`[POST /pulse-reactions] Quota check result:`, quotaCheck);
       
       if (!quotaCheck.hasQuotaRemaining) {
         return res.status(429).json({ 
@@ -5471,11 +5474,13 @@ ${extractedText.substring(0, 5000)}
       }
       
       // Check if the user has already reacted to this pulse with this reaction type
+      console.log(`[POST /pulse-reactions] Checking for existing reaction...`);
       const existingReaction = await storage.getPulseReactionByUserAndPulse(
         reactionData.userId,
         reactionData.pulseId,
         reactionData.reactionType as "insightful" | "misinformed"
       );
+      console.log(`[POST /pulse-reactions] Existing reaction check:`, existingReaction ? 'Found existing' : 'No existing reaction');
       
       if (existingReaction) {
         return res.status(409).json({ 
@@ -5485,9 +5490,12 @@ ${extractedText.substring(0, 5000)}
       }
       
       // Create the reaction
+      console.log(`[POST /pulse-reactions] Creating new reaction...`);
       const reaction = await storage.createPulseReaction(reactionData as InsertPulseReaction);
+      console.log(`[POST /pulse-reactions] Created reaction:`, reaction);
       
       // Increment the user's quota usage
+      console.log(`[POST /pulse-reactions] Incrementing quota...`);
       await storage.incrementReactionQuota(
         reactionData.userId,
         reactionData.reactionType as "insightful" | "misinformed"
@@ -5517,6 +5525,7 @@ ${extractedText.substring(0, 5000)}
         res.status(400).json({ message: error.errors });
       } else {
         console.error(`[POST /pulse-reactions] Server error:`, error);
+        console.error(`[POST /pulse-reactions] Error stack:`, error instanceof Error ? error.stack : 'No stack trace');
         res.status(500).json({ message: "Internal server error" });
       }
     }
