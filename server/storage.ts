@@ -2709,40 +2709,66 @@ export class MemStorage implements IStorage {
   }
   
   async getPulseReactionByUserAndPulse(userId: number, pulseId: number, reactionType: "insightful" | "misinformed"): Promise<PulseReaction | undefined> {
-    return Array.from(this.pulseReactions.values())
-      .find(reaction => reaction.userId === userId && reaction.pulseId === pulseId && reaction.reactionType === reactionType);
+    try {
+      console.log(`[db.getPulseReactionByUserAndPulse] Checking reaction for user ${userId}, pulse ${pulseId}, type ${reactionType}`);
+      
+      const result = await pool.query(`
+        SELECT 
+          id, pulse_id as "pulseId", user_id as "userId", 
+          reaction_type as "reactionType", created_at as "createdAt"
+        FROM pulse_reactions 
+        WHERE user_id = $1 AND pulse_id = $2 AND reaction_type = $3
+        LIMIT 1
+      `, [userId, pulseId, reactionType]);
+      
+      if (result.rows.length === 0) {
+        console.log(`[db.getPulseReactionByUserAndPulse] No reaction found`);
+        return undefined;
+      }
+      
+      console.log(`[db.getPulseReactionByUserAndPulse] Found existing reaction`);
+      return result.rows[0];
+    } catch (error) {
+      console.error('[db.getPulseReactionByUserAndPulse] Error checking pulse reaction:', error);
+      throw error;
+    }
   }
   
   // Pulse Reaction operations implementation
   async createPulseReaction(insertReaction: InsertPulseReaction): Promise<PulseReaction> {
-    const id = this.currentPulseReactionId++;
-    const createdAt = new Date();
-    
-    const reaction: PulseReaction = {
-      ...insertReaction,
-      id,
-      createdAt
-    };
-    
-    this.pulseReactions.set(id, reaction);
-    
-    // Update the pulse reaction count
-    const pulse = this.pulses.get(insertReaction.pulseId);
-    if (pulse) {
+    try {
+      console.log(`[db.createPulseReaction] Creating reaction:`, insertReaction);
+      
+      const result = await pool.query(`
+        INSERT INTO pulse_reactions (pulse_id, user_id, reaction_type, created_at)
+        VALUES ($1, $2, $3, NOW())
+        RETURNING id, pulse_id as "pulseId", user_id as "userId", 
+                  reaction_type as "reactionType", created_at as "createdAt"
+      `, [insertReaction.pulseId, insertReaction.userId, insertReaction.reactionType]);
+      
+      const reaction = result.rows[0];
+      console.log(`[db.createPulseReaction] Created reaction with ID:`, reaction.id);
+      
+      // Update pulse reaction counts in the pulses table
       if (insertReaction.reactionType === "insightful") {
-        this.pulses.set(pulse.id, {
-          ...pulse,
-          insightfulCount: (pulse.insightfulCount || 0) + 1
-        });
+        await pool.query(`
+          UPDATE pulses 
+          SET insightful_count = COALESCE(insightful_count, 0) + 1 
+          WHERE id = $1
+        `, [insertReaction.pulseId]);
       } else if (insertReaction.reactionType === "misinformed") {
-        this.pulses.set(pulse.id, {
-          ...pulse,
-          misinformedCount: (pulse.misinformedCount || 0) + 1
-        });
+        await pool.query(`
+          UPDATE pulses 
+          SET misinformed_count = COALESCE(misinformed_count, 0) + 1 
+          WHERE id = $1
+        `, [insertReaction.pulseId]);
       }
+      
+      return reaction;
+    } catch (error) {
+      console.error('[db.createPulseReaction] Error creating pulse reaction:', error);
+      throw error;
     }
-    
-    return reaction;
   }
   
   async deletePulseReaction(id: number): Promise<boolean> {
