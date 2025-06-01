@@ -636,6 +636,43 @@ export interface IStorage {
   createCapsuleJournal(journal: InsertCapsuleJournal): Promise<CapsuleJournal>;
   updateCapsuleJournal(id: number, journal: Partial<CapsuleJournal>): Promise<CapsuleJournal | undefined>;
   deleteCapsuleJournal(id: number): Promise<boolean>;
+  
+  // Auto-deletion system operations
+  // Flagged Items operations
+  getFlaggedItems(): Promise<FlaggedItem[]>;
+  getFlaggedItemsByType(itemType: string): Promise<FlaggedItem[]>;
+  getFlaggedItemsByItemId(itemType: string, itemId: number): Promise<FlaggedItem[]>;
+  createFlaggedItem(flaggedItem: InsertFlaggedItem): Promise<FlaggedItem>;
+  markFlaggedItemAsAutoDeleted(id: number): Promise<FlaggedItem | undefined>;
+  
+  // Item Views operations  
+  getItemViewsByItemId(itemType: string, itemId: number): Promise<ItemView[]>;
+  getUniqueViewCountForItem(itemType: string, itemId: number): Promise<number>;
+  createItemView(itemView: InsertItemView): Promise<ItemView>;
+  hasUserViewedItem(userId: number, itemType: string, itemId: number): Promise<boolean>;
+  
+  // User Restrictions operations
+  getUserRestrictions(userId: number): Promise<UserRestriction[]>;
+  getActiveUserRestrictions(userId: number): Promise<UserRestriction[]>;
+  createUserRestriction(restriction: InsertUserRestriction): Promise<UserRestriction>;
+  deactivateUserRestriction(id: number): Promise<UserRestriction | undefined>;
+  getUserDeletionsToday(userId: number): Promise<number>;
+  
+  // Auto-deletion algorithm operations
+  checkAutoDeleteConditions(itemType: string, itemId: number): Promise<{
+    shouldDelete: boolean;
+    reason: string;
+    flagCount?: number;
+    viewCount?: number;
+    flagToViewRatio?: number;
+  }>;
+  executeAutoDelete(itemType: string, itemId: number, reason: string): Promise<boolean>;
+  checkUserPostingRestrictions(userId: number): Promise<{
+    isRestricted: boolean;
+    restrictionType?: string;
+    endTime?: Date;
+    reason?: string;
+  }>;
 }
 
 // In-memory implementation of the storage

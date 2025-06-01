@@ -1290,3 +1290,68 @@ export type InsertMentorshipFeedback = z.infer<typeof insertMentorshipFeedbackSc
 // Export notification types
 export type Notification = typeof notifications.$inferSelect;
 export type InsertNotification = z.infer<typeof insertNotificationSchema>;
+
+// Auto-deletion system tables
+// Content flagging tracking
+export const flaggedItems = pgTable("flagged_items", {
+  id: serial("id").primaryKey(),
+  itemType: text("item_type").notNull(), // 'pulse' or 'nowboard'
+  itemId: integer("item_id").notNull(),
+  flaggedByUserId: integer("flagged_by_user_id").notNull(),
+  reason: text("reason"), // Optional reason for flagging
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  autoDeleted: boolean("auto_deleted").default(false),
+});
+
+// Item view tracking for ratio calculation
+export const itemViews = pgTable("item_views", {
+  id: serial("id").primaryKey(),
+  itemType: text("item_type").notNull(), // 'pulse' or 'nowboard'
+  itemId: integer("item_id").notNull(),
+  userId: integer("user_id").notNull(),
+  viewedAt: timestamp("viewed_at").notNull().defaultNow(),
+});
+
+// User restriction tracking
+export const userRestrictionTypeEnum = pgEnum("user_restriction_type", [
+  "posting_block",
+  "permanent_ban"
+]);
+
+export const userRestrictions = pgTable("user_restrictions", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  restrictionType: userRestrictionTypeEnum("restriction_type").notNull(),
+  startTime: timestamp("start_time").notNull().defaultNow(),
+  endTime: timestamp("end_time"), // null for permanent restrictions
+  reason: text("reason").notNull(),
+  isActive: boolean("is_active").default(true),
+});
+
+// Insert schemas for auto-deletion system
+export const insertFlaggedItemSchema = createInsertSchema(flaggedItems).omit({
+  id: true,
+  createdAt: true,
+  autoDeleted: true
+});
+
+export const insertItemViewSchema = createInsertSchema(itemViews).omit({
+  id: true,
+  viewedAt: true
+});
+
+export const insertUserRestrictionSchema = createInsertSchema(userRestrictions).omit({
+  id: true,
+  startTime: true,
+  isActive: true
+});
+
+// Export types for auto-deletion system
+export type FlaggedItem = typeof flaggedItems.$inferSelect;
+export type InsertFlaggedItem = z.infer<typeof insertFlaggedItemSchema>;
+
+export type ItemView = typeof itemViews.$inferSelect;
+export type InsertItemView = z.infer<typeof insertItemViewSchema>;
+
+export type UserRestriction = typeof userRestrictions.$inferSelect;
+export type InsertUserRestriction = z.infer<typeof insertUserRestrictionSchema>;
