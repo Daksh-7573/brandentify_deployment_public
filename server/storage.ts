@@ -8946,19 +8946,24 @@ export class DatabaseStorage implements IStorage {
       
       const result = await pool.query(`
         SELECT 
-          id,
-          user_id as "userId",
-          content,
-          category,
-          visibility,
-          inspired_count as "inspiredCount",
-          related_skills as "relatedSkills",
-          related_project as "relatedProject",
-          image_url as "imageUrl",
-          created_at as "createdAt",
-          updated_at as "updatedAt"
-        FROM nowboard_items
-        ORDER BY created_at DESC
+          ni.id,
+          ni.user_id as "userId",
+          ni.content,
+          ni.category,
+          ni.visibility,
+          ni.inspired_count as "inspiredCount",
+          ni.related_skills as "relatedSkills",
+          ni.related_project as "relatedProject",
+          ni.image_url as "imageUrl",
+          ni.created_at as "createdAt",
+          ni.updated_at as "updatedAt",
+          json_build_object(
+            'name', u.name,
+            'photoURL', u.photo_url
+          ) as "user"
+        FROM nowboard_items ni
+        LEFT JOIN users u ON ni.user_id = u.id
+        ORDER BY ni.created_at DESC
         LIMIT 50
       `);
       
