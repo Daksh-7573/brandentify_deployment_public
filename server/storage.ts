@@ -7104,6 +7104,228 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
+  // Pulse Reaction Database Methods
+  async getPulseReactions(pulseId: number): Promise<PulseReaction[]> {
+    try {
+      console.log(`[db.getPulseReactions] Fetching reactions for pulse: ${pulseId}`);
+      
+      const result = await pool.query(`
+        SELECT 
+          id, pulse_id as "pulseId", user_id as "userId", 
+          reaction_type as "reactionType", created_at as "createdAt"
+        FROM pulse_reactions 
+        WHERE pulse_id = $1
+        ORDER BY created_at DESC
+      `, [pulseId]);
+      
+      console.log(`[db.getPulseReactions] Found ${result.rows.length} reactions`);
+      return result.rows;
+    } catch (error) {
+      console.error('[db.getPulseReactions] Error fetching pulse reactions:', error);
+      throw error;
+    }
+  }
+
+  async getPulseReactionByUserAndPulse(userId: number, pulseId: number, reactionType: "insightful" | "misinformed"): Promise<PulseReaction | undefined> {
+    try {
+      console.log(`[db.getPulseReactionByUserAndPulse] Checking reaction for user ${userId}, pulse ${pulseId}, type ${reactionType}`);
+      
+      const result = await pool.query(`
+        SELECT 
+          id, pulse_id as "pulseId", user_id as "userId", 
+          reaction_type as "reactionType", created_at as "createdAt"
+        FROM pulse_reactions 
+        WHERE user_id = $1 AND pulse_id = $2 AND reaction_type = $3
+      `, [userId, pulseId, reactionType]);
+      
+      if (result.rows.length === 0) {
+        console.log(`[db.getPulseReactionByUserAndPulse] No reaction found`);
+        return undefined;
+      }
+      
+      console.log(`[db.getPulseReactionByUserAndPulse] Found existing reaction`);
+      return result.rows[0];
+    } catch (error) {
+      console.error('[db.getPulseReactionByUserAndPulse] Error checking pulse reaction:', error);
+      return undefined;
+    }
+  }
+
+  async createPulseReaction(insertReaction: InsertPulseReaction): Promise<PulseReaction> {
+    try {
+      console.log(`[db.createPulseReaction] Creating reaction:`, insertReaction);
+      
+      const result = await pool.query(`
+        INSERT INTO pulse_reactions (pulse_id, user_id, reaction_type)
+        VALUES ($1, $2, $3)
+        RETURNING id, pulse_id as "pulseId", user_id as "userId", 
+                  reaction_type as "reactionType", created_at as "createdAt"
+      `, [insertReaction.pulseId, insertReaction.userId, insertReaction.reactionType]);
+      
+      const reaction = result.rows[0];
+      console.log(`[db.createPulseReaction] Created reaction with ID: ${reaction.id}`);
+      
+      // Update the pulse reaction count
+      const updateCountQuery = insertReaction.reactionType === "insightful" 
+        ? `UPDATE pulses SET insightful_count = COALESCE(insightful_count, 0) + 1 WHERE id = $1`
+        : `UPDATE pulses SET misinformed_count = COALESCE(misinformed_count, 0) + 1 WHERE id = $1`;
+      
+      await pool.query(updateCountQuery, [insertReaction.pulseId]);
+      
+      return reaction;
+    } catch (error) {
+      console.error('[db.createPulseReaction] Error creating pulse reaction:', error);
+      throw error;
+    }
+  }
+
+  async getOrCreateUserReactionQuota(userId: number): Promise<UserReactionQuota> {
+    try {
+      console.log(`[db.getOrCreateUserReactionQuota] Getting quota for user: ${userId}`);
+      
+      // Get today's date at midnight for consistent quota tracking
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      // Check if quota exists for today
+      const existingResult = await pool.query(`
+        SELECT 
+          id, user_id as "userId", date, 
+          insightful_quota_used as "insightfulQuotaUsed",
+          misinformed_quota_used as "misinformedQuotaUsed",
+          insightful_quota_max as "insightfulQuotaMax",
+          misinformed_quota_max as "misinformedQuotaMax",
+          updated_at as "updatedAt"
+        FROM user_reaction_quotas 
+        WHERE user_id = $1 AND date = $2
+      `, [userId, today]);
+      
+      if (existingResult.rows.length > 0) {
+        console.log(`[db.getOrCreateUserReactionQuota] Found existing quota`);
+        return existingResult.rows[0];
+      }
+      
+      // Create new quota for today
+      console.log(`[db.getOrCreateUserReactionQuota] Creating new quota for today`);
+      const createResult = await pool.query(`
+        INSERT INTO user_reaction_quotas (user_id, date, insightful_quota_used, misinformed_quota_used)
+        VALUES ($1, $2, 0, 0)
+        RETURNING id, user_id as "userId", date, 
+                  insightful_quota_used as "insightfulQuotaUsed",
+                  misinformed_quota_used as "misinformedQuotaUsed",
+                  insightful_quota_max as "insightfulQuotaMax",
+                  misinformed_quota_max as "misinformedQuotaMax",
+                  updated_at as "updatedAt"
+      `, [userId, today]);
+      
+      return createResult.rows[0];
+    } catch (error) {
+      console.error('[db.getOrCreateUserReactionQuota] Error getting/creating quota:', error);
+      throw error;
+    }
+  }
+
+  async checkReactionQuota(userId: number, reactionType: "insightful" | "misinformed"): Promise<{ 
+    hasQuotaRemaining: boolean; 
+    remaining: number; 
+    used: number;
+    max: number;
+  }> {
+    try {
+      const quota = await this.getOrCreateUserReactionQuota(userId);
+      
+      if (reactionType === "insightful") {
+        const used = quota.insightfulQuotaUsed || 0;
+        const max = quota.insightfulQuotaMax || 10;
+        const remaining = max - used;
+        return {
+          hasQuotaRemaining: remaining > 0,
+          remaining,
+          used,
+          max
+        };
+      } else {
+        const used = quota.misinformedQuotaUsed || 0;
+        const max = quota.misinformedQuotaMax || 10;
+        const remaining = max - used;
+        return {
+          hasQuotaRemaining: remaining > 0,
+          remaining,
+          used,
+          max
+        };
+      }
+    } catch (error) {
+      console.error('[db.checkReactionQuota] Error checking quota:', error);
+      throw error;
+    }
+  }
+
+  async incrementReactionQuota(userId: number, reactionType: "insightful" | "misinformed"): Promise<UserReactionQuota> {
+    try {
+      console.log(`[db.incrementReactionQuota] Incrementing ${reactionType} quota for user ${userId}`);
+      
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      const updateColumn = reactionType === "insightful" 
+        ? "insightful_quota_used" 
+        : "misinformed_quota_used";
+      
+      const result = await pool.query(`
+        UPDATE user_reaction_quotas 
+        SET ${updateColumn} = COALESCE(${updateColumn}, 0) + 1, 
+            updated_at = NOW()
+        WHERE user_id = $1 AND date = $2
+        RETURNING id, user_id as "userId", date, 
+                  insightful_quota_used as "insightfulQuotaUsed",
+                  misinformed_quota_used as "misinformedQuotaUsed",
+                  insightful_quota_max as "insightfulQuotaMax",
+                  misinformed_quota_max as "misinformedQuotaMax",
+                  updated_at as "updatedAt"
+      `, [userId, today]);
+      
+      if (result.rows.length === 0) {
+        // If no quota exists, create one and increment
+        await this.getOrCreateUserReactionQuota(userId);
+        return this.incrementReactionQuota(userId, reactionType);
+      }
+      
+      console.log(`[db.incrementReactionQuota] Updated quota successfully`);
+      return result.rows[0];
+    } catch (error) {
+      console.error('[db.incrementReactionQuota] Error incrementing quota:', error);
+      throw error;
+    }
+  }
+
+  async createPulseShare(insertShare: InsertPulseShare): Promise<PulseShare> {
+    try {
+      console.log(`[db.createPulseShare] Creating share:`, insertShare);
+      
+      const result = await pool.query(`
+        INSERT INTO pulse_shares (pulse_id, sender_id, recipient_id, message)
+        VALUES ($1, $2, $3, $4)
+        RETURNING id, pulse_id as "pulseId", sender_id as "senderId", 
+                  recipient_id as "recipientId", message, is_read as "isRead",
+                  created_at as "createdAt"
+      `, [insertShare.pulseId, insertShare.senderId, insertShare.recipientId, insertShare.message || null]);
+      
+      const share = result.rows[0];
+      console.log(`[db.createPulseShare] Created share with ID: ${share.id}`);
+      
+      // Update the pulse share count
+      await pool.query(`
+        UPDATE pulses SET share_count = COALESCE(share_count, 0) + 1 WHERE id = $1
+      `, [insertShare.pulseId]);
+      
+      return share;
+    } catch (error) {
+      console.error('[db.createPulseShare] Error creating pulse share:', error);
+      throw error;
+    }
+  }
+
   async createUserXp(userXp: InsertUserXp): Promise<UserXp> {
     try {
       console.log(`[db.createUserXp] Creating XP record for user ${userXp.userId}`);
