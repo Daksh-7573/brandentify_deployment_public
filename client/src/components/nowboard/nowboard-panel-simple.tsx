@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, Heart } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -20,6 +20,43 @@ interface NowboardItem {
     name: string;
     photoURL?: string;
   };
+}
+
+// Custom Lightbulb-Brain Icon Component
+function LightbulbBrainIcon({ className, filled }: { className?: string; filled?: boolean }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      {/* Lightbulb base */}
+      <rect x="9" y="18" width="6" height="2" rx="1" />
+      <rect x="10" y="20" width="4" height="1" rx="0.5" />
+      
+      {/* Main bulb shape */}
+      <path 
+        d="M15 10.5C15 7.5 13.5 5 12 5S9 7.5 9 10.5c0 1.5 0.5 2.5 1.5 3.5h3c1-1 1.5-2 1.5-3.5z"
+        fill={filled ? "currentColor" : "none"}
+      />
+      
+      {/* Brain-like patterns inside */}
+      <path 
+        d="M10.5 8.5c0.5-0.5 1-0.5 1.5 0M10.5 10c0.5-0.3 1-0.3 1.5 0M10.5 11.5c0.5-0.3 1-0.3 1.5 0"
+        stroke={filled ? "rgba(255,255,255,0.8)" : "currentColor"}
+        strokeWidth="1"
+      />
+      
+      {/* Neural connections */}
+      <circle cx="10.5" cy="9" r="0.5" fill={filled ? "rgba(255,255,255,0.9)" : "currentColor"} />
+      <circle cx="13.5" cy="9" r="0.5" fill={filled ? "rgba(255,255,255,0.9)" : "currentColor"} />
+      <circle cx="12" cy="11" r="0.5" fill={filled ? "rgba(255,255,255,0.9)" : "currentColor"} />
+    </svg>
+  );
 }
 
 // Inspired Button Component
@@ -80,8 +117,9 @@ function InspiredButton({
           : 'bg-white/5 text-white/60 border border-white/20 hover:bg-white/10 hover:text-white/80'
       }`}
     >
-      <Heart 
-        className={`h-3 w-3 ${isInspired ? 'fill-current' : ''}`} 
+      <LightbulbBrainIcon 
+        className="h-3 w-3" 
+        filled={isInspired}
       />
       <span>{count}</span>
     </button>
