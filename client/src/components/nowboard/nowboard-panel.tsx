@@ -128,10 +128,8 @@ export default function NowboardPanel() {
     enabled: true,
     select: (data: any[]) => {
       console.log("Raw nowboard data:", data);
-      return data.map(item => ({
-        ...item,
-        user: { name: "User", photoURL: null } // Default user data
-      }));
+      console.log("Nowboard items data:", data);
+      return data;
     }
   });
   
