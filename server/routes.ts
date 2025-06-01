@@ -5519,19 +5519,32 @@ ${extractedText.substring(0, 5000)}
   });
   
   apiRouter.get("/pulses/:pulseId/reactions", async (req: Request, res: Response) => {
+    console.log(`[GET /pulses/:pulseId/reactions] Route handler executing`);
     try {
       const pulseId = parseInt(req.params.pulseId);
+      console.log(`[GET /pulses/:pulseId/reactions] Pulse ID: ${pulseId}`);
       
       if (isNaN(pulseId)) {
         return res.status(400).json({ message: "Invalid pulse ID format" });
       }
       
-      const reactions = await storage.getPulseReactionsByPulseId(pulseId);
+      // Direct database query for now to fix the issue
+      console.log(`[GET /pulses/:pulseId/reactions] Executing database query`);
+      const result = await pool.query(`
+        SELECT id, pulse_id as "pulseId", user_id as "userId", 
+               reaction_type as "reactionType", created_at as "createdAt"
+        FROM pulse_reactions 
+        WHERE pulse_id = $1
+        ORDER BY created_at DESC
+      `, [pulseId]);
+      
+      console.log(`[GET /pulses/:pulseId/reactions] Query result:`, result.rows);
+      const reactions = result.rows;
       
       res.json(reactions);
     } catch (error) {
-      console.error("Error fetching pulse reactions:", error);
-      res.status(500).json({ message: "Internal server error" });
+      console.error(`[GET /pulses/:pulseId/reactions] Error:`, error);
+      res.status(500).json({ message: "Internal server error", error: error instanceof Error ? error.message : String(error) });
     }
   });
   
@@ -5561,8 +5574,36 @@ ${extractedText.substring(0, 5000)}
         }
       }
       
-      // Get the user's reaction quota
-      const quota = await storage.getOrCreateUserReactionQuota(userId);
+      // Direct database query for reaction quota to fix the issue
+      const result = await pool.query(`
+        SELECT user_id as "userId", 
+               insightful_quota_used as "insightfulQuotaUsed",
+               insightful_quota_max as "insightfulQuotaMax",
+               misinformed_quota_used as "misinformedQuotaUsed",
+               misinformed_quota_max as "misinformedQuotaMax",
+               last_reset_date as "lastResetDate"
+        FROM user_reaction_quotas 
+        WHERE user_id = $1
+      `, [userId]);
+      
+      let quota;
+      if (result.rows.length === 0) {
+        // Create default quota if it doesn't exist
+        const createResult = await pool.query(`
+          INSERT INTO user_reaction_quotas (user_id, insightful_quota_used, insightful_quota_max, 
+                                          misinformed_quota_used, misinformed_quota_max, last_reset_date)
+          VALUES ($1, 0, 10, 0, 10, CURRENT_DATE)
+          RETURNING user_id as "userId", 
+                   insightful_quota_used as "insightfulQuotaUsed",
+                   insightful_quota_max as "insightfulQuotaMax",
+                   misinformed_quota_used as "misinformedQuotaUsed",
+                   misinformed_quota_max as "misinformedQuotaMax",
+                   last_reset_date as "lastResetDate"
+        `, [userId]);
+        quota = createResult.rows[0];
+      } else {
+        quota = result.rows[0];
+      }
       
       // Format the response
       const response = {
