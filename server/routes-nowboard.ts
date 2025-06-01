@@ -2,6 +2,7 @@ import { Request, Response, Router } from 'express';
 import { z } from 'zod';
 import { IStorage } from './storage';
 import { insertNowboardItemSchema, nowboardCategoryEnum, insertNowboardInspiredBySchema } from '@shared/schema';
+import { pool } from './db';
 
 // Setup Nowboard routes
 export function setupNowboardRoutes(router: Router, storage: IStorage) {
@@ -113,7 +114,37 @@ export function setupNowboardRoutes(router: Router, storage: IStorage) {
       };
 
       console.log('[POST /nowboard-items] Creating item with data:', itemData);
-      const newItem = await storage.createNowboardItem(itemData);
+      
+      // Direct database call to bypass any binding issues
+      const result = await pool.query(`
+        INSERT INTO nowboard_items (
+          user_id, content, category, visibility, 
+          related_skills, related_project, image_url
+        )
+        VALUES ($1, $2, $3, $4, $5, $6, $7)
+        RETURNING 
+          id,
+          user_id as "userId",
+          content,
+          category,
+          visibility,
+          inspired_count as "inspiredCount",
+          related_skills as "relatedSkills",
+          related_project as "relatedProject",
+          image_url as "imageUrl",
+          created_at as "createdAt",
+          updated_at as "updatedAt"
+      `, [
+        itemData.userId,
+        itemData.content,
+        itemData.category,
+        itemData.visibility,
+        null, // relatedSkills
+        null, // relatedProject
+        null  // imageUrl
+      ]);
+      
+      const newItem = result.rows[0];
       console.log('[POST /nowboard-items] Item created successfully:', newItem);
       
       res.status(201).json(newItem);
