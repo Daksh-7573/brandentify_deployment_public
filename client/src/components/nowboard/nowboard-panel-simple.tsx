@@ -111,14 +111,14 @@ function InspiredButton({
     <button
       onClick={() => toggleInspired.mutate()}
       disabled={toggleInspired.isPending}
-      className={`flex items-center gap-1.5 px-2 py-1 rounded-lg text-sm transition-colors hover:bg-white/10 ${
+      className={`flex items-center gap-2 px-3 py-2 rounded-lg text-base transition-colors hover:bg-white/10 ${
         isInspired 
           ? 'text-yellow-400' 
           : 'text-white/60 hover:text-white/80'
       }`}
     >
       <LightbulbBrainIcon 
-        className="h-4 w-4" 
+        className="h-6 w-6" 
         filled={isInspired}
       />
       <span className="font-medium">{count}</span>
