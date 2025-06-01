@@ -1002,6 +1002,7 @@ export default function IndustryPulsePage() {
   const [activeTab, setActiveTab] = useState("all");
   const [_, setLocation] = useLocation();
   const { toast } = useToast();
+  const { user } = useAuth();
   
   // Smart refresh state
   const [hasNewContent, setHasNewContent] = useState(false);
