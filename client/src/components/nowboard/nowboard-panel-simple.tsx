@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2 } from "lucide-react";
+import { Loader2, Heart } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -15,10 +15,89 @@ interface NowboardItem {
   category: string;
   visibility: string;
   createdAt: string;
+  inspiredCount?: number;
   user?: {
     name: string;
     photoURL?: string;
   };
+}
+
+// Inspired Button Component
+function InspiredButton({ 
+  itemId, 
+  userId, 
+  currentCount = 0 
+}: { 
+  itemId: number; 
+  userId: number; 
+  currentCount: number 
+}) {
+  const { toast } = useToast();
+  const [isInspired, setIsInspired] = useState(false);
+  const [count, setCount] = useState(currentCount);
+
+  // Check if user has already inspired this item
+  const { data: userInspiredStatus } = useQuery({
+    queryKey: [`/api/nowboard-items/${itemId}/inspired-by/user/${userId}`],
+    enabled: !!userId && !!itemId,
+    staleTime: 30000, // Cache for 30 seconds
+  });
+
+  // Update inspired state when data loads
+  useState(() => {
+    if (userInspiredStatus !== undefined) {
+      setIsInspired(!!userInspiredStatus);
+    }
+  });
+
+  // Toggle inspired status
+  const toggleInspired = useMutation({
+    mutationFn: async () => {
+      const method = isInspired ? 'DELETE' : 'POST';
+      const response = await fetch(`/api/nowboard-items/${itemId}/inspired-by`, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to update inspired status');
+      }
+      
+      return response.json();
+    },
+    onSuccess: () => {
+      setIsInspired(!isInspired);
+      setCount(prev => isInspired ? prev - 1 : prev + 1);
+      queryClient.invalidateQueries({ queryKey: ['/api/nowboard-items'] });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to update inspired status. Please try again.",
+        variant: "destructive",
+      });
+    }
+  });
+
+  return (
+    <button
+      onClick={() => toggleInspired.mutate()}
+      disabled={toggleInspired.isPending}
+      className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs transition-colors ${
+        isInspired 
+          ? 'bg-red-500/20 text-red-400 border border-red-400/30' 
+          : 'bg-white/5 text-white/60 border border-white/20 hover:bg-white/10 hover:text-white/80'
+      }`}
+    >
+      <Heart 
+        className={`h-3 w-3 ${isInspired ? 'fill-current' : ''}`} 
+      />
+      <span>{count}</span>
+    </button>
+  );
 }
 
 export default function NowboardPanelSimple() {
@@ -197,8 +276,17 @@ export default function NowboardPanelSimple() {
                       </span>
                     </div>
                     <p className="text-white/80 text-sm mb-2">{item.content}</p>
-                    <div className="text-xs text-white/50">
-                      {formatDate(item.createdAt)}
+                    <div className="flex items-center justify-between">
+                      <div className="text-xs text-white/50">
+                        {formatDate(item.createdAt)}
+                      </div>
+                      {user && (
+                        <InspiredButton
+                          itemId={item.id}
+                          userId={parseInt(user.uid)}
+                          currentCount={item.inspiredCount || 0}
+                        />
+                      )}
                     </div>
                   </div>
                 </div>
