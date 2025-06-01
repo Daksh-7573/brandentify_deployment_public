@@ -144,17 +144,19 @@ export default function PulseMenu({ pulseId, currentUserId, pulseCreatorId }: Pu
           {isCreator ? (
             <DropdownMenuItem 
               onClick={() => setShowDeleteDialog(true)} 
-              className="text-red-300 hover:text-red-200 hover:bg-red-500/20 focus:bg-red-500/20 focus:text-red-200 cursor-pointer rounded-md px-3 py-2 text-sm font-medium"
+              className="text-red-400 hover:text-red-300 hover:bg-red-500/30 focus:bg-red-500/30 focus:text-red-300 cursor-pointer rounded-md px-3 py-2 text-sm font-semibold flex items-center"
+              style={{ color: '#f87171' }}
             >
-              <Trash2 className="mr-2 h-4 w-4" />
+              <Trash2 className="mr-2 h-4 w-4" style={{ color: '#f87171' }} />
               Delete Pulse
             </DropdownMenuItem>
           ) : (
             <DropdownMenuItem 
               onClick={() => setShowFlagDialog(true)}
-              className="text-white/90 hover:text-white hover:bg-white/10 focus:bg-white/10 focus:text-white cursor-pointer rounded-md px-3 py-2 text-sm font-medium"
+              className="text-white hover:text-white hover:bg-white/20 focus:bg-white/20 focus:text-white cursor-pointer rounded-md px-3 py-2 text-sm font-semibold flex items-center"
+              style={{ color: '#ffffff' }}
             >
-              <Flag className="mr-2 h-4 w-4" />
+              <Flag className="mr-2 h-4 w-4" style={{ color: '#ffffff' }} />
               Flag Pulse
             </DropdownMenuItem>
           )}
