@@ -631,6 +631,9 @@ export type InsertPulse = z.infer<typeof insertPulseSchema>;
 export type PulseComment = typeof pulseComments.$inferSelect;
 export type InsertPulseComment = z.infer<typeof insertPulseCommentSchema>;
 
+export type PulseFlag = typeof pulseFlags.$inferSelect;
+export type InsertPulseFlag = z.infer<typeof insertPulseFlagSchema>;
+
 export type PollVote = typeof pollVotes.$inferSelect;
 export type InsertPollVote = z.infer<typeof insertPollVoteSchema>;
 

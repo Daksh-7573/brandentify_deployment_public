@@ -5881,6 +5881,93 @@ ${extractedText.substring(0, 5000)}
     }
   });
 
+  // Pulse Management endpoints - Delete and Flag
+  apiRouter.delete("/pulses/:id", async (req: Request, res: Response) => {
+    try {
+      const pulseId = parseInt(req.params.id);
+      console.log(`[DELETE /pulses/:id] Deleting pulse with ID: ${pulseId}`);
+      
+      if (isNaN(pulseId)) {
+        return res.status(400).json({ message: "Invalid pulse ID format" });
+      }
+
+      // Check if pulse exists and get creator info
+      const pulseResult = await pool.query(`
+        SELECT id, user_id as "userId" FROM pulses WHERE id = $1
+      `, [pulseId]);
+
+      if (pulseResult.rows.length === 0) {
+        return res.status(404).json({ message: "Pulse not found" });
+      }
+
+      const pulse = pulseResult.rows[0];
+      console.log(`[DELETE /pulses/:id] Found pulse:`, pulse);
+
+      // Delete the pulse (cascade will handle related records)
+      await pool.query(`DELETE FROM pulses WHERE id = $1`, [pulseId]);
+      
+      console.log(`[DELETE /pulses/:id] Successfully deleted pulse with ID: ${pulseId}`);
+      res.status(200).json({ message: "Pulse deleted successfully" });
+    } catch (error) {
+      console.error(`[DELETE /pulses/:id] Error:`, error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  apiRouter.post("/pulses/:id/flag", async (req: Request, res: Response) => {
+    try {
+      const pulseId = parseInt(req.params.id);
+      const { userId, reason, description } = req.body;
+      
+      console.log(`[POST /pulses/:id/flag] Flagging pulse ${pulseId} by user ${userId} for reason: ${reason}`);
+      
+      if (isNaN(pulseId)) {
+        return res.status(400).json({ message: "Invalid pulse ID format" });
+      }
+
+      if (!userId || !reason) {
+        return res.status(400).json({ message: "User ID and reason are required" });
+      }
+
+      // Check if pulse exists
+      const pulseResult = await pool.query(`
+        SELECT id FROM pulses WHERE id = $1
+      `, [pulseId]);
+
+      if (pulseResult.rows.length === 0) {
+        return res.status(404).json({ message: "Pulse not found" });
+      }
+
+      // Check if user has already flagged this pulse
+      const existingFlag = await pool.query(`
+        SELECT id FROM pulse_flags 
+        WHERE pulse_id = $1 AND reporter_id = $2
+      `, [pulseId, userId]);
+
+      if (existingFlag.rows.length > 0) {
+        return res.status(409).json({ message: "You have already flagged this pulse" });
+      }
+
+      // Create the flag
+      const flagResult = await pool.query(`
+        INSERT INTO pulse_flags (pulse_id, reporter_id, reason, description)
+        VALUES ($1, $2, $3, $4)
+        RETURNING id, pulse_id as "pulseId", reporter_id as "reporterId", reason, description, status, created_at as "createdAt"
+      `, [pulseId, userId, reason, description]);
+      
+      const flag = flagResult.rows[0];
+      console.log(`[POST /pulses/:id/flag] Created flag with ID: ${flag.id}`);
+      
+      res.status(201).json({
+        message: "Pulse flagged successfully",
+        flag
+      });
+    } catch (error) {
+      console.error(`[POST /pulses/:id/flag] Error:`, error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   // Smart Radar feature endpoints
   apiRouter.post("/users/:id/geolocation", updateUserGeolocation);
   apiRouter.post("/users/:id/radar-visibility", updateUserRadarVisibility);
