@@ -5451,6 +5451,7 @@ ${extractedText.substring(0, 5000)}
 
   // Pulse Reaction endpoints
   apiRouter.post("/pulse-reactions", async (req: Request, res: Response) => {
+    console.log(`[POST /pulse-reactions] Route handler started, req.body:`, req.body);
     try {
       console.log(`[POST /pulse-reactions] Creating reaction with data:`, req.body);
       
