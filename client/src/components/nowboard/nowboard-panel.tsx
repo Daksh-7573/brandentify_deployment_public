@@ -216,8 +216,9 @@ export default function NowboardPanel() {
   });
 
   // Handle submit of new nowboard item
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     
     if (!newItemContent.trim()) {
       toast({
@@ -237,12 +238,16 @@ export default function NowboardPanel() {
       return;
     }
     
-    createMutation.mutate({
-      userId,
-      content: newItemContent,
-      category: selectedCategory,
-      visibility: "public"
-    });
+    try {
+      await createMutation.mutateAsync({
+        userId,
+        content: newItemContent,
+        category: selectedCategory,
+        visibility: "public"
+      });
+    } catch (error) {
+      console.error("Error creating nowboard item:", error);
+    }
   };
 
   // Get icon for category
@@ -294,7 +299,7 @@ export default function NowboardPanel() {
         </div>
         
         <div className="pb-4 border-b border-white/10 mb-4">
-          <form onSubmit={handleSubmit} className="space-y-3">
+          <div className="space-y-3">
             <Textarea
               placeholder="Share what you're working on... (150 chars max)"
               value={newItemContent}
@@ -320,7 +325,7 @@ export default function NowboardPanel() {
                 </SelectContent>
               </Select>
               <button
-                type="submit"
+                onClick={handleSubmit}
                 className="neo-glass-button ml-auto"
                 disabled={createMutation.isPending || !newItemContent.trim()}
               >
@@ -331,7 +336,7 @@ export default function NowboardPanel() {
             <div className="text-xs text-right text-white/60">
               {newItemContent.length}/150 characters
             </div>
-          </form>
+          </div>
         </div>
         
         <div className="flex-1 overflow-y-auto">
