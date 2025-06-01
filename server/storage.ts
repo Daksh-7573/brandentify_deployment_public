@@ -7183,10 +7183,6 @@ export class DatabaseStorage implements IStorage {
     try {
       console.log(`[db.getOrCreateUserReactionQuota] Getting quota for user: ${userId}`);
       
-      // Get today's date at midnight for consistent quota tracking
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      
       // Check if quota exists for today
       const existingResult = await pool.query(`
         SELECT 
@@ -7197,8 +7193,8 @@ export class DatabaseStorage implements IStorage {
           misinformed_quota_max as "misinformedQuotaMax",
           updated_at as "updatedAt"
         FROM user_reaction_quotas 
-        WHERE user_id = $1 AND date = $2
-      `, [userId, today]);
+        WHERE user_id = $1 AND date = CURRENT_DATE
+      `, [userId]);
       
       if (existingResult.rows.length > 0) {
         console.log(`[db.getOrCreateUserReactionQuota] Found existing quota`);
@@ -7209,14 +7205,14 @@ export class DatabaseStorage implements IStorage {
       console.log(`[db.getOrCreateUserReactionQuota] Creating new quota for today`);
       const createResult = await pool.query(`
         INSERT INTO user_reaction_quotas (user_id, date, insightful_quota_used, misinformed_quota_used)
-        VALUES ($1, $2, 0, 0)
+        VALUES ($1, CURRENT_DATE, 0, 0)
         RETURNING id, user_id as "userId", date, 
                   insightful_quota_used as "insightfulQuotaUsed",
                   misinformed_quota_used as "misinformedQuotaUsed",
                   insightful_quota_max as "insightfulQuotaMax",
                   misinformed_quota_max as "misinformedQuotaMax",
                   updated_at as "updatedAt"
-      `, [userId, today]);
+      `, [userId]);
       
       return createResult.rows[0];
     } catch (error) {
@@ -7265,9 +7261,6 @@ export class DatabaseStorage implements IStorage {
     try {
       console.log(`[db.incrementReactionQuota] Incrementing ${reactionType} quota for user ${userId}`);
       
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      
       const updateColumn = reactionType === "insightful" 
         ? "insightful_quota_used" 
         : "misinformed_quota_used";
@@ -7276,14 +7269,14 @@ export class DatabaseStorage implements IStorage {
         UPDATE user_reaction_quotas 
         SET ${updateColumn} = COALESCE(${updateColumn}, 0) + 1, 
             updated_at = NOW()
-        WHERE user_id = $1 AND date = $2
+        WHERE user_id = $1 AND date = CURRENT_DATE
         RETURNING id, user_id as "userId", date, 
                   insightful_quota_used as "insightfulQuotaUsed",
                   misinformed_quota_used as "misinformedQuotaUsed",
                   insightful_quota_max as "insightfulQuotaMax",
                   misinformed_quota_max as "misinformedQuotaMax",
                   updated_at as "updatedAt"
-      `, [userId, today]);
+      `, [userId]);
       
       if (result.rows.length === 0) {
         // If no quota exists, create one and increment
@@ -7330,10 +7323,6 @@ export class DatabaseStorage implements IStorage {
     try {
       console.log(`[db.getUserReactionQuota] Getting quota for user: ${userId}`);
       
-      // Get today's date at midnight for consistent quota tracking
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      
       const result = await pool.query(`
         SELECT 
           id, user_id as "userId", date, 
@@ -7343,8 +7332,8 @@ export class DatabaseStorage implements IStorage {
           misinformed_quota_max as "misinformedQuotaMax",
           updated_at as "updatedAt"
         FROM user_reaction_quotas 
-        WHERE user_id = $1 AND date = $2
-      `, [userId, today]);
+        WHERE user_id = $1 AND date = CURRENT_DATE
+      `, [userId]);
       
       if (result.rows.length === 0) {
         console.log(`[db.getUserReactionQuota] No quota found for user ${userId}`);
