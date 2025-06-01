@@ -29,6 +29,8 @@ interface NowboardMenuProps {
 }
 
 export function NowboardMenu({ itemId, userId, currentUserId, onDeleted }: NowboardMenuProps) {
+  console.log('NowboardMenu rendered with:', { itemId, userId, currentUserId });
+  
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
