@@ -288,21 +288,21 @@ export default function NowboardPanel() {
 
   return (
     <div className="h-full flex flex-col">
-      <Card className="flex-1 flex flex-col shadow-md">
-        <CardHeader className="pb-2">
+      <Card className="flex-1 flex flex-col neo-glass-panel border-0 bg-white/60 backdrop-blur-xl shadow-neo-glass">
+        <CardHeader className="pb-2 border-b border-white/20">
           <CardTitle className="text-lg flex items-center gap-2">
-            <span className="text-primary font-semibold">Nowboard</span>
-            <span className="text-xs text-muted-foreground">What professionals are doing now</span>
+            <span className="text-slate-800 font-semibold bg-gradient-to-r from-violet-600 to-indigo-600 bg-clip-text text-transparent">Nowboard</span>
+            <span className="text-xs text-slate-600/80">What professionals are doing now</span>
           </CardTitle>
         </CardHeader>
         
-        <div className="px-4 pb-3">
-          <form onSubmit={handleSubmit} className="space-y-2">
+        <div className="px-4 pb-3 border-b border-white/10">
+          <form onSubmit={handleSubmit} className="space-y-3">
             <Textarea
               placeholder="Share what you're working on... (150 chars max)"
               value={newItemContent}
               onChange={(e) => setNewItemContent(e.target.value)}
-              className="resize-none text-sm min-h-[60px]"
+              className="resize-none text-sm min-h-[60px] neo-glass-input bg-white/40 border-white/30 backdrop-blur-sm focus:bg-white/50 focus:border-violet-300/50 text-slate-800 placeholder:text-slate-500/70"
               maxLength={150}
             />
             <div className="flex gap-2">
@@ -310,10 +310,10 @@ export default function NowboardPanel() {
                 value={selectedCategory}
                 onValueChange={(value) => setSelectedCategory(value as any)}
               >
-                <SelectTrigger className="w-[140px] h-8">
+                <SelectTrigger className="w-[140px] h-8 neo-glass-input bg-white/40 border-white/30 backdrop-blur-sm text-slate-700">
                   <SelectValue placeholder="Category" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="neo-glass-dropdown bg-white/90 backdrop-blur-xl border-white/30">
                   <SelectItem value="learning">Learning</SelectItem>
                   <SelectItem value="growth">Growth</SelectItem>
                   <SelectItem value="launch">Launch</SelectItem>
@@ -325,53 +325,53 @@ export default function NowboardPanel() {
               <Button
                 type="submit"
                 size="sm"
-                className="ml-auto"
+                className="ml-auto neo-glass-button bg-gradient-to-r from-violet-500/80 to-indigo-500/80 hover:from-violet-600/80 hover:to-indigo-600/80 text-white border-0 backdrop-blur-sm shadow-lg"
                 disabled={createMutation.isPending || !newItemContent.trim()}
               >
                 {createMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Share
               </Button>
             </div>
-            <div className="text-xs text-right text-muted-foreground">
+            <div className="text-xs text-right text-slate-500/70">
               {newItemContent.length}/150 characters
             </div>
           </form>
         </div>
         
-        <CardContent className="flex-1 overflow-y-auto pt-0">
+        <CardContent className="flex-1 overflow-y-auto pt-4 bg-gradient-to-b from-transparent to-white/20">
           {/* Brand of the Day Section */}
           <BrandOfTheDay />
           
           {isLoading ? (
             <div className="flex justify-center py-8">
-              <Loader2 className="h-8 w-8 animate-spin text-primary/70" />
+              <Loader2 className="h-8 w-8 animate-spin text-violet-500/70" />
             </div>
           ) : nowboardItems.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
+            <div className="text-center py-8 text-slate-600/80">
               <p>No professional updates yet.</p>
               <p className="text-sm mt-1">Be the first to share what you're working on!</p>
             </div>
           ) : (
             <div className="space-y-3">
               {nowboardItems.map((item) => (
-                <div key={item.id} className="border rounded-lg p-3 hover:shadow-sm transition-shadow">
-                  <div className="flex items-start gap-2">
-                    <Avatar className="h-8 w-8">
+                <div key={item.id} className="neo-glass-card bg-white/30 backdrop-blur-sm border border-white/40 rounded-xl p-3 hover:bg-white/40 hover:shadow-lg transition-all duration-300 hover:scale-[1.02]">
+                  <div className="flex items-start gap-3">
+                    <Avatar className="h-8 w-8 ring-2 ring-white/30">
                       <AvatarImage src={item.user?.photoURL || undefined} alt={item.user?.name || "User"} />
-                      <AvatarFallback>{item.user?.name ? item.user.name.charAt(0) : "U"}</AvatarFallback>
+                      <AvatarFallback className="bg-gradient-to-br from-violet-100 to-indigo-100 text-slate-700">{item.user?.name ? item.user.name.charAt(0) : "U"}</AvatarFallback>
                     </Avatar>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2">
-                        <p className="text-sm font-medium truncate">{item.user?.name || "User"}</p>
-                        <Badge variant="outline" className={`text-xs ${getCategoryColor(item.category)}`}>
+                        <p className="text-sm font-medium truncate text-slate-800">{item.user?.name || "User"}</p>
+                        <Badge variant="outline" className={`text-xs neo-glass-badge bg-white/50 border-white/40 backdrop-blur-sm ${getCategoryColor(item.category)}`}>
                           <span className="flex items-center gap-1">
                             {getCategoryIcon(item.category)}
                             <span className="capitalize">{item.category}</span>
                           </span>
                         </Badge>
                       </div>
-                      <p className="text-sm mt-1">{item.content}</p>
-                      <div className="flex items-center justify-between text-xs text-muted-foreground mt-2">
+                      <p className="text-sm mt-1 text-slate-700 leading-relaxed">{item.content}</p>
+                      <div className="flex items-center justify-between text-xs text-slate-500/80 mt-2">
                         <span>
                           {(() => {
                             console.log(`Date format for item ${item.id}:`, item.createdAt, typeof item.createdAt);
