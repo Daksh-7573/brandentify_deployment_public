@@ -5449,19 +5449,52 @@ ${extractedText.substring(0, 5000)}
     }
   });
 
-  // Pulse Reaction endpoints - Simplified for debugging
+  // Pulse Reaction endpoints - with quota tracking
   apiRouter.post("/pulse-reactions", async (req: Request, res: Response) => {
     console.log(`[POST /pulse-reactions] Route handler executing`);
     try {
       console.log(`[POST /pulse-reactions] Request body:`, req.body);
       
-      // Simple direct database insert to test basic functionality
       const { userId, pulseId, reactionType } = req.body;
       
       if (!userId || !pulseId || !reactionType) {
         return res.status(400).json({ message: "Missing required fields" });
       }
       
+      // Check quota first
+      const today = new Date().toISOString().split('T')[0];
+      const quotaResult = await pool.query(`
+        SELECT 
+          COALESCE(insightful_quota_used, 0) as insightful_used,
+          COALESCE(misinformed_quota_used, 0) as misinformed_used,
+          COALESCE(insightful_quota_max, 10) as insightful_max,
+          COALESCE(misinformed_quota_max, 10) as misinformed_max
+        FROM user_reaction_quotas 
+        WHERE user_id = $1 AND date = $2
+      `, [userId, today]);
+      
+      let currentUsed = 0;
+      let maxQuota = 10;
+      
+      if (quotaResult.rows.length > 0) {
+        const quota = quotaResult.rows[0];
+        currentUsed = reactionType === "insightful" ? quota.insightful_used : quota.misinformed_used;
+        maxQuota = reactionType === "insightful" ? quota.insightful_max : quota.misinformed_max;
+      }
+      
+      // Check if user has exceeded quota
+      if (currentUsed >= maxQuota) {
+        return res.status(429).json({ 
+          message: "Daily reaction quota exceeded",
+          quota: {
+            used: currentUsed,
+            remaining: 0,
+            max: maxQuota
+          }
+        });
+      }
+      
+      // Create the reaction
       const result = await pool.query(`
         INSERT INTO pulse_reactions (pulse_id, user_id, reaction_type)
         VALUES ($1, $2, $3)
@@ -5469,14 +5502,50 @@ ${extractedText.substring(0, 5000)}
                  reaction_type as "reactionType", created_at as "createdAt"
       `, [pulseId, userId, reactionType]);
       
-      console.log(`[POST /pulse-reactions] Direct insert result:`, result.rows[0]);
+      console.log(`[POST /pulse-reactions] Created reaction:`, result.rows[0]);
+      
+      // Update pulse count
+      const countField = reactionType === "insightful" ? "insightful_count" : "misinformed_count";
+      await pool.query(`
+        UPDATE pulses 
+        SET ${countField} = ${countField} + 1 
+        WHERE id = $1
+      `, [pulseId]);
+      
+      // Update or create quota record
+      if (quotaResult.rows.length > 0) {
+        const quotaField = reactionType === "insightful" ? "insightful_quota_used" : "misinformed_quota_used";
+        await pool.query(`
+          UPDATE user_reaction_quotas 
+          SET ${quotaField} = ${quotaField} + 1
+          WHERE user_id = $1 AND date = $2
+        `, [userId, today]);
+      } else {
+        const insightfulUsed = reactionType === "insightful" ? 1 : 0;
+        const misinformedUsed = reactionType === "misinformed" ? 1 : 0;
+        await pool.query(`
+          INSERT INTO user_reaction_quotas (user_id, date, insightful_quota_used, misinformed_quota_used)
+          VALUES ($1, $2, $3, $4)
+        `, [userId, today, insightfulUsed, misinformedUsed]);
+      }
+      
+      // Return updated quota info
+      const newUsed = currentUsed + 1;
+      const quotaData = {
+        used: newUsed,
+        remaining: maxQuota - newUsed,
+        max: maxQuota
+      };
+      
+      console.log(`[POST /pulse-reactions] Updated quota:`, quotaData);
       
       res.status(201).json({ 
         reaction: result.rows[0],
+        quota: quotaData,
         message: "Reaction created successfully"
       });
     } catch (error) {
-      console.error(`[POST /pulse-reactions] Direct error:`, error);
+      console.error(`[POST /pulse-reactions] Error:`, error);
       res.status(500).json({ message: "Internal server error", error: error instanceof Error ? error.message : String(error) });
     }
   });
