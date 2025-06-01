@@ -306,14 +306,14 @@ export default function NowboardPanel() {
             <div className="flex justify-center py-8">
               <Loader2 className="h-8 w-8 animate-spin text-white/70" />
             </div>
-          ) : nowboardItems.length === 0 ? (
+          ) : (nowboardItems as any[]).length === 0 ? (
             <div className="text-center py-8 text-white/60">
               <p>No professional updates yet.</p>
               <p className="text-sm mt-1">Be the first to share what you're working on!</p>
             </div>
           ) : (
             <div className="space-y-3">
-              {nowboardItems.map((item) => (
+              {(nowboardItems as any[]).map((item: any) => (
                 <div key={item.id} className="neo-glass-card rounded-lg p-4 hover:bg-white/5 transition-all duration-300">
                   <div className="flex items-start gap-3">
                     <Avatar className="h-8 w-8">
