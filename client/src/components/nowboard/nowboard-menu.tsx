@@ -92,7 +92,7 @@ export function NowboardMenu({ itemId, userId, currentUserId, onDeleted }: Nowbo
             variant="ghost" 
             className="h-8 w-8 p-0 hover:bg-white/10 focus:bg-white/10 data-[state=open]:bg-white/10"
           >
-            <MoreHorizontal className="h-4 w-4" />
+            <MoreHorizontal className="h-4 w-4 text-white" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent 
