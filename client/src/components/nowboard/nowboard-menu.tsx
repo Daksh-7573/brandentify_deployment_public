@@ -84,15 +84,18 @@ export function NowboardMenu({ itemId, userId, currentUserId, onDeleted }: Nowbo
     flagMutation.mutate();
   };
 
+  console.log('NowboardMenu rendering for item:', itemId, 'currentUser:', currentUserId, 'itemUser:', userId);
+  
   return (
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button 
             variant="ghost" 
-            className="h-8 w-8 p-0 hover:bg-white/10 focus:bg-white/10 data-[state=open]:bg-white/10"
+            className="h-8 w-8 p-0 hover:bg-white/10 focus:bg-white/10 data-[state=open]:bg-white/10 text-white opacity-70 hover:opacity-100"
+            style={{ color: 'white' }}
           >
-            <MoreHorizontal className="h-4 w-4" />
+            <MoreHorizontal className="h-4 w-4 text-white" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent 
