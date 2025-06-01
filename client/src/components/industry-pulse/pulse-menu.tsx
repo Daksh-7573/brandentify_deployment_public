@@ -129,18 +129,31 @@ export default function PulseMenu({ pulseId, currentUserId, pulseCreatorId }: Pu
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="h-8 w-8 p-0 text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+          >
             <MoreHorizontal className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
+        <DropdownMenuContent 
+          align="end"
+          className="glass-panel border-white/20 bg-black/40 backdrop-blur-md text-white min-w-[160px]"
+        >
           {isCreator ? (
-            <DropdownMenuItem onClick={() => setShowDeleteDialog(true)} className="text-red-600">
+            <DropdownMenuItem 
+              onClick={() => setShowDeleteDialog(true)} 
+              className="text-red-400 hover:text-red-300 hover:bg-red-500/20 focus:bg-red-500/20 focus:text-red-300 cursor-pointer"
+            >
               <Trash2 className="mr-2 h-4 w-4" />
               Delete Pulse
             </DropdownMenuItem>
           ) : (
-            <DropdownMenuItem onClick={() => setShowFlagDialog(true)}>
+            <DropdownMenuItem 
+              onClick={() => setShowFlagDialog(true)}
+              className="text-white/80 hover:text-white hover:bg-white/10 focus:bg-white/10 focus:text-white cursor-pointer"
+            >
               <Flag className="mr-2 h-4 w-4" />
               Flag Pulse
             </DropdownMenuItem>
@@ -150,18 +163,20 @@ export default function PulseMenu({ pulseId, currentUserId, pulseCreatorId }: Pu
 
       {/* Delete confirmation dialog */}
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent>
+        <AlertDialogContent className="glass-panel bg-black/40 backdrop-blur-md border-white/20 text-white">
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogTitle className="text-white">Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription className="text-white/70">
               This action cannot be undone. This will permanently delete your pulse and remove it from the platform.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel className="bg-white/10 border-white/20 text-white hover:bg-white/20 hover:text-white">
+              Cancel
+            </AlertDialogCancel>
             <AlertDialogAction 
               onClick={handleDelete} 
-              className="bg-red-600 hover:bg-red-700"
+              className="bg-red-600/80 hover:bg-red-600 border-red-500/50 text-white"
               disabled={deletePulseMutation.isPending}
             >
               {deletePulseMutation.isPending ? "Deleting..." : "Delete"}
@@ -172,46 +187,55 @@ export default function PulseMenu({ pulseId, currentUserId, pulseCreatorId }: Pu
 
       {/* Flag dialog */}
       <Dialog open={showFlagDialog} onOpenChange={setShowFlagDialog}>
-        <DialogContent>
+        <DialogContent className="glass-panel bg-black/40 backdrop-blur-md border-white/20 text-white">
           <DialogHeader>
-            <DialogTitle>Flag Pulse</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-white">Flag Pulse</DialogTitle>
+            <DialogDescription className="text-white/70">
               Help us understand why this content violates our community guidelines.
             </DialogDescription>
           </DialogHeader>
           
           <div className="space-y-4">
             <div>
-              <Label>Reason for flagging</Label>
+              <Label className="text-white">Reason for flagging</Label>
               <RadioGroup value={flagReason} onValueChange={setFlagReason} className="mt-2">
                 {flagReasons.map((reason) => (
                   <div key={reason.value} className="flex items-center space-x-2">
-                    <RadioGroupItem value={reason.value} id={reason.value} />
-                    <Label htmlFor={reason.value}>{reason.label}</Label>
+                    <RadioGroupItem 
+                      value={reason.value} 
+                      id={reason.value} 
+                      className="border-white/30 text-white data-[state=checked]:bg-white/20 data-[state=checked]:border-white"
+                    />
+                    <Label htmlFor={reason.value} className="text-white/80">{reason.label}</Label>
                   </div>
                 ))}
               </RadioGroup>
             </div>
             
             <div>
-              <Label htmlFor="description">Additional details (optional)</Label>
+              <Label htmlFor="description" className="text-white">Additional details (optional)</Label>
               <Textarea
                 id="description"
                 placeholder="Provide any additional context that might help us review this content..."
                 value={flagDescription}
                 onChange={(e) => setFlagDescription(e.target.value)}
-                className="mt-2"
+                className="mt-2 bg-white/10 border-white/20 text-white placeholder:text-white/50 focus:border-white/40"
               />
             </div>
           </div>
           
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowFlagDialog(false)}>
+            <Button 
+              variant="outline" 
+              onClick={() => setShowFlagDialog(false)}
+              className="bg-white/10 border-white/20 text-white hover:bg-white/20 hover:text-white"
+            >
               Cancel
             </Button>
             <Button 
               onClick={handleFlag} 
               disabled={!flagReason || flagPulseMutation.isPending}
+              className="bg-blue-600/80 hover:bg-blue-600 border-blue-500/50 text-white"
             >
               {flagPulseMutation.isPending ? "Submitting..." : "Submit Report"}
             </Button>
