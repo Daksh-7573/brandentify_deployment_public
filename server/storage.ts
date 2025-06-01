@@ -9416,5 +9416,20 @@ export const storage = {
   
   // Pulse methods
   getPulses: () => dbStorage.getPulses(),
-  createPulse: (pulse: InsertPulse) => dbStorage.createPulse(pulse)
+  createPulse: (pulse: InsertPulse) => dbStorage.createPulse(pulse),
+  
+  // Nowboard methods
+  getNowboardItems: () => dbStorage.getNowboardItems(),
+  getNowboardItemsByUserId: (userId: number) => dbStorage.getNowboardItemsByUserId(userId),
+  getNowboardItemById: (id: number) => dbStorage.getNowboardItemById(id),
+  getNowboardItemsByCategory: (category: any) => dbStorage.getNowboardItemsByCategory(category),
+  createNowboardItem: (item: InsertNowboardItem) => dbStorage.createNowboardItem(item),
+  updateNowboardItem: (id: number, item: Partial<NowboardItem>) => dbStorage.updateNowboardItem(id, item),
+  deleteNowboardItem: (id: number) => dbStorage.deleteNowboardItem(id),
+  getInspiredByForNowboardItem: (itemId: number) => dbStorage.getInspiredByForNowboardItem(itemId),
+  markInspiredByNowboardItem: (userId: number, itemId: number) => dbStorage.markInspiredByNowboardItem(userId, itemId),
+  unmarkInspiredByNowboardItem: (userId: number, itemId: number) => dbStorage.unmarkInspiredByNowboardItem(userId, itemId),
+  isNowboardItemInspiredByUser: (userId: number, itemId: number) => dbStorage.isNowboardItemInspiredByUser(userId, itemId),
+  getInspiredByForUserAndItem: (userId: number, itemId: number) => dbStorage.getInspiredByForUserAndItem(userId, itemId),
+  getUserInspiredCount: (userId: number) => dbStorage.getUserInspiredCount(userId)
 } as IStorage;
