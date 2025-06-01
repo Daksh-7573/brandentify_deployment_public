@@ -157,6 +157,14 @@ import {
   // capsuleTasks, CapsuleTask, InsertCapsuleTask,
   // capsuleJournals, CapsuleJournal, InsertCapsuleJournal
 } from "@shared/schema";
+import type { 
+  FlaggedItem, 
+  InsertFlaggedItem, 
+  ItemView, 
+  InsertItemView, 
+  UserRestriction, 
+  InsertUserRestriction 
+} from "@shared/schema";
 
 // Import Musk suggestion models
 import { 
@@ -9323,6 +9331,305 @@ export class DatabaseStorage implements IStorage {
       console.error(`[db.updateCapsuleProgress] Error updating progress for career capsule with ID ${id}:`, error);
       throw error;
     }
+  }
+
+  // Auto-deletion system implementation
+  
+  async getFlaggedItems(): Promise<FlaggedItem[]> {
+    const result = await this.db.query(`
+      SELECT * FROM flagged_items 
+      ORDER BY created_at DESC
+    `);
+    return result.rows;
+  }
+
+  async getFlaggedItemsByType(itemType: string): Promise<FlaggedItem[]> {
+    const result = await this.db.query(`
+      SELECT * FROM flagged_items 
+      WHERE item_type = $1 
+      ORDER BY created_at DESC
+    `, [itemType]);
+    return result.rows;
+  }
+
+  async getFlaggedItemsByItemId(itemType: string, itemId: number): Promise<FlaggedItem[]> {
+    const result = await this.db.query(`
+      SELECT * FROM flagged_items 
+      WHERE item_type = $1 AND item_id = $2 
+      ORDER BY created_at DESC
+    `, [itemType, itemId]);
+    return result.rows;
+  }
+
+  async createFlaggedItem(flaggedItem: InsertFlaggedItem): Promise<FlaggedItem> {
+    const result = await this.db.query(`
+      INSERT INTO flagged_items (item_type, item_id, flagged_by_user_id, reason)
+      VALUES ($1, $2, $3, $4)
+      RETURNING *
+    `, [flaggedItem.itemType, flaggedItem.itemId, flaggedItem.flaggedByUserId, flaggedItem.reason]);
+    
+    // After creating the flag, check if auto-deletion is triggered
+    const autoDeleteCheck = await this.checkAutoDeleteConditions(flaggedItem.itemType, flaggedItem.itemId);
+    if (autoDeleteCheck.shouldDelete) {
+      await this.executeAutoDelete(flaggedItem.itemType, flaggedItem.itemId, autoDeleteCheck.reason);
+    }
+    
+    return result.rows[0];
+  }
+
+  async markFlaggedItemAsAutoDeleted(id: number): Promise<FlaggedItem | undefined> {
+    const result = await this.db.query(`
+      UPDATE flagged_items 
+      SET auto_deleted = true 
+      WHERE id = $1 
+      RETURNING *
+    `, [id]);
+    return result.rows[0];
+  }
+
+  async getItemViewsByItemId(itemType: string, itemId: number): Promise<ItemView[]> {
+    const result = await this.db.query(`
+      SELECT * FROM item_views 
+      WHERE item_type = $1 AND item_id = $2 
+      ORDER BY viewed_at DESC
+    `, [itemType, itemId]);
+    return result.rows;
+  }
+
+  async getUniqueViewCountForItem(itemType: string, itemId: number): Promise<number> {
+    const result = await this.db.query(`
+      SELECT COUNT(DISTINCT user_id) as count 
+      FROM item_views 
+      WHERE item_type = $1 AND item_id = $2
+    `, [itemType, itemId]);
+    return parseInt(result.rows[0].count) || 0;
+  }
+
+  async createItemView(itemView: InsertItemView): Promise<ItemView> {
+    // Check if user has already viewed this item
+    const existingView = await this.hasUserViewedItem(itemView.userId, itemView.itemType, itemView.itemId);
+    if (existingView) {
+      // Return existing view instead of creating duplicate
+      const result = await this.db.query(`
+        SELECT * FROM item_views 
+        WHERE user_id = $1 AND item_type = $2 AND item_id = $3 
+        LIMIT 1
+      `, [itemView.userId, itemView.itemType, itemView.itemId]);
+      return result.rows[0];
+    }
+
+    const result = await this.db.query(`
+      INSERT INTO item_views (item_type, item_id, user_id)
+      VALUES ($1, $2, $3)
+      RETURNING *
+    `, [itemView.itemType, itemView.itemId, itemView.userId]);
+    return result.rows[0];
+  }
+
+  async hasUserViewedItem(userId: number, itemType: string, itemId: number): Promise<boolean> {
+    const result = await this.db.query(`
+      SELECT 1 FROM item_views 
+      WHERE user_id = $1 AND item_type = $2 AND item_id = $3 
+      LIMIT 1
+    `, [userId, itemType, itemId]);
+    return result.rows.length > 0;
+  }
+
+  async getUserRestrictions(userId: number): Promise<UserRestriction[]> {
+    const result = await this.db.query(`
+      SELECT * FROM user_restrictions 
+      WHERE user_id = $1 
+      ORDER BY start_time DESC
+    `, [userId]);
+    return result.rows;
+  }
+
+  async getActiveUserRestrictions(userId: number): Promise<UserRestriction[]> {
+    const result = await this.db.query(`
+      SELECT * FROM user_restrictions 
+      WHERE user_id = $1 AND is_active = true 
+      AND (end_time IS NULL OR end_time > NOW())
+      ORDER BY start_time DESC
+    `, [userId]);
+    return result.rows;
+  }
+
+  async createUserRestriction(restriction: InsertUserRestriction): Promise<UserRestriction> {
+    const result = await this.db.query(`
+      INSERT INTO user_restrictions (user_id, restriction_type, end_time, reason)
+      VALUES ($1, $2, $3, $4)
+      RETURNING *
+    `, [restriction.userId, restriction.restrictionType, restriction.endTime, restriction.reason]);
+    return result.rows[0];
+  }
+
+  async deactivateUserRestriction(id: number): Promise<UserRestriction | undefined> {
+    const result = await this.db.query(`
+      UPDATE user_restrictions 
+      SET is_active = false 
+      WHERE id = $1 
+      RETURNING *
+    `, [id]);
+    return result.rows[0];
+  }
+
+  async getUserDeletionsToday(userId: number): Promise<number> {
+    const result = await this.db.query(`
+      SELECT COUNT(*) as count FROM flagged_items 
+      WHERE flagged_by_user_id = $1 
+      AND auto_deleted = true 
+      AND created_at >= CURRENT_DATE
+    `, [userId]);
+    return parseInt(result.rows[0].count) || 0;
+  }
+
+  async checkAutoDeleteConditions(itemType: string, itemId: number): Promise<{
+    shouldDelete: boolean;
+    reason: string;
+    flagCount?: number;
+    viewCount?: number;
+    flagToViewRatio?: number;
+  }> {
+    // Get flag data
+    const flagResult = await this.db.query(`
+      SELECT 
+        COUNT(DISTINCT flagged_by_user_id) as unique_flags,
+        COUNT(*) as total_flags,
+        MIN(created_at) as first_flag
+      FROM flagged_items 
+      WHERE item_type = $1 AND item_id = $2
+    `, [itemType, itemId]);
+
+    const flagData = flagResult.rows[0];
+    const uniqueFlags = parseInt(flagData.unique_flags) || 0;
+    const totalFlags = parseInt(flagData.total_flags) || 0;
+    const firstFlag = flagData.first_flag;
+
+    // Get view count
+    const viewCount = await this.getUniqueViewCountForItem(itemType, itemId);
+
+    // Check conditions for auto-deletion
+    
+    // 1. 6+ flags from unique users within 1 hour
+    if (uniqueFlags >= 6 && firstFlag) {
+      const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+      const recentFlagsResult = await this.db.query(`
+        SELECT COUNT(DISTINCT flagged_by_user_id) as recent_flags
+        FROM flagged_items 
+        WHERE item_type = $1 AND item_id = $2 AND created_at >= $3
+      `, [itemType, itemId, oneHourAgo]);
+      
+      const recentFlags = parseInt(recentFlagsResult.rows[0].recent_flags) || 0;
+      if (recentFlags >= 6) {
+        return {
+          shouldDelete: true,
+          reason: `6+ flags from unique users within 1 hour (${recentFlags} flags)`,
+          flagCount: recentFlags,
+          viewCount
+        };
+      }
+    }
+
+    // 2. 10+ total flags from unique users over any time
+    if (uniqueFlags >= 10) {
+      return {
+        shouldDelete: true,
+        reason: `10+ total flags from unique users (${uniqueFlags} flags)`,
+        flagCount: uniqueFlags,
+        viewCount
+      };
+    }
+
+    // 3. Flag-to-View Ratio > 70%
+    if (viewCount > 0) {
+      const flagToViewRatio = (uniqueFlags / viewCount) * 100;
+      if (flagToViewRatio > 70) {
+        return {
+          shouldDelete: true,
+          reason: `Flag-to-View ratio exceeds 70% (${flagToViewRatio.toFixed(1)}%)`,
+          flagCount: uniqueFlags,
+          viewCount,
+          flagToViewRatio
+        };
+      }
+    }
+
+    return {
+      shouldDelete: false,
+      reason: 'No auto-deletion conditions met',
+      flagCount: uniqueFlags,
+      viewCount
+    };
+  }
+
+  async executeAutoDelete(itemType: string, itemId: number, reason: string): Promise<boolean> {
+    try {
+      // Mark all flags for this item as auto-deleted
+      await this.db.query(`
+        UPDATE flagged_items 
+        SET auto_deleted = true 
+        WHERE item_type = $1 AND item_id = $2
+      `, [itemType, itemId]);
+
+      // Delete the actual item
+      let deleted = false;
+      if (itemType === 'pulse') {
+        deleted = await this.deletePulse(itemId);
+      } else if (itemType === 'nowboard') {
+        deleted = await this.deleteNowboardItem(itemId);
+      }
+
+      // Check for user posting restrictions
+      if (deleted) {
+        const itemResult = await this.db.query(`
+          SELECT user_id FROM ${itemType === 'pulse' ? 'pulses' : 'nowboard_items'} 
+          WHERE id = $1
+        `, [itemId]);
+        
+        if (itemResult.rows[0]) {
+          const userId = itemResult.rows[0].user_id;
+          const deletionsToday = await this.getUserDeletionsToday(userId);
+          
+          // If user has 3+ deletions today, apply temporary posting block
+          if (deletionsToday >= 3) {
+            const endTime = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+            await this.createUserRestriction({
+              userId,
+              restrictionType: 'posting_block',
+              endTime,
+              reason: `Temporary posting block: 3+ auto-deletions in one day`
+            });
+          }
+        }
+      }
+
+      console.log(`[AutoDelete] ${itemType} ${itemId} auto-deleted: ${reason}`);
+      return deleted;
+    } catch (error) {
+      console.error(`[AutoDelete] Error executing auto-delete for ${itemType} ${itemId}:`, error);
+      return false;
+    }
+  }
+
+  async checkUserPostingRestrictions(userId: number): Promise<{
+    isRestricted: boolean;
+    restrictionType?: string;
+    endTime?: Date;
+    reason?: string;
+  }> {
+    const restrictions = await this.getActiveUserRestrictions(userId);
+    
+    if (restrictions.length > 0) {
+      const restriction = restrictions[0]; // Get the most recent active restriction
+      return {
+        isRestricted: true,
+        restrictionType: restriction.restrictionType,
+        endTime: restriction.endTime,
+        reason: restriction.reason
+      };
+    }
+
+    return { isRestricted: false };
   }
 }
 
