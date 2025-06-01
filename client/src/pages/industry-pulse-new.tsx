@@ -48,6 +48,7 @@ import {
   DialogTrigger
 } from "@/components/ui/dialog";
 import NowboardPanelSimple from "@/components/nowboard/nowboard-panel-simple";
+import PulseMenu from "@/components/industry-pulse/pulse-menu";
 import {
   Tooltip,
   TooltipContent,
