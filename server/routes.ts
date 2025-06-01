@@ -5449,86 +5449,35 @@ ${extractedText.substring(0, 5000)}
     }
   });
 
-  // Pulse Reaction endpoints
+  // Pulse Reaction endpoints - Simplified for debugging
   apiRouter.post("/pulse-reactions", async (req: Request, res: Response) => {
-    console.log(`[POST /pulse-reactions] Route handler started, req.body:`, req.body);
+    console.log(`[POST /pulse-reactions] Route handler executing`);
     try {
-      console.log(`[POST /pulse-reactions] Creating reaction with data:`, req.body);
+      console.log(`[POST /pulse-reactions] Request body:`, req.body);
       
-      // Validate the request body
-      const reactionData = insertPulseReactionSchema.parse(req.body);
-      console.log(`[POST /pulse-reactions] Validated reaction data:`, reactionData);
+      // Simple direct database insert to test basic functionality
+      const { userId, pulseId, reactionType } = req.body;
       
-      // Check if user has remaining quota
-      console.log(`[POST /pulse-reactions] Checking quota for user ${reactionData.userId}, reaction type: ${reactionData.reactionType}`);
-      const quotaCheck = await storage.checkReactionQuota(
-        reactionData.userId, 
-        reactionData.reactionType as "insightful" | "misinformed"
-      );
-      console.log(`[POST /pulse-reactions] Quota check result:`, quotaCheck);
-      
-      if (!quotaCheck.hasQuotaRemaining) {
-        return res.status(429).json({ 
-          message: `You've reached your daily limit of ${quotaCheck.max} ${reactionData.reactionType} reactions`,
-          quota: quotaCheck
-        });
+      if (!userId || !pulseId || !reactionType) {
+        return res.status(400).json({ message: "Missing required fields" });
       }
       
-      // Check if the user has already reacted to this pulse with this reaction type
-      console.log(`[POST /pulse-reactions] Checking for existing reaction...`);
-      const existingReaction = await storage.getPulseReactionByUserAndPulse(
-        reactionData.userId,
-        reactionData.pulseId,
-        reactionData.reactionType as "insightful" | "misinformed"
-      );
-      console.log(`[POST /pulse-reactions] Existing reaction check:`, existingReaction ? 'Found existing' : 'No existing reaction');
+      const result = await pool.query(`
+        INSERT INTO pulse_reactions (pulse_id, user_id, reaction_type)
+        VALUES ($1, $2, $3)
+        RETURNING id, pulse_id as "pulseId", user_id as "userId", 
+                 reaction_type as "reactionType", created_at as "createdAt"
+      `, [pulseId, userId, reactionType]);
       
-      if (existingReaction) {
-        return res.status(409).json({ 
-          message: "You've already reacted to this pulse with this reaction type", 
-          existingReaction 
-        });
-      }
+      console.log(`[POST /pulse-reactions] Direct insert result:`, result.rows[0]);
       
-      // Create the reaction
-      console.log(`[POST /pulse-reactions] Creating new reaction...`);
-      const reaction = await storage.createPulseReaction(reactionData as InsertPulseReaction);
-      console.log(`[POST /pulse-reactions] Created reaction:`, reaction);
-      
-      // Increment the user's quota usage
-      console.log(`[POST /pulse-reactions] Incrementing quota...`);
-      await storage.incrementReactionQuota(
-        reactionData.userId,
-        reactionData.reactionType as "insightful" | "misinformed"
-      );
-      
-      // Get updated quota status
-      const updatedQuota = await storage.getUserReactionQuota(reactionData.userId);
-      
-      console.log(`[POST /pulse-reactions] Created reaction with ID: ${reaction.id}`);
       res.status(201).json({ 
-        reaction,
-        quota: {
-          used: reactionData.reactionType === "insightful" 
-            ? updatedQuota?.insightfulQuotaUsed || 0 
-            : updatedQuota?.misinformedQuotaUsed || 0,
-          remaining: reactionData.reactionType === "insightful"
-            ? (updatedQuota?.insightfulQuotaMax || 10) - (updatedQuota?.insightfulQuotaUsed || 0)
-            : (updatedQuota?.misinformedQuotaMax || 10) - (updatedQuota?.misinformedQuotaUsed || 0),
-          max: reactionData.reactionType === "insightful"
-            ? updatedQuota?.insightfulQuotaMax || 10
-            : updatedQuota?.misinformedQuotaMax || 10
-        }
+        reaction: result.rows[0],
+        message: "Reaction created successfully"
       });
     } catch (error) {
-      if (error instanceof z.ZodError) {
-        console.error(`[POST /pulse-reactions] Validation error:`, error.errors);
-        res.status(400).json({ message: error.errors });
-      } else {
-        console.error(`[POST /pulse-reactions] Server error:`, error);
-        console.error(`[POST /pulse-reactions] Error stack:`, error instanceof Error ? error.stack : 'No stack trace');
-        res.status(500).json({ message: "Internal server error" });
-      }
+      console.error(`[POST /pulse-reactions] Direct error:`, error);
+      res.status(500).json({ message: "Internal server error", error: error instanceof Error ? error.message : String(error) });
     }
   });
   
