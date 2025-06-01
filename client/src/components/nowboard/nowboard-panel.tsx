@@ -119,65 +119,18 @@ export default function NowboardPanel() {
   const [selectedCategory, setSelectedCategory] = useState<"growth" | "learning" | "launch" | "planning" | "collaboration" | "visibility">("learning");
   const [categoryFilter, setCategoryFilter] = useState<string | undefined>(undefined);
   
-  // Use the useFeedAlgorithm hook from feed-algorithm.ts
+  // Fetch nowboard items using useQuery
   const { 
-    items: nowboardItems, 
+    data: nowboardItems = [], 
     isLoading 
-  } = useFeedAlgorithm<NowboardItem>({
-    queryKey: ["/api/nowboard-items"],
-    filters: categoryFilter ? { category: categoryFilter } : undefined,
-    refreshInterval: 30000, // Refresh every 30 seconds (less frequent to avoid flickering)
-    fetchUserData: async (items) => {
-      // Use a Map to avoid duplicate user fetches
-      const uniqueUserIds = new Map<number, boolean>();
-      
-      // Find all items that need user data
-      for (const item of items) {
-        if (!item.user && !uniqueUserIds.has(item.userId)) {
-          uniqueUserIds.set(item.userId, true);
-        }
-      }
-      
-      // Fetch user data for all unique userIds in parallel (much faster)
-      const userDataPromises = Array.from(uniqueUserIds.keys()).map(async (userId) => {
-        try {
-          const response = await fetch(`/api/users/${userId}`);
-          if (response.ok) {
-            const userData = await response.json();
-            return { 
-              userId, 
-              userData: {
-                name: userData.name,
-                photoURL: userData.photoURL
-              }
-            };
-          }
-        } catch (error) {
-          console.error("Error fetching user data for nowboard item:", error);
-        }
-        return { userId, userData: null };
-      });
-      
-      // Wait for all user data to be fetched
-      const usersData = await Promise.all(userDataPromises);
-      
-      // Create a map of userId -> userData for faster lookup
-      const userDataMap = new Map<number, { name: string | null, photoURL: string | null }>();
-      usersData.forEach(data => {
-        if (data.userData) {
-          userDataMap.set(data.userId, data.userData);
-        }
-      });
-      
-      // Apply user data to all items
-      for (const item of items) {
-        if (!item.user) {
-          const userData = userDataMap.get(item.userId);
-          if (userData) {
-            item.user = userData;
-          }
-        }
-      }
+  } = useQuery<NowboardItem[]>({
+    queryKey: ["/api/nowboard-items", categoryFilter],
+    enabled: true,
+    select: (data: any[]) => {
+      return data.map(item => ({
+        ...item,
+        user: { name: "User", photoURL: null } // Default user data
+      }));
     }
   });
   
