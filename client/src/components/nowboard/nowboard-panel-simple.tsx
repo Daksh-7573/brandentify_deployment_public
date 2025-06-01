@@ -36,19 +36,7 @@ function InspiredButton({
   const [isInspired, setIsInspired] = useState(false);
   const [count, setCount] = useState(currentCount);
 
-  // Check if user has already inspired this item
-  const { data: userInspiredStatus } = useQuery({
-    queryKey: [`/api/nowboard-items/${itemId}/inspired-by/user/${userId}`],
-    enabled: !!userId && !!itemId,
-    staleTime: 30000, // Cache for 30 seconds
-  });
 
-  // Update inspired state when data loads
-  useState(() => {
-    if (userInspiredStatus !== undefined) {
-      setIsInspired(!!userInspiredStatus);
-    }
-  });
 
   // Toggle inspired status
   const toggleInspired = useMutation({
