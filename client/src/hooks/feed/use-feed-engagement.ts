@@ -140,15 +140,40 @@ export function useFeedEngagement({
       }
     },
     onSuccess: () => {
-      // Invalidate relevant queries
-      queryClient.invalidateQueries({ queryKey: [`/api/${apiEndpoint}/${itemId}/reactions`] });
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/reaction-quota`] });
-      queryClient.invalidateQueries({ queryKey: [`/api/${apiEndpoint}`] });
-      
-      // If this is an inspired action, also invalidate the user's total inspired count
-      if (engagementType === "inspired") {
-        queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/inspired-count`] });
-        queryClient.invalidateQueries({ queryKey: [`/api/${apiEndpoint}/${itemId}/inspired-by/user/${userId}`] });
+      // For pulse reactions, invalidate reaction-specific queries but not the main feed
+      if (engagementType === "insightful" || engagementType === "misinformed") {
+        queryClient.invalidateQueries({ queryKey: [`/api/${apiEndpoint}/${itemId}/reactions`] });
+        queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/reaction-quota`] });
+        queryClient.invalidateQueries({ queryKey: [`/api/${apiEndpoint}/${itemId}/reactions/user/${userId}`] });
+        
+        // Update pulse count optimistically instead of refetching entire feed
+        const queryKey = [`/api/${apiEndpoint}`];
+        const previousData = queryClient.getQueryData<any[]>(queryKey);
+        
+        if (previousData) {
+          const updatedData = previousData.map(item => {
+            if (item.id === itemId) {
+              const countField = engagementType === "insightful" ? "insightfulCount" : "misinformedCount";
+              return {
+                ...item,
+                [countField]: (item[countField] || 0) + 1
+              };
+            }
+            return item;
+          });
+          queryClient.setQueryData(queryKey, updatedData);
+        }
+      } else {
+        // For other engagement types, invalidate as before
+        queryClient.invalidateQueries({ queryKey: [`/api/${apiEndpoint}/${itemId}/reactions`] });
+        queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/reaction-quota`] });
+        queryClient.invalidateQueries({ queryKey: [`/api/${apiEndpoint}`] });
+        
+        // If this is an inspired action, also invalidate the user's total inspired count
+        if (engagementType === "inspired") {
+          queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/inspired-count`] });
+          queryClient.invalidateQueries({ queryKey: [`/api/${apiEndpoint}/${itemId}/inspired-by/user/${userId}`] });
+        }
       }
       
       // Show success toast
@@ -227,10 +252,35 @@ export function useFeedEngagement({
       const res = await apiRequest("DELETE", endpoint);
       return res.ok;
     },
-    onSuccess: () => {
-      // Invalidate relevant queries
-      queryClient.invalidateQueries({ queryKey: [`/api/${apiEndpoint}/${itemId}/reactions`] });
-      queryClient.invalidateQueries({ queryKey: [`/api/${apiEndpoint}`] });
+    onSuccess: (data) => {
+      // For pulse reactions, handle quota restoration and optimistic updates
+      if (engagementType === "insightful" || engagementType === "misinformed") {
+        queryClient.invalidateQueries({ queryKey: [`/api/${apiEndpoint}/${itemId}/reactions`] });
+        queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}/reaction-quota`] });
+        queryClient.invalidateQueries({ queryKey: [`/api/${apiEndpoint}/${itemId}/reactions/user/${userId}`] });
+        
+        // Update pulse count optimistically instead of refetching entire feed
+        const queryKey = [`/api/${apiEndpoint}`];
+        const previousData = queryClient.getQueryData<any[]>(queryKey);
+        
+        if (previousData) {
+          const updatedData = previousData.map(item => {
+            if (item.id === itemId) {
+              const countField = engagementType === "insightful" ? "insightfulCount" : "misinformedCount";
+              return {
+                ...item,
+                [countField]: Math.max(0, (item[countField] || 0) - 1)
+              };
+            }
+            return item;
+          });
+          queryClient.setQueryData(queryKey, updatedData);
+        }
+      } else {
+        // For other engagement types, invalidate as before
+        queryClient.invalidateQueries({ queryKey: [`/api/${apiEndpoint}/${itemId}/reactions`] });
+        queryClient.invalidateQueries({ queryKey: [`/api/${apiEndpoint}`] });
+      }
       
       toast({
         title: `${engagementType} removed`,

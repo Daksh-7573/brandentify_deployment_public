@@ -5560,7 +5560,7 @@ ${extractedText.substring(0, 5000)}
         return res.status(400).json({ message: "Invalid reaction ID format" });
       }
       
-      // Simple delete without quota restoration for now - just to test basic functionality
+      // Delete reaction and get details for quota restoration
       const deleteResult = await pool.query(`
         DELETE FROM pulse_reactions WHERE id = $1 RETURNING pulse_id, user_id, reaction_type
       `, [reactionId]);
@@ -5581,10 +5581,50 @@ ${extractedText.substring(0, 5000)}
         WHERE id = $1
       `, [pulse_id]);
       
-      console.log(`[DELETE /pulse-reactions/:id] Successfully deleted reaction and updated pulse count`);
+      // Restore quota - decrease the used count
+      const today = new Date().toISOString().split('T')[0];
+      const quotaField = reaction_type === "insightful" ? "insightful_quota_used" : "misinformed_quota_used";
+      
+      await pool.query(`
+        UPDATE user_reaction_quotas 
+        SET ${quotaField} = GREATEST(0, ${quotaField} - 1)
+        WHERE user_id = $1 AND date = $2
+      `, [user_id, today]);
+      
+      // Get updated quota info to return
+      const quotaResult = await pool.query(`
+        SELECT 
+          COALESCE(insightful_quota_used, 0) as insightful_used,
+          COALESCE(misinformed_quota_used, 0) as misinformed_used,
+          COALESCE(insightful_quota_max, 10) as insightful_max,
+          COALESCE(misinformed_quota_max, 10) as misinformed_max
+        FROM user_reaction_quotas 
+        WHERE user_id = $1 AND date = $2
+      `, [user_id, today]);
+      
+      let quotaData = {
+        used: 0,
+        remaining: 10,
+        max: 10
+      };
+      
+      if (quotaResult.rows.length > 0) {
+        const quota = quotaResult.rows[0];
+        const currentUsed = reaction_type === "insightful" ? quota.insightful_used : quota.misinformed_used;
+        const maxQuota = reaction_type === "insightful" ? quota.insightful_max : quota.misinformed_max;
+        
+        quotaData = {
+          used: currentUsed,
+          remaining: maxQuota - currentUsed,
+          max: maxQuota
+        };
+      }
+      
+      console.log(`[DELETE /pulse-reactions/:id] Successfully deleted reaction, updated counts, and restored quota:`, quotaData);
       
       res.status(200).json({ 
-        message: "Reaction deleted successfully"
+        message: "Reaction deleted successfully",
+        quota: quotaData
       });
     } catch (error) {
       console.error(`[DELETE /pulse-reactions/:id] Error:`, error);
@@ -5618,6 +5658,32 @@ ${extractedText.substring(0, 5000)}
       res.json(reactions);
     } catch (error) {
       console.error(`[GET /pulses/:pulseId/reactions] Error:`, error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // Get user's specific reaction for a pulse (for checking active state)
+  apiRouter.get("/pulses/:pulseId/reactions/user/:userId", async (req: Request, res: Response) => {
+    try {
+      const pulseId = parseInt(req.params.pulseId);
+      const userId = parseInt(req.params.userId);
+      
+      if (isNaN(pulseId) || isNaN(userId)) {
+        return res.status(400).json({ message: "Invalid pulse ID or user ID format" });
+      }
+      
+      const result = await pool.query(`
+        SELECT id, pulse_id as "pulseId", user_id as "userId", 
+               reaction_type as "reactionType", created_at as "createdAt"
+        FROM pulse_reactions 
+        WHERE pulse_id = $1 AND user_id = $2
+        LIMIT 1
+      `, [pulseId, userId]);
+      
+      // Return the reaction or null if none exists
+      res.json(result.rows[0] || null);
+    } catch (error) {
+      console.error(`[GET /pulses/:pulseId/reactions/user/:userId] Error:`, error);
       res.status(500).json({ message: "Internal server error", error: error instanceof Error ? error.message : String(error) });
     }
   });
