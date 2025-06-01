@@ -123,10 +123,11 @@ export default function NowboardPanel() {
   const { 
     data: nowboardItems = [], 
     isLoading 
-  } = useQuery<NowboardItem[]>({
+  } = useQuery({
     queryKey: ["/api/nowboard-items", categoryFilter],
     enabled: true,
     select: (data: any[]) => {
+      console.log("Raw nowboard data:", data);
       return data.map(item => ({
         ...item,
         user: { name: "User", photoURL: null } // Default user data
