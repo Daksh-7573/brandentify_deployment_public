@@ -1,5 +1,4 @@
-import { pool } from './db';
-import { sql } from 'drizzle-orm';
+// Imports moved to bottom to avoid conflicts
 
 // Career Capsule interface
 export interface CareerCapsule {
