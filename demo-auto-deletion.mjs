@@ -3,7 +3,7 @@
  * Shows how the democratic content moderation works
  */
 
-const BASE_URL = 'http://localhost:3000/api';
+const BASE_URL = 'https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api';
 
 async function makeRequest(endpoint, options = {}) {
   try {
