@@ -2684,8 +2684,24 @@ export class MemStorage implements IStorage {
   
   // Pulse Reaction operations
   async getPulseReactionsByPulseId(pulseId: number): Promise<PulseReaction[]> {
-    return Array.from(this.pulseReactions.values())
-      .filter(reaction => reaction.pulseId === pulseId);
+    try {
+      console.log(`[db.getPulseReactionsByPulseId] Fetching reactions for pulse: ${pulseId}`);
+      
+      const result = await pool.query(`
+        SELECT 
+          id, pulse_id as "pulseId", user_id as "userId", 
+          reaction_type as "reactionType", created_at as "createdAt"
+        FROM pulse_reactions 
+        WHERE pulse_id = $1
+        ORDER BY created_at DESC
+      `, [pulseId]);
+      
+      console.log(`[db.getPulseReactionsByPulseId] Found ${result.rows.length} reactions`);
+      return result.rows;
+    } catch (error) {
+      console.error('[db.getPulseReactionsByPulseId] Error fetching pulse reactions:', error);
+      throw error;
+    }
   }
   
   async getPulseReactionById(id: number): Promise<PulseReaction | undefined> {
@@ -7104,27 +7120,7 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  // Pulse Reaction Database Methods
-  async getPulseReactions(pulseId: number): Promise<PulseReaction[]> {
-    try {
-      console.log(`[db.getPulseReactions] Fetching reactions for pulse: ${pulseId}`);
-      
-      const result = await pool.query(`
-        SELECT 
-          id, pulse_id as "pulseId", user_id as "userId", 
-          reaction_type as "reactionType", created_at as "createdAt"
-        FROM pulse_reactions 
-        WHERE pulse_id = $1
-        ORDER BY created_at DESC
-      `, [pulseId]);
-      
-      console.log(`[db.getPulseReactions] Found ${result.rows.length} reactions`);
-      return result.rows;
-    } catch (error) {
-      console.error('[db.getPulseReactions] Error fetching pulse reactions:', error);
-      throw error;
-    }
-  }
+
 
   async getPulseReactionByUserAndPulse(userId: number, pulseId: number, reactionType: "insightful" | "misinformed"): Promise<PulseReaction | undefined> {
     try {

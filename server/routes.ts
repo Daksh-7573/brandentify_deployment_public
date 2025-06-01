@@ -5567,7 +5567,7 @@ ${extractedText.substring(0, 5000)}
         return res.status(400).json({ message: "Invalid pulse ID format" });
       }
       
-      const reactions = await storage.getPulseReactions(pulseId);
+      const reactions = await storage.getPulseReactionsByPulseId(pulseId);
       
       res.json(reactions);
     } catch (error) {
