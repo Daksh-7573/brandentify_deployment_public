@@ -111,17 +111,17 @@ function InspiredButton({
     <button
       onClick={() => toggleInspired.mutate()}
       disabled={toggleInspired.isPending}
-      className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs transition-colors ${
+      className={`flex items-center gap-1.5 px-2 py-1 rounded-lg text-sm transition-colors hover:bg-white/10 ${
         isInspired 
-          ? 'bg-red-500/20 text-red-400 border border-red-400/30' 
-          : 'bg-white/5 text-white/60 border border-white/20 hover:bg-white/10 hover:text-white/80'
+          ? 'text-yellow-400' 
+          : 'text-white/60 hover:text-white/80'
       }`}
     >
       <LightbulbBrainIcon 
-        className="h-3 w-3" 
+        className="h-4 w-4" 
         filled={isInspired}
       />
-      <span>{count}</span>
+      <span className="font-medium">{count}</span>
     </button>
   );
 }
