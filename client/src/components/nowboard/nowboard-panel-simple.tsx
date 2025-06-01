@@ -2,6 +2,36 @@ import { useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2, Heart } from "lucide-react";
+
+// Custom Brain-Lightbulb Icon Component
+function BrainLightbulbIcon({ className = "h-4 w-4", filled = false }: { className?: string; filled?: boolean }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className={className}
+      fill={filled ? "currentColor" : "none"}
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      {/* Lightbulb outline */}
+      <path d="M9 18h6M10 22h4M8 12a4 4 0 1 1 8 0c0 2-1 3-2 4H10c-1-1-2-2-2-4z" />
+      
+      {/* Brain pattern inside the bulb */}
+      <path 
+        d="M10 8c.5-.5 1-1 2-1s1.5.5 2 1M10.5 10c.3-.3.7-.5 1.5-.5s1.2.2 1.5.5M11 12c.2-.2.5-.3 1-.3s.8.1 1 .3" 
+        strokeWidth="1"
+        opacity={filled ? "0.8" : "0.6"}
+      />
+      
+      {/* Additional brain details */}
+      <circle cx="10.5" cy="9" r="0.5" fill="currentColor" opacity={filled ? "0.9" : "0.5"} />
+      <circle cx="13.5" cy="9" r="0.5" fill="currentColor" opacity={filled ? "0.9" : "0.5"} />
+      <circle cx="12" cy="11" r="0.5" fill="currentColor" opacity={filled ? "0.9" : "0.5"} />
+    </svg>
+  );
+}
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -76,12 +106,13 @@ function InspiredButton({
       disabled={toggleInspired.isPending}
       className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs transition-colors ${
         isInspired 
-          ? 'bg-red-500/20 text-red-400 border border-red-400/30' 
+          ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-400/30' 
           : 'bg-white/5 text-white/60 border border-white/20 hover:bg-white/10 hover:text-white/80'
       }`}
     >
-      <Heart 
-        className={`h-3 w-3 ${isInspired ? 'fill-current' : ''}`} 
+      <BrainLightbulbIcon 
+        className="h-3 w-3" 
+        filled={isInspired}
       />
       <span>{count}</span>
     </button>
