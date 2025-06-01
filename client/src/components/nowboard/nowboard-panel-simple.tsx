@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAuth } from "@/context/auth-context";
 import { NeoGlassSection } from "@/components/layout/neo-glass-layout";
+import { NowboardMenu } from "./nowboard-menu";
 
 interface NowboardItem {
   id: number;
@@ -299,6 +300,13 @@ export default function NowboardPanelSimple() {
                       <span className="text-xs px-2 py-0.5 bg-white/10 text-white/70 rounded-full">
                         {item.category}
                       </span>
+                      <div className="ml-auto">
+                        <NowboardMenu 
+                          itemId={item.id} 
+                          userId={item.userId} 
+                          currentUserId={userId}
+                        />
+                      </div>
                     </div>
                     <p className="text-white/80 text-sm mb-2">{item.content}</p>
                     <div className="flex items-center justify-between">
