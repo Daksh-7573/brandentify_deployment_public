@@ -130,17 +130,17 @@ function InspiredButton({
     <button
       onClick={() => toggleInspired.mutate()}
       disabled={toggleInspired.isPending}
-      className={`flex items-center gap-2 px-3 py-2 rounded-lg text-base transition-colors hover:bg-white/10 ${
+      className={`text-gray-400 hover:text-white hover:bg-gray-600/30 hover:scale-110 hover:shadow-md rounded-md px-2 py-1 text-sm flex items-center gap-1.5 transition-all duration-200 disabled:opacity-50 ${
         isInspired 
           ? 'text-yellow-400' 
-          : 'text-white/60 hover:text-white/80'
+          : ''
       }`}
     >
       <LightbulbIcon 
-        className="h-4 w-4" 
+        className={`h-4 w-4 transition-all duration-200 ${isInspired ? "text-yellow-400 scale-110" : ""}`}
         filled={isInspired}
       />
-      <span className="font-medium">{count}</span>
+      {count}
     </button>
   );
 }
