@@ -881,6 +881,7 @@ function VideoPlayer({ pulse }: { pulse: PulseWithUser }) {
 
 // Project Details Component
 function ProjectDetails({ pulse }: { pulse: PulseWithUser }) {
+  const [_, setLocation] = useLocation();
   const [isLoading, setIsLoading] = useState(true);
   const [projectDetails, setProjectDetails] = useState<any>(null);
   
