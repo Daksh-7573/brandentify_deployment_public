@@ -203,11 +203,20 @@ export default function CreatePulsePage() {
           description: "Your project has been saved to your profile and will be featured in this pulse.",
         });
         
-      } catch (error) {
+      } catch (error: any) {
         console.error("Error creating project:", error);
+        
+        // Extract the error message from the server response
+        let errorMessage = "Failed to create project. Please try again.";
+        if (error?.message) {
+          errorMessage = error.message;
+        } else if (typeof error === 'string') {
+          errorMessage = error;
+        }
+        
         toast({
-          title: "Project Creation Failed",
-          description: "Failed to create project. Please try again.",
+          title: "Error",
+          description: errorMessage,
           variant: "destructive",
         });
         return;
