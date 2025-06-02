@@ -2853,12 +2853,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
   apiRouter.post("/poll-votes", async (req: Request, res: Response) => {
     try {
       console.log('[POST /poll-votes] Processing vote:', req.body);
+      console.log('[POST /poll-votes] Storage object available:', typeof storage);
+      console.log('[POST /poll-votes] Storage methods:', Object.keys(storage).filter(key => key.includes('Poll')));
       
       // Parse and validate the vote data
       const voteData = insertPollVoteSchema.parse(req.body);
+      console.log('[POST /poll-votes] Validated vote data:', voteData);
       
       // Check if the user has already voted on this poll
+      console.log('[POST /poll-votes] Checking for existing vote...');
       const existingVote = await storage.getPollVoteByUserAndPulse(voteData.userId, voteData.pulseId);
+      console.log('[POST /poll-votes] Existing vote result:', existingVote);
       
       let vote;
       if (existingVote) {
@@ -2877,9 +2882,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         vote = await storage.createPollVote(voteData);
       }
       
-      console.log(`[POST /poll-votes] Processed vote successfully`);
+      console.log(`[POST /poll-votes] Processed vote successfully:`, vote);
       res.status(201).json(vote);
     } catch (error) {
+      console.error('[POST /poll-votes] Full error details:', error);
+      console.error('[POST /poll-votes] Error stack:', error instanceof Error ? error.stack : 'No stack available');
       if (error instanceof z.ZodError) {
         console.error('[POST /poll-votes] Validation error:', error.errors);
         res.status(400).json({ 
@@ -2888,7 +2895,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       } else {
         console.error('[POST /poll-votes] Error processing vote:', error);
-        res.status(500).json({ message: 'Error processing vote' });
+        res.status(500).json({ 
+          message: 'Error processing vote',
+          error: error instanceof Error ? error.message : String(error)
+        });
       }
     }
   });
