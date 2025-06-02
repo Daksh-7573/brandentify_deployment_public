@@ -461,24 +461,6 @@ export default function Projects() {
   
   // Action handlers
   const handleAdd = () => {
-    // Check if user has reached the maximum project limit using server data
-    const currentProjectCount = serverProjects?.length || displayProjects.length;
-    console.log("Project count check:", { 
-      serverProjectsLength: serverProjects?.length, 
-      displayProjectsLength: displayProjects.length,
-      currentProjectCount,
-      hasReachedLimit: currentProjectCount >= 6 
-    });
-    
-    if (currentProjectCount >= 6) {
-      toast({
-        title: "Project Limit Reached",
-        description: "Not more than 6 projects could be added. Please delete an existing project before adding a new one.",
-        variant: "destructive"
-      });
-      return;
-    }
-    
     setCurrentProject(null);
     projectForm.reset({
       title: '',
@@ -592,17 +574,6 @@ export default function Projects() {
     console.log("Form errors:", projectForm.formState.errors);
     
     if (!userId) return;
-    
-    // Check if user has reached the maximum project limit for new projects
-    const currentProjectCount = serverProjects?.length || displayProjects.length;
-    if (!currentProject && currentProjectCount >= 6) {
-      toast({
-        title: "Project Limit Reached",
-        description: "Not more than 6 projects could be added. Please delete an existing project before adding a new one.",
-        variant: "destructive"
-      });
-      return;
-    }
     
     // No longer requiring thumbnail for projects
     
@@ -829,24 +800,13 @@ export default function Projects() {
       // Refresh data
       refetch();
       
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error saving project:", error);
-      
-      // Check if it's a 6-project limit error from the error message
-      const errorMessage = error?.message || '';
-      if (errorMessage.includes('Maximum of 6 projects') || errorMessage.includes('400')) {
-        toast({
-          title: "Project Limit Reached",
-          description: "Maximum 6 projects allowed per user. Please delete an existing project before adding a new one.",
-          variant: "destructive"
-        });
-      } else {
-        toast({
-          title: "Error",
-          description: `Failed to ${currentProject ? 'update' : 'save'} your project. Please try again.`,
-          variant: "destructive"
-        });
-      }
+      toast({
+        title: "Error",
+        description: `Failed to ${currentProject ? 'update' : 'save'} your project. Please try again.`,
+        variant: "destructive"
+      });
     }
   };
 
@@ -1005,37 +965,13 @@ export default function Projects() {
           </h2>
           <p className="text-sm text-gray-300">Highlight your best work and project achievements</p>
         </div>
-        {(() => {
-          const currentCount = serverProjects?.length || displayProjects.length;
-          const shouldDisable = currentCount >= 6;
-          console.log("Button display check:", { 
-            serverProjectsLength: serverProjects?.length, 
-            displayProjectsLength: displayProjects.length,
-            currentCount,
-            shouldDisable 
-          });
-          return shouldDisable;
-        })() ? (
-          <div className="flex flex-col items-end">
-            <button 
-              disabled
-              className="neo-glass-button flex items-center gap-2 py-1.5 px-3 whitespace-nowrap opacity-50 cursor-not-allowed"
-              title="Maximum 6 projects allowed"
-            >
-              <Plus className="h-3.5 w-3.5" />
-              <span>Add Showcase</span>
-            </button>
-            <p className="text-xs text-red-400 mt-1">Not more than 6 projects could be added</p>
-          </div>
-        ) : (
-          <button 
-            onClick={handleAdd} 
-            className="neo-glass-button flex items-center gap-2 py-1.5 px-3 whitespace-nowrap"
-          >
-            <Plus className="h-3.5 w-3.5" />
-            <span>Add Showcase</span>
-          </button>
-        )}
+        <button 
+          onClick={handleAdd} 
+          className="neo-glass-button flex items-center gap-2 py-1.5 px-3 whitespace-nowrap"
+        >
+          <Plus className="h-3.5 w-3.5" />
+          <span>Add Showcase</span>
+        </button>
       </div>
       
       <div className="space-y-4">
