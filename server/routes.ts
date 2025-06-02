@@ -1874,12 +1874,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       console.log(`[POST /projects] Processing with userId: ${req.body.userId}`);
       
-      // Check if user already has 10 projects (increased limit for testing)
+      // Check if user already has 6 projects (maximum limit)
       const existingProjects = await storage.getProjectsByUserId(req.body.userId);
-      if (existingProjects.length >= 10) {
-        console.log(`[POST /projects] User ${req.body.userId} already has ${existingProjects.length} projects. Maximum is 10.`);
+      if (existingProjects.length >= 6) {
+        console.log(`[POST /projects] User ${req.body.userId} already has ${existingProjects.length} projects. Maximum is 6.`);
         return res.status(400).json({ 
-          message: "Maximum of 10 projects allowed per user. Please delete an existing project before adding a new one." 
+          message: "Maximum of 6 projects allowed per user. Please delete an existing project before adding a new one." 
         });
       }
       
