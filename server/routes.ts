@@ -2394,32 +2394,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       console.log(`[GET /projects/${projectId}/endorsements] Fetching endorsements for project ${projectId}`);
       
-      // Import the database connection
-      const { Pool } = await import('pg');
-      const pool = new Pool({
-        connectionString: process.env.DATABASE_URL,
-      });
-      
-      // Fetch endorsements directly from database
-      const result = await pool.query(
-        'SELECT * FROM project_endorsements WHERE project_id = $1 ORDER BY created_at DESC',
-        [projectId]
-      );
-      
-      const endorsements = result.rows.map(row => ({
-        id: row.id,
-        projectId: row.project_id,
-        clientName: row.client_name,
-        clientEmail: row.client_email,
-        clientTitle: row.client_title,
-        clientCompany: row.client_company,
-        message: row.message,
-        rating: row.rating,
-        isVerified: row.is_verified,
-        verificationToken: row.verification_token,
-        verificationExpires: row.verification_expires,
-        createdAt: row.created_at
-      }));
+      // Use the database connection from storage
+      const endorsements = await storage.getProjectEndorsementsByProjectId(projectId);
       
       console.log(`[GET /projects/${projectId}/endorsements] Found ${endorsements.length} endorsements`);
       res.json(endorsements);
