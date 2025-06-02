@@ -2267,7 +2267,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log(`[GET /projects/${projectId}/collaborators] Fetching collaborators for project ${projectId}`);
       
       // Use the existing storage system
-      const collaborators = await storage.getProjectCollaborators(projectId);
+      const collaborators = await storage.getProjectCollaboratorsByProjectId(projectId);
       
       console.log(`[GET /projects/${projectId}/collaborators] Found ${collaborators.length} collaborators`);
       res.json(collaborators);
