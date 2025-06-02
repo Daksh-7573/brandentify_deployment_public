@@ -2266,10 +2266,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       console.log(`[GET /projects/${projectId}/collaborators] Fetching collaborators for project ${projectId}`);
       
-      // Use the existing storage system
-      const collaborators = await storage.getProjectCollaboratorsByProjectId(projectId);
+      // Import the database connection
+      const { Pool } = await import('pg');
+      const pool = new Pool({
+        connectionString: process.env.DATABASE_URL,
+      });
+      
+      // Fetch collaborators directly from database
+      const result = await pool.query(
+        'SELECT * FROM project_collaborators WHERE project_id = $1 ORDER BY created_at DESC',
+        [projectId]
+      );
+      
+      const collaborators = result.rows.map(row => ({
+        id: row.id,
+        projectId: row.project_id,
+        name: row.name,
+        email: row.email,
+        role: row.role,
+        profileLink: row.profile_link,
+        userId: row.user_id,
+        inviteStatus: row.invite_status,
+        inviteToken: row.invite_token,
+        inviteExpires: row.invite_expires,
+        createdAt: row.created_at
+      }));
       
       console.log(`[GET /projects/${projectId}/collaborators] Found ${collaborators.length} collaborators`);
+      await pool.end();
       res.json(collaborators);
     } catch (error) {
       const projectId = req.params.projectId;
