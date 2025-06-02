@@ -1119,29 +1119,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Project Collaborator routes
-  apiRouter.get("/projects/:projectId/collaborators", async (req: Request, res: Response) => {
-    try {
-      const projectId = parseInt(req.params.projectId);
-      
-      if (isNaN(projectId)) {
-        return res.status(400).json({ message: "Invalid project ID format" });
-      }
-      
-      // Check if project exists
-      const existingProject = await storage.getProjectById(projectId);
-      
-      if (!existingProject) {
-        return res.status(404).json({ message: "Project not found" });
-      }
-      
-      const collaborators = await storage.getProjectCollaboratorsByProjectId(projectId);
-      res.json(collaborators);
-    } catch (error) {
-      console.error("Error fetching project collaborators:", error);
-      res.status(500).json({ message: "Internal server error" });
-    }
-  });
+  // Project Collaborator routes - REMOVED to avoid conflict with main routes.ts
 
   apiRouter.post("/project-collaborators", async (req: Request, res: Response) => {
     try {

@@ -2265,15 +2265,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       console.log(`[GET /projects/${projectId}/collaborators] Fetching collaborators for project ${projectId}`);
+      console.log(`[GET /projects/${projectId}/collaborators] Storage type:`, typeof storage);
+      console.log(`[GET /projects/${projectId}/collaborators] Storage method exists:`, typeof storage.getProjectCollaboratorsByProjectId);
       
-      // Use the database connection from storage
+      // Use the storage method directly
       const collaborators = await storage.getProjectCollaboratorsByProjectId(projectId);
       
-      console.log(`[GET /projects/${projectId}/collaborators] Found ${collaborators.length} collaborators`);
+      console.log(`[GET /projects/${projectId}/collaborators] Found ${collaborators.length} collaborators:`, collaborators);
       res.json(collaborators);
     } catch (error) {
       const projectId = req.params.projectId;
-      console.error(`[GET /projects/${projectId}/collaborators] Error:`, error);
+      console.error(`[GET /projects/${projectId}/collaborators] Detailed error:`, error);
+      console.error(`[GET /projects/${projectId}/collaborators] Error stack:`, error instanceof Error ? error.stack : 'No stack trace');
       res.status(500).json({ message: "Internal server error" });
     }
   });
