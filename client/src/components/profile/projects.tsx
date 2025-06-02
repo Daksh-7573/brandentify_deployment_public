@@ -466,7 +466,7 @@ export default function Projects() {
     if (currentProjectCount >= 6) {
       toast({
         title: "Project Limit Reached",
-        description: "Maximum 6 projects allowed per user. Please delete an existing project before adding a new one.",
+        description: "Not more than 6 projects could be added. Please delete an existing project before adding a new one.",
         variant: "destructive"
       });
       return;
@@ -591,7 +591,7 @@ export default function Projects() {
     if (!currentProject && currentProjectCount >= 6) {
       toast({
         title: "Project Limit Reached",
-        description: "Maximum 6 projects allowed per user. Please delete an existing project before adding a new one.",
+        description: "Not more than 6 projects could be added. Please delete an existing project before adding a new one.",
         variant: "destructive"
       });
       return;
@@ -1008,7 +1008,7 @@ export default function Projects() {
               <Plus className="h-3.5 w-3.5" />
               <span>Add Showcase</span>
             </button>
-            <p className="text-xs text-red-400 mt-1">Maximum 6 projects reached</p>
+            <p className="text-xs text-red-400 mt-1">Not more than 6 projects could be added</p>
           </div>
         ) : (
           <button 
