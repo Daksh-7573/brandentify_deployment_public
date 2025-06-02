@@ -102,6 +102,16 @@ import * as xaiService from "./services/xai-service";
 export async function registerRoutes(app: Express): Promise<Server> {
   const apiRouter = express.Router();
   
+  // Health check endpoint for enterprise scaling
+  apiRouter.get("/health", (req: Request, res: Response) => {
+    res.status(200).json({
+      status: "healthy",
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      version: "1.0.0"
+    });
+  });
+  
   // Register Smart Connect routes directly
   registerSmartConnectRoutes(app, storage);
   
