@@ -276,7 +276,7 @@ function PulseReactions({ pulse }: PulseReactionsProps) {
               className="text-gray-400 hover:text-white hover:bg-gray-600/30 hover:scale-110 hover:shadow-md rounded-md px-2 py-1 text-sm flex items-center gap-1.5 transition-all duration-200 disabled:opacity-50"
               onClick={() => handleReaction("insightful")}
             >
-              <Flame className={`h-4 w-4 transition-all duration-200 ${hasInsightfulReaction ? "text-white fill-white scale-110" : ""}`} />
+              <Flame className={`h-4 w-4 transition-all duration-200 ${hasInsightfulReaction ? "text-white fill-white scale-110" : ""}`} strokeWidth={2} />
               {formatCount(pulse.insightfulCount || 0)}
             </button>
           </TooltipTrigger>
@@ -298,7 +298,7 @@ function PulseReactions({ pulse }: PulseReactionsProps) {
               className="text-gray-400 hover:text-white hover:bg-gray-600/30 hover:scale-110 hover:shadow-md rounded-md px-2 py-1 text-sm flex items-center gap-1.5 transition-all duration-200 disabled:opacity-50"
               onClick={() => handleReaction("misinformed")}
             >
-              <AlertTriangle className={`h-4 w-4 transition-all duration-200 ${hasMisinformedReaction ? "text-white fill-white/30 scale-110" : ""}`} />
+              <AlertTriangle className={`h-4 w-4 transition-all duration-200 ${hasMisinformedReaction ? "text-white fill-white/30 scale-110" : ""}`} strokeWidth={2} />
               {formatCount(pulse.misinformedCount || 0)}
             </button>
           </TooltipTrigger>
@@ -315,7 +315,7 @@ function PulseReactions({ pulse }: PulseReactionsProps) {
       <Dialog open={isShareDialogOpen} onOpenChange={setIsShareDialogOpen}>
         <DialogTrigger asChild>
           <button className="text-gray-400 hover:text-white hover:bg-gray-600/30 hover:scale-110 hover:shadow-md rounded-md px-2 py-1 text-sm flex items-center gap-1.5 transition-all duration-200">
-            <Share className={`h-4 w-4 transition-all duration-200 ${isShareDialogOpen ? "text-white scale-110" : ""}`} />
+            <Share className={`h-4 w-4 transition-all duration-200 ${isShareDialogOpen ? "text-white scale-110" : ""}`} strokeWidth={2} />
             {formatCount(pulse.shareCount || 0)}
           </button>
         </DialogTrigger>
@@ -375,7 +375,7 @@ function PulseReactions({ pulse }: PulseReactionsProps) {
       <button 
         className="text-gray-400 hover:text-white hover:bg-gray-600/30 hover:scale-110 hover:shadow-md rounded-md px-2 py-1 text-sm flex items-center gap-1.5 transition-all duration-200"
       >
-        <MessageSquare className="h-4 w-4" />
+        <MessageSquare className="h-4 w-4" strokeWidth={2} />
         {formatCount(pulse.comments || 0)}
       </button>
     </div>
