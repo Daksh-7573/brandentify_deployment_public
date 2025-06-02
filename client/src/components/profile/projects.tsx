@@ -575,6 +575,16 @@ export default function Projects() {
     
     if (!userId) return;
     
+    // Check if user has reached the maximum project limit for new projects
+    if (!currentProject && displayProjects.length >= 6) {
+      toast({
+        title: "Project Limit Reached",
+        description: "Maximum 6 projects allowed per user. Please delete an existing project before adding a new one.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     // No longer requiring thumbnail for projects
     
     // Validate additional media files
