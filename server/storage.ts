@@ -10288,6 +10288,12 @@ export const storage = {
   getPulses: () => dbStorage.getPulses(),
   createPulse: (pulse: InsertPulse) => dbStorage.createPulse(pulse),
   
+  // Poll Vote methods
+  getPollVoteByUserAndPulse: (userId: number, pulseId: number) => dbStorage.getPollVoteByUserAndPulse(userId, pulseId),
+  createPollVote: (vote: InsertPollVote) => dbStorage.createPollVote(vote),
+  updatePollVote: (id: number, voteData: Partial<PollVote>) => dbStorage.updatePollVote(id, voteData),
+  getPollVotesByPulseId: (pulseId: number) => dbStorage.getPollVotesByPulseId(pulseId),
+  
   // Nowboard methods
   getNowboardItems: () => dbStorage.getNowboardItems(),
   getNowboardItemsByUserId: (userId: number) => dbStorage.getNowboardItemsByUserId(userId),
