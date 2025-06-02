@@ -463,6 +463,13 @@ export default function Projects() {
   const handleAdd = () => {
     // Check if user has reached the maximum project limit using server data
     const currentProjectCount = serverProjects?.length || displayProjects.length;
+    console.log("Project count check:", { 
+      serverProjectsLength: serverProjects?.length, 
+      displayProjectsLength: displayProjects.length,
+      currentProjectCount,
+      hasReachedLimit: currentProjectCount >= 6 
+    });
+    
     if (currentProjectCount >= 6) {
       toast({
         title: "Project Limit Reached",
@@ -998,7 +1005,17 @@ export default function Projects() {
           </h2>
           <p className="text-sm text-gray-300">Highlight your best work and project achievements</p>
         </div>
-        {(serverProjects?.length || displayProjects.length) >= 6 ? (
+        {(() => {
+          const currentCount = serverProjects?.length || displayProjects.length;
+          const shouldDisable = currentCount >= 6;
+          console.log("Button display check:", { 
+            serverProjectsLength: serverProjects?.length, 
+            displayProjectsLength: displayProjects.length,
+            currentCount,
+            shouldDisable 
+          });
+          return shouldDisable;
+        })() ? (
           <div className="flex flex-col items-end">
             <button 
               disabled
