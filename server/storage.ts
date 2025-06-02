@@ -2994,6 +2994,91 @@ export class MemStorage implements IStorage {
     }
   }
   
+  // Poll Vote operations for DatabaseStorage
+  async getPollVoteByUserAndPulse(userId: number, pulseId: number): Promise<PollVote | undefined> {
+    try {
+      console.log(`[db.getPollVoteByUserAndPulse] Checking vote for user ${userId} on pulse ${pulseId}`);
+      
+      const result = await pool.query(`
+        SELECT id, pulse_id as "pulseId", user_id as "userId", option_index as "optionIndex", created_at as "createdAt"
+        FROM poll_votes 
+        WHERE user_id = $1 AND pulse_id = $2
+      `, [userId, pulseId]);
+      
+      if (result.rows.length > 0) {
+        console.log(`[db.getPollVoteByUserAndPulse] Found vote:`, result.rows[0]);
+        return result.rows[0];
+      }
+      
+      console.log(`[db.getPollVoteByUserAndPulse] No vote found`);
+      return undefined;
+    } catch (error) {
+      console.error('[db.getPollVoteByUserAndPulse] Error:', error);
+      throw error;
+    }
+  }
+  
+  async createPollVote(insertVote: InsertPollVote): Promise<PollVote> {
+    try {
+      console.log(`[db.createPollVote] Creating vote:`, insertVote);
+      
+      const result = await pool.query(`
+        INSERT INTO poll_votes (pulse_id, user_id, option_index)
+        VALUES ($1, $2, $3)
+        RETURNING id, pulse_id as "pulseId", user_id as "userId", option_index as "optionIndex", created_at as "createdAt"
+      `, [insertVote.pulseId, insertVote.userId, insertVote.optionIndex]);
+      
+      console.log(`[db.createPollVote] Created vote with ID:`, result.rows[0].id);
+      return result.rows[0];
+    } catch (error) {
+      console.error('[db.createPollVote] Error:', error);
+      throw error;
+    }
+  }
+  
+  async updatePollVote(id: number, voteData: Partial<PollVote>): Promise<PollVote | undefined> {
+    try {
+      console.log(`[db.updatePollVote] Updating vote ${id} with:`, voteData);
+      
+      const result = await pool.query(`
+        UPDATE poll_votes 
+        SET option_index = $2
+        WHERE id = $1
+        RETURNING id, pulse_id as "pulseId", user_id as "userId", option_index as "optionIndex", created_at as "createdAt"
+      `, [id, voteData.optionIndex]);
+      
+      if (result.rows.length > 0) {
+        console.log(`[db.updatePollVote] Updated vote:`, result.rows[0]);
+        return result.rows[0];
+      }
+      
+      console.log(`[db.updatePollVote] Vote not found`);
+      return undefined;
+    } catch (error) {
+      console.error('[db.updatePollVote] Error:', error);
+      throw error;
+    }
+  }
+  
+  async getPollVotesByPulseId(pulseId: number): Promise<PollVote[]> {
+    try {
+      console.log(`[db.getPollVotesByPulseId] Fetching votes for pulse ${pulseId}`);
+      
+      const result = await pool.query(`
+        SELECT id, pulse_id as "pulseId", user_id as "userId", option_index as "optionIndex", created_at as "createdAt"
+        FROM poll_votes 
+        WHERE pulse_id = $1
+        ORDER BY created_at DESC
+      `, [pulseId]);
+      
+      console.log(`[db.getPollVotesByPulseId] Found ${result.rows.length} votes`);
+      return result.rows;
+    } catch (error) {
+      console.error('[db.getPollVotesByPulseId] Error:', error);
+      throw error;
+    }
+  }
+  
   // Pulse Share operations
   async getPulseSharesByRecipientId(recipientId: number): Promise<PulseShare[]> {
     return Array.from(this.pulseShares.values())
