@@ -214,11 +214,19 @@ export default function CreatePulsePage() {
           errorMessage = error;
         }
         
-        toast({
-          title: "Error",
-          description: errorMessage,
-          variant: "destructive",
-        });
+        // Check if it's a project limit message
+        if (errorMessage.includes("Max 6 projects")) {
+          toast({
+            title: "Project Limit Reached",
+            description: errorMessage,
+          });
+        } else {
+          toast({
+            title: "Error",
+            description: errorMessage,
+            variant: "destructive",
+          });
+        }
         return;
       }
     }

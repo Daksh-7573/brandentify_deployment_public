@@ -196,11 +196,21 @@ const ProjectsFixed = () => {
     },
     onError: (error: any) => {
       console.error('Error creating project:', error);
-      toast({
-        title: "Error",
-        description: error.message || "Failed to save your project. Please try again.",
-        variant: "destructive",
-      });
+      
+      // Check if it's a project limit message
+      const errorMessage = error.message || "Failed to save your project. Please try again.";
+      if (errorMessage.includes("Max 6 projects")) {
+        toast({
+          title: "Project Limit Reached",
+          description: errorMessage,
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: errorMessage,
+          variant: "destructive",
+        });
+      }
     }
   });
 
