@@ -965,13 +965,27 @@ export default function Projects() {
           </h2>
           <p className="text-sm text-gray-300">Highlight your best work and project achievements</p>
         </div>
-        <button 
-          onClick={handleAdd} 
-          className="neo-glass-button flex items-center gap-2 py-1.5 px-3 whitespace-nowrap"
-        >
-          <Plus className="h-3.5 w-3.5" />
-          <span>Add Showcase</span>
-        </button>
+        {displayProjects.length >= 6 ? (
+          <div className="flex flex-col items-end">
+            <button 
+              disabled
+              className="neo-glass-button flex items-center gap-2 py-1.5 px-3 whitespace-nowrap opacity-50 cursor-not-allowed"
+              title="Maximum 6 projects allowed"
+            >
+              <Plus className="h-3.5 w-3.5" />
+              <span>Add Showcase</span>
+            </button>
+            <p className="text-xs text-red-400 mt-1">Maximum 6 projects reached</p>
+          </div>
+        ) : (
+          <button 
+            onClick={handleAdd} 
+            className="neo-glass-button flex items-center gap-2 py-1.5 px-3 whitespace-nowrap"
+          >
+            <Plus className="h-3.5 w-3.5" />
+            <span>Add Showcase</span>
+          </button>
+        )}
       </div>
       
       <div className="space-y-4">
