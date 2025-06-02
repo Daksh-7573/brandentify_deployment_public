@@ -13,7 +13,7 @@ import CatchAllAuthHandler from "@/routes/CatchAllAuthHandler";
 
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
-
+import Dashboard from "@/pages/dashboard";
 import Profile from "@/pages/profile";
 import ProfileNeo from "@/pages/profile-neo";
 import PublicProfile from "@/pages/public-profile";
@@ -48,7 +48,6 @@ import SmartConnectPage from "@/pages/smart-connect";
 import MuskMatchPage from "@/pages/musk-match";
 import ResumePage from "@/pages/resume";
 import ResumeCV from "@/pages/resume-cv";
-import ProjectDetail from "@/pages/project-detail";
 import ResumeEditor from "@/pages/resume-editor";
 // Resume Parser page removed per request
 import UnifiedProfilePage from "@/pages/unified-profile";
@@ -176,6 +175,9 @@ function Router() {
       }} />
       <Route path="/verify-email" component={EmailVerification} />
       {/* Quest demo route removed per request */}
+      <Route path="/dashboard">
+        <ProtectedRoute path="/dashboard" component={Dashboard} />
+      </Route>
       <Route path="/profile">
         <ProtectedRoute path="/profile" component={ProfileNeo} />
       </Route>
@@ -186,7 +188,9 @@ function Router() {
       <Route path="/@:username">
         {(params) => <PublicProfile username={params.username} />}
       </Route>
-
+      <Route path="/ai-career">
+        <ProtectedRoute path="/ai-career" component={Dashboard} />
+      </Route>
       <Route path="/smart-connect">
         <ProtectedRoute path="/smart-connect" component={SmartConnectPage} />
       </Route>
@@ -210,9 +214,6 @@ function Router() {
       </Route>
       <Route path="/industry-pulse">
         <ProtectedRoute path="/industry-pulse" component={IndustryPulsePage} />
-      </Route>
-      <Route path="/project/:projectId">
-        {(params) => <ProtectedRoute path="/project/:projectId" component={() => <ProjectDetail projectId={params.projectId} />} />}
       </Route>
       <Route path="/search">
         <ProtectedRoute path="/search" component={SearchPage} />
