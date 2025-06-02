@@ -85,12 +85,8 @@ function ProjectDetailView({ projectId, onBack }: { projectId: string, onBack: (
   // Show loading state
   if (loading && !localProject) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/5 via-purple-500/5 to-cyan-500/5"></div>
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"></div>
-        
-        <div className="relative z-10 p-6 max-w-7xl mx-auto">
+      <div className="neo-glass-container min-h-screen">
+        <div className="neo-glass-content p-6">
           <Button 
             onClick={onBack} 
             variant="ghost" 
@@ -100,13 +96,13 @@ function ProjectDetailView({ projectId, onBack }: { projectId: string, onBack: (
             <ArrowLeft className="h-4 w-4 mr-2" /> Back to Dashboard
           </Button>
           
-          <div className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-3xl p-8 shadow-2xl animate-pulse">
-            <div className="h-12 w-80 bg-white/20 rounded mb-6"></div>
-            <div className="h-6 w-60 bg-white/10 rounded mb-8"></div>
+          <div className="neo-glass-panel p-8 animate-pulse">
+            <div className="h-12 w-80 bg-neo-glass-highlight rounded mb-6"></div>
+            <div className="h-6 w-60 bg-neo-glass-border rounded mb-8"></div>
             <div className="space-y-4">
-              <div className="h-4 w-full bg-white/10 rounded"></div>
-              <div className="h-4 w-3/4 bg-white/10 rounded"></div>
-              <div className="h-4 w-1/2 bg-white/10 rounded"></div>
+              <div className="h-4 w-full bg-neo-glass-border rounded"></div>
+              <div className="h-4 w-3/4 bg-neo-glass-border rounded"></div>
+              <div className="h-4 w-1/2 bg-neo-glass-border rounded"></div>
             </div>
           </div>
         </div>
@@ -116,10 +112,8 @@ function ProjectDetailView({ projectId, onBack }: { projectId: string, onBack: (
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/5 via-purple-500/5 to-cyan-500/5"></div>
-        
-        <div className="relative z-10 p-6 max-w-7xl mx-auto">
+      <div className="neo-glass-container min-h-screen">
+        <div className="neo-glass-content p-6">
           <Button 
             onClick={onBack} 
             variant="ghost" 
@@ -129,9 +123,9 @@ function ProjectDetailView({ projectId, onBack }: { projectId: string, onBack: (
             <ArrowLeft className="h-4 w-4 mr-2" /> Back to Dashboard
           </Button>
           
-          <div className="backdrop-blur-xl bg-red-500/10 border border-red-400/20 rounded-3xl p-8 shadow-2xl">
-            <h3 className="text-2xl font-bold text-red-300 mb-4">Error Loading Project</h3>
-            <p className="text-white/80">Unable to load project details. Please try again.</p>
+          <div className="neo-glass-panel p-8">
+            <h3 className="text-2xl font-bold text-red-400 mb-4">Error Loading Project</h3>
+            <p className="text-neo-light-gray">Unable to load project details. Please try again.</p>
           </div>
         </div>
       </div>
@@ -143,10 +137,8 @@ function ProjectDetailView({ projectId, onBack }: { projectId: string, onBack: (
 
   if (!currentProject) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/5 via-purple-500/5 to-cyan-500/5"></div>
-        
-        <div className="relative z-10 p-6 max-w-7xl mx-auto">
+      <div className="neo-glass-container min-h-screen">
+        <div className="neo-glass-content p-6">
           <Button 
             onClick={onBack} 
             variant="ghost" 
@@ -156,9 +148,9 @@ function ProjectDetailView({ projectId, onBack }: { projectId: string, onBack: (
             <ArrowLeft className="h-4 w-4 mr-2" /> Back to Dashboard
           </Button>
           
-          <div className="backdrop-blur-xl bg-yellow-500/10 border border-yellow-400/20 rounded-3xl p-8 shadow-2xl">
-            <h3 className="text-2xl font-bold text-yellow-300 mb-4">Project Not Found</h3>
-            <p className="text-white/80">The requested project could not be found.</p>
+          <div className="neo-glass-panel p-8">
+            <h3 className="text-2xl font-bold text-yellow-400 mb-4">Project Not Found</h3>
+            <p className="text-neo-light-gray">The requested project could not be found.</p>
           </div>
         </div>
       </div>
@@ -166,13 +158,8 @@ function ProjectDetailView({ projectId, onBack }: { projectId: string, onBack: (
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
-      {/* Background Effects */}
-      <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/5 via-purple-500/5 to-cyan-500/5"></div>
-      <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"></div>
-      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"></div>
-      
-      <div className="relative z-10 p-6 max-w-7xl mx-auto">
+    <div className="neo-glass-container min-h-screen">
+      <div className="neo-glass-content p-6">
         {/* Header with Back Button */}
         <div className="mb-8">
           <Button 
@@ -186,26 +173,26 @@ function ProjectDetailView({ projectId, onBack }: { projectId: string, onBack: (
         </div>
 
         {/* Main Project Card */}
-        <div className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-3xl p-8 mb-8 shadow-2xl">
+        <div className="neo-glass-panel p-8 mb-8">
           {/* Project Header */}
           <div className="flex flex-col md:flex-row justify-between items-start mb-8">
             <div className="flex-1 mb-6 md:mb-0">
               <h1 className="text-4xl font-bold text-white mb-4">{currentProject.title}</h1>
-              <div className="flex flex-wrap items-center text-white/60 text-sm space-x-6 mb-4">
-                <span className="flex items-center backdrop-blur-sm bg-white/10 px-3 py-1 rounded-full">
+              <div className="flex flex-wrap items-center text-neo-light-gray text-sm space-x-6 mb-4">
+                <span className="flex items-center neo-glass-card px-3 py-1 rounded-full">
                   <Calendar className="h-4 w-4 mr-2" />
                   {currentProject.startDate ? format(new Date(currentProject.startDate), 'MMM yyyy') : 'Date not set'}
                   {currentProject.endDate && ` - ${format(new Date(currentProject.endDate), 'MMM yyyy')}`}
                   {currentProject.isCurrent && ' (Current)'}
                 </span>
-                <span className="flex items-center backdrop-blur-sm bg-white/10 px-3 py-1 rounded-full">
+                <span className="flex items-center neo-glass-card px-3 py-1 rounded-full">
                   <User className="h-4 w-4 mr-2" />
                   Personal Project
                 </span>
               </div>
             </div>
             {currentProject.thumbnailUrl && (
-              <div className="w-32 h-32 rounded-2xl overflow-hidden bg-white/10 backdrop-blur-sm border border-white/20 flex-shrink-0">
+              <div className="w-32 h-32 rounded-2xl overflow-hidden neo-glass-card border-neo-glass-border flex-shrink-0">
                 <img 
                   src={currentProject.thumbnailUrl} 
                   alt="Project thumbnail" 
@@ -217,19 +204,19 @@ function ProjectDetailView({ projectId, onBack }: { projectId: string, onBack: (
 
           {/* Project Description */}
           <div className="mb-8">
-            <h3 className="text-xl font-semibold text-white mb-4">About This Project</h3>
-            <p className="text-white/80 leading-relaxed text-lg">{currentProject.description}</p>
+            <h3 className="text-xl font-semibold text-neo-white mb-4">About This Project</h3>
+            <p className="text-neo-light-gray leading-relaxed text-lg">{currentProject.description}</p>
           </div>
 
           {/* Skills & Technologies */}
           {currentProject.skills && currentProject.skills.length > 0 && (
             <div className="mb-8">
-              <h3 className="text-xl font-semibold text-white mb-4">Skills & Technologies</h3>
+              <h3 className="text-xl font-semibold text-neo-white mb-4">Skills & Technologies</h3>
               <div className="flex flex-wrap gap-3">
                 {currentProject.skills.map((skill: string, index: number) => (
                   <span 
                     key={index} 
-                    className="px-4 py-2 backdrop-blur-sm bg-blue-500/20 border border-blue-400/30 rounded-full text-blue-100 text-sm font-medium hover:bg-blue-500/30 transition-all duration-200"
+                    className="px-4 py-2 neo-glass-card rounded-full text-neo-primary text-sm font-medium hover:bg-neo-glass-highlight transition-all duration-200"
                   >
                     {skill}
                   </span>
@@ -241,16 +228,16 @@ function ProjectDetailView({ projectId, onBack }: { projectId: string, onBack: (
           {/* Project Media Gallery */}
           {currentProject.mediaUrls && currentProject.mediaUrls.length > 0 && (
             <div className="mb-8">
-              <h3 className="text-xl font-semibold text-white mb-4">Project Gallery</h3>
+              <h3 className="text-xl font-semibold text-neo-white mb-4">Project Gallery</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {currentProject.mediaUrls.map((media: string, index: number) => (
-                  <div key={index} className="group relative aspect-video backdrop-blur-sm bg-white/5 border border-white/20 rounded-2xl overflow-hidden hover:bg-white/10 transition-all duration-300">
+                  <div key={index} className="group relative aspect-video neo-glass-card rounded-2xl overflow-hidden hover:bg-neo-glass-highlight transition-all duration-300">
                     <img 
                       src={media} 
                       alt={`Project media ${index + 1}`} 
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-neo-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   </div>
                 ))}
               </div>
@@ -260,7 +247,7 @@ function ProjectDetailView({ projectId, onBack }: { projectId: string, onBack: (
           {/* Project Links */}
           {currentProject.links && currentProject.links.length > 0 && (
             <div className="mb-8">
-              <h3 className="text-xl font-semibold text-white mb-4">Project Links</h3>
+              <h3 className="text-xl font-semibold text-neo-white mb-4">Project Links</h3>
               <div className="space-y-3">
                 {currentProject.links.map((link: { label: string, url: string }, index: number) => (
                   <a 
@@ -268,14 +255,14 @@ function ProjectDetailView({ projectId, onBack }: { projectId: string, onBack: (
                     href={link.url} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="flex items-center p-4 backdrop-blur-sm bg-white/10 border border-white/20 rounded-xl hover:bg-white/20 transition-all duration-200 group"
+                    className="flex items-center p-4 neo-glass-card rounded-xl hover:bg-neo-glass-highlight transition-all duration-200 group"
                   >
                     {link.label.toLowerCase().includes('github') ? (
-                      <Github className="h-5 w-5 mr-3 text-white/70 group-hover:text-white" />
+                      <Github className="h-5 w-5 mr-3 text-neo-light-gray group-hover:text-neo-white" />
                     ) : (
-                      <Globe className="h-5 w-5 mr-3 text-white/70 group-hover:text-white" />
+                      <Globe className="h-5 w-5 mr-3 text-neo-light-gray group-hover:text-neo-white" />
                     )}
-                    <span className="text-white/80 group-hover:text-white font-medium">{link.label}</span>
+                    <span className="text-neo-light-gray group-hover:text-neo-white font-medium">{link.label}</span>
                   </a>
                 ))}
               </div>
@@ -285,21 +272,21 @@ function ProjectDetailView({ projectId, onBack }: { projectId: string, onBack: (
 
         {/* Team & Collaborators Section */}
         {collaborators && collaborators.length > 0 && (
-          <div className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-3xl p-8 mb-8 shadow-2xl">
-            <h3 className="text-2xl font-semibold text-white mb-6">Team & Collaborators</h3>
+          <div className="neo-glass-panel p-8 mb-8">
+            <h3 className="text-2xl font-semibold text-neo-white mb-6">Team & Collaborators</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {collaborators.map((collaborator: any, index: number) => (
-                <div key={index} className="backdrop-blur-sm bg-white/10 border border-white/20 rounded-xl p-6 hover:bg-white/20 transition-all duration-200">
+                <div key={index} className="neo-glass-card rounded-xl p-6 hover:bg-neo-glass-highlight transition-all duration-200">
                   <div className="flex items-center mb-4">
                     <Avatar className="h-12 w-12 mr-4">
                       <AvatarImage src="" alt={collaborator.name} />
-                      <AvatarFallback className="bg-white/20 text-white">
+                      <AvatarFallback className="bg-neo-glass-bg text-neo-white">
                         {collaborator.name?.charAt(0) || 'T'}
                       </AvatarFallback>
                     </Avatar>
                     <div>
-                      <h4 className="font-semibold text-white">{collaborator.name}</h4>
-                      <p className="text-white/60 text-sm">{collaborator.role}</p>
+                      <h4 className="font-semibold text-neo-white">{collaborator.name}</h4>
+                      <p className="text-neo-light-gray text-sm">{collaborator.role}</p>
                     </div>
                   </div>
                   {collaborator.profileLink && (
@@ -307,7 +294,7 @@ function ProjectDetailView({ projectId, onBack }: { projectId: string, onBack: (
                       href={collaborator.profileLink} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="text-blue-300 hover:text-blue-200 text-sm transition-colors"
+                      className="text-neo-primary hover:text-neo-primary-bright text-sm transition-colors"
                     >
                       View Profile
                     </a>
@@ -320,24 +307,24 @@ function ProjectDetailView({ projectId, onBack }: { projectId: string, onBack: (
 
         {/* Endorsements Section */}
         {endorsements && endorsements.length > 0 && (
-          <div className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-3xl p-8 mb-8 shadow-2xl">
-            <h3 className="text-2xl font-semibold text-white mb-6">Project Endorsements</h3>
+          <div className="neo-glass-panel p-8 mb-8">
+            <h3 className="text-2xl font-semibold text-neo-white mb-6">Project Endorsements</h3>
             <div className="space-y-6">
               {endorsements.map((endorsement: any, index: number) => (
-                <div key={index} className="backdrop-blur-sm bg-white/10 border border-white/20 rounded-xl p-6">
+                <div key={index} className="neo-glass-card rounded-xl p-6">
                   <div className="flex items-start mb-4">
                     <Avatar className="h-10 w-10 mr-4">
                       <AvatarImage src="" alt={endorsement.endorserName} />
-                      <AvatarFallback className="bg-white/20 text-white">
+                      <AvatarFallback className="bg-neo-glass-bg text-neo-white">
                         {endorsement.endorserName?.charAt(0) || 'E'}
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex-1">
-                      <h4 className="font-semibold text-white">{endorsement.endorserName}</h4>
-                      <p className="text-white/60 text-sm">{endorsement.endorserTitle}</p>
+                      <h4 className="font-semibold text-neo-white">{endorsement.endorserName}</h4>
+                      <p className="text-neo-light-gray text-sm">{endorsement.endorserTitle}</p>
                     </div>
                   </div>
-                  <p className="text-white/80 italic">"{endorsement.content}"</p>
+                  <p className="text-neo-light-gray italic">"{endorsement.content}"</p>
                 </div>
               ))}
             </div>
@@ -346,8 +333,8 @@ function ProjectDetailView({ projectId, onBack }: { projectId: string, onBack: (
 
         {/* Footer */}
         <div className="text-center">
-          <div className="backdrop-blur-sm bg-white/10 border border-white/20 rounded-xl p-4 inline-block">
-            <p className="text-white/60 text-sm">
+          <div className="neo-glass-card rounded-xl p-4 inline-block">
+            <p className="text-neo-light-gray text-sm">
               Created {format(new Date(currentProject.createdAt), 'PPP')}
             </p>
           </div>
