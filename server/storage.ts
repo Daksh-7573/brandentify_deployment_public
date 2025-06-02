@@ -1035,8 +1035,82 @@ export class MemStorage implements IStorage {
     // Add demo Nowboard items
     this.createDemoNowboardItems(demoUser.id);
     
+    // Add demo collaborators and endorsements
+    this.createDemoCollaboratorsAndEndorsements();
+    
     console.log(`[storage.initializeDemoData] No pre-created services - users will add their own`);
     
+  }
+
+  /**
+   * Create demo collaborators and endorsements for testing
+   */
+  private createDemoCollaboratorsAndEndorsements(): void {
+    // Add collaborators for project ID 1 (if it exists)
+    const collaborator1: ProjectCollaborator = {
+      id: this.currentProjectCollaboratorId++,
+      projectId: 1,
+      name: "Sarah Chen",
+      email: "sarah.chen@example.com",
+      role: "Frontend Developer",
+      profileLink: "https://linkedin.com/in/sarahchen",
+      userId: null,
+      inviteStatus: "accepted",
+      inviteToken: null,
+      inviteExpires: null,
+      createdAt: new Date()
+    };
+    this.projectCollaborators.set(collaborator1.id, collaborator1);
+
+    const collaborator2: ProjectCollaborator = {
+      id: this.currentProjectCollaboratorId++,
+      projectId: 1,
+      name: "Mike Rodriguez",
+      email: "mike.rodriguez@example.com",
+      role: "UI/UX Designer",
+      profileLink: "https://dribbble.com/mikerodriguez",
+      userId: null,
+      inviteStatus: "accepted",
+      inviteToken: null,
+      inviteExpires: null,
+      createdAt: new Date()
+    };
+    this.projectCollaborators.set(collaborator2.id, collaborator2);
+
+    // Add endorsements for project ID 1
+    const endorsement1: ProjectEndorsement = {
+      id: this.currentProjectEndorsementId++,
+      projectId: 1,
+      clientName: "Jennifer Walsh",
+      clientEmail: "jennifer.walsh@techcorp.com",
+      clientTitle: "Product Manager",
+      clientCompany: "TechCorp Solutions",
+      message: "Exceptional work on our mobile app redesign. The team delivered beyond expectations with clean code and intuitive design.",
+      rating: 5,
+      isVerified: true,
+      verificationToken: null,
+      verificationExpires: null,
+      createdAt: new Date()
+    };
+    this.projectEndorsements.set(endorsement1.id, endorsement1);
+
+    const endorsement2: ProjectEndorsement = {
+      id: this.currentProjectEndorsementId++,
+      projectId: 1,
+      clientName: "David Kim",
+      clientEmail: "david.kim@startup.io",
+      clientTitle: "CTO",
+      clientCompany: "InnovateLab",
+      message: "Outstanding technical execution and project management. Would definitely work with this team again.",
+      rating: 5,
+      isVerified: true,
+      verificationToken: null,
+      verificationExpires: null,
+      createdAt: new Date()
+    };
+    this.projectEndorsements.set(endorsement2.id, endorsement2);
+
+    console.log(`[storage.createDemoCollaboratorsAndEndorsements] Added ${this.projectCollaborators.size} collaborators and ${this.projectEndorsements.size} endorsements`);
   }
   
   /**
@@ -2056,23 +2130,13 @@ export class MemStorage implements IStorage {
   // Project Collaborator operations
   async getProjectCollaboratorsByProjectId(projectId: number): Promise<ProjectCollaborator[]> {
     try {
-      const result = await this.db.query(
-        'SELECT * FROM project_collaborators WHERE project_id = $1 ORDER BY created_at DESC',
-        [projectId]
-      );
-      return result.rows.map(row => ({
-        id: row.id,
-        projectId: row.project_id,
-        name: row.name,
-        email: row.email,
-        role: row.role,
-        profileLink: row.profile_link,
-        userId: row.user_id,
-        inviteStatus: row.invite_status,
-        inviteToken: row.invite_token,
-        inviteExpires: row.invite_expires,
-        createdAt: row.created_at
-      }));
+      const collaborators: ProjectCollaborator[] = [];
+      this.projectCollaborators.forEach((collaborator) => {
+        if (collaborator.projectId === projectId) {
+          collaborators.push(collaborator);
+        }
+      });
+      return collaborators.sort((a, b) => (b.createdAt?.getTime() || 0) - (a.createdAt?.getTime() || 0));
     } catch (error) {
       console.error('Error fetching project collaborators:', error);
       return [];
@@ -2120,24 +2184,13 @@ export class MemStorage implements IStorage {
   // Project Endorsement operations
   async getProjectEndorsementsByProjectId(projectId: number): Promise<ProjectEndorsement[]> {
     try {
-      const result = await this.db.query(
-        'SELECT * FROM project_endorsements WHERE project_id = $1 ORDER BY created_at DESC',
-        [projectId]
-      );
-      return result.rows.map(row => ({
-        id: row.id,
-        projectId: row.project_id,
-        clientName: row.client_name,
-        clientEmail: row.client_email,
-        clientTitle: row.client_title,
-        clientCompany: row.client_company,
-        message: row.message,
-        rating: row.rating,
-        isVerified: row.is_verified,
-        verificationToken: row.verification_token,
-        verificationExpires: row.verification_expires,
-        createdAt: row.created_at
-      }));
+      const endorsements: ProjectEndorsement[] = [];
+      this.projectEndorsements.forEach((endorsement) => {
+        if (endorsement.projectId === projectId) {
+          endorsements.push(endorsement);
+        }
+      });
+      return endorsements.sort((a, b) => (b.createdAt?.getTime() || 0) - (a.createdAt?.getTime() || 0));
     } catch (error) {
       console.error('Error fetching project endorsements:', error);
       return [];
