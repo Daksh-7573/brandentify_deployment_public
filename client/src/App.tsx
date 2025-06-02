@@ -176,15 +176,7 @@ function Router() {
       <Route path="/verify-email" component={EmailVerification} />
       {/* Quest demo route removed per request */}
       <Route path="/dashboard">
-        <ProtectedRoute path="/dashboard" component={() => {
-          const [_, navigate] = useLocation();
-          useEffect(() => {
-            navigate("/industry-pulse");
-          }, [navigate]);
-          return <div className="flex items-center justify-center min-h-screen">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
-          </div>;
-        }} />
+        <ProtectedRoute path="/dashboard" component={Dashboard} />
       </Route>
       <Route path="/profile">
         <ProtectedRoute path="/profile" component={ProfileNeo} />
