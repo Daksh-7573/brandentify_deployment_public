@@ -161,7 +161,20 @@ const ProjectsFixed = () => {
       if (!response.ok) {
         const errorText = await response.text();
         console.error('API Error Response:', errorText);
-        throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
+        
+        // Try to parse the error message from the server response
+        let errorMessage = "Failed to save your project. Please try again.";
+        try {
+          const errorData = JSON.parse(errorText);
+          if (errorData.message) {
+            errorMessage = errorData.message;
+          }
+        } catch (e) {
+          // If parsing fails, use the raw error text or default message
+          errorMessage = errorText || errorMessage;
+        }
+        
+        throw new Error(errorMessage);
       }
       
       return await response.json();
@@ -185,7 +198,7 @@ const ProjectsFixed = () => {
       console.error('Error creating project:', error);
       toast({
         title: "Error",
-        description: "Failed to save your project. Please try again.",
+        description: error.message || "Failed to save your project. Please try again.",
         variant: "destructive",
       });
     }
