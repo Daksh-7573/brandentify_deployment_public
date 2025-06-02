@@ -1046,71 +1046,76 @@ export class MemStorage implements IStorage {
    * Create demo collaborators and endorsements for testing
    */
   private createDemoCollaboratorsAndEndorsements(): void {
-    // Add collaborators for project ID 1 (if it exists)
-    const collaborator1: ProjectCollaborator = {
-      id: this.currentProjectCollaboratorId++,
-      projectId: 1,
-      name: "Sarah Chen",
-      email: "sarah.chen@example.com",
-      role: "Frontend Developer",
-      profileLink: "https://linkedin.com/in/sarahchen",
-      userId: null,
-      inviteStatus: "accepted",
-      inviteToken: null,
-      inviteExpires: null,
-      createdAt: new Date()
-    };
-    this.projectCollaborators.set(collaborator1.id, collaborator1);
+    // Add collaborators for multiple project IDs to test functionality
+    const projectIds = [1, 37, 38, 39, 40, 41]; // Common project IDs in use
 
-    const collaborator2: ProjectCollaborator = {
-      id: this.currentProjectCollaboratorId++,
-      projectId: 1,
-      name: "Mike Rodriguez",
-      email: "mike.rodriguez@example.com",
-      role: "UI/UX Designer",
-      profileLink: "https://dribbble.com/mikerodriguez",
-      userId: null,
-      inviteStatus: "accepted",
-      inviteToken: null,
-      inviteExpires: null,
-      createdAt: new Date()
-    };
-    this.projectCollaborators.set(collaborator2.id, collaborator2);
+    projectIds.forEach(projectId => {
+      // Add 2 collaborators per project
+      const collaborator1: ProjectCollaborator = {
+        id: this.currentProjectCollaboratorId++,
+        projectId,
+        name: "Sarah Chen",
+        email: "sarah.chen@example.com",
+        role: "Frontend Developer",
+        profileLink: "https://linkedin.com/in/sarahchen",
+        userId: null,
+        inviteStatus: "accepted",
+        inviteToken: null,
+        inviteExpires: null,
+        createdAt: new Date()
+      };
+      this.projectCollaborators.set(collaborator1.id, collaborator1);
 
-    // Add endorsements for project ID 1
-    const endorsement1: ProjectEndorsement = {
-      id: this.currentProjectEndorsementId++,
-      projectId: 1,
-      clientName: "Jennifer Walsh",
-      clientEmail: "jennifer.walsh@techcorp.com",
-      clientTitle: "Product Manager",
-      clientCompany: "TechCorp Solutions",
-      message: "Exceptional work on our mobile app redesign. The team delivered beyond expectations with clean code and intuitive design.",
-      rating: 5,
-      isVerified: true,
-      verificationToken: null,
-      verificationExpires: null,
-      createdAt: new Date()
-    };
-    this.projectEndorsements.set(endorsement1.id, endorsement1);
+      const collaborator2: ProjectCollaborator = {
+        id: this.currentProjectCollaboratorId++,
+        projectId,
+        name: "Mike Rodriguez",
+        email: "mike.rodriguez@example.com",
+        role: "UI/UX Designer",
+        profileLink: "https://dribbble.com/mikerodriguez",
+        userId: null,
+        inviteStatus: "accepted",
+        inviteToken: null,
+        inviteExpires: null,
+        createdAt: new Date()
+      };
+      this.projectCollaborators.set(collaborator2.id, collaborator2);
 
-    const endorsement2: ProjectEndorsement = {
-      id: this.currentProjectEndorsementId++,
-      projectId: 1,
-      clientName: "David Kim",
-      clientEmail: "david.kim@startup.io",
-      clientTitle: "CTO",
-      clientCompany: "InnovateLab",
-      message: "Outstanding technical execution and project management. Would definitely work with this team again.",
-      rating: 5,
-      isVerified: true,
-      verificationToken: null,
-      verificationExpires: null,
-      createdAt: new Date()
-    };
-    this.projectEndorsements.set(endorsement2.id, endorsement2);
+      // Add 2 endorsements per project
+      const endorsement1: ProjectEndorsement = {
+        id: this.currentProjectEndorsementId++,
+        projectId,
+        clientName: "Jennifer Walsh",
+        clientEmail: "jennifer.walsh@techcorp.com",
+        clientTitle: "Product Manager",
+        clientCompany: "TechCorp Solutions",
+        message: "Exceptional work on our mobile app redesign. The team delivered beyond expectations with clean code and intuitive design.",
+        rating: 5,
+        isVerified: true,
+        verificationToken: null,
+        verificationExpires: null,
+        createdAt: new Date()
+      };
+      this.projectEndorsements.set(endorsement1.id, endorsement1);
 
-    console.log(`[storage.createDemoCollaboratorsAndEndorsements] Added ${this.projectCollaborators.size} collaborators and ${this.projectEndorsements.size} endorsements`);
+      const endorsement2: ProjectEndorsement = {
+        id: this.currentProjectEndorsementId++,
+        projectId,
+        clientName: "David Kim",
+        clientEmail: "david.kim@startup.io",
+        clientTitle: "CTO",
+        clientCompany: "InnovateLab",
+        message: "Outstanding technical execution and project management. Would definitely work with this team again.",
+        rating: 5,
+        isVerified: true,
+        verificationToken: null,
+        verificationExpires: null,
+        createdAt: new Date()
+      };
+      this.projectEndorsements.set(endorsement2.id, endorsement2);
+    });
+
+    console.log(`[storage.createDemoCollaboratorsAndEndorsements] Added ${this.projectCollaborators.size} collaborators and ${this.projectEndorsements.size} endorsements across ${projectIds.length} projects`);
   }
   
   /**
