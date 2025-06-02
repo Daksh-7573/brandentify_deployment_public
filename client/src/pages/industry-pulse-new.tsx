@@ -949,7 +949,7 @@ function ProjectDetails({ pulse }: { pulse: PulseWithUser }) {
                 variant="outline" 
                 size="sm" 
                 className="hover:bg-green-50 hover:border-green-200 border-muted"
-                onClick={() => window.location.href = `/projects/${projectDetails.id}`}
+                onClick={() => setLocation(`/dashboard?view=project&projectId=${projectDetails.id}`)}
               >
                 View Project
               </Button>
