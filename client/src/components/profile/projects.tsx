@@ -461,6 +461,16 @@ export default function Projects() {
   
   // Action handlers
   const handleAdd = () => {
+    // Check if user has reached the maximum project limit
+    if (displayProjects.length >= 6) {
+      toast({
+        title: "Project Limit Reached",
+        description: "Maximum 6 projects allowed per user. Please delete an existing project before adding a new one.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     setCurrentProject(null);
     projectForm.reset({
       title: '',
@@ -810,13 +820,24 @@ export default function Projects() {
       // Refresh data
       refetch();
       
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error saving project:", error);
-      toast({
-        title: "Error",
-        description: `Failed to ${currentProject ? 'update' : 'save'} your project. Please try again.`,
-        variant: "destructive"
-      });
+      
+      // Check if it's a 6-project limit error from the error message
+      const errorMessage = error?.message || '';
+      if (errorMessage.includes('Maximum of 6 projects') || errorMessage.includes('400')) {
+        toast({
+          title: "Project Limit Reached",
+          description: "Maximum 6 projects allowed per user. Please delete an existing project before adding a new one.",
+          variant: "destructive"
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: `Failed to ${currentProject ? 'update' : 'save'} your project. Please try again.`,
+          variant: "destructive"
+        });
+      }
     }
   };
 
