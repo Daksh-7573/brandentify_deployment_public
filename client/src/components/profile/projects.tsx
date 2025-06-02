@@ -461,8 +461,9 @@ export default function Projects() {
   
   // Action handlers
   const handleAdd = () => {
-    // Check if user has reached the maximum project limit
-    if (displayProjects.length >= 6) {
+    // Check if user has reached the maximum project limit using server data
+    const currentProjectCount = serverProjects?.length || displayProjects.length;
+    if (currentProjectCount >= 6) {
       toast({
         title: "Project Limit Reached",
         description: "Maximum 6 projects allowed per user. Please delete an existing project before adding a new one.",
@@ -586,7 +587,8 @@ export default function Projects() {
     if (!userId) return;
     
     // Check if user has reached the maximum project limit for new projects
-    if (!currentProject && displayProjects.length >= 6) {
+    const currentProjectCount = serverProjects?.length || displayProjects.length;
+    if (!currentProject && currentProjectCount >= 6) {
       toast({
         title: "Project Limit Reached",
         description: "Maximum 6 projects allowed per user. Please delete an existing project before adding a new one.",
@@ -996,7 +998,7 @@ export default function Projects() {
           </h2>
           <p className="text-sm text-gray-300">Highlight your best work and project achievements</p>
         </div>
-        {displayProjects.length >= 6 ? (
+        {(serverProjects?.length || displayProjects.length) >= 6 ? (
           <div className="flex flex-col items-end">
             <button 
               disabled
