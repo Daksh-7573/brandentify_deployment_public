@@ -3,6 +3,7 @@ import { useLocation } from "wouter";
 // Removed Sidebar import, using top navigation only
 import Header from "@/components/layout/header";
 import RightSidebar from "@/components/layout/right-sidebar";
+import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -11,9 +12,12 @@ import { calculateOverallProfileCompletion } from "@/lib/profile-utils";
 import { useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useState, useEffect } from "react";
-import { ArrowLeft, FileCode, Github, Globe, Calendar, User } from "lucide-react";
+import { ArrowLeft, FileCode, Github, Globe, Calendar, User, ExternalLink, Users, Award, Image, Video, ChevronLeft, ChevronRight, X, Maximize2 } from "lucide-react";
 import { format } from "date-fns";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { cn } from "@/lib/utils";
 
 // Project Detail Component
 function ProjectDetailView({ projectId, onBack }: { projectId: string, onBack: () => void }) {
