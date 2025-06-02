@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2 } from "lucide-react";
+import { Loader2, Lightbulb } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -136,9 +136,8 @@ function InspiredButton({
           : ''
       }`}
     >
-      <LightbulbIcon 
-        className={`h-4 w-4 transition-all duration-200 ${isInspired ? "text-yellow-400 scale-110" : ""}`}
-        filled={isInspired}
+      <Lightbulb 
+        className={`h-4 w-4 transition-all duration-200 ${isInspired ? "text-yellow-400 fill-yellow-400 scale-110" : ""}`}
       />
       {count}
     </button>
