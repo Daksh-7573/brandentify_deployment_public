@@ -10267,6 +10267,20 @@ export const storage = {
   // Resume parsing methods for projects
   addProject: (project: InsertProject) => dbStorage.createProject(project),
   
+  // Project Collaborator methods
+  getProjectCollaboratorsByProjectId: (projectId: number) => dbStorage.getProjectCollaboratorsByProjectId(projectId),
+  getProjectCollaboratorById: (id: number) => dbStorage.getProjectCollaboratorById(id),
+  createProjectCollaborator: (collaborator: InsertProjectCollaborator) => dbStorage.createProjectCollaborator(collaborator),
+  updateProjectCollaborator: (id: number, collaborator: Partial<ProjectCollaborator>) => dbStorage.updateProjectCollaborator(id, collaborator),
+  deleteProjectCollaborator: (id: number) => dbStorage.deleteProjectCollaborator(id),
+  
+  // Project Endorsement methods
+  getProjectEndorsementsByProjectId: (projectId: number) => dbStorage.getProjectEndorsementsByProjectId(projectId),
+  getProjectEndorsementById: (id: number) => dbStorage.getProjectEndorsementById(id),
+  createProjectEndorsement: (endorsement: InsertProjectEndorsement) => dbStorage.createProjectEndorsement(endorsement),
+  updateProjectEndorsement: (id: number, endorsement: Partial<ProjectEndorsement>) => dbStorage.updateProjectEndorsement(id, endorsement),
+  deleteProjectEndorsement: (id: number) => dbStorage.deleteProjectEndorsement(id),
+  
   // Career Goal methods
   getCareerGoalsByUserId: (userId: number) => dbStorage.getCareerGoalsByUserId(userId),
   getCareerGoalById: (id: number) => dbStorage.getCareerGoalById(id),
