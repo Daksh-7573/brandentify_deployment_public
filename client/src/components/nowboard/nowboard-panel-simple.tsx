@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2 } from "lucide-react";
@@ -71,7 +71,24 @@ function InspiredButton({
   const [isInspired, setIsInspired] = useState(false);
   const [count, setCount] = useState(currentCount);
 
+  // Check if user has already inspired this item
+  const { data: inspiredStatus } = useQuery<{ isInspired: boolean }>({
+    queryKey: [`/api/nowboard-items/${itemId}/inspired-by/${userId}`],
+    enabled: !!itemId && !!userId,
+    staleTime: 30000, // 30 seconds
+  });
 
+  // Update local state when inspired status is fetched
+  useEffect(() => {
+    if (inspiredStatus && inspiredStatus.isInspired !== undefined) {
+      setIsInspired(inspiredStatus.isInspired);
+    }
+  }, [inspiredStatus]);
+
+  // Update count when currentCount changes
+  useEffect(() => {
+    setCount(currentCount);
+  }, [currentCount]);
 
   // Toggle inspired status
   const toggleInspired = useMutation({
@@ -92,9 +109,13 @@ function InspiredButton({
       return response.json();
     },
     onSuccess: () => {
-      setIsInspired(!isInspired);
-      setCount(prev => isInspired ? prev - 1 : prev + 1);
+      const newInspiredState = !isInspired;
+      setIsInspired(newInspiredState);
+      setCount(prev => newInspiredState ? prev + 1 : prev - 1);
+      
+      // Invalidate both queries to refresh data
       queryClient.invalidateQueries({ queryKey: ['/api/nowboard-items'] });
+      queryClient.invalidateQueries({ queryKey: [`/api/nowboard-items/${itemId}/inspired-by/${userId}`] });
     },
     onError: () => {
       toast({

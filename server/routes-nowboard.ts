@@ -282,6 +282,28 @@ export function setupNowboardRoutes(router: Router, storage: IStorage) {
     }
   });
 
+  // Check if user has inspired a specific item
+  router.get('/nowboard-items/:id/inspired-by/:userId', async (req: Request, res: Response) => {
+    try {
+      const itemId = parseInt(req.params.id, 10);
+      const userId = parseInt(req.params.userId, 10);
+      
+      if (isNaN(itemId) || isNaN(userId)) {
+        return res.status(400).json({ message: 'Invalid item or user ID' });
+      }
+      
+      const result = await pool.query(
+        'SELECT id FROM nowboard_inspired_by WHERE user_id = $1 AND nowboard_item_id = $2',
+        [userId, itemId]
+      );
+      
+      res.json({ isInspired: result.rows.length > 0 });
+    } catch (error) {
+      console.error(`[GET /nowboard-items/${req.params.id}/inspired-by/${req.params.userId}]`, error);
+      res.status(500).json({ message: 'Error checking inspired status' });
+    }
+  });
+
   // Remove inspired-by mark from a Nowboard item
   router.delete('/nowboard-items/:id/inspired-by', async (req: Request, res: Response) => {
     try {
