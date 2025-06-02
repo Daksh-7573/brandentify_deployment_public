@@ -13,7 +13,7 @@ import CatchAllAuthHandler from "@/routes/CatchAllAuthHandler";
 
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
-import Dashboard from "@/pages/dashboard";
+
 import Profile from "@/pages/profile";
 import ProfileNeo from "@/pages/profile-neo";
 import PublicProfile from "@/pages/public-profile";
@@ -175,9 +175,6 @@ function Router() {
       }} />
       <Route path="/verify-email" component={EmailVerification} />
       {/* Quest demo route removed per request */}
-      <Route path="/dashboard">
-        <ProtectedRoute path="/dashboard" component={Dashboard} />
-      </Route>
       <Route path="/profile">
         <ProtectedRoute path="/profile" component={ProfileNeo} />
       </Route>
@@ -188,9 +185,7 @@ function Router() {
       <Route path="/@:username">
         {(params) => <PublicProfile username={params.username} />}
       </Route>
-      <Route path="/ai-career">
-        <ProtectedRoute path="/ai-career" component={Dashboard} />
-      </Route>
+
       <Route path="/smart-connect">
         <ProtectedRoute path="/smart-connect" component={SmartConnectPage} />
       </Route>
