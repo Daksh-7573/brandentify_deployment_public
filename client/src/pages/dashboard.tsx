@@ -80,6 +80,22 @@ function ProjectDetailView({ projectId, onBack }: { projectId: string, onBack: (
     }
   });
 
+  // Fetch project collaborators
+  const { data: collaborators = [] } = useQuery({
+    queryKey: [`/api/projects/${projectId}/collaborators`],
+    staleTime: 300000,
+    refetchOnWindowFocus: false,
+    enabled: !!projectId
+  });
+
+  // Fetch project endorsements
+  const { data: endorsements = [] } = useQuery({
+    queryKey: [`/api/projects/${projectId}/endorsements`],
+    staleTime: 300000,
+    refetchOnWindowFocus: false,
+    enabled: !!projectId
+  });
+
   // Show interactive skeleton UI instead of spinner during loading
   if (loading) {
     return (
@@ -172,14 +188,28 @@ function ProjectDetailView({ projectId, onBack }: { projectId: string, onBack: (
     );
   }
 
+  // Use current project data (local or from query)
+  const currentProject = localProject || project;
+
   return (
-    <div className="space-y-6 animate-fadeIn">
-      <div className="flex items-center mb-4">
-        <Button onClick={onBack} variant="ghost" size="sm" className="mr-2">
-          <ArrowLeft className="h-4 w-4 mr-1" /> Back
-        </Button>
-        <h1 className="text-2xl font-bold">Project Details</h1>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
+      {/* Background Effects */}
+      <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/5 via-purple-500/5 to-cyan-500/5"></div>
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"></div>
+      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"></div>
+      
+      <div className="relative z-10 p-6 max-w-7xl mx-auto">
+        {/* Header with Back Button */}
+        <div className="mb-8">
+          <Button 
+            onClick={onBack} 
+            variant="ghost" 
+            size="sm" 
+            className="mb-4 text-white/70 hover:text-white hover:bg-white/10 backdrop-blur-sm border border-white/10"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" /> Back to Dashboard
+          </Button>
+        </div>
       
       <Card>
         <CardHeader>
