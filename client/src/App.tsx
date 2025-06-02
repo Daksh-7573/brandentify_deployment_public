@@ -48,6 +48,7 @@ import SmartConnectPage from "@/pages/smart-connect";
 import MuskMatchPage from "@/pages/musk-match";
 import ResumePage from "@/pages/resume";
 import ResumeCV from "@/pages/resume-cv";
+import ProjectDetail from "@/pages/project-detail";
 import ResumeEditor from "@/pages/resume-editor";
 // Resume Parser page removed per request
 import UnifiedProfilePage from "@/pages/unified-profile";
@@ -209,6 +210,9 @@ function Router() {
       </Route>
       <Route path="/industry-pulse">
         <ProtectedRoute path="/industry-pulse" component={IndustryPulsePage} />
+      </Route>
+      <Route path="/project/:projectId">
+        {(params) => <ProtectedRoute path="/project/:projectId" component={() => <ProjectDetail projectId={params.projectId} />} />}
       </Route>
       <Route path="/search">
         <ProtectedRoute path="/search" component={SearchPage} />
