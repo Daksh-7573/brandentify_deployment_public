@@ -1227,28 +1227,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Project Endorsement routes
-  apiRouter.get("/projects/:projectId/endorsements", async (req: Request, res: Response) => {
-    try {
-      const projectId = parseInt(req.params.projectId);
-      
-      if (isNaN(projectId)) {
-        return res.status(400).json({ message: "Invalid project ID format" });
-      }
-      
-      // Check if project exists
-      const existingProject = await storage.getProjectById(projectId);
-      
-      if (!existingProject) {
-        return res.status(404).json({ message: "Project not found" });
-      }
-      
-      const endorsements = await storage.getProjectEndorsementsByProjectId(projectId);
-      res.json(endorsements);
-    } catch (error) {
-      console.error("Error fetching project endorsements:", error);
-      res.status(500).json({ message: "Internal server error" });
-    }
-  });
+  // Project Endorsements routes - REMOVED to avoid conflict with main routes.ts
 
   apiRouter.post("/project-endorsements", async (req: Request, res: Response) => {
     try {
