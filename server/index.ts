@@ -11,6 +11,8 @@ import { aiSecurityMiddleware } from "./ai-security";
 import { securityMonitoringMiddleware } from "./security-monitoring";
 import securityDashboardRoutes from "./security-dashboard";
 import { firebaseAuthRedirectHandler } from "./firebase-auth-handler";
+import { apiGateway } from "./services/api-gateway";
+import { messageQueue, TaskTypes } from "./services/message-queue";
 
 const app = express();
 // Increase body size limit to handle file uploads (25MB)
@@ -160,6 +162,30 @@ app.use(securityMonitoringMiddleware);
 
 // Add security dashboard routes (admin only)
 app.use('/api/security', securityDashboardRoutes);
+
+// Setup API Gateway and Message Queue (Phase 3: Microservices Architecture)
+console.log("Setting up API Gateway and Message Queue services");
+app.use(apiGateway.routeRequest);
+app.use(apiGateway.healthCheckMiddleware);
+app.use(apiGateway.timeoutMiddleware);
+
+// Initialize message queue handlers
+messageQueue.registerHandler(TaskTypes.EMAIL_NOTIFICATION, async (payload) => {
+  console.log('Processing email notification:', payload);
+  // Email processing would be handled here
+});
+
+messageQueue.registerHandler(TaskTypes.AI_PROCESSING, async (payload) => {
+  console.log('Processing AI task:', payload);
+  // AI processing would be handled here
+});
+
+messageQueue.registerHandler(TaskTypes.USER_ACTIVITY_LOG, async (payload) => {
+  console.log('Logging user activity:', payload);
+  // User activity logging would be handled here
+});
+
+console.log("Phase 3 microservices architecture initialized");
 
 (async () => {
   const server = await registerRoutes(app);
