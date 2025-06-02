@@ -1380,6 +1380,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   apiRouter.get("/projects/:id", async (req: Request, res: Response) => {
     try {
       const projectId = parseInt(req.params.id);
+      console.log(`[GET /projects/:id] Fetching project details for ID: ${projectId}`);
       
       if (isNaN(projectId)) {
         return res.status(400).json({ message: "Invalid project ID format" });
@@ -1388,12 +1389,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const project = await storage.getProjectById(projectId);
       
       if (!project) {
+        console.log(`[GET /projects/:id] Project not found with ID: ${projectId}`);
         return res.status(404).json({ message: "Project not found" });
       }
       
-      res.json(project);
+      // Fetch additional project details
+      try {
+        const collaborators = await storage.getProjectCollaboratorsByProjectId(projectId);
+        const endorsements = await storage.getProjectEndorsementsByProjectId(projectId);
+        
+        const projectWithDetails = {
+          ...project,
+          collaborators: collaborators || [],
+          endorsements: endorsements || []
+        };
+        
+        console.log(`[GET /projects/:id] Returning project with ${collaborators?.length || 0} collaborators and ${endorsements?.length || 0} endorsements`);
+        res.json(projectWithDetails);
+      } catch (detailsError) {
+        console.warn(`[GET /projects/:id] Error fetching project details, returning basic project:`, detailsError);
+        // Return project without additional details if there's an error
+        res.json(project);
+      }
     } catch (error) {
-      console.error("Error fetching project:", error);
+      console.error(`[GET /projects/:id] Error fetching project:`, error);
       res.status(500).json({ message: "Internal server error" });
     }
   });
@@ -1868,6 +1887,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (req.body.thumbnailFile && !req.body.thumbnailUrl) {
         const thumbnailUrl = getFileUrl(req.body.thumbnailFile);
         req.body.thumbnailUrl = thumbnailUrl;
+      }
+      
+      // If no thumbnailUrl but mediaUrls exist, use first media as thumbnail
+      if (!req.body.thumbnailUrl && req.body.mediaUrls) {
+        if (Array.isArray(req.body.mediaUrls) && req.body.mediaUrls.length > 0) {
+          req.body.thumbnailUrl = req.body.mediaUrls[0];
+          console.log(`[POST /projects] Set first mediaUrl as thumbnail: ${req.body.thumbnailUrl}`);
+        } else if (typeof req.body.mediaUrls === 'string') {
+          try {
+            const parsed = JSON.parse(req.body.mediaUrls);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              req.body.thumbnailUrl = parsed[0];
+              console.log(`[POST /projects] Set first parsed mediaUrl as thumbnail: ${req.body.thumbnailUrl}`);
+            }
+          } catch {
+            // If not JSON, treat as single URL
+            req.body.thumbnailUrl = req.body.mediaUrls;
+            console.log(`[POST /projects] Set mediaUrls string as thumbnail: ${req.body.thumbnailUrl}`);
+          }
+        }
       }
       
       // Log the schema for debugging
