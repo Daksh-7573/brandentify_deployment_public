@@ -832,22 +832,23 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
               className="w-full text-white placeholder:text-white/50 border-0 bg-transparent"
               disabled={isTyping || isUploading}
               style={{
-                background: 'rgba(18, 18, 18, 0.85)',
-                backdropFilter: 'blur(20px)',
-                border: '1px solid rgba(255, 255, 255, 0.15)',
-                borderRadius: '12px',
-                boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 8px 32px rgba(0, 0, 0, 0.3)',
-                WebkitBackdropFilter: 'blur(20px)'
+                background: 'rgba(0, 0, 0, 0.6)',
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                borderRadius: '8px',
+                boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 4px 16px rgba(0, 0, 0, 0.2)',
+                WebkitBackdropFilter: 'blur(10px)',
+                color: 'white'
               }}
               onFocus={(e) => {
-                e.currentTarget.style.background = 'rgba(18, 18, 18, 0.9)';
-                e.currentTarget.style.border = '1px solid rgba(255, 255, 255, 0.25)';
-                e.currentTarget.style.boxShadow = 'inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 8px 32px rgba(0, 0, 0, 0.4)';
+                e.currentTarget.style.background = 'rgba(0, 0, 0, 0.75)';
+                e.currentTarget.style.border = '1px solid rgba(255, 255, 255, 0.2)';
+                e.currentTarget.style.boxShadow = 'inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 4px 20px rgba(0, 0, 0, 0.3)';
               }}
               onBlur={(e) => {
-                e.currentTarget.style.background = 'rgba(18, 18, 18, 0.85)';
-                e.currentTarget.style.border = '1px solid rgba(255, 255, 255, 0.15)';
-                e.currentTarget.style.boxShadow = 'inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 8px 32px rgba(0, 0, 0, 0.3)';
+                e.currentTarget.style.background = 'rgba(0, 0, 0, 0.6)';
+                e.currentTarget.style.border = '1px solid rgba(255, 255, 255, 0.1)';
+                e.currentTarget.style.boxShadow = 'inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 4px 16px rgba(0, 0, 0, 0.2)';
               }}
             />
           </div>

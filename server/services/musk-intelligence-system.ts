@@ -259,19 +259,20 @@ Quick Response Options: "Analyze my career progression", "Help me quantify achie
 function determineUserIntent(message: string, context: MuskContext): string {
   const lowercaseMessage = message.toLowerCase();
   
-  // Intent mapping based on keywords
+  // Intent mapping based on keywords - more specific detection
   const intentMap = {
-    career_growth: ["next step", "advance", "promotion", "grow", "progress"],
-    skill_development: ["skills", "learn", "improve", "certification", "courses"],
-    career_change: ["change career", "switch", "transition", "new field"],
-    interview_prep: ["interview", "prepare", "questions", "assessment"],
-    salary_negotiation: ["salary", "compensation", "negotiate", "raise"],
-    networking: ["network", "connect", "linkedin", "contacts"],
-    resume_feedback: ["resume", "cv", "profile", "application"]
+    networking: ["network", "connect", "networking", "linkedin", "contacts", "meet people", "professional connections"],
+    skill_development: ["skills", "learn", "improve", "develop", "certification", "courses", "training", "abilities"],
+    career_growth: ["career", "next step", "advance", "promotion", "grow", "progress", "growth", "development"],
+    resume_feedback: ["resume", "cv", "profile", "application", "feedback", "review"],
+    interview_prep: ["interview", "prepare", "questions", "assessment", "preparation"],
+    salary_negotiation: ["salary", "compensation", "negotiate", "raise", "pay"],
+    work_experience: ["experience", "work history", "job", "employment", "background"],
+    industry_insights: ["industry", "market", "trends", "insights", "growing"]
   };
 
-  // Find best matching intent
-  let bestIntent = "career_advice";
+  // Find best matching intent with better scoring
+  let bestIntent = "general";
   let maxMatches = 0;
 
   for (const [intent, keywords] of Object.entries(intentMap)) {
@@ -473,6 +474,100 @@ Hi ${userName}! I can help you create a compelling resume.
 - Upload your current resume for detailed analysis
 - Or start building your profile with work experiences
 - Focus on accomplishments over responsibilities
+
+Quick Response Options: ${quickResponses.map(r => `"${r}"`).join(", ")}`;
+      }
+
+    case 'interview_prep':
+      return `# Interview Preparation Guide
+
+Hi ${userName}! Let me help you prepare for successful interviews.
+
+**Interview Preparation Strategy:**
+- Research the company's mission, values, and recent news
+- Practice STAR method (Situation, Task, Action, Result) for behavioral questions
+- Prepare specific examples that demonstrate your skills
+- Review common questions for your industry and role level
+
+**Based on Your Profile:**
+${profileData.careerStage === 'entry_level' ? '- Focus on academic projects, internships, and enthusiasm to learn' : '- Emphasize your professional achievements and leadership experience'}
+${profileData.primarySkills.length > 0 ? `- Prepare technical questions about: ${profileData.primarySkills.slice(0,3).join(', ')}` : '- Be ready to discuss your learning goals and adaptability'}
+
+**Mock Interview Topics:**
+- "Tell me about yourself" - craft a compelling 2-minute summary
+- "Why do you want this role?" - connect your goals to the opportunity
+- "Describe a challenge you overcame" - use specific examples
+
+Quick Response Options: ${quickResponses.map(r => `"${r}"`).join(", ")}`;
+
+    case 'industry_insights':
+      return `# Industry Insights & Market Trends
+
+Hello ${userName}! Here are current market insights to guide your career decisions.
+
+**Growing Industries & Trends:**
+- Technology: AI/ML, Cybersecurity, Cloud Computing, Data Science
+- Healthcare: Digital Health, Biotechnology, Elderly Care
+- Sustainability: Renewable Energy, Environmental Consulting
+- Finance: FinTech, Digital Banking, Cryptocurrency
+
+**Skills in High Demand:**
+- Digital literacy and data analysis
+- Project management and agile methodologies
+- Communication and remote collaboration
+- Problem-solving and critical thinking
+
+**Career Strategy Tips:**
+- Stay updated with industry publications and thought leaders
+- Attend virtual conferences and webinars
+- Build skills that complement automation rather than compete with it
+- Network with professionals in target industries
+
+Quick Response Options: ${quickResponses.map(r => `"${r}"`).join(", ")}`;
+
+    case 'work_experience':
+      if (hasResumeData) {
+        return `# Work Experience Analysis
+
+Hello ${userName}! I can see you have resume data available for analysis.
+
+**Experience Enhancement Areas:**
+- Quantify achievements with specific metrics and numbers
+- Highlight leadership and collaboration experiences
+- Showcase problem-solving and innovation
+- Demonstrate career progression and skill development
+
+**Current Profile Data:**
+- Experience entries: ${profileData.primarySkills.length > 0 ? 'Available for analysis' : 'Ready to be added'}
+- Skills demonstrated: ${profileData.primarySkills.length > 0 ? profileData.primarySkills.slice(0,3).join(', ') : 'To be identified from experiences'}
+
+**Next Steps:**
+- Review and optimize existing experience descriptions
+- Add missing roles or responsibilities
+- Focus on impact and results rather than just duties
+
+Quick Response Options: ${quickResponses.map(r => `"${r}"`).join(", ")}`;
+      } else {
+        return `# Building Your Work Experience Profile
+
+Hi ${userName}! Let's develop a strong work experience section.
+
+**Experience Documentation Strategy:**
+- Start with your most recent or relevant positions
+- For each role, include company, title, dates, and key achievements
+- Use action verbs and quantify results where possible
+- Show progression and increasing responsibility
+
+**What to Include:**
+- Full-time and part-time employment
+- Internships and co-op programs
+- Freelance or contract work
+- Volunteer leadership roles
+
+**Getting Started:**
+- Add your work experiences to your profile
+- Or upload your resume for comprehensive analysis
+- Focus on accomplishments that demonstrate your value
 
 Quick Response Options: ${quickResponses.map(r => `"${r}"`).join(", ")}`;
       }
