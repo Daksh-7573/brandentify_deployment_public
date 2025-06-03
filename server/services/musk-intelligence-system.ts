@@ -366,10 +366,18 @@ function calculateProfileCompleteness(context: MuskContext): number {
  * Generate intelligent fallback responses when AI services are unavailable
  */
 function generateIntelligentFallback(message: string, context: MuskContext, intent: string): string {
+  console.log(`[Fallback] Processing intent: "${intent}" for message: "${message.substring(0, 50)}..."`);
+  
   const userName = context.userData?.name || "Professional";
   const userIdStr = context.userId?.toString();
   const hasResumeData = !!context.resumeData || !!(userIdStr && (global as any).resumeContexts?.[userIdStr]);
   const profileData = analyzeCareerProfile(context);
+  
+  console.log(`[Fallback] User: ${userName}, Intent: ${intent}, ProfileData:`, {
+    careerStage: profileData.careerStage,
+    skillsCount: profileData.primarySkills.length,
+    completion: profileData.profileCompleteness
+  });
   
   // Generate contextual quick responses
   const quickResponses = generateContextualQuickResponses(context);
