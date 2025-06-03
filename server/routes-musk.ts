@@ -781,6 +781,15 @@ Based on your background, I can help you:
     
   } catch (error) {
     console.error("Error processing resume upload:", error);
+    console.error("Error stack:", error instanceof Error ? error.stack : 'No stack trace');
+    console.error("Error details:", {
+      name: error instanceof Error ? error.name : 'Unknown',
+      message: error instanceof Error ? error.message : String(error),
+      userId: req.body.userId,
+      hasFiles: !!req.files,
+      fileDetails: req.files ? Object.keys(req.files) : 'No files'
+    });
+    
     return res.status(500).json({
       error: "Failed to process resume upload",
       message: error instanceof Error ? error.message : "Unknown error occurred"
