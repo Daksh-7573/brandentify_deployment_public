@@ -11,11 +11,13 @@ export async function updateUserGeolocation(req: Request, res: Response) {
     const userId = req.params.id;
     const { latitude, longitude, geoVisibleNearby = true } = req.body;
     
+    console.log('Geolocation update request:', { userId, body: req.body });
+    
     if (!userId) {
       return res.status(400).json({ error: 'User ID is required' });
     }
     
-    if (!latitude || !longitude) {
+    if (latitude === undefined || longitude === undefined) {
       return res.status(400).json({ error: 'Latitude and longitude are required' });
     }
     
@@ -33,11 +35,11 @@ export async function updateUserGeolocation(req: Request, res: Response) {
     
     // Update the user's geolocation
     await db.update(users).set({
-      geoLatitude: sql`${lat}`,
-      geoLongitude: sql`${lng}`,
+      geoLatitude: lat,
+      geoLongitude: lng,
       geoVisibleNearby,
       geoLastUpdated: new Date()
-    }).where(eq(users.id, userId));
+    }).where(eq(users.id, parseInt(userId, 10)));
     
     res.status(200).json({ 
       success: true, 
