@@ -10,6 +10,8 @@ interface PersonalInfoSectionProps {
 }
 
 const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({ userData, onEdit }) => {
+  console.log('PersonalInfoSection userData:', userData);
+  
   // Component to display contact information
   return (
     <Card className="shadow-sm">
