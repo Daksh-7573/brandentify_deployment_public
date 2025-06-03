@@ -326,6 +326,19 @@ const Radar = () => {
     queryKey: ['/api/users', currentUser?.uid],
     enabled: !!currentUser?.uid,
   });
+
+  // Get nearby users from real API
+  const { data: nearbyUsersData = [], isLoading: isLoadingNearby, refetch: refetchNearby } = useQuery<NearbyUser[]>({
+    queryKey: ['/api/nearby-users', coordinates, radius],
+    queryFn: async () => {
+      if (!coordinates) return [];
+      const response = await fetch(`/api/nearby-users?latitude=${coordinates.lat}&longitude=${coordinates.lng}&radius=${radius}&userId=${userData?.id}`);
+      if (!response.ok) throw new Error('Failed to fetch nearby users');
+      return response.json();
+    },
+    enabled: !!coordinates && !!userData?.id,
+    refetchInterval: 30000, // Refetch every 30 seconds
+  });
   
   // Initialize filter values from user profile when data is loaded
   useEffect(() => {
@@ -337,30 +350,12 @@ const Radar = () => {
     }
   }, [userData]);
   
-  // This is our demo data state
-  const [nearbyUsersData, setNearbyUsersData] = useState<NearbyUser[]>(DEMO_NEARBY_USERS);
-  
-  // Query to get nearby users
-  const { 
-    isLoading: isLoadingNearby,
-    refetch: refetchNearby,
-    data: nearbyUsersResult
-  } = useQuery({
-    queryKey: ['/api/nearby-users', coordinates, radius],
-    queryFn: async () => {
-      // In a production app, this would fetch real data
-      // For demo purposes, we'll just use the demo data
-      return DEMO_NEARBY_USERS;
-    },
-    enabled: !!coordinates && locationStatus === 'granted'
-  });
-  
   // Update nearby users data when the query result changes
   useEffect(() => {
-    if (nearbyUsersResult) {
-      setNearbyUsersData(nearbyUsersResult);
+    if (nearbyUsersData) {
+      // Data is automatically updated by the query
     }
-  }, [nearbyUsersResult]);
+  }, [nearbyUsersData]);
   
   // Filter nearby users based on job title, industry, and lookingFor
   const filteredNearbyUsers = nearbyUsersData.filter(user => {
@@ -416,15 +411,25 @@ const Radar = () => {
   // Mutation to update user's geolocation
   const updateGeoLocationMutation = useMutation({
     mutationFn: async (coords: {lat: number, lng: number}) => {
-      // This would update the user's location on the server in production
-      console.log('Setting coordinates to:', coords);
-      return { success: true };
+      const response = await fetch(`/api/users/${userData?.id}/geolocation`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: userData?.id,
+          latitude: coords.lat,
+          longitude: coords.lng,
+          geoVisibleNearby: visibleInRadar
+        })
+      });
+      if (!response.ok) throw new Error('Failed to update location');
+      return response.json();
     },
     onSuccess: () => {
       toast({
         title: "Location updated",
         description: "Your location has been updated successfully.",
       });
+      refetchNearby();
     },
     onError: () => {
       toast({
