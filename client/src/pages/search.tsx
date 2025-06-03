@@ -750,7 +750,7 @@ function SearchPage() {
                     </div>
                     
                     {showMatchForm && (
-                      <Card className="bg-black/40 backdrop-blur-md border border-white/20 shadow-xl mb-8">
+                      <Card className="neo-glass-panel mb-8">
                         <CardHeader>
                           <CardTitle className="text-white">Connection Preferences</CardTitle>
                           <CardDescription className="text-white/80">
