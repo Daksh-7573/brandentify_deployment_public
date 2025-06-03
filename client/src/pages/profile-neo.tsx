@@ -266,10 +266,6 @@ export default function ProfileNeo() {
                   </p>
                 </div>
                 <div className="flex flex-col md:flex-row items-start md:items-center gap-4 mt-4 md:mt-0">
-                  {/* Professional Overview Header */}
-                  <div className="text-right">
-                    <h2 className="text-lg font-semibold text-white">Professional Overview</h2>
-                  </div>
                   <div className="flex items-center gap-4">
                     <button 
                     onClick={() => {
@@ -390,7 +386,7 @@ export default function ProfileNeo() {
                           </button>
                         </div>
                         <p className="text-white/80 text-sm">
-                          {userData?.about || "Add a professional summary to introduce yourself to other professionals."}
+                          {userData?.aboutMe || "Add a professional summary to introduce yourself to other professionals."}
                         </p>
                       </div>
                       
