@@ -365,34 +365,42 @@ ${priorityRecommendations.map((rec, i) => `${i + 1}. ${rec}`).join('\n')}
 ## Immediate Action Items
 ${immediateActions.length > 0 ? immediateActions.map((action, i) => `• ${action}`).join('\n') : '• Focus on adding missing profile sections mentioned above'}
 
-## Leverage Your ${projectCount} Projects
-- Transform your best projects into detailed case studies
-- Add specific metrics and outcomes for each project
-- Highlight technologies used and problems solved
-- Include links to live demos or GitHub repositories
+## Maximize Brandentifier's Profile Features
+- **Industry Pulse**: Share insights about your ${projectCount} projects to establish expertise
+- **Nowboard**: Create opportunities showcasing your project capabilities
+- **Career Capsule**: Document your professional journey and achievements
+- **Smart Connect**: Let our AI match you with relevant professionals based on your skills
+- **Mentorship Features**: Offer your project expertise or seek guidance from industry leaders
 
-## Skills Enhancement Strategy
+## Leverage Your ${projectCount} Projects on Brandentifier
+- Showcase each project with detailed case studies and outcomes
+- Use Industry Pulse to share project insights and lessons learned
+- Create Nowboard opportunities related to your project expertise
+- Highlight specific technologies and problems solved in your profile
+- Connect your projects to trending industry topics
+
+## Skills Strategy Using Brandentifier
 ${hasSkills ? 
-  `- Expand on your ${currentSkills.join(', ')} skills with advanced certifications
-- Add complementary skills that enhance your existing expertise
-- Document skill levels (Beginner, Intermediate, Advanced)` :
-  `- Add technical skills relevant to your projects
-- Include both hard skills (programming languages, tools) and soft skills
-- Prioritize in-demand skills in your target industry`
+  `- Use your ${currentSkills.join(', ')} skills to engage in relevant Industry Pulse discussions
+- Create Nowboard opportunities that leverage your existing expertise
+- Complete Career Quests to validate and expand your skill set` :
+  `- Add technical skills from your projects to attract the right connections
+- Participate in Industry Pulse discussions to learn and demonstrate knowledge
+- Use Career Quests to systematically build and validate new skills`
 }
 
-## Professional Branding Tips
-- Create a consistent professional image across all platforms
-- Use industry-specific keywords that recruiters search for
-- Showcase your unique perspective and problem-solving approach
-- Include a professional photo if you haven't already
+## Professional Branding on Brandentifier
+- Create compelling content on Industry Pulse to establish thought leadership
+- Use consistent professional messaging across all Brandentifier features
+- Engage authentically with the professional community
+- Showcase your unique perspective through project stories and insights
 
-## Next Steps to Stand Out
+## Next Steps to Stand Out on Brandentifier
 1. Complete all missing profile sections identified above
-2. Write compelling descriptions for each project with specific results
-3. Get recommendations from colleagues or mentors
-4. Share industry insights or content to demonstrate expertise
-5. Join professional groups related to your field
+2. Create your first Industry Pulse post about one of your projects
+3. Set up at least one Nowboard opportunity showcasing your expertise
+4. Engage with 3-5 trending discussions in Industry Pulse
+5. Complete your first Career Quest to demonstrate active growth
 
 Your ${projectCount} projects show you're actively building things - that's excellent! Now let's make sure your profile tells that story effectively.
 
@@ -451,23 +459,30 @@ function generateNetworkingAdvice(userName: string, userTitle: string, userIndus
 
 # Professional Networking Strategy
 
-## Building Your Network
+## Leverage Brandentifier's Networking Features
+- **Industry Pulse**: Share insights and engage with trending topics in your field
+- **Smart Connect**: Use our intelligent matching system to find relevant professionals
+- **Nowboard**: Showcase your opportunities and connect with potential collaborators
+- **Mentorship Connect**: Find mentors or offer mentorship in your expertise areas
+- **Career Quests**: Complete networking challenges to expand your professional circle
+
+## Building Your Network on Brandentifier
 ${hasExperiences ? 
-  "- Leverage your existing professional relationships and alumni networks\n- Reach out to former colleagues and industry contacts" :
-  "- Start with professional networking platforms like LinkedIn\n- Join industry-specific groups and communities"
+  "- Import and showcase your professional experience to attract like-minded professionals\n- Use your work history to connect with colleagues from previous companies" :
+  "- Start building your professional presence on Brandentifier's platform\n- Join industry-specific discussions in Industry Pulse"
 }
 
-## Networking Tactics
-- Attend industry events, conferences, and meetups${industry ? ` focused on ${userIndustry}` : ""}
-- Engage meaningfully on professional social platforms
-- Offer value before asking for favors
-- Follow up consistently with new connections
+## Advanced Networking Strategies
+- Create compelling content on Industry Pulse to establish thought leadership
+- Participate in trending discussions to increase your visibility
+- Use Brandentifier's Smart Connect to find professionals with complementary skills
+- Offer value through Nowboard opportunities before seeking connections
+- Engage authentically in the platform's professional community
 
-## Relationship Building
-- Share industry insights and helpful content
-- Make strategic introductions between your contacts
-- Maintain regular touchpoints with key relationships
-- Be genuine and authentic in all interactions
+## External Networking (if needed)
+- Attend industry events, conferences, and meetups${industry ? ` focused on ${userIndustry}` : ""}
+- Consider other professional platforms only for specific industry requirements
+- Maintain consistent professional branding across all platforms
 
 ${formatResponseWithPersonalization("", context).includes("Quick Response Options") ? "" : 
 `\n\nQuick Response Options: ${generateSmartQuickResponses(context).map(q => `"${q}"`).join(", ")}`}`;
@@ -496,11 +511,17 @@ ${hasSkills ?
   "Focus on building both technical skills and soft skills that are valued in your industry."
 }
 
-## Professional Development
-- Pursue relevant certifications or additional education
-- Attend industry conferences and professional development workshops
-- Join professional associations related to your field
-- Consider leadership development programs
+## Professional Development on Brandentifier
+- **Career Quests**: Complete structured learning paths to advance your skills
+- **Industry Pulse**: Follow thought leaders and trending topics in your field
+- **Mentorship Connect**: Find mentors who can guide your career progression
+- **Nowboard**: Explore opportunities that challenge and develop your capabilities
+
+## Additional Development Resources
+- Pursue relevant certifications that align with Career Quest recommendations
+- Attend industry conferences and share insights on Industry Pulse
+- Connect with professional associations through Brandentifier's networking features
+- Consider leadership development programs and document progress in Career Capsule
 
 ${formatResponseWithPersonalization("", context).includes("Quick Response Options") ? "" : 
 `\n\nQuick Response Options: ${generateSmartQuickResponses(context).map(q => `"${q}"`).join(", ")}`}`;
@@ -526,17 +547,25 @@ ${hasSkills ?
 - **Digital Literacy**: Data analysis, digital marketing, or relevant tech skills
 - **Business Acumen**: Understanding of business operations and strategy
 
-## Learning Approaches
-- Online courses and certifications (Coursera, LinkedIn Learning, Udemy)
-- Hands-on projects and practical application
-- Mentorship and peer learning opportunities
-- Professional workshops and industry training
+## Learning Through Brandentifier
+- **Career Quests**: Follow structured skill-building paths with measurable progress
+- **Industry Pulse**: Learn from expert insights and trending discussions in your field
+- **Mentorship Connect**: Get personalized guidance from industry professionals
+- **Nowboard**: Find skill-building opportunities and collaborative projects
+- **Smart Connect**: Connect with professionals who can teach complementary skills
 
-## Skill Validation
-- Seek projects that demonstrate your new capabilities
-- Add completed certifications to your professional profiles
-- Request feedback from supervisors and colleagues
-- Document your skill development journey
+## Skill Development Strategy
+- Complete Career Quests aligned with your target skills
+- Share your learning journey on Industry Pulse to demonstrate growth
+- Use hands-on projects and document them in your profile
+- Engage with mentors through Brandentifier's mentorship features
+
+## Skill Validation on Brandentifier
+- Showcase new capabilities through Nowboard opportunities
+- Share project outcomes and learnings on Industry Pulse
+- Get feedback from mentors and peers in the platform
+- Document your skill development progress in Career Capsule
+- Use external certifications only when Career Quests don't cover specific areas
 
 ${formatResponseWithPersonalization("", context).includes("Quick Response Options") ? "" : 
 `\n\nQuick Response Options: ${generateSmartQuickResponses(context).map(q => `"${q}"`).join(", ")}`}`;
