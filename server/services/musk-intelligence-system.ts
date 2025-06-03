@@ -156,7 +156,12 @@ Quick Response Options: "How do I upload my resume?", "What should I include in 
     return finalResponse;
   } catch (error) {
     console.error("Error in Musk intelligence system:", error);
-    return "I encountered an issue while processing your request. As your AI career assistant, I'll work on improving. Could you please try asking your question in a different way?";
+    
+    // Use a default intent for fallback
+    const fallbackIntent = "general";
+    
+    // Provide contextual fallback responses based on available data and user intent
+    return generateIntelligentFallback(message, context, fallbackIntent);
   }
 }
 
@@ -357,4 +362,139 @@ function calculateProfileCompleteness(context: MuskContext): number {
   if ((context.skills?.length || 0) > 0) score += 20;
   if ((context.educations?.length || 0) > 0) score += 20;
   return score;
+}
+
+/**
+ * Generate intelligent fallback responses when AI services are unavailable
+ */
+function generateIntelligentFallback(message: string, context: MuskContext, intent: string): string {
+  const userName = context.userData?.name || "Professional";
+  const userIdStr = context.userId?.toString();
+  const hasResumeData = !!context.resumeData || !!(userIdStr && (global as any).resumeContexts?.[userIdStr]);
+  const profileData = analyzeCareerProfile(context);
+  
+  // Generate contextual quick responses
+  const quickResponses = generateContextualQuickResponses(context);
+  
+  // Intent-based fallback responses
+  switch (intent) {
+    case 'networking':
+      return `# Networking Guidance
+
+Hello ${userName}! I can help you improve your networking strategy based on your profile.
+
+**Key Networking Approaches:**
+- Join professional associations in your industry
+- Attend virtual and in-person industry events
+- Engage meaningfully on LinkedIn with industry leaders
+- Reach out to alumni from your educational background
+- Participate in relevant online communities and forums
+
+**Your Profile Strengths for Networking:**
+${profileData.careerStage === 'entry_level' ? '- Fresh perspective and eagerness to learn' : '- Professional experience to share insights'}
+${profileData.primarySkills.length > 0 ? `- Technical expertise in: ${profileData.primarySkills.slice(0,3).join(', ')}` : '- Developing skill set'}
+${profileData.industryExperience.length > 0 ? `- Industry knowledge in ${profileData.industryExperience.join(', ')}` : '- Open to diverse industry connections'}
+
+Quick Response Options: ${quickResponses.map(r => `"${r}"`).join(", ")}`;
+
+    case 'career_growth':
+      return `# Career Growth Strategy
+
+Hi ${userName}! Based on your profile (${profileData.profileCompleteness}% complete), here's targeted growth advice:
+
+**Immediate Growth Actions:**
+- Identify 2-3 key skills to develop in your field
+- Seek mentorship from senior professionals
+- Document and quantify your current achievements
+- Set specific, measurable career milestones
+
+**Based on Your Career Stage (${profileData.careerStage}):**
+${profileData.careerStage === 'entry_level' ? '- Focus on building core competencies and gaining diverse experience' : ''}
+${profileData.careerStage === 'mid_career' ? '- Consider leadership opportunities and specialization' : ''}
+${profileData.careerStage === 'senior_level' ? '- Explore strategic roles and mentoring opportunities' : ''}
+
+${hasResumeData ? '**I notice you have resume data available. I can provide specific insights about your work experience once my analysis services are restored.**' : ''}
+
+Quick Response Options: ${quickResponses.map(r => `"${r}"`).join(", ")}`;
+
+    case 'skill_development':
+      return `# Skill Development Plan
+
+Hello ${userName}! Let me help you enhance your skillset strategically.
+
+**Current Skills Assessment:**
+${profileData.primarySkills.length > 0 ? `- Existing strengths: ${profileData.primarySkills.join(', ')}` : '- Ready to build foundational skills'}
+- Profile completion: ${profileData.profileCompleteness}%
+
+**Skill Development Strategy:**
+- Identify in-demand skills in your target industry
+- Choose learning methods that fit your schedule (online courses, bootcamps, certifications)
+- Practice skills through projects and real-world applications
+- Build a portfolio showcasing your new capabilities
+
+**Next Steps:**
+- Research job descriptions in your field to identify skill gaps
+- Set aside dedicated time weekly for skill development
+- Connect with professionals who have the skills you want to develop
+
+Quick Response Options: ${quickResponses.map(r => `"${r}"`).join(", ")}`;
+
+    case 'resume_feedback':
+      if (hasResumeData) {
+        return `# Resume Analysis
+
+Hello ${userName}! I can see you have resume data uploaded. Once my detailed analysis services are restored, I'll provide specific feedback on:
+
+**Resume Analysis Areas:**
+- Achievement quantification and impact statements
+- Skills alignment with target roles
+- Professional experience presentation
+- Industry-specific terminology optimization
+
+**General Resume Best Practices:**
+- Use action verbs and quantifiable results
+- Tailor content for each application
+- Keep formatting clean and professional
+- Include relevant keywords for ATS systems
+
+Quick Response Options: ${quickResponses.map(r => `"${r}"`).join(", ")}`;
+      } else {
+        return `# Resume Improvement Guide
+
+Hi ${userName}! I can help you create a compelling resume.
+
+**Key Resume Elements:**
+- Strong professional summary highlighting your value
+- Quantified achievements rather than job duties
+- Relevant skills section with proficiency levels
+- Clean, readable formatting with consistent styling
+
+**Getting Started:**
+- Upload your current resume for detailed analysis
+- Or start building your profile with work experiences
+- Focus on accomplishments over responsibilities
+
+Quick Response Options: ${quickResponses.map(r => `"${r}"`).join(", ")}`;
+      }
+
+    default:
+      return `# Career Guidance
+
+Hello ${userName}! I'm here to help with your professional development.
+
+**Your Profile Overview:**
+- Career Stage: ${profileData.careerStage.replace('_', ' ')}
+- Profile Completion: ${profileData.profileCompleteness}%
+${profileData.primarySkills.length > 0 ? `- Key Skills: ${profileData.primarySkills.slice(0,3).join(', ')}` : ''}
+${hasResumeData ? '- Resume data available for analysis' : ''}
+
+**I can assist you with:**
+- Career strategy and growth planning
+- Resume optimization and feedback
+- Skill development recommendations
+- Networking strategies
+- Interview preparation
+
+Quick Response Options: ${quickResponses.map(r => `"${r}"`).join(", ")}`;
+  }
 }

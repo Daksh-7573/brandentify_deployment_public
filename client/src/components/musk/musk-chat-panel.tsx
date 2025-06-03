@@ -829,21 +829,25 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
               placeholder="Type your message..."
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
-              className="w-full text-white placeholder:text-white/60 border-0"
+              className="w-full text-white placeholder:text-white/50 border-0 bg-transparent"
               disabled={isTyping || isUploading}
               style={{
-                background: 'rgba(255, 255, 255, 0.15)',
-                backdropFilter: 'blur(8px)',
-                border: '1px solid rgba(255, 255, 255, 0.25)',
-                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1)'
+                background: 'rgba(18, 18, 18, 0.85)',
+                backdropFilter: 'blur(20px)',
+                border: '1px solid rgba(255, 255, 255, 0.15)',
+                borderRadius: '12px',
+                boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 8px 32px rgba(0, 0, 0, 0.3)',
+                WebkitBackdropFilter: 'blur(20px)'
               }}
               onFocus={(e) => {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
-                e.currentTarget.style.border = '1px solid rgba(255, 255, 255, 0.35)';
+                e.currentTarget.style.background = 'rgba(18, 18, 18, 0.9)';
+                e.currentTarget.style.border = '1px solid rgba(255, 255, 255, 0.25)';
+                e.currentTarget.style.boxShadow = 'inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 8px 32px rgba(0, 0, 0, 0.4)';
               }}
               onBlur={(e) => {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
-                e.currentTarget.style.border = '1px solid rgba(255, 255, 255, 0.25)';
+                e.currentTarget.style.background = 'rgba(18, 18, 18, 0.85)';
+                e.currentTarget.style.border = '1px solid rgba(255, 255, 255, 0.15)';
+                e.currentTarget.style.boxShadow = 'inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 8px 32px rgba(0, 0, 0, 0.3)';
               }}
             />
           </div>
