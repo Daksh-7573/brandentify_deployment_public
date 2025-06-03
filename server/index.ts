@@ -13,6 +13,7 @@ import securityDashboardRoutes from "./security-dashboard";
 import { firebaseAuthRedirectHandler } from "./firebase-auth-handler";
 import { apiGateway } from "./services/api-gateway";
 import { messageQueue, TaskTypes } from "./services/message-queue";
+import { muskPulseScheduler } from "./services/musk-pulse-scheduler";
 
 const app = express();
 // Increase body size limit to handle file uploads (25MB)
@@ -186,6 +187,11 @@ messageQueue.registerHandler(TaskTypes.USER_ACTIVITY_LOG, async (payload) => {
 });
 
 console.log("Phase 3 microservices architecture initialized");
+
+// Start Musk Pulse automation system
+console.log("Starting Musk Pulse automation system...");
+muskPulseScheduler.start();
+console.log("Musk Pulse automation system started - scheduling pulses for 9 AM, 2 PM, and 7 PM daily");
 
 (async () => {
   const server = await registerRoutes(app);

@@ -321,7 +321,6 @@ Respond with JSON format:
       insightfulCount: 0,
       misinformedCount: 0,
       shareCount: 0,
-      comments: 0,
       isPublished: true,
       expiresAt: null
     };

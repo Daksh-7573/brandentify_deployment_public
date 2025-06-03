@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Musk Pulse Administration</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #f8fafc;
+            color: #334155;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        .status-active { background: #10b981; }
+        .status-inactive { background: #ef4444; }
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-right: 12px;
+            margin-bottom: 12px;
+        }
+        button:hover { background: #2563eb; }
+        button.danger { background: #ef4444; }
+        button.danger:hover { background: #dc2626; }
+        button.success { background: #10b981; }
+        button.success:hover { background: #059669; }
+        .log {
+            background: #f1f5f9;
+            padding: 16px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        .schedule-info {
+            background: #eff6ff;
+            border: 1px solid #dbeafe;
+            padding: 16px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+        input, select {
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🤖 Musk Pulse Administration</h1>
+        <p>Automated content generation for Industry Pulse</p>
+    </div>
+
+    <div class="card">
+        <h2>System Status</h2>
+        <div class="status">
+            <div class="status-dot" id="statusDot"></div>
+            <span id="statusText">Checking...</span>
+        </div>
+        <div class="schedule-info">
+            <strong>Daily Schedule:</strong><br>
+            • Morning Pulse: 9:00 AM<br>
+            • Afternoon Pulse: 2:00 PM<br>
+            • Evening Pulse: 7:00 PM<br>
+            • Event Monitoring: Every 30 minutes
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Manual Controls</h2>
+        <button id="startBtn" class="success">Start Automation</button>
+        <button id="stopBtn" class="danger">Stop Automation</button>
+        <button id="refreshBtn">Refresh Status</button>
+    </div>
+
+    <div class="card">
+        <h2>Generate Test Pulses</h2>
+        <select id="pulseType">
+            <option value="morning">Morning Pulse</option>
+            <option value="afternoon">Afternoon Pulse</option>
+            <option value="evening">Evening Pulse</option>
+        </select>
+        <button id="generateTestBtn">Generate Test Pulse</button>
+        
+        <h3>Event-Driven Pulse</h3>
+        <input type="text" id="industry" placeholder="Industry (e.g., Technology)" />
+        <input type="text" id="eventDesc" placeholder="Event description" />
+        <button id="generateEventBtn">Generate Event Pulse</button>
+    </div>
+
+    <div class="card">
+        <h2>Activity Log</h2>
+        <div class="log" id="activityLog">System initialized...\n</div>
+        <button onclick="clearLog()">Clear Log</button>
+    </div>
+
+    <script>
+        let logContent = 'System initialized...\n';
+
+        function log(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            logContent += `[${timestamp}] ${message}\n`;
+            document.getElementById('activityLog').textContent = logContent;
+            document.getElementById('activityLog').scrollTop = document.getElementById('activityLog').scrollHeight;
+        }
+
+        function clearLog() {
+            logContent = '';
+            document.getElementById('activityLog').textContent = '';
+        }
+
+        async function makeRequest(endpoint, method = 'GET', body = null) {
+            try {
+                const options = {
+                    method,
+                    headers: { 'Content-Type': 'application/json' }
+                };
+                if (body) options.body = JSON.stringify(body);
+                
+                const response = await fetch(`/api/musk-pulse${endpoint}`, options);
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.message || 'Request failed');
+                }
+                
+                return data;
+            } catch (error) {
+                log(`Error: ${error.message}`);
+                throw error;
+            }
+        }
+
+        async function updateStatus() {
+            try {
+                const status = await makeRequest('/status');
+                const isRunning = status.automation.isRunning;
+                
+                document.getElementById('statusDot').className = 
+                    `status-dot ${isRunning ? 'status-active' : 'status-inactive'}`;
+                document.getElementById('statusText').textContent = 
+                    `Automation ${isRunning ? 'Active' : 'Inactive'} - ${status.automation.activeIntervals} active intervals`;
+                
+                log(`Status updated: ${isRunning ? 'Active' : 'Inactive'}`);
+            } catch (error) {
+                document.getElementById('statusText').textContent = 'Error checking status';
+            }
+        }
+
+        async function startAutomation() {
+            try {
+                const result = await makeRequest('/start-automation', 'POST');
+                log(`Started: ${result.message}`);
+                await updateStatus();
+            } catch (error) {
+                log(`Failed to start automation: ${error.message}`);
+            }
+        }
+
+        async function stopAutomation() {
+            try {
+                const result = await makeRequest('/stop-automation', 'POST');
+                log(`Stopped: ${result.message}`);
+                await updateStatus();
+            } catch (error) {
+                log(`Failed to stop automation: ${error.message}`);
+            }
+        }
+
+        async function generateTestPulse() {
+            try {
+                const type = document.getElementById('pulseType').value;
+                const result = await makeRequest('/generate-test', 'POST', { type });
+                log(`Generated test ${type} pulse: ${result.message}`);
+            } catch (error) {
+                log(`Failed to generate test pulse: ${error.message}`);
+            }
+        }
+
+        async function generateEventPulse() {
+            try {
+                const industry = document.getElementById('industry').value;
+                const eventDescription = document.getElementById('eventDesc').value;
+                
+                if (!industry || !eventDescription) {
+                    log('Error: Industry and event description are required');
+                    return;
+                }
+                
+                const result = await makeRequest('/generate-event', 'POST', { 
+                    industry, 
+                    eventDescription 
+                });
+                log(`Generated event pulse for ${industry}: ${result.message}`);
+                
+                // Clear inputs
+                document.getElementById('industry').value = '';
+                document.getElementById('eventDesc').value = '';
+            } catch (error) {
+                log(`Failed to generate event pulse: ${error.message}`);
+            }
+        }
+
+        // Event listeners
+        document.getElementById('startBtn').addEventListener('click', startAutomation);
+        document.getElementById('stopBtn').addEventListener('click', stopAutomation);
+        document.getElementById('refreshBtn').addEventListener('click', updateStatus);
+        document.getElementById('generateTestBtn').addEventListener('click', generateTestPulse);
+        document.getElementById('generateEventBtn').addEventListener('click', generateEventPulse);
+
+        // Initialize
+        updateStatus();
+        
+        // Auto-refresh status every 30 seconds
+        setInterval(updateStatus, 30000);
+    </script>
+</body>
+</html>

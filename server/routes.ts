@@ -48,6 +48,7 @@ import muskFeedbackRoutes from "./routes-musk-feedback";
 import { setupServicesRoutes } from "./routes-services";
 import addProjectUpdateRoutes from "./routes-project-update";
 import careerCapsuleRoutes from "./routes-career-capsule";
+import muskPulseAutomationRoutes from "./routes-musk-pulse-automation";
 import aiMonitoringRoutes from "./routes-ai-monitoring";
 import { setupPersonalizedHashtagRoutes } from "./routes-personalized-hashtags";
 import notificationRoutes from "./routes-notifications";
@@ -6704,6 +6705,10 @@ ${extractedText.substring(0, 5000)}
   // Register AI monitoring and management routes
   apiRouter.use('/admin', aiMonitoringRoutes);
   console.log("AI monitoring routes loaded");
+
+  // Register Musk Pulse automation routes
+  apiRouter.use('/musk-pulse', muskPulseAutomationRoutes);
+  console.log("Musk Pulse automation routes loaded");
 
   // Add Musk resume upload route - import the working handler
   const { handleResumeUploadFixed } = await import('./routes-musk-resume-fix');
