@@ -562,36 +562,54 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
   };
   
   return (
-    <Card className="fixed bottom-4 right-4 w-96 h-[80vh] max-h-[700px] shadow-xl bg-background border rounded-xl overflow-hidden z-50">
-      <motion.div
-        className="flex flex-col h-full"
-        variants={panelVariants}
-        initial="hidden"
-        animate="visible"
-        exit="exit"
-      >
+    <motion.div
+      className="fixed bottom-4 right-4 w-96 h-[80vh] max-h-[700px] z-50 flex flex-col overflow-hidden rounded-xl"
+      variants={panelVariants}
+      initial="hidden"
+      animate="visible"
+      exit="exit"
+      style={{
+        background: 'rgba(15, 23, 42, 0.7)',
+        backdropFilter: 'blur(16px)',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4)'
+      }}
+    >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b">
+        <div 
+          className="flex items-center justify-between p-4"
+          style={{
+            borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+            background: 'rgba(255, 255, 255, 0.05)'
+          }}
+        >
           <div className="flex items-center gap-3">
-            <Avatar className="h-10 w-10 bg-primary/10">
-              <img 
-                src="/images/musk-ai-avatar.png" 
-                alt="Musk AI"
-                onError={(e) => {
-                  e.currentTarget.src = "https://ui-avatars.com/api/?name=Musk&background=6366f1&color=fff";
+            <div 
+              className="h-10 w-10 rounded-full flex items-center justify-center relative"
+              style={{
+                background: 'linear-gradient(135deg, #3B82F6, #6366F1)',
+                boxShadow: '0 8px 32px rgba(59, 130, 246, 0.3)'
+              }}
+            >
+              <span className="text-white font-bold text-sm">M</span>
+              <div 
+                className="absolute inset-0 rounded-full"
+                style={{
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  backdropFilter: 'blur(4px)'
                 }}
               />
-            </Avatar>
+            </div>
             <div>
-              <h3 className="font-semibold text-lg">Musk</h3>
-              <p className="text-xs text-muted-foreground">AI Career Assistant</p>
+              <h3 className="font-semibold text-lg text-white">Musk</h3>
+              <p className="text-xs" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>AI Career Assistant</p>
             </div>
           </div>
           <Button 
             variant="ghost" 
             size="icon" 
             onClick={onClose}
-            className="h-8 w-8 rounded-full hover:bg-accent"
+            className="h-8 w-8 rounded-full text-white hover:bg-white/10 border-0"
           >
             <X className="h-4 w-4" />
           </Button>
@@ -606,9 +624,19 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
                 className={cn(
                   "flex flex-col rounded-lg p-3 animate-in fade-in-0 zoom-in-95 duration-300",
                   message.sender === 'user' 
-                    ? "ml-auto bg-primary text-primary-foreground rounded-br-none max-w-[85%]" 
-                    : "mr-auto bg-muted rounded-bl-none max-w-[90%]"
+                    ? "ml-auto rounded-br-none max-w-[85%]" 
+                    : "mr-auto rounded-bl-none max-w-[90%]"
                 )}
+                style={message.sender === 'user' ? {
+                  background: 'linear-gradient(135deg, #3B82F6, #0EA5E9)',
+                  color: 'white',
+                  boxShadow: '0 8px 32px rgba(59, 130, 246, 0.3)'
+                } : {
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  backdropFilter: 'blur(8px)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  color: 'white'
+                }}
               >
                 {/* Show thinking indicator */}
                 {message.thinking ? (
@@ -655,8 +683,19 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
                         key={i}
                         variant="secondary"
                         size="sm"
-                        className="text-xs py-1 px-2 h-auto bg-background/80 hover:bg-background text-left w-full justify-start overflow-hidden whitespace-normal"
+                        className="text-xs py-1 px-2 h-auto text-left w-full justify-start overflow-hidden whitespace-normal text-white border-0"
                         onClick={() => handleQuickResponse(response)}
+                        style={{
+                          background: 'rgba(255, 255, 255, 0.05)',
+                          backdropFilter: 'blur(4px)',
+                          border: '1px solid rgba(255, 255, 255, 0.1)'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
+                        }}
                       >
                         <span className="line-clamp-2">{response}</span>
                       </Button>
@@ -669,7 +708,12 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
           </div>
         </ScrollArea>
         
-        <Separator />
+        <div 
+          style={{
+            height: '1px',
+            background: 'rgba(255, 255, 255, 0.1)'
+          }}
+        />
         
         {/* Hidden file inputs */}
         <input
@@ -692,15 +736,34 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
             and will instead show suggested questions directly in the chat */}
         
         {/* File upload buttons */}
-        <div className="flex items-center justify-center gap-2 px-4 py-2 border-t border-border/50">
+        <div 
+          className="flex items-center justify-center gap-2 px-4 py-2"
+          style={{
+            borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+            background: 'rgba(255, 255, 255, 0.02)'
+          }}
+        >
           <Button
             type="button"
             variant="outline"
             size="sm"
-            className="flex-1 flex items-center justify-center gap-2"
+            className="flex-1 flex items-center justify-center gap-2 text-white border-0"
             disabled={isTyping || isUploading}
             title="Upload Resume"
             onClick={triggerResumeUpload}
+            style={{
+              background: 'rgba(255, 255, 255, 0.05)',
+              backdropFilter: 'blur(4px)',
+              border: '1px solid rgba(255, 255, 255, 0.1)'
+            }}
+            onMouseEnter={(e) => {
+              if (!isTyping && !isUploading) {
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+              }
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
+            }}
           >
             <FileText className="h-4 w-4" />
             <span>Upload Resume</span>
@@ -709,10 +772,23 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
             type="button"
             variant="outline"
             size="sm"
-            className="flex-1 flex items-center justify-center gap-2"
+            className="flex-1 flex items-center justify-center gap-2 text-white border-0"
             disabled={isTyping || isUploading}
             title="Upload Pitch Deck"
             onClick={triggerPitchDeckUpload}
+            style={{
+              background: 'rgba(255, 255, 255, 0.05)',
+              backdropFilter: 'blur(4px)',
+              border: '1px solid rgba(255, 255, 255, 0.1)'
+            }}
+            onMouseEnter={(e) => {
+              if (!isTyping && !isUploading) {
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+              }
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
+            }}
           >
             <PresentationIcon className="h-4 w-4" />
             <span>Upload Pitch Deck</span>
@@ -727,16 +803,25 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
               placeholder="Type your message..."
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
-              className="w-full"
+              className="w-full text-white placeholder:text-white/60 border-0"
               disabled={isTyping || isUploading}
+              style={{
+                background: 'rgba(255, 255, 255, 0.05)',
+                backdropFilter: 'blur(8px)',
+                border: '1px solid rgba(255, 255, 255, 0.1)'
+              }}
             />
           </div>
           <Button 
             type="submit" 
             variant="default" 
-            className="px-3 gap-2"
+            className="px-3 gap-2 text-white border-0"
             disabled={!inputValue.trim() || isTyping || isUploading}
             title="Send message"
+            style={{
+              background: 'linear-gradient(135deg, #3B82F6, #0EA5E9)',
+              boxShadow: '0 8px 32px rgba(59, 130, 246, 0.3)'
+            }}
           >
             <Send className="h-4 w-4" />
             <span>Send</span>
@@ -745,20 +830,33 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
         
         {/* Upload progress indicator */}
         {isUploading && (
-          <div className="px-4 py-2 bg-primary/10 border-t">
-            <div className="text-xs mb-1 flex justify-between">
+          <div 
+            className="px-4 py-2"
+            style={{
+              background: 'rgba(59, 130, 246, 0.1)',
+              borderTop: '1px solid rgba(255, 255, 255, 0.1)'
+            }}
+          >
+            <div className="text-xs mb-1 flex justify-between text-white">
               <span>Uploading {uploadType === 'resume' ? 'resume' : 'pitch deck'}...</span>
               <span>{uploadProgress}%</span>
             </div>
-            <div className="h-1 bg-muted rounded-full overflow-hidden">
+            <div 
+              className="h-1 rounded-full overflow-hidden"
+              style={{
+                background: 'rgba(255, 255, 255, 0.1)'
+              }}
+            >
               <div 
-                className="h-full bg-primary rounded-full transition-all duration-300 ease-in-out" 
-                style={{ width: `${uploadProgress}%` }}
+                className="h-full rounded-full transition-all duration-300 ease-in-out"
+                style={{ 
+                  width: `${uploadProgress}%`,
+                  background: 'linear-gradient(135deg, #3B82F6, #0EA5E9)'
+                }}
               ></div>
             </div>
           </div>
         )}
       </motion.div>
-    </Card>
   );
 }
