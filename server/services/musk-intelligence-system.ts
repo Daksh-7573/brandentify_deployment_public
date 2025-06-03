@@ -281,7 +281,7 @@ function determineUserIntent(message: string, context: MuskContext): string {
 }
 
 /**
- * Format AI response with personalization
+ * Format AI response with personalization and contextual quick responses
  */
 function formatResponseWithPersonalization(response: string, context: MuskContext): string {
   let formattedResponse = response;
@@ -294,9 +294,12 @@ function formatResponseWithPersonalization(response: string, context: MuskContex
     }
   }
 
-  // Add context-specific formatting
-  if (context.page && !formattedResponse.includes("follow-up")) {
-    formattedResponse += "\n\nFeel free to ask any follow-up questions about your career development!";
+  // Generate contextual quick responses
+  const quickResponses = generateContextualQuickResponses(context);
+  
+  // Add contextual quick responses if not already present
+  if (!formattedResponse.includes("Quick Response Options:")) {
+    formattedResponse += `\n\nQuick Response Options: ${quickResponses.map(r => `"${r}"`).join(", ")}`;
   }
 
   return formattedResponse;
