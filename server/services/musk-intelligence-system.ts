@@ -79,6 +79,10 @@ export async function generatePersonalizedResponse(
   message: string,
   context: MuskContext
 ): Promise<string> {
+  // Determine user intent first to ensure it's available in catch block
+  const intent = determineUserIntent(message, context);
+  console.log(`Detected intent: ${intent}`);
+
   try {
     console.log("Musk intelligence system processing message with context:", {
       message: message.substring(0, 50) + "...",
@@ -124,10 +128,6 @@ Quick Response Options: "How do I upload my resume?", "What should I include in 
       }
     }
 
-    // Determine user intent
-    const intent = determineUserIntent(message, context);
-    console.log(`Detected intent: ${intent}`);
-
     // Build user profile for local AI service
     const userProfile = {
       user: {
@@ -157,11 +157,8 @@ Quick Response Options: "How do I upload my resume?", "What should I include in 
   } catch (error) {
     console.error("Error in Musk intelligence system:", error);
     
-    // Use the detected intent for fallback
-    const fallbackIntent = intent;
-    
     // Provide contextual fallback responses based on available data and user intent
-    return generateIntelligentFallback(message, context, fallbackIntent);
+    return generateIntelligentFallback(message, context, intent);
   }
 }
 
