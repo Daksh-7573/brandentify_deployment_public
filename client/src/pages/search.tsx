@@ -713,10 +713,10 @@ const SearchPage = () => {
                 </div>
                 
                 {showMatchForm && (
-                  <Card className="bg-gray-900/60 backdrop-blur-md border border-white/10 shadow-xl mb-8">
+                  <Card className="bg-black/20 backdrop-blur-md border border-white/10 shadow-xl mb-8">
                     <CardHeader>
                       <CardTitle className="text-white">Connection Preferences</CardTitle>
-                      <CardDescription className="text-gray-300">
+                      <CardDescription className="text-white/80">
                         Define what you're looking for to find the best matches
                       </CardDescription>
                     </CardHeader>
