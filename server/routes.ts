@@ -5416,6 +5416,33 @@ ${extractedText.substring(0, 5000)}
     }
   });
   
+  // User Preferences endpoint
+  apiRouter.get("/user-preferences", async (req: Request, res: Response) => {
+    try {
+      // For now, return default preferences structure
+      // This can be extended to fetch from database when user preferences table is implemented
+      res.json({
+        theme: "dark",
+        notifications: {
+          email: true,
+          push: true,
+          sms: false
+        },
+        privacy: {
+          profileVisibility: "public",
+          contactInfo: "connections"
+        },
+        preferences: {
+          language: "en",
+          timezone: "UTC"
+        }
+      });
+    } catch (error) {
+      console.error("Error fetching user preferences:", error);
+      res.status(500).json({ error: "Failed to fetch user preferences" });
+    }
+  });
+
   // News Pulse routes
   apiRouter.post("/news-pulses", async (req: Request, res: Response) => {
     try {
