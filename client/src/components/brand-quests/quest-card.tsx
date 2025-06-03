@@ -111,7 +111,7 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
     quest.muskResponse;
   
   return (
-    <div className="w-full bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-5 shadow-lg transition-all hover:shadow-xl hover:bg-white/15 hover:scale-[1.02] duration-300">
+    <div className="w-full bg-black/20 backdrop-blur-md border border-white/10 rounded-xl p-5 shadow-lg transition-all hover:shadow-xl hover:bg-black/30 hover:scale-[1.02] duration-300">
       <div className="pb-2">
         <div className="flex justify-between items-start">
           <div className="flex-1">
@@ -120,16 +120,16 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
               <h3 className="text-lg font-semibold text-white">{questDefinition.title}</h3>
             </div>
             {questDefinition.badgeReward && (
-              <Badge variant="outline" className="ml-7 mt-1 bg-white/10 text-white border-white/20 backdrop-blur-sm">
+              <Badge variant="outline" className="ml-7 mt-1 bg-black/30 text-white border-white/10 backdrop-blur-sm">
                 Award: {getBadgeLabel(questDefinition.badgeReward)}
               </Badge>
             )}
           </div>
           <Badge 
             className={
-              isComplete ? "bg-white/20 text-green-300 hover:bg-white/30 border-white/30 backdrop-blur-sm" : 
-              isExpired ? "bg-white/15 text-red-300 border-white/20 hover:bg-white/25 backdrop-blur-sm" : 
-              "bg-white/15 text-blue-300 border-white/20 hover:bg-white/25 backdrop-blur-sm"
+              isComplete ? "bg-black/40 text-green-300 hover:bg-black/50 border-white/10 backdrop-blur-sm" : 
+              isExpired ? "bg-black/40 text-red-300 border-white/10 hover:bg-black/50 backdrop-blur-sm" : 
+              "bg-black/40 text-blue-300 border-white/10 hover:bg-black/50 backdrop-blur-sm"
             }
           >
             {getQuestStatusLabel(quest.status)}
@@ -155,12 +155,12 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
           </div>
           
           {muskTipContent && (
-            <div className="mt-3 bg-white/10 p-3 rounded-lg border border-white/20 backdrop-blur-sm">
+            <div className="mt-3 bg-black/30 p-3 rounded-lg border border-white/10 backdrop-blur-sm">
               <div className="flex items-center gap-2 text-sm font-medium mb-1 text-white">
                 <span>⚡</span>
                 <span>Musk's Tip</span>
               </div>
-              <p className="text-sm text-white/80">{muskTipContent}</p>
+              <p className="text-sm text-white/90">{muskTipContent}</p>
               
               {/* Add StaticHashtagSuggestions component for pulse creation quests */}
               {(questDefinition.type === 'pulse_creation' || 
