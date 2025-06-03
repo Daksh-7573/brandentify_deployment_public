@@ -496,17 +496,23 @@ const Radar = () => {
         },
         (error) => {
           setLocationStatus('denied');
-          console.error('Geolocation error:', error);
-          // Set default coordinates for demo purposes
+          console.log('Geolocation permission denied or unavailable, using default location');
+          // Set San Francisco coordinates as fallback to show nearby users
           setCoordinates({
             lat: 37.7749,
             lng: -122.4194
           });
+        },
+        {
+          enableHighAccuracy: false,
+          timeout: 5000,
+          maximumAge: 300000
         }
       );
     } else {
       setLocationStatus('denied');
-      // Set default coordinates for demo purposes
+      console.log('Geolocation not supported, using default location');
+      // Set San Francisco coordinates as fallback
       setCoordinates({
         lat: 37.7749,
         lng: -122.4194

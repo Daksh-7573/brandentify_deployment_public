@@ -35,8 +35,8 @@ export async function updateUserGeolocation(req: Request, res: Response) {
     
     // Update the user's geolocation
     await db.update(users).set({
-      geoLatitude: lat,
-      geoLongitude: lng,
+      geoLatitude: lat.toString(),
+      geoLongitude: lng.toString(),
       geoVisibleNearby,
       geoLastUpdated: new Date()
     }).where(eq(users.id, parseInt(userId, 10)));
