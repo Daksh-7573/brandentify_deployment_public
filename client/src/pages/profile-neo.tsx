@@ -354,6 +354,8 @@ export default function ProfileNeo() {
                     
                     <div className="text-center mt-4">
                       <h2 className="text-xl font-bold text-white">{userData?.name}</h2>
+                      <p className="text-white/80 text-sm">{userData?.title || "Add your job title"}</p>
+                      <p className="text-white/60 text-xs mt-1">{userData?.location || "Add your location"}</p>
                       
                       {/* Edit Profile Button */}
                       <button
@@ -369,15 +371,23 @@ export default function ProfileNeo() {
                     </div>
                   </div>
                   
-                  {/* Profile Info & Stats - Now includes title and location on the right */}
+                  {/* Profile Info & Stats */}
                   <div className="flex-1">
                     <div className="space-y-4">
-                      {/* Title and Location moved to right side */}
-                      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-                        <div>
-                          <p className="text-white/80 text-lg font-medium">{userData?.title || "Add your job title"}</p>
-                          <p className="text-white/60 text-sm">{userData?.location || "Add your location"}</p>
+                      {/* Professional Overview */}
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <h3 className="text-lg font-medium text-white">Professional Overview</h3>
+                          <button
+                            onClick={() => setShowEditAboutDialog(true)}
+                            className="text-white/60 hover:text-white transition-colors"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </button>
                         </div>
+                        <p className="text-white/80 text-sm">
+                          {userData?.about || "Add a professional summary to introduce yourself to other professionals."}
+                        </p>
                       </div>
                       
                       {/* Industry & Domain */}
@@ -441,15 +451,13 @@ export default function ProfileNeo() {
               </div>
             </NeoGlassSection>
             
-
-            
             {/* Specific Services as a separate section */}
             <Services />
             
-            {/* 3. What I'm Good At (Skills) - Temporarily disabled to fix infinite loop */}
-            {/* <NeoGlassSection className="mb-6">
-              <Skills />
-            </NeoGlassSection> */}
+            {/* 3. What I'm Good At (Skills) */}
+            <NeoGlassSection className="mb-6">
+              <Skills userFirebaseId={user.uid} userNumericId={userData?.id} />
+            </NeoGlassSection>
             
             {/* 4. Specific Services are included in the Services component */}
             
@@ -466,6 +474,18 @@ export default function ProfileNeo() {
             {/* 7. Academic Background (Education) */}
             <NeoGlassSection className="mb-6">
               <Education userFirebaseId={user.uid} userNumericId={userData?.id} />
+            </NeoGlassSection>
+            
+            {/* 8. Personal Information */}
+            <NeoGlassSection className="mb-6">
+              <div className="p-4">
+                <h3 className="text-lg font-medium text-white mb-4">Personal Information</h3>
+                {userData ? (
+                  <PersonalInfoSection userData={userData} />
+                ) : (
+                  <div className="text-white/70">Loading personal information...</div>
+                )}
+              </div>
             </NeoGlassSection>
             
             {/* Account Actions */}
