@@ -735,7 +735,65 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
         {/* We're removing the separate Suggested Questions section 
             and will instead show suggested questions directly in the chat */}
         
-
+        {/* File upload buttons */}
+        <div 
+          className="flex items-center justify-center gap-2 px-4 py-2"
+          style={{
+            borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+            background: 'rgba(255, 255, 255, 0.02)'
+          }}
+        >
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="flex-1 flex items-center justify-center gap-2 text-white border-0"
+            disabled={isTyping || isUploading}
+            title="Upload Resume"
+            onClick={triggerResumeUpload}
+            style={{
+              background: 'rgba(255, 255, 255, 0.05)',
+              backdropFilter: 'blur(4px)',
+              border: '1px solid rgba(255, 255, 255, 0.1)'
+            }}
+            onMouseEnter={(e) => {
+              if (!isTyping && !isUploading) {
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+              }
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
+            }}
+          >
+            <FileText className="h-4 w-4" />
+            <span>Upload Resume</span>
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="flex-1 flex items-center justify-center gap-2 text-white border-0"
+            disabled={isTyping || isUploading}
+            title="Upload Pitch Deck"
+            onClick={triggerPitchDeckUpload}
+            style={{
+              background: 'rgba(255, 255, 255, 0.05)',
+              backdropFilter: 'blur(4px)',
+              border: '1px solid rgba(255, 255, 255, 0.1)'
+            }}
+            onMouseEnter={(e) => {
+              if (!isTyping && !isUploading) {
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+              }
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
+            }}
+          >
+            <PresentationIcon className="h-4 w-4" />
+            <span>Upload Pitch Deck</span>
+          </Button>
+        </div>
         
         {/* Input form */}
         <form onSubmit={handleSubmit} className="p-4 pt-2 flex gap-2">
