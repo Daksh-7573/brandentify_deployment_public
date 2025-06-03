@@ -94,13 +94,15 @@ function determineUserIntent(message: string, context: MuskContext): string {
   
   // Intent mapping based on keywords
   const intentMap = {
-    career_growth: ["next step", "advance", "promotion", "grow", "progress"],
+    industry_trends: ["industries", "industry", "growing", "trending", "hot sectors", "market trends", "emerging markets"],
+    career_growth: ["next step", "advance", "promotion", "progress", "career development"],
     skill_development: ["skills", "learn", "improve", "certification", "courses"],
     career_change: ["change career", "switch", "transition", "new field"],
     interview_prep: ["interview", "prepare", "questions", "assessment"],
     salary_negotiation: ["salary", "compensation", "negotiate", "raise"],
     networking: ["network", "connect", "linkedin", "contacts"],
-    resume_feedback: ["resume", "cv", "profile", "application"]
+    resume_feedback: ["resume", "cv", "profile", "application"],
+    work_experience: ["experience", "internship", "entry level", "first job"]
   };
 
   // Find best matching intent
@@ -262,6 +264,9 @@ function generateIntelligentFallbackResponse(message: string, context: MuskConte
 
   // Generate contextual response based on intent and user profile
   switch (intent) {
+    case 'industry_trends':
+      return generateIndustryTrendsAdvice(userName, context);
+    
     case 'networking':
       return generateNetworkingAdvice(userName, userTitle, userIndustry, hasExperiences, context);
     
@@ -286,6 +291,50 @@ function generateIntelligentFallbackResponse(message: string, context: MuskConte
     default:
       return generateGeneralCareerAdvice(userName, userTitle, context);
   }
+}
+
+function generateIndustryTrendsAdvice(userName: string, context: MuskContext): string {
+  return `Hi ${userName}! Here are the fastest-growing industries and career opportunities:
+
+# Top Growing Industries for 2025
+
+## Technology & AI
+- **Artificial Intelligence & Machine Learning**: AI engineers, data scientists, prompt engineers
+- **Cybersecurity**: Security analysts, ethical hackers, compliance specialists
+- **Cloud Computing**: Cloud architects, DevOps engineers, solutions architects
+- **Software Development**: Full-stack developers, mobile app developers, API specialists
+
+## Healthcare & Biotechnology
+- **Digital Health**: Telemedicine specialists, health informatics, medical device engineers
+- **Mental Health Services**: Therapists, counselors, wellness coaches
+- **Biotechnology**: Research scientists, clinical trial coordinators, regulatory affairs
+- **Elder Care**: Geriatric care specialists, home health aides, care coordinators
+
+## Green Energy & Sustainability
+- **Renewable Energy**: Solar/wind technicians, energy analysts, project managers
+- **Environmental Consulting**: Sustainability consultants, environmental engineers
+- **Electric Vehicles**: Battery engineers, charging infrastructure specialists
+- **Green Construction**: LEED specialists, sustainable design architects
+
+## E-commerce & Digital Marketing
+- **Digital Marketing**: SEO specialists, content creators, social media managers
+- **E-commerce Operations**: Supply chain analysts, logistics coordinators
+- **User Experience**: UX/UI designers, product managers, conversion specialists
+- **Data Analytics**: Business analysts, marketing analysts, growth hackers
+
+## Financial Technology
+- **Fintech**: Blockchain developers, payment processing specialists
+- **Digital Banking**: Mobile banking specialists, financial advisors
+- **Investment Technology**: Robo-advisor developers, algorithmic trading specialists
+- **Regulatory Technology**: Compliance automation, risk management
+
+## Remote Work Infrastructure
+- **Virtual Collaboration**: Platform developers, community managers
+- **Digital Training**: Instructional designers, e-learning specialists
+- **Remote Work Consulting**: Productivity coaches, virtual team leaders
+
+${formatResponseWithPersonalization("", context).includes("Quick Response Options") ? "" : 
+`\n\nQuick Response Options: ${generateSmartQuickResponses(context).map(q => `"${q}"`).join(", ")}`}`;
 }
 
 function generateNetworkingAdvice(userName: string, userTitle: string, userIndustry: string | null | undefined, hasExperiences: boolean, context: MuskContext): string {
