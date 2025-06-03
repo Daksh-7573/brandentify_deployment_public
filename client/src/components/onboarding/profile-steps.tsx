@@ -134,7 +134,7 @@ const stepMessages = [
 ];
 
 type FormData = {
-  // Step 1: All About Me
+  // Step 1: Professional Overview
   name: string;
   photoURL: string | null;
   title: string;

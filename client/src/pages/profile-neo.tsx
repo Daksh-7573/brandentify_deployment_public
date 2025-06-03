@@ -136,7 +136,7 @@ export default function ProfileNeo() {
     },
     onSuccess: () => {
       toast({
-        title: "About me updated",
+        title: "Professional overview updated",
         description: "Your professional summary has been updated successfully."
       });
       setShowEditAboutDialog(false);
@@ -374,10 +374,10 @@ export default function ProfileNeo() {
                   {/* Profile Info & Stats */}
                   <div className="flex-1">
                     <div className="space-y-4">
-                      {/* About Me */}
+                      {/* Professional Overview */}
                       <div>
                         <div className="flex items-center justify-between mb-2">
-                          <h3 className="text-lg font-medium text-white">About Me</h3>
+                          <h3 className="text-lg font-medium text-white">Professional Overview</h3>
                           <button
                             onClick={() => setShowEditAboutDialog(true)}
                             className="text-white/60 hover:text-white transition-colors"
