@@ -480,7 +480,11 @@ export default function ProfileNeo() {
             <NeoGlassSection className="mb-6">
               <div className="p-4">
                 <h3 className="text-lg font-medium text-white mb-4">Personal Information</h3>
-                {userData && <PersonalInfoSection userData={userData} />}
+                {userData ? (
+                  <PersonalInfoSection userData={userData} />
+                ) : (
+                  <div className="text-white/70">Loading personal information...</div>
+                )}
               </div>
             </NeoGlassSection>
             
