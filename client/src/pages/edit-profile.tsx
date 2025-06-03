@@ -394,7 +394,7 @@ export default function EditProfilePage() {
   
   // Map tab names to more user-friendly display names
   const tabDisplayNames: Record<string, { label: string, icon: React.ReactNode }> = {
-    "all about me": { label: "All About Me", icon: <User className="h-4 w-4 mr-2" /> },
+    "all about me": { label: "Professional Overview", icon: <User className="h-4 w-4 mr-2" /> },
     "what i'm good at": { label: "What I'm Good At", icon: <Sparkles className="h-4 w-4 mr-2" /> },
     "what i offer": { label: "What I Offer", icon: <Briefcase className="h-4 w-4 mr-2" /> },
     "showcase": { label: "Showcase", icon: <Folder className="h-4 w-4 mr-2" /> },
