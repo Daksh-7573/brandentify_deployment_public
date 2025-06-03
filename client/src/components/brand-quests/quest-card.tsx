@@ -111,7 +111,7 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
     quest.muskResponse;
   
   return (
-    <div className="w-full bg-gray-900/60 backdrop-blur-md border border-white/5 rounded-xl p-5 shadow-md transition-all hover:shadow-lg hover:bg-gray-900/70">
+    <div className="w-full bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-5 shadow-lg transition-all hover:shadow-xl hover:bg-white/15 hover:scale-[1.02] duration-300">
       <div className="pb-2">
         <div className="flex justify-between items-start">
           <div className="flex-1">
@@ -120,40 +120,47 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
               <h3 className="text-lg font-semibold text-white">{questDefinition.title}</h3>
             </div>
             {questDefinition.badgeReward && (
-              <Badge variant="outline" className="ml-7 mt-1 bg-gray-800/80 text-white border-white/10">
+              <Badge variant="outline" className="ml-7 mt-1 bg-white/10 text-white border-white/20 backdrop-blur-sm">
                 Award: {getBadgeLabel(questDefinition.badgeReward)}
               </Badge>
             )}
           </div>
           <Badge 
             className={
-              isComplete ? "bg-white/20 text-white hover:bg-white/30" : 
-              isExpired ? "bg-red-500/20 text-white border-red-500/20 hover:bg-red-500/30" : 
-              "bg-blue-500/20 text-white border-blue-500/20 hover:bg-blue-500/30"
+              isComplete ? "bg-green-500/20 text-white hover:bg-green-500/30 border-green-500/30 backdrop-blur-sm" : 
+              isExpired ? "bg-red-500/20 text-white border-red-500/30 hover:bg-red-500/30 backdrop-blur-sm" : 
+              "bg-blue-500/20 text-white border-blue-500/30 hover:bg-blue-500/30 backdrop-blur-sm"
             }
           >
             {getQuestStatusLabel(quest.status)}
           </Badge>
         </div>
-        <p className="ml-7 mt-1 text-white/70 text-sm">
+        <p className="ml-7 mt-1 text-white/80 text-sm">
           {questDefinition.description}
         </p>
       </div>
       <div className="py-3">
-        <div className="space-y-2">
-          <div className="flex justify-between text-sm text-white/60 mb-1">
-            <span>Progress: {quest.progress} / {questDefinition.targetCount}</span>
-            <span>+{questDefinition.xpReward} XP</span>
+        <div className="space-y-3">
+          <div className="flex justify-between text-sm text-white/70 mb-2">
+            <span className="font-medium">Progress: {quest.progress} / {questDefinition.targetCount}</span>
+            <span className="text-blue-300 font-medium">+{questDefinition.xpReward} XP</span>
           </div>
-          <Progress value={progressPercentage} className="h-2 bg-gray-800/60" />
+          <div className="relative">
+            <div className="w-full bg-white/10 rounded-full h-2 backdrop-blur-sm border border-white/20">
+              <div 
+                className="bg-gradient-to-r from-blue-400 to-purple-500 h-2 rounded-full transition-all duration-500 shadow-lg shadow-blue-500/20"
+                style={{ width: `${progressPercentage}%` }}
+              ></div>
+            </div>
+          </div>
           
           {muskTipContent && (
-            <div className="mt-3 bg-gray-800/40 p-3 rounded-md border border-white/5">
+            <div className="mt-3 bg-white/10 p-3 rounded-lg border border-white/20 backdrop-blur-sm">
               <div className="flex items-center gap-2 text-sm font-medium mb-1 text-white">
                 <span>⚡</span>
                 <span>Musk's Tip</span>
               </div>
-              <p className="text-sm text-white/70">{muskTipContent}</p>
+              <p className="text-sm text-white/80">{muskTipContent}</p>
               
               {/* Add StaticHashtagSuggestions component for pulse creation quests */}
               {(questDefinition.type === 'pulse_creation' || 

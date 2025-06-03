@@ -44,34 +44,34 @@ export function XpProgressBar({ balance, monthlyEarned, lifetimeEarned, classNam
   const progressPercentage = Math.min(100, Math.floor((progressInCurrentLevel / xpRange) * 100));
   
   return (
-    <div className={cn("space-y-2", className)}>
+    <div className={cn("space-y-3", className)}>
       <div className="flex justify-between items-center">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Badge variant="secondary" className="px-3 py-1.5 font-bold text-md">
+                <Badge variant="secondary" className="px-3 py-1.5 font-bold text-md bg-white/10 text-white border-white/20 backdrop-blur-sm hover:bg-white/15">
                   LVL {currentLevelInfo.level}
                 </Badge>
               </TooltipTrigger>
-              <TooltipContent>
+              <TooltipContent className="bg-white/10 backdrop-blur-md border border-white/20 text-white">
                 <p>Your current brand level</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
           
           <div className="text-sm font-medium">
-            <span className="text-yellow-500 dark:text-yellow-400">{balance} XP</span>
+            <span className="text-yellow-300 font-semibold">{balance} XP</span>
           </div>
         </div>
         
-        <div className="text-sm text-muted-foreground">
+        <div className="text-sm text-white/70">
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <span>{progressInCurrentLevel} / {xpRange} XP to Level {nextLevelInfo.level}</span>
+                <span className="font-medium">{progressInCurrentLevel} / {xpRange} XP to Level {nextLevelInfo.level}</span>
               </TooltipTrigger>
-              <TooltipContent className="space-y-2 w-56">
+              <TooltipContent className="space-y-2 w-56 bg-white/10 backdrop-blur-md border border-white/20 text-white">
                 <p>Monthly XP: {monthlyEarned} XP</p>
                 <p>Lifetime earned: {lifetimeEarned} XP</p>
                 <p>Current balance: {balance} XP</p>
@@ -82,11 +82,14 @@ export function XpProgressBar({ balance, monthlyEarned, lifetimeEarned, classNam
         </div>
       </div>
       
-      {/* Apply gradient via Tailwind classes targeting the indicator div */}
-      <Progress 
-        value={progressPercentage} 
-        className="h-3 [&>div]:bg-gradient-to-r [&>div]:from-yellow-500 [&>div]:to-yellow-300" 
-      />
+      <div className="relative">
+        <div className="w-full bg-white/10 rounded-full h-3 backdrop-blur-sm border border-white/20">
+          <div 
+            className="bg-gradient-to-r from-yellow-400 to-amber-500 h-3 rounded-full transition-all duration-500 shadow-lg shadow-yellow-500/20"
+            style={{ width: `${progressPercentage}%` }}
+          ></div>
+        </div>
+      </div>
     </div>
   );
 }
