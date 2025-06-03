@@ -750,11 +750,11 @@ function SearchPage() {
                     </div>
                     
                     {showMatchForm && (
-                      <Card className="bg-black/20 backdrop-blur-md border border-white/10 shadow-xl mb-8">
-                        <CardHeader>
-                          <CardTitle className="text-white">Connection Preferences</CardTitle>
-                          <CardDescription className="text-white/80">
-                            Define what you're looking for to find the best matches
+                      <Card className="neo-glass-card mb-8">
+                        <CardHeader className="pb-4">
+                          <CardTitle className="text-white text-xl font-semibold">Smart Connection Preferences</CardTitle>
+                          <CardDescription className="text-white/70">
+                            Define your criteria to discover the most relevant professional connections
                           </CardDescription>
                         </CardHeader>
                         <CardContent>
@@ -876,32 +876,32 @@ function SearchPage() {
                     )}
                     
                     {showMatchResults && (
-                      <Card className="bg-gray-900/60 backdrop-blur-md border border-white/10 shadow-xl">
-                        <CardHeader>
-                          <CardTitle className="text-white">Match Results</CardTitle>
-                          <CardDescription className="text-gray-300">
-                            Professionals who match your criteria
+                      <Card className="neo-glass-card">
+                        <CardHeader className="pb-4">
+                          <CardTitle className="text-white text-xl font-semibold">Smart Connection Results</CardTitle>
+                          <CardDescription className="text-white/70">
+                            Professionals who match your criteria based on intelligent analysis
                           </CardDescription>
                         </CardHeader>
                         <CardContent>
                           {matchMutation.isPending ? (
                             <div className="space-y-4">
                               {[1, 2, 3].map((i) => (
-                                <Card key={i} className="border border-gray-200 overflow-hidden">
+                                <Card key={i} className="neo-glass-card overflow-hidden">
                                   <CardContent className="p-4">
                                     <div className="flex gap-4 items-center">
-                                      <Skeleton className="h-16 w-16 rounded-full" />
+                                      <Skeleton className="h-16 w-16 rounded-full bg-white/10" />
                                       <div className="flex-grow">
-                                        <Skeleton className="h-4 w-40 mb-2" />
-                                        <Skeleton className="h-3 w-24" />
+                                        <Skeleton className="h-4 w-40 mb-2 bg-white/10" />
+                                        <Skeleton className="h-3 w-24 bg-white/10" />
                                         <div className="flex gap-1 mt-2">
-                                          <Skeleton className="h-3 w-12 rounded-full" />
-                                          <Skeleton className="h-3 w-12 rounded-full" />
-                                          <Skeleton className="h-3 w-12 rounded-full" />
+                                          <Skeleton className="h-3 w-12 rounded-full bg-white/10" />
+                                          <Skeleton className="h-3 w-12 rounded-full bg-white/10" />
+                                          <Skeleton className="h-3 w-12 rounded-full bg-white/10" />
                                         </div>
                                       </div>
                                       <div className="w-20">
-                                        <Skeleton className="h-8 w-full rounded-md" />
+                                        <Skeleton className="h-8 w-full rounded-md bg-white/10" />
                                       </div>
                                     </div>
                                   </CardContent>
@@ -911,7 +911,7 @@ function SearchPage() {
                           ) : matchMutation.isSuccess && matchMutation.data && matchMutation.data.length > 0 ? (
                             <div className="space-y-4">
                               {matchMutation.data.map((match: any) => (
-                                <Card key={match.id} className="border border-white/20 bg-gray-800/40 overflow-hidden shadow-lg hover:shadow-xl transition-all hover:bg-gray-700/40">
+                                <Card key={match.id} className="neo-glass-card overflow-hidden hover:scale-[1.02] transition-all duration-300">
                                   <CardContent className="p-4">
                                     <div className="flex gap-4 items-center">
                                       <Avatar className="h-16 w-16 border-2 border-white/20">

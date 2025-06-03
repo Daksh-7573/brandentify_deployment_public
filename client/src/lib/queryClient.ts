@@ -269,13 +269,16 @@ export const getQueryFn: <T>(options: {
       const url = queryKey[0] as string;
       
       // Reduce cache busting frequency for profile-related endpoints to prevent network congestion
-      // Use a timestamp that changes less frequently (once per minute) for these endpoints
+      // Use a timestamp that changes less frequently (once per 5 minutes) for skills/profile endpoints
+      const isSkillsEndpoint = url.includes('/skills') || url.includes('/projects') || 
+                               url.includes('/experiences') || url.includes('/educations') ||
+                               url.includes('/services');
       const isProfileEndpoint = url.includes('/api/users') || 
                                 url.includes('/enhanced-user') || 
                                 url.includes('/what-i-offer');
                                 
-      const cacheBusterTimestamp = isProfileEndpoint 
-        ? Math.floor(Date.now() / 60000) // Only changes once per minute for profile endpoints
+      const cacheBusterTimestamp = (isProfileEndpoint || isSkillsEndpoint)
+        ? Math.floor(Date.now() / 300000) // Only changes once per 5 minutes for profile/skills endpoints
         : Date.now(); // Regular timestamp for other endpoints
         
       const cacheBuster = url.includes('?') 
