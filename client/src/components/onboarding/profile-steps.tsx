@@ -2971,6 +2971,19 @@ export default function ProfileSteps({
             required
           />
         </div>
+        
+        {/* What I Offer */}
+        <div className="space-y-2">
+          <Label htmlFor="whatIOffer">What I Offer</Label>
+          <Textarea
+            id="whatIOffer"
+            name="whatIOffer"
+            placeholder="Describe what you offer professionally - your services, expertise, or skills"
+            value={formData.whatIOffer}
+            onChange={handleInputChange}
+            rows={4}
+          />
+        </div>
       </div>
     );
   };
