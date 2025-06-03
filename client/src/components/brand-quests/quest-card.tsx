@@ -155,12 +155,12 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
           </div>
           
           {muskTipContent && (
-            <div className="mt-3 bg-black/30 p-3 rounded-lg border border-white/10 backdrop-blur-sm">
-              <div className="flex items-center gap-2 text-sm font-medium mb-1 text-white">
-                <span>⚡</span>
+            <div className="mt-3 bg-white/5 p-3 rounded-lg border border-white/20 backdrop-blur-md shadow-inner">
+              <div className="flex items-center gap-2 text-sm font-medium mb-2 text-white">
+                <span className="text-yellow-400">⚡</span>
                 <span>Musk's Tip</span>
               </div>
-              <p className="text-sm text-white/90">{muskTipContent}</p>
+              <p className="text-sm text-white/80 leading-relaxed">{muskTipContent}</p>
               
               {/* Add StaticHashtagSuggestions component for pulse creation quests */}
               {(questDefinition.type === 'pulse_creation' || 
