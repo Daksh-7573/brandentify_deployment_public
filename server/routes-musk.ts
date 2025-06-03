@@ -5,7 +5,7 @@ import crypto from 'crypto';
 import OpenAI from 'openai';
 import { analyzeResume } from './services/fixed-openai-service';
 import { storage } from './storage';
-import { generatePersonalizedResponse, MuskContext, determineUserIntent, generateIntelligentFallback } from './services/musk-intelligence-system';
+import { generatePersonalizedResponse, MuskContext } from './services/musk-intelligence-system';
 import { handleResumeUploadFixed } from './routes-musk-resume-fix';
 
 // Initialize global variable for resume context storage and user interaction memory
@@ -502,38 +502,37 @@ async function enrichContextWithUserData(userId: number, context?: any) {
 
 // Generate AI response based on message and context
 async function generateMuskResponse(message: string, context: any) {
-  // Convert the old context format to our new MuskContext format (outside try block for scope)
-  const muskContext: MuskContext = {
-    userId: context.userId,
-    userData: context.userData?.profile,
-    experiences: context.userData?.experiences || [],
-    educations: context.userData?.educations || [],
-    skills: context.userData?.skills || [],
-    projects: context.userData?.projects || [],
-    resumeData: context.resumeData,
-    userMemory: context.userMemory ? {
-      interactions: context.userMemory.messageHistory || [],
-      patterns: {
-        communicationStyle: context.userMemory.communicationStyle?.formality || 'neutral',
-        topicPreferences: context.userMemory.topicPreferences || {},
-        engagementLevel: context.userMemory.communicationStyle?.detailLevel || 'medium',
-        responseStyle: context.userMemory.communicationStyle?.messageLength || 'medium'
-      }
-    } : undefined,
-    dataSource: context.dataSource,
-    page: context.page,
-    section: context.section
-  };
-
   try {
     // Check if OpenAI Key is set
     if (!process.env.OPENAI_API_KEY) {
-      console.log("Using intelligent fallback responses as OpenAI API key is not set");
-      const intent = determineUserIntent(message, muskContext);
-      return generateIntelligentFallback(message, muskContext, intent);
+      console.log("Using fallback responses as OpenAI API key is not set");
+      return generateFallbackResponse(message, context);
     }
     
     console.log("Generating personalized response using Musk Intelligence System");
+    
+    // Convert the old context format to our new MuskContext format
+    const muskContext: MuskContext = {
+      userId: context.userId,
+      userData: context.userData?.profile,
+      experiences: context.userData?.experiences || [],
+      educations: context.userData?.educations || [],
+      skills: context.userData?.skills || [],
+      projects: context.userData?.projects || [],
+      resumeData: context.resumeData,
+      userMemory: context.userMemory ? {
+        interactions: context.userMemory.messageHistory || [],
+        patterns: {
+          communicationStyle: context.userMemory.communicationStyle?.formality || 'neutral',
+          topicPreferences: context.userMemory.topicPreferences || {},
+          engagementLevel: context.userMemory.communicationStyle?.detailLevel || 'medium',
+          responseStyle: context.userMemory.communicationStyle?.messageLength || 'medium'
+        }
+      } : undefined,
+      dataSource: context.dataSource,
+      page: context.page,
+      section: context.section
+    };
     
     // Log context data for debugging
     console.log("Musk context data being sent to intelligence system:", {
@@ -558,10 +557,9 @@ async function generateMuskResponse(message: string, context: any) {
     console.log("Musk AI response generated with enhanced intelligence system");
     return response;
   } catch (error) {
-    console.error("Error in generateMuskResponse:", error);
-    // Use intelligent fallback from the intelligence system instead of generic responses
-    const intent = determineUserIntent(message, muskContext);
-    return generateIntelligentFallback(message, muskContext, intent);
+    console.error("Error in Musk intelligence system:", error);
+    // Fallback to demo responses if OpenAI fails
+    return generateFallbackResponse(message, context);
   }
 }
 
