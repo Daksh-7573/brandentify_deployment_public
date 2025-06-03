@@ -344,11 +344,11 @@ export default function CareerCapsulePage() {
                         <div className="w-full bg-white/10 rounded-full h-2 backdrop-blur-sm border border-white/20">
                           <div 
                             className="bg-gradient-to-r from-blue-400 to-purple-500 h-2 rounded-full transition-all duration-500 shadow-lg shadow-blue-500/20"
-                            style={{ width: `${goal.progress || 0}%` }}
+                            style={{ width: `${goal.overallProgress || 0}%` }}
                           ></div>
                         </div>
                         <span className="text-xs text-gray-300 mt-2 block font-medium">
-                          {goal.progress || 0}% complete
+                          {goal.overallProgress || 0}% complete
                         </span>
                       </div>
                     </div>
