@@ -94,6 +94,7 @@ function determineUserIntent(message: string, context: MuskContext): string {
   
   // Intent mapping based on keywords
   const intentMap = {
+    profile_optimization: ["standout profile", "standout", "profile", "improve profile", "better profile", "profile tips", "enhance profile"],
     industry_trends: ["industries", "industry", "growing", "trending", "hot sectors", "market trends", "emerging markets"],
     career_growth: ["next step", "advance", "promotion", "progress", "career development"],
     skill_development: ["skills", "learn", "improve", "certification", "courses"],
@@ -101,7 +102,7 @@ function determineUserIntent(message: string, context: MuskContext): string {
     interview_prep: ["interview", "prepare", "questions", "assessment"],
     salary_negotiation: ["salary", "compensation", "negotiate", "raise"],
     networking: ["network", "connect", "linkedin", "contacts"],
-    resume_feedback: ["resume", "cv", "profile", "application"],
+    resume_feedback: ["resume", "cv", "application"],
     work_experience: ["experience", "internship", "entry level", "first job"]
   };
 
@@ -264,6 +265,9 @@ function generateIntelligentFallbackResponse(message: string, context: MuskConte
 
   // Generate contextual response based on intent and user profile
   switch (intent) {
+    case 'profile_optimization':
+      return generateProfileOptimizationAdvice(userName, context);
+    
     case 'industry_trends':
       return generateIndustryTrendsAdvice(userName, context);
     
@@ -291,6 +295,109 @@ function generateIntelligentFallbackResponse(message: string, context: MuskConte
     default:
       return generateGeneralCareerAdvice(userName, userTitle, context);
   }
+}
+
+function generateProfileOptimizationAdvice(userName: string, context: MuskContext): string {
+  // Analyze user's current profile state
+  const profileAnalysis = analyzeCareerProfile(context);
+  const hasExperiences = (context.experiences?.length || 0) > 0;
+  const hasSkills = (context.skills?.length || 0) > 0;
+  const hasProjects = (context.projects?.length || 0) > 0;
+  const hasEducation = (context.educations?.length || 0) > 0;
+  const currentSkills = context.skills?.map(s => s.name).filter(Boolean) || [];
+  const projectCount = context.projects?.length || 0;
+  
+  // Calculate current profile strength
+  const profileCompleteness = calculateProfileCompleteness(context);
+  
+  // Generate personalized recommendations based on current state
+  let priorityRecommendations = [];
+  let strengthsToLeverage = [];
+  let immediateActions = [];
+  
+  // Analyze strengths
+  if (projectCount >= 6) {
+    strengthsToLeverage.push("Strong project portfolio with " + projectCount + " projects");
+  }
+  if (hasSkills) {
+    strengthsToLeverage.push("Technical skills in " + currentSkills.join(", "));
+  }
+  if (hasEducation) {
+    strengthsToLeverage.push("Educational background");
+  }
+  
+  // Identify gaps and priorities
+  if (!context.userData?.title || context.userData.title.trim() === '') {
+    priorityRecommendations.push("Add a professional title that clearly defines your role or aspirations");
+    immediateActions.push("Update your title to something specific like 'Software Developer', 'Product Manager', or your target role");
+  }
+  
+  if (!context.userData?.industry || context.userData.industry.trim() === '') {
+    priorityRecommendations.push("Specify your target industry to help recruiters find you");
+    immediateActions.push("Choose an industry that aligns with your " + projectCount + " projects");
+  }
+  
+  if (!context.userData?.location || context.userData.location.trim() === '') {
+    priorityRecommendations.push("Add your location for local opportunities and remote work preferences");
+  }
+  
+  if (!hasExperiences) {
+    priorityRecommendations.push("Add work experience entries, including internships, freelance work, or significant projects");
+    immediateActions.push("Convert your strongest projects into 'experience' entries with specific achievements");
+  }
+  
+  if (!context.userData?.aboutMe || context.userData.aboutMe.trim() === '') {
+    priorityRecommendations.push("Write a compelling professional summary that highlights your unique value");
+  }
+  
+  return `Hi ${userName}! I've analyzed your profile and here's how to make it standout:
+
+# Profile Analysis for ${userName}
+
+## Current Strengths
+${strengthsToLeverage.length > 0 ? strengthsToLeverage.map(s => `✓ ${s}`).join('\n') : '• Building a solid foundation with your current efforts'}
+
+## Profile Completeness: ${profileCompleteness}%
+
+## Priority Improvements (Do These First)
+${priorityRecommendations.map((rec, i) => `${i + 1}. ${rec}`).join('\n')}
+
+## Immediate Action Items
+${immediateActions.length > 0 ? immediateActions.map((action, i) => `• ${action}`).join('\n') : '• Focus on adding missing profile sections mentioned above'}
+
+## Leverage Your ${projectCount} Projects
+- Transform your best projects into detailed case studies
+- Add specific metrics and outcomes for each project
+- Highlight technologies used and problems solved
+- Include links to live demos or GitHub repositories
+
+## Skills Enhancement Strategy
+${hasSkills ? 
+  `- Expand on your ${currentSkills.join(', ')} skills with advanced certifications
+- Add complementary skills that enhance your existing expertise
+- Document skill levels (Beginner, Intermediate, Advanced)` :
+  `- Add technical skills relevant to your projects
+- Include both hard skills (programming languages, tools) and soft skills
+- Prioritize in-demand skills in your target industry`
+}
+
+## Professional Branding Tips
+- Create a consistent professional image across all platforms
+- Use industry-specific keywords that recruiters search for
+- Showcase your unique perspective and problem-solving approach
+- Include a professional photo if you haven't already
+
+## Next Steps to Stand Out
+1. Complete all missing profile sections identified above
+2. Write compelling descriptions for each project with specific results
+3. Get recommendations from colleagues or mentors
+4. Share industry insights or content to demonstrate expertise
+5. Join professional groups related to your field
+
+Your ${projectCount} projects show you're actively building things - that's excellent! Now let's make sure your profile tells that story effectively.
+
+${formatResponseWithPersonalization("", context).includes("Quick Response Options") ? "" : 
+`\n\nQuick Response Options: ${generateSmartQuickResponses(context).map(q => `"${q}"`).join(", ")}`}`;
 }
 
 function generateIndustryTrendsAdvice(userName: string, context: MuskContext): string {
