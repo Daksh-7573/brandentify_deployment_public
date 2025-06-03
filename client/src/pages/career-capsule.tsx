@@ -340,20 +340,26 @@ export default function CareerCapsulePage() {
                       </div>
                     </div>
                     <div className="mb-3">
-                      <Progress value={goal.progress || 0} className="h-2" />
-                      <span className="text-xs text-gray-400 mt-1 block">
-                        {goal.progress || 0}% complete
-                      </span>
+                      <div className="relative">
+                        <div className="w-full bg-white/10 rounded-full h-2 backdrop-blur-sm border border-white/20">
+                          <div 
+                            className="bg-gradient-to-r from-blue-400 to-purple-500 h-2 rounded-full transition-all duration-500 shadow-lg shadow-blue-500/20"
+                            style={{ width: `${goal.progress || 0}%` }}
+                          ></div>
+                        </div>
+                        <span className="text-xs text-gray-300 mt-2 block font-medium">
+                          {goal.progress || 0}% complete
+                        </span>
+                      </div>
                     </div>
                     <p className="line-clamp-2 text-sm text-gray-300 mb-4">{goal.description || "No description provided"}</p>
-                    <div className="pt-2 border-t border-gray-700">
-                      <Button 
-                        variant="outline" 
-                        className="w-full px-5 py-2 rounded-md border border-gray-600 text-white hover:bg-white/5 shadow-sm font-medium transition-all flex items-center justify-center" 
+                    <div className="pt-3 border-t border-white/10">
+                      <button 
+                        className="neo-glass-button w-full py-2.5 px-4 text-sm font-medium text-white transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-blue-500/20"
                         onClick={() => handleViewDetails(goal.id)}
                       >
                         <span>View Details</span>
-                      </Button>
+                      </button>
                     </div>
                   </div>
                 </NeoGlassSection>
