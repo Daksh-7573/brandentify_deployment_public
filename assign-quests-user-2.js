@@ -106,8 +106,8 @@ async function assignQuestsToUser2() {
       await executeQuery(`
         INSERT INTO user_quests (
           user_id, quest_definition_id, status, progress, week_number, year,
-          assigned_at, expires_at
-        ) VALUES ($1, $2, 'active', 0, $3, $4, NOW(), NOW() + INTERVAL '7 days')
+          assigned_at
+        ) VALUES ($1, $2, 'active', 0, $3, $4, NOW())
       `, [userId, questDef.id, currentWeek, currentYear]);
 
       console.log(`Quest "${questDef.title}" assigned to user ${userId}`);
