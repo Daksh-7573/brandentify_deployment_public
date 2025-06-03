@@ -652,7 +652,7 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
         </div>
         
         {/* Messages */}
-        <ScrollArea className="flex-1 p-4">
+        <div className="flex-1 p-4 overflow-y-auto">
           <div className="flex flex-col gap-4">
             {messages.map((message) => (
               <div 
@@ -747,7 +747,7 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
             ))}
             <div ref={messagesEndRef} />
           </div>
-        </ScrollArea>
+        </div>
         
         <div 
           style={{
