@@ -750,7 +750,7 @@ function SearchPage() {
                     </div>
                     
                     {showMatchForm && (
-                      <Card className="bg-[rgba(18,18,18,0.6)] backdrop-blur-[15px] border border-white/10 shadow-xl mb-8">
+                      <Card className="bg-black/20 backdrop-blur-md border border-white/10 shadow-xl mb-8">
                         <CardHeader>
                           <CardTitle className="text-white">Connection Preferences</CardTitle>
                           <CardDescription className="text-white/80">
@@ -769,7 +769,7 @@ function SearchPage() {
                                   <SelectTrigger id="industry" className="neo-glass-input">
                                     <SelectValue placeholder="Select industry" />
                                   </SelectTrigger>
-                                  <SelectContent className="bg-black/90 backdrop-blur-md text-white border-white/20">
+                                  <SelectContent className="bg-gray-900/95 text-white border-white/10">
                                     <SelectGroup>
                                       <SelectLabel>Industries</SelectLabel>
                                       {INDUSTRIES.map((ind) => (
@@ -790,7 +790,7 @@ function SearchPage() {
                                   <SelectTrigger id="domain" className="neo-glass-input">
                                     <SelectValue placeholder={industry ? "Select domain" : "Select industry first"} />
                                   </SelectTrigger>
-                                  <SelectContent className="bg-black/90 backdrop-blur-md text-white border-white/20">
+                                  <SelectContent className="bg-gray-900/95 text-white border-white/10">
                                     <SelectGroup>
                                       <SelectLabel>Domains</SelectLabel>
                                       {domains.map((dom) => (
@@ -819,7 +819,7 @@ function SearchPage() {
                                   <SelectTrigger id="experience" className="neo-glass-input">
                                     <SelectValue placeholder="Select experience level" />
                                   </SelectTrigger>
-                                  <SelectContent className="bg-black/90 backdrop-blur-md text-white border-white/20">
+                                  <SelectContent className="bg-gray-900/95 text-white border-white/10">
                                     <SelectGroup>
                                       <SelectLabel>Experience Levels</SelectLabel>
                                       {EXPERIENCE_LEVELS.map((exp) => (
@@ -839,7 +839,7 @@ function SearchPage() {
                                   <SelectTrigger id="looking-for" className="neo-glass-input">
                                     <SelectValue placeholder="What are you looking for?" />
                                   </SelectTrigger>
-                                  <SelectContent className="bg-black/90 backdrop-blur-md text-white border-white/20">
+                                  <SelectContent className="bg-gray-900/95 text-white border-white/10">
                                     <SelectGroup>
                                       <SelectLabel>Connection Types</SelectLabel>
                                       {LOOKING_FOR_OPTIONS.map((opt) => (
