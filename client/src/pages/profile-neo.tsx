@@ -265,8 +265,14 @@ export default function ProfileNeo() {
                     Manage your professional information and career details
                   </p>
                 </div>
-                <div className="flex items-center gap-4 mt-4 md:mt-0">
-                  <button 
+                <div className="flex flex-col md:flex-row items-start md:items-center gap-4 mt-4 md:mt-0">
+                  {/* User Title and Location */}
+                  <div className="text-right">
+                    <h2 className="text-lg font-semibold text-white">{userData?.title || "Add your job title"}</h2>
+                    <p className="text-white/60 text-sm">{userData?.location || "Add your location"}</p>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <button 
                     onClick={() => {
                       // Create a loading state in the button
                       const btn = document.getElementById('portfolio-btn');
@@ -311,7 +317,8 @@ export default function ProfileNeo() {
                   >
                     <CreditCard className="w-4 h-4" />
                     <span>Quantum Card</span>
-                  </button>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -354,8 +361,6 @@ export default function ProfileNeo() {
                     
                     <div className="text-center mt-4">
                       <h2 className="text-xl font-bold text-white">{userData?.name}</h2>
-                      <p className="text-white/80 text-sm">{userData?.title || "Add your job title"}</p>
-                      <p className="text-white/60 text-xs mt-1">{userData?.location || "Add your location"}</p>
                       
                       {/* Edit Profile Button */}
                       <button
@@ -451,6 +456,8 @@ export default function ProfileNeo() {
               </div>
             </NeoGlassSection>
             
+
+            
             {/* Specific Services as a separate section */}
             <Services />
             
@@ -480,11 +487,7 @@ export default function ProfileNeo() {
             <NeoGlassSection className="mb-6">
               <div className="p-4">
                 <h3 className="text-lg font-medium text-white mb-4">Personal Information</h3>
-                {userData ? (
-                  <PersonalInfoSection userData={userData} />
-                ) : (
-                  <div className="text-white/70">Loading personal information...</div>
-                )}
+                <PersonalInfoSection userData={userData} />
               </div>
             </NeoGlassSection>
             
