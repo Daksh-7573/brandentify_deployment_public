@@ -715,13 +715,21 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
           }}
         />
         
-        {/* Hidden file inputs */}
+        {/* Completely hidden file inputs */}
         <input
           type="file"
           ref={fileInputRef}
           onChange={handleFileUpload}
           accept=".pdf,.doc,.docx"
-          style={{ display: 'none' }}
+          style={{ 
+            display: 'none !important',
+            visibility: 'hidden !important',
+            position: 'absolute !important',
+            left: '-9999px !important',
+            width: '0 !important',
+            height: '0 !important',
+            opacity: '0 !important'
+          }}
         />
         
         <input
@@ -729,7 +737,15 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
           ref={pitchDeckFileInputRef}
           onChange={handleFileUpload}
           accept=".pdf"
-          style={{ display: 'none' }}
+          style={{ 
+            display: 'none !important',
+            visibility: 'hidden !important',
+            position: 'absolute !important',
+            left: '-9999px !important',
+            width: '0 !important',
+            height: '0 !important',
+            opacity: '0 !important'
+          }}
         />
 
         {/* We're removing the separate Suggested Questions section 
