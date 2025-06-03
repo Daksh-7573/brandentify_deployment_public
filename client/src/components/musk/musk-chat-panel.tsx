@@ -562,19 +562,55 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
   };
   
   return (
-    <motion.div
-      className="fixed bottom-4 right-4 w-96 h-[80vh] max-h-[700px] z-50 flex flex-col overflow-hidden rounded-xl"
-      variants={panelVariants}
-      initial="hidden"
-      animate="visible"
-      exit="exit"
-      style={{
-        background: 'rgba(15, 23, 42, 0.7)',
-        backdropFilter: 'blur(16px)',
-        border: '1px solid rgba(255, 255, 255, 0.1)',
-        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4)'
-      }}
-    >
+    <>
+      {/* Completely hidden file inputs outside main component */}
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleFileUpload}
+        accept=".pdf,.doc,.docx"
+        style={{ 
+          position: 'fixed',
+          left: '-9999px',
+          top: '-9999px',
+          width: '1px',
+          height: '1px',
+          opacity: 0,
+          visibility: 'hidden',
+          pointerEvents: 'none'
+        }}
+      />
+      
+      <input
+        type="file"
+        ref={pitchDeckFileInputRef}
+        onChange={handleFileUpload}
+        accept=".pdf"
+        style={{ 
+          position: 'fixed',
+          left: '-9999px',
+          top: '-9999px',
+          width: '1px',
+          height: '1px',
+          opacity: 0,
+          visibility: 'hidden',
+          pointerEvents: 'none'
+        }}
+      />
+
+      <motion.div
+        className="fixed bottom-4 right-4 w-96 h-[80vh] max-h-[700px] z-50 flex flex-col overflow-hidden rounded-xl"
+        variants={panelVariants}
+        initial="hidden"
+        animate="visible"
+        exit="exit"
+        style={{
+          background: 'rgba(15, 23, 42, 0.7)',
+          backdropFilter: 'blur(16px)',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4)'
+        }}
+      >
         {/* Header */}
         <div 
           className="flex items-center justify-between p-4"
@@ -843,5 +879,6 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
           </div>
         )}
       </motion.div>
+    </>
   );
 }
