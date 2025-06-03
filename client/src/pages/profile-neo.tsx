@@ -376,14 +376,8 @@ export default function ProfileNeo() {
                     <div className="space-y-4">
                       {/* Professional Overview */}
                       <div>
-                        <div className="flex items-center justify-between mb-2">
-                          <h3 className="text-lg font-medium text-white">Professional Overview</h3>
-                          <button
-                            onClick={() => setShowEditAboutDialog(true)}
-                            className="text-white/60 hover:text-white transition-colors"
-                          >
-                            <Edit className="h-4 w-4" />
-                          </button>
+                        <div className="mb-2">
+                          <h3 className="font-medium text-white">Professional Overview</h3>
                         </div>
                         <p className="text-white/80 text-sm">
                           {userData?.aboutMe || "Add a professional summary to introduce yourself to other professionals."}
@@ -404,14 +398,8 @@ export default function ProfileNeo() {
                       
                       {/* Industry & Domain */}
                       <div>
-                        <div className="flex items-center justify-between mb-2">
-                          <h3 className="text-lg font-medium text-white">Industry & Domain</h3>
-                          <button
-                            onClick={() => setShowIndustryDialog(true)}
-                            className="text-white/60 hover:text-white transition-colors"
-                          >
-                            <Edit className="h-4 w-4" />
-                          </button>
+                        <div className="mb-2">
+                          <h3 className="font-medium text-white">Industry & Domain</h3>
                         </div>
                         <div className="flex flex-wrap gap-2">
                           {userData?.industry ? (
@@ -436,14 +424,8 @@ export default function ProfileNeo() {
                       
                       {/* Looking For */}
                       <div>
-                        <div className="flex items-center justify-between mb-2">
-                          <h3 className="text-lg font-medium text-white">I am looking for</h3>
-                          <button
-                            onClick={() => setShowLookingForDialog(true)}
-                            className="text-white/60 hover:text-white transition-colors"
-                          >
-                            <Edit className="h-4 w-4" />
-                          </button>
+                        <div className="mb-2">
+                          <h3 className="font-medium text-white">I am looking for</h3>
                         </div>
                         <div className="flex flex-wrap gap-2">
                           {userData?.lookingFor ? (
