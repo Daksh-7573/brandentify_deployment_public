@@ -314,7 +314,8 @@ Respond with JSON format:
         title: `${industry} Industry Update`,
         content: `Important developments in ${industry}. Consider how these changes might impact your career path and what new skills might be valuable.`,
         industry: industry,
-        hashtags: [`#${industry}`, '#CareerStrategy']
+        hashtags: [`#${industry}`, '#CareerStrategy'],
+        referenceLinks: []
       };
     }
   }
@@ -323,14 +324,19 @@ Respond with JSON format:
    * Create Musk pulse in the database
    */
   private async createMuskPulse(
-    content: { title: string; content: string; industry?: string; hashtags: string[] }
+    content: { title: string; content: string; industry?: string; hashtags: string[]; referenceLinks?: Array<{title: string; url: string; source: string}> }
   ): Promise<void> {
     
+    // Create enhanced content with reference links
+    const enhancedContent = content.referenceLinks && content.referenceLinks.length > 0 
+      ? `${content.content}\n\n📚 Read More:\n${content.referenceLinks.map(link => `• ${link.title} - ${link.source}\n  ${link.url}`).join('\n')}`
+      : content.content;
+
     const pulseData: InsertPulse = {
       userId: MuskPulseGenerator.MUSK_USER_ID,
       type: "news-pulse",
       title: content.title,
-      content: content.content,
+      content: enhancedContent,
       industry: content.industry || null,
       domain: null,
       category: null,
