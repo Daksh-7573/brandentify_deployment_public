@@ -790,7 +790,7 @@ function SearchPage() {
                                   <SelectTrigger id="domain" className="neo-glass-input">
                                     <SelectValue placeholder={industry ? "Select domain" : "Select industry first"} />
                                   </SelectTrigger>
-                                  <SelectContent className="bg-gray-900/95 text-white border-white/10">
+                                  <SelectContent className="bg-black/90 backdrop-blur-md text-white border-white/20">
                                     <SelectGroup>
                                       <SelectLabel>Domains</SelectLabel>
                                       {domains.map((dom) => (
@@ -819,7 +819,7 @@ function SearchPage() {
                                   <SelectTrigger id="experience" className="neo-glass-input">
                                     <SelectValue placeholder="Select experience level" />
                                   </SelectTrigger>
-                                  <SelectContent className="bg-gray-900/95 text-white border-white/10">
+                                  <SelectContent className="bg-black/90 backdrop-blur-md text-white border-white/20">
                                     <SelectGroup>
                                       <SelectLabel>Experience Levels</SelectLabel>
                                       {EXPERIENCE_LEVELS.map((exp) => (
@@ -839,7 +839,7 @@ function SearchPage() {
                                   <SelectTrigger id="looking-for" className="neo-glass-input">
                                     <SelectValue placeholder="What are you looking for?" />
                                   </SelectTrigger>
-                                  <SelectContent className="bg-gray-900/95 text-white border-white/10">
+                                  <SelectContent className="bg-black/90 backdrop-blur-md text-white border-white/20">
                                     <SelectGroup>
                                       <SelectLabel>Connection Types</SelectLabel>
                                       {LOOKING_FOR_OPTIONS.map((opt) => (
