@@ -137,24 +137,8 @@ FORMAT YOUR RESPONSE USING THESE GUIDELINES:
   5. ATS Optimization Tips
   6. Next Steps`;
 
-    // Make the direct OpenAI API call with a shorter response (for testing purposes)
-    const completion = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo", // Use a faster model for testing
-      messages: [
-        {
-          role: "system",
-          content: systemPrompt
-        },
-        {
-          role: "user",
-          content: userPrompt
-        }
-      ],
-      temperature: 0.7,
-      max_tokens: 1000 // Shorter response for testing
-    });
-
-    const analysis = completion.choices[0].message.content || '';
+    // Use local AI service for resume analysis
+    const analysis = await localAI.analyzeResume(resumeText);
     
     // Send back the analysis result as JSON
     res.json({
@@ -175,8 +159,8 @@ FORMAT YOUR RESPONSE USING THESE GUIDELINES:
 // Test route specifically for Canva resume analysis
 resumeTestRoutes.post('/test-canva-resume-analysis', async (req, res) => {
   try {
-    // Initialize OpenAI client
-    const openai = new OpenAI();
+    // Initialize local AI service
+    const localAI = new LocalAIService();
     
     // Get resume text from request, or use a sample designed resume if not provided
     const resumeText = req.body.resumeText || `

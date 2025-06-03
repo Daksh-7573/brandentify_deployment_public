@@ -8,12 +8,10 @@
  */
 
 import { Request, Response, NextFunction } from 'express';
-import OpenAI from 'openai';
+import { LocalAIService } from './services/local-ai-service';
 
-// Initialize OpenAI for content moderation
-const openai = new OpenAI({ 
-  apiKey: process.env.OPENAI_API_KEY,
-});
+// Initialize local AI service for content moderation
+const localAI = new LocalAIService();
 
 // Regular expressions for detecting potential prompt injection attacks
 const PROMPT_INJECTION_PATTERNS = [

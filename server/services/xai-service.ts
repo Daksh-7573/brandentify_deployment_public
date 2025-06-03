@@ -62,9 +62,12 @@ Format your response in clear sections with actionable advice.`;
 
     // Call local AI service
     const response = await localAI.generateCareerAdvice({
-      prompt,
-      maxTokens: 1000,
-      temperature: 0.7
+      user: { name: "User" },
+      workExperiences: userProfile.workExperiences,
+      skills: userProfile.skills,
+      educations: userProfile.educations,
+      adviceType: "general",
+      customAdviceText: prompt
     });
 
     return response;
@@ -94,11 +97,7 @@ Please provide the following:
 
 Format your response in clearly labeled sections.`;
 
-    const response = await localAI.analyzeResume({
-      resumeText,
-      maxTokens: 1000,
-      temperature: 0.5
-    });
+    const response = await localAI.analyzeResume(resumeText);
 
     return response;
   } catch (error) {
@@ -158,10 +157,14 @@ export async function generateNetworkingRecommendations(
 
 Make all advice specific to the profile and networking goals provided.`;
 
-    const response = await localAI.generateNetworkingRecommendations({
-      prompt,
-      maxTokens: 800,
-      temperature: 0.6
+    // Use local AI for networking recommendations  
+    const response = await localAI.generateCareerAdvice({
+      user: { name: "User" },
+      workExperiences: userProfile.workExperiences,
+      skills: userProfile.skills,
+      educations: [],
+      adviceType: "networking",
+      customAdviceText: prompt
     });
 
     return response;

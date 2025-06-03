@@ -7,11 +7,11 @@
 
 import { Express, Request, Response } from "express";
 import fetch from 'node-fetch';
-import { OpenAI } from "openai";
+import { LocalAIService } from "./services/local-ai-service";
 import * as muskCareerInsightsService from "./services/musk-career-insights";
 
-// Initialize OpenAI client
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+// Initialize local AI service
+const localAI = new LocalAIService();
 
 /**
  * Generate enhanced career guidance using Musk AI with trend graph data
