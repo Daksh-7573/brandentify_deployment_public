@@ -424,7 +424,8 @@ ${hasResumeData ? '**I notice you have resume data available. I can provide spec
 Quick Response Options: ${quickResponses.map(r => `"${r}"`).join(", ")}`;
 
     case 'skill_development':
-      return `# Skill Development Plan
+      console.log(`[Fallback] Generating skill_development response for ${userName}`);
+      const skillResponse = `# Skill Development Plan
 
 Hello ${userName}! Let me help you enhance your skillset strategically.
 
@@ -444,6 +445,8 @@ ${profileData.primarySkills.length > 0 ? `- Existing strengths: ${profileData.pr
 - Connect with professionals who have the skills you want to develop
 
 Quick Response Options: ${quickResponses.map(r => `"${r}"`).join(", ")}`;
+      console.log(`[Fallback] Returning skill_development response: ${skillResponse.substring(0, 100)}...`);
+      return skillResponse;
 
     case 'resume_feedback':
       if (hasResumeData) {
