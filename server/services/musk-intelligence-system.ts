@@ -81,7 +81,8 @@ export async function generatePersonalizedResponse(
     return finalResponse;
   } catch (error) {
     console.error("Error in Musk intelligence system:", error);
-    return "I encountered an issue while processing your request. As your AI career assistant, I'll work on improving. Could you please try asking your question in a different way?";
+    // Provide intelligent fallback response based on user intent and context
+    return generateIntelligentFallbackResponse(message, context);
   }
 }
 
@@ -246,4 +247,312 @@ function generateSmartQuickResponses(context: MuskContext): string[] {
   
   // Return top 3 most relevant suggestions
   return responses.slice(0, 3);
+}
+
+/**
+ * Generate intelligent fallback response when AI services are unavailable
+ */
+function generateIntelligentFallbackResponse(message: string, context: MuskContext): string {
+  const intent = determineUserIntent(message, context);
+  const userName = context.userData?.name || "Professional";
+  const userTitle = context.userData?.title || "your current role";
+  const hasExperiences = (context.experiences?.length || 0) > 0;
+  const hasSkills = (context.skills?.length || 0) > 0;
+  const userIndustry = context.userData?.industry;
+
+  // Generate contextual response based on intent and user profile
+  switch (intent) {
+    case 'networking':
+      return generateNetworkingAdvice(userName, userTitle, userIndustry, hasExperiences, context);
+    
+    case 'career_growth':
+      return generateCareerGrowthAdvice(userName, userTitle, hasExperiences, hasSkills, context);
+    
+    case 'skill_development':
+      return generateSkillDevelopmentAdvice(userName, context);
+    
+    case 'career_change':
+      return generateCareerChangeAdvice(userName, userTitle, hasExperiences, context);
+    
+    case 'interview_prep':
+      return generateInterviewPrepAdvice(userName, userTitle, context);
+    
+    case 'salary_negotiation':
+      return generateSalaryNegotiationAdvice(userName, userTitle, hasExperiences, context);
+    
+    case 'work_experience':
+      return generateWorkExperienceAdvice(userName, hasExperiences, context);
+    
+    default:
+      return generateGeneralCareerAdvice(userName, userTitle, context);
+  }
+}
+
+function generateNetworkingAdvice(userName: string, userTitle: string, userIndustry: string | null | undefined, hasExperiences: boolean, context: MuskContext): string {
+  const industry = userIndustry ? ` in ${userIndustry}` : "";
+  
+  return `Hi ${userName}! Here's personalized networking guidance for you as ${userTitle}${industry}:
+
+# Professional Networking Strategy
+
+## Building Your Network
+${hasExperiences ? 
+  "- Leverage your existing professional relationships and alumni networks\n- Reach out to former colleagues and industry contacts" :
+  "- Start with professional networking platforms like LinkedIn\n- Join industry-specific groups and communities"
+}
+
+## Networking Tactics
+- Attend industry events, conferences, and meetups${industry ? ` focused on ${userIndustry}` : ""}
+- Engage meaningfully on professional social platforms
+- Offer value before asking for favors
+- Follow up consistently with new connections
+
+## Relationship Building
+- Share industry insights and helpful content
+- Make strategic introductions between your contacts
+- Maintain regular touchpoints with key relationships
+- Be genuine and authentic in all interactions
+
+${formatResponseWithPersonalization("", context).includes("Quick Response Options") ? "" : 
+`\n\nQuick Response Options: ${generateSmartQuickResponses(context).map(q => `"${q}"`).join(", ")}`}`;
+}
+
+function generateCareerGrowthAdvice(userName: string, userTitle: string, hasExperiences: boolean, hasSkills: boolean, context: MuskContext): string {
+  return `Hi ${userName}! Here's your personalized career growth roadmap:
+
+# Career Advancement Strategy
+
+## Current Position Analysis
+${hasExperiences ? 
+  "Based on your work experience, focus on expanding your responsibilities and demonstrating leadership capabilities." :
+  "As you build your professional foundation, concentrate on gaining diverse experience and proving your value."
+}
+
+## Growth Opportunities
+- Seek stretch assignments that challenge your current skill set
+- Volunteer for cross-functional projects to broaden your expertise
+- Consider lateral moves that provide new perspectives
+- Build relationships with senior leaders and mentors
+
+## Skill Enhancement
+${hasSkills ?
+  "Continue developing your existing skills while identifying emerging competencies in your field." :
+  "Focus on building both technical skills and soft skills that are valued in your industry."
+}
+
+## Professional Development
+- Pursue relevant certifications or additional education
+- Attend industry conferences and professional development workshops
+- Join professional associations related to your field
+- Consider leadership development programs
+
+${formatResponseWithPersonalization("", context).includes("Quick Response Options") ? "" : 
+`\n\nQuick Response Options: ${generateSmartQuickResponses(context).map(q => `"${q}"`).join(", ")}`}`;
+}
+
+function generateSkillDevelopmentAdvice(userName: string, context: MuskContext): string {
+  const currentSkills = context.skills?.map(s => s.name).filter(Boolean) || [];
+  const hasSkills = currentSkills.length > 0;
+  
+  return `Hi ${userName}! Here's your personalized skill development plan:
+
+# Skill Development Strategy
+
+## Current Skills Assessment
+${hasSkills ? 
+  `You've identified skills in: ${currentSkills.join(", ")}. Let's build on this foundation.` :
+  "Let's identify and develop the key skills that will accelerate your career growth."
+}
+
+## Skill Categories to Focus On
+- **Technical Skills**: Industry-specific tools and technologies
+- **Soft Skills**: Communication, leadership, and problem-solving
+- **Digital Literacy**: Data analysis, digital marketing, or relevant tech skills
+- **Business Acumen**: Understanding of business operations and strategy
+
+## Learning Approaches
+- Online courses and certifications (Coursera, LinkedIn Learning, Udemy)
+- Hands-on projects and practical application
+- Mentorship and peer learning opportunities
+- Professional workshops and industry training
+
+## Skill Validation
+- Seek projects that demonstrate your new capabilities
+- Add completed certifications to your professional profiles
+- Request feedback from supervisors and colleagues
+- Document your skill development journey
+
+${formatResponseWithPersonalization("", context).includes("Quick Response Options") ? "" : 
+`\n\nQuick Response Options: ${generateSmartQuickResponses(context).map(q => `"${q}"`).join(", ")}`}`;
+}
+
+function generateCareerChangeAdvice(userName: string, userTitle: string, hasExperiences: boolean, context: MuskContext): string {
+  return `Hi ${userName}! Here's guidance for your career transition:
+
+# Career Change Strategy
+
+## Transition Planning
+${hasExperiences ?
+  "Leverage your existing experience while identifying transferable skills for your target field." :
+  "Use this early career stage as an opportunity to explore different paths and industries."
+}
+
+## Research & Exploration
+- Conduct informational interviews with professionals in your target field
+- Research industry trends, growth prospects, and required qualifications
+- Understand the typical career progression in your desired area
+- Identify companies and roles that align with your interests
+
+## Skill Gap Analysis
+- Compare your current skills with requirements in your target field
+- Identify specific skills, certifications, or experience you need to develop
+- Create a learning plan to bridge identified gaps
+- Consider transitional roles that combine your current and target expertise
+
+## Making the Transition
+- Update your resume to highlight transferable skills and relevant experience
+- Network with professionals in your target industry
+- Consider contract work, volunteering, or side projects to gain experience
+- Be prepared to explain your career change motivation clearly
+
+${formatResponseWithPersonalization("", context).includes("Quick Response Options") ? "" : 
+`\n\nQuick Response Options: ${generateSmartQuickResponses(context).map(q => `"${q}"`).join(", ")}`}`;
+}
+
+function generateInterviewPrepAdvice(userName: string, userTitle: string, context: MuskContext): string {
+  return `Hi ${userName}! Here's your comprehensive interview preparation guide:
+
+# Interview Success Strategy
+
+## Pre-Interview Preparation
+- Research the company, its culture, values, and recent developments
+- Review the job description and align your experience with key requirements
+- Prepare specific examples using the STAR method (Situation, Task, Action, Result)
+- Practice common interview questions relevant to ${userTitle} roles
+
+## Key Areas to Prepare
+- Your professional story and career progression
+- Specific achievements and quantifiable results
+- Challenges you've overcome and lessons learned
+- Questions about the role, team, and company culture
+
+## Interview Performance
+- Arrive early and dress appropriately for the company culture
+- Demonstrate enthusiasm and genuine interest in the opportunity
+- Listen actively and provide thoughtful, specific responses
+- Ask insightful questions that show your research and interest
+
+## Follow-Up Strategy
+- Send a thank-you email within 24 hours
+- Reference specific conversation points from the interview
+- Reiterate your interest and key qualifications
+- Be patient but follow up appropriately on timing
+
+${formatResponseWithPersonalization("", context).includes("Quick Response Options") ? "" : 
+`\n\nQuick Response Options: ${generateSmartQuickResponses(context).map(q => `"${q}"`).join(", ")}`}`;
+}
+
+function generateSalaryNegotiationAdvice(userName: string, userTitle: string, hasExperiences: boolean, context: MuskContext): string {
+  return `Hi ${userName}! Here's your salary negotiation strategy:
+
+# Compensation Negotiation Guide
+
+## Market Research
+- Research salary ranges for ${userTitle} positions in your location
+- Use platforms like Glassdoor, PayScale, and LinkedIn Salary Insights
+- Consider industry standards and company size factors
+- Factor in your experience level and unique qualifications
+
+## Preparation Strategy
+${hasExperiences ?
+  "Document your achievements, contributions, and value delivered in previous roles." :
+  "Focus on your potential, relevant skills, and any unique qualifications you bring."
+}
+
+## Negotiation Approach
+- Express gratitude for the offer before discussing adjustments
+- Present your research and rationale professionally
+- Consider the total compensation package, not just base salary
+- Be prepared to discuss benefits, vacation time, and professional development
+
+## Beyond Salary
+- Professional development opportunities and training budgets
+- Flexible work arrangements or remote work options
+- Additional vacation time or sabbatical opportunities
+- Stock options, bonuses, or performance incentives
+
+## Negotiation Tips
+- Remain professional and collaborative throughout the process
+- Give the employer time to consider your request
+- Be prepared to compromise and find mutually beneficial solutions
+- Get any agreed-upon changes in writing
+
+${formatResponseWithPersonalization("", context).includes("Quick Response Options") ? "" : 
+`\n\nQuick Response Options: ${generateSmartQuickResponses(context).map(q => `"${q}"`).join(", ")}`}`;
+}
+
+function generateWorkExperienceAdvice(userName: string, hasExperiences: boolean, context: MuskContext): string {
+  return `Hi ${userName}! Here's guidance about building your work experience:
+
+# Work Experience Development
+
+## Experience Building Strategy
+${hasExperiences ?
+  "Continue expanding your experience with strategic role selections and skill development." :
+  "Focus on gaining foundational experience while building a strong professional reputation."
+}
+
+## Gaining Relevant Experience
+- Seek internships, co-op programs, or entry-level positions in your target field
+- Volunteer for projects that provide relevant skills and networking opportunities
+- Consider freelance or contract work to build a diverse portfolio
+- Participate in professional organizations and industry associations
+
+## Maximizing Current Roles
+- Take on additional responsibilities beyond your job description
+- Volunteer for challenging projects and cross-functional teams
+- Seek mentorship from experienced colleagues
+- Document your achievements and impact for future reference
+
+## Building Professional Credibility
+- Deliver consistent, high-quality work that exceeds expectations
+- Develop strong relationships with colleagues and supervisors
+- Seek feedback regularly and implement suggestions for improvement
+- Maintain a professional online presence and personal brand
+
+${formatResponseWithPersonalization("", context).includes("Quick Response Options") ? "" : 
+`\n\nQuick Response Options: ${generateSmartQuickResponses(context).map(q => `"${q}"`).join(", ")}`}`;
+}
+
+function generateGeneralCareerAdvice(userName: string, userTitle: string, context: MuskContext): string {
+  return `Hi ${userName}! Here's personalized career guidance for you:
+
+# Professional Development Strategy
+
+## Career Foundation
+- Define your professional goals and create a clear career vision
+- Identify your strengths, interests, and values to guide your decisions
+- Build a strong professional network within and outside your current industry
+- Maintain an updated resume and professional online presence
+
+## Continuous Learning
+- Stay current with industry trends and emerging technologies
+- Pursue relevant certifications and professional development opportunities
+- Seek feedback regularly and implement suggestions for improvement
+- Consider formal education or specialized training as needed
+
+## Professional Growth
+- Take on challenging projects that stretch your capabilities
+- Seek mentorship from experienced professionals in your field
+- Build both technical expertise and leadership skills
+- Document your achievements and impact for future opportunities
+
+## Career Management
+- Regularly assess your career progress against your goals
+- Be open to new opportunities that align with your long-term vision
+- Maintain strong professional relationships and reputation
+- Plan for both short-term advancement and long-term career sustainability
+
+${formatResponseWithPersonalization("", context).includes("Quick Response Options") ? "" : 
+`\n\nQuick Response Options: ${generateSmartQuickResponses(context).map(q => `"${q}"`).join(", ")}`}`;
 }
