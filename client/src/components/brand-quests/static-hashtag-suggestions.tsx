@@ -170,7 +170,7 @@ export function StaticHashtagSuggestions({
         <Badge 
           key={hashtag} 
           variant="outline"
-          className="cursor-pointer hover:bg-accent transition-colors"
+          className="cursor-pointer bg-black/20 text-blue-300 border-white/10 hover:bg-black/30 hover:border-white/20 backdrop-blur-sm transition-all duration-200 text-xs"
           onClick={() => handleHashtagClick(hashtag)}
         >
           #{hashtag}
