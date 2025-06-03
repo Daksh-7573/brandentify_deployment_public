@@ -539,15 +539,15 @@ export default function ProfileNeo() {
         </div>
       </div>
       
-      {/* Edit About Me Dialog */}
+      {/* Edit Professional Overview Dialog */}
       <Dialog open={showEditAboutDialog} onOpenChange={setShowEditAboutDialog}>
         <DialogContent className="neo-glass-card border-0 max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-white">Edit Professional Summary</DialogTitle>
+            <DialogTitle className="text-white">Edit Professional Overview</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="about" className="text-white">About Me</Label>
+              <Label htmlFor="about" className="text-white">Professional Overview</Label>
               <Textarea
                 id="about"
                 value={aboutMe || ""}

@@ -133,19 +133,11 @@ export const UnifiedProfileView: FC<UnifiedProfileViewProps> = ({ userId: propUs
               
               <div className="md:w-2/3 space-y-4">
                 <div>
-                  <h4 className="font-medium mb-2">About Me</h4>
-                  <p className="text-sm text-muted-foreground">{profileData.aboutMe || 'No about me information available'}</p>
+                  <h4 className="font-medium mb-2">Professional Overview</h4>
+                  <p className="text-sm text-muted-foreground">{profileData.aboutMe || 'No professional overview available'}</p>
                 </div>
                 
                 <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <h4 className="font-medium mb-2">Email</h4>
-                    <p className="text-sm text-muted-foreground">{profileData.email}</p>
-                  </div>
-                  <div>
-                    <h4 className="font-medium mb-2">Phone</h4>
-                    <p className="text-sm text-muted-foreground">{profileData.phoneNumber || 'Not specified'}</p>
-                  </div>
                   <div>
                     <h4 className="font-medium mb-2">Industry</h4>
                     <p className="text-sm text-muted-foreground">{profileData.industry || 'Not specified'}</p>
@@ -157,8 +149,19 @@ export const UnifiedProfileView: FC<UnifiedProfileViewProps> = ({ userId: propUs
                 </div>
                 
                 <div>
-                  <h4 className="font-medium mb-2">Looking For</h4>
+                  <h4 className="font-medium mb-2">I am Looking for</h4>
                   <p className="text-sm text-muted-foreground">{profileData.lookingFor || 'Not specified'}</p>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <h4 className="font-medium mb-2">Email</h4>
+                    <p className="text-sm text-muted-foreground">{profileData.email}</p>
+                  </div>
+                  <div>
+                    <h4 className="font-medium mb-2">Phone</h4>
+                    <p className="text-sm text-muted-foreground">{profileData.phoneNumber || 'Not specified'}</p>
+                  </div>
                 </div>
                 
                 <div>
