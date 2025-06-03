@@ -350,13 +350,6 @@ const Radar = () => {
     }
   }, [userData]);
   
-  // Update nearby users data when the query result changes
-  useEffect(() => {
-    if (nearbyUsersData) {
-      // Data is automatically updated by the query
-    }
-  }, [nearbyUsersData]);
-  
   // Filter nearby users based on job title, industry, and lookingFor
   const filteredNearbyUsers = nearbyUsersData.filter(user => {
     const matchesJobTitle = !jobTitleFilter || 
@@ -449,9 +442,8 @@ const Radar = () => {
   // Handle radius change
   const handleRadiusChange = (value: string) => {
     setRadius(value);
-    // In a real app, this would trigger a refetch with the new radius
-    // For demo purposes, let's shuffle the order of the users to simulate a change
-    setNearbyUsersData([...DEMO_NEARBY_USERS].sort(() => Math.random() - 0.5));
+    // Refetch with new radius
+    refetchNearby();
   };
   
   // Handle user card click
@@ -462,28 +454,52 @@ const Radar = () => {
   
   // Handle manual location refresh
   const handleRefreshLocation = () => {
-    // In a real app, this would get the user's current location
-    // For demo purposes, let's just simulate by shuffling the demo data
-    setNearbyUsersData([...DEMO_NEARBY_USERS].sort(() => Math.random() - 0.5));
-    toast({
-      title: "Location refreshed",
-      description: "Found " + DEMO_NEARBY_USERS.length + " professionals nearby.",
-    });
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const newCoords = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          };
+          setCoordinates(newCoords);
+          updateGeoLocationMutation.mutate(newCoords);
+          toast({
+            title: "Location refreshed",
+            description: "Found " + nearbyUsersData.length + " professionals nearby.",
+          });
+        },
+        (error) => {
+          toast({
+            title: "Location error",
+            description: "Unable to get your current location. Please enable location access.",
+            variant: "destructive",
+          });
+        }
+      );
+    }
   };
   
   // Initialize geolocation on component mount
   useEffect(() => {
-    // For demo purposes, always set to granted
-    setLocationStatus('granted');
-    
-    // Set demo coordinates
-    setCoordinates({
-      lat: 37.7749,
-      lng: -122.4194
-    });
-    
-    // In a real app, this would get the user's geolocation
-    // and update the state with the result
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setLocationStatus('granted');
+          const coords = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          };
+          setCoordinates(coords);
+          updateGeoLocationMutation.mutate(coords);
+        },
+        (error) => {
+          setLocationStatus('denied');
+          console.error('Geolocation error:', error);
+        }
+      );
+    } else {
+      setLocationStatus('unavailable');
+    }
   }, []);
   
   // Render the quantum card for the selected user
