@@ -1,9 +1,6 @@
 import { Skill, WorkExperience, Education } from "@shared/schema";
-import OpenAI from "openai";
 import { storage } from "../storage";
-
-// Initialize OpenAI with your API key
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+import { localAIService } from "./local-ai-service";
 
 export async function generateCareerAdvice(
   message: string,
@@ -168,60 +165,28 @@ export async function generateCareerAdvice(
       Current date: April 1, 2025
     `;
     
-    // Create the OpenAI API call
-    const response = await openai.chat.completions.create({
-      // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-      model: "gpt-4o",
-      messages: [
-        {
-          role: "system",
-          content: `You are Musk, a world-class career advisor with deep expertise across all industries, domains, and professional fields.
+    // Build user profile for local AI service
+    const userProfile = {
+      user: {
+        name: userName || "Professional",
+        title: userTitle,
+        industry: userLocation,
+        lookingFor: careerGoal
+      },
+      workExperiences: experiences,
+      skills: skills.map(skill => ({
+        name: skill.name,
+        proficiency: 80, // Default proficiency
+        level: skill.level
+      })),
+      educations: educations,
+      adviceType: isFollowUpQuestion ? "follow_up" : "comprehensive_analysis",
+      customAdviceText: message
+    };
 
-          IMPORTANT INSTRUCTIONS:
-          
-          1. PROFILE ANALYSIS IS MANDATORY: Begin by thoroughly analyzing the provided profile information (skills, experience, education). Mention specific elements from their profile in your response to demonstrate you've understood their background.
-          
-          2. INDUSTRY EXPERTISE: Demonstrate your knowledge of current trends, challenges, and opportunities in the relevant industry/domain. Include a "Current Industry Landscape" section with market insights specific to their field.
-          
-          3. PERSONALIZATION: Make your advice highly customized to their specific situation. Avoid generic career advice that could apply to anyone.
-          
-          4. CONTEXTUAL AWARENESS: When responding to follow-up questions, remember what you've previously discussed. Reference prior recommendations and build upon them rather than starting from scratch.
-          
-          5. FORMAT YOUR RESPONSE AS A PROFESSIONAL ASSESSMENT:
-             - Begin with a personalized "Executive Summary" that acknowledges their background and goals
-             - Include a "Profile Strengths & Gaps Analysis" section
-             - Provide "Strategic Career Recommendations" (3-5 actionable items)
-             - Add relevant "Industry Context" with current trends
-          
-          6. FOR FOLLOW-UP QUESTIONS:
-             - Directly address the specific question being asked
-             - Reference the conversation history to provide continuity
-             - Maintain the same tone and level of expertise
-             - Provide concise but thorough answers
-          
-          7. EVERY RESPONSE MUST END with a follow-up question and quick response options:
-          
-          ## Let me ask you a follow-up question:
-          [Ask a specific question related to their profile and career goals]
-          
-          **Quick Response Options:**
-          - [Specific option 1 related to their situation]
-          - [Specific option 2 related to their situation]
-          - [Specific option 3 related to their situation]
-          - Tell me more about something else
-          
-          Use sophisticated career development frameworks and concepts in your analysis. Demonstrate your expertise as a true career strategist who understands both mainstream and specialized career paths.`
-        },
-        {
-          role: "user",
-          content: expertContent
-        }
-      ],
-      max_tokens: 2000,
-      temperature: 0.4,
-    });
-
-    return response.choices[0].message.content || "I'm sorry, I couldn't generate advice at the moment. Please try again.";
+    // Use local AI service instead of OpenAI
+    const response = await localAIService.generateCareerAdvice(userProfile);
+    return response;
   } catch (error) {
     console.error("Error generating AI career advice:", error);
     throw new Error("Failed to generate career advice. Please try again later.");
