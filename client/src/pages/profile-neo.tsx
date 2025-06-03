@@ -742,8 +742,7 @@ export default function ProfileNeo() {
                 domain: userData.domain || '',
                 aboutMe: userData.aboutMe || '',
                 lookingFor: userData.lookingFor || '',
-                photoURL: userData.photoURL || '',
-                whatIOffer: userData.whatIOffer || ''
+                photoURL: userData.photoURL || ''
               }}
               onCancel={() => setShowEditPersonalInfoDialog(false)}
               onSave={() => setShowEditPersonalInfoDialog(false)}

@@ -42,7 +42,7 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
   const [domain, setDomain] = useState(userData.domain || "");
   const [aboutMe, setAboutMe] = useState(userData.aboutMe || "");
   const [lookingFor, setLookingFor] = useState(userData.lookingFor || "");
-  const [whatIOffer, setWhatIOffer] = useState(userData.whatIOffer || "");
+
 
   const handleSave = async () => {
     setIsLoading(true);
@@ -56,7 +56,6 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
         domain: domain || null,
         aboutMe: aboutMe.trim() || null,
         lookingFor: lookingFor.trim() || null,
-        whatIOffer: whatIOffer.trim() || null,
       };
 
       await apiRequest({
@@ -318,31 +317,7 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
           />
         </div>
 
-        {/* What I Offer */}
-        <div className="space-y-2">
-          <label htmlFor="whatIOffer" className="text-sm font-medium text-white flex items-center gap-2">
-            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-6"></path>
-              <path d="M2 7l10-5 10 5"></path>
-              <path d="M12 22v-10"></path>
-            </svg>
-            What I Offer
-          </label>
-          <textarea
-            id="whatIOffer"
-            value={whatIOffer}
-            onChange={(e) => setWhatIOffer(e.target.value)}
-            placeholder="What can you offer to others? (e.g. expertise, services, mentorship, etc.)"
-            rows={3}
-            className="!bg-[rgba(18,18,18,0.95)] !backdrop-blur-md !text-white !border-white/20 shadow-md transition-all hover:!border-white/30 w-full min-h-[80px] px-3 py-3 rounded-md border !placeholder-white/50 focus:!border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none resize-none"
-            style={{ 
-              backgroundColor: 'rgba(18,18,18,0.95) !important', 
-              color: 'white !important',
-              backdropFilter: 'blur(12px)',
-              border: '1px solid rgba(255,255,255,0.2) !important'
-            }}
-          />
-        </div>
+
 
         {/* Profile URL (read-only) */}
         <div className="space-y-2">
