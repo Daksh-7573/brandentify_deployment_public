@@ -724,15 +724,15 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
                         className="text-xs py-1 px-2 h-auto text-left w-full justify-start overflow-hidden whitespace-normal text-white border-0"
                         onClick={() => handleQuickResponse(response)}
                         style={{
-                          background: 'rgba(255, 255, 255, 0.05)',
-                          backdropFilter: 'blur(4px)',
-                          border: '1px solid rgba(255, 255, 255, 0.1)'
+                          background: 'rgba(255, 255, 255, 0.1)',
+                          backdropFilter: 'blur(8px)',
+                          border: '1px solid rgba(255, 255, 255, 0.2)'
                         }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+                          e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
                         }}
                         onMouseLeave={(e) => {
-                          e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
+                          e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
                         }}
                       >
                         <span className="line-clamp-2">{response}</span>
