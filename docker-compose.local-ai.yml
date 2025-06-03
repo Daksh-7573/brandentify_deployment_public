@@ -1,0 +1,86 @@
+# Docker Compose for Local AI Infrastructure
+# This replaces OpenAI with free, local AI models
+
+version: '3.8'
+
+services:
+  # Ollama service for running local LLMs
+  ollama:
+    image: ollama/ollama:latest
+    container_name: career-platform-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    environment:
+      - OLLAMA_ORIGINS=*
+    restart: unless-stopped
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    networks:
+      - ai-network
+
+  # Redis for caching AI responses
+  redis:
+    image: redis:7-alpine
+    container_name: career-platform-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - ai-network
+
+  # Model downloader service
+  model-setup:
+    image: ollama/ollama:latest
+    container_name: career-platform-model-setup
+    depends_on:
+      - ollama
+    volumes:
+      - ./scripts:/scripts
+    command: |
+      sh -c "
+        echo 'Waiting for Ollama to be ready...'
+        sleep 10
+        echo 'Downloading Llama 3.2 3B model...'
+        ollama pull llama3.2:3b
+        echo 'Downloading Llama 3.1 7B model...'
+        ollama pull llama3.1:7b
+        echo 'Models downloaded successfully!'
+      "
+    networks:
+      - ai-network
+
+  # Optional: LM Studio alternative (if you prefer GUI)
+  # Uncomment if you want to use LM Studio instead of Ollama
+  # lmstudio:
+  #   image: lmstudio/server:latest
+  #   container_name: career-platform-lmstudio
+  #   ports:
+  #     - "1234:1234"
+  #   volumes:
+  #     - lmstudio_data:/data
+  #   environment:
+  #     - LM_STUDIO_SERVER_PORT=1234
+  #   restart: unless-stopped
+  #   networks:
+  #     - ai-network
+
+volumes:
+  ollama_data:
+    driver: local
+  redis_data:
+    driver: local
+  # lmstudio_data:
+  #   driver: local
+
+networks:
+  ai-network:
+    driver: bridge

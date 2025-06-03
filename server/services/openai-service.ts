@@ -1,8 +1,4 @@
-import { OpenAI } from "openai";
-
-// Initialize OpenAI client
-// the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+import { localAIService } from "./local-ai-service";
 
 // Cache for hashtag suggestions to minimize API calls
 const hashtagSuggestionCache = new Map<string, { suggestions: string[], timestamp: number }>();
@@ -113,23 +109,27 @@ export async function generateCareerAdvice(userProfile: {
   const userPrompt = `Based on my profile information below, I'm seeking ${adviceType.replace('_', ' ')} advice:\n\n${userProfileSummary}`;
 
   try {
-    const response = await openai.chat.completions.create({
-      model: 'gpt-4o',
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: userPrompt }
-      ],
-      max_tokens: 1500
+    // Use local AI service instead of OpenAI
+    const response = await localAIService.generateCareerAdvice({
+      user: {
+        name: userProfile.name,
+        title: userProfile.title,
+        industry: userProfile.industry,
+        lookingFor: userProfile.lookingFor
+      },
+      workExperiences: userProfile.experiences || [],
+      skills: userProfile.skills || [],
+      educations: userProfile.educations || [],
+      adviceType: adviceType,
+      customAdviceText: userPrompt
     });
-
-    const generatedText = response.choices[0].message.content || '';
     
     return {
-      advice: generatedText,
-      nextSteps: extractNextSteps(generatedText),
+      advice: response,
+      nextSteps: extractNextSteps(response),
     };
   } catch (error: unknown) {
-    console.error('Error generating career advice with OpenAI:', error);
+    console.error('Error generating career advice with Local AI:', error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     throw new Error(`Failed to generate career advice: ${errorMessage}`);
   }
@@ -161,23 +161,15 @@ Your task is to analyze the provided resume and provide comprehensive insights, 
 Always be constructive and actionable in your feedback. Focus on helping the person improve their professional presentation and career potential.`;
 
   try {
-    const response = await openai.chat.completions.create({
-      model: 'gpt-4o',
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: `Here is my resume to analyze:\n\n${resumeText}` }
-      ],
-      max_tokens: 2000
-    });
-
-    const generatedText = response.choices[0].message.content || '';
+    // Use local AI service instead of OpenAI
+    const response = await localAIService.analyzeResume(resumeText);
     
     return {
-      analysis: generatedText,
-      sections: extractAnalysisSections(generatedText),
+      analysis: response,
+      sections: extractAnalysisSections(response),
     };
   } catch (error: unknown) {
-    console.error('Error analyzing resume with OpenAI:', error);
+    console.error('Error analyzing resume with Local AI:', error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     throw new Error(`Failed to analyze resume: ${errorMessage}`);
   }
@@ -247,23 +239,13 @@ Suggest ${count} hashtags that are:
   const userPrompt = `Based on the following information, suggest ${count} relevant professional hashtags:\n\n${contextInfo}`;
 
   try {
-    const response = await openai.chat.completions.create({
-      model: 'gpt-4o',
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: userPrompt }
-      ],
-      response_format: { type: "json_object" },
-      max_tokens: 500
+    // Use local AI service instead of OpenAI
+    const hashtags = await localAIService.suggestHashtags({
+      industry: options.industry,
+      domain: options.domain,
+      content: options.contentContext,
+      platform: "LinkedIn" // Default platform
     });
-
-    const content = response.choices[0].message.content || '{"hashtags": []}';
-    const parsedResponse = JSON.parse(content);
-    
-    // Ensure we have an array of hashtags
-    const hashtags = Array.isArray(parsedResponse.hashtags) 
-      ? parsedResponse.hashtags 
-      : [];
     
     // Cache the results
     hashtagSuggestionCache.set(cacheKey, {
@@ -273,7 +255,7 @@ Suggest ${count} hashtags that are:
     
     return { hashtags };
   } catch (error: unknown) {
-    console.error('Error generating hashtag suggestions with OpenAI:', error);
+    console.error('Error generating hashtag suggestions with Local AI:', error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     throw new Error(`Failed to generate hashtag suggestions: ${errorMessage}`);
   }
@@ -332,23 +314,27 @@ ${profileSummary}`;
   }
 
   try {
-    const response = await openai.chat.completions.create({
-      model: 'gpt-4o',
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: userPrompt }
-      ],
-      max_tokens: 1500
+    // Use local AI service to generate networking recommendations
+    const response = await localAIService.generateCareerAdvice({
+      user: {
+        name: userProfile.name,
+        title: userProfile.title,
+        industry: userProfile.industry || targetIndustry,
+        lookingFor: purpose
+      },
+      workExperiences: userProfile.experiences || [],
+      skills: userProfile.skills || [],
+      educations: userProfile.educations || [],
+      adviceType: "networking",
+      customAdviceText: userPrompt
     });
-
-    const generatedText = response.choices[0].message.content || '';
     
     return {
-      recommendations: generatedText,
-      sections: extractNetworkingSections(generatedText),
+      recommendations: response,
+      sections: extractNetworkingSections(response),
     };
   } catch (error: unknown) {
-    console.error('Error generating networking recommendations with OpenAI:', error);
+    console.error('Error generating networking recommendations with Local AI:', error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     throw new Error(`Failed to generate networking recommendations: ${errorMessage}`);
   }
