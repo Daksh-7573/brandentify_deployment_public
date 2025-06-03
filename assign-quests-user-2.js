@@ -2,7 +2,8 @@
  * Script to assign quests to user ID 2 (current logged-in user)
  */
 
-import { Pool } from 'pg';
+import pkg from 'pg';
+const { Pool } = pkg;
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -77,11 +78,13 @@ async function assignQuestsToUser2() {
     console.log(`Preparing to assign ${questsToAssign.length} quests to user ${userId}`);
 
     // Ensure user has XP record
-    await executeQuery(`
-      INSERT INTO user_xp (user_id, total_xp, level, weekly_xp)
-      VALUES ($1, 0, 1, 0)
-      ON CONFLICT (user_id) DO NOTHING
-    `, [userId]);
+    const xpCheck = await executeQuery('SELECT id FROM user_xp WHERE user_id = $1', [userId]);
+    if (xpCheck.rows.length === 0) {
+      await executeQuery(`
+        INSERT INTO user_xp (user_id, balance, lifetime_earned, current_month_earned)
+        VALUES ($1, 0, 0, 0)
+      `, [userId]);
+    }
     console.log(`Ensured XP record exists for user ${userId}`);
 
     // Assign quests
