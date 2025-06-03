@@ -127,9 +127,9 @@ export function QuestCard({ quest, onActionClick }: QuestCardProps) {
           </div>
           <Badge 
             className={
-              isComplete ? "bg-green-500/20 text-white hover:bg-green-500/30 border-green-500/30 backdrop-blur-sm" : 
-              isExpired ? "bg-red-500/20 text-white border-red-500/30 hover:bg-red-500/30 backdrop-blur-sm" : 
-              "bg-blue-500/20 text-white border-blue-500/30 hover:bg-blue-500/30 backdrop-blur-sm"
+              isComplete ? "bg-white/20 text-green-300 hover:bg-white/30 border-white/30 backdrop-blur-sm" : 
+              isExpired ? "bg-white/15 text-red-300 border-white/20 hover:bg-white/25 backdrop-blur-sm" : 
+              "bg-white/15 text-blue-300 border-white/20 hover:bg-white/25 backdrop-blur-sm"
             }
           >
             {getQuestStatusLabel(quest.status)}
