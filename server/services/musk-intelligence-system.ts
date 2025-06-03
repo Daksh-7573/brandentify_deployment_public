@@ -5,12 +5,7 @@
  * career guidance through multiple intelligence dimensions.
  */
 import { User, WorkExperience, Education, Skill, Project } from "@shared/schema";
-import OpenAI from "openai";
-
-// Initialize OpenAI with proper error handling
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
-});
+import { localAIService } from "./local-ai-service";
 
 /**
  * Core intelligence system for Musk AI that processes user data through
@@ -73,30 +68,32 @@ export async function generatePersonalizedResponse(
     // Generate personalized prompt based on career profile, intent and available data
     const prompt = generateEnhancedPrompt(message, intent, careerProfile, context);
     
-    // Generate response using OpenAI
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o", // The newest OpenAI model is "gpt-4o" which was released May 13, 2024
-      messages: [
-        {
-          role: "system", 
-          content: prompt
-        },
-        {
-          role: "user",
-          content: message
-        }
-      ]
-    });
+    // Generate response using Local AI Service
+    const userProfile = {
+      user: {
+        name: context.userData?.name || "Professional",
+        title: context.userData?.title,
+        industry: context.userData?.industry,
+        lookingFor: context.userData?.lookingFor
+      },
+      workExperiences: context.experiences || [],
+      skills: (context.skills || []).map(skill => ({
+        name: skill.name || "",
+        proficiency: 80,
+        level: skill.level
+      })),
+      educations: context.educations || [],
+      adviceType: intent || "career_advice",
+      customAdviceText: message
+    };
+
+    const aiResponse = await localAIService.generateCareerAdvice(userProfile);
     
-    // Extract the response
-    const aiResponse = response.choices[0].message.content || 
-      "I apologize, but I'm unable to process your request right now. Please try again later.";
+    // Process the response
+    let finalResponse = formatResponseWithPersonalization(aiResponse, context);
     
     // Generate potential follow-up questions based on intent and context
     const followUpQuestions = generateFollowUpQuestions(intent, context);
-    
-    // Choose one follow-up question to add to the response if appropriate
-    let finalResponse = formatResponseWithPersonalization(aiResponse, context);
     
     // Add a follow-up question if the response doesn't already contain a question
     // and it's not too long (to avoid making it overwhelming)
