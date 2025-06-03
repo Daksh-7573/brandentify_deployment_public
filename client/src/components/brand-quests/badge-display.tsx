@@ -26,14 +26,14 @@ const BADGE_ICONS: Record<BadgeType, string> = {
 };
 
 const BADGE_COLORS: Record<BadgeType, string> = {
-  quest_initiate: 'bg-blue-500/20 text-white border border-blue-500/20',
-  weekly_hustler: 'bg-green-500/20 text-white border border-green-500/20',
-  musk_learner: 'bg-purple-500/20 text-white border border-purple-500/20',
-  thought_leader: 'bg-yellow-500/20 text-white border border-yellow-500/20',
-  portfolio_star: 'bg-pink-500/20 text-white border border-pink-500/20',
-  visibility_boosted: 'bg-indigo-500/20 text-white border border-indigo-500/20',
-  explorer: 'bg-amber-500/20 text-white border border-amber-500/20',
-  opportunist: 'bg-teal-500/20 text-white border border-teal-500/20'
+  quest_initiate: 'bg-blue-500/20 text-white border border-blue-500/30 backdrop-blur-sm',
+  weekly_hustler: 'bg-green-500/20 text-white border border-green-500/30 backdrop-blur-sm',
+  musk_learner: 'bg-purple-500/20 text-white border border-purple-500/30 backdrop-blur-sm',
+  thought_leader: 'bg-yellow-500/20 text-white border border-yellow-500/30 backdrop-blur-sm',
+  portfolio_star: 'bg-pink-500/20 text-white border border-pink-500/30 backdrop-blur-sm',
+  visibility_boosted: 'bg-indigo-500/20 text-white border border-indigo-500/30 backdrop-blur-sm',
+  explorer: 'bg-amber-500/20 text-white border border-amber-500/30 backdrop-blur-sm',
+  opportunist: 'bg-teal-500/20 text-white border border-teal-500/30 backdrop-blur-sm'
 };
 
 export function BadgeDisplay({ userId, limit, compact = false, className }: BadgeDisplayProps) {
@@ -52,7 +52,7 @@ export function BadgeDisplay({ userId, limit, compact = false, className }: Badg
         {compact ? (
           <div className="flex flex-wrap gap-2">
             {Array.from({ length: 4 }).map((_, i) => (
-              <Skeleton key={i} className="w-14 h-14 rounded-full bg-gray-800/60" />
+              <Skeleton key={i} className="w-14 h-14 rounded-full bg-white/10 backdrop-blur-sm border border-white/20" />
             ))}
           </div>
         ) : (
@@ -63,7 +63,7 @@ export function BadgeDisplay({ userId, limit, compact = false, className }: Badg
             </div>
             <div className="flex flex-wrap gap-2">
               {Array.from({ length: 6 }).map((_, i) => (
-                <Skeleton key={i} className="w-16 h-16 rounded-full bg-gray-800/60" />
+                <Skeleton key={i} className="w-16 h-16 rounded-full bg-white/10 backdrop-blur-sm border border-white/20" />
               ))}
             </div>
           </div>
@@ -81,8 +81,8 @@ export function BadgeDisplay({ userId, limit, compact = false, className }: Badg
           <h2 className="text-xl font-semibold text-white">Your Badges</h2>
           <p className="text-white/70 text-sm">Complete quests to earn badges</p>
         </div>
-        <div className="bg-gray-900/40 backdrop-blur-md border border-white/5 rounded-lg p-4">
-          <div className="text-center py-4 text-white/60">
+        <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-4">
+          <div className="text-center py-4 text-white/70">
             You haven't earned any badges yet. Complete quests to earn badges!
           </div>
         </div>
