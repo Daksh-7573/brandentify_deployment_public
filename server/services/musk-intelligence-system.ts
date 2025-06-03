@@ -157,8 +157,8 @@ Quick Response Options: "How do I upload my resume?", "What should I include in 
   } catch (error) {
     console.error("Error in Musk intelligence system:", error);
     
-    // Use a default intent for fallback
-    const fallbackIntent = "general";
+    // Use the detected intent for fallback
+    const fallbackIntent = intent;
     
     // Provide contextual fallback responses based on available data and user intent
     return generateIntelligentFallback(message, context, fallbackIntent);
