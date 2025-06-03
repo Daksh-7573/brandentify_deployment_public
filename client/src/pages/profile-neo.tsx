@@ -136,7 +136,7 @@ export default function ProfileNeo() {
     },
     onSuccess: () => {
       toast({
-        title: "Professional overview updated",
+        title: "About me updated",
         description: "Your professional summary has been updated successfully."
       });
       setShowEditAboutDialog(false);
@@ -265,14 +265,8 @@ export default function ProfileNeo() {
                     Manage your professional information and career details
                   </p>
                 </div>
-                <div className="flex flex-col md:flex-row items-start md:items-center gap-4 mt-4 md:mt-0">
-                  {/* User Title and Location */}
-                  <div className="text-right">
-                    <h2 className="text-lg font-semibold text-white">{userData?.title || "Add your job title"}</h2>
-                    <p className="text-white/60 text-sm">{userData?.location || "Add your location"}</p>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <button 
+                <div className="flex items-center gap-4 mt-4 md:mt-0">
+                  <button 
                     onClick={() => {
                       // Create a loading state in the button
                       const btn = document.getElementById('portfolio-btn');
@@ -317,8 +311,7 @@ export default function ProfileNeo() {
                   >
                     <CreditCard className="w-4 h-4" />
                     <span>Quantum Card</span>
-                    </button>
-                  </div>
+                  </button>
                 </div>
               </div>
             </div>
@@ -361,6 +354,8 @@ export default function ProfileNeo() {
                     
                     <div className="text-center mt-4">
                       <h2 className="text-xl font-bold text-white">{userData?.name}</h2>
+                      <p className="text-white/80 text-sm">{userData?.title || "Add your job title"}</p>
+                      <p className="text-white/60 text-xs mt-1">{userData?.location || "Add your location"}</p>
                       
                       {/* Edit Profile Button */}
                       <button
@@ -379,10 +374,10 @@ export default function ProfileNeo() {
                   {/* Profile Info & Stats */}
                   <div className="flex-1">
                     <div className="space-y-4">
-                      {/* Professional Overview */}
+                      {/* About Me */}
                       <div>
                         <div className="flex items-center justify-between mb-2">
-                          <h3 className="text-lg font-medium text-white">Professional Overview</h3>
+                          <h3 className="text-lg font-medium text-white">About Me</h3>
                           <button
                             onClick={() => setShowEditAboutDialog(true)}
                             className="text-white/60 hover:text-white transition-colors"
@@ -456,7 +451,49 @@ export default function ProfileNeo() {
               </div>
             </NeoGlassSection>
             
-
+            {/* Professional Overview - Connected with Personal Details */}
+            <NeoGlassSection className="mb-6">
+              <div className="p-4">
+                <div className="flex flex-row items-center justify-between space-y-0 pb-4 mb-4 border-b border-gray-800">
+                  <div>
+                    <h2 className="text-xl font-bold text-white">Professional Overview</h2>
+                    <p className="text-sm text-gray-300">General description of your expertise</p>
+                  </div>
+                  {userData?.whatIOffer ? (
+                    <Button
+                      variant="ghost"
+                      className="neo-glass-button flex items-center gap-1 py-1.5 px-3 whitespace-nowrap"
+                      onClick={() => {/* Add edit functionality */}}
+                    >
+                      <Edit className="h-3.5 w-3.5" />
+                      <span>Edit</span>
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="ghost"
+                      className="neo-glass-button flex items-center gap-1 py-1.5 px-3 whitespace-nowrap"
+                      onClick={() => {/* Add edit functionality */}}
+                    >
+                      <Plus className="h-3.5 w-3.5" />
+                      <span>Add Overview</span>
+                    </Button>
+                  )}
+                </div>
+                
+                {userData?.whatIOffer ? (
+                  <div className="transition-all">
+                    <p className="text-sm text-gray-300 whitespace-pre-line">{userData.whatIOffer}</p>
+                  </div>
+                ) : (
+                  <div className="py-6 text-center">
+                    <AlertCircle className="mx-auto h-10 w-10 text-gray-400/50" />
+                    <p className="mt-2 text-gray-400">
+                      Add a general description of your professional expertise.
+                    </p>
+                  </div>
+                )}
+              </div>
+            </NeoGlassSection>
             
             {/* Specific Services as a separate section */}
             <Services />
@@ -483,14 +520,6 @@ export default function ProfileNeo() {
               <Education userFirebaseId={user.uid} userNumericId={userData?.id} />
             </NeoGlassSection>
             
-            {/* 8. Personal Information */}
-            <NeoGlassSection className="mb-6">
-              <div className="p-4">
-                <h3 className="text-lg font-medium text-white mb-4">Personal Information</h3>
-                <PersonalInfoSection userData={userData} />
-              </div>
-            </NeoGlassSection>
-            
             {/* Account Actions */}
             <NeoGlassSection className="mb-6">
               <div className="p-4">
@@ -510,15 +539,15 @@ export default function ProfileNeo() {
         </div>
       </div>
       
-      {/* Edit Professional Overview Dialog */}
+      {/* Edit About Me Dialog */}
       <Dialog open={showEditAboutDialog} onOpenChange={setShowEditAboutDialog}>
         <DialogContent className="neo-glass-card border-0 max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-white">Edit Professional Overview</DialogTitle>
+            <DialogTitle className="text-white">Edit Professional Summary</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="about" className="text-white">Professional Overview</Label>
+              <Label htmlFor="about" className="text-white">About Me</Label>
               <Textarea
                 id="about"
                 value={aboutMe || ""}
