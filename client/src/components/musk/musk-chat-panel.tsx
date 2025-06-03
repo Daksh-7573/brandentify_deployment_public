@@ -605,18 +605,18 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
         animate="visible"
         exit="exit"
         style={{
-          background: 'rgba(15, 23, 42, 0.7)',
+          background: 'rgba(18, 18, 18, 0.95)',
           backdropFilter: 'blur(16px)',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4)'
+          border: '1px solid rgba(255, 255, 255, 0.2)',
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
         }}
       >
         {/* Header */}
         <div 
           className="flex items-center justify-between p-4"
           style={{
-            borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-            background: 'rgba(255, 255, 255, 0.05)'
+            borderBottom: '1px solid rgba(255, 255, 255, 0.2)',
+            background: 'rgba(255, 255, 255, 0.1)'
           }}
         >
           <div className="flex items-center gap-3">
@@ -664,13 +664,15 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
                     : "mr-auto rounded-bl-none max-w-[90%]"
                 )}
                 style={message.sender === 'user' ? {
-                  background: 'linear-gradient(135deg, #3B82F6, #0EA5E9)',
+                  background: 'rgba(255, 255, 255, 0.15)',
+                  backdropFilter: 'blur(8px)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
                   color: 'white',
-                  boxShadow: '0 8px 32px rgba(59, 130, 246, 0.3)'
+                  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)'
                 } : {
                   background: 'rgba(255, 255, 255, 0.1)',
                   backdropFilter: 'blur(8px)',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
                   color: 'white'
                 }}
               >
@@ -827,9 +829,9 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
               className="w-full text-white placeholder:text-white/60 border-0"
               disabled={isTyping || isUploading}
               style={{
-                background: 'rgba(255, 255, 255, 0.05)',
+                background: 'rgba(255, 255, 255, 0.1)',
                 backdropFilter: 'blur(8px)',
-                border: '1px solid rgba(255, 255, 255, 0.1)'
+                border: '1px solid rgba(255, 255, 255, 0.2)'
               }}
             />
           </div>
@@ -840,8 +842,10 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
             disabled={!inputValue.trim() || isTyping || isUploading}
             title="Send message"
             style={{
-              background: 'linear-gradient(135deg, #3B82F6, #0EA5E9)',
-              boxShadow: '0 8px 32px rgba(59, 130, 246, 0.3)'
+              background: 'rgba(255, 255, 255, 0.15)',
+              backdropFilter: 'blur(8px)',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)'
             }}
           >
             <Send className="h-4 w-4" />
