@@ -158,14 +158,17 @@ function SearchPage() {
   const matchMutation = useMutation({
     mutationFn: async () => {
       const payload = {
+        userId: user?.id,
         industry,
         domain,
-        jobTitle,
+        targetJobTitle: jobTitle,
         experienceLevel: experience,
-        lookingFor
+        lookingFor,
+        skills: [],
+        location: user?.location || ""
       };
       
-      const response = await fetch("/api/smart-connect/match", {
+      const response = await fetch("/api/smart-connect", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -174,7 +177,12 @@ function SearchPage() {
         credentials: "include"
       });
       
-      return response.json();
+      if (!response.ok) {
+        throw new Error('Failed to find matches');
+      }
+      
+      const data = await response.json();
+      return data.matches || [];
     },
     onSuccess: (data) => {
       setShowMatchResults(true);
@@ -911,45 +919,45 @@ function SearchPage() {
                           ) : matchMutation.isSuccess && matchMutation.data && matchMutation.data.length > 0 ? (
                             <div className="space-y-4">
                               {matchMutation.data.map((match: any) => (
-                                <Card key={match.id} className="neo-glass-card overflow-hidden hover:scale-[1.02] transition-all duration-300">
+                                <Card key={match.user.id} className="neo-glass-card overflow-hidden hover:scale-[1.02] transition-all duration-300">
                                   <CardContent className="p-4">
                                     <div className="flex gap-4 items-center">
                                       <Avatar className="h-16 w-16 border-2 border-white/20">
-                                        <AvatarImage src={match.photoURL || undefined} />
-                                        <AvatarFallback className="text-lg bg-white/10 text-white">{getInitials(match.name)}</AvatarFallback>
+                                        <AvatarImage src={match.user.photoURL || undefined} />
+                                        <AvatarFallback className="text-lg bg-white/10 text-white">{getInitials(match.user.name || "User")}</AvatarFallback>
                                       </Avatar>
                                       
                                       <div className="flex-grow">
-                                        <h4 className="font-medium text-white">{match.name}</h4>
-                                        <p className="text-sm text-gray-300">{match.title}</p>
+                                        <h4 className="font-medium text-white">{match.user.name}</h4>
+                                        <p className="text-sm text-gray-300">{match.user.title}</p>
                                         
                                         <div className="flex flex-wrap gap-1 mt-2">
-                                          {match.skills.map((skill: string, i: number) => (
+                                          {match.strengthAreas?.map((area: string, i: number) => (
                                             <Badge key={i} variant="outline" className="text-xs font-normal bg-white/10 text-white border-white/20">
-                                              {skill}
+                                              {area}
                                             </Badge>
                                           ))}
                                         </div>
                                         
                                         <div className="flex items-center mt-3 text-xs text-gray-300">
                                           <MapPin size={12} className="mr-1" />
-                                          {match.location}
+                                          {match.user.location}
                                         </div>
                                       </div>
                                       
                                       <div className="text-center">
                                         <div className="mb-1 relative w-16 h-16">
                                           <div className="absolute inset-0 flex items-center justify-center">
-                                            <span className="text-lg font-bold text-white">{match.matchPercentage}%</span>
+                                            <span className="text-lg font-bold text-white">{Math.round(match.score * 100)}%</span>
                                           </div>
                                           <Progress 
-                                            value={match.matchPercentage} 
+                                            value={match.score * 100} 
                                             className="w-16 h-16 rounded-full [&>div]:bg-white/60 [&>div]:rounded-full" 
                                           />
                                         </div>
                                         <button 
                                           className="mt-2 w-full px-4 py-1.5 rounded-full bg-white/20 text-white hover:bg-white/30 focus:outline-none focus:ring-2 focus:ring-white/20 shadow-sm font-medium transition-all text-sm flex items-center justify-center"
-                                          onClick={() => setLocation(`/profile/${match.id}`)}
+                                          onClick={() => setLocation(`/profile/${match.user.id}`)}
                                         >
                                           <Plus className="h-3.5 w-3.5 mr-1" />
                                           <span>Connect</span>
@@ -959,39 +967,33 @@ function SearchPage() {
                                     
                                     {/* Match Details */}
                                     <div className="mt-3 pt-3 border-t border-white/10">
-                                      <h5 className="text-xs font-medium mb-2 text-white">Match Details</h5>
-                                      <div className="grid grid-cols-4 gap-2">
-                                        {match.matchDetails.complementaryMatch && (
-                                          <div>
-                                            <p className="text-xs text-gray-300">Goals Match</p>
-                                            <div className="flex items-center mt-1">
-                                              <Progress value={match.matchDetails.complementaryMatch} className="h-1 mr-2" />
-                                              <span className="text-xs text-white">{match.matchDetails.complementaryMatch}%</span>
-                                            </div>
-                                          </div>
-                                        )}
-                                        <div>
-                                          <p className="text-xs text-gray-300">Industry</p>
-                                          <div className="flex items-center mt-1">
-                                            <Progress value={match.matchDetails.industryMatch} className="h-1 mr-2" />
-                                            <span className="text-xs text-white">{match.matchDetails.industryMatch}%</span>
-                                          </div>
+                                      <h5 className="text-xs font-medium mb-2 text-white">Why This Match</h5>
+                                      {match.compatibilityInsights && match.compatibilityInsights.length > 0 && (
+                                        <div className="mb-3">
+                                          <p className="text-xs text-gray-300 mb-1">Compatibility Insights:</p>
+                                          <ul className="space-y-1">
+                                            {match.compatibilityInsights.slice(0, 2).map((insight: string, i: number) => (
+                                              <li key={i} className="text-xs text-white flex items-start">
+                                                <span className="text-white/60 mr-2">•</span>
+                                                <span>{insight}</span>
+                                              </li>
+                                            ))}
+                                          </ul>
                                         </div>
+                                      )}
+                                      {match.matchReasons && match.matchReasons.length > 0 && (
                                         <div>
-                                          <p className="text-xs text-gray-300">Domain</p>
-                                          <div className="flex items-center mt-1">
-                                            <Progress value={match.matchDetails.domainMatch} className="h-1 mr-2" />
-                                            <span className="text-xs text-white">{match.matchDetails.domainMatch}%</span>
-                                          </div>
+                                          <p className="text-xs text-gray-300 mb-1">Match Reasons:</p>
+                                          <ul className="space-y-1">
+                                            {match.matchReasons.slice(0, 2).map((reason: string, i: number) => (
+                                              <li key={i} className="text-xs text-white flex items-start">
+                                                <span className="text-white/60 mr-2">•</span>
+                                                <span>{reason}</span>
+                                              </li>
+                                            ))}
+                                          </ul>
                                         </div>
-                                        <div>
-                                          <p className="text-xs text-gray-300">Experience</p>
-                                          <div className="flex items-center mt-1">
-                                            <Progress value={match.matchDetails.experienceMatch} className="h-1 mr-2" />
-                                            <span className="text-xs text-white">{match.matchDetails.experienceMatch}%</span>
-                                          </div>
-                                        </div>
-                                      </div>
+                                      )}
                                     </div>
                                   </CardContent>
                                 </Card>
