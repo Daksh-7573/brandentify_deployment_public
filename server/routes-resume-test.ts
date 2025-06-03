@@ -2,7 +2,7 @@
  * Routes for testing the enhanced resume analysis feature
  */
 import { Router } from 'express';
-import OpenAI from 'openai';
+import { LocalAIService } from './services/local-ai-service';
 
 // Create a router
 export const resumeTestRoutes = Router();

@@ -1,10 +1,7 @@
-import OpenAI from "openai";
+import { LocalAIService } from "./local-ai-service";
 
-// Initialize the xAI client
-const openai = new OpenAI({ 
-  baseURL: "https://api.x.ai/v1", 
-  apiKey: process.env.XAI_API_KEY 
-});
+// Initialize local AI service
+const localAI = new LocalAIService();
 
 /**
  * Generate career advice based on user profile information
@@ -63,18 +60,16 @@ export async function generateCareerAdvice(userProfile: {
 
 Format your response in clear sections with actionable advice.`;
 
-    // Call Grok API
-    const response = await openai.chat.completions.create({
-      model: "grok-2-1212",
-      messages: [{ role: "user", content: prompt }],
-      max_tokens: 1000,
-      temperature: 0.7,
+    // Call local AI service
+    const response = await localAI.generateCareerAdvice({
+      prompt,
+      maxTokens: 1000,
+      temperature: 0.7
     });
 
-    // Return the response
-    return response.choices[0].message.content;
+    return response;
   } catch (error) {
-    console.error("Error generating career advice with Grok:", error);
+    console.error("Error generating career advice with local AI:", error);
     throw new Error("Failed to generate career advice. Please try again later.");
   }
 }
@@ -99,16 +94,15 @@ Please provide the following:
 
 Format your response in clearly labeled sections.`;
 
-    const response = await openai.chat.completions.create({
-      model: "grok-2-1212",
-      messages: [{ role: "user", content: prompt }],
-      max_tokens: 1000,
-      temperature: 0.5,
+    const response = await localAI.analyzeResume({
+      resumeText,
+      maxTokens: 1000,
+      temperature: 0.5
     });
 
-    return response.choices[0].message.content;
+    return response;
   } catch (error) {
-    console.error("Error analyzing resume with Grok:", error);
+    console.error("Error analyzing resume with local AI:", error);
     throw new Error("Failed to analyze resume. Please try again later.");
   }
 }
@@ -164,16 +158,15 @@ export async function generateNetworkingRecommendations(
 
 Make all advice specific to the profile and networking goals provided.`;
 
-    const response = await openai.chat.completions.create({
-      model: "grok-2-1212",
-      messages: [{ role: "user", content: prompt }],
-      max_tokens: 800,
-      temperature: 0.6,
+    const response = await localAI.generateNetworkingRecommendations({
+      prompt,
+      maxTokens: 800,
+      temperature: 0.6
     });
 
-    return response.choices[0].message.content;
+    return response;
   } catch (error) {
-    console.error("Error generating networking recommendations with Grok:", error);
+    console.error("Error generating networking recommendations with local AI:", error);
     throw new Error("Failed to generate networking recommendations. Please try again later.");
   }
 }
