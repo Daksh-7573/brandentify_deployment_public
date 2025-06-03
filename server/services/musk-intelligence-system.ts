@@ -75,7 +75,7 @@ export async function generatePersonalizedResponse(
     // Generate response using local AI service
     const aiResponse = await localAIService.generateCareerAdvice(userProfile);
     
-    // Format response with personalization
+    // Format response with personalization and smart quick responses
     const finalResponse = formatResponseWithPersonalization(aiResponse, context);
     
     return finalResponse;
@@ -117,27 +117,7 @@ function determineUserIntent(message: string, context: MuskContext): string {
   return bestIntent;
 }
 
-/**
- * Format AI response with personalization
- */
-function formatResponseWithPersonalization(response: string, context: MuskContext): string {
-  let formattedResponse = response;
 
-  // Add personalization based on user data
-  if (context.userData?.name) {
-    // Ensure response feels personal
-    if (!formattedResponse.includes(context.userData.name)) {
-      formattedResponse = `Hi ${context.userData.name}! ${formattedResponse}`;
-    }
-  }
-
-  // Add context-specific formatting
-  if (context.page && !formattedResponse.includes("follow-up")) {
-    formattedResponse += "\n\nFeel free to ask any follow-up questions about your career development!";
-  }
-
-  return formattedResponse;
-}
 
 /**
  * Analyze user's career profile from available data
@@ -191,4 +171,79 @@ function calculateProfileCompleteness(context: MuskContext): number {
   if ((context.skills?.length || 0) > 0) score += 20;
   if ((context.educations?.length || 0) > 0) score += 20;
   return score;
+}
+
+/**
+ * Format response with personalization and smart quick responses
+ */
+function formatResponseWithPersonalization(response: string, context: MuskContext): string {
+  let formattedResponse = response;
+
+  // Add personalization based on user data
+  if (context.userData?.name) {
+    // Ensure response feels personal
+    if (!formattedResponse.includes(context.userData.name)) {
+      formattedResponse = `Hi ${context.userData.name}! ${formattedResponse}`;
+    }
+  }
+
+  // Add context-specific formatting
+  if (context.page && !formattedResponse.includes("follow-up")) {
+    formattedResponse += "\n\nFeel free to ask any follow-up questions about your career development!";
+  }
+
+  // Add smart quick response options based on user profile and context
+  const quickResponses = generateSmartQuickResponses(context);
+  
+  if (quickResponses.length > 0) {
+    formattedResponse += `\n\nQuick Response Options: ${quickResponses.map(q => `"${q}"`).join(", ")}`;
+  }
+  
+  return formattedResponse;
+}
+
+/**
+ * Generate smart quick response options based on user context
+ */
+function generateSmartQuickResponses(context: MuskContext): string[] {
+  const responses: string[] = [];
+  const hasExperiences = (context.experiences?.length || 0) > 0;
+  const hasSkills = (context.skills?.length || 0) > 0;
+  const hasEducation = (context.educations?.length || 0) > 0;
+  const hasProjects = (context.projects?.length || 0) > 0;
+  const userTitle = context.userData?.title;
+  const userIndustry = context.userData?.industry;
+  
+  // Career growth suggestions based on profile
+  if (hasExperiences) {
+    responses.push("What's my next career step?");
+    responses.push("How can I advance in my current role?");
+  } else {
+    responses.push("How do I start my career?");
+    responses.push("What entry-level positions should I consider?");
+  }
+  
+  // Skill development based on profile
+  if (hasSkills) {
+    responses.push("Which skills should I develop further?");
+  } else {
+    responses.push("What skills are essential for my field?");
+  }
+  
+  // Industry-specific suggestions
+  if (userIndustry) {
+    responses.push(`What are the trends in ${userIndustry}?`);
+  } else {
+    responses.push("Help me identify my ideal industry");
+  }
+  
+  // Resume and profile optimization
+  if (hasExperiences || hasEducation || hasProjects) {
+    responses.push("How can I improve my professional profile?");
+  } else {
+    responses.push("How do I build a strong professional profile?");
+  }
+  
+  // Return top 3 most relevant suggestions
+  return responses.slice(0, 3);
 }
