@@ -503,13 +503,7 @@ async function enrichContextWithUserData(userId: number, context?: any) {
 // Generate AI response based on message and context
 async function generateMuskResponse(message: string, context: any) {
   try {
-    // Check if OpenAI Key is set
-    if (!process.env.OPENAI_API_KEY) {
-      console.log("Using fallback responses as OpenAI API key is not set");
-      return generateFallbackResponse(message, context);
-    }
-    
-    console.log("Generating personalized response using Musk Intelligence System");
+    console.log("Generating personalized response using Musk Intelligence System with Local AI");
     
     // Convert the old context format to our new MuskContext format
     const muskContext: MuskContext = {
