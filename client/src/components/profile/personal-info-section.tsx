@@ -1,5 +1,5 @@
 import React from "react";
-import { Mail, Phone, Globe, Briefcase, Edit, FileText } from "lucide-react";
+import { Mail, Phone, Globe, Briefcase, Edit } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { UserData } from "@/types/user";
@@ -10,8 +10,6 @@ interface PersonalInfoSectionProps {
 }
 
 const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({ userData, onEdit }) => {
-  console.log('PersonalInfoSection userData:', userData);
-  
   // Component to display contact information
   return (
     <Card className="shadow-sm">
@@ -31,28 +29,6 @@ const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({ userData, onE
           )}
         </div>
         <div className="space-y-4">
-          {/* Professional Summary */}
-          {userData.aboutMe && (
-            <div className="flex items-start gap-2">
-              <FileText className="h-4 w-4 text-muted-foreground mt-0.5" />
-              <div className="text-sm">
-                <div className="font-medium mb-1">Professional Overview</div>
-                <div className="text-muted-foreground whitespace-pre-line">{userData.aboutMe}</div>
-              </div>
-            </div>
-          )}
-          
-          {/* What I Offer - only show if value exists */}
-          {userData.whatIOffer && (
-            <div className="flex items-start gap-2">
-              <Briefcase className="h-4 w-4 text-muted-foreground mt-0.5" />
-              <div className="text-sm">
-                <div className="font-medium mb-1">What I Offer</div>
-                <div className="text-muted-foreground">{userData.whatIOffer}</div>
-              </div>
-            </div>
-          )}
-          
           {/* Email */}
           <div className="flex items-center gap-2">
             <Mail className="h-4 w-4 text-muted-foreground" />
@@ -64,6 +40,17 @@ const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({ userData, onE
             <div className="flex items-center gap-2">
               <Phone className="h-4 w-4 text-muted-foreground" />
               <span className="text-sm">{userData.phoneNumber}</span>
+            </div>
+          )}
+          
+          {/* What I Offer - only show if value exists */}
+          {userData.whatIOffer && (
+            <div className="flex items-start gap-2">
+              <Briefcase className="h-4 w-4 text-muted-foreground mt-0.5" />
+              <div className="text-sm">
+                <div className="font-medium mb-1">What I Offer</div>
+                <div className="text-muted-foreground">{userData.whatIOffer}</div>
+              </div>
             </div>
           )}
           
