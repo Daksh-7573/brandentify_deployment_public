@@ -480,15 +480,15 @@ export default function ProfileNeo() {
                   )}
                 </div>
                 
-                {userData?.whatIOffer ? (
+                {userData?.aboutMe ? (
                   <div className="transition-all">
-                    <p className="text-sm text-gray-300 whitespace-pre-line">{userData.whatIOffer}</p>
+                    <p className="text-sm text-gray-300 whitespace-pre-line">{userData.aboutMe}</p>
                   </div>
                 ) : (
                   <div className="py-6 text-center">
                     <AlertCircle className="mx-auto h-10 w-10 text-gray-400/50" />
                     <p className="mt-2 text-gray-400">
-                      Add a general description of your professional expertise.
+                      Add a professional overview of your expertise and background.
                     </p>
                   </div>
                 )}
@@ -518,6 +518,14 @@ export default function ProfileNeo() {
             {/* 7. Academic Background (Education) */}
             <NeoGlassSection className="mb-6">
               <Education userFirebaseId={user.uid} userNumericId={userData?.id} />
+            </NeoGlassSection>
+            
+            {/* 8. Personal Information */}
+            <NeoGlassSection className="mb-6">
+              <div className="p-4">
+                <h3 className="text-lg font-medium text-white mb-4">Personal Information</h3>
+                <PersonalInfoSection userData={userData} />
+              </div>
             </NeoGlassSection>
             
             {/* Account Actions */}
