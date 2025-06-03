@@ -48,6 +48,7 @@ import muskFeedbackRoutes from "./routes-musk-feedback";
 import { setupServicesRoutes } from "./routes-services";
 import addProjectUpdateRoutes from "./routes-project-update";
 import careerCapsuleRoutes from "./routes-career-capsule";
+import aiMonitoringRoutes from "./routes-ai-monitoring";
 import { setupPersonalizedHashtagRoutes } from "./routes-personalized-hashtags";
 import notificationRoutes from "./routes-notifications";
 import directAccessRoutes from "./routes-direct-access";
@@ -6699,6 +6700,10 @@ ${extractedText.substring(0, 5000)}
   // Register dedicated analytics endpoint
   apiRouter.use('/analytics-data', directAnalyticsRoutes);
   console.log("Direct analytics endpoint loaded");
+  
+  // Register AI monitoring and management routes
+  apiRouter.use('/admin', aiMonitoringRoutes);
+  console.log("AI monitoring routes loaded");
 
   app.use("/api", apiRouter);
 
