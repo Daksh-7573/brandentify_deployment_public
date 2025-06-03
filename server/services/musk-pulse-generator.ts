@@ -168,7 +168,7 @@ export class MuskPulseGenerator {
   private async generatePulseContent(
     options: PulseGenerationOptions, 
     userContext: { industries: string[]; domains: string[]; locations: string[] }
-  ): Promise<{ title: string; content: string; industry?: string; hashtags: string[] }> {
+  ): Promise<{ title: string; content: string; industry?: string; hashtags: string[]; referenceLinks: Array<{title: string; url: string; source: string}> }> {
     
     const timePrompts = {
       morning: "Generate morning career insights and industry updates",
@@ -186,26 +186,34 @@ Platform user interests:
     const prompt = `
 You are Musk, an expert AI career assistant for Brandentifier, a professional networking platform.
 
-Generate a ${options.timeOfDay} news pulse that provides valuable career insights for professionals.
+Generate a ${options.timeOfDay} news pulse that provides concise career summaries with reference links.
 
 ${contextInfo}
 
 Requirements:
+- Create brief summaries (2-3 sentences max) instead of long content
+- Include credible reference links for "Read More" functionality
 - Focus on actionable career advice, industry trends, or skill development
 - Be professional yet engaging
 - Include 2-3 relevant hashtags
-- Keep content between 150-250 words
 - Prioritize Brandentifier platform features (portfolio building, networking, skill development)
-- Avoid external platform promotions
+- Provide authentic source links to reputable publications
 
 ${timePrompts[options.timeOfDay]}
 
 Respond with JSON format:
 {
   "title": "Engaging title (max 80 chars)",
-  "content": "Main content with actionable insights",
+  "content": "Brief summary (2-3 sentences max) with key insights",
   "industry": "Primary industry focus (if applicable)", 
-  "hashtags": ["hashtag1", "hashtag2", "hashtag3"]
+  "hashtags": ["hashtag1", "hashtag2", "hashtag3"],
+  "referenceLinks": [
+    {
+      "title": "Source article title",
+      "url": "https://credible-source.com/article",
+      "source": "Publication name"
+    }
+  ]
 }
     `;
 
@@ -223,7 +231,8 @@ Respond with JSON format:
         title: generated.title || `${options.timeOfDay.charAt(0).toUpperCase() + options.timeOfDay.slice(1)} Career Insights`,
         content: generated.content || "Stay focused on your professional growth journey.",
         industry: generated.industry,
-        hashtags: generated.hashtags || []
+        hashtags: generated.hashtags || [],
+        referenceLinks: generated.referenceLinks || []
       };
     } catch (error) {
       console.error('[MuskPulseGenerator] Error generating content:', error);
@@ -232,7 +241,8 @@ Respond with JSON format:
       return {
         title: `${options.timeOfDay.charAt(0).toUpperCase() + options.timeOfDay.slice(1)} Professional Update`,
         content: `Today is a great day to focus on your career development. Consider updating your Brandentifier portfolio or connecting with professionals in your industry.`,
-        hashtags: ['#CareerGrowth', '#ProfessionalDevelopment']
+        hashtags: ['#CareerGrowth', '#ProfessionalDevelopment'],
+        referenceLinks: []
       };
     }
   }
@@ -244,7 +254,7 @@ Respond with JSON format:
     eventDescription: string,
     industry: string,
     userContext: UserContext[]
-  ): Promise<{ title: string; content: string; industry: string; hashtags: string[] }> {
+  ): Promise<{ title: string; content: string; industry: string; hashtags: string[]; referenceLinks: Array<{title: string; url: string; source: string}> }> {
     
     const prompt = `
 You are Musk, an expert AI career assistant for Brandentifier.
@@ -254,19 +264,29 @@ Event: ${eventDescription}
 Industry: ${industry}
 Target audience: ${userContext.length} professionals in ${industry}
 
-Create content that:
+Requirements:
+- Create brief summaries (2-3 sentences max) instead of long content
+- Include credible reference links for "Read More" functionality
 - Explains the career implications of this event
 - Provides actionable advice for professionals in ${industry}
 - Suggests relevant skills to develop
 - Encourages use of Brandentifier features (portfolio updates, networking)
 - Includes 2-3 relevant hashtags
+- Provide authentic source links to reputable publications
 
 Respond with JSON format:
 {
   "title": "Engaging title about the event (max 80 chars)",
-  "content": "Analysis and career advice (150-250 words)",
+  "content": "Brief summary (2-3 sentences max) with key insights",
   "industry": "${industry}",
-  "hashtags": ["hashtag1", "hashtag2", "hashtag3"]
+  "hashtags": ["hashtag1", "hashtag2", "hashtag3"],
+  "referenceLinks": [
+    {
+      "title": "Source article title",
+      "url": "https://credible-source.com/article",
+      "source": "Publication name"
+    }
+  ]
 }
     `;
 
@@ -284,7 +304,8 @@ Respond with JSON format:
         title: generated.title || `${industry} Industry Update`,
         content: generated.content || `Important developments in ${industry}. Stay informed and adapt your career strategy accordingly.`,
         industry: industry,
-        hashtags: generated.hashtags || [`#${industry}`, '#IndustryNews']
+        hashtags: generated.hashtags || [`#${industry}`, '#IndustryNews'],
+        referenceLinks: generated.referenceLinks || []
       };
     } catch (error) {
       console.error('[MuskPulseGenerator] Error generating event content:', error);
