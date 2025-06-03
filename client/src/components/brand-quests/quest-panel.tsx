@@ -128,21 +128,21 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
       </div>
       
       {isLoadingWeekly ? (
-        <div className="space-y-4">
-          <Skeleton className="h-32 w-full rounded-xl bg-white/10 backdrop-blur-sm border border-white/20" />
-          <Skeleton className="h-32 w-full rounded-xl bg-white/10 backdrop-blur-sm border border-white/20" />
-          <Skeleton className="h-32 w-full rounded-xl bg-white/10 backdrop-blur-sm border border-white/20" />
+        <div className="space-y-3">
+          <Skeleton className="h-24 w-full rounded-md bg-gray-800/60" />
+          <Skeleton className="h-24 w-full rounded-md bg-gray-800/60" />
+          <Skeleton className="h-24 w-full rounded-md bg-gray-800/60" />
         </div>
       ) : (
         <Tabs defaultValue="weekly" value={tabValue} onValueChange={setTabValue}>
-          <TabsList className="grid grid-cols-3 mb-6 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-1">
-            <TabsTrigger value="weekly" className="data-[state=active]:bg-white/20 data-[state=active]:text-white text-white/70 rounded-lg transition-all duration-200 hover:bg-white/10">
+          <TabsList className="grid grid-cols-3 mb-4 dark-tabs-list border border-white/5">
+            <TabsTrigger value="weekly" className="dark-tabs-trigger">
               Weekly ({weeklyQuests?.length || 0})
             </TabsTrigger>
-            <TabsTrigger value="completed" className="data-[state=active]:bg-white/20 data-[state=active]:text-white text-white/70 rounded-lg transition-all duration-200 hover:bg-white/10">
+            <TabsTrigger value="completed" className="dark-tabs-trigger">
               Completed ({completedQuests.length})
             </TabsTrigger>
-            <TabsTrigger value="expired" className="data-[state=active]:bg-white/20 data-[state=active]:text-white text-white/70 rounded-lg transition-all duration-200 hover:bg-white/10">
+            <TabsTrigger value="expired" className="dark-tabs-trigger">
               Missed ({expiredQuests.length})
             </TabsTrigger>
           </TabsList>
