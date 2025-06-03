@@ -253,7 +253,7 @@ Quick Response Options: "Analyze my career progression", "Help me quantify achie
 /**
  * Determine user intent from message content
  */
-function determineUserIntent(message: string, context: MuskContext): string {
+export function determineUserIntent(message: string, context: MuskContext): string {
   const lowercaseMessage = message.toLowerCase();
   
   // Intent mapping based on keywords - more specific detection
@@ -365,7 +365,7 @@ function calculateProfileCompleteness(context: MuskContext): number {
 /**
  * Generate intelligent fallback responses when AI services are unavailable
  */
-function generateIntelligentFallback(message: string, context: MuskContext, intent: string): string {
+export function generateIntelligentFallback(message: string, context: MuskContext, intent: string): string {
   console.log(`[Fallback] Processing intent: "${intent}" for message: "${message.substring(0, 50)}..."`);
   
   const userName = context.userData?.name || "Professional";
@@ -601,3 +601,6 @@ ${hasResumeData ? '- Resume data available for analysis' : ''}
 Quick Response Options: ${quickResponses.map(r => `"${r}"`).join(", ")}`;
   }
 }
+
+// Export the main function that's already exported
+// The helper functions are used internally by generatePersonalizedResponse
