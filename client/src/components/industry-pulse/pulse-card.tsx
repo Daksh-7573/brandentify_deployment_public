@@ -44,26 +44,85 @@ export default function PulseCard({
   // State to track expanded view for longer content
   const [expanded, setExpanded] = useState(false);
   
-  // Format content with truncation for very long content
+  // Parse and format content with clickable reference links
   const getFormattedContent = () => {
     if (!pulse.content) return null;
     
-    const maxLength = 250;
-    if (pulse.content.length <= maxLength || expanded) {
-      return <p className="text-sm text-muted-foreground mt-2">{pulse.content}</p>;
+    // Check if content contains reference links section
+    const readMoreIndex = pulse.content.indexOf('📚 Read More:');
+    
+    if (readMoreIndex === -1) {
+      // No reference links, use original logic with truncation
+      const maxLength = 250;
+      if (pulse.content.length <= maxLength || expanded) {
+        return <p className="text-sm text-muted-foreground mt-2">{pulse.content}</p>;
+      }
+      
+      return (
+        <div className="mt-2">
+          <p className="text-sm text-muted-foreground">
+            {pulse.content.substring(0, maxLength)}...
+            <button 
+              className="text-primary ml-1 hover:underline" 
+              onClick={() => setExpanded(true)}
+            >
+              Read more
+            </button>
+          </p>
+        </div>
+      );
+    }
+    
+    // Split content into main content and reference links
+    const mainContent = pulse.content.substring(0, readMoreIndex).trim();
+    const referencesSection = pulse.content.substring(readMoreIndex);
+    
+    // Parse reference links from the text
+    const referenceLines = referencesSection.split('\n').slice(1); // Skip the "📚 Read More:" line
+    const references = [];
+    
+    for (let i = 0; i < referenceLines.length; i += 2) {
+      const titleLine = referenceLines[i];
+      const urlLine = referenceLines[i + 1];
+      
+      if (titleLine && urlLine && titleLine.startsWith('•') && urlLine.trim().startsWith('http')) {
+        const titleMatch = titleLine.match(/^•\s*(.+?)\s*-\s*(.+)$/);
+        if (titleMatch) {
+          references.push({
+            title: titleMatch[1].trim(),
+            source: titleMatch[2].trim(),
+            url: urlLine.trim()
+          });
+        }
+      }
     }
     
     return (
       <div className="mt-2">
-        <p className="text-sm text-muted-foreground">
-          {pulse.content.substring(0, maxLength)}...
-          <button 
-            className="text-primary ml-1 hover:underline" 
-            onClick={() => setExpanded(true)}
-          >
-            Read more
-          </button>
-        </p>
+        <p className="text-sm text-muted-foreground">{mainContent}</p>
+        
+        {references.length > 0 && (
+          <div className="mt-3 p-3 bg-muted/30 rounded-md border">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-sm font-medium">📚 Read More</span>
+            </div>
+            <div className="space-y-2">
+              {references.map((ref, index) => (
+                <div key={index} className="flex flex-col gap-1">
+                  <a 
+                    href={ref.url} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-sm text-primary hover:underline font-medium"
+                  >
+                    {ref.title}
+                  </a>
+                  <span className="text-xs text-muted-foreground">{ref.source}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     );
   };
