@@ -1,11 +1,9 @@
 import fs from 'fs/promises';
-import { OpenAI } from 'openai';
+import { LocalAIService } from '../services/local-ai-service';
 import path from 'path';
 import { extractTextFromPdf } from './pdf-extractor';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
-});
+const localAI = new LocalAIService();
 
 /**
  * Advanced PDF processing system that implements Musk's multi-step approach
@@ -44,8 +42,8 @@ export async function processPdfWithAdvancedAlgorithm(pdfBuffer: Buffer): Promis
     // Convert to base64 for API submission
     const base64Data = pdfBuffer.toString('base64');
     
-    // Step 3: Use GPT-4o to read and understand the PDF content with enhanced resume parsing prompt
-    const completion = await openai.chat.completions.create({
+    // Step 3: Use local AI to read and understand the PDF content with enhanced resume parsing prompt
+    const analysisResult = await localAI.analyzeResume(base64Data);
       model: "gpt-4o",
       messages: [
         {
@@ -111,7 +109,7 @@ export async function createStructuredResumeData(resumeText: string) {
   try {
     console.log("🧠 Creating structured resume data using semantic grouping");
     
-    const completion = await openai.chat.completions.create({
+    const structuredData = await localAI.analyzeResume(resumeText);
       model: "gpt-4o",
       messages: [
         {

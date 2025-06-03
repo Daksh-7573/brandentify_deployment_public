@@ -1,20 +1,15 @@
 /**
- * Enhanced OpenAI Service - Fix for resume analysis
- * This module provides fixed versions of OpenAI service functions
+ * Enhanced Local AI Service - Fix for resume analysis
+ * This module provides fixed versions of local AI service functions
  * that handle various resume formats and proper error handling
  */
 
-import OpenAI from "openai";
+import { LocalAIService } from "./server/services/local-ai-service";
 // Import required types
 import type { WorkExperience, Education, Skill } from "./shared/schema";
 
-// Create the OpenAI instance
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY as string,
-});
-
-// Define the default model
-const MODEL = "gpt-4o";
+// Create the local AI service instance
+const localAI = new LocalAIService();
 
 /**
  * Generate career advice based on user profile information and specific advice type
