@@ -679,12 +679,15 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
                 {/* Show thinking indicator */}
                 {message.thinking ? (
                   <div className="flex items-center space-x-2">
-                    <div className="text-sm">Thinking</div>
-                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <div className="text-sm text-white">Thinking</div>
+                    <Loader2 className="h-4 w-4 animate-spin text-white" />
                   </div>
                 ) : (
                   <div 
-                    className="text-sm whitespace-pre-wrap leading-relaxed prose prose-sm max-w-none dark:prose-invert prose-headings:mb-2 prose-headings:mt-4 prose-h3:text-base prose-h2:text-lg prose-h1:text-xl prose-li:my-0 prose-p:my-2 first:prose-headings:mt-0"
+                    className="text-sm whitespace-pre-wrap leading-relaxed text-white prose prose-sm max-w-none prose-invert prose-headings:mb-2 prose-headings:mt-4 prose-h3:text-base prose-h2:text-lg prose-h1:text-xl prose-li:my-0 prose-p:my-2 first:prose-headings:mt-0 prose-headings:text-white prose-p:text-white prose-li:text-white prose-strong:text-white prose-em:text-white prose-code:text-white prose-pre:text-white"
+                    style={{
+                      color: 'white'
+                    }}
                     dangerouslySetInnerHTML={{ 
                       __html: message.content
                         // Headers
