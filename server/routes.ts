@@ -6705,6 +6705,11 @@ ${extractedText.substring(0, 5000)}
   apiRouter.use('/admin', aiMonitoringRoutes);
   console.log("AI monitoring routes loaded");
 
+  // Add Musk resume upload route - import the working handler
+  const { handleResumeUploadFixed } = await import('./routes-musk-resume-fix');
+  apiRouter.post('/musk/resume-upload', handleResumeUploadFixed);
+  console.log("Musk file upload routes loaded");
+
   app.use("/api", apiRouter);
 
   // Add route for hashtag suggestions test page
