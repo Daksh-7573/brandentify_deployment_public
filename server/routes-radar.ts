@@ -135,9 +135,10 @@ export async function getNearbyUsers(req: Request, res: Response) {
       username: users.username,
       photoURL: users.photoURL,
       title: users.title,
-      company: users.company,
       location: users.location,
       visitingCardType: users.visitingCardType,
+      industry: users.industry,
+      lookingFor: users.lookingFor,
       distance: distanceCalculation
     })
     .from(users)
@@ -145,11 +146,7 @@ export async function getNearbyUsers(req: Request, res: Response) {
       not(isNull(users.geoLatitude)),
       not(isNull(users.geoLongitude)),
       eq(users.geoVisibleNearby, true),
-      userId ? not(eq(users.id, parseInt(userId as string))) : sql`1=1`,
-      // Only include users whose location was updated in the last 24 hours
-      sql`geo_last_updated > NOW() - INTERVAL '24 hours'`,
-      // Filter by distance
-      sql`${distanceCalculation} <= ${maxRadius}`
+      userId ? not(eq(users.id, parseInt(userId as string))) : sql`1=1`
     ))
     .orderBy(distanceCalculation);
     

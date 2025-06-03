@@ -28,6 +28,11 @@ export const users = pgTable("users", {
   emailVerified: boolean("email_verified").default(false), // Whether email is verified
   emailVerificationToken: text("email_verification_token"), // Token for email verification
   emailVerificationExpires: timestamp("email_verification_expires"), // When token expires
+  // Smart Radar geolocation fields
+  geoLatitude: decimal("geo_latitude", { precision: 10, scale: 8 }), // Latitude for Smart Radar
+  geoLongitude: decimal("geo_longitude", { precision: 11, scale: 8 }), // Longitude for Smart Radar
+  geoVisibleNearby: boolean("geo_visible_nearby").default(true), // Whether user is visible in Smart Radar
+  geoLastUpdated: timestamp("geo_last_updated"), // When location was last updated
   createdAt: timestamp("created_at").defaultNow(),
 });
 
