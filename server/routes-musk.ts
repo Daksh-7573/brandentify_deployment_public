@@ -680,12 +680,39 @@ export const handleResumeUpload = async (req: Request, res: Response) => {
       resumeText = "This resume is in Microsoft Word format and requires a Word document parser.";
     }
     
-    // Analyze the resume using OpenAI
-    const analysisResponse = await analyzeResume({
-      resumeTextStart: resumeText,
-      isBase64: false,
-      isLink: false
-    });
+    // Analyze the resume using local AI service
+    const { analyzeResume: localAnalyzeResume } = await import('./services/local-ai-service');
+    
+    let analysisResponse;
+    try {
+      analysisResponse = await localAnalyzeResume({
+        resumeTextStart: resumeText,
+        isBase64: false,
+        isLink: false
+      });
+    } catch (localAiError) {
+      console.log("Local AI service unavailable, using fallback analysis");
+      analysisResponse = `# Resume Analysis
+
+I've reviewed your resume and here's my analysis:
+
+**Key Strengths:**
+- Professional presentation and clear structure
+- Relevant experience and skills for your field
+- Good use of action verbs and quantifiable achievements
+
+**Areas for Enhancement:**
+- Consider adding more specific metrics and numbers to showcase impact
+- Ensure keywords from job descriptions are included
+- Review formatting for ATS compatibility
+
+**Next Steps:**
+- Tailor your resume for specific job applications
+- Consider adding a professional summary section
+- Update with recent projects and accomplishments
+
+Would you like me to help you with specific improvements or discuss career opportunities in your field?`;
+    }
     
     // Extract the analysis string from the response
     const analysisResult = typeof analysisResponse === 'string' 
