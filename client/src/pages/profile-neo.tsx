@@ -378,7 +378,33 @@ export default function ProfileNeo() {
                   {/* Profile Info & Stats */}
                   <div className="flex-1">
                     <div className="space-y-4">
-
+                      {/* Professional Overview */}
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <h3 className="text-lg font-medium text-white">Professional Overview</h3>
+                          <button
+                            onClick={() => setShowEditAboutDialog(true)}
+                            className="text-white/60 hover:text-white transition-colors"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </button>
+                        </div>
+                        <p className="text-white/80 text-sm">
+                          {userData?.about || "Add a professional summary to introduce yourself to other professionals."}
+                        </p>
+                      </div>
+                      
+                      {/* Job Title and Location */}
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <h4 className="font-medium mb-2 text-white">Job Title</h4>
+                          <p className="text-sm text-white/80">{userData?.title || 'Not specified'}</p>
+                        </div>
+                        <div>
+                          <h4 className="font-medium mb-2 text-white">Location</h4>
+                          <p className="text-sm text-white/80">{userData?.location || 'Not specified'}</p>
+                        </div>
+                      </div>
                       
                       {/* Industry & Domain */}
                       <div>
