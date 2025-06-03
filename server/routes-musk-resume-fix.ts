@@ -43,11 +43,12 @@ export const handleResumeUploadFixed = async (req: Request, res: Response) => {
     
     console.log(`Processing file: ${resumeFile.name}`);
     
-    // Simple file validation
+    // Simple file validation - accept common resume formats
     const fileExt = resumeFile.name.split('.').pop()?.toLowerCase();
-    if (!['pdf', 'doc', 'docx'].includes(fileExt || '')) {
+    if (!['pdf', 'doc', 'docx', 'txt', 'rtf'].includes(fileExt || '')) {
       return res.status(400).json({
-        error: "Invalid file type. Only PDF, DOC, and DOCX files are accepted."
+        error: "INVALID_FILE",
+        message: "File type not allowed. Please upload PDF, DOC, DOCX, TXT, or RTF files."
       });
     }
     

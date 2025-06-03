@@ -63,7 +63,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   }
   
   // Skip validation for media upload endpoints that have their own validation
-  const mediaUploadPaths = ['/api/pulses/upload-media', '/api/projects/upload-media'];
+  const mediaUploadPaths = ['/api/pulses/upload-media', '/api/projects/upload-media', '/api/musk/resume-upload', '/api/musk/pitchdeck-upload'];
   if (mediaUploadPaths.some(path => req.path.includes(path))) {
     return next();
   }
