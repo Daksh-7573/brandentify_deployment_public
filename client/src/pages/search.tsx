@@ -732,7 +732,7 @@ const SearchPage = () => {
                               <SelectTrigger id="industry" className="neo-glass-input">
                                 <SelectValue placeholder="Select industry" />
                               </SelectTrigger>
-                              <SelectContent className="bg-gray-900/95 text-white border-white/10">
+                              <SelectContent className="bg-black/90 backdrop-blur-md text-white border-white/10">
                                 <SelectGroup>
                                   <SelectLabel>Industries</SelectLabel>
                                   {INDUSTRIES.map((ind) => (
@@ -753,7 +753,7 @@ const SearchPage = () => {
                               <SelectTrigger id="domain" className="neo-glass-input">
                                 <SelectValue placeholder={industry ? "Select domain" : "Select industry first"} />
                               </SelectTrigger>
-                              <SelectContent className="bg-gray-900/95 text-white border-white/10">
+                              <SelectContent className="bg-black/90 backdrop-blur-md text-white border-white/10">
                                 <SelectGroup>
                                   <SelectLabel>Domains</SelectLabel>
                                   {domains.map((dom) => (
@@ -782,7 +782,7 @@ const SearchPage = () => {
                               <SelectTrigger id="experience" className="neo-glass-input">
                                 <SelectValue placeholder="Select experience level" />
                               </SelectTrigger>
-                              <SelectContent className="bg-gray-900/95 text-white border-white/10">
+                              <SelectContent className="bg-black/90 backdrop-blur-md text-white border-white/10">
                                 <SelectGroup>
                                   <SelectLabel>Experience Levels</SelectLabel>
                                   {EXPERIENCE_LEVELS.map((exp) => (
@@ -802,7 +802,7 @@ const SearchPage = () => {
                               <SelectTrigger id="looking-for" className="neo-glass-input">
                                 <SelectValue placeholder="What are you looking for?" />
                               </SelectTrigger>
-                              <SelectContent className="bg-gray-900/95 text-white border-white/10">
+                              <SelectContent className="bg-black/90 backdrop-blur-md text-white border-white/10">
                                 <SelectGroup>
                                   <SelectLabel>Connection Types</SelectLabel>
                                   {LOOKING_FOR_OPTIONS.map((opt) => (
@@ -839,10 +839,10 @@ const SearchPage = () => {
                 )}
                 
                 {showMatchResults && (
-                  <Card className="bg-gray-900/60 backdrop-blur-md border border-white/10 shadow-xl">
+                  <Card className="bg-black/20 backdrop-blur-md border border-white/10 shadow-xl">
                     <CardHeader>
                       <CardTitle className="text-white">Match Results</CardTitle>
-                      <CardDescription className="text-gray-300">
+                      <CardDescription className="text-white/80">
                         Professionals who match your criteria
                       </CardDescription>
                     </CardHeader>
