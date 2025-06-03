@@ -1748,37 +1748,7 @@ export default function ProfileSteps({
       });
     };
     
-    // Handle what I offer text change with enhanced persistence
-    const handleWhatIOfferChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-      const newValue = e.target.value;
-      console.log("Updating whatIOffer field with value:", newValue);
-      
-      // Save to localStorage immediately for backup
-      try {
-        localStorage.setItem('whatIOffer_current', newValue);
-        localStorage.setItem('whatIOffer_lastEdited', Date.now().toString());
-      } catch (err) {
-        console.error("Failed to backup whatIOffer to localStorage:", err);
-      }
-      
-      // Update form state with detailed logging
-      setFormData(prev => {
-        const updated = { 
-          ...prev, 
-          whatIOffer: newValue 
-        };
-        console.log("Updated form data whatIOffer:", updated.whatIOffer);
-        
-        // Verify the update was processed correctly
-        if (updated.whatIOffer !== newValue) {
-          console.error("Critical error: Form data update failed for whatIOffer!");
-          console.error("Expected:", newValue);
-          console.error("Actual:", updated.whatIOffer);
-        }
-        
-        return updated;
-      });
-    };
+
     
     const rateUnits = [
       { value: 'hr', label: 'Per Hour' },
