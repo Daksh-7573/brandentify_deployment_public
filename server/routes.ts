@@ -6722,6 +6722,11 @@ ${extractedText.substring(0, 5000)}
     res.sendFile(path.join(process.cwd(), 'test-hashtag-client.html'));
   });
 
+  // Add route for Musk Pulse admin interface
+  app.get('/musk-pulse-admin', (req, res) => {
+    res.sendFile(path.join(process.cwd(), 'musk-pulse-admin.html'));
+  });
+
   const httpServer = createServer(app);
   
   // Setup WebSocket server for real-time messaging
