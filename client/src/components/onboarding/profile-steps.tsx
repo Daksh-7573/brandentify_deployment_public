@@ -1329,7 +1329,7 @@ export default function ProfileSteps({
     }
   };
   
-  // Step 1: All About Me
+  // Step 1: Professional Overview
   const renderAllAboutMeStep = () => {
     return (
       <div className="space-y-6">
@@ -1458,9 +1458,9 @@ export default function ProfileSteps({
           </Select>
         </div>
         
-        {/* About Me */}
+        {/* Professional Overview */}
         <div className="space-y-2">
-          <Label htmlFor="aboutMe">About Me</Label>
+          <Label htmlFor="aboutMe">Professional Overview</Label>
           <Textarea
             id="aboutMe"
             name="aboutMe"
