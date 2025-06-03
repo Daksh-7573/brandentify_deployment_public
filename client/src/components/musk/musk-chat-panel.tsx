@@ -832,9 +832,18 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
               className="w-full text-white placeholder:text-white/60 border-0"
               disabled={isTyping || isUploading}
               style={{
-                background: 'rgba(255, 255, 255, 0.1)',
+                background: 'rgba(255, 255, 255, 0.15)',
                 backdropFilter: 'blur(8px)',
-                border: '1px solid rgba(255, 255, 255, 0.2)'
+                border: '1px solid rgba(255, 255, 255, 0.25)',
+                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1)'
+              }}
+              onFocus={(e) => {
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)';
+                e.currentTarget.style.border = '1px solid rgba(255, 255, 255, 0.35)';
+              }}
+              onBlur={(e) => {
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
+                e.currentTarget.style.border = '1px solid rgba(255, 255, 255, 0.25)';
               }}
             />
           </div>
