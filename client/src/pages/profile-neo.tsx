@@ -265,8 +265,14 @@ export default function ProfileNeo() {
                     Manage your professional information and career details
                   </p>
                 </div>
-                <div className="flex items-center gap-4 mt-4 md:mt-0">
-                  <button 
+                <div className="flex flex-col md:flex-row items-start md:items-center gap-4 mt-4 md:mt-0">
+                  {/* User Title and Location */}
+                  <div className="text-right">
+                    <h2 className="text-lg font-semibold text-white">{userData?.title || "Add your job title"}</h2>
+                    <p className="text-white/60 text-sm">{userData?.location || "Add your location"}</p>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <button 
                     onClick={() => {
                       // Create a loading state in the button
                       const btn = document.getElementById('portfolio-btn');
@@ -311,7 +317,8 @@ export default function ProfileNeo() {
                   >
                     <CreditCard className="w-4 h-4" />
                     <span>Quantum Card</span>
-                  </button>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -451,49 +458,7 @@ export default function ProfileNeo() {
               </div>
             </NeoGlassSection>
             
-            {/* Professional Overview - Connected with Personal Details */}
-            <NeoGlassSection className="mb-6">
-              <div className="p-4">
-                <div className="flex flex-row items-center justify-between space-y-0 pb-4 mb-4 border-b border-gray-800">
-                  <div>
-                    <h2 className="text-xl font-bold text-white">Professional Overview</h2>
-                    <p className="text-sm text-gray-300">General description of your expertise</p>
-                  </div>
-                  {userData?.whatIOffer ? (
-                    <Button
-                      variant="ghost"
-                      className="neo-glass-button flex items-center gap-1 py-1.5 px-3 whitespace-nowrap"
-                      onClick={() => {/* Add edit functionality */}}
-                    >
-                      <Edit className="h-3.5 w-3.5" />
-                      <span>Edit</span>
-                    </Button>
-                  ) : (
-                    <Button
-                      variant="ghost"
-                      className="neo-glass-button flex items-center gap-1 py-1.5 px-3 whitespace-nowrap"
-                      onClick={() => {/* Add edit functionality */}}
-                    >
-                      <Plus className="h-3.5 w-3.5" />
-                      <span>Add Overview</span>
-                    </Button>
-                  )}
-                </div>
-                
-                {userData?.aboutMe ? (
-                  <div className="transition-all">
-                    <p className="text-sm text-gray-300 whitespace-pre-line">{userData.aboutMe}</p>
-                  </div>
-                ) : (
-                  <div className="py-6 text-center">
-                    <AlertCircle className="mx-auto h-10 w-10 text-gray-400/50" />
-                    <p className="mt-2 text-gray-400">
-                      Add a professional overview of your expertise and background.
-                    </p>
-                  </div>
-                )}
-              </div>
-            </NeoGlassSection>
+
             
             {/* Specific Services as a separate section */}
             <Services />
