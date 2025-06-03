@@ -266,10 +266,9 @@ export default function ProfileNeo() {
                   </p>
                 </div>
                 <div className="flex flex-col md:flex-row items-start md:items-center gap-4 mt-4 md:mt-0">
-                  {/* User Title and Location */}
+                  {/* Professional Overview Header */}
                   <div className="text-right">
-                    <h2 className="text-lg font-semibold text-white">{userData?.title || "Add your job title"}</h2>
-                    <p className="text-white/60 text-sm">{userData?.location || "Add your location"}</p>
+                    <h2 className="text-lg font-semibold text-white">Professional Overview</h2>
                   </div>
                   <div className="flex items-center gap-4">
                     <button 
@@ -379,21 +378,7 @@ export default function ProfileNeo() {
                   {/* Profile Info & Stats */}
                   <div className="flex-1">
                     <div className="space-y-4">
-                      {/* Professional Overview */}
-                      <div>
-                        <div className="flex items-center justify-between mb-2">
-                          <h3 className="text-lg font-medium text-white">Professional Overview</h3>
-                          <button
-                            onClick={() => setShowEditAboutDialog(true)}
-                            className="text-white/60 hover:text-white transition-colors"
-                          >
-                            <Edit className="h-4 w-4" />
-                          </button>
-                        </div>
-                        <p className="text-white/80 text-sm">
-                          {userData?.about || "Add a professional summary to introduce yourself to other professionals."}
-                        </p>
-                      </div>
+
                       
                       {/* Industry & Domain */}
                       <div>
