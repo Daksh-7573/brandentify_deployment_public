@@ -361,8 +361,6 @@ export default function ProfileNeo() {
                     
                     <div className="text-center mt-4">
                       <h2 className="text-xl font-bold text-white">{userData?.name}</h2>
-                      <p className="text-white/80 text-sm">{userData?.title || "Add your job title"}</p>
-                      <p className="text-white/60 text-xs mt-1">{userData?.location || "Add your location"}</p>
                       
                       {/* Edit Profile Button */}
                       <button
