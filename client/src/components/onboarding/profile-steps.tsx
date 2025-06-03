@@ -73,7 +73,7 @@ const LOOKING_FOR_CATEGORIES = [
 const steps = [
   {
     id: 1,
-    title: "All About Me",
+    title: "Professional Overview",
     description: "Tell us who you are and what you do",
     icon: <User className="h-6 w-6 text-primary" />,
     mandatory: true
@@ -134,7 +134,7 @@ const stepMessages = [
 ];
 
 type FormData = {
-  // Step 1: All About Me
+  // Step 1: Professional Overview
   name: string;
   photoURL: string | null;
   title: string;
@@ -896,7 +896,7 @@ export default function ProfileSteps({
     }
     
     switch (currentStep) {
-      case 1: // All About Me
+      case 1: // Professional Overview
         if (!formData.name) {
           toast({
             title: "Name is required",
@@ -980,8 +980,8 @@ export default function ProfileSteps({
       console.log(`Saving data for step ${currentStep}:`, formData);
       
       switch (currentStep) {
-        case 1: // All About Me
-          console.log("Saving All About Me data with direct approach:", {
+        case 1: // Professional Overview
+          console.log("Saving Professional Overview data with direct approach:", {
             name: formData.name,
             // Rest of fields...
           });
@@ -1263,7 +1263,7 @@ export default function ProfileSteps({
     // Calculate completed mandatory steps
     let completedMandatory = 0;
     
-    // Step 1: All About Me
+    // Step 1: Professional Overview
     if (formData.name && formData.title && formData.location && formData.industry && formData.lookingFor) {
       completedMandatory++;
     }
@@ -1329,7 +1329,7 @@ export default function ProfileSteps({
     }
   };
   
-  // Step 1: All About Me
+  // Step 1: Professional Overview
   const renderAllAboutMeStep = () => {
     return (
       <div className="space-y-6">
@@ -1458,9 +1458,9 @@ export default function ProfileSteps({
           </Select>
         </div>
         
-        {/* About Me */}
+        {/* Professional Overview */}
         <div className="space-y-2">
-          <Label htmlFor="aboutMe">About Me</Label>
+          <Label htmlFor="aboutMe">Professional Overview</Label>
           <Textarea
             id="aboutMe"
             name="aboutMe"
@@ -1748,37 +1748,7 @@ export default function ProfileSteps({
       });
     };
     
-    // Handle what I offer text change with enhanced persistence
-    const handleWhatIOfferChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-      const newValue = e.target.value;
-      console.log("Updating whatIOffer field with value:", newValue);
-      
-      // Save to localStorage immediately for backup
-      try {
-        localStorage.setItem('whatIOffer_current', newValue);
-        localStorage.setItem('whatIOffer_lastEdited', Date.now().toString());
-      } catch (err) {
-        console.error("Failed to backup whatIOffer to localStorage:", err);
-      }
-      
-      // Update form state with detailed logging
-      setFormData(prev => {
-        const updated = { 
-          ...prev, 
-          whatIOffer: newValue 
-        };
-        console.log("Updated form data whatIOffer:", updated.whatIOffer);
-        
-        // Verify the update was processed correctly
-        if (updated.whatIOffer !== newValue) {
-          console.error("Critical error: Form data update failed for whatIOffer!");
-          console.error("Expected:", newValue);
-          console.error("Actual:", updated.whatIOffer);
-        }
-        
-        return updated;
-      });
-    };
+
     
     const rateUnits = [
       { value: 'hr', label: 'Per Hour' },
@@ -2969,6 +2939,19 @@ export default function ProfileSteps({
             value={formData.phoneNumber}
             onChange={handleInputChange}
             required
+          />
+        </div>
+        
+        {/* What I Offer */}
+        <div className="space-y-2">
+          <Label htmlFor="whatIOffer">What I Offer</Label>
+          <Textarea
+            id="whatIOffer"
+            name="whatIOffer"
+            placeholder="Describe what you offer professionally - your services, expertise, or skills"
+            value={formData.whatIOffer}
+            onChange={handleInputChange}
+            rows={4}
           />
         </div>
       </div>
