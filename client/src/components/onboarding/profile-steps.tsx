@@ -73,7 +73,7 @@ const LOOKING_FOR_CATEGORIES = [
 const steps = [
   {
     id: 1,
-    title: "All About Me",
+    title: "Professional Overview",
     description: "Tell us who you are and what you do",
     icon: <User className="h-6 w-6 text-primary" />,
     mandatory: true
@@ -896,7 +896,7 @@ export default function ProfileSteps({
     }
     
     switch (currentStep) {
-      case 1: // All About Me
+      case 1: // Professional Overview
         if (!formData.name) {
           toast({
             title: "Name is required",
@@ -980,8 +980,8 @@ export default function ProfileSteps({
       console.log(`Saving data for step ${currentStep}:`, formData);
       
       switch (currentStep) {
-        case 1: // All About Me
-          console.log("Saving All About Me data with direct approach:", {
+        case 1: // Professional Overview
+          console.log("Saving Professional Overview data with direct approach:", {
             name: formData.name,
             // Rest of fields...
           });
@@ -1263,7 +1263,7 @@ export default function ProfileSteps({
     // Calculate completed mandatory steps
     let completedMandatory = 0;
     
-    // Step 1: All About Me
+    // Step 1: Professional Overview
     if (formData.name && formData.title && formData.location && formData.industry && formData.lookingFor) {
       completedMandatory++;
     }
