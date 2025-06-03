@@ -192,14 +192,21 @@ ${contextInfo}
 
 Requirements:
 - Create brief summaries (2-3 sentences max) instead of long content
-- Include credible reference links for "Read More" functionality
+- MUST include 2-3 credible reference links for "Read More" functionality
 - Focus on actionable career advice, industry trends, or skill development
 - Be professional yet engaging
 - Include 2-3 relevant hashtags
 - Prioritize Brandentifier platform features (portfolio building, networking, skill development)
-- Provide authentic source links to reputable publications
+- Use real, credible sources like Harvard Business Review, McKinsey, Forbes, TechCrunch, MIT Technology Review, etc.
 
 ${timePrompts[options.timeOfDay]}
+
+IMPORTANT: Always include reference links. Use these example patterns:
+- https://hbr.org/topic/career-development
+- https://www.mckinsey.com/featured-insights/future-of-work
+- https://www.forbes.com/sites/forbescoachescouncil/
+- https://techcrunch.com/category/artificial-intelligence/
+- https://www.technologyreview.com/topic/artificial-intelligence/
 
 Respond with JSON format:
 {
@@ -209,9 +216,14 @@ Respond with JSON format:
   "hashtags": ["hashtag1", "hashtag2", "hashtag3"],
   "referenceLinks": [
     {
-      "title": "Source article title",
-      "url": "https://credible-source.com/article",
-      "source": "Publication name"
+      "title": "Specific article title about the topic",
+      "url": "https://credible-domain.com/relevant-article-path",
+      "source": "Publication Name"
+    },
+    {
+      "title": "Second relevant article title",
+      "url": "https://another-credible-source.com/article",
+      "source": "Publication Name"
     }
   ]
 }
@@ -227,22 +239,49 @@ Respond with JSON format:
 
       const generated = JSON.parse(response.choices[0].message.content || '{}');
       
+      // Ensure reference links are always present
+      const defaultLinks = [
+        {
+          title: "Career Development Strategies for Modern Professionals",
+          url: "https://hbr.org/topic/career-development",
+          source: "Harvard Business Review"
+        },
+        {
+          title: "Future of Work Insights and Trends",
+          url: "https://www.mckinsey.com/featured-insights/future-of-work",
+          source: "McKinsey & Company"
+        }
+      ];
+
       return {
         title: generated.title || `${options.timeOfDay.charAt(0).toUpperCase() + options.timeOfDay.slice(1)} Career Insights`,
         content: generated.content || "Stay focused on your professional growth journey.",
         industry: generated.industry,
         hashtags: generated.hashtags || [],
-        referenceLinks: generated.referenceLinks || []
+        referenceLinks: generated.referenceLinks && generated.referenceLinks.length > 0 ? generated.referenceLinks : defaultLinks
       };
     } catch (error) {
       console.error('[MuskPulseGenerator] Error generating content:', error);
       
-      // Fallback content
+      // Fallback content with default reference links
+      const fallbackLinks = [
+        {
+          title: "Professional Development Best Practices",
+          url: "https://hbr.org/topic/career-development",
+          source: "Harvard Business Review"
+        },
+        {
+          title: "Building Your Career Network",
+          url: "https://www.forbes.com/sites/forbescoachescouncil/",
+          source: "Forbes"
+        }
+      ];
+
       return {
         title: `${options.timeOfDay.charAt(0).toUpperCase() + options.timeOfDay.slice(1)} Professional Update`,
         content: `Today is a great day to focus on your career development. Consider updating your Brandentifier portfolio or connecting with professionals in your industry.`,
         hashtags: ['#CareerGrowth', '#ProfessionalDevelopment'],
-        referenceLinks: []
+        referenceLinks: fallbackLinks
       };
     }
   }
