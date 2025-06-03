@@ -451,6 +451,50 @@ export default function ProfileNeo() {
               </div>
             </NeoGlassSection>
             
+            {/* Professional Overview - Connected with Personal Details */}
+            <NeoGlassSection className="mb-6">
+              <div className="p-4">
+                <div className="flex flex-row items-center justify-between space-y-0 pb-4 mb-4 border-b border-gray-800">
+                  <div>
+                    <h2 className="text-xl font-bold text-white">Professional Overview</h2>
+                    <p className="text-sm text-gray-300">General description of your expertise</p>
+                  </div>
+                  {userData?.whatIOffer ? (
+                    <Button
+                      variant="ghost"
+                      className="neo-glass-button flex items-center gap-1 py-1.5 px-3 whitespace-nowrap"
+                      onClick={() => {/* Add edit functionality */}}
+                    >
+                      <Edit className="h-3.5 w-3.5" />
+                      <span>Edit</span>
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="ghost"
+                      className="neo-glass-button flex items-center gap-1 py-1.5 px-3 whitespace-nowrap"
+                      onClick={() => {/* Add edit functionality */}}
+                    >
+                      <Plus className="h-3.5 w-3.5" />
+                      <span>Add Overview</span>
+                    </Button>
+                  )}
+                </div>
+                
+                {userData?.whatIOffer ? (
+                  <div className="transition-all">
+                    <p className="text-sm text-gray-300 whitespace-pre-line">{userData.whatIOffer}</p>
+                  </div>
+                ) : (
+                  <div className="py-6 text-center">
+                    <AlertCircle className="mx-auto h-10 w-10 text-gray-400/50" />
+                    <p className="mt-2 text-gray-400">
+                      Add a general description of your professional expertise.
+                    </p>
+                  </div>
+                )}
+              </div>
+            </NeoGlassSection>
+            
             {/* Specific Services as a separate section */}
             <Services />
             
@@ -474,18 +518,6 @@ export default function ProfileNeo() {
             {/* 7. Academic Background (Education) */}
             <NeoGlassSection className="mb-6">
               <Education userFirebaseId={user.uid} userNumericId={userData?.id} />
-            </NeoGlassSection>
-            
-            {/* 8. Personal Information */}
-            <NeoGlassSection className="mb-6">
-              <div className="p-4">
-                <h3 className="text-lg font-medium text-white mb-4">Personal Information</h3>
-                {userData ? (
-                  <PersonalInfoSection userData={userData} />
-                ) : (
-                  <div className="text-white/70">Loading personal information...</div>
-                )}
-              </div>
             </NeoGlassSection>
             
             {/* Account Actions */}
