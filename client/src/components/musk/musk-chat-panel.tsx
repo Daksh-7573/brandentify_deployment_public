@@ -721,7 +721,7 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
           ref={fileInputRef}
           onChange={handleFileUpload}
           accept=".pdf,.doc,.docx"
-          className="hidden"
+          style={{ display: 'none' }}
         />
         
         <input
@@ -729,7 +729,7 @@ export default function MuskChatPanel({ context, onClose }: MuskChatPanelProps) 
           ref={pitchDeckFileInputRef}
           onChange={handleFileUpload}
           accept=".pdf"
-          className="hidden"
+          style={{ display: 'none' }}
         />
 
         {/* We're removing the separate Suggested Questions section 
