@@ -102,15 +102,15 @@ body.neo-glass-theme {
   z-index: 2;
 }
 
-/* Card variant - lighter than panels */
+/* Card variant - proper glassmorphic styling */
 .neo-glass-card {
-  background: rgba(40, 40, 40, 0.5);
-  border: 1px solid var(--neo-glass-border);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4), 0 0 20px rgba(0, 0, 0, 0.2);
+  background: rgba(18, 18, 18, 0.6) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5), 0 0 30px rgba(0, 0, 0, 0.3);
   border-radius: 0.5rem;
   position: relative;
-  backdrop-filter: blur(var(--neo-blur-medium));
-  -webkit-backdrop-filter: blur(var(--neo-blur-medium));
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
   overflow: hidden;
   padding: 1.5rem;
   transition: all 0.3s ease;
