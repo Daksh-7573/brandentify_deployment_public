@@ -490,17 +490,29 @@ const Radar = () => {
             lng: position.coords.longitude
           };
           setCoordinates(coords);
-          updateGeoLocationMutation.mutate(coords);
+          if (userData?.id) {
+            updateGeoLocationMutation.mutate(coords);
+          }
         },
         (error) => {
           setLocationStatus('denied');
           console.error('Geolocation error:', error);
+          // Set default coordinates for demo purposes
+          setCoordinates({
+            lat: 37.7749,
+            lng: -122.4194
+          });
         }
       );
     } else {
-      setLocationStatus('unavailable');
+      setLocationStatus('denied');
+      // Set default coordinates for demo purposes
+      setCoordinates({
+        lat: 37.7749,
+        lng: -122.4194
+      });
     }
-  }, []);
+  }, [userData?.id]);
   
   // Render the quantum card for the selected user
   const renderUserQuantumCard = () => {

@@ -8,7 +8,8 @@ import { and, eq, sql, isNull, not, lte, gte } from 'drizzle-orm';
  */
 export async function updateUserGeolocation(req: Request, res: Response) {
   try {
-    const { userId, latitude, longitude, geoVisibleNearby = true } = req.body;
+    const userId = req.params.id;
+    const { latitude, longitude, geoVisibleNearby = true } = req.body;
     
     if (!userId) {
       return res.status(400).json({ error: 'User ID is required' });
