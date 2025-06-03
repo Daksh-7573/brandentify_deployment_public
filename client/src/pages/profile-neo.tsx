@@ -451,50 +451,6 @@ export default function ProfileNeo() {
               </div>
             </NeoGlassSection>
             
-            {/* Professional Overview - Connected with Personal Details */}
-            <NeoGlassSection className="mb-6">
-              <div className="p-4">
-                <div className="flex flex-row items-center justify-between space-y-0 pb-4 mb-4 border-b border-gray-800">
-                  <div>
-                    <h2 className="text-xl font-bold text-white">Professional Overview</h2>
-                    <p className="text-sm text-gray-300">General description of your expertise</p>
-                  </div>
-                  {userData?.whatIOffer ? (
-                    <Button
-                      variant="ghost"
-                      className="neo-glass-button flex items-center gap-1 py-1.5 px-3 whitespace-nowrap"
-                      onClick={() => {/* Add edit functionality */}}
-                    >
-                      <Edit className="h-3.5 w-3.5" />
-                      <span>Edit</span>
-                    </Button>
-                  ) : (
-                    <Button
-                      variant="ghost"
-                      className="neo-glass-button flex items-center gap-1 py-1.5 px-3 whitespace-nowrap"
-                      onClick={() => {/* Add edit functionality */}}
-                    >
-                      <Plus className="h-3.5 w-3.5" />
-                      <span>Add Overview</span>
-                    </Button>
-                  )}
-                </div>
-                
-                {userData?.aboutMe ? (
-                  <div className="transition-all">
-                    <p className="text-sm text-gray-300 whitespace-pre-line">{userData.aboutMe}</p>
-                  </div>
-                ) : (
-                  <div className="py-6 text-center">
-                    <AlertCircle className="mx-auto h-10 w-10 text-gray-400/50" />
-                    <p className="mt-2 text-gray-400">
-                      Add a professional overview of your expertise and background.
-                    </p>
-                  </div>
-                )}
-              </div>
-            </NeoGlassSection>
-            
             {/* Specific Services as a separate section */}
             <Services />
             
