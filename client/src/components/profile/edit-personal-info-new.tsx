@@ -139,11 +139,39 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
       name, brandName, phoneNumber, jobTitle, location, industry, domain, aboutMe, lookingFor
     });
     
+    // Validate required fields
+    if (!name.trim()) {
+      toast({
+        title: "Validation Error",
+        description: "Full Name is required.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!brandName.trim()) {
+      toast({
+        title: "Validation Error",
+        description: "Brand Name is required.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (brandNameStatus !== 'available') {
+      toast({
+        title: "Validation Error",
+        description: "Please choose a valid and available brand name.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     setIsLoading(true);
     
     const updateData = {
       name: name.trim(),
-      brandName: brandName.trim() || null,
+      brandName: brandName.trim(),
       phoneNumber: phoneNumber.trim() ? `${phoneCountryCode} ${phoneNumber.trim()}` : null,
       title: jobTitle.trim() || null,
       location: location.trim() || null,
@@ -242,6 +270,7 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
               onChange={(e) => handleBrandNameChange(e.target.value)}
               placeholder="e.g., nishanttech, choprahealthcare"
               className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all duration-300 hover:border-white/30 hover:shadow-lg w-full h-10 px-3 pr-10 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none focus:shadow-xl"
+              required
             />
             <div className="absolute inset-y-0 right-0 flex items-center pr-3">
               {brandNameStatus === 'checking' && (
