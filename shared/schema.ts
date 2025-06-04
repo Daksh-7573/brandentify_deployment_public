@@ -12,6 +12,7 @@ export const users = pgTable("users", {
   password: text("password"),
   phoneNumber: text("phone_number").unique(), // Added phone number for mobile login
   name: text("name"),
+  brandName: text("brand_name").unique(), // Professional brand name for URL
   photoURL: text("photo_url"),
   title: text("title"), // Job title
   aboutMe: text("about_me"), // About Me section - max 350 words
