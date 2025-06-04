@@ -4,7 +4,7 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { UserData } from "@/types/user";
-import { INDUSTRIES, INDUSTRY_DOMAINS } from "@shared/constants";
+import { INDUSTRIES, INDUSTRY_DOMAINS, LOOKING_FOR_OPTIONS } from "@shared/constants";
 import { useAuth } from "@/hooks/use-auth";
 import LocationAutocomplete from "@/components/ui/location-autocomplete";
 
@@ -52,7 +52,33 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
   const [industry, setIndustry] = useState(userData.industry || "");
   const [domain, setDomain] = useState(userData.domain || "");
   const [aboutMe, setAboutMe] = useState(userData.aboutMe || "");
-  const [lookingFor, setLookingFor] = useState(userData.lookingFor || "");
+  // Convert database value to display value for lookingFor
+  const convertDbToDisplayValue = (dbValue: string) => {
+    if (dbValue === "job_opportunities") return "Job Opportunities";
+    if (dbValue === "mentorship") return "Mentorship";
+    if (dbValue === "networking") return "Networking";
+    if (dbValue === "collaboration") return "Collaboration";
+    if (dbValue === "investment") return "Investment";
+    if (dbValue === "learning") return "Learning";
+    if (dbValue === "career_advice") return "Career Advice";
+    if (dbValue === "business_partnerships") return "Business Partnerships";
+    return dbValue;
+  };
+
+  // Convert display value to database format for lookingFor
+  const convertDisplayToDbValue = (displayValue: string) => {
+    if (displayValue === "Job Opportunities") return "job_opportunities";
+    if (displayValue === "Mentorship") return "mentorship";
+    if (displayValue === "Networking") return "networking";
+    if (displayValue === "Collaboration") return "collaboration";
+    if (displayValue === "Investment") return "investment";
+    if (displayValue === "Learning") return "learning";
+    if (displayValue === "Career Advice") return "career_advice";
+    if (displayValue === "Business Partnerships") return "business_partnerships";
+    return displayValue;
+  };
+
+  const [lookingFor, setLookingFor] = useState(convertDbToDisplayValue(userData.lookingFor || ""));
 
   // Parse existing combined job title on component load and when userData changes
   React.useEffect(() => {
@@ -62,7 +88,7 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
     setIndustry(userData.industry || "");
     setDomain(userData.domain || "");
     setAboutMe(userData.aboutMe || "");
-    setLookingFor(userData.lookingFor || "");
+    setLookingFor(convertDbToDisplayValue(userData.lookingFor || ""));
     
     if (userData.title && jobTitlesData?.jobTitles) {
       const existingTitle = userData.title;
@@ -367,20 +393,28 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
             </svg>
             Looking For
           </label>
-          <textarea
-            id="lookingFor"
-            value={lookingFor}
-            onChange={(e) => setLookingFor(e.target.value)}
-            placeholder="What are you looking for professionally? (e.g. collaborations, new opportunities, etc.)"
-            rows={3}
-            className="!bg-[rgba(18,18,18,0.95)] !backdrop-blur-md !text-white !border-white/20 shadow-md transition-all hover:!border-white/30 w-full min-h-[80px] px-3 py-3 rounded-md border !placeholder-white/50 focus:!border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none resize-none"
-            style={{ 
-              backgroundColor: 'rgba(18,18,18,0.95) !important', 
-              color: 'white !important',
-              backdropFilter: 'blur(12px)',
-              border: '1px solid rgba(255,255,255,0.2) !important'
-            }}
-          />
+          <div className="relative">
+            <select
+              id="lookingFor"
+              value={lookingFor}
+              onChange={(e) => setLookingFor(e.target.value)}
+              className="!bg-[rgba(18,18,18,0.95)] !backdrop-blur-md !text-white !border-white/20 shadow-md transition-all hover:!border-white/30 w-full px-3 py-3 rounded-md border !placeholder-white/50 focus:!border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none appearance-none cursor-pointer"
+              style={{ 
+                backgroundColor: 'rgba(18,18,18,0.95) !important', 
+                color: 'white !important',
+                backdropFilter: 'blur(12px)',
+                border: '1px solid rgba(255,255,255,0.2) !important'
+              }}
+            >
+              <option value="" className="bg-[#1a1a1a] text-white">Select what you're looking for...</option>
+              {LOOKING_FOR_OPTIONS.map((option) => (
+                <option key={option} value={option} className="bg-[#1a1a1a] text-white">
+                  {option}
+                </option>
+              ))}
+            </select>
+            <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-white/50 pointer-events-none" />
+          </div>
         </div>
 
 
