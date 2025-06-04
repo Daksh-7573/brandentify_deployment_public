@@ -12,7 +12,6 @@ import { UserData } from '@/types/user';
 import { apiRequest } from '@/lib/queryClient';
 
 const contactInfoSchema = z.object({
-  email: z.string().email('Invalid email address'),
   phoneNumber: z.string().optional(),
   brandName: z.string().min(3, 'Brand name must be at least 3 characters').max(20, 'Brand name must be at most 20 characters').optional().or(z.literal('')),
 });
@@ -35,7 +34,6 @@ const EditContactInfo: React.FC<EditContactInfoProps> = ({ userData, onCancel, o
   const form = useForm<ContactInfoData>({
     resolver: zodResolver(contactInfoSchema),
     defaultValues: {
-      email: userData.email || '',
       phoneNumber: userData.phoneNumber || '',
       brandName: userData.brandName || '',
     },
@@ -123,7 +121,6 @@ const EditContactInfo: React.FC<EditContactInfoProps> = ({ userData, onCancel, o
     setIsLoading(true);
     try {
       const response = await apiRequest('PUT', `/api/users/${userData.id}`, {
-        email: data.email,
         phoneNumber: data.phoneNumber || null,
         brandName: data.brandName || null,
       });
@@ -142,46 +139,36 @@ const EditContactInfo: React.FC<EditContactInfoProps> = ({ userData, onCancel, o
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-white/95 backdrop-blur border border-white/20 shadow-2xl">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+      <div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-white/10 backdrop-blur-md border border-white/20 rounded-lg shadow-2xl">
+        <div className="flex flex-row items-center justify-between p-6 pb-4">
           <div>
-            <CardTitle className="text-xl font-semibold">Edit Contact Information</CardTitle>
-            <p className="text-sm text-muted-foreground mt-1">
-              Update your email, phone number, and brand name
+            <h2 className="text-xl font-semibold text-white">Edit Contact Information</h2>
+            <p className="text-sm text-white/70 mt-1">
+              Update your phone number and brand name
             </p>
           </div>
           <Button
             variant="ghost"
             size="icon"
             onClick={onCancel}
-            className="h-8 w-8"
+            className="h-8 w-8 text-white hover:bg-white/20"
           >
             <X className="h-4 w-4" />
           </Button>
-        </CardHeader>
+        </div>
 
-        <CardContent>
+        <div className="p-6 pt-0">
+          {/* Read-only Email Display */}
+          <div className="mb-6">
+            <Label className="text-white/80 text-sm">Email Address (from Google)</Label>
+            <div className="mt-2 p-3 bg-white/5 border border-white/20 rounded-lg">
+              <span className="text-white">{userData.email}</span>
+              <p className="text-xs text-white/60 mt-1">This email cannot be changed as it's linked to your Google account</p>
+            </div>
+          </div>
+
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              {/* Email */}
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email Address *</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        type="email"
-                        placeholder="your.email@example.com"
-                        className="bg-white/50"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
 
               {/* Phone Number */}
               <FormField
@@ -189,16 +176,16 @@ const EditContactInfo: React.FC<EditContactInfoProps> = ({ userData, onCancel, o
                 name="phoneNumber"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Phone Number</FormLabel>
+                    <FormLabel className="text-white/80">Phone Number</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
                         type="tel"
                         placeholder="+1 (555) 123-4567"
-                        className="bg-white/50"
+                        className="bg-white/10 border-white/20 text-white placeholder:text-white/50 focus:bg-white/20 focus:border-white/40"
                       />
                     </FormControl>
-                    <FormMessage />
+                    <FormMessage className="text-red-400" />
                   </FormItem>
                 )}
               />
@@ -209,13 +196,13 @@ const EditContactInfo: React.FC<EditContactInfoProps> = ({ userData, onCancel, o
                 name="brandName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Brand Name</FormLabel>
+                    <FormLabel className="text-white/80">Brand Name</FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Input
                           {...field}
                           placeholder="your-brand-name"
-                          className="bg-white/50 pr-10"
+                          className="bg-white/10 border-white/20 text-white placeholder:text-white/50 focus:bg-white/20 focus:border-white/40 pr-10"
                           onChange={(e) => {
                             field.onChange(e);
                             handleBrandNameChange(e.target.value);
@@ -231,10 +218,10 @@ const EditContactInfo: React.FC<EditContactInfoProps> = ({ userData, onCancel, o
                         {statusMessage.message}
                       </p>
                     )}
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs text-white/60">
                       Your unique brand identifier for custom URLs
                     </p>
-                    <FormMessage />
+                    <FormMessage className="text-red-400" />
                   </FormItem>
                 )}
               />
@@ -246,13 +233,14 @@ const EditContactInfo: React.FC<EditContactInfoProps> = ({ userData, onCancel, o
                   variant="outline"
                   onClick={onCancel}
                   disabled={isLoading}
+                  className="bg-white/10 border-white/20 text-white hover:bg-white/20 hover:border-white/30"
                 >
                   Cancel
                 </Button>
                 <Button
                   type="submit"
                   disabled={isLoading || (brandName && brandNameStatus === 'taken')}
-                  className="min-w-[100px]"
+                  className="min-w-[100px] bg-white/20 border-white/30 text-white hover:bg-white/30 hover:border-white/40"
                 >
                   {isLoading ? (
                     <>
@@ -266,8 +254,8 @@ const EditContactInfo: React.FC<EditContactInfoProps> = ({ userData, onCancel, o
               </div>
             </form>
           </Form>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 };
