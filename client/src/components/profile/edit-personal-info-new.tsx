@@ -60,9 +60,12 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
 
     setBrandNameStatus('checking');
     try {
-      const response = await apiRequest('GET', `/api/users/check-brand-name/${encodeURIComponent(name)}`) as any;
+      const currentUserId = userData.id;
+      const response = await apiRequest('GET', `/api/users/check-brand-name/${encodeURIComponent(name)}?currentUserId=${currentUserId}`) as any;
+      console.log(`[checkBrandNameAvailability] Response for "${name}":`, response);
       setBrandNameStatus(response.available ? 'available' : 'taken');
     } catch (error) {
+      console.error('Error checking brand name:', error);
       setBrandNameStatus('invalid');
     }
   };

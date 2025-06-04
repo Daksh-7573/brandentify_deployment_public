@@ -608,7 +608,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   apiRouter.get("/users/check-brand-name/:brandName", async (req: Request, res: Response) => {
     try {
       const brandName = req.params.brandName;
-      console.log(`[GET /users/check-brand-name/:brandName] Checking availability for: ${brandName}`);
+      const currentUserId = req.query.currentUserId as string;
+      
+      console.log(`[GET /users/check-brand-name/:brandName] Checking availability for: ${brandName} (current user: ${currentUserId})`);
       
       // Validate brand name format
       if (!brandName || brandName.length < 3 || brandName.length > 20) {
@@ -621,10 +623,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Check if brand name is already taken by another user
       const existingUser = await storage.getUserByBrandName(brandName);
-      const available = !existingUser;
       
-      console.log(`[GET /users/check-brand-name/:brandName] Brand name "${brandName}" available: ${available}`);
-      res.json({ available });
+      // If no existing user, brand name is available
+      if (!existingUser) {
+        console.log(`[GET /users/check-brand-name/:brandName] Brand name "${brandName}" is available (no existing user)`);
+        return res.json({ available: true });
+      }
+      
+      // If existing user is the current user, brand name is available for them
+      if (currentUserId && existingUser.id.toString() === currentUserId) {
+        console.log(`[GET /users/check-brand-name/:brandName] Brand name "${brandName}" belongs to current user - available`);
+        return res.json({ available: true });
+      }
+      
+      // Brand name is taken by another user
+      console.log(`[GET /users/check-brand-name/:brandName] Brand name "${brandName}" is taken by user ${existingUser.id}`);
+      res.json({ available: false, reason: 'Brand name is already taken' });
     } catch (error) {
       console.error("Error checking brand name availability:", error);
       res.status(500).json({ available: false, reason: 'Server error' });
