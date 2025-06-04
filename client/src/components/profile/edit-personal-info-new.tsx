@@ -446,11 +446,23 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
                 lookingFor: lookingFor.trim() || null,
               };
 
+              // Validate lookingFor value before sending
+              const validLookingForValues = Object.keys(LOOKING_FOR_OPTIONS);
+              const isValidLookingFor = lookingFor && validLookingForValues.includes(lookingFor);
+              
               console.log("[BUTTON] Combined job title:", combinedJobTitle);
               console.log("[BUTTON] lookingFor state value:", lookingFor);
               console.log("[BUTTON] lookingFor type:", typeof lookingFor);
+              console.log("[BUTTON] Valid lookingFor values:", validLookingForValues);
+              console.log("[BUTTON] Is lookingFor valid?", isValidLookingFor);
               console.log("[BUTTON] LOOKING_FOR_OPTIONS:", LOOKING_FOR_OPTIONS);
               console.log("[BUTTON] Making direct API call with data:", updateData);
+              
+              // If lookingFor is invalid, don't send it
+              if (!isValidLookingFor && lookingFor) {
+                console.error("[BUTTON] Invalid lookingFor value detected:", lookingFor);
+                updateData.lookingFor = null; // Reset to null if invalid
+              }
               
               const response = await fetch(`/api/users/${userData.id}/force-update`, {
                 method: 'PUT',
