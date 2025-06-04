@@ -182,7 +182,7 @@ const EditContactInfo: React.FC<EditContactInfoProps> = ({ userData, onCancel, o
                         {...field}
                         type="tel"
                         placeholder="+1 (555) 123-4567"
-                        className="bg-white/10 border-white/20 text-white placeholder:text-white/50 focus:bg-white/20 focus:border-white/40"
+                        className="!bg-white/10 !border-white/20 !text-white placeholder:!text-white/50 focus:!bg-white/20 focus:!border-white/40 focus:!ring-white/20"
                       />
                     </FormControl>
                     <FormMessage className="text-red-400" />
@@ -202,7 +202,7 @@ const EditContactInfo: React.FC<EditContactInfoProps> = ({ userData, onCancel, o
                         <Input
                           {...field}
                           placeholder="your-brand-name"
-                          className="bg-white/10 border-white/20 text-white placeholder:text-white/50 focus:bg-white/20 focus:border-white/40 pr-10"
+                          className="!bg-white/10 !border-white/20 !text-white placeholder:!text-white/50 focus:!bg-white/20 focus:!border-white/40 focus:!ring-white/20 pr-10"
                           onChange={(e) => {
                             field.onChange(e);
                             handleBrandNameChange(e.target.value);
@@ -239,7 +239,7 @@ const EditContactInfo: React.FC<EditContactInfoProps> = ({ userData, onCancel, o
                 </Button>
                 <Button
                   type="submit"
-                  disabled={isLoading || (brandName && brandNameStatus === 'taken')}
+                  disabled={isLoading || Boolean(brandName && brandNameStatus === 'taken')}
                   className="min-w-[100px] bg-white/20 border-white/30 text-white hover:bg-white/30 hover:border-white/40"
                 >
                   {isLoading ? (
