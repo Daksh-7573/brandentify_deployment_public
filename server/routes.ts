@@ -157,17 +157,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const query = (req.query.q as string || '').toLowerCase().trim();
     
     const allLocations = [
-      // Developed Countries
+      // Countries
       "USA", "Canada", "United Kingdom", "Australia", "New Zealand", "Germany", "France", "Japan", 
       "South Korea", "Singapore", "Ireland", "Switzerland", "Sweden", "Netherlands", "Norway", 
       "Finland", "Denmark", "Belgium", "Austria", "Spain", "Italy", "Portugal", "Israel", 
-      "UAE", "Qatar", "Kuwait", "Czech Republic", "Taiwan",
-      
-      // Developing and Emerging Countries
-      "India", "China", "Brazil", "Russia", "South Africa", "Mexico", "Indonesia", "Turkey", 
-      "Saudi Arabia", "Argentina", "Thailand", "Malaysia", "Vietnam", "Philippines", "Nigeria", 
-      "Egypt", "Pakistan", "Bangladesh", "Poland", "Hungary", "Chile", "Colombia", "Peru", 
-      "Morocco", "Kenya", "Ghana", "Ethiopia", "Tanzania", "Ukraine", "Romania", "Kazakhstan",
+      "UAE", "Qatar", "Kuwait", "Czech Republic", "Taiwan", "India", "China", "Brazil", "Russia", 
+      "South Africa", "Mexico", "Indonesia", "Turkey", "Saudi Arabia", "Argentina", "Thailand", 
+      "Malaysia", "Vietnam", "Philippines", "Nigeria", "Egypt", "Pakistan", "Bangladesh", "Poland", 
+      "Hungary", "Chile", "Colombia", "Peru", "Morocco", "Kenya", "Ghana", "Ethiopia", "Tanzania", 
+      "Ukraine", "Romania", "Kazakhstan", "Cambodia", "Laos", "Myanmar", "Sri Lanka", "Nepal",
       
       // Regions
       "Asia", "Europe", "North America", "South America", "Africa", "Middle East", "Southeast Asia", 
@@ -177,41 +175,100 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Work arrangements
       "Remote", "Hybrid", "Global",
       
-      // Major Cities - USA
+      // USA - Major Cities
       "New York, NY, USA", "San Francisco, CA, USA", "Los Angeles, CA, USA", "Chicago, IL, USA", 
       "Seattle, WA, USA", "Austin, TX, USA", "Boston, MA, USA", "Denver, CO, USA", "Atlanta, GA, USA", 
       "Portland, OR, USA", "Washington, DC, USA", "San Diego, CA, USA", "Miami, FL, USA", 
       "Dallas, TX, USA", "Houston, TX, USA", "Phoenix, AZ, USA", "Philadelphia, PA, USA",
+      "Las Vegas, NV, USA", "Detroit, MI, USA", "Minneapolis, MN, USA", "Nashville, TN, USA",
+      "Charlotte, NC, USA", "Raleigh, NC, USA", "Orlando, FL, USA", "Tampa, FL, USA",
       
-      // Major Cities - Canada
+      // Canada - Cities
       "Toronto, ON, Canada", "Vancouver, BC, Canada", "Montreal, QC, Canada", "Calgary, AB, Canada", 
       "Ottawa, ON, Canada", "Edmonton, AB, Canada", "Winnipeg, MB, Canada", "Quebec City, QC, Canada",
+      "Hamilton, ON, Canada", "Kitchener, ON, Canada", "London, ON, Canada", "Halifax, NS, Canada",
       
-      // Major Cities - UK
+      // UK - Cities
       "London, UK", "Manchester, UK", "Birmingham, UK", "Glasgow, Scotland", "Edinburgh, Scotland", 
       "Liverpool, UK", "Bristol, UK", "Leeds, UK", "Cardiff, Wales", "Belfast, Northern Ireland",
+      "Sheffield, UK", "Newcastle, UK", "Nottingham, UK", "Leicester, UK", "Brighton, UK",
       
-      // Major Cities - Europe
-      "Berlin, Germany", "Munich, Germany", "Hamburg, Germany", "Frankfurt, Germany", "Paris, France", 
-      "Lyon, France", "Marseille, France", "Madrid, Spain", "Barcelona, Spain", "Rome, Italy", 
-      "Milan, Italy", "Amsterdam, Netherlands", "Stockholm, Sweden", "Copenhagen, Denmark", 
-      "Oslo, Norway", "Helsinki, Finland", "Vienna, Austria", "Zurich, Switzerland", "Geneva, Switzerland",
+      // Europe - Major Cities
+      "Berlin, Germany", "Munich, Germany", "Hamburg, Germany", "Frankfurt, Germany", "Cologne, Germany",
+      "Paris, France", "Lyon, France", "Marseille, France", "Nice, France", "Toulouse, France",
+      "Madrid, Spain", "Barcelona, Spain", "Valencia, Spain", "Seville, Spain", "Bilbao, Spain",
+      "Rome, Italy", "Milan, Italy", "Naples, Italy", "Turin, Italy", "Florence, Italy",
+      "Amsterdam, Netherlands", "Rotterdam, Netherlands", "The Hague, Netherlands", "Utrecht, Netherlands",
+      "Stockholm, Sweden", "Gothenburg, Sweden", "Malmö, Sweden", "Copenhagen, Denmark",
+      "Oslo, Norway", "Bergen, Norway", "Helsinki, Finland", "Tampere, Finland",
+      "Vienna, Austria", "Graz, Austria", "Zurich, Switzerland", "Geneva, Switzerland", "Basel, Switzerland",
+      "Brussels, Belgium", "Antwerp, Belgium", "Prague, Czech Republic", "Brno, Czech Republic",
+      "Warsaw, Poland", "Krakow, Poland", "Gdansk, Poland", "Budapest, Hungary",
+      "Lisbon, Portugal", "Porto, Portugal", "Dublin, Ireland", "Cork, Ireland",
       
-      // Major Cities - Asia Pacific
-      "Tokyo, Japan", "Osaka, Japan", "Seoul, South Korea", "Sydney, Australia", "Melbourne, Australia", 
-      "Singapore", "Hong Kong", "Mumbai, India", "Delhi, India", "Bangalore, India", "Hyderabad, India", 
-      "Chennai, India", "Pune, India", "Kolkata, India", "Ahmedabad, India", "Beijing, China", 
-      "Shanghai, China", "Shenzhen, China", "Guangzhou, China", "Bangkok, Thailand", "Manila, Philippines", 
-      "Jakarta, Indonesia", "Kuala Lumpur, Malaysia", "Ho Chi Minh City, Vietnam", "Hanoi, Vietnam",
+      // Australia & New Zealand
+      "Sydney, Australia", "Melbourne, Australia", "Brisbane, Australia", "Perth, Australia", 
+      "Adelaide, Australia", "Canberra, Australia", "Gold Coast, Australia", "Darwin, Australia",
+      "Auckland, New Zealand", "Wellington, New Zealand", "Christchurch, New Zealand", "Hamilton, New Zealand",
       
-      // Major Cities - Middle East & Africa
-      "Dubai, UAE", "Abu Dhabi, UAE", "Riyadh, Saudi Arabia", "Jeddah, Saudi Arabia", "Tel Aviv, Israel", 
-      "Jerusalem, Israel", "Cairo, Egypt", "Lagos, Nigeria", "Nairobi, Kenya", "Cape Town, South Africa", 
-      "Johannesburg, South Africa", "Casablanca, Morocco", "Istanbul, Turkey", "Ankara, Turkey",
+      // Asia - Major Cities
+      "Tokyo, Japan", "Osaka, Japan", "Kyoto, Japan", "Yokohama, Japan", "Nagoya, Japan",
+      "Seoul, South Korea", "Busan, South Korea", "Incheon, South Korea",
+      "Singapore", "Hong Kong", "Macau",
+      "Beijing, China", "Shanghai, China", "Shenzhen, China", "Guangzhou, China", "Chengdu, China",
+      "Hangzhou, China", "Nanjing, China", "Xi'an, China", "Wuhan, China", "Tianjin, China",
+      "Bangkok, Thailand", "Chiang Mai, Thailand", "Pattaya, Thailand",
+      "Kuala Lumpur, Malaysia", "Penang, Malaysia", "Johor Bahru, Malaysia",
+      "Manila, Philippines", "Cebu, Philippines", "Davao, Philippines",
+      "Jakarta, Indonesia", "Surabaya, Indonesia", "Bandung, Indonesia", "Medan, Indonesia",
+      "Ho Chi Minh City, Vietnam", "Hanoi, Vietnam", "Da Nang, Vietnam",
+      "Phnom Penh, Cambodia", "Siem Reap, Cambodia",
+      "Vientiane, Laos", "Yangon, Myanmar", "Colombo, Sri Lanka", "Kathmandu, Nepal",
       
-      // Major Cities - Latin America
-      "São Paulo, Brazil", "Rio de Janeiro, Brazil", "Mexico City, Mexico", "Buenos Aires, Argentina", 
-      "Lima, Peru", "Bogotá, Colombia", "Santiago, Chile", "Caracas, Venezuela", "Quito, Ecuador"
+      // India - Major Cities
+      "Mumbai, India", "Delhi, India", "Bangalore, India", "Hyderabad, India", "Chennai, India", 
+      "Pune, India", "Kolkata, India", "Ahmedabad, India", "Jaipur, India", "Surat, India",
+      "Lucknow, India", "Kanpur, India", "Nagpur, India", "Indore, India", "Thane, India",
+      "Bhopal, India", "Visakhapatnam, India", "Vadodara, India", "Firozabad, India", "Ludhiana, India",
+      "Rajkot, India", "Agra, India", "Siliguri, India", "Nashik, India", "Faridabad, India",
+      "Patiala, India", "Ghaziabad, India", "Kalyan, India", "Dombivli, India", "Howrah, India",
+      "Ranchi, India", "Raipur, India", "Kota, India", "Gwalior, India", "Chandigarh, India",
+      "Solapur, India", "Hubli, India", "Dharwad, India", "Jodhpur, India", "Kochi, India",
+      "Thiruvananthapuram, India", "Kozhikode, India", "Coimbatore, India", "Madurai, India",
+      "Tiruchirappalli, India", "Salem, India", "Tirunelveli, India", "Erode, India",
+      
+      // Indian States & Cities
+      "Gandhinagar, Gujarat, India", "Surat, Gujarat, India", "Vadodara, Gujarat, India", "Rajkot, Gujarat, India",
+      "Bhavnagar, Gujarat, India", "Jamnagar, Gujarat, India", "Anand, Gujarat, India", "Mehsana, Gujarat, India",
+      "Morbi, Gujarat, India", "Bharuch, Gujarat, India", "Vapi, Gujarat, India", "Navsari, Gujarat, India",
+      "Junagadh, Gujarat, India", "Porbandar, Gujarat, India", "Amreli, Gujarat, India", "Surendranagar, Gujarat, India",
+      
+      // Middle East & Africa
+      "Dubai, UAE", "Abu Dhabi, UAE", "Sharjah, UAE", "Ajman, UAE", "Ras Al Khaimah, UAE",
+      "Riyadh, Saudi Arabia", "Jeddah, Saudi Arabia", "Mecca, Saudi Arabia", "Medina, Saudi Arabia",
+      "Dammam, Saudi Arabia", "Khobar, Saudi Arabia",
+      "Tel Aviv, Israel", "Jerusalem, Israel", "Haifa, Israel", "Eilat, Israel",
+      "Cairo, Egypt", "Alexandria, Egypt", "Giza, Egypt", "Luxor, Egypt",
+      "Istanbul, Turkey", "Ankara, Turkey", "Izmir, Turkey", "Antalya, Turkey",
+      "Doha, Qatar", "Kuwait City, Kuwait", "Manama, Bahrain", "Muscat, Oman",
+      "Lagos, Nigeria", "Abuja, Nigeria", "Kano, Nigeria", "Ibadan, Nigeria",
+      "Nairobi, Kenya", "Mombasa, Kenya", "Kisumu, Kenya",
+      "Cape Town, South Africa", "Johannesburg, South Africa", "Durban, South Africa", "Pretoria, South Africa",
+      "Casablanca, Morocco", "Rabat, Morocco", "Marrakech, Morocco", "Fez, Morocco",
+      "Accra, Ghana", "Kumasi, Ghana", "Addis Ababa, Ethiopia", "Dar es Salaam, Tanzania",
+      
+      // Latin America
+      "São Paulo, Brazil", "Rio de Janeiro, Brazil", "Brasília, Brazil", "Salvador, Brazil",
+      "Fortaleza, Brazil", "Belo Horizonte, Brazil", "Manaus, Brazil", "Curitiba, Brazil",
+      "Recife, Brazil", "Porto Alegre, Brazil", "Belém, Brazil", "Goiânia, Brazil",
+      "Mexico City, Mexico", "Guadalajara, Mexico", "Monterrey, Mexico", "Puebla, Mexico",
+      "Tijuana, Mexico", "León, Mexico", "Juárez, Mexico", "Zapopan, Mexico",
+      "Buenos Aires, Argentina", "Córdoba, Argentina", "Rosario, Argentina", "Mendoza, Argentina",
+      "Lima, Peru", "Arequipa, Peru", "Trujillo, Peru", "Chiclayo, Peru",
+      "Bogotá, Colombia", "Medellín, Colombia", "Cali, Colombia", "Barranquilla, Colombia",
+      "Santiago, Chile", "Valparaíso, Chile", "Concepción, Chile", "La Serena, Chile",
+      "Caracas, Venezuela", "Maracaibo, Venezuela", "Valencia, Venezuela", "Barquisimeto, Venezuela",
+      "Quito, Ecuador", "Guayaquil, Ecuador", "Cuenca, Ecuador", "Santo Domingo, Ecuador"
     ];
     
     if (!query) {
