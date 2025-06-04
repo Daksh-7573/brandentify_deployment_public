@@ -62,12 +62,14 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
   // Parse existing combined job title on component load and when userData changes
   React.useEffect(() => {
     // Reset form state when userData changes
+    console.log("[FORM INIT] userData.lookingFor:", userData.lookingFor);
     setName(userData.name || "");
     setLocation(userData.location || "");
     setIndustry(userData.industry || "");
     setDomain(userData.domain || "");
     setAboutMe(userData.aboutMe || "");
-    setLookingFor(convertDbToDisplayValue(userData.lookingFor || ""));
+    setLookingFor(userData.lookingFor || "");
+    console.log("[FORM INIT] Set lookingFor to:", userData.lookingFor || "");
     
     if (userData.title && jobTitlesData?.jobTitles) {
       const existingTitle = userData.title;
@@ -376,7 +378,10 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
             <select
               id="lookingFor"
               value={lookingFor}
-              onChange={(e) => setLookingFor(e.target.value)}
+              onChange={(e) => {
+                console.log("[DROPDOWN] Selected value:", e.target.value);
+                setLookingFor(e.target.value);
+              }}
               className="!bg-[rgba(18,18,18,0.95)] !backdrop-blur-md !text-white !border-white/20 shadow-md transition-all hover:!border-white/30 w-full px-3 py-3 rounded-md border !placeholder-white/50 focus:!border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none appearance-none cursor-pointer"
               style={{ 
                 backgroundColor: 'rgba(18,18,18,0.95) !important', 
@@ -442,6 +447,7 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
               };
 
               console.log("[BUTTON] Combined job title:", combinedJobTitle);
+              console.log("[BUTTON] lookingFor state value:", lookingFor);
               console.log("[BUTTON] Making direct API call with data:", updateData);
               
               const response = await fetch(`/api/users/${userData.id}/force-update`, {

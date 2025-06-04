@@ -13,7 +13,17 @@ interface ProfileInfoSectionProps {
 const ProfileInfoSection: React.FC<ProfileInfoSectionProps> = ({ userData, onEdit }) => {
   // Convert database value to display value for lookingFor
   const convertDbToDisplayValue = (dbValue: string) => {
-    return LOOKING_FOR_OPTIONS[dbValue as keyof typeof LOOKING_FOR_OPTIONS] || dbValue;
+    const lookingForOptions = {
+      "job_opportunities": "Job Opportunities",
+      "mentorship": "Mentorship", 
+      "networking": "Networking",
+      "collaboration": "Collaboration",
+      "investment": "Investment",
+      "learning": "Learning",
+      "career_advice": "Career Advice",
+      "business_partnerships": "Business Partnerships"
+    };
+    return lookingForOptions[dbValue as keyof typeof lookingForOptions] || dbValue;
   };
   return (
     <Card className="shadow-sm">
