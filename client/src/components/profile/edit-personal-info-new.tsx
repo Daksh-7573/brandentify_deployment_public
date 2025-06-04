@@ -446,23 +446,30 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
                 lookingFor: lookingFor.trim() || null,
               };
 
-              // Validate lookingFor value before sending
+              // Validate and ensure lookingFor value is correct
               const validLookingForValues = Object.keys(LOOKING_FOR_OPTIONS);
               const isValidLookingFor = lookingFor && validLookingForValues.includes(lookingFor);
               
               console.log("[BUTTON] Combined job title:", combinedJobTitle);
-              console.log("[BUTTON] lookingFor state value:", lookingFor);
+              console.log("[BUTTON] Raw lookingFor state value:", lookingFor);
               console.log("[BUTTON] lookingFor type:", typeof lookingFor);
               console.log("[BUTTON] Valid lookingFor values:", validLookingForValues);
               console.log("[BUTTON] Is lookingFor valid?", isValidLookingFor);
-              console.log("[BUTTON] LOOKING_FOR_OPTIONS:", LOOKING_FOR_OPTIONS);
-              console.log("[BUTTON] Making direct API call with data:", updateData);
               
-              // If lookingFor is invalid, don't send it
-              if (!isValidLookingFor && lookingFor) {
-                console.error("[BUTTON] Invalid lookingFor value detected:", lookingFor);
-                updateData.lookingFor = null; // Reset to null if invalid
+              // Critical fix: Only send valid database values
+              if (isValidLookingFor) {
+                updateData.lookingFor = lookingFor; // Keep the valid value
+                console.log("[BUTTON] Using valid lookingFor value:", lookingFor);
+              } else if (lookingFor) {
+                console.error("[BUTTON] CRITICAL: Invalid lookingFor detected, blocking save:", lookingFor);
+                alert("Invalid dropdown value detected. Please select a valid option.");
+                return;
+              } else {
+                updateData.lookingFor = null;
+                console.log("[BUTTON] No lookingFor selected, setting to null");
               }
+              
+              console.log("[BUTTON] Final validated data:", updateData);
               
               const response = await fetch(`/api/users/${userData.id}/force-update`, {
                 method: 'PUT',
