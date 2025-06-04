@@ -66,9 +66,9 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
       const response = await apiRequest("PUT", `/api/users/${userData.id}`, updateData);
       console.log("[DEBUG] API response:", response);
 
-      // Invalidate queries to refresh data
-      await queryClient.invalidateQueries({ queryKey: [`/api/users/${userData.username}`] });
-      await queryClient.invalidateQueries({ queryKey: [`/api/users/${userData.id}`] });
+      // Invalidate queries to refresh data - use the correct query keys that match profile page
+      await queryClient.invalidateQueries({ queryKey: ['/api/users', userData.username] });
+      await queryClient.invalidateQueries({ queryKey: ['/api/users'] });
 
       toast({
         title: "Profile Updated",
@@ -142,9 +142,9 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
       const result = await response.json();
       console.log("[SAVE] API response:", result);
 
-      // Invalidate queries to refresh data
-      await queryClient.invalidateQueries({ queryKey: [`/api/users/${userData.username}`] });
-      await queryClient.invalidateQueries({ queryKey: [`/api/users/${userData.id}`] });
+      // Invalidate queries to refresh data - use the correct query keys that match profile page
+      await queryClient.invalidateQueries({ queryKey: ['/api/users', userData.username] });
+      await queryClient.invalidateQueries({ queryKey: ['/api/users'] });
 
       toast({
         title: "Profile Updated",
