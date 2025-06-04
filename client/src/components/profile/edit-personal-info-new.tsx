@@ -52,8 +52,6 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
     try {
       const updateData = {
         name: name.trim(),
-        brandName: brandName.trim() || null,
-        phoneNumber: phoneNumber.trim() ? `${phoneCountryCode} ${phoneNumber.trim()}` : null,
         title: jobTitle.trim() || null,
         location: location.trim() || null,
         industry: industry || null,
@@ -97,7 +95,7 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
     console.log("[SAVE] ========== PROFILE SAVE STARTED ==========");
     console.log("[SAVE] userData.id:", userData.id);
     console.log("[SAVE] Current form values:", {
-      name, brandName, phoneNumber, jobTitle, location, industry, domain, aboutMe, lookingFor
+      name, jobTitle, location, industry, domain, aboutMe, lookingFor
     });
     
     // Validate required fields
@@ -110,30 +108,12 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
       return;
     }
 
-    if (!brandName.trim()) {
-      toast({
-        title: "Validation Error",
-        description: "Brand Name is required.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (brandNameStatus !== 'available') {
-      toast({
-        title: "Validation Error",
-        description: "Please choose a valid and available brand name.",
-        variant: "destructive",
-      });
-      return;
-    }
+    // Brand name validation removed per user request
     
     setIsLoading(true);
     
     const updateData = {
       name: name.trim(),
-      brandName: brandName.trim(),
-      phoneNumber: phoneNumber.trim() ? `${phoneCountryCode} ${phoneNumber.trim()}` : null,
       title: jobTitle.trim() || null,
       location: location.trim() || null,
       industry: industry || null,
@@ -217,55 +197,7 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
           />
         </div>
 
-        {/* Brand Name */}
-        <div className="space-y-2">
-          <label htmlFor="brandName" className="text-sm font-medium text-white flex items-center gap-2">
-            <Link2 className="h-4 w-4" />
-            Brand Name *
-          </label>
-          <div className="relative">
-            <input
-              id="brandName"
-              type="text"
-              value={brandName}
-              onChange={(e) => handleBrandNameChange(e.target.value)}
-              placeholder="e.g., nishanttech, choprahealthcare"
-              className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all duration-300 hover:border-white/30 hover:shadow-lg w-full h-10 px-3 pr-10 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none focus:shadow-xl"
-              required
-            />
-            <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-              {brandNameStatus === 'checking' && (
-                <div className="animate-spin h-4 w-4 border-2 border-white/30 border-t-white rounded-full"></div>
-              )}
-              {brandNameStatus === 'available' && (
-                <Check className="h-4 w-4 text-green-400" />
-              )}
-              {brandNameStatus === 'taken' && (
-                <X className="h-4 w-4 text-red-400" />
-              )}
-              {brandNameStatus === 'invalid' && (
-                <AlertCircle className="h-4 w-4 text-yellow-400" />
-              )}
-            </div>
-          </div>
-          <div className="flex flex-col gap-1 text-xs">
-            {brandName && (
-              <p className="text-white/70">
-                Your profile URL: <span className="text-blue-300">/{brandName}</span>
-              </p>
-            )}
-            {brandNameStatus === 'taken' && (
-              <p className="text-red-400">This brand name is already taken</p>
-            )}
-            {brandNameStatus === 'invalid' && brandName && (
-              <p className="text-yellow-400">3-20 characters, letters, numbers, hyphens and underscores only</p>
-            )}
-            {brandNameStatus === 'available' && (
-              <p className="text-green-400">This brand name is available!</p>
-            )}
-            <p className="text-white/50">Create a memorable URL for your professional profile</p>
-          </div>
-        </div>
+        {/* Brand Name field removed per user request */}
 
         {/* Email (read-only) */}
         <div className="space-y-2">
