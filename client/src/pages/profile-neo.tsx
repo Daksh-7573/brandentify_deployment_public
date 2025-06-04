@@ -374,11 +374,12 @@ export default function ProfileNeo() {
                         <p className="text-xs text-white/60 mb-1">Your Profile Link</p>
                         <div className="flex items-center justify-center gap-2">
                           <span className="text-xs text-white/80 font-mono bg-white/10 px-2 py-1 rounded">
-                            {window.location.origin}/profile/{userData?.id}
+                            {window.location.origin}/profile/{userData?.name?.toLowerCase().replace(/\s+/g, '-')}
                           </span>
                           <button
                             onClick={() => {
-                              navigator.clipboard.writeText(`${window.location.origin}/profile/${userData?.id}`);
+                              const profileUrl = `${window.location.origin}/profile/${userData?.name?.toLowerCase().replace(/\s+/g, '-')}`;
+                              navigator.clipboard.writeText(profileUrl);
                               toast({
                                 title: "Link copied!",
                                 description: "Profile link copied to clipboard"
