@@ -534,158 +534,160 @@ const NeoGlowCard: React.FC<NeoGlowCardProps> = ({ userData }) => {
             </div>
           </div>
           
-          {/* Contact Content */}
+          {/* Unified Contact Card */}
           <div
-            className="space-y-1 overflow-hidden"
+            className="overflow-hidden"
             style={{
               maxHeight: isContactExpanded ? '200px' : '0',
               opacity: isContactExpanded ? 1 : 0,
               transition: "max-height 0.5s ease, opacity 0.3s ease",
             }}
           >
-            {/* Email */}
+            {/* Single Unified Contact Information Card */}
             <div 
-              className="flex items-center justify-between px-3 py-1 rounded-md"
+              className="p-4 rounded-lg backdrop-blur-sm"
               style={{
                 backgroundColor: colors.panelBg,
-                transform: `translateY(${hoveredSection === 'email' ? '-2px' : '0'})`,
-                transition: "transform 0.3s ease",
-                borderLeft: `2px solid ${colors.teal}`,
+                border: `1px solid ${colors.border}`,
+                boxShadow: `0 0 15px ${colors.teal}30`,
+                transform: `translateY(${hoveredSection === 'contact-unified' ? '-2px' : '0'})`,
+                transition: "all 0.3s ease",
               }}
-              onMouseEnter={() => setHoveredSection('email')}
+              onMouseEnter={() => setHoveredSection('contact-unified')}
               onMouseLeave={() => setHoveredSection(null)}
             >
-              <div className="flex items-center gap-2">
-                <Mail 
-                  className="h-4 w-4 flex-shrink-0"
-                  style={{
-                    color: colors.teal,
-                    filter: `drop-shadow(0 0 3px ${colors.teal}80)`,
-                    animation: hoveredSection === 'email' ? 'shake 0.8s ease-in-out infinite' : 'none',
-                  }}
-                />
-                <span 
-                  className="text-sm truncate max-w-[150px]"
-                  style={{
-                    color: colors.textSecondary,
-                  }}
-                >
-                  {userData.email}
-                </span>
-              </div>
-              
-              <button
-                className="p-1 rounded hover:bg-black/20 transition-colors"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (userData.email) {
-                    copyToClipboard(userData.email, "Email");
-                  }
-                }}
-                title="Copy email"
-              >
-                <Copy 
-                  className="h-3.5 w-3.5" 
-                  style={{ color: colors.textMuted }}
-                />
-              </button>
-            </div>
-            
-            {/* Phone */}
-            <div 
-              className="flex items-center justify-between px-3 py-1 rounded-md"
-              style={{
-                backgroundColor: colors.panelBg,
-                transform: `translateY(${hoveredSection === 'phone' ? '-2px' : '0'})`,
-                transition: "transform 0.3s ease",
-                borderLeft: `2px solid ${colors.cyberBlue}`,
-              }}
-              onMouseEnter={() => setHoveredSection('phone')}
-              onMouseLeave={() => setHoveredSection(null)}
-            >
-              <div className="flex items-center gap-2">
-                <Phone 
-                  className="h-4 w-4 flex-shrink-0"
-                  style={{
-                    color: colors.cyberBlue,
-                    filter: `drop-shadow(0 0 3px ${colors.cyberBlue}80)`,
-                    animation: hoveredSection === 'phone' ? 'shake 0.8s ease-in-out infinite' : 'none',
-                  }}
-                />
-                <span 
-                  className="text-sm truncate max-w-[150px]"
-                  style={{
-                    color: userData.phoneNumber ? colors.textSecondary : colors.textMuted,
-                  }}
-                >
-                  {userData.phoneNumber || "Add phone number"}
-                </span>
-              </div>
-              
-              {userData.phoneNumber && (
-                <button
-                  className="p-1 rounded hover:bg-black/20 transition-colors"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (userData.phoneNumber) {
-                      copyToClipboard(userData.phoneNumber, "Phone");
-                    }
-                  }}
-                  title="Copy phone"
-                >
-                  <Copy 
-                    className="h-3.5 w-3.5" 
-                    style={{ color: colors.textMuted }}
-                  />
-                </button>
-              )}
-            </div>
-            
-            {/* Profile Link */}
-            <div 
-              className="flex items-center justify-between px-3 py-1 rounded-md"
-              style={{
-                backgroundColor: colors.panelBg,
-                transform: `translateY(${hoveredSection === 'profile-link' ? '-2px' : '0'})`,
-                transition: "transform 0.3s ease",
-                borderLeft: `2px solid ${colors.magenta}`,
-              }}
-              onMouseEnter={() => setHoveredSection('profile-link')}
-              onMouseLeave={() => setHoveredSection(null)}
-            >
-              <div className="flex items-center gap-2">
-                <Globe 
-                  className="h-4 w-4 flex-shrink-0"
-                  style={{
-                    color: colors.magenta,
-                    filter: `drop-shadow(0 0 3px ${colors.magenta}80)`,
-                    animation: hoveredSection === 'profile-link' ? 'shake 0.8s ease-in-out infinite' : 'none',
-                  }}
-                />
-                <span 
-                  className="text-sm truncate max-w-[150px]"
-                  style={{
-                    color: colors.textSecondary,
-                  }}
-                >
-                  {profileLink}
-                </span>
-              </div>
-              
-              <div className="flex gap-1">
-                <button
-                  className="p-1 rounded hover:bg-black/20 transition-colors"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    window.open(`https://${profileLink}`, '_blank');
-                  }}
-                  title="Open link"
-                >
-                  <ExternalLink 
-                    className="h-3.5 w-3.5" 
-                    style={{ color: colors.textMuted }}
-                  />
-                </button>
+              {/* Contact Items Grid */}
+              <div className="space-y-3">
+                {/* Email Row */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <Mail 
+                      className="h-4 w-4 flex-shrink-0"
+                      style={{
+                        color: colors.teal,
+                        filter: `drop-shadow(0 0 3px ${colors.teal}80)`,
+                      }}
+                    />
+                    <span 
+                      className="text-sm"
+                      style={{
+                        color: colors.textSecondary,
+                      }}
+                    >
+                      {userData.email}
+                    </span>
+                  </div>
+                  <button
+                    className="p-1 rounded hover:bg-black/20 transition-colors"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (userData.email) {
+                        copyToClipboard(userData.email, "Email");
+                      }
+                    }}
+                    title="Copy email"
+                  >
+                    <Copy 
+                      className="h-3.5 w-3.5" 
+                      style={{ color: colors.textMuted }}
+                    />
+                  </button>
+                </div>
+
+                {/* Phone Row */}
+                {userData.phoneNumber && (
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <Phone 
+                        className="h-4 w-4 flex-shrink-0"
+                        style={{
+                          color: colors.cyberBlue,
+                          filter: `drop-shadow(0 0 3px ${colors.cyberBlue}80)`,
+                        }}
+                      />
+                      <span 
+                        className="text-sm"
+                        style={{
+                          color: colors.textSecondary,
+                        }}
+                      >
+                        {userData.phoneNumber}
+                      </span>
+                    </div>
+                    <button
+                      className="p-1 rounded hover:bg-black/20 transition-colors"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (userData.phoneNumber) {
+                          copyToClipboard(userData.phoneNumber, "Phone");
+                        }
+                      }}
+                      title="Copy phone"
+                    >
+                      <Copy 
+                        className="h-3.5 w-3.5" 
+                        style={{ color: colors.textMuted }}
+                      />
+                    </button>
+                  </div>
+                )}
+
+                {/* Brand Name Row */}
+                {userData.brandName && (
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <Building2 
+                        className="h-4 w-4 flex-shrink-0"
+                        style={{
+                          color: colors.magenta,
+                          filter: `drop-shadow(0 0 3px ${colors.magenta}80)`,
+                        }}
+                      />
+                      <span 
+                        className="text-sm"
+                        style={{
+                          color: colors.textSecondary,
+                        }}
+                      >
+                        {userData.brandName}
+                      </span>
+                    </div>
+                  </div>
+                )}
+
+                {/* Profile URL Row */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <Globe 
+                      className="h-4 w-4 flex-shrink-0"
+                      style={{
+                        color: colors.magenta,
+                        filter: `drop-shadow(0 0 3px ${colors.magenta}80)`,
+                      }}
+                    />
+                    <span 
+                      className="text-sm truncate max-w-[120px]"
+                      style={{
+                        color: colors.textSecondary,
+                      }}
+                    >
+                      {profileLink}
+                    </span>
+                  </div>
+                  <button
+                    className="p-1 rounded hover:bg-black/20 transition-colors"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      window.open(`https://${profileLink}`, '_blank');
+                    }}
+                    title="Open link"
+                  >
+                    <ExternalLink 
+                      className="h-3.5 w-3.5" 
+                      style={{ color: colors.textMuted }}
+                    />
+                  </button>
+                </div>
               </div>
             </div>
           </div>
