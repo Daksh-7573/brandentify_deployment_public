@@ -165,7 +165,7 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
     } finally {
       setIsLoading(false);
     }
-  }, [name, brandName, phoneNumber, phoneCountryCode, jobTitle, location, industry, domain, aboutMe, lookingFor, userData.id, userData.username, queryClient, toast, onSave]);
+  }, [name, jobTitle, location, industry, domain, aboutMe, lookingFor, userData.id, userData.username, queryClient, toast, onSave]);
 
   return (
     <div className="space-y-6 p-6 neo-glass-card backdrop-blur-xl bg-gradient-to-br from-white/10 to-white/5 border border-white/20 rounded-2xl shadow-2xl">
