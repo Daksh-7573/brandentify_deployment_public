@@ -95,7 +95,7 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
         lookingFor: lookingFor.trim() || null,
       };
 
-      await apiRequest("PATCH", `/api/users/${userData.id}`, updateData);
+      await apiRequest("PUT", `/api/users/${userData.id}`, updateData);
 
       // Invalidate queries to refresh data
       await queryClient.invalidateQueries({ queryKey: [`/api/users/${userData.username}`] });
