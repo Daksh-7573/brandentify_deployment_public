@@ -103,6 +103,18 @@ export default function QuantumCardPage() {
           </NeoGlassLayout>
         </div>
       </div>
+
+      {/* Edit Contact Information Dialog */}
+      {userData && showEditContactInfo && (
+        <EditContactInfo
+          userData={userData}
+          onCancel={() => setShowEditContactInfo(false)}
+          onSave={() => {
+            setShowEditContactInfo(false);
+            queryClient.invalidateQueries({ queryKey: [`/api/users/${user?.uid}`] });
+          }}
+        />
+      )}
     </div>
   );
 }
