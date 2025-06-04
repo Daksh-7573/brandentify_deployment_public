@@ -43,13 +43,38 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
 
   // Form state
   const [name, setName] = useState(userData.name || "");
-  const [jobTitle, setJobTitle] = useState(userData.title || "");
-  const [selectedJobTitleFromDropdown, setSelectedJobTitleFromDropdown] = useState(""); // Separate dropdown value
+  const [jobTitle, setJobTitle] = useState(""); // Text input only
+  const [selectedJobTitleFromDropdown, setSelectedJobTitleFromDropdown] = useState(""); // Dropdown value
   const [location, setLocation] = useState(userData.location || "");
   const [industry, setIndustry] = useState(userData.industry || "");
   const [domain, setDomain] = useState(userData.domain || "");
   const [aboutMe, setAboutMe] = useState(userData.aboutMe || "");
   const [lookingFor, setLookingFor] = useState(userData.lookingFor || "");
+
+  // Parse existing combined job title on component load
+  React.useEffect(() => {
+    if (userData.title && jobTitlesData?.jobTitles) {
+      const existingTitle = userData.title;
+      const availableTitles = jobTitlesData.jobTitles.map(jt => jt.title);
+      
+      // Check if the title starts with any dropdown option
+      const matchedDropdownTitle = availableTitles.find(title => 
+        existingTitle.startsWith(title + ' - ') || existingTitle === title
+      );
+      
+      if (matchedDropdownTitle) {
+        setSelectedJobTitleFromDropdown(matchedDropdownTitle);
+        // Extract the text part after " - "
+        const textPart = existingTitle.replace(matchedDropdownTitle + ' - ', '');
+        if (textPart !== matchedDropdownTitle) {
+          setJobTitle(textPart);
+        }
+      } else {
+        // If no dropdown match, put everything in text input
+        setJobTitle(existingTitle);
+      }
+    }
+  }, [userData.title, jobTitlesData]);
 
   // Brand name and phone number fields removed per user request
 
@@ -79,11 +104,14 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
 
       console.log("[DEBUG] Sending PUT request to:", `/api/users/${userData.id}`);
       console.log("[DEBUG] Update data:", updateData);
+      console.log("[DEBUG] Combined job title being saved:", combinedJobTitle);
       
       const response = await apiRequest("PUT", `/api/users/${userData.id}`, updateData);
       console.log("[DEBUG] API response:", response);
 
       // Invalidate queries to refresh data - use the correct query keys that match profile page
+      await queryClient.invalidateQueries({ queryKey: [`/api/users/${userData.id}`] });
+      await queryClient.invalidateQueries({ queryKey: [`/api/users/${userData.username}`] });
       await queryClient.invalidateQueries({ queryKey: ['/api/users', userData.username] });
       await queryClient.invalidateQueries({ queryKey: ['/api/users'] });
 
@@ -452,9 +480,14 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
             setIsLoading(true);
             
             try {
+              // Combine dropdown and text input values for job title
+              const combinedJobTitle = [selectedJobTitleFromDropdown, jobTitle]
+                .filter(Boolean)
+                .join(' - ') || null;
+              
               const updateData = {
                 name: name.trim(),
-                title: jobTitle.trim() || null,
+                title: combinedJobTitle,
                 location: location.trim() || null,
                 industry: industry || null,
                 domain: domain || null,
@@ -462,6 +495,7 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
                 lookingFor: lookingFor.trim() || null,
               };
 
+              console.log("[BUTTON] Combined job title:", combinedJobTitle);
               console.log("[BUTTON] Making direct API call with data:", updateData);
               
               const response = await fetch(`/api/users/${userData.id}`, {
