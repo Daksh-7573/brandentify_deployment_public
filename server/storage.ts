@@ -8030,7 +8030,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateUser(id: number, userData: Partial<User>): Promise<User | undefined> {
-    console.log(`[DatabaseStorage.updateUser] Updating user with ID: ${id}`);
+    console.log(`[DatabaseStorage.updateUser] CRITICAL FIX - Updating user with ID: ${id}`);
     console.log(`[DatabaseStorage.updateUser] Update data:`, userData);
     
     // First validate the data by removing any fields that don't match the schema
@@ -8060,55 +8060,122 @@ export class DatabaseStorage implements IStorage {
     }
     
     try {
-      // Direct SQL query for updating user data with improved reliability
-      let updateQuery = 'UPDATE users SET ';
-      const updateValues: any[] = [];
-      const updateParts: string[] = [];
-      let paramIndex = 1;
+      // Use Drizzle ORM for more reliable database updates
+      const updateData: any = {};
       
-      // Add each property to the update
+      // Map camelCase to actual database columns using Drizzle
       for (const [key, value] of Object.entries(cleanedUserData)) {
-        // Convert camelCase to snake_case for PostgreSQL
-        const columnName = key.replace(/([A-Z])/g, '_$1').toLowerCase();
-        updateParts.push(`${columnName} = $${paramIndex}`);
-        updateValues.push(value);
-        paramIndex++;
+        switch (key) {
+          case 'phoneNumber':
+            updateData.phoneNumber = value;
+            break;
+          case 'brandName':
+            updateData.brandName = value;
+            break;
+          case 'photoURL':
+            updateData.photoURL = value;
+            break;
+          case 'aboutMe':
+            updateData.aboutMe = value;
+            break;
+          case 'lookingFor':
+            updateData.lookingFor = value;
+            break;
+          case 'whatIOffer':
+            updateData.whatIOffer = value;
+            break;
+          case 'visitingCardType':
+            updateData.visitingCardType = value;
+            break;
+          case 'profileCompleted':
+            updateData.profileCompleted = value;
+            break;
+          case 'emailVerified':
+            updateData.emailVerified = value;
+            break;
+          case 'emailVerificationToken':
+            updateData.emailVerificationToken = value;
+            break;
+          case 'emailVerificationExpires':
+            updateData.emailVerificationExpires = value;
+            break;
+          default:
+            updateData[key] = value;
+        }
       }
       
-      // Add WHERE clause and returning
-      updateQuery += updateParts.join(', ');
-      updateQuery += ` WHERE id = $${paramIndex} RETURNING id, username, email, password, phone_number as "phoneNumber", name, brand_name as "brandName", photo_url as "photoURL", title, about_me as "aboutMe", location, industry, domain, looking_for as "lookingFor", what_i_offer as "whatIOffer", visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", email_verified as "emailVerified", email_verification_token as "emailVerificationToken", email_verification_expires as "emailVerificationExpires", created_at as "createdAt"`;
-      updateValues.push(id);
+      console.log(`[DatabaseStorage.updateUser] Drizzle update data:`, updateData);
       
-      console.log(`[DatabaseStorage.updateUser] Generated query:`, updateQuery);
-      console.log(`[DatabaseStorage.updateUser] Query params:`, updateValues);
+      // Execute the update using Drizzle ORM
+      const [updatedUser] = await db
+        .update(users)
+        .set(updateData)
+        .where(eq(users.id, id))
+        .returning();
       
-      const result = await pool.query(updateQuery, updateValues);
-      
-      if (result.rows.length === 0) {
-        console.log(`[DatabaseStorage.updateUser] No user found with ID ${id}`);
+      if (!updatedUser) {
+        console.log(`[DatabaseStorage.updateUser] No user found with ID ${id} after Drizzle update`);
         return undefined;
       }
       
-      const updatedUser = result.rows[0];
-      console.log(`[DatabaseStorage.updateUser] Updated user successfully:`, updatedUser);
-      console.log(`[DatabaseStorage.updateUser] Updated title field:`, updatedUser.title);
+      console.log(`[DatabaseStorage.updateUser] DRIZZLE UPDATE SUCCESS:`, updatedUser);
+      console.log(`[DatabaseStorage.updateUser] Updated title field via Drizzle:`, updatedUser.title);
       
       // Verify critical fields were updated correctly
       for (const [key, value] of Object.entries(cleanedUserData)) {
-        const updatedValue = updatedUser[key];
+        const updatedValue = (updatedUser as any)[key];
         if (value !== updatedValue) {
           console.warn(`[DatabaseStorage.updateUser] Field '${key}' update verification:`);
           console.warn(`Expected: ${value}, Got: ${updatedValue}`);
         } else {
-          console.log(`[DatabaseStorage.updateUser] Field '${key}' updated correctly: ${value}`);
+          console.log(`[DatabaseStorage.updateUser] Field '${key}' updated correctly via Drizzle: ${value}`);
         }
       }
       
       return updatedUser;
     } catch (error) {
-      console.error(`[DatabaseStorage.updateUser] Error updating user:`, error);
-      throw error;
+      console.error(`[DatabaseStorage.updateUser] Error updating user via Drizzle:`, error);
+      
+      // Fallback to direct SQL if Drizzle fails
+      console.log(`[DatabaseStorage.updateUser] Falling back to direct SQL...`);
+      
+      try {
+        let updateQuery = 'UPDATE users SET ';
+        const updateValues: any[] = [];
+        const updateParts: string[] = [];
+        let paramIndex = 1;
+        
+        // Add each property to the update
+        for (const [key, value] of Object.entries(cleanedUserData)) {
+          // Convert camelCase to snake_case for PostgreSQL
+          const columnName = key.replace(/([A-Z])/g, '_$1').toLowerCase();
+          updateParts.push(`${columnName} = $${paramIndex}`);
+          updateValues.push(value);
+          paramIndex++;
+        }
+        
+        // Add WHERE clause and returning
+        updateQuery += updateParts.join(', ');
+        updateQuery += ` WHERE id = $${paramIndex} RETURNING id, username, email, password, phone_number as "phoneNumber", name, brand_name as "brandName", photo_url as "photoURL", title, about_me as "aboutMe", location, industry, domain, looking_for as "lookingFor", what_i_offer as "whatIOffer", visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", email_verified as "emailVerified", email_verification_token as "emailVerificationToken", email_verification_expires as "emailVerificationExpires", created_at as "createdAt"`;
+        updateValues.push(id);
+        
+        console.log(`[DatabaseStorage.updateUser] Fallback SQL query:`, updateQuery);
+        console.log(`[DatabaseStorage.updateUser] Fallback query params:`, updateValues);
+        
+        const result = await pool.query(updateQuery, updateValues);
+        
+        if (result.rows.length === 0) {
+          console.log(`[DatabaseStorage.updateUser] No user found with ID ${id} in fallback`);
+          return undefined;
+        }
+        
+        const updatedUser = result.rows[0];
+        console.log(`[DatabaseStorage.updateUser] FALLBACK SQL UPDATE SUCCESS:`, updatedUser);
+        return updatedUser;
+      } catch (fallbackError) {
+        console.error(`[DatabaseStorage.updateUser] Fallback SQL also failed:`, fallbackError);
+        throw fallbackError;
+      }
     }
   }
 

@@ -766,7 +766,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
         
         console.log(`[PUT /users/:id] Found user with numeric ID: ${userId}, updating...`);
-        updatedUser = await storage.updateUser(userId, userData);
+        
+        // DIRECT DATABASE UPDATE BYPASS - Fix for persistent storage issue
+        console.log(`[PUT /users/:id] IMPLEMENTING DIRECT DATABASE BYPASS`);
+        try {
+          let updateQuery = 'UPDATE users SET ';
+          const updateValues: any[] = [];
+          const updateParts: string[] = [];
+          let paramIndex = 1;
+          
+          // Add each property to the update
+          for (const [key, value] of Object.entries(userData)) {
+            // Convert camelCase to snake_case for PostgreSQL
+            const columnName = key.replace(/([A-Z])/g, '_$1').toLowerCase();
+            updateParts.push(`${columnName} = $${paramIndex}`);
+            updateValues.push(value);
+            paramIndex++;
+          }
+          
+          // Add WHERE clause and returning
+          updateQuery += updateParts.join(', ');
+          updateQuery += ` WHERE id = $${paramIndex} RETURNING id, username, email, password, phone_number as "phoneNumber", name, brand_name as "brandName", photo_url as "photoURL", title, about_me as "aboutMe", location, industry, domain, looking_for as "lookingFor", what_i_offer as "whatIOffer", visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", email_verified as "emailVerified", email_verification_token as "emailVerificationToken", email_verification_expires as "emailVerificationExpires", created_at as "createdAt"`;
+          updateValues.push(userId);
+          
+          console.log(`[PUT /users/:id] Direct DB query:`, updateQuery);
+          console.log(`[PUT /users/:id] Direct DB params:`, updateValues);
+          
+          const result = await pool.query(updateQuery, updateValues);
+          
+          if (result.rows.length === 0) {
+            console.log(`[PUT /users/:id] Direct DB update failed - no user found`);
+            updatedUser = await storage.updateUser(userId, userData);
+          } else {
+            updatedUser = result.rows[0];
+            console.log(`[PUT /users/:id] DIRECT DB UPDATE SUCCESS:`, updatedUser.title);
+          }
+        } catch (directError) {
+          console.error(`[PUT /users/:id] Direct DB update failed:`, directError);
+          updatedUser = await storage.updateUser(userId, userData);
+        }
       }
       
       console.log(`[PUT /users/:id] Successfully updated user:`, updatedUser);
