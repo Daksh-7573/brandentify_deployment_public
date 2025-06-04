@@ -8059,58 +8059,57 @@ export class DatabaseStorage implements IStorage {
       return existingUser;
     }
     
-    // Use retry mechanism to handle intermittent database issues
-    return executeWithRetry(async () => {
-      try {
-        // Direct SQL query for updating user data with improved reliability
-        let updateQuery = 'UPDATE users SET ';
-        const updateValues: any[] = [];
-        const updateParts: string[] = [];
-        let paramIndex = 1;
-        
-        // Add each property to the update
-        for (const [key, value] of Object.entries(cleanedUserData)) {
-          // Convert camelCase to snake_case for PostgreSQL
-          const columnName = key.replace(/([A-Z])/g, '_$1').toLowerCase();
-          updateParts.push(`${columnName} = $${paramIndex}`);
-          updateValues.push(value);
-          paramIndex++;
-        }
-        
-        // Add WHERE clause and returning
-        updateQuery += updateParts.join(', ');
-        updateQuery += ` WHERE id = $${paramIndex} RETURNING id, username, email, password, phone_number as "phoneNumber", name, brand_name as "brandName", photo_url as "photoURL", title, about_me as "aboutMe", location, industry, domain, looking_for as "lookingFor", what_i_offer as "whatIOffer", visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", email_verified as "emailVerified", email_verification_token as "emailVerificationToken", email_verification_expires as "emailVerificationExpires", created_at as "createdAt"`;
-        updateValues.push(id);
-        
-        console.log(`[DatabaseStorage.updateUser] Generated query:`, updateQuery);
-        console.log(`[DatabaseStorage.updateUser] Query params:`, updateValues);
-        
-        const result = await pool.query(updateQuery, updateValues);
-        
-        if (result.rows.length === 0) {
-          console.log(`[DatabaseStorage.updateUser] No user found with ID ${id}`);
-          return undefined;
-        }
-        
-        const updatedUser = result.rows[0];
-        console.log(`[DatabaseStorage.updateUser] Updated user successfully:`, updatedUser);
-        
-        // Verify critical fields were updated correctly
-        for (const [key, value] of Object.entries(cleanedUserData)) {
-          // Handle null values properly
-          const updatedValue = updatedUser[key];
-          if (value !== updatedValue) {
-            console.warn(`[DatabaseStorage.updateUser] Field '${key}' may not have updated correctly.`);
-            console.warn(`Expected: ${value}, Got: ${updatedValue}`);
-          }
-        }
-        
-        return updatedUser;
-      } catch (error) {
-        console.error(`[DatabaseStorage.updateUser] Error updating user:`, error);
-        throw error;
+    try {
+      // Direct SQL query for updating user data with improved reliability
+      let updateQuery = 'UPDATE users SET ';
+      const updateValues: any[] = [];
+      const updateParts: string[] = [];
+      let paramIndex = 1;
+      
+      // Add each property to the update
+      for (const [key, value] of Object.entries(cleanedUserData)) {
+        // Convert camelCase to snake_case for PostgreSQL
+        const columnName = key.replace(/([A-Z])/g, '_$1').toLowerCase();
+        updateParts.push(`${columnName} = $${paramIndex}`);
+        updateValues.push(value);
+        paramIndex++;
       }
-    }, 3, 1000); // 3 retries, starting with 1000ms delay
+      
+      // Add WHERE clause and returning
+      updateQuery += updateParts.join(', ');
+      updateQuery += ` WHERE id = $${paramIndex} RETURNING id, username, email, password, phone_number as "phoneNumber", name, brand_name as "brandName", photo_url as "photoURL", title, about_me as "aboutMe", location, industry, domain, looking_for as "lookingFor", what_i_offer as "whatIOffer", visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", email_verified as "emailVerified", email_verification_token as "emailVerificationToken", email_verification_expires as "emailVerificationExpires", created_at as "createdAt"`;
+      updateValues.push(id);
+      
+      console.log(`[DatabaseStorage.updateUser] Generated query:`, updateQuery);
+      console.log(`[DatabaseStorage.updateUser] Query params:`, updateValues);
+      
+      const result = await pool.query(updateQuery, updateValues);
+      
+      if (result.rows.length === 0) {
+        console.log(`[DatabaseStorage.updateUser] No user found with ID ${id}`);
+        return undefined;
+      }
+      
+      const updatedUser = result.rows[0];
+      console.log(`[DatabaseStorage.updateUser] Updated user successfully:`, updatedUser);
+      console.log(`[DatabaseStorage.updateUser] Updated title field:`, updatedUser.title);
+      
+      // Verify critical fields were updated correctly
+      for (const [key, value] of Object.entries(cleanedUserData)) {
+        const updatedValue = updatedUser[key];
+        if (value !== updatedValue) {
+          console.warn(`[DatabaseStorage.updateUser] Field '${key}' update verification:`);
+          console.warn(`Expected: ${value}, Got: ${updatedValue}`);
+        } else {
+          console.log(`[DatabaseStorage.updateUser] Field '${key}' updated correctly: ${value}`);
+        }
+      }
+      
+      return updatedUser;
+    } catch (error) {
+      console.error(`[DatabaseStorage.updateUser] Error updating user:`, error);
+      throw error;
+    }
   }
 
   async getAllUsers(): Promise<User[]> {
