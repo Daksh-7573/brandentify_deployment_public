@@ -6,6 +6,7 @@ import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { UserData } from "@/types/user";
 import { INDUSTRIES, INDUSTRY_DOMAINS } from "@shared/constants";
 import { useAuth } from "@/hooks/use-auth";
+import LocationAutocomplete from "@/components/ui/location-autocomplete";
 
 interface EditPersonalInfoProps {
   userData: UserData;
@@ -260,13 +261,11 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
             <MapPin className="h-4 w-4" />
             Location
           </label>
-          <input
-            id="location"
-            type="text"
+          <LocationAutocomplete
             value={location}
-            onChange={(e) => setLocation(e.target.value)}
+            onChange={setLocation}
             placeholder="Your location (e.g. San Francisco, CA)"
-            className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-10 px-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+            className="h-10"
           />
         </div>
 
