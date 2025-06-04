@@ -143,7 +143,7 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
         industry: industry || null,
         domain: domain || null,
         aboutMe: aboutMe.trim() || null,
-        lookingFor: lookingFor.trim() || null,
+        lookingFor: convertDisplayToDbValue(lookingFor.trim()) || null,
       };
 
       console.log("[DEBUG] Sending PUT request to:", `/api/users/${userData.id}`);
@@ -459,7 +459,7 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
                 industry: industry || null,
                 domain: domain || null,
                 aboutMe: aboutMe.trim() || null,
-                lookingFor: lookingFor.trim() || null,
+                lookingFor: convertDisplayToDbValue(lookingFor.trim()) || null,
               };
 
               console.log("[BUTTON] Combined job title:", combinedJobTitle);
