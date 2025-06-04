@@ -73,7 +73,7 @@ const PersonalDetailsPage: React.FC = () => {
                 Update your contact details and profile information
               </DialogDescription>
             </DialogHeader>
-            <EditPersonalInfo 
+            <EditPersonalInfoNew 
               userData={userData}
               onCancel={() => setShowEditPersonalInfo(false)}
               onSave={() => {
