@@ -369,31 +369,7 @@ export default function ProfileNeo() {
                         Edit Profile Information
                       </button>
                       
-                      {/* Brand Name & Public URL */}
-                      {userData?.brandName && (
-                        <div className="mt-3 px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-center">
-                          <p className="text-xs text-white/60 mb-1">Your Public Profile</p>
-                          <div className="flex items-center justify-center gap-2">
-                            <span className="text-sm text-blue-300">/{userData.brandName}</span>
-                            <button
-                              onClick={() => {
-                                const url = `${window.location.origin}/${userData.brandName}`;
-                                navigator.clipboard.writeText(url);
-                                toast({
-                                  title: "Link copied!",
-                                  description: "Profile URL copied to clipboard",
-                                });
-                              }}
-                              className="p-1 rounded text-white/60 hover:text-white hover:bg-white/10 transition-all"
-                              title="Copy profile link"
-                            >
-                              <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                              </svg>
-                            </button>
-                          </div>
-                        </div>
-                      )}
+                      {/* Brand Name & Public URL section removed per user request */}
                     </div>
                   </div>
                   
