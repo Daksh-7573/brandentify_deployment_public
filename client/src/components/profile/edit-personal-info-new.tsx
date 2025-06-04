@@ -379,8 +379,12 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
               id="lookingFor"
               value={lookingFor}
               onChange={(e) => {
-                console.log("[DROPDOWN] Selected value:", e.target.value);
-                setLookingFor(e.target.value);
+                const selectedValue = e.target.value;
+                console.log("[DROPDOWN] Raw selected value:", selectedValue);
+                console.log("[DROPDOWN] Selected value type:", typeof selectedValue);
+                console.log("[DROPDOWN] Selected option element:", e.target.selectedOptions[0]);
+                console.log("[DROPDOWN] Available options:", Object.keys(LOOKING_FOR_OPTIONS));
+                setLookingFor(selectedValue);
               }}
               className="!bg-[rgba(18,18,18,0.95)] !backdrop-blur-md !text-white !border-white/20 shadow-md transition-all hover:!border-white/30 w-full px-3 py-3 rounded-md border !placeholder-white/50 focus:!border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none appearance-none cursor-pointer"
               style={{ 
