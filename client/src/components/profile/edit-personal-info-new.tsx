@@ -95,7 +95,11 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
         lookingFor: lookingFor.trim() || null,
       };
 
-      await apiRequest("PATCH", `/api/users/${userData.id}`, updateData);
+      console.log('Saving profile with data:', updateData);
+      console.log('User ID being used:', userData.id);
+      console.log('Brand name value:', brandName);
+
+      await apiRequest("PUT", `/api/users/${userData.id}`, updateData);
 
       // Invalidate queries to refresh data
       await queryClient.invalidateQueries({ queryKey: [`/api/users/${userData.username}`] });
