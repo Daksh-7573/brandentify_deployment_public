@@ -5,6 +5,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { UserData } from "@/types/user";
 import { INDUSTRIES, INDUSTRY_DOMAINS } from "@shared/constants";
+import { useAuth } from "@/hooks/use-auth";
 
 interface EditPersonalInfoProps {
   userData: UserData;
@@ -29,6 +30,7 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
   const [isJobTitleDropdownOpen, setIsJobTitleDropdownOpen] = useState(false);
 
   // Fetch job titles from backend
@@ -51,8 +53,16 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
   const [aboutMe, setAboutMe] = useState(userData.aboutMe || "");
   const [lookingFor, setLookingFor] = useState(userData.lookingFor || "");
 
-  // Parse existing combined job title on component load
+  // Parse existing combined job title on component load and when userData changes
   React.useEffect(() => {
+    // Reset form state when userData changes
+    setName(userData.name || "");
+    setLocation(userData.location || "");
+    setIndustry(userData.industry || "");
+    setDomain(userData.domain || "");
+    setAboutMe(userData.aboutMe || "");
+    setLookingFor(userData.lookingFor || "");
+    
     if (userData.title && jobTitlesData?.jobTitles) {
       const existingTitle = userData.title;
       const availableTitles = jobTitlesData.jobTitles.map(jt => jt.title);
@@ -68,13 +78,20 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
         const textPart = existingTitle.replace(matchedDropdownTitle + ' - ', '');
         if (textPart !== matchedDropdownTitle) {
           setJobTitle(textPart);
+        } else {
+          setJobTitle('');
         }
       } else {
         // If no dropdown match, put everything in text input
+        setSelectedJobTitleFromDropdown('');
         setJobTitle(existingTitle);
       }
+    } else {
+      // Clear job title fields if no title
+      setSelectedJobTitleFromDropdown('');
+      setJobTitle('');
     }
-  }, [userData.title, jobTitlesData]);
+  }, [userData, jobTitlesData]);
 
   // Brand name and phone number fields removed per user request
 
@@ -516,7 +533,11 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
               const result = await response.json();
               console.log("[BUTTON] API response:", result);
 
-              // Invalidate queries to refresh data
+              // Invalidate queries to refresh data - match profile page query key
+              if (user?.uid) {
+                await queryClient.invalidateQueries({ queryKey: ['/api/users', user.uid] });
+              }
+              await queryClient.invalidateQueries({ queryKey: [`/api/users/${userData.id}`] });
               await queryClient.invalidateQueries({ queryKey: ['/api/users', userData.username] });
               await queryClient.invalidateQueries({ queryKey: ['/api/users'] });
 
