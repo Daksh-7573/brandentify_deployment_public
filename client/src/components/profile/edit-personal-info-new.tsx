@@ -448,6 +448,8 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
 
               console.log("[BUTTON] Combined job title:", combinedJobTitle);
               console.log("[BUTTON] lookingFor state value:", lookingFor);
+              console.log("[BUTTON] lookingFor type:", typeof lookingFor);
+              console.log("[BUTTON] LOOKING_FOR_OPTIONS:", LOOKING_FOR_OPTIONS);
               console.log("[BUTTON] Making direct API call with data:", updateData);
               
               const response = await fetch(`/api/users/${userData.id}/force-update`, {
