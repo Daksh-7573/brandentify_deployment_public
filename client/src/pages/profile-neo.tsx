@@ -8,7 +8,7 @@ import Skills from "@/components/profile/skills";
 import ProjectsFixed from "@/components/profile/projects-fixed";
 import Services from "@/components/profile/services-fixed";
 import PersonalInfoSection from "@/components/profile/personal-info-section";
-import EditProfileForm from "@/components/profile/EditProfileForm";
+import EditPersonalInfoNew from "@/components/profile/edit-personal-info-new";
 import MuskButton from "@/components/musk/musk-button";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Plus, AlertCircle } from "lucide-react";
@@ -723,30 +723,45 @@ export default function ProfileNeo() {
         </DialogContent>
       </Dialog>
       
-      {/* Edit Personal Info Form */}
-      {showEditPersonalInfoDialog && userData && (
-        <EditProfileForm
-          userData={{
-            id: userData.id || 0,
-            name: userData.name || '',
-            brandName: userData.brandName || '',
-            phoneNumber: userData.phoneNumber || '',
-            title: userData.title || '',
-            location: userData.location || '',
-            industry: userData.industry || '',
-            domain: userData.domain || '',
-            aboutMe: userData.aboutMe || '',
-            lookingFor: userData.lookingFor || ''
-          }}
-          onClose={() => setShowEditPersonalInfoDialog(false)}
-          onSave={async () => {
-            console.log("[DEBUG] onSave called from profile dialog");
-            // Refresh user data after successful save
-            await queryClient.invalidateQueries({ queryKey: [`/api/users/${user.uid}`] });
-            setShowEditPersonalInfoDialog(false);
-          }}
-        />
-      )}
+      {/* Edit Personal Info Dialog */}
+      <Dialog open={showEditPersonalInfoDialog} onOpenChange={setShowEditPersonalInfoDialog}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-transparent border-none shadow-none p-0 m-0">
+          {isUserDataLoading ? (
+            <div className="flex items-center justify-center p-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+            </div>
+          ) : userData ? (
+            <EditPersonalInfoNew
+              userData={{
+                id: userData.id || 0,
+                username: userData.username || '',
+                name: userData.name || '',
+                email: userData.email || '',
+                phoneNumber: userData.phoneNumber || '',
+                title: userData.title || '',
+                location: userData.location || '',
+                industry: userData.industry || '',
+                domain: userData.domain || '',
+                aboutMe: userData.aboutMe || '',
+                lookingFor: userData.lookingFor || '',
+                photoURL: userData.photoURL || ''
+              }}
+              onCancel={() => setShowEditPersonalInfoDialog(false)}
+              onSave={async () => {
+                console.log("[DEBUG] onSave called from profile dialog");
+                // The actual save happens inside EditPersonalInfoNew component
+                // We'll close the dialog after save completes successfully
+                await new Promise(resolve => setTimeout(resolve, 100)); // Small delay to ensure save completes
+                setShowEditPersonalInfoDialog(false);
+              }}
+            />
+          ) : (
+            <div className="p-8 text-white text-center">
+              Unable to load user data. Please try again.
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
       {/* Add Profile Picture Dialog component */}
       <ProfilePictureDialog 
         userId={user.uid}
