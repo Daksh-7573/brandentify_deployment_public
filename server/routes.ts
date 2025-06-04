@@ -554,6 +554,92 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Internal server error" });
     }
   });
+
+  // EMERGENCY BYPASS ENDPOINT - Direct database access for profile updates
+  apiRouter.put("/users/:id/force-update", async (req: Request, res: Response) => {
+    res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+    
+    try {
+      const idParam = req.params.id;
+      const userData = req.body;
+      
+      console.log(`[FORCE UPDATE] Direct database update for ID: ${idParam}`);
+      console.log(`[FORCE UPDATE] Data:`, userData);
+      
+      // Determine if Firebase UID or numeric ID
+      const isFirebaseUid = idParam.length > 20 && /[^0-9]/.test(idParam);
+      let userId: number;
+      
+      if (isFirebaseUid) {
+        const userResult = await pool.query('SELECT id FROM users WHERE username = $1', [idParam]);
+        if (userResult.rows.length === 0) {
+          return res.status(404).json({ message: "User not found" });
+        }
+        userId = userResult.rows[0].id;
+      } else {
+        userId = parseInt(idParam);
+      }
+      
+      // Direct database update
+      const updateFields = [];
+      const values = [];
+      let paramIndex = 1;
+      
+      for (const [key, value] of Object.entries(userData)) {
+        const columnName = key.replace(/([A-Z])/g, '_$1').toLowerCase();
+        updateFields.push(`${columnName} = $${paramIndex}`);
+        values.push(value);
+        paramIndex++;
+      }
+      
+      if (updateFields.length === 0) {
+        return res.status(400).json({ message: "No data to update" });
+      }
+      
+      values.push(userId);
+      
+      const updateQuery = `
+        UPDATE users 
+        SET ${updateFields.join(', ')} 
+        WHERE id = $${paramIndex} 
+        RETURNING 
+          id, username, email, password, 
+          phone_number as "phoneNumber", 
+          name, brand_name as "brandName", 
+          photo_url as "photoURL", 
+          title, about_me as "aboutMe", 
+          location, industry, domain, 
+          looking_for as "lookingFor", 
+          what_i_offer as "whatIOffer", 
+          visiting_card_type as "visitingCardType", 
+          profile_completed as "profileCompleted", 
+          email_verified as "emailVerified", 
+          email_verification_token as "emailVerificationToken", 
+          email_verification_expires as "emailVerificationExpires", 
+          created_at as "createdAt"
+      `;
+      
+      console.log(`[FORCE UPDATE] Executing query:`, updateQuery);
+      console.log(`[FORCE UPDATE] With values:`, values);
+      
+      const result = await pool.query(updateQuery, values);
+      
+      if (result.rows.length === 0) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      const updatedUser = result.rows[0];
+      console.log(`[FORCE UPDATE] SUCCESS - New title: ${updatedUser.title}`);
+      
+      res.json(updatedUser);
+      
+    } catch (error) {
+      console.error("[FORCE UPDATE] Error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
   
   // NEW: Special endpoint for shared card view with reliability enhancements 
   apiRouter.get("/shared-card/:id", async (req: Request, res: Response) => {

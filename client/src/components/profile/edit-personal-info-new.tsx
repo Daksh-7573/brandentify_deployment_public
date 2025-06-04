@@ -188,12 +188,12 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
       lookingFor: lookingFor.trim() || null,
     };
 
-    console.log("[SAVE] Making API call to:", `/api/users/${userData.id}`);
+    console.log("[SAVE] Making API call to:", `/api/users/${userData.id}/force-update`);
     console.log("[SAVE] Update data:", updateData);
     console.log("[SAVE] JSON stringified data:", JSON.stringify(updateData));
     
     try {
-      const response = await fetch(`/api/users/${userData.id}`, {
+      const response = await fetch(`/api/users/${userData.id}/force-update`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
