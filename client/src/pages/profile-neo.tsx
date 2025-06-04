@@ -736,6 +736,7 @@ export default function ProfileNeo() {
                 id: userData.id || 0,
                 username: userData.username || '',
                 name: userData.name || '',
+                brandName: userData.brandName || '',
                 email: userData.email || '',
                 phoneNumber: userData.phoneNumber || '',
                 title: userData.title || '',
