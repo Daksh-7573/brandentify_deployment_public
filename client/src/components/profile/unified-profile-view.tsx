@@ -148,18 +148,9 @@ export const UnifiedProfileView: FC<UnifiedProfileViewProps> = ({ userId: propUs
                   </div>
                 </div>
                 
-                <div className={profileData.lookingFor === 'job_opportunities' ? 'p-3 rounded-lg border-2 border-orange-400 bg-orange-50/80 backdrop-blur-sm' : ''}>
-                  <h4 className={`font-medium mb-2 ${profileData.lookingFor === 'job_opportunities' ? 'text-orange-700 flex items-center gap-2' : ''}`}>
-                    I am Looking for
-                    {profileData.lookingFor === 'job_opportunities' && (
-                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800 border border-orange-300">
-                        🎯 Job Opportunities
-                      </span>
-                    )}
-                  </h4>
-                  <p className={`text-sm ${profileData.lookingFor === 'job_opportunities' ? 'text-orange-700 font-medium' : 'text-muted-foreground'}`}>
-                    {profileData.lookingFor === 'job_opportunities' ? 'Job Opportunities' : (profileData.lookingFor || 'Not specified')}
-                  </p>
+                <div>
+                  <h4 className="font-medium mb-2">I am Looking for</h4>
+                  <p className="text-sm text-muted-foreground">{profileData.lookingFor || 'Not specified'}</p>
                 </div>
                 
                 <div className="grid grid-cols-2 gap-4">
