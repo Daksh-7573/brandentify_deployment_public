@@ -604,6 +604,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Brand name availability check endpoint
+  apiRouter.get("/users/check-brand-name/:brandName", async (req: Request, res: Response) => {
+    try {
+      const brandName = req.params.brandName;
+      console.log(`[GET /users/check-brand-name/:brandName] Checking availability for: ${brandName}`);
+      
+      // Validate brand name format
+      if (!brandName || brandName.length < 3 || brandName.length > 20) {
+        return res.json({ available: false, reason: 'Invalid format' });
+      }
+      
+      if (!/^[a-zA-Z0-9_-]+$/.test(brandName)) {
+        return res.json({ available: false, reason: 'Invalid characters' });
+      }
+      
+      // Check if brand name is already taken by another user
+      const existingUser = await storage.getUserByBrandName(brandName);
+      const available = !existingUser;
+      
+      console.log(`[GET /users/check-brand-name/:brandName] Brand name "${brandName}" available: ${available}`);
+      res.json({ available });
+    } catch (error) {
+      console.error("Error checking brand name availability:", error);
+      res.status(500).json({ available: false, reason: 'Server error' });
+    }
+  });
+
   apiRouter.put("/users/:id", async (req: Request, res: Response) => {
     try {
       const idParam = req.params.id;

@@ -1659,6 +1659,35 @@ export class MemStorage implements IStorage {
     }
   }
   
+  async getUserByBrandName(brandName: string): Promise<User | undefined> {
+    console.log(`[db.getUserByBrandName] Looking up user by brand name: ${brandName}`);
+    
+    try {
+      const query = `
+        SELECT id, username, email, password, phone_number as "phoneNumber", 
+        name, photo_url as "photoURL", title, about_me as "aboutMe", 
+        location, industry, domain, looking_for as "lookingFor", 
+        brand_name as "brandName",
+        visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", 
+        email_verified as "emailVerified", email_verification_token as "emailVerificationToken", 
+        email_verification_expires as "emailVerificationExpires", created_at as "createdAt"
+        FROM users WHERE brand_name = $1
+      `;
+      
+      const result = await pool.query(query, [brandName]);
+      console.log(`[db.getUserByBrandName] Query returned ${result.rows.length} rows`);
+      
+      if (result.rows.length === 0) {
+        return undefined;
+      }
+      
+      return result.rows[0] as User;
+    } catch (error) {
+      console.error(`[db.getUserByBrandName] Error fetching user with brand name ${brandName}:`, error);
+      return undefined;
+    }
+  }
+  
   async getUserByPhoneNumber(phoneNumber: string): Promise<User | undefined> {
     return Array.from(this.users.values()).find(user => user.phoneNumber === phoneNumber);
   }
@@ -10226,6 +10255,7 @@ export const storage = {
   getUser: (id: number) => dbStorage.getUser(id),
   getUserByEmail: (email: string) => dbStorage.getUserByEmail(email),
   getUserByUsername: (username: string) => dbStorage.getUserByUsername(username),
+  getUserByBrandName: (brandName: string) => dbStorage.getUserByBrandName(brandName),
   getUserByPhoneNumber: (phoneNumber: string) => dbStorage.getUserByPhoneNumber(phoneNumber),
   createUser: (user: InsertUser) => dbStorage.createUser(user),
   updateUser: (id: number, userData: Partial<User>) => dbStorage.updateUser(id, userData),

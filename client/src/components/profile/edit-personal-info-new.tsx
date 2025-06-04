@@ -69,15 +69,20 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
 
   const handleBrandNameChange = (value: string) => {
     setBrandName(value);
-    if (value !== userData.brandName) {
-      setBrandNameStatus('idle');
-      // Debounce the availability check
-      setTimeout(() => {
-        if (value === brandName) {
-          checkBrandNameAvailability(value);
-        }
-      }, 500);
+    
+    // If the value is the same as the user's existing brand name, mark as available
+    if (value === userData.brandName) {
+      setBrandNameStatus('available');
+      return;
     }
+    
+    // Reset status and check availability for new values
+    setBrandNameStatus('idle');
+    
+    // Debounce the availability check
+    setTimeout(() => {
+      checkBrandNameAvailability(value);
+    }, 500);
   };
 
   const handleSave = async () => {
