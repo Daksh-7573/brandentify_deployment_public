@@ -8,7 +8,7 @@ import Skills from "@/components/profile/skills";
 import ProjectsFixed from "@/components/profile/projects-fixed";
 import Services from "@/components/profile/services-fixed";
 import PersonalInfoSection from "@/components/profile/personal-info-section";
-import EditPersonalInfoNew from "@/components/profile/edit-personal-info-new";
+import TestEditForm from "@/components/profile/test-edit-form";
 import MuskButton from "@/components/musk/musk-button";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Plus, AlertCircle } from "lucide-react";
@@ -731,25 +731,34 @@ export default function ProfileNeo() {
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
             </div>
           ) : userData ? (
-            <EditPersonalInfoNew
-              userData={{
-                id: userData.id || 0,
-                username: userData.username || '',
-                name: userData.name || '',
-                brandName: userData.brandName || '',
-                email: userData.email || '',
-                phoneNumber: userData.phoneNumber || '',
-                title: userData.title || '',
-                location: userData.location || '',
-                industry: userData.industry || '',
-                domain: userData.domain || '',
-                aboutMe: userData.aboutMe || '',
-                lookingFor: userData.lookingFor || '',
-                photoURL: userData.photoURL || ''
-              }}
-              onCancel={() => setShowEditPersonalInfoDialog(false)}
-              onSave={() => setShowEditPersonalInfoDialog(false)}
-            />
+            <>
+              {console.log('=== RENDERING EditPersonalInfoNew ===', userData)}
+              <TestEditForm
+                userData={{
+                  id: userData.id || 0,
+                  username: userData.username || '',
+                  name: userData.name || '',
+                  brandName: userData.brandName || '',
+                  email: userData.email || '',
+                  phoneNumber: userData.phoneNumber || '',
+                  title: userData.title || '',
+                  location: userData.location || '',
+                  industry: userData.industry || '',
+                  domain: userData.domain || '',
+                  aboutMe: userData.aboutMe || '',
+                  lookingFor: userData.lookingFor || '',
+                  photoURL: userData.photoURL || ''
+                }}
+                onCancel={() => {
+                  console.log('=== CANCEL CLICKED ===');
+                  setShowEditPersonalInfoDialog(false);
+                }}
+                onSave={() => {
+                  console.log('=== SAVE CALLBACK TRIGGERED ===');
+                  setShowEditPersonalInfoDialog(false);
+                }}
+              />
+            </>
           ) : (
             <div className="p-8 text-white text-center">
               Unable to load user data. Please try again.
