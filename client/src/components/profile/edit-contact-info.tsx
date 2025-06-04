@@ -233,14 +233,14 @@ const EditContactInfo: React.FC<EditContactInfoProps> = ({ userData, onCancel, o
                   variant="outline"
                   onClick={onCancel}
                   disabled={isLoading}
-                  className="bg-white/10 border-white/20 text-white hover:bg-white/20 hover:border-white/30"
+                  className="!bg-white/10 !border-white/20 !text-white hover:!bg-white/20 hover:!border-white/30 transition-all duration-300 backdrop-blur-sm"
                 >
                   Cancel
                 </Button>
                 <Button
                   type="submit"
                   disabled={isLoading || Boolean(brandName && brandNameStatus === 'taken')}
-                  className="min-w-[100px] bg-white/20 border-white/30 text-white hover:bg-white/30 hover:border-white/40"
+                  className="min-w-[100px] !bg-white/20 !border-white/30 !text-white hover:!bg-white/30 hover:!border-white/40 transition-all duration-300 backdrop-blur-sm disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isLoading ? (
                     <>
