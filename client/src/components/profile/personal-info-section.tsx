@@ -47,30 +47,7 @@ const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({ userData, onE
             </div>
           )}
           
-          {/* Brand Name - only show if value exists */}
-          {userData.brandName && (
-            <div className="flex items-center gap-3 p-3 rounded-lg bg-white/5 border border-white/10">
-              <Tag className="h-5 w-5 text-white/70" />
-              <div className="flex-1">
-                <div className="text-xs text-white/60 mb-1">Brand Name</div>
-                <span className="text-white font-medium">@{userData.brandName}</span>
-              </div>
-            </div>
-          )}
-          
-          {/* Profile URL */}
-          <div className="flex items-center gap-3 p-3 rounded-lg bg-white/5 border border-white/10">
-            <Globe className="h-5 w-5 text-white/70" />
-            <div className="flex-1">
-              <div className="text-xs text-white/60 mb-1">Profile URL</div>
-              <a 
-                href={`/@${userData.brandName || (userData.name ? userData.name.replace(/\s+/g, '') : userData.username)}`} 
-                className="text-white/90 hover:text-white transition-colors duration-200 font-medium"
-              >
-                brandentifier.com/@{userData.brandName || (userData.name ? userData.name.replace(/\s+/g, '') : userData.username)}
-              </a>
-            </div>
-          </div>
+          {/* Brand Name and Profile URL sections removed per user request */}
         </div>
       </div>
     </div>
