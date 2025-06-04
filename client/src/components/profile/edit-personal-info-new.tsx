@@ -216,42 +216,7 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
           <p className="text-xs text-white/50">Email cannot be changed</p>
         </div>
 
-        {/* Phone Number */}
-        <div className="space-y-2">
-          <label htmlFor="phoneNumber" className="text-sm font-medium text-white flex items-center gap-2">
-            <Phone className="h-4 w-4" />
-            Phone Number
-          </label>
-          <div className="flex gap-2">
-            <div className="relative">
-              <select
-                value={phoneCountryCode}
-                onChange={(e) => setPhoneCountryCode(e.target.value)}
-                className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-[150px] h-12 px-3 pr-10 rounded-md border appearance-none cursor-pointer focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none text-sm leading-relaxed"
-                style={{ lineHeight: '1.5', paddingTop: '0.75rem', paddingBottom: '0.75rem' }}
-              >
-                {countryCodes.map((country) => (
-                  <option key={country.code} value={country.code} className="bg-gray-800 text-white">
-                    {country.code}
-                  </option>
-                ))}
-              </select>
-              <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-                <svg className="h-3 w-3 text-white/70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-                </svg>
-              </div>
-            </div>
-            <input
-              id="phoneNumber"
-              type="tel"
-              value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
-              placeholder="Your phone number"
-              className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 flex-1 h-12 px-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
-            />
-          </div>
-        </div>
+        {/* Phone Number field removed per user request */}
 
         {/* Job Title */}
         <div className="space-y-2">
