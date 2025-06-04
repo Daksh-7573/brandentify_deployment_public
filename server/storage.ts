@@ -239,6 +239,7 @@ export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
+  getUserByBrandName(brandName: string): Promise<User | undefined>;
   getUserByPhoneNumber(phoneNumber: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   updateUser(id: number, user: Partial<User>): Promise<User | undefined>;
