@@ -99,6 +99,9 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
     });
     console.log("[SAVE] Original userData:", userData);
     
+    // Force immediate execution without waiting for validation
+    console.log("[SAVE] FORCING IMMEDIATE SAVE OPERATION");
+    
     // Validate required fields
     if (!name.trim()) {
       toast({
@@ -372,10 +375,71 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
         </button>
         <button 
           type="button"
-          onClick={(e) => {
+          onClick={async (e) => {
             console.log("[BUTTON] Save button clicked!", e);
-            console.log("[BUTTON] Calling handleSaveProfile");
-            handleSaveProfile();
+            console.log("[BUTTON] Starting direct save operation");
+            
+            e.preventDefault();
+            e.stopPropagation();
+            
+            if (isLoading) return;
+            
+            setIsLoading(true);
+            
+            try {
+              const updateData = {
+                name: name.trim(),
+                title: jobTitle.trim() || null,
+                location: location.trim() || null,
+                industry: industry || null,
+                domain: domain || null,
+                aboutMe: aboutMe.trim() || null,
+                lookingFor: lookingFor.trim() || null,
+              };
+
+              console.log("[BUTTON] Making direct API call with data:", updateData);
+              
+              const response = await fetch(`/api/users/${userData.id}`, {
+                method: 'PUT',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(updateData),
+              });
+
+              console.log("[BUTTON] Response status:", response.status);
+
+              if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`API call failed: ${response.status} - ${errorText}`);
+              }
+
+              const result = await response.json();
+              console.log("[BUTTON] API response:", result);
+
+              // Invalidate queries to refresh data
+              await queryClient.invalidateQueries({ queryKey: ['/api/users', userData.username] });
+              await queryClient.invalidateQueries({ queryKey: ['/api/users'] });
+
+              toast({
+                title: "Profile Updated",
+                description: "Your profile information has been successfully updated.",
+                variant: "default",
+              });
+
+              console.log("[BUTTON] Calling parent onSave callback");
+              onSave();
+              
+            } catch (error) {
+              console.error('[BUTTON] Error updating profile:', error);
+              toast({
+                title: "Update Failed",
+                description: "Failed to update profile. Please try again.",
+                variant: "destructive",
+              });
+            } finally {
+              setIsLoading(false);
+            }
           }}
           disabled={isLoading}
           className="neo-glass-button flex items-center gap-2 py-2.5 px-6 text-white bg-gradient-to-r from-blue-500/20 to-purple-500/20 hover:from-blue-500/30 hover:to-purple-500/30 border border-white/20 hover:border-white/30 rounded-lg transition-all duration-200 backdrop-blur-sm shadow-lg"
