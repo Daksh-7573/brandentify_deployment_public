@@ -97,9 +97,15 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
 
       console.log('Saving profile with data:', updateData);
       console.log('User ID being used:', userData.id);
+      console.log('User username being used:', userData.username);
       console.log('Brand name value:', brandName);
+      console.log('Full userData object:', userData);
 
-      await apiRequest("PUT", `/api/users/${userData.id}`, updateData);
+      // Use the Firebase UID (username) instead of numeric ID for the API call
+      const userIdentifier = userData.username || userData.id;
+      console.log('Using user identifier for API:', userIdentifier);
+
+      await apiRequest("PUT", `/api/users/${userIdentifier}`, updateData);
 
       // Invalidate queries to refresh data
       await queryClient.invalidateQueries({ queryKey: [`/api/users/${userData.username}`] });
