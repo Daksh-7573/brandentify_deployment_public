@@ -140,7 +140,7 @@ export const LocationAutocomplete: React.FC<LocationAutocompleteProps> = ({
           onFocus={handleInputFocus}
           onBlur={handleInputBlur}
           placeholder={placeholder}
-          className={`bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 pl-10 pr-10 rounded-md border focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none ${className}`}
+          className={`bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 px-3 pr-10 rounded-md border focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none ${className}`}
           style={{ 
             backgroundColor: 'rgba(18,18,18,0.95) !important', 
             color: 'white !important',
@@ -148,9 +148,6 @@ export const LocationAutocomplete: React.FC<LocationAutocompleteProps> = ({
             border: '1px solid rgba(255,255,255,0.2) !important'
           }}
         />
-        
-        {/* Location icon */}
-        <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-white/70" />
         
         {/* Clear button */}
         {value && (
@@ -180,13 +177,12 @@ export const LocationAutocomplete: React.FC<LocationAutocompleteProps> = ({
                 key={suggestion}
                 ref={el => suggestionRefs.current[index] = el}
                 onClick={() => handleSuggestionClick(suggestion)}
-                className={`px-4 py-2 cursor-pointer transition-colors flex items-center gap-2 ${
+                className={`px-4 py-2 cursor-pointer transition-colors ${
                   index === selectedIndex
                     ? 'bg-white/20 text-white'
                     : 'text-white/80 hover:bg-white/10 hover:text-white'
                 }`}
               >
-                <MapPin className="h-3 w-3 text-white/50 flex-shrink-0" />
                 <span className="truncate">{suggestion}</span>
               </li>
             ))}
