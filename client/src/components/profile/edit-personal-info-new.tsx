@@ -81,7 +81,7 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
   };
 
   const handleSave = async () => {
-    console.log("[DEBUG] handleSave called - Starting profile update");
+    console.log("[DEBUG] ========== HANDLE SAVE CALLED ==========");
     console.log("[DEBUG] userData.id:", userData.id);
     console.log("[DEBUG] Current form values:", {
       name, brandName, phoneNumber, jobTitle, location, industry, domain, aboutMe, lookingFor
@@ -443,9 +443,11 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
           Cancel
         </button>
         <button 
+          type="button"
           onClick={async (e) => {
             e.preventDefault();
-            console.log("[DEBUG] Save button clicked!");
+            e.stopPropagation();
+            console.log("[DEBUG] ========== SAVE BUTTON CLICKED ==========");
             await handleSave();
           }}
           disabled={isLoading}
