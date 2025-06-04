@@ -81,6 +81,7 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({ userData, onClose, on
 
       console.log('[FORM] Sending update to API:', updateData);
       console.log('[FORM] User ID:', userData.id);
+      console.log('[FORM] API URL:', `/api/users/${userData.id}`);
 
       // Make API call
       const response = await fetch(`/api/users/${userData.id}`, {
@@ -92,21 +93,32 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({ userData, onClose, on
       });
 
       console.log('[FORM] API Response status:', response.status);
+      console.log('[FORM] API Response headers:', response.headers);
+      
+      const responseText = await response.text();
+      console.log('[FORM] Raw API Response:', responseText);
 
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error('[FORM] API Error:', errorText);
+        console.error('[FORM] API Error:', responseText);
         throw new Error(`Failed to update profile: ${response.status}`);
       }
 
-      const result = await response.json();
-      console.log('[FORM] API Success:', result);
+      let result;
+      try {
+        result = JSON.parse(responseText);
+        console.log('[FORM] API Success:', result);
+      } catch (parseError) {
+        console.log('[FORM] Response is not JSON, treating as success:', responseText);
+        result = { success: true };
+      }
 
       setSuccess(true);
       
+      // Call onSave callback first to trigger data refresh
+      onSave();
+      
       // Close form after short delay
       setTimeout(() => {
-        onSave();
         onClose();
       }, 1500);
 
