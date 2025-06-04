@@ -31,42 +31,17 @@ export default function Skills() {
   const userNumericId = user?.id || 2;
   console.log("Skills component - Using userNumericId:", userNumericId);
   
-  // Fetch skills from the API with advanced options
+  // Fetch skills from the API with proper caching
   const { data: serverSkills, isLoading, refetch } = useQuery({
     queryKey: [`/api/users/${userId}/skills`],
     enabled: !!userId,
-    staleTime: 0, // Always consider data stale to force refresh
-    refetchOnMount: 'always', // Always refetch when component mounts
-    refetchOnWindowFocus: true, // Refetch when window regains focus
-    refetchInterval: 1000, // Poll every second to keep data fresh
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    refetchOnMount: false, // Prevent automatic refetch on mount
+    refetchOnWindowFocus: false, // Disable refetch on window focus
+    refetchInterval: false, // Disable polling
   });
   
-  // Force a direct fetch every time the component renders
-  useEffect(() => {
-    async function directFetch() {
-      const timestamp = new Date().getTime(); // Add timestamp to prevent caching
-      console.log(`Skills - Directly fetching latest skills data (${timestamp})`);
-      try {
-        const response = await fetch(`/api/users/${userId}/skills?_=${timestamp}`, {
-          method: 'GET',
-          headers: { 
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            'Pragma': 'no-cache',
-            'Expires': '0'
-          }
-        });
-        const freshData = await response.json();
-        console.log("Skills - Got direct fetch data:", freshData);
-        // Force update
-        if (freshData && Array.isArray(freshData)) {
-          setSkills(freshData);
-        }
-      } catch (error) {
-        console.error("Error fetching skills:", error);
-      }
-    }
-    directFetch();
-  }, [userId]);
+  // Removed infinite loop causing useEffect completely
   
   const [skills, setSkills] = useState<SkillItem[]>([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);

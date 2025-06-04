@@ -62,9 +62,14 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
     
     setIsLoading(true);
     try {
+      // Combine dropdown and text input values for job title
+      const combinedJobTitle = [selectedJobTitleFromDropdown, jobTitle]
+        .filter(Boolean)
+        .join(' - ') || null;
+      
       const updateData = {
         name: name.trim(),
-        title: jobTitle.trim() || null,
+        title: combinedJobTitle,
         location: location.trim() || null,
         industry: industry || null,
         domain: domain || null,
@@ -264,18 +269,23 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
             
             {/* Help text explaining the functionality */}
             <p className="text-xs text-white/60 mt-2">
-              The dropdown and text field work independently. Select from common titles or create your own custom title.
+              Select from common titles and/or add custom text. Both values will be combined as your job title.
             </p>
             
-            {/* Display current selections */}
+            {/* Display current selections and preview */}
             {(selectedJobTitleFromDropdown || jobTitle) && (
               <div className="mt-2 p-2 bg-white/5 rounded-md border border-white/10">
                 <p className="text-xs text-white/70 mb-1">Current selections:</p>
                 {selectedJobTitleFromDropdown && (
-                  <p className="text-sm text-white/90">Dropdown: {selectedJobTitleFromDropdown}</p>
+                  <p className="text-sm text-white/90">From dropdown: {selectedJobTitleFromDropdown}</p>
                 )}
                 {jobTitle && (
-                  <p className="text-sm text-white/90">Custom: {jobTitle}</p>
+                  <p className="text-sm text-white/90">Custom text: {jobTitle}</p>
+                )}
+                {(selectedJobTitleFromDropdown && jobTitle) && (
+                  <p className="text-sm text-white font-medium mt-1">
+                    Final title: {selectedJobTitleFromDropdown} - {jobTitle}
+                  </p>
                 )}
               </div>
             )}
