@@ -12,6 +12,10 @@ const SimpleProfileEditor: React.FC<SimpleProfileEditorProps> = ({ userData, onC
   const [title, setTitle] = useState(userData.title || '');
   const [location, setLocation] = useState(userData.location || '');
   const [industry, setIndustry] = useState(userData.industry || '');
+  const [brandName, setBrandName] = useState(userData.brandName || '');
+  const [aboutMe, setAboutMe] = useState(userData.aboutMe || '');
+  const [domain, setDomain] = useState(userData.domain || '');
+  const [lookingFor, setLookingFor] = useState(userData.lookingFor || '');
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSave = async () => {
@@ -24,6 +28,10 @@ const SimpleProfileEditor: React.FC<SimpleProfileEditorProps> = ({ userData, onC
         title: title.trim() || null,
         location: location.trim() || null,
         industry: industry || null,
+        brandName: brandName.trim() || null,
+        aboutMe: aboutMe.trim() || null,
+        domain: domain || null,
+        lookingFor: lookingFor || null,
       };
 
       console.log("Making API call with data:", updateData);
@@ -57,10 +65,10 @@ const SimpleProfileEditor: React.FC<SimpleProfileEditorProps> = ({ userData, onC
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+      <div className="bg-white rounded-lg p-6 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
         <h2 className="text-xl font-bold mb-4">Edit Profile</h2>
         
-        <div className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium mb-1">Full Name</label>
             <input
@@ -69,6 +77,17 @@ const SimpleProfileEditor: React.FC<SimpleProfileEditorProps> = ({ userData, onC
               onChange={(e) => setName(e.target.value)}
               className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
               placeholder="Enter your full name"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium mb-1">Brand Name</label>
+            <input
+              type="text"
+              value={brandName}
+              onChange={(e) => setBrandName(e.target.value)}
+              className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+              placeholder="Your unique brand name"
             />
           </div>
           
@@ -110,6 +129,59 @@ const SimpleProfileEditor: React.FC<SimpleProfileEditorProps> = ({ userData, onC
               <option value="Consulting">Consulting</option>
               <option value="Other">Other</option>
             </select>
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium mb-1">Domain</label>
+            <select
+              value={domain}
+              onChange={(e) => setDomain(e.target.value)}
+              className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">Select Domain</option>
+              <option value="Software Development">Software Development</option>
+              <option value="Data Science">Data Science</option>
+              <option value="Product Management">Product Management</option>
+              <option value="Marketing">Marketing</option>
+              <option value="Sales">Sales</option>
+              <option value="Design">Design</option>
+              <option value="Finance">Finance</option>
+              <option value="Human Resources">Human Resources</option>
+              <option value="Operations">Operations</option>
+              <option value="Biotechnology">Biotechnology</option>
+              <option value="Research">Research</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          
+          <div className="md:col-span-2">
+            <label className="block text-sm font-medium mb-1">I am looking for</label>
+            <select
+              value={lookingFor}
+              onChange={(e) => setLookingFor(e.target.value)}
+              className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">Select what you're looking for</option>
+              <option value="job_opportunities">Job Opportunities</option>
+              <option value="networking">Networking</option>
+              <option value="mentorship">Mentorship</option>
+              <option value="collaboration">Collaboration</option>
+              <option value="investment">Investment</option>
+              <option value="partnerships">Partnerships</option>
+              <option value="talent_acquisition">Talent Acquisition</option>
+              <option value="knowledge_sharing">Knowledge Sharing</option>
+            </select>
+          </div>
+          
+          <div className="md:col-span-2">
+            <label className="block text-sm font-medium mb-1">Professional Overview</label>
+            <textarea
+              value={aboutMe}
+              onChange={(e) => setAboutMe(e.target.value)}
+              rows={3}
+              className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+              placeholder="Write a brief professional summary about yourself..."
+            />
           </div>
         </div>
         
