@@ -131,31 +131,32 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
     }
   };
 
-  // Create a global save function that executes immediately
-  const executeProfileSave = async () => {
-    console.log("[DEBUG] ========== PROFILE SAVE EXECUTED ==========");
-    console.log("[DEBUG] userData.id:", userData.id);
-    console.log("[DEBUG] Current form values:", {
+  // Direct save handler that bypasses all event handling issues
+  const handleSaveProfile = React.useCallback(async () => {
+    console.log("[SAVE] ========== PROFILE SAVE STARTED ==========");
+    console.log("[SAVE] userData.id:", userData.id);
+    console.log("[SAVE] Current form values:", {
       name, brandName, phoneNumber, jobTitle, location, industry, domain, aboutMe, lookingFor
     });
     
     setIsLoading(true);
-    try {
-      const updateData = {
-        name: name.trim(),
-        brandName: brandName.trim() || null,
-        phoneNumber: phoneNumber.trim() ? `${phoneCountryCode} ${phoneNumber.trim()}` : null,
-        title: jobTitle.trim() || null,
-        location: location.trim() || null,
-        industry: industry || null,
-        domain: domain || null,
-        aboutMe: aboutMe.trim() || null,
-        lookingFor: lookingFor.trim() || null,
-      };
+    
+    const updateData = {
+      name: name.trim(),
+      brandName: brandName.trim() || null,
+      phoneNumber: phoneNumber.trim() ? `${phoneCountryCode} ${phoneNumber.trim()}` : null,
+      title: jobTitle.trim() || null,
+      location: location.trim() || null,
+      industry: industry || null,
+      domain: domain || null,
+      aboutMe: aboutMe.trim() || null,
+      lookingFor: lookingFor.trim() || null,
+    };
 
-      console.log("[DEBUG] Making API call to:", `/api/users/${userData.id}`);
-      console.log("[DEBUG] Update data:", updateData);
-      
+    console.log("[SAVE] Making API call to:", `/api/users/${userData.id}`);
+    console.log("[SAVE] Update data:", updateData);
+    
+    try {
       const response = await fetch(`/api/users/${userData.id}`, {
         method: 'PUT',
         headers: {
@@ -165,11 +166,12 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
       });
 
       if (!response.ok) {
-        throw new Error(`API call failed: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(`API call failed: ${response.status} - ${errorText}`);
       }
 
       const result = await response.json();
-      console.log("[DEBUG] API response:", result);
+      console.log("[SAVE] API response:", result);
 
       // Invalidate queries to refresh data
       await queryClient.invalidateQueries({ queryKey: [`/api/users/${userData.username}`] });
@@ -181,9 +183,11 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
         variant: "default",
       });
 
+      console.log("[SAVE] Calling onSave callback");
       onSave();
+      console.log("[SAVE] ========== PROFILE SAVE COMPLETED ==========");
     } catch (error) {
-      console.error('Error updating profile:', error);
+      console.error('[SAVE] Error updating profile:', error);
       toast({
         title: "Update Failed",
         description: "Failed to update profile. Please try again.",
@@ -192,15 +196,7 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
     } finally {
       setIsLoading(false);
     }
-  };
-
-  // Attach to window for global access (temporary debugging solution)
-  React.useEffect(() => {
-    (window as any).triggerProfileSave = executeProfileSave;
-    return () => {
-      delete (window as any).triggerProfileSave;
-    };
-  }, [name, brandName, phoneNumber, jobTitle, location, industry, domain, aboutMe, lookingFor]);
+  }, [name, brandName, phoneNumber, phoneCountryCode, jobTitle, location, industry, domain, aboutMe, lookingFor, userData.id, userData.username, queryClient, toast, onSave]);
 
   return (
     <div className="space-y-6 p-6 neo-glass-card backdrop-blur-xl bg-gradient-to-br from-white/10 to-white/5 border border-white/20 rounded-2xl shadow-2xl">
@@ -516,10 +512,7 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
         </button>
         <button 
           type="button"
-          onClick={() => {
-            console.log("[DEBUG] Button clicked - executing global save");
-            executeProfileSave();
-          }}
+          onClick={handleSaveProfile}
           disabled={isLoading}
           className="neo-glass-button flex items-center gap-2 py-2.5 px-6 text-white bg-gradient-to-r from-blue-500/20 to-purple-500/20 hover:from-blue-500/30 hover:to-purple-500/30 border border-white/20 hover:border-white/30 rounded-lg transition-all duration-200 backdrop-blur-sm shadow-lg"
         >
