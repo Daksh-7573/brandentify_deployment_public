@@ -423,20 +423,13 @@ export default function ProfileNeo() {
                       </div>
                       
                       {/* Looking For */}
-                      <div className={userData?.lookingFor === 'job_opportunities' ? 'p-3 rounded-lg border-2 border-orange-400 bg-orange-500/20 backdrop-blur-sm' : ''}>
+                      <div>
                         <div className="mb-2">
-                          <h3 className={`font-medium ${userData?.lookingFor === 'job_opportunities' ? 'text-orange-200 flex items-center gap-2' : 'text-white'}`}>
-                            I am looking for
-                            {userData?.lookingFor === 'job_opportunities' && (
-                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800 border border-orange-300">
-                                🎯 Job Opportunities
-                              </span>
-                            )}
-                          </h3>
+                          <h3 className="font-medium text-white">I am looking for</h3>
                         </div>
                         <div className="flex flex-wrap gap-2">
                           {userData?.lookingFor ? (
-                            <span className={`px-2 py-1 text-xs rounded-full ${userData?.lookingFor === 'job_opportunities' ? 'bg-orange-100 border border-orange-300 text-orange-800 font-medium' : 'bg-white/10 border border-white/20 text-white'}`}>
+                            <span className="px-2 py-1 text-xs rounded-full bg-white/10 border border-white/20 text-white">
                               {lookingForLabel}
                             </span>
                           ) : (
