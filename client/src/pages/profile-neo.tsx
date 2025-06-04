@@ -747,7 +747,13 @@ export default function ProfileNeo() {
                 photoURL: userData.photoURL || ''
               }}
               onCancel={() => setShowEditPersonalInfoDialog(false)}
-              onSave={() => setShowEditPersonalInfoDialog(false)}
+              onSave={async () => {
+                console.log("[DEBUG] onSave called from profile dialog");
+                // The actual save happens inside EditPersonalInfoNew component
+                // We'll close the dialog after save completes successfully
+                await new Promise(resolve => setTimeout(resolve, 100)); // Small delay to ensure save completes
+                setShowEditPersonalInfoDialog(false);
+              }}
             />
           ) : (
             <div className="p-8 text-white text-center">

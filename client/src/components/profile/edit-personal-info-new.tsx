@@ -117,6 +117,7 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
         variant: "default",
       });
 
+      // Only call onSave after successful save to close the dialog
       onSave();
     } catch (error) {
       console.error('Error updating profile:', error);
@@ -442,7 +443,10 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
           Cancel
         </button>
         <button 
-          onClick={handleSave}
+          onClick={() => {
+            console.log("[DEBUG] Save button clicked!");
+            handleSave();
+          }}
           disabled={isLoading}
           className="neo-glass-button flex items-center gap-2 py-2.5 px-6 text-white bg-gradient-to-r from-blue-500/20 to-purple-500/20 hover:from-blue-500/30 hover:to-purple-500/30 border border-white/20 hover:border-white/30 rounded-lg transition-all duration-200 backdrop-blur-sm shadow-lg"
         >
