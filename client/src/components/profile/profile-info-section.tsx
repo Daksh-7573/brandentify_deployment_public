@@ -3,6 +3,7 @@ import { User, MapPin, Building, Briefcase, Edit } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { UserData } from "@/types/user";
+import { LOOKING_FOR_OPTIONS } from "@/lib/constants";
 
 interface ProfileInfoSectionProps {
   userData: UserData;
@@ -12,15 +13,7 @@ interface ProfileInfoSectionProps {
 const ProfileInfoSection: React.FC<ProfileInfoSectionProps> = ({ userData, onEdit }) => {
   // Convert database value to display value for lookingFor
   const convertDbToDisplayValue = (dbValue: string) => {
-    if (dbValue === "job_opportunities") return "Job Opportunities";
-    if (dbValue === "mentorship") return "Mentorship";
-    if (dbValue === "networking") return "Networking";
-    if (dbValue === "collaboration") return "Collaboration";
-    if (dbValue === "investment") return "Investment";
-    if (dbValue === "learning") return "Learning";
-    if (dbValue === "career_advice") return "Career Advice";
-    if (dbValue === "business_partnerships") return "Business Partnerships";
-    return dbValue;
+    return LOOKING_FOR_OPTIONS[dbValue as keyof typeof LOOKING_FOR_OPTIONS] || dbValue;
   };
   return (
     <Card className="shadow-sm">
