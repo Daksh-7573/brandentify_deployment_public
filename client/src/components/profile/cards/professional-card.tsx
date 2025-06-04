@@ -223,88 +223,102 @@ const ProfessionalCard: React.FC<ProfessionalCardProps> = ({ userData }) => {
           } blur-xl transform -translate-x-20 -translate-y-20`}></div>
         </div>
         
-        {/* Contact info section - Unified Card */}
-        <div className="relative z-10 mt-4">
-          <h3 className={`text-lg font-bold mb-4 ${
+        {/* Contact info section */}
+        <div className="relative z-10 mt-4 space-y-3">
+          <h3 className={`text-lg font-bold ${
             isDarkMode ? 'text-white' : 'text-slate-800'
           }`}>
             Contact Information
           </h3>
           
-          {/* Single unified contact card */}
-          <div className={`p-4 rounded-lg shadow-sm ${
-            isDarkMode ? 'bg-slate-700/50' : 'bg-slate-50'
-          }`}>
-            {/* Email */}
-            <div className="flex items-center gap-3 mb-3 cursor-pointer hover:opacity-80 transition-opacity" onClick={(e) => handleContact("email", e)}>
-              <div className={`h-8 w-8 rounded-full flex items-center justify-center ${
-                isDarkMode ? 'bg-blue-900/50' : 'bg-blue-100'
-              }`}>
-                <Mail className={`h-4 w-4 ${
-                  isDarkMode ? 'text-blue-300' : 'text-blue-600'
-                }`} />
-              </div>
-              <div className="flex-1">
-                <p className={`text-xs font-medium ${isDarkMode ? 'text-blue-200' : 'text-blue-600'}`}>Email</p>
-                <p className={`text-sm truncate ${
-                  isDarkMode ? 'text-slate-300' : 'text-slate-600'
-                }`}>{userData.email}</p>
-              </div>
+          {/* Email */}
+          <div
+            className={`contact-item flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all ${
+              isDarkMode ? 'bg-slate-700/50 hover:bg-slate-700' : 'bg-slate-50 hover:bg-blue-50/30'
+            } shadow-sm`}
+            onClick={(e) => handleContact("email", e)}
+          >
+            <div className={`icon-container h-10 w-10 rounded-full flex items-center justify-center ${
+              isDarkMode ? 'bg-blue-900/50' : 'bg-blue-100'
+            }`}>
+              <Mail className={`h-5 w-5 ${
+                isDarkMode ? 'text-blue-300' : 'text-blue-600'
+              }`} />
             </div>
-            
-            {/* Phone */}
-            <div className="flex items-center gap-3 mb-3 cursor-pointer hover:opacity-80 transition-opacity" onClick={(e) => handleContact("phone", e)}>
-              <div className={`h-8 w-8 rounded-full flex items-center justify-center ${
-                isDarkMode ? 'bg-green-900/50' : 'bg-green-100'
-              }`}>
-                <Phone className={`h-4 w-4 ${
-                  isDarkMode ? 'text-green-300' : 'text-green-600'
-                }`} />
-              </div>
-              <div className="flex-1">
-                <p className={`text-xs font-medium ${isDarkMode ? 'text-green-200' : 'text-green-600'}`}>Phone</p>
-                <p className={`text-sm truncate ${
-                  isDarkMode ? 'text-slate-300' : 'text-slate-600'
-                }`}>{userData.phoneNumber || "Add phone number"}</p>
-              </div>
+            <div className="flex-1">
+              <p className={`text-sm font-medium ${isDarkMode ? 'text-blue-200' : 'text-blue-600'}`}>Email</p>
+              <p className={`text-sm truncate max-w-[180px] ${
+                isDarkMode ? 'text-slate-300' : 'text-slate-600'
+              }`}>{userData.email}</p>
             </div>
-            
-            {/* Brand Name */}
-            {userData.brandName && (
-              <div className="flex items-center gap-3 mb-3">
-                <div className={`h-8 w-8 rounded-full flex items-center justify-center ${
-                  isDarkMode ? 'bg-purple-900/50' : 'bg-purple-100'
-                }`}>
-                  <Code className={`h-4 w-4 ${
-                    isDarkMode ? 'text-purple-300' : 'text-purple-600'
-                  }`} />
-                </div>
-                <div className="flex-1">
-                  <p className={`text-xs font-medium ${isDarkMode ? 'text-purple-200' : 'text-purple-600'}`}>Brand Name</p>
-                  <p className={`text-sm truncate ${
-                    isDarkMode ? 'text-slate-300' : 'text-slate-600'
-                  }`}>@{userData.brandName}</p>
-                </div>
-              </div>
-            )}
-            
-            {/* Profile URL */}
-            <div className="flex items-center gap-3">
-              <div className={`h-8 w-8 rounded-full flex items-center justify-center ${
+            <div className={`h-6 w-6 rounded-full flex items-center justify-center ${
+              isDarkMode ? 'bg-slate-600/50' : 'bg-slate-100'
+            }`}>
+              <ChevronUp className={`h-4 w-4 rotate-90 ${
+                isDarkMode ? 'text-slate-300' : 'text-slate-500'
+              }`} />
+            </div>
+          </div>
+          
+          {/* Phone */}
+          <div
+            className={`contact-item flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all ${
+              isDarkMode ? 'bg-slate-700/50 hover:bg-slate-700' : 'bg-slate-50 hover:bg-green-50/30'
+            } shadow-sm`}
+            onClick={(e) => handleContact("phone", e)}
+          >
+            <div className={`icon-container h-10 w-10 rounded-full flex items-center justify-center ${
+              isDarkMode ? 'bg-green-900/50' : 'bg-green-100'
+            }`}>
+              <Phone className={`h-5 w-5 ${
+                isDarkMode ? 'text-green-300' : 'text-green-600'
+              }`} />
+            </div>
+            <div className="flex-1">
+              <p className={`text-sm font-medium ${isDarkMode ? 'text-green-200' : 'text-green-600'}`}>Phone</p>
+              <p className={`text-sm truncate max-w-[180px] ${
+                isDarkMode ? 'text-slate-300' : 'text-slate-600'
+              }`}>{userData.phoneNumber || "Add phone number"}</p>
+            </div>
+            <div className={`h-6 w-6 rounded-full flex items-center justify-center ${
+              isDarkMode ? 'bg-slate-600/50' : 'bg-slate-100'
+            }`}>
+              <ChevronUp className={`h-4 w-4 rotate-90 ${
+                isDarkMode ? 'text-slate-300' : 'text-slate-500'
+              }`} />
+            </div>
+          </div>
+          
+          {/* Location */}
+          {userData.location && (
+            <div
+              className={`contact-item flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all ${
+                isDarkMode ? 'bg-slate-700/50 hover:bg-slate-700' : 'bg-slate-50 hover:bg-indigo-50/30'
+              } shadow-sm`}
+              onClick={(e) => handleContact("location", e)}
+            >
+              <div className={`icon-container h-10 w-10 rounded-full flex items-center justify-center ${
                 isDarkMode ? 'bg-indigo-900/50' : 'bg-indigo-100'
               }`}>
-                <Globe className={`h-4 w-4 ${
+                <MapPin className={`h-5 w-5 ${
                   isDarkMode ? 'text-indigo-300' : 'text-indigo-600'
                 }`} />
               </div>
               <div className="flex-1">
-                <p className={`text-xs font-medium ${isDarkMode ? 'text-indigo-200' : 'text-indigo-600'}`}>Profile URL</p>
-                <p className={`text-sm truncate ${
+                <p className={`text-sm font-medium ${isDarkMode ? 'text-indigo-200' : 'text-indigo-600'}`}>Location</p>
+                <p className={`text-sm truncate max-w-[180px] ${
                   isDarkMode ? 'text-slate-300' : 'text-slate-600'
-                }`}>{profileLink}</p>
+                }`}>{userData.location}</p>
+              </div>
+              <div className={`h-6 w-6 rounded-full flex items-center justify-center ${
+                isDarkMode ? 'bg-slate-600/50' : 'bg-slate-100'
+              }`}>
+                <ChevronUp className={`h-4 w-4 rotate-90 ${
+                  isDarkMode ? 'text-slate-300' : 'text-slate-500'
+                }`} />
               </div>
             </div>
-          </div>
+          )}
         </div>
         
         {/* QR Code section (simulated) */}
