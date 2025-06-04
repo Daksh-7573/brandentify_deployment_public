@@ -86,6 +86,11 @@ export default function ProfileNeo() {
   
   // State variables
   const [showEditPersonalInfoDialog, setShowEditPersonalInfoDialog] = useState(false);
+  
+  // Debug: Track dialog state changes
+  useEffect(() => {
+    console.log("[DIALOG STATE] showEditPersonalInfoDialog changed to:", showEditPersonalInfoDialog);
+  }, [showEditPersonalInfoDialog]);
   const [showEditAboutDialog, setShowEditAboutDialog] = useState(false);
   const [aboutMe, setAboutMe] = useState<string | null>(null);
   const [showLookingForDialog, setShowLookingForDialog] = useState(false);
