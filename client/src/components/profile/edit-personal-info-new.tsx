@@ -81,6 +81,9 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
   };
 
   const handleSave = async () => {
+    console.log('=== HANDLE SAVE FUNCTION CALLED ===');
+    console.log('Button clicked, starting save process');
+    
     setIsLoading(true);
     try {
       const updateData = {
