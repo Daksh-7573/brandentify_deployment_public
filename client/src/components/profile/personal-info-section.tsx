@@ -1,5 +1,5 @@
 import React from "react";
-import { Mail, Phone, Globe, Briefcase, Edit } from "lucide-react";
+import { Mail, Phone, Globe, Tag, Edit } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { UserData } from "@/types/user";
@@ -10,12 +10,11 @@ interface PersonalInfoSectionProps {
 }
 
 const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({ userData, onEdit }) => {
-  // Component to display contact information
   return (
     <Card className="shadow-sm">
       <CardContent className="p-6">
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-semibold">Personal Information</h3>
+          <h3 className="text-lg font-semibold">Contact Information</h3>
           {onEdit && (
             <Button 
               variant="outline" 
@@ -24,7 +23,7 @@ const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({ userData, onE
               className="flex items-center gap-1"
             >
               <Edit className="h-4 w-4" />
-              Edit Info
+              Edit Contact
             </Button>
           )}
         </div>
@@ -43,14 +42,22 @@ const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({ userData, onE
             </div>
           )}
           
+          {/* Brand Name - only show if value exists */}
+          {userData.brandName && (
+            <div className="flex items-center gap-2">
+              <Tag className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm font-medium">@{userData.brandName}</span>
+            </div>
+          )}
+          
           {/* Profile URL */}
           <div className="flex items-center gap-2">
             <Globe className="h-4 w-4 text-muted-foreground" />
             <a 
-              href={`/@${userData.name ? userData.name.replace(/\s+/g, '') : userData.username}`} 
+              href={`/@${userData.brandName || (userData.name ? userData.name.replace(/\s+/g, '') : userData.username)}`} 
               className="text-sm text-primary hover:underline"
             >
-              brandentifier.com/@{userData.name ? userData.name.replace(/\s+/g, '') : userData.username}
+              brandentifier.com/@{userData.brandName || (userData.name ? userData.name.replace(/\s+/g, '') : userData.username)}
             </a>
           </div>
         </div>

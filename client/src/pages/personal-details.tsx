@@ -4,9 +4,10 @@ import { useAuth } from "@/hooks/use-auth";
 import Header from "@/components/layout/header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import PersonalInfoSection from "@/components/profile/personal-info-section";
-import EditPersonalInfoNew from "@/components/profile/edit-personal-info-new";
+import ProfileInfoSection from "@/components/profile/profile-info-section";
+import EditContactInfo from "@/components/profile/edit-contact-info";
+import EditProfileInfo from "@/components/profile/edit-profile-info";
 import VisitingCardBuilder from "@/components/profile/visiting-card-builder";
 import { ArrowLeft } from "lucide-react";
 import { useLocation } from "wouter";
@@ -18,7 +19,8 @@ const PersonalDetailsPage: React.FC = () => {
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const userId = user?.uid;
-  const [showEditPersonalInfo, setShowEditPersonalInfo] = useState(false);
+  const [showEditContactInfo, setShowEditContactInfo] = useState(false);
+  const [showEditProfileInfo, setShowEditProfileInfo] = useState(false);
   const [selectedCardType, setSelectedCardType] = useState<string>("");
 
   // Fetch user data
@@ -63,29 +65,6 @@ const PersonalDetailsPage: React.FC = () => {
 
   return (
     <div className="flex min-h-screen flex-col">
-      {/* Edit personal info dialog */}
-      {userData && (
-        <Dialog open={showEditPersonalInfo} onOpenChange={setShowEditPersonalInfo}>
-          <DialogContent className="sm:max-w-[650px] max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>Edit Personal Information</DialogTitle>
-              <DialogDescription>
-                Update your contact details and profile information
-              </DialogDescription>
-            </DialogHeader>
-            <EditPersonalInfoNew 
-              userData={userData}
-              onCancel={() => setShowEditPersonalInfo(false)}
-              onSave={() => {
-                setShowEditPersonalInfo(false);
-                // Refetch user data
-                queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}`] });
-              }}
-            />
-          </DialogContent>
-        </Dialog>
-      )}
-      
       <Header />
       
       <div className="flex-1 p-6 container max-w-4xl mx-auto">
@@ -101,45 +80,67 @@ const PersonalDetailsPage: React.FC = () => {
           <h1 className="text-2xl font-semibold">Personal Details</h1>
         </div>
         
-        <Card>
-          <CardHeader>
-            <CardTitle>Contact Information</CardTitle>
-            <CardDescription>
-              Your contact details and quantum card settings
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {userData && (
-              <>
-                <PersonalInfoSection 
-                  userData={userData} 
-                  onEdit={() => setShowEditPersonalInfo(true)}
-                />
-                
-                {/* Quantum Card Builder Component */}
+        <div className="space-y-6">
+          {/* Profile Information Section */}
+          {userData && (
+            <ProfileInfoSection 
+              userData={userData} 
+              onEdit={() => setShowEditProfileInfo(true)}
+            />
+          )}
+          
+          {/* Contact Information Section */}
+          {userData && (
+            <PersonalInfoSection 
+              userData={userData} 
+              onEdit={() => setShowEditContactInfo(true)}
+            />
+          )}
+          
+          {/* Quantum Card Builder Section */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Quantum Card Settings</CardTitle>
+              <CardDescription>
+                Choose your quantum card design and preview
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {userData && (
                 <VisitingCardBuilder 
                   userData={userData}
                   selectedCardType={userData.visitingCardType || selectedCardType}
                   onCardTypeSelect={handleCardTypeSelect}
                 />
-              </>
-            )}
-          </CardContent>
-        </Card>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       </div>
 
-      {/* Edit Personal Information Dialog */}
-      <Dialog open={showEditPersonalInfo} onOpenChange={setShowEditPersonalInfo}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-transparent border-none shadow-none p-0 m-0">
-          {userData && (
-            <EditPersonalInfoNew
-              userData={userData}
-              onCancel={() => setShowEditPersonalInfo(false)}
-              onSave={() => setShowEditPersonalInfo(false)}
-            />
-          )}
-        </DialogContent>
-      </Dialog>
+      {/* Edit Contact Information Dialog */}
+      {userData && showEditContactInfo && (
+        <EditContactInfo
+          userData={userData}
+          onCancel={() => setShowEditContactInfo(false)}
+          onSave={() => {
+            setShowEditContactInfo(false);
+            queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}`] });
+          }}
+        />
+      )}
+
+      {/* Edit Profile Information Dialog */}
+      {userData && showEditProfileInfo && (
+        <EditProfileInfo
+          userData={userData}
+          onCancel={() => setShowEditProfileInfo(false)}
+          onSave={() => {
+            setShowEditProfileInfo(false);
+            queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}`] });
+          }}
+        />
+      )}
     </div>
   );
 };
