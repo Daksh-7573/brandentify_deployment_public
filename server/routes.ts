@@ -151,6 +151,99 @@ export async function registerRoutes(app: Express): Promise<Server> {
     
     res.json({ jobTitles });
   });
+
+  // Location suggestions endpoint
+  apiRouter.get("/locations", (req: Request, res: Response) => {
+    const query = (req.query.q as string || '').toLowerCase().trim();
+    
+    const allLocations = [
+      // Developed Countries
+      "USA", "Canada", "United Kingdom", "Australia", "New Zealand", "Germany", "France", "Japan", 
+      "South Korea", "Singapore", "Ireland", "Switzerland", "Sweden", "Netherlands", "Norway", 
+      "Finland", "Denmark", "Belgium", "Austria", "Spain", "Italy", "Portugal", "Israel", 
+      "UAE", "Qatar", "Kuwait", "Czech Republic", "Taiwan",
+      
+      // Developing and Emerging Countries
+      "India", "China", "Brazil", "Russia", "South Africa", "Mexico", "Indonesia", "Turkey", 
+      "Saudi Arabia", "Argentina", "Thailand", "Malaysia", "Vietnam", "Philippines", "Nigeria", 
+      "Egypt", "Pakistan", "Bangladesh", "Poland", "Hungary", "Chile", "Colombia", "Peru", 
+      "Morocco", "Kenya", "Ghana", "Ethiopia", "Tanzania", "Ukraine", "Romania", "Kazakhstan",
+      
+      // Regions
+      "Asia", "Europe", "North America", "South America", "Africa", "Middle East", "Southeast Asia", 
+      "East Asia", "South Asia", "Central America", "Caribbean", "Oceania", "Nordic Countries", 
+      "Scandinavia", "Mediterranean", "Latin America", "European Union", "APAC", "EMEA", "LATAM",
+      
+      // Work arrangements
+      "Remote", "Hybrid", "Global",
+      
+      // Major Cities - USA
+      "New York, NY, USA", "San Francisco, CA, USA", "Los Angeles, CA, USA", "Chicago, IL, USA", 
+      "Seattle, WA, USA", "Austin, TX, USA", "Boston, MA, USA", "Denver, CO, USA", "Atlanta, GA, USA", 
+      "Portland, OR, USA", "Washington, DC, USA", "San Diego, CA, USA", "Miami, FL, USA", 
+      "Dallas, TX, USA", "Houston, TX, USA", "Phoenix, AZ, USA", "Philadelphia, PA, USA",
+      
+      // Major Cities - Canada
+      "Toronto, ON, Canada", "Vancouver, BC, Canada", "Montreal, QC, Canada", "Calgary, AB, Canada", 
+      "Ottawa, ON, Canada", "Edmonton, AB, Canada", "Winnipeg, MB, Canada", "Quebec City, QC, Canada",
+      
+      // Major Cities - UK
+      "London, UK", "Manchester, UK", "Birmingham, UK", "Glasgow, Scotland", "Edinburgh, Scotland", 
+      "Liverpool, UK", "Bristol, UK", "Leeds, UK", "Cardiff, Wales", "Belfast, Northern Ireland",
+      
+      // Major Cities - Europe
+      "Berlin, Germany", "Munich, Germany", "Hamburg, Germany", "Frankfurt, Germany", "Paris, France", 
+      "Lyon, France", "Marseille, France", "Madrid, Spain", "Barcelona, Spain", "Rome, Italy", 
+      "Milan, Italy", "Amsterdam, Netherlands", "Stockholm, Sweden", "Copenhagen, Denmark", 
+      "Oslo, Norway", "Helsinki, Finland", "Vienna, Austria", "Zurich, Switzerland", "Geneva, Switzerland",
+      
+      // Major Cities - Asia Pacific
+      "Tokyo, Japan", "Osaka, Japan", "Seoul, South Korea", "Sydney, Australia", "Melbourne, Australia", 
+      "Singapore", "Hong Kong", "Mumbai, India", "Delhi, India", "Bangalore, India", "Hyderabad, India", 
+      "Chennai, India", "Pune, India", "Kolkata, India", "Ahmedabad, India", "Beijing, China", 
+      "Shanghai, China", "Shenzhen, China", "Guangzhou, China", "Bangkok, Thailand", "Manila, Philippines", 
+      "Jakarta, Indonesia", "Kuala Lumpur, Malaysia", "Ho Chi Minh City, Vietnam", "Hanoi, Vietnam",
+      
+      // Major Cities - Middle East & Africa
+      "Dubai, UAE", "Abu Dhabi, UAE", "Riyadh, Saudi Arabia", "Jeddah, Saudi Arabia", "Tel Aviv, Israel", 
+      "Jerusalem, Israel", "Cairo, Egypt", "Lagos, Nigeria", "Nairobi, Kenya", "Cape Town, South Africa", 
+      "Johannesburg, South Africa", "Casablanca, Morocco", "Istanbul, Turkey", "Ankara, Turkey",
+      
+      // Major Cities - Latin America
+      "São Paulo, Brazil", "Rio de Janeiro, Brazil", "Mexico City, Mexico", "Buenos Aires, Argentina", 
+      "Lima, Peru", "Bogotá, Colombia", "Santiago, Chile", "Caracas, Venezuela", "Quito, Ecuador"
+    ];
+    
+    if (!query) {
+      // Return popular locations if no query
+      return res.json({ 
+        locations: allLocations.slice(0, 20),
+        total: allLocations.length 
+      });
+    }
+    
+    // Filter locations based on query
+    const filtered = allLocations.filter(location => 
+      location.toLowerCase().includes(query)
+    );
+    
+    // Sort by relevance (starts with query first, then contains)
+    const sorted = filtered.sort((a, b) => {
+      const aLower = a.toLowerCase();
+      const bLower = b.toLowerCase();
+      const aStartsWith = aLower.startsWith(query);
+      const bStartsWith = bLower.startsWith(query);
+      
+      if (aStartsWith && !bStartsWith) return -1;
+      if (!aStartsWith && bStartsWith) return 1;
+      return a.localeCompare(b);
+    });
+    
+    res.json({ 
+      locations: sorted.slice(0, 10), // Limit to 10 suggestions
+      total: sorted.length 
+    });
+  });
   
   // Register Smart Connect routes directly
   registerSmartConnectRoutes(app, storage);
