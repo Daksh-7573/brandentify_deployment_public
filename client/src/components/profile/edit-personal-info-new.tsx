@@ -124,6 +124,7 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
 
     console.log("[SAVE] Making API call to:", `/api/users/${userData.id}`);
     console.log("[SAVE] Update data:", updateData);
+    console.log("[SAVE] JSON stringified data:", JSON.stringify(updateData));
     
     try {
       const response = await fetch(`/api/users/${userData.id}`, {
@@ -133,6 +134,9 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
         },
         body: JSON.stringify(updateData),
       });
+
+      console.log("[SAVE] Response status:", response.status);
+      console.log("[SAVE] Response headers:", response.headers);
 
       if (!response.ok) {
         const errorText = await response.text();
