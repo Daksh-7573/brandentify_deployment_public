@@ -32,12 +32,6 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
 
   // Form state
   const [name, setName] = useState(userData.name || "");
-  const [brandName, setBrandName] = useState(userData.brandName || "");
-  const [brandNameStatus, setBrandNameStatus] = useState<'idle' | 'checking' | 'available' | 'taken' | 'invalid'>('idle');
-  const [phoneNumber, setPhoneNumber] = useState(userData.phoneNumber?.replace(/^\+\d+\s/, "") || "");
-  const [phoneCountryCode, setPhoneCountryCode] = useState(
-    userData.phoneNumber?.match(/^\+\d+/)?.[0] || "+1"
-  );
   const [jobTitle, setJobTitle] = useState(userData.title || "");
   const [location, setLocation] = useState(userData.location || "");
   const [industry, setIndustry] = useState(userData.industry || "");
@@ -45,55 +39,13 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
   const [aboutMe, setAboutMe] = useState(userData.aboutMe || "");
   const [lookingFor, setLookingFor] = useState(userData.lookingFor || "");
 
-  // Brand name validation and checking
-  const validateBrandName = (name: string) => {
-    if (!name) return true; // Optional field
-    if (name.length < 3 || name.length > 20) return false;
-    return /^[a-zA-Z0-9_-]+$/.test(name);
-  };
-
-  const checkBrandNameAvailability = async (name: string) => {
-    if (!name || !validateBrandName(name)) {
-      setBrandNameStatus('invalid');
-      return;
-    }
-
-    setBrandNameStatus('checking');
-    try {
-      const currentUserId = userData.id;
-      const response = await apiRequest('GET', `/api/users/check-brand-name/${encodeURIComponent(name)}?currentUserId=${currentUserId}`);
-      const data = await response.json();
-      console.log(`[checkBrandNameAvailability] Response for "${name}":`, data);
-      setBrandNameStatus(data.available ? 'available' : 'taken');
-    } catch (error) {
-      console.error('Error checking brand name:', error);
-      setBrandNameStatus('invalid');
-    }
-  };
-
-  const handleBrandNameChange = (value: string) => {
-    setBrandName(value);
-    
-    // If the value is the same as the user's existing brand name, mark as available
-    if (value === userData.brandName) {
-      setBrandNameStatus('available');
-      return;
-    }
-    
-    // Reset status and check availability for new values
-    setBrandNameStatus('idle');
-    
-    // Debounce the availability check
-    setTimeout(() => {
-      checkBrandNameAvailability(value);
-    }, 500);
-  };
+  // Brand name and phone number fields removed per user request
 
   const handleSave = async () => {
     console.log("[DEBUG] ========== HANDLE SAVE CALLED ==========");
     console.log("[DEBUG] userData.id:", userData.id);
     console.log("[DEBUG] Current form values:", {
-      name, brandName, phoneNumber, jobTitle, location, industry, domain, aboutMe, lookingFor
+      name, jobTitle, location, industry, domain, aboutMe, lookingFor
     });
     
     setIsLoading(true);
