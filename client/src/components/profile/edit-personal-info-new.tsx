@@ -449,8 +449,17 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
         </button>
         <button 
           type="button"
-          onClick={async () => {
-            console.log('=== DIRECT BUTTON CLICKED ===');
+          onMouseDown={() => console.log('MOUSE DOWN ON SAVE BUTTON')}
+          onMouseUp={() => console.log('MOUSE UP ON SAVE BUTTON')}
+          onClick={async (e) => {
+            console.log('=== SAVE BUTTON CLICKED ===');
+            console.log('Event:', e);
+            console.log('Current target:', e.currentTarget);
+            console.log('Target:', e.target);
+            
+            e.preventDefault();
+            e.stopPropagation();
+            
             setIsLoading(true);
             try {
               const updateData = {
@@ -495,6 +504,12 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
             }
           }}
           disabled={isLoading}
+          style={{ 
+            zIndex: 9999, 
+            position: 'relative',
+            backgroundColor: 'red !important',
+            border: '2px solid yellow !important'
+          }}
           className="neo-glass-button flex items-center gap-2 py-2.5 px-6 text-white bg-gradient-to-r from-blue-500/20 to-purple-500/20 hover:from-blue-500/30 hover:to-purple-500/30 border border-white/20 hover:border-white/30 rounded-lg transition-all duration-200 backdrop-blur-sm shadow-lg"
         >
           {isLoading ? (
