@@ -44,7 +44,9 @@ const SimpleProfileEditor: React.FC<SimpleProfileEditorProps> = ({ userData, onC
       console.log("Success! Updated user:", result);
       
       alert("Profile updated successfully!");
-      onSave();
+      
+      // Force page reload to show updated data immediately
+      window.location.reload();
     } catch (error) {
       console.error('Update failed:', error);
       alert("Update failed. Please try again.");
