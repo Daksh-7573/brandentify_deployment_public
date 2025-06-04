@@ -232,8 +232,7 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
         <div className="space-y-2">
           <label htmlFor="brandName" className="text-sm font-medium text-white flex items-center gap-2">
             <Link2 className="h-4 w-4" />
-            Brand Name
-            <span className="text-xs text-white/50">(Optional)</span>
+            Brand Name *
           </label>
           <div className="relative">
             <input
