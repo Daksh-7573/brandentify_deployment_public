@@ -472,13 +472,7 @@ export default function ProfileNeo() {
               <Education userFirebaseId={user.uid} userNumericId={userData?.id} />
             </NeoGlassSection>
             
-            {/* 8. Personal Information */}
-            <NeoGlassSection className="mb-6">
-              <div className="p-4">
-                <h3 className="text-lg font-medium text-white mb-4">Personal Information</h3>
-                <PersonalInfoSection userData={userData} />
-              </div>
-            </NeoGlassSection>
+
             
             {/* Account Actions */}
             <NeoGlassSection className="mb-6">
