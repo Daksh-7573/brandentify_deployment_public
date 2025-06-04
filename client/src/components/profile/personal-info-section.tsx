@@ -26,50 +26,69 @@ const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({ userData, onE
             </Button>
           )}
         </div>
-        <div className="space-y-4">
+        
+        {/* Unified Contact Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Email (from Google - read-only) */}
-          <div className="flex items-center gap-3 p-3 rounded-lg bg-white/5 border border-white/10">
-            <Mail className="h-5 w-5 text-white/70" />
-            <div className="flex-1">
+          <div className="flex items-center gap-3 p-4 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-all duration-200">
+            <div className="flex-shrink-0 w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
+              <Mail className="h-5 w-5 text-white/70" />
+            </div>
+            <div className="flex-1 min-w-0">
               <div className="text-xs text-white/60 mb-1">Email (from Google)</div>
-              <span className="text-white font-medium">{userData.email}</span>
+              <span className="text-white font-medium text-sm truncate block">{userData.email}</span>
             </div>
           </div>
           
-          {/* Phone Number - only show if value exists */}
-          {userData.phoneNumber && (
-            <div className="flex items-center gap-3 p-3 rounded-lg bg-white/5 border border-white/10">
+          {/* Phone Number */}
+          <div className="flex items-center gap-3 p-4 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-all duration-200">
+            <div className="flex-shrink-0 w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
               <Phone className="h-5 w-5 text-white/70" />
-              <div className="flex-1">
-                <div className="text-xs text-white/60 mb-1">Phone Number</div>
-                <span className="text-white font-medium">{userData.phoneNumber}</span>
-              </div>
             </div>
-          )}
+            <div className="flex-1 min-w-0">
+              <div className="text-xs text-white/60 mb-1">Phone Number</div>
+              <span className="text-white font-medium text-sm">
+                {userData.phoneNumber || "Not provided"}
+              </span>
+            </div>
+          </div>
           
-          {/* Brand Name - only show if value exists */}
-          {userData.brandName && (
-            <div className="flex items-center gap-3 p-3 rounded-lg bg-white/5 border border-white/10">
+          {/* Brand Name */}
+          <div className="flex items-center gap-3 p-4 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-all duration-200">
+            <div className="flex-shrink-0 w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
               <Tag className="h-5 w-5 text-white/70" />
-              <div className="flex-1">
-                <div className="text-xs text-white/60 mb-1">Brand Name</div>
-                <span className="text-white font-medium">@{userData.brandName}</span>
-              </div>
             </div>
-          )}
+            <div className="flex-1 min-w-0">
+              <div className="text-xs text-white/60 mb-1">Brand Name</div>
+              <span className="text-white font-medium text-sm">
+                {userData.brandName ? `@${userData.brandName}` : "Not set"}
+              </span>
+            </div>
+          </div>
           
           {/* Profile URL */}
-          <div className="flex items-center gap-3 p-3 rounded-lg bg-white/5 border border-white/10">
-            <Globe className="h-5 w-5 text-white/70" />
-            <div className="flex-1">
+          <div className="flex items-center gap-3 p-4 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-all duration-200">
+            <div className="flex-shrink-0 w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
+              <Globe className="h-5 w-5 text-white/70" />
+            </div>
+            <div className="flex-1 min-w-0">
               <div className="text-xs text-white/60 mb-1">Profile URL</div>
               <a 
                 href={`/@${userData.brandName || (userData.name ? userData.name.replace(/\s+/g, '') : userData.username)}`} 
-                className="text-white/90 hover:text-white transition-colors duration-200 font-medium"
+                className="text-white/90 hover:text-white transition-colors duration-200 font-medium text-sm truncate block"
+                title={`brandentifier.com/@${userData.brandName || (userData.name ? userData.name.replace(/\s+/g, '') : userData.username)}`}
               >
                 brandentifier.com/@{userData.brandName || (userData.name ? userData.name.replace(/\s+/g, '') : userData.username)}
               </a>
             </div>
+          </div>
+        </div>
+        
+        {/* Additional Contact Summary */}
+        <div className="mt-6 p-4 bg-white/5 border border-white/10 rounded-lg">
+          <div className="text-xs text-white/60 mb-2">Contact Summary</div>
+          <div className="text-sm text-white/80">
+            Complete your contact information to enhance your professional presence and make it easier for others to connect with you.
           </div>
         </div>
       </div>
