@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Mail, Phone, Globe, Briefcase, MapPin, Building, Book, User, X, Save, Link2, Check, AlertCircle } from "lucide-react";
+import { Mail, Phone, Globe, Briefcase, MapPin, Building, Book, User, X, Save, Link2, Check, AlertCircle, ChevronDown } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { UserData } from "@/types/user";
 import { INDUSTRIES, INDUSTRY_DOMAINS } from "@shared/constants";
 
@@ -29,6 +29,17 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [isJobTitleDropdownOpen, setIsJobTitleDropdownOpen] = useState(false);
+
+  // Fetch job titles from backend
+  const { data: jobTitlesData, isLoading: jobTitlesLoading } = useQuery({
+    queryKey: ['/api/job-titles'],
+    queryFn: async () => {
+      const response = await fetch('/api/job-titles');
+      if (!response.ok) throw new Error('Failed to fetch job titles');
+      return response.json();
+    },
+  });
 
   // Form state
   const [name, setName] = useState(userData.name || "");
@@ -217,14 +228,24 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
             <Briefcase className="h-4 w-4" />
             Job Title
           </label>
-          <input
-            id="jobTitle"
-            type="text"
-            value={jobTitle}
-            onChange={(e) => setJobTitle(e.target.value)}
-            placeholder="Your professional title (e.g. Senior Developer)"
-            className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-10 px-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
-          />
+          <div className="relative">
+            <select
+              id="jobTitle"
+              value={jobTitle}
+              onChange={(e) => setJobTitle(e.target.value)}
+              disabled={jobTitlesLoading}
+              className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 px-3 pr-10 rounded-md border appearance-none cursor-pointer focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none text-sm leading-relaxed"
+              style={{ lineHeight: '1.5', paddingTop: '0.75rem', paddingBottom: '0.75rem' }}
+            >
+              <option value="">Select your job title</option>
+              {jobTitlesData?.jobTitles?.map((title: string) => (
+                <option key={title} value={title} className="bg-gray-800 text-white">
+                  {title}
+                </option>
+              ))}
+            </select>
+            <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-white/70 pointer-events-none" />
+          </div>
         </div>
 
         {/* Location */}

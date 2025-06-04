@@ -113,6 +113,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
       version: "1.0.0"
     });
   });
+
+  // Job title options endpoint
+  apiRouter.get("/job-titles", (req: Request, res: Response) => {
+    const jobTitles = [
+      "Student",
+      "Intern",
+      "Junior",
+      "Associate", 
+      "Senior",
+      "Lead",
+      "Principal",
+      "Manager",
+      "Senior Manager",
+      "Director",
+      "Senior Director",
+      "VP",
+      "Senior VP",
+      "Executive VP",
+      "Chief Executive Officer",
+      "Chief Technology Officer",
+      "Chief Operating Officer",
+      "Chief Financial Officer",
+      "Chief Marketing Officer",
+      "Chief Product Officer",
+      "Chief Data Officer",
+      "Founder",
+      "Co-Founder",
+      "Partner",
+      "Consultant",
+      "Senior Consultant",
+      "Principal Consultant",
+      "Freelancer",
+      "Contractor",
+      "Entrepreneur"
+    ];
+    
+    res.json({ jobTitles });
+  });
   
   // Register Smart Connect routes directly
   registerSmartConnectRoutes(app, storage);
