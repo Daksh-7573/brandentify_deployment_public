@@ -411,6 +411,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Internal server error" });
     }
   });
+
+  // Brand name availability check endpoint
+  apiRouter.get("/users/check-brand-name/:brandName", async (req: Request, res: Response) => {
+    try {
+      const brandName = req.params.brandName;
+      console.log(`[GET /users/check-brand-name/:brandName] Checking availability for brand name: ${brandName}`);
+      
+      // Validate brand name format
+      if (!brandName || brandName.length < 3 || brandName.length > 20 || !/^[a-zA-Z0-9_-]+$/.test(brandName)) {
+        return res.json({ available: false, reason: 'invalid_format' });
+      }
+      
+      // Check if brand name is already taken
+      const result = await pool.query('SELECT id FROM users WHERE brand_name = $1', [brandName]);
+      const available = result.rows.length === 0;
+      
+      console.log(`[GET /users/check-brand-name/:brandName] Brand name "${brandName}" is ${available ? 'available' : 'taken'}`);
+      return res.json({ available });
+    } catch (error) {
+      console.error("Error checking brand name availability:", error);
+      res.status(500).json({ available: false, reason: 'server_error' });
+    }
+  });
   
   apiRouter.get("/users/:id", async (req: Request, res: Response) => {
     try {

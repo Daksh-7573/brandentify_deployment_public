@@ -8004,7 +8004,7 @@ export class DatabaseStorage implements IStorage {
     
     // First validate the data by removing any fields that don't match the schema
     const validKeys = [
-      'id', 'username', 'email', 'password', 'phoneNumber', 'name', 
+      'id', 'username', 'email', 'password', 'phoneNumber', 'name', 'brandName',
       'photoURL', 'title', 'aboutMe', 'location', 'industry', 'domain', 
       'lookingFor', 'whatIOffer', 'visitingCardType', 'profileCompleted',
       'emailVerified', 'emailVerificationToken', 'emailVerificationExpires',
@@ -8048,7 +8048,7 @@ export class DatabaseStorage implements IStorage {
         
         // Add WHERE clause and returning
         updateQuery += updateParts.join(', ');
-        updateQuery += ` WHERE id = $${paramIndex} RETURNING id, username, email, password, phone_number as "phoneNumber", name, photo_url as "photoURL", title, about_me as "aboutMe", location, industry, domain, looking_for as "lookingFor", what_i_offer as "whatIOffer", visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", email_verified as "emailVerified", email_verification_token as "emailVerificationToken", email_verification_expires as "emailVerificationExpires", created_at as "createdAt"`;
+        updateQuery += ` WHERE id = $${paramIndex} RETURNING id, username, email, password, phone_number as "phoneNumber", name, brand_name as "brandName", photo_url as "photoURL", title, about_me as "aboutMe", location, industry, domain, looking_for as "lookingFor", what_i_offer as "whatIOffer", visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", email_verified as "emailVerified", email_verification_token as "emailVerificationToken", email_verification_expires as "emailVerificationExpires", created_at as "createdAt"`;
         updateValues.push(id);
         
         console.log(`[DatabaseStorage.updateUser] Generated query:`, updateQuery);
