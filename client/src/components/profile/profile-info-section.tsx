@@ -10,6 +10,18 @@ interface ProfileInfoSectionProps {
 }
 
 const ProfileInfoSection: React.FC<ProfileInfoSectionProps> = ({ userData, onEdit }) => {
+  // Convert database value to display value for lookingFor
+  const convertDbToDisplayValue = (dbValue: string) => {
+    if (dbValue === "job_opportunities") return "Job Opportunities";
+    if (dbValue === "mentorship") return "Mentorship";
+    if (dbValue === "networking") return "Networking";
+    if (dbValue === "collaboration") return "Collaboration";
+    if (dbValue === "investment") return "Investment";
+    if (dbValue === "learning") return "Learning";
+    if (dbValue === "career_advice") return "Career Advice";
+    if (dbValue === "business_partnerships") return "Business Partnerships";
+    return dbValue;
+  };
   return (
     <Card className="shadow-sm">
       <CardContent className="p-6">
@@ -80,8 +92,8 @@ const ProfileInfoSection: React.FC<ProfileInfoSectionProps> = ({ userData, onEdi
           {userData.lookingFor && (
             <div className="border-t pt-4">
               <div className="text-sm font-medium mb-2">Looking For</div>
-              <div className="text-sm text-muted-foreground capitalize">
-                {userData.lookingFor.replace('_', ' ')}
+              <div className="text-sm text-muted-foreground">
+                {convertDbToDisplayValue(userData.lookingFor)}
               </div>
             </div>
           )}
