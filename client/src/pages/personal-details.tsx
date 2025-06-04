@@ -4,11 +4,8 @@ import { useAuth } from "@/hooks/use-auth";
 import Header from "@/components/layout/header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import PersonalInfoSection from "@/components/profile/personal-info-section";
 import ProfileInfoSection from "@/components/profile/profile-info-section";
-import EditContactInfo from "@/components/profile/edit-contact-info";
 import EditProfileInfo from "@/components/profile/edit-profile-info";
-import VisitingCardBuilder from "@/components/profile/visiting-card-builder";
 import { ArrowLeft } from "lucide-react";
 import { useLocation } from "wouter";
 import { UserData } from "@/types/user";
@@ -19,9 +16,7 @@ const PersonalDetailsPage: React.FC = () => {
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const userId = user?.uid;
-  const [showEditContactInfo, setShowEditContactInfo] = useState(false);
   const [showEditProfileInfo, setShowEditProfileInfo] = useState(false);
-  const [selectedCardType, setSelectedCardType] = useState<string>("");
 
   // Fetch user data
   const { data: userData, isLoading } = useQuery<UserData>({
@@ -80,55 +75,16 @@ const PersonalDetailsPage: React.FC = () => {
           <h1 className="text-2xl font-semibold">Personal Details</h1>
         </div>
         
-        <div className="space-y-6">
-          {/* Profile Information Section */}
-          {userData && (
-            <ProfileInfoSection 
-              userData={userData} 
-              onEdit={() => setShowEditProfileInfo(true)}
-            />
-          )}
-          
-          {/* Contact Information Section */}
-          {userData && (
-            <PersonalInfoSection 
-              userData={userData} 
-              onEdit={() => setShowEditContactInfo(true)}
-            />
-          )}
-          
-          {/* Quantum Card Builder Section */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Quantum Card Settings</CardTitle>
-              <CardDescription>
-                Choose your quantum card design and preview
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {userData && (
-                <VisitingCardBuilder 
-                  userData={userData}
-                  selectedCardType={userData.visitingCardType || selectedCardType}
-                  onCardTypeSelect={handleCardTypeSelect}
-                />
-              )}
-            </CardContent>
-          </Card>
-        </div>
+        {/* Profile Information Section */}
+        {userData && (
+          <ProfileInfoSection 
+            userData={userData} 
+            onEdit={() => setShowEditProfileInfo(true)}
+          />
+        )}
       </div>
 
-      {/* Edit Contact Information Dialog */}
-      {userData && showEditContactInfo && (
-        <EditContactInfo
-          userData={userData}
-          onCancel={() => setShowEditContactInfo(false)}
-          onSave={() => {
-            setShowEditContactInfo(false);
-            queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}`] });
-          }}
-        />
-      )}
+
 
       {/* Edit Profile Information Dialog */}
       {userData && showEditProfileInfo && (

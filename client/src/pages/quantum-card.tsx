@@ -1,16 +1,21 @@
 import { useAuth } from "@/hooks/use-auth";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import VisitingCardBuilder from "@/components/profile/visiting-card-builder";
+import PersonalInfoSection from "@/components/profile/personal-info-section";
+import EditContactInfo from "@/components/profile/edit-contact-info";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
 import Header from "@/components/layout/header";
 import { UserData } from "@/types/user";
+import { useState } from "react";
 
 export default function QuantumCardPage() {
   const { user } = useAuth();
   const [_, navigate] = useLocation();
+  const queryClient = useQueryClient();
+  const [showEditContactInfo, setShowEditContactInfo] = useState(false);
 
   // Fetch user data
   const { data: userData, isLoading } = useQuery({
@@ -72,6 +77,17 @@ export default function QuantumCardPage() {
               </div>
             </div>
 
+            {/* Contact Information Section */}
+            <NeoGlassSection className="neo-glass-card border border-white/10 shadow-lg mb-6">
+              <div className="p-6">
+                <PersonalInfoSection 
+                  userData={userData as any} 
+                  onEdit={() => setShowEditContactInfo(true)}
+                />
+              </div>
+            </NeoGlassSection>
+
+            {/* Quantum Card Builder Section */}
             <NeoGlassSection className="neo-glass-card border border-white/10 shadow-lg">
               <div className="p-6">
                 <VisitingCardBuilder 
