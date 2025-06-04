@@ -81,6 +81,12 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
   };
 
   const handleSave = async () => {
+    console.log("[DEBUG] handleSave called - Starting profile update");
+    console.log("[DEBUG] userData.id:", userData.id);
+    console.log("[DEBUG] Current form values:", {
+      name, brandName, phoneNumber, jobTitle, location, industry, domain, aboutMe, lookingFor
+    });
+    
     setIsLoading(true);
     try {
       const updateData = {
@@ -95,7 +101,11 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
         lookingFor: lookingFor.trim() || null,
       };
 
-      await apiRequest("PUT", `/api/users/${userData.id}`, updateData);
+      console.log("[DEBUG] Sending PUT request to:", `/api/users/${userData.id}`);
+      console.log("[DEBUG] Update data:", updateData);
+      
+      const response = await apiRequest("PUT", `/api/users/${userData.id}`, updateData);
+      console.log("[DEBUG] API response:", response);
 
       // Invalidate queries to refresh data
       await queryClient.invalidateQueries({ queryKey: [`/api/users/${userData.username}`] });
