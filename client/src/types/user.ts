@@ -3,6 +3,7 @@ export interface UserData {
   id: number;
   username: string;
   name: string | null;
+  brandName?: string | null;
   email: string;
   photoURL: string | null;
   title: string | null;

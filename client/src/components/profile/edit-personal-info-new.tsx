@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Mail, Phone, Globe, Briefcase, MapPin, Building, Book, User, X, Save } from "lucide-react";
+import { Mail, Phone, Globe, Briefcase, MapPin, Building, Book, User, X, Save, Link2, Check, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { useQueryClient } from "@tanstack/react-query";
@@ -32,6 +32,8 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
 
   // Form state
   const [name, setName] = useState(userData.name || "");
+  const [brandName, setBrandName] = useState(userData.brandName || "");
+  const [brandNameStatus, setBrandNameStatus] = useState<'idle' | 'checking' | 'available' | 'taken' | 'invalid'>('idle');
   const [phoneNumber, setPhoneNumber] = useState(userData.phoneNumber?.replace(/^\+\d+\s/, "") || "");
   const [phoneCountryCode, setPhoneCountryCode] = useState(
     userData.phoneNumber?.match(/^\+\d+/)?.[0] || "+1"
@@ -43,12 +45,47 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
   const [aboutMe, setAboutMe] = useState(userData.aboutMe || "");
   const [lookingFor, setLookingFor] = useState(userData.lookingFor || "");
 
+  // Brand name validation and checking
+  const validateBrandName = (name: string) => {
+    if (!name) return true; // Optional field
+    if (name.length < 3 || name.length > 20) return false;
+    return /^[a-zA-Z0-9_-]+$/.test(name);
+  };
+
+  const checkBrandNameAvailability = async (name: string) => {
+    if (!name || !validateBrandName(name)) {
+      setBrandNameStatus('invalid');
+      return;
+    }
+
+    setBrandNameStatus('checking');
+    try {
+      const response = await apiRequest('GET', `/api/users/check-brand-name/${encodeURIComponent(name)}`);
+      setBrandNameStatus(response.available ? 'available' : 'taken');
+    } catch (error) {
+      setBrandNameStatus('invalid');
+    }
+  };
+
+  const handleBrandNameChange = (value: string) => {
+    setBrandName(value);
+    if (value !== userData.brandName) {
+      setBrandNameStatus('idle');
+      // Debounce the availability check
+      setTimeout(() => {
+        if (value === brandName) {
+          checkBrandNameAvailability(value);
+        }
+      }, 500);
+    }
+  };
 
   const handleSave = async () => {
     setIsLoading(true);
     try {
       const updateData = {
         name: name.trim(),
+        brandName: brandName.trim() || null,
         phoneNumber: phoneNumber.trim() ? `${phoneCountryCode} ${phoneNumber.trim()}` : null,
         title: jobTitle.trim() || null,
         location: location.trim() || null,
@@ -111,6 +148,56 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
             placeholder="Enter your full name"
             className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all duration-300 hover:border-white/30 hover:shadow-lg w-full h-10 px-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none focus:shadow-xl"
           />
+        </div>
+
+        {/* Brand Name */}
+        <div className="space-y-2">
+          <label htmlFor="brandName" className="text-sm font-medium text-white flex items-center gap-2">
+            <Link2 className="h-4 w-4" />
+            Brand Name
+            <span className="text-xs text-white/50">(Optional)</span>
+          </label>
+          <div className="relative">
+            <input
+              id="brandName"
+              type="text"
+              value={brandName}
+              onChange={(e) => handleBrandNameChange(e.target.value)}
+              placeholder="e.g., nishanttech, choprahealthcare"
+              className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all duration-300 hover:border-white/30 hover:shadow-lg w-full h-10 px-3 pr-10 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none focus:shadow-xl"
+            />
+            <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+              {brandNameStatus === 'checking' && (
+                <div className="animate-spin h-4 w-4 border-2 border-white/30 border-t-white rounded-full"></div>
+              )}
+              {brandNameStatus === 'available' && (
+                <Check className="h-4 w-4 text-green-400" />
+              )}
+              {brandNameStatus === 'taken' && (
+                <X className="h-4 w-4 text-red-400" />
+              )}
+              {brandNameStatus === 'invalid' && (
+                <AlertCircle className="h-4 w-4 text-yellow-400" />
+              )}
+            </div>
+          </div>
+          <div className="flex flex-col gap-1 text-xs">
+            {brandName && (
+              <p className="text-white/70">
+                Your profile URL: <span className="text-blue-300">/{brandName}</span>
+              </p>
+            )}
+            {brandNameStatus === 'taken' && (
+              <p className="text-red-400">This brand name is already taken</p>
+            )}
+            {brandNameStatus === 'invalid' && brandName && (
+              <p className="text-yellow-400">3-20 characters, letters, numbers, hyphens and underscores only</p>
+            )}
+            {brandNameStatus === 'available' && (
+              <p className="text-green-400">This brand name is available!</p>
+            )}
+            <p className="text-white/50">Create a memorable URL for your professional profile</p>
+          </div>
         </div>
 
         {/* Email (read-only) */}
