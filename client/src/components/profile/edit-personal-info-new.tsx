@@ -199,22 +199,7 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
 
         {/* Brand Name field removed per user request */}
 
-        {/* Email (read-only) */}
-        <div className="space-y-2">
-          <label htmlFor="email" className="text-sm font-medium text-white flex items-center gap-2">
-            <Mail className="h-4 w-4" />
-            Email
-          </label>
-          <input
-            id="email"
-            type="email"
-            value={userData.email}
-            disabled
-            readOnly
-            className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white/70 border-white/20 shadow-md w-full h-10 px-3 rounded-md border cursor-not-allowed opacity-70"
-          />
-          <p className="text-xs text-white/50">Email cannot be changed</p>
-        </div>
+        {/* Email field removed per user request */}
 
         {/* Phone Number field removed per user request */}
 
@@ -366,23 +351,7 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
 
 
 
-        {/* Profile URL (read-only) */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-white flex items-center gap-2">
-            <Globe className="h-4 w-4" />
-            Profile URL
-          </label>
-          <input
-            type="text"
-            value={`${window.location.origin}/profile/${userData.username}`}
-            disabled
-            readOnly
-            className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white/70 border-white/20 shadow-md w-full h-10 px-3 rounded-md border cursor-not-allowed opacity-70"
-          />
-          <p className="text-xs text-white/50">
-            Your profile URL is based on your name and cannot be changed
-          </p>
-        </div>
+        {/* Profile URL field removed per user request */}
       </div>
 
       {/* Action Buttons */}
