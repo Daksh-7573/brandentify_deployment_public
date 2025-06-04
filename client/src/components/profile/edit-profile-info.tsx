@@ -51,7 +51,10 @@ const EditProfileInfo: React.FC<EditProfileInfoProps> = ({ userData, onCancel, o
   const onSubmit = async (data: ProfileInfoData) => {
     setIsLoading(true);
     try {
-      const response = await apiRequest('PUT', `/api/users/${userData.id}`, {
+      console.log('Form submission data:', data);
+      console.log('User ID being used:', userData.id);
+      
+      const updatePayload = {
         name: data.name,
         title: data.jobTitle || null,
         aboutMe: data.aboutMe || null,
@@ -60,13 +63,26 @@ const EditProfileInfo: React.FC<EditProfileInfoProps> = ({ userData, onCancel, o
         domain: data.domain || null,
         lookingFor: data.lookingFor || null,
         whatIOffer: data.whatIOffer || null,
-      });
+      };
+      
+      console.log('Update payload:', updatePayload);
+      
+      const response = await apiRequest('PUT', `/api/users/${userData.id}`, updatePayload);
+      
+      console.log('API response status:', response.status);
+      console.log('API response:', response);
 
       if (response.ok) {
+        console.log('Profile update successful, calling onSave');
         onSave();
+      } else {
+        const errorData = await response.text();
+        console.error('API error response:', errorData);
+        alert('Failed to update profile. Please try again.');
       }
     } catch (error) {
       console.error('Error updating profile info:', error);
+      alert('Error updating profile. Please check the console for details.');
     } finally {
       setIsLoading(false);
     }
