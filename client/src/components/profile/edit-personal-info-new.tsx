@@ -26,6 +26,9 @@ const countryCodes = [
 ];
 
 const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCancel, onSave }) => {
+  console.log('=== COMPONENT MOUNTED ===');
+  console.log('userData received:', userData);
+  
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -445,13 +448,51 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
           Cancel
         </button>
         <button 
-          onClick={(e) => {
-            console.log('=== BUTTON CLICKED ===');
-            console.log('Event target:', e.target);
-            console.log('Brand name status:', brandNameStatus);
-            console.log('Is loading:', isLoading);
-            console.log('Brand name value:', brandName);
-            handleSave();
+          type="button"
+          onClick={async () => {
+            console.log('=== DIRECT BUTTON CLICKED ===');
+            setIsLoading(true);
+            try {
+              const updateData = {
+                name: name.trim(),
+                brandName: brandName.trim() || null,
+                phoneNumber: phoneNumber.trim() ? `${phoneCountryCode} ${phoneNumber.trim()}` : null,
+                title: jobTitle.trim() || null,
+                location: location.trim() || null,
+                industry: industry || null,
+                domain: domain || null,
+                aboutMe: aboutMe.trim() || null,
+                lookingFor: lookingFor.trim() || null,
+              };
+
+              console.log('Saving profile with data:', updateData);
+              console.log('User ID being used:', userData.id);
+
+              const userIdentifier = userData.username || userData.id;
+              console.log('Using user identifier for API:', userIdentifier);
+
+              await apiRequest("PUT", `/api/users/${userIdentifier}`, updateData);
+
+              await queryClient.invalidateQueries({ queryKey: [`/api/users/${userData.username}`] });
+              await queryClient.invalidateQueries({ queryKey: [`/api/users/${userData.id}`] });
+
+              toast({
+                title: "Profile Updated",
+                description: "Your profile information has been successfully updated.",
+                variant: "default",
+              });
+
+              onSave();
+            } catch (error) {
+              console.error('Error updating profile:', error);
+              toast({
+                title: "Update Failed",
+                description: "Failed to update profile. Please try again.",
+                variant: "destructive",
+              });
+            } finally {
+              setIsLoading(false);
+            }
           }}
           disabled={isLoading}
           className="neo-glass-button flex items-center gap-2 py-2.5 px-6 text-white bg-gradient-to-r from-blue-500/20 to-purple-500/20 hover:from-blue-500/30 hover:to-purple-500/30 border border-white/20 hover:border-white/30 rounded-lg transition-all duration-200 backdrop-blur-sm shadow-lg"
