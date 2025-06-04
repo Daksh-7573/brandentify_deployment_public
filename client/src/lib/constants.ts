@@ -250,16 +250,14 @@ export const EXPERIENCE_LEVELS = [
   "Executive"
 ];
 
-// Looking for options
-export const LOOKING_FOR_OPTIONS = [
-  "Job Opportunities",
-  "Mentorship",
-  "Networking",
-  "Project Collaborations",
-  "Industry Insights",
-  "Career Advice",
-  "Skill Development",
-  "Knowledge Sharing",
-  "Business Partnerships",
-  "Investment Opportunities"
-];
+// Looking for options - using database values as keys with display labels
+export const LOOKING_FOR_OPTIONS = {
+  "job_opportunities": "Job Opportunities",
+  "mentorship": "Mentorship", 
+  "networking": "Networking",
+  "collaboration": "Collaboration",
+  "investment": "Investment",
+  "learning": "Learning",
+  "career_advice": "Career Advice",
+  "business_partnerships": "Business Partnerships"
+};

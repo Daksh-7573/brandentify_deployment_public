@@ -54,31 +54,10 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
   const [aboutMe, setAboutMe] = useState(userData.aboutMe || "");
   // Convert database value to display value for lookingFor
   const convertDbToDisplayValue = (dbValue: string) => {
-    if (dbValue === "job_opportunities") return "Job Opportunities";
-    if (dbValue === "mentorship") return "Mentorship";
-    if (dbValue === "networking") return "Networking";
-    if (dbValue === "collaboration") return "Collaboration";
-    if (dbValue === "investment") return "Investment";
-    if (dbValue === "learning") return "Learning";
-    if (dbValue === "career_advice") return "Career Advice";
-    if (dbValue === "business_partnerships") return "Business Partnerships";
-    return dbValue;
+    return LOOKING_FOR_OPTIONS[dbValue as keyof typeof LOOKING_FOR_OPTIONS] || dbValue;
   };
 
-  // Convert display value to database format for lookingFor
-  const convertDisplayToDbValue = (displayValue: string) => {
-    if (displayValue === "Job Opportunities") return "job_opportunities";
-    if (displayValue === "Mentorship") return "mentorship";
-    if (displayValue === "Networking") return "networking";
-    if (displayValue === "Collaboration") return "collaboration";
-    if (displayValue === "Investment") return "investment";
-    if (displayValue === "Learning") return "learning";
-    if (displayValue === "Career Advice") return "career_advice";
-    if (displayValue === "Business Partnerships") return "business_partnerships";
-    return displayValue;
-  };
-
-  const [lookingFor, setLookingFor] = useState(convertDbToDisplayValue(userData.lookingFor || ""));
+  const [lookingFor, setLookingFor] = useState(userData.lookingFor || "");
 
   // Parse existing combined job title on component load and when userData changes
   React.useEffect(() => {
@@ -407,9 +386,9 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
               }}
             >
               <option value="" className="bg-[#1a1a1a] text-white">Select what you're looking for...</option>
-              {LOOKING_FOR_OPTIONS.map((option) => (
-                <option key={option} value={option} className="bg-[#1a1a1a] text-white">
-                  {option}
+              {Object.entries(LOOKING_FOR_OPTIONS).map(([value, label]) => (
+                <option key={value} value={value} className="bg-[#1a1a1a] text-white">
+                  {label}
                 </option>
               ))}
             </select>
@@ -459,7 +438,7 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
                 industry: industry || null,
                 domain: domain || null,
                 aboutMe: aboutMe.trim() || null,
-                lookingFor: convertDisplayToDbValue(lookingFor.trim()) || null,
+                lookingFor: lookingFor.trim() || null,
               };
 
               console.log("[BUTTON] Combined job title:", combinedJobTitle);
