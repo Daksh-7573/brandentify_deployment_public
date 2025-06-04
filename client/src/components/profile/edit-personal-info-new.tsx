@@ -229,20 +229,21 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
             Job Title
           </label>
           <div className="relative">
-            <input
+            <select
               id="jobTitle"
-              type="text"
               value={jobTitle}
               onChange={(e) => setJobTitle(e.target.value)}
-              placeholder="Your professional title (e.g. Senior Developer)"
-              list="jobTitleOptions"
-              className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-10 px-3 pr-10 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
-            />
-            <datalist id="jobTitleOptions">
+              disabled={jobTitlesLoading}
+              className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 px-3 pr-10 rounded-md border appearance-none cursor-pointer focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none text-sm leading-relaxed"
+              style={{ lineHeight: '1.5', paddingTop: '0.75rem', paddingBottom: '0.75rem' }}
+            >
+              <option value="">Select your job title</option>
               {jobTitlesData?.jobTitles?.map((title: string) => (
-                <option key={title} value={title} />
+                <option key={title} value={title} className="bg-gray-800 text-white">
+                  {title}
+                </option>
               ))}
-            </datalist>
+            </select>
             <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-white/70 pointer-events-none" />
           </div>
         </div>
