@@ -303,14 +303,95 @@ const EditPersonalInfo: React.FC<EditPersonalInfoProps> = ({
           </svg>
           Looking For
         </label>
-        <textarea
-          id="lookingFor"
-          value={lookingFor}
-          onChange={(e) => setLookingFor(e.target.value)}
-          placeholder="What are you looking for professionally? (e.g. collaborations, new opportunities, etc.)"
-          rows={3}
-          className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full min-h-[80px] px-3 py-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none resize-none"
-        />
+        <div className="space-y-3">
+          {/* Quick Selection Buttons */}
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              onClick={() => setLookingFor('job_opportunities')}
+              className={`p-3 rounded-lg border transition-all duration-200 text-left ${
+                lookingFor === 'job_opportunities'
+                  ? 'bg-gradient-to-r from-purple-500/20 to-blue-500/20 border-purple-400/50 text-white shadow-lg shadow-purple-500/20'
+                  : 'bg-[rgba(18,18,18,0.95)] backdrop-blur-md border-white/20 text-white/80 hover:border-white/30 hover:bg-white/5'
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <div className={`w-2 h-2 rounded-full ${
+                  lookingFor === 'job_opportunities' ? 'bg-purple-400' : 'bg-white/40'
+                }`}></div>
+                <span className="font-medium">Job Opportunities</span>
+              </div>
+              <p className="text-xs mt-1 opacity-70">Seeking new career opportunities</p>
+            </button>
+            
+            <button
+              type="button"
+              onClick={() => setLookingFor('networking')}
+              className={`p-3 rounded-lg border transition-all duration-200 text-left ${
+                lookingFor === 'networking'
+                  ? 'bg-gradient-to-r from-green-500/20 to-teal-500/20 border-green-400/50 text-white shadow-lg shadow-green-500/20'
+                  : 'bg-[rgba(18,18,18,0.95)] backdrop-blur-md border-white/20 text-white/80 hover:border-white/30 hover:bg-white/5'
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <div className={`w-2 h-2 rounded-full ${
+                  lookingFor === 'networking' ? 'bg-green-400' : 'bg-white/40'
+                }`}></div>
+                <span className="font-medium">Networking</span>
+              </div>
+              <p className="text-xs mt-1 opacity-70">Building professional connections</p>
+            </button>
+            
+            <button
+              type="button"
+              onClick={() => setLookingFor('mentorship')}
+              className={`p-3 rounded-lg border transition-all duration-200 text-left ${
+                lookingFor === 'mentorship'
+                  ? 'bg-gradient-to-r from-orange-500/20 to-red-500/20 border-orange-400/50 text-white shadow-lg shadow-orange-500/20'
+                  : 'bg-[rgba(18,18,18,0.95)] backdrop-blur-md border-white/20 text-white/80 hover:border-white/30 hover:bg-white/5'
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <div className={`w-2 h-2 rounded-full ${
+                  lookingFor === 'mentorship' ? 'bg-orange-400' : 'bg-white/40'
+                }`}></div>
+                <span className="font-medium">Mentorship</span>
+              </div>
+              <p className="text-xs mt-1 opacity-70">Seeking guidance or offering help</p>
+            </button>
+            
+            <button
+              type="button"
+              onClick={() => setLookingFor('collaborations')}
+              className={`p-3 rounded-lg border transition-all duration-200 text-left ${
+                lookingFor === 'collaborations'
+                  ? 'bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border-blue-400/50 text-white shadow-lg shadow-blue-500/20'
+                  : 'bg-[rgba(18,18,18,0.95)] backdrop-blur-md border-white/20 text-white/80 hover:border-white/30 hover:bg-white/5'
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <div className={`w-2 h-2 rounded-full ${
+                  lookingFor === 'collaborations' ? 'bg-blue-400' : 'bg-white/40'
+                }`}></div>
+                <span className="font-medium">Collaborations</span>
+              </div>
+              <p className="text-xs mt-1 opacity-70">Working on projects together</p>
+            </button>
+          </div>
+          
+          {/* Custom Text Input */}
+          <div className="space-y-2">
+            <label className="text-xs text-white/70">Or specify something else:</label>
+            <textarea
+              id="lookingFor"
+              value={!['job_opportunities', 'networking', 'mentorship', 'collaborations'].includes(lookingFor) ? lookingFor : ''}
+              onChange={(e) => setLookingFor(e.target.value)}
+              placeholder="Describe what you're looking for professionally..."
+              rows={2}
+              className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full min-h-[60px] px-3 py-2 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none resize-none text-sm"
+            />
+          </div>
+        </div>
       </div>
       
       {/* Profile URL (read-only) */}
