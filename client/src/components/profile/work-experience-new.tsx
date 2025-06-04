@@ -31,49 +31,14 @@ export default function WorkExperience() {
   const { user, isDemoMode } = useAuth();
   const userId = isDemoMode ? 1 : (user?.uid ? parseInt(user.uid) : 1);
   
-  // Fetch work experiences from the API with advanced options
+  // Fetch work experiences from the API with normal caching behavior
   const { data: serverExperiences, isLoading, refetch } = useQuery({
     queryKey: [`/api/users/${userId}/experiences`],
     enabled: !!userId,
-    staleTime: 0, // Always consider data stale to force refresh
-    refetchOnMount: 'always', // Always refetch when component mounts
-    refetchOnWindowFocus: true, // Refetch when window regains focus
-    refetchInterval: 1000, // Poll every second to keep data fresh
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
   });
-  
-  // Force a direct fetch every time the component renders
-  useEffect(() => {
-    async function directFetch() {
-      const timestamp = new Date().getTime(); // Add timestamp to prevent caching
-      console.log(`Work Experience - Directly fetching latest experiences data (${timestamp})`);
-      try {
-        const response = await fetch(`/api/users/${userId}/experiences?_=${timestamp}`, {
-          method: 'GET',
-          headers: { 
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            'Pragma': 'no-cache',
-            'Expires': '0'
-          }
-        });
-        const freshData = await response.json();
-        console.log("Work Experience - Got direct fetch data:", freshData);
-        // Force update
-        if (freshData && Array.isArray(freshData)) {
-          setExperiences([...freshData]);
-          // Update the ref as well
-          latestDataRef.current = [...freshData];
-        }
-      } catch (error) {
-        console.error("Error during direct fetch:", error);
-      }
-    }
-    
-    directFetch();
-    
-    // Poll every second
-    const interval = setInterval(directFetch, 1000);
-    return () => clearInterval(interval);
-  }, [userId]); // Only re-run when userId changes
   
   // Initialize with an empty array, but use the ref for the actual display data
   const [experiences, setExperiences] = useState<WorkExperienceItem[]>([]);

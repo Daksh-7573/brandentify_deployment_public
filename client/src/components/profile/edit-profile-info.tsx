@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { JobTitleInput } from '@/components/ui/job-title-input';
 import { Loader2, X } from 'lucide-react';
 import { UserData } from '@/types/user';
 import { apiRequest } from '@/lib/queryClient';
@@ -138,9 +139,10 @@ const EditProfileInfo: React.FC<EditProfileInfoProps> = ({ userData, onCancel, o
                   <FormItem>
                     <FormLabel>Job Title</FormLabel>
                     <FormControl>
-                      <Input
-                        {...field}
-                        placeholder="e.g., Senior Software Engineer"
+                      <JobTitleInput
+                        value={field.value || ''}
+                        onChange={field.onChange}
+                        placeholder="Product Manager"
                         className="bg-white/50"
                       />
                     </FormControl>
