@@ -38,6 +38,13 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({ userData, onClose, on
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
+  // Add console log to track component mounting
+  useEffect(() => {
+    console.log('[FORM] EditProfileForm component mounted');
+    console.log('[FORM] Initial userData:', userData);
+    console.log('[FORM] Initial formData:', formData);
+  }, []);
+
   // Handle input changes
   const handleInputChange = (field: string, value: string) => {
     console.log(`[FORM] Field ${field} changed to:`, value);
@@ -52,6 +59,8 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({ userData, onClose, on
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log('[FORM] Submit triggered');
+    console.log('[FORM] Current form data:', formData);
+    console.log('[FORM] User data ID:', userData.id);
     
     setIsLoading(true);
     setError(null);
