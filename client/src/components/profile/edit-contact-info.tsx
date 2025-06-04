@@ -233,14 +233,14 @@ const EditContactInfo: React.FC<EditContactInfoProps> = ({ userData, onCancel, o
                   variant="outline"
                   onClick={onCancel}
                   disabled={isLoading}
-                  className="!bg-white/10 !border-white/20 !text-white hover:!bg-white/20 hover:!border-white/30 transition-all duration-300 backdrop-blur-sm"
+                  className="!bg-white/10 !border-white/20 !text-white hover:!bg-white/25 hover:!border-white/40 hover:!shadow-[0_8px_32px_rgba(255,255,255,0.1)] hover:!scale-[1.02] hover:!backdrop-blur-lg active:!scale-[0.98] transition-all duration-300 ease-out backdrop-blur-sm"
                 >
                   Cancel
                 </Button>
                 <Button
                   type="submit"
                   disabled={isLoading || Boolean(brandName && brandNameStatus === 'taken')}
-                  className="min-w-[100px] !bg-white/20 !border-white/30 !text-white hover:!bg-white/30 hover:!border-white/40 transition-all duration-300 backdrop-blur-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="min-w-[100px] !bg-white/20 !border-white/30 !text-white hover:!bg-white/35 hover:!border-white/50 hover:!shadow-[0_8px_32px_rgba(255,255,255,0.15)] hover:!scale-[1.02] hover:!backdrop-blur-lg active:!scale-[0.98] transition-all duration-300 ease-out backdrop-blur-sm disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:!scale-100 disabled:hover:!shadow-none"
                 >
                   {isLoading ? (
                     <>
