@@ -268,8 +268,7 @@ export const getQueryFn: <T>(options: {
       // Add cache busting for GET requests, but with reduced frequency for profile data
       const url = queryKey[0] as string;
       
-      // Reduce cache busting frequency for profile-related endpoints to prevent network congestion
-      // Use a timestamp that changes less frequently (once per 5 minutes) for skills/profile endpoints
+      // Stable caching for profile-related endpoints to prevent infinite loops
       const isSkillsEndpoint = url.includes('/skills') || url.includes('/projects') || 
                                url.includes('/experiences') || url.includes('/educations') ||
                                url.includes('/services');
@@ -277,15 +276,9 @@ export const getQueryFn: <T>(options: {
                                 url.includes('/enhanced-user') || 
                                 url.includes('/what-i-offer');
                                 
-      const cacheBusterTimestamp = (isProfileEndpoint || isSkillsEndpoint)
-        ? Math.floor(Date.now() / 300000) // Only changes once per 5 minutes for profile/skills endpoints
-        : Date.now(); // Regular timestamp for other endpoints
-        
-      const cacheBuster = url.includes('?') 
-        ? `&t=${cacheBusterTimestamp}` 
-        : `?t=${cacheBusterTimestamp}`;
-        
-      const fetchUrl = `${url}${cacheBuster}`;
+      // Use stable cache key for profile/skills endpoints - no timestamp to prevent loops
+      const fetchUrl = (isProfileEndpoint || isSkillsEndpoint) ? url : 
+        url.includes('?') ? `${url}&t=${Date.now()}` : `${url}?t=${Date.now()}`;
       
       // Add timeout protection (only for slow endpoints)
       const controller = new AbortController();
@@ -455,13 +448,13 @@ export const queryClient = new QueryClient({
       queryFn: getQueryFn({ on401: "throw" }),
       refetchInterval: false,
       refetchOnWindowFocus: false,
-      staleTime: 1000 * 60 * 15, // 15 minutes instead of 5 minutes
+      refetchOnMount: false, // Prevent automatic refetch on mount
+      refetchOnReconnect: false, // Prevent refetch on reconnect
+      staleTime: 1000 * 60 * 30, // 30 minutes - longer stale time
       retry: 1, // Only retry once to avoid cascading failures
       retryDelay: attempt => Math.min(1000 * 3 ** attempt, 30000), // Slower exponential backoff
-      // Add network mode to avoid multiple simultaneous requests
       networkMode: 'always', // Keep trying even if browser is offline
-      // Reduce query cache size to avoid memory issues
-      gcTime: 1000 * 60 * 30, // 30 minutes before garbage collection
+      gcTime: 1000 * 60 * 60, // 1 hour before garbage collection
     },
     mutations: {
       retry: 1, // Allow one retry for mutations
