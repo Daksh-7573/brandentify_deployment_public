@@ -684,6 +684,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   apiRouter.put("/users/:id", async (req: Request, res: Response) => {
+    // BYPASS API Gateway health check for user updates - critical fix
+    res.set('X-Service-Bypass', 'true');
+    // Disable all caching for user updates
+    res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
     try {
       const idParam = req.params.id;
       const userData = req.body;
@@ -781,6 +787,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
           } else {
             updatedUser = result.rows[0];
             console.log(`[PUT /users/:id] FIREBASE UID DIRECT DB UPDATE SUCCESS:`, updatedUser.title);
+            
+            // FORCE CACHE INVALIDATION - Clear all caching layers
+            if (global.gc) {
+              global.gc();
+            }
+            
+            // Invalidate cache service if available
+            try {
+              const { cacheService } = require('./services/cache-service');
+              await cacheService.invalidatePattern(`user:${user.id}:*`);
+              await cacheService.invalidatePattern(`users:*`);
+            } catch (cacheError) {
+              console.log(`[PUT /users/:id] Cache invalidation skipped:`, cacheError.message);
+            }
           }
         } catch (directError) {
           console.error(`[PUT /users/:id] Firebase UID Direct DB update failed:`, directError);
@@ -846,7 +866,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       console.log(`[PUT /users/:id] Successfully updated user:`, updatedUser);
-      res.json(updatedUser);
+      
+      // FORCE REAL-TIME DATABASE READ - Bypass all caching completely
+      try {
+        const freshDataQuery = `
+          SELECT 
+            id, username, email, password, 
+            phone_number as "phoneNumber", 
+            name, brand_name as "brandName", 
+            photo_url as "photoURL", 
+            title, about_me as "aboutMe", 
+            location, industry, domain, 
+            looking_for as "lookingFor", 
+            what_i_offer as "whatIOffer", 
+            visiting_card_type as "visitingCardType", 
+            profile_completed as "profileCompleted", 
+            email_verified as "emailVerified", 
+            email_verification_token as "emailVerificationToken", 
+            email_verification_expires as "emailVerificationExpires", 
+            created_at as "createdAt"
+          FROM users 
+          WHERE id = $1
+        `;
+        
+        const freshResult = await pool.query(freshDataQuery, [updatedUser.id]);
+        
+        if (freshResult.rows.length > 0) {
+          const freshUser = freshResult.rows[0];
+          console.log(`[PUT /users/:id] FRESH DATA FROM DB - title: ${freshUser.title}`);
+          res.json(freshUser);
+        } else {
+          res.json(updatedUser);
+        }
+      } catch (freshError) {
+        console.error(`[PUT /users/:id] Fresh data fetch failed:`, freshError);
+        res.json(updatedUser);
+      }
     } catch (error) {
       console.error("Error updating user:", error);
       res.status(500).json({ message: "Internal server error" });

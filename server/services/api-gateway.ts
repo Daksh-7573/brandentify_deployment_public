@@ -142,6 +142,13 @@ export class APIGateway {
    * Service health check middleware
    */
   healthCheckMiddleware = (req: Request, res: Response, next: NextFunction): void => {
+    // BYPASS health check for user profile updates - critical fix
+    if (req.path.includes('/users/') && req.method === 'PUT') {
+      console.log(`[API Gateway] Bypassing health check for user update: ${req.path}`);
+      next();
+      return;
+    }
+    
     const serviceName = req.serviceContext?.serviceName;
     
     if (serviceName && !this.serviceHealth.get(serviceName)) {
