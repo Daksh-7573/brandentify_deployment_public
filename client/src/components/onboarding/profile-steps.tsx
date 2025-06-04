@@ -394,8 +394,9 @@ export default function ProfileSteps({
     enabled: !!userData?.id && isAuthenticated,
     staleTime: 1000 * 60 * 5, // 5 minutes
     refetchOnWindowFocus: false,
-    refetchOnMount: true,
-    refetchOnReconnect: false
+    refetchOnMount: false, // Changed to false to prevent infinite loop
+    refetchOnReconnect: false,
+    refetchInterval: false // Disable automatic refetching
   });
   
   // Fetch user services directly using the useProfileServices hook

@@ -44,6 +44,7 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
   // Form state
   const [name, setName] = useState(userData.name || "");
   const [jobTitle, setJobTitle] = useState(userData.title || "");
+  const [selectedJobTitleFromDropdown, setSelectedJobTitleFromDropdown] = useState(""); // Separate dropdown value
   const [location, setLocation] = useState(userData.location || "");
   const [industry, setIndustry] = useState(userData.industry || "");
   const [domain, setDomain] = useState(userData.domain || "");
@@ -229,15 +230,13 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
             Job Title
           </label>
           <div className="space-y-3">
-            {/* Dropdown for quick selection */}
+            {/* Dropdown for quick selection - keeps its own value */}
             <div className="relative">
               <select
                 id="jobTitleDropdown"
-                value=""
+                value={selectedJobTitleFromDropdown}
                 onChange={(e) => {
-                  if (e.target.value) {
-                    setJobTitle(e.target.value);
-                  }
+                  setSelectedJobTitleFromDropdown(e.target.value);
                 }}
                 disabled={jobTitlesLoading}
                 className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 px-3 pr-10 rounded-md border appearance-none cursor-pointer focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none text-sm leading-relaxed"
@@ -253,15 +252,33 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
               <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-white/70 pointer-events-none" />
             </div>
             
-            {/* Text input for custom job title */}
+            {/* Text input for custom job title - independent value */}
             <input
               id="jobTitle"
               type="text"
               value={jobTitle}
               onChange={(e) => setJobTitle(e.target.value)}
-              placeholder="Or enter your custom job title"
+              placeholder="Enter your custom job title"
               className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-10 px-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
             />
+            
+            {/* Help text explaining the functionality */}
+            <p className="text-xs text-white/60 mt-2">
+              The dropdown and text field work independently. Select from common titles or create your own custom title.
+            </p>
+            
+            {/* Display current selections */}
+            {(selectedJobTitleFromDropdown || jobTitle) && (
+              <div className="mt-2 p-2 bg-white/5 rounded-md border border-white/10">
+                <p className="text-xs text-white/70 mb-1">Current selections:</p>
+                {selectedJobTitleFromDropdown && (
+                  <p className="text-sm text-white/90">Dropdown: {selectedJobTitleFromDropdown}</p>
+                )}
+                {jobTitle && (
+                  <p className="text-sm text-white/90">Custom: {jobTitle}</p>
+                )}
+              </div>
+            )}
           </div>
         </div>
 
