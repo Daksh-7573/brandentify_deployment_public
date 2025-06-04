@@ -15,7 +15,7 @@ import { Plus, AlertCircle } from "lucide-react";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { calculateOverallProfileCompletion } from "@/lib/profile-utils";
 import { useState, useEffect } from "react";
-import { Camera, FileText, Edit, Loader2, FolderIcon, Mail, Phone, Globe, Briefcase, MapPin, Book, Building, User2, CreditCard, Copy } from "lucide-react";
+import { Camera, FileText, Edit, Loader2, FolderIcon, Mail, Phone, Globe, Briefcase, MapPin, Book, Building, User2, CreditCard } from "lucide-react";
 import PersonalInfoIcon from "@/components/icons/personal-info-icon";
 import { useProfilePicture } from "@/hooks/use-profile-picture";
 import { ProfilePictureDialog } from "@/components/profile/profile-picture-dialog";
@@ -297,7 +297,7 @@ export default function ProfileNeo() {
                     className="neo-glass-button flex items-center gap-1 py-1.5 px-3 whitespace-nowrap"
                   >
                     <User2 className="w-4 h-4" />
-                    <span>Portfolio Builder</span>
+                    <span>Portfolio</span>
                   </button>
                   <button 
                     onClick={() => setLocation('/resume-builder')}
@@ -368,29 +368,6 @@ export default function ProfileNeo() {
                         <Edit className="h-4 w-4" />
                         Edit Profile Information
                       </button>
-                      
-                      {/* Profile Link */}
-                      <div className="mt-3 px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-center">
-                        <p className="text-xs text-white/60 mb-1">Your Profile Link</p>
-                        <div className="flex items-center justify-center gap-2">
-                          <span className="text-xs text-white/80 font-mono bg-white/10 px-2 py-1 rounded">
-                            {window.location.origin}/profile/{userData?.name?.toLowerCase().replace(/\s+/g, '-')}
-                          </span>
-                          <button
-                            onClick={() => {
-                              const profileUrl = `${window.location.origin}/profile/${userData?.name?.toLowerCase().replace(/\s+/g, '-')}`;
-                              navigator.clipboard.writeText(profileUrl);
-                              toast({
-                                title: "Link copied!",
-                                description: "Profile link copied to clipboard"
-                              });
-                            }}
-                            className="p-1 rounded bg-white/10 hover:bg-white/20 transition-colors"
-                          >
-                            <Copy className="h-3 w-3 text-white/80" />
-                          </button>
-                        </div>
-                      </div>
                     </div>
                   </div>
                   
