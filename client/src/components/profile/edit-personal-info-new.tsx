@@ -212,9 +212,13 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
       const result = await response.json();
       console.log("[SAVE] API response:", result);
 
-      // Invalidate queries to refresh data - use the correct query keys that match profile page
+      // Force complete cache invalidation using the exact query key from profile page
       await queryClient.invalidateQueries({ queryKey: ['/api/users', userData.username] });
       await queryClient.invalidateQueries({ queryKey: ['/api/users'] });
+      await queryClient.refetchQueries({ queryKey: ['/api/users', userData.username] });
+      
+      // Clear all cached responses to ensure fresh data
+      queryClient.clear();
 
       toast({
         title: "Profile Updated",
