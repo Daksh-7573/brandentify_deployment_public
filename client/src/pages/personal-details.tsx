@@ -103,7 +103,7 @@ const PersonalDetailsPage: React.FC = () => {
         
         <Card>
           <CardHeader>
-            <CardTitle>Profile Information</CardTitle>
+            <CardTitle>Contact Information</CardTitle>
             <CardDescription>
               Your contact details and quantum card settings
             </CardDescription>
