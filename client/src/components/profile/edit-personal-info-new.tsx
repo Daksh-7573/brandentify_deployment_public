@@ -131,8 +131,9 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
     }
   };
 
-  const handleDirectSave = async () => {
-    console.log("[DEBUG] ========== DIRECT SAVE TRIGGERED ==========");
+  // Create a global save function that executes immediately
+  const executeProfileSave = async () => {
+    console.log("[DEBUG] ========== PROFILE SAVE EXECUTED ==========");
     console.log("[DEBUG] userData.id:", userData.id);
     console.log("[DEBUG] Current form values:", {
       name, brandName, phoneNumber, jobTitle, location, industry, domain, aboutMe, lookingFor
@@ -152,7 +153,7 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
         lookingFor: lookingFor.trim() || null,
       };
 
-      console.log("[DEBUG] Making direct API call to:", `/api/users/${userData.id}`);
+      console.log("[DEBUG] Making API call to:", `/api/users/${userData.id}`);
       console.log("[DEBUG] Update data:", updateData);
       
       const response = await fetch(`/api/users/${userData.id}`, {
@@ -192,6 +193,14 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
       setIsLoading(false);
     }
   };
+
+  // Attach to window for global access (temporary debugging solution)
+  React.useEffect(() => {
+    (window as any).triggerProfileSave = executeProfileSave;
+    return () => {
+      delete (window as any).triggerProfileSave;
+    };
+  }, [name, brandName, phoneNumber, jobTitle, location, industry, domain, aboutMe, lookingFor]);
 
   return (
     <div className="space-y-6 p-6 neo-glass-card backdrop-blur-xl bg-gradient-to-br from-white/10 to-white/5 border border-white/20 rounded-2xl shadow-2xl">
@@ -507,7 +516,10 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
         </button>
         <button 
           type="button"
-          onClick={handleDirectSave}
+          onClick={() => {
+            console.log("[DEBUG] Button clicked - executing global save");
+            executeProfileSave();
+          }}
           disabled={isLoading}
           className="neo-glass-button flex items-center gap-2 py-2.5 px-6 text-white bg-gradient-to-r from-blue-500/20 to-purple-500/20 hover:from-blue-500/30 hover:to-purple-500/30 border border-white/20 hover:border-white/30 rounded-lg transition-all duration-200 backdrop-blur-sm shadow-lg"
         >
