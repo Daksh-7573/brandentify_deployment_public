@@ -993,6 +993,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // DIRECT DATABASE UPDATE BYPASS FOR FIREBASE UID PATH
         console.log(`[PUT /users/:id] IMPLEMENTING DIRECT DATABASE BYPASS FOR FIREBASE UID`);
         try {
+          // Validate and sanitize lookingFor value before database update
+          if (userData.lookingFor) {
+            const validLookingForValues = [
+              'job_opportunities', 'mentorship', 'networking', 'collaboration',
+              'investment', 'learning', 'career_advice', 'business_partnerships'
+            ];
+            
+            // Check if it's an array index (number as string)
+            if (/^\d+$/.test(userData.lookingFor.toString())) {
+              console.error(`[PUT /users/:id] CRITICAL: Array index detected in lookingFor, blocking save:`, userData.lookingFor);
+              return res.status(400).json({ 
+                message: "Invalid dropdown value detected. Please refresh and try again.",
+                error: "ARRAY_INDEX_DETECTED"
+              });
+            }
+            
+            // Validate against allowed values
+            if (!validLookingForValues.includes(userData.lookingFor)) {
+              console.error(`[PUT /users/:id] Invalid lookingFor value detected:`, userData.lookingFor);
+              return res.status(400).json({ 
+                message: "Invalid looking for value. Please select a valid option.",
+                error: "INVALID_LOOKING_FOR_VALUE"
+              });
+            }
+          }
+          
           let updateQuery = 'UPDATE users SET ';
           const updateValues: any[] = [];
           const updateParts: string[] = [];

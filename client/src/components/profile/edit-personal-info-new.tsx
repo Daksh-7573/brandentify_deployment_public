@@ -57,19 +57,42 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
     return LOOKING_FOR_OPTIONS[dbValue as keyof typeof LOOKING_FOR_OPTIONS] || dbValue;
   };
 
-  const [lookingFor, setLookingFor] = useState(userData.lookingFor || "");
+  // Sanitize lookingFor value to prevent array index corruption
+  const sanitizeLookingForValue = (value: string | null | undefined): string => {
+    if (!value) return "";
+    
+    // If it's an array index (number as string), convert to empty string
+    if (/^\d+$/.test(value)) {
+      console.warn("[SANITIZE] Array index detected in lookingFor, resetting:", value);
+      return "";
+    }
+    
+    // Validate against allowed values
+    const validValues = Object.keys(LOOKING_FOR_OPTIONS);
+    if (validValues.includes(value)) {
+      return value;
+    }
+    
+    console.warn("[SANITIZE] Invalid lookingFor value detected, resetting:", value);
+    return "";
+  };
+
+  const [lookingFor, setLookingFor] = useState(sanitizeLookingForValue(userData.lookingFor));
 
   // Parse existing combined job title on component load and when userData changes
   React.useEffect(() => {
-    // Reset form state when userData changes
-    console.log("[FORM INIT] userData.lookingFor:", userData.lookingFor);
+    // Reset form state when userData changes with sanitization
+    console.log("[FORM INIT] userData.lookingFor (raw):", userData.lookingFor);
+    const sanitizedLookingFor = sanitizeLookingForValue(userData.lookingFor);
+    console.log("[FORM INIT] userData.lookingFor (sanitized):", sanitizedLookingFor);
+    
     setName(userData.name || "");
     setLocation(userData.location || "");
     setIndustry(userData.industry || "");
     setDomain(userData.domain || "");
     setAboutMe(userData.aboutMe || "");
-    setLookingFor(userData.lookingFor || "");
-    console.log("[FORM INIT] Set lookingFor to:", userData.lookingFor || "");
+    setLookingFor(sanitizedLookingFor);
+    console.log("[FORM INIT] Set lookingFor to:", sanitizedLookingFor);
     
     if (userData.title && jobTitlesData?.jobTitles) {
       const existingTitle = userData.title;
