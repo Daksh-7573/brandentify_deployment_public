@@ -479,156 +479,174 @@ export default function PortfolioBuilder() {
   ];
 
   // Handle creating portfolio with AI
-  const handleCreatePortfolio = () => {
+  const handleCreatePortfolio = async () => {
+    console.log("Portfolio - Starting AI creation process");
     setIsAnalyzingProfile(true);
 
-    // First check if we have the user's profile and portfolio related data
+    // First analyze user profile
     setTimeout(() => {
       setIsAnalyzingProfile(false);
       setIsGenerating(true);
+      console.log("Portfolio - Starting data generation");
 
       // Directly fetch the most up-to-date data
       const fetchAllUserData = async () => {
-        let experiencesData = [];
-        let skillsData = [];
-        let projectsData = [];
-        let educationsData = [];
-        let servicesData = [];
-        
-        if (userNumericId) {
-          try {
-            // Fetch latest experiences from userNumericId
-            const expResponse = await fetch(`/api/users/${userNumericId}/experiences`);
-            if (expResponse.ok) {
-              experiencesData = await expResponse.json();
-              console.log("Portfolio - Got latest experiences for userNumericId:", experiencesData);
-              
-              // If no experiences, try with userId=0 (for existing data)
-              if (experiencesData.length === 0) {
-                const fallbackResponse = await fetch(`/api/users/0/experiences`);
-                if (fallbackResponse.ok) {
-                  experiencesData = await fallbackResponse.json();
-                  console.log("Portfolio - Got fallback experiences for userId=0:", experiencesData);
-                }
+        try {
+          let experiencesData = [];
+          let skillsData = [];
+          let projectsData = [];
+          let educationsData = [];
+          let servicesData = [];
+          
+          if (userNumericId) {
+            console.log("Portfolio - Fetching user data for userNumericId:", userNumericId);
+            
+            // Fetch experiences with timeout
+            try {
+              const expResponse = await Promise.race([
+                fetch(`/api/users/${userNumericId}/experiences`),
+                new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000))
+              ]);
+              if (expResponse.ok) {
+                experiencesData = await expResponse.json();
+                console.log("Portfolio - Got experiences:", experiencesData?.length || 0);
               }
+            } catch (error) {
+              console.log("Portfolio - Failed to fetch experiences:", error);
+              experiencesData = [];
             }
             
-            // Fetch latest skills from userNumericId
-            const skillsResponse = await fetch(`/api/users/${userNumericId}/skills`);
-            if (skillsResponse.ok) {
-              skillsData = await skillsResponse.json();
-              console.log("Portfolio - Got latest skills for userNumericId:", skillsData);
-              
-              // If no skills, try with userId=0 (for existing data)
-              if (skillsData.length === 0) {
-                const fallbackResponse = await fetch(`/api/users/0/skills`);
-                if (fallbackResponse.ok) {
-                  skillsData = await fallbackResponse.json();
-                  console.log("Portfolio - Got fallback skills for userId=0:", skillsData);
-                }
+            // Fetch skills with timeout
+            try {
+              const skillsResponse = await Promise.race([
+                fetch(`/api/users/${userNumericId}/skills`),
+                new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000))
+              ]);
+              if (skillsResponse.ok) {
+                skillsData = await skillsResponse.json();
+                console.log("Portfolio - Got skills:", skillsData?.length || 0);
               }
+            } catch (error) {
+              console.log("Portfolio - Failed to fetch skills:", error);
+              skillsData = [];
             }
             
-            // Fetch latest educations from userNumericId
-            const educationsResponse = await fetch(`/api/users/${userNumericId}/educations`);
-            if (educationsResponse.ok) {
-              educationsData = await educationsResponse.json();
-              console.log("Portfolio - Got latest educations for userNumericId:", educationsData);
-              
-              // If no educations, try with userId=0 (for existing data)
-              if (educationsData.length === 0) {
-                const fallbackResponse = await fetch(`/api/users/0/educations`);
-                if (fallbackResponse.ok) {
-                  educationsData = await fallbackResponse.json();
-                  console.log("Portfolio - Got fallback educations for userId=0:", educationsData);
-                }
+            // Fetch projects with timeout
+            try {
+              const projectsResponse = await Promise.race([
+                fetch(`/api/users/${userNumericId}/projects`),
+                new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000))
+              ]);
+              if (projectsResponse.ok) {
+                projectsData = await projectsResponse.json();
+                console.log("Portfolio - Got projects:", projectsData?.length || 0);
               }
+            } catch (error) {
+              console.log("Portfolio - Failed to fetch projects:", error);
+              projectsData = [];
             }
             
-            // Fetch latest projects - already linked to correct userNumericId
-            const projectsResponse = await fetch(`/api/users/${userNumericId}/projects`);
-            if (projectsResponse.ok) {
-              projectsData = await projectsResponse.json();
-              console.log("Portfolio - Got latest projects:", projectsData);
+            // Fetch educations with timeout
+            try {
+              const educationsResponse = await Promise.race([
+                fetch(`/api/users/${userNumericId}/educations`),
+                new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000))
+              ]);
+              if (educationsResponse.ok) {
+                educationsData = await educationsResponse.json();
+                console.log("Portfolio - Got educations:", educationsData?.length || 0);
+              }
+            } catch (error) {
+              console.log("Portfolio - Failed to fetch educations:", error);
+              educationsData = [];
             }
             
-            // Fetch latest services from userNumericId
-            const servicesResponse = await fetch(`/api/users/${userNumericId}/services`);
-            if (servicesResponse.ok) {
-              servicesData = await servicesResponse.json();
-              console.log("Portfolio - Got latest services for userNumericId:", servicesData);
-              
-              // If no services, try with userId=0 (for existing data)
-              if (servicesData.length === 0) {
-                const fallbackResponse = await fetch(`/api/users/0/services`);
-                if (fallbackResponse.ok) {
-                  servicesData = await fallbackResponse.json();
-                  console.log("Portfolio - Got fallback services for userId=0:", servicesData);
-                }
+            // Fetch services with timeout
+            try {
+              const servicesResponse = await Promise.race([
+                fetch(`/api/users/${userNumericId}/services`),
+                new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000))
+              ]);
+              if (servicesResponse.ok) {
+                servicesData = await servicesResponse.json();
+                console.log("Portfolio - Got services:", servicesData?.length || 0);
               }
+            } catch (error) {
+              console.log("Portfolio - Failed to fetch services:", error);
+              servicesData = [];
             }
-          } catch (error) {
-            console.error("Failed to fetch latest user data:", error);
           }
-        }
 
-        // Prepare the portfolio data with user information
-        const selectedLayout = form.getValues().layout;
-        const publicUrl = form.getValues().publicUrl;
+          // Prepare the portfolio data with user information
+          const selectedLayout = form.getValues().layout;
+          const publicUrl = form.getValues().publicUrl;
+          
+          // Get all user details for AI to analyze
+          const userDetails = {
+            name: userData?.name || user?.name || '',
+            title: userData?.title || '',
+            industry: userData?.industry || '',
+            domain: userData?.domain || '',
+            location: userData?.location || '',
+            jobLevel: userData?.jobLevel || '',
+            lookingFor: userData?.lookingFor || '',
+            email: userData?.email || user?.email || '',
+            photoURL: userData?.photoURL || user?.photoURL || null,
+          };
+          
+          console.log("Portfolio - User details for AI analysis:", userDetails);
+          console.log("Portfolio - Layout selected:", selectedLayout);
         
-        // Get all user details for Musk AI to analyze
-        const userDetails = {
-          name: userData?.name || user?.name || '',
-          title: userData?.title || '',
-          industry: userData?.industry || '',
-          domain: userData?.domain || '',
-          location: userData?.location || '',
-          jobLevel: userData?.jobLevel || '',
-          lookingFor: userData?.lookingFor || '',
-          email: userData?.email || user?.email || '',
-          photoURL: userData?.photoURL || user?.photoURL || null,
-        };
-        
-        console.log("Portfolio - User details for AI analysis:", userDetails);
-        console.log("Portfolio - Layout selected:", selectedLayout);
-      
-        // Prepare portfolio data with user information
-        const portfolioData = {
-          layout: selectedLayout,
-          publicUrl: publicUrl || null,
-          isPublished: false,
-          customTitle: userDetails.name,
-          customBio: userDetails.title 
-            ? `${userDetails.title}${userDetails.industry ? ` in ${userDetails.industry}` : ''}`
-            : (userDetails.industry ? `Professional in ${userDetails.industry}` : ''),
-          customizationOptions: {
-            theme: selectedLayout === 'visual-expert' || selectedLayout === 'timeline-storyteller-2' ? 'colorful' : 'professional',
-            showContact: true
-          },
-          featuredProjects: projectsData.map((project: Project) => project.id),
-          featuredSkills: skillsData.map((skill: Skill) => skill.id),
-          featuredExperiences: experiencesData.map((exp: WorkExperience) => exp.id),
-          // Additional analyzed data fields
-          skills: skillsData,
-          experiences: experiencesData,
-          projects: projectsData,
-          educations: educationsData,
-          services: servicesData,
-          userData: userDetails,
-        };
-        
-        console.log("Portfolio - AI generated data:", portfolioData);
-        
-        // Save the analyzed data for preview templates
-        localStorage.setItem('portfolio-preview-data', JSON.stringify(portfolioData));
-        
-        // Set the updated form values to include our personalized data
-        form.setValue('isPublished', false);
-        
-        // AI generation simulation complete
-        setIsGenerating(false);
-        setGenerationComplete(true);
-        setCurrentStep(STEPS.PREVIEW);
+          // Prepare portfolio data with user information
+          const portfolioData = {
+            layout: selectedLayout,
+            publicUrl: publicUrl || null,
+            isPublished: false,
+            customTitle: userDetails.name,
+            customBio: userDetails.title 
+              ? `${userDetails.title}${userDetails.industry ? ` in ${userDetails.industry}` : ''}`
+              : (userDetails.industry ? `Professional in ${userDetails.industry}` : ''),
+            customizationOptions: {
+              theme: selectedLayout === 'visual-expert' || selectedLayout === 'timeline-storyteller-2' ? 'colorful' : 'professional',
+              showContact: true
+            },
+            featuredProjects: projectsData?.map((project: Project) => project.id) || [],
+            featuredSkills: skillsData?.map((skill: Skill) => skill.id) || [],
+            featuredExperiences: experiencesData?.map((exp: WorkExperience) => exp.id) || [],
+            // Additional analyzed data fields
+            skills: skillsData || [],
+            experiences: experiencesData || [],
+            projects: projectsData || [],
+            educations: educationsData || [],
+            services: servicesData || [],
+            userData: userDetails,
+          };
+          
+          console.log("Portfolio - AI generated data:", portfolioData);
+          
+          // Save the analyzed data for preview templates
+          try {
+            localStorage.setItem('portfolio-preview-data', JSON.stringify(portfolioData));
+            console.log("Portfolio - Saved preview data to localStorage");
+          } catch (error) {
+            console.error("Portfolio - Failed to save to localStorage:", error);
+          }
+          
+          // Set the updated form values to include our personalized data
+          form.setValue('isPublished', false);
+          
+          // AI generation simulation complete
+          console.log("Portfolio - AI generation complete, moving to preview");
+          setIsGenerating(false);
+          setGenerationComplete(true);
+          setCurrentStep(STEPS.PREVIEW);
+        } catch (error) {
+          console.error("Portfolio - Error in fetchAllUserData:", error);
+          // Even if there's an error, complete the process
+          setIsGenerating(false);
+          setGenerationComplete(true);
+          setCurrentStep(STEPS.PREVIEW);
+        }
       };
       
       // Execute the data fetching and processing
