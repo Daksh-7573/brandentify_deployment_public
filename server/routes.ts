@@ -919,6 +919,70 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get user by brand name endpoint for public profiles
+  apiRouter.get("/users/brand/:brandName", async (req: Request, res: Response) => {
+    try {
+      const brandName = req.params.brandName;
+      
+      console.log(`[GET /users/brand/:brandName] Looking up user with brand name: ${brandName}`);
+      
+      // Query database for user with this brand name
+      const result = await pool.query(
+        `SELECT 
+          id, username, email, password, 
+          phone_number as "phoneNumber", 
+          name, brand_name as "brandName", 
+          photo_url as "photoURL", 
+          profile_url as "profileUrl",
+          title, about_me as "aboutMe", 
+          location, industry, domain, 
+          looking_for as "lookingFor", 
+          what_i_offer as "whatIOffer", 
+          visiting_card_type as "visitingCardType",
+          selected_portfolio_layout as "selectedPortfolioLayout",
+          profile_completed as "profileCompleted", 
+          email_verified as "emailVerified", 
+          email_verification_token as "emailVerificationToken", 
+          email_verification_expires as "emailVerificationExpires", 
+          created_at as "createdAt"
+        FROM users WHERE brand_name = $1`,
+        [brandName]
+      );
+      
+      if (result.rows.length === 0) {
+        console.log(`[GET /users/brand/:brandName] No user found with brand name: ${brandName}`);
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      const user = result.rows[0];
+      console.log(`[GET /users/brand/:brandName] Found user with ID: ${user.id} for brand name: ${brandName}`);
+      
+      // Don't expose sensitive information in public API
+      const publicUser = {
+        id: user.id,
+        username: user.username,
+        name: user.name,
+        brandName: user.brandName,
+        photoURL: user.photoURL,
+        title: user.title,
+        aboutMe: user.aboutMe,
+        location: user.location,
+        industry: user.industry,
+        domain: user.domain,
+        lookingFor: user.lookingFor,
+        whatIOffer: user.whatIOffer,
+        selectedPortfolioLayout: user.selectedPortfolioLayout,
+        visitingCardType: user.visitingCardType,
+        createdAt: user.createdAt
+      };
+      
+      res.json(publicUser);
+    } catch (error) {
+      console.error("Error fetching user by brand name:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   apiRouter.put("/users/:id", async (req: Request, res: Response) => {
     // BYPASS API Gateway health check for user updates - critical fix
     res.set('X-Service-Bypass', 'true');

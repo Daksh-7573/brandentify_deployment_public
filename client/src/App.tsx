@@ -17,6 +17,7 @@ import Dashboard from "@/pages/dashboard";
 import Profile from "@/pages/profile";
 import ProfileNeo from "@/pages/profile-neo";
 import PublicProfile from "@/pages/public-profile";
+import BrandProfile from "@/pages/brand-profile";
 
 import PortfolioBuilder from "@/pages/portfolio-builder";
 import CreatePulsePage from "@/pages/create-pulse-new";
