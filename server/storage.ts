@@ -1672,7 +1672,7 @@ export class MemStorage implements IStorage {
         visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", 
         email_verified as "emailVerified", email_verification_token as "emailVerificationToken", 
         email_verification_expires as "emailVerificationExpires", created_at as "createdAt"
-        FROM users WHERE brand_name = $1
+        FROM users WHERE LOWER(brand_name) = LOWER($1)
       `;
       
       const result = await pool.query(query, [brandName]);
