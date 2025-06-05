@@ -405,7 +405,7 @@ export default function Services() {
       
       {/* Edit What I Offer Dialog */}
       <Dialog open={isEditWhatIOfferDialogOpen} onOpenChange={setEditWhatIOfferDialogOpen}>
-        <DialogContent className="sm:max-w-[525px] neo-glass-card bg-transparent border-white/20">
+        <DialogContent className="sm:max-w-[525px] neo-glass-card bg-[rgba(18,18,18,0.95)] backdrop-blur-md border-white/20">
           <DialogHeader>
             <DialogTitle className="text-white text-xl font-semibold">Edit General Professional Offering</DialogTitle>
             <DialogDescription className="text-gray-300">
