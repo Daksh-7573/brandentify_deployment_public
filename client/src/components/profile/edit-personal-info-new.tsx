@@ -62,14 +62,30 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
   // Parse existing combined job title on component load and when userData changes
   React.useEffect(() => {
     // Reset form state when userData changes
-    console.log("[FORM INIT] userData.lookingFor:", userData.lookingFor);
+    console.log("[FORM INIT] userData.lookingFor (raw):", userData.lookingFor);
     setName(userData.name || "");
     setLocation(userData.location || "");
     setIndustry(userData.industry || "");
     setDomain(userData.domain || "");
     setAboutMe(userData.aboutMe || "");
-    setLookingFor(userData.lookingFor || "");
-    console.log("[FORM INIT] Set lookingFor to:", userData.lookingFor || "");
+    
+    // Validate lookingFor value before setting it
+    const rawLookingFor = userData.lookingFor || "";
+    const validKeys = Object.keys(LOOKING_FOR_OPTIONS);
+    const isValidLookingFor = rawLookingFor && validKeys.includes(rawLookingFor);
+    
+    if (isValidLookingFor) {
+      setLookingFor(rawLookingFor);
+      console.log("[FORM INIT] userData.lookingFor (sanitized):", rawLookingFor);
+    } else if (rawLookingFor) {
+      console.warn("[FORM INIT] Invalid lookingFor detected, clearing:", rawLookingFor);
+      setLookingFor("");
+      console.log("[FORM INIT] userData.lookingFor (sanitized):", "");
+    } else {
+      setLookingFor("");
+      console.log("[FORM INIT] userData.lookingFor (sanitized):", "");
+    }
+    console.log("[FORM INIT] Set lookingFor to:", isValidLookingFor ? rawLookingFor : "");
     
     if (userData.title && jobTitlesData?.jobTitles) {
       const existingTitle = userData.title;
@@ -379,8 +395,21 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
               id="lookingFor"
               value={lookingFor}
               onChange={(e) => {
-                console.log("[DROPDOWN] Selected value:", e.target.value);
-                setLookingFor(e.target.value);
+                const selectedValue = e.target.value;
+                console.log("[DROPDOWN] Raw selected value:", selectedValue);
+                console.log("[DROPDOWN] Selected value type:", typeof selectedValue);
+                
+                // Validate that the selected value is a valid database key
+                const validKeys = Object.keys(LOOKING_FOR_OPTIONS);
+                if (selectedValue && !validKeys.includes(selectedValue)) {
+                  console.error("[DROPDOWN] CRITICAL: Invalid value detected:", selectedValue);
+                  console.log("[DROPDOWN] Valid options:", validKeys);
+                  // Don't set invalid values
+                  return;
+                }
+                
+                console.log("[DROPDOWN] Setting valid value:", selectedValue);
+                setLookingFor(selectedValue);
               }}
               className="!bg-[rgba(18,18,18,0.95)] !backdrop-blur-md !text-white !border-white/20 shadow-md transition-all hover:!border-white/30 w-full px-3 py-3 rounded-md border !placeholder-white/50 focus:!border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none appearance-none cursor-pointer"
               style={{ 
