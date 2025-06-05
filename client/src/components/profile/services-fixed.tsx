@@ -405,10 +405,10 @@ export default function Services() {
       
       {/* Edit What I Offer Dialog */}
       <Dialog open={isEditWhatIOfferDialogOpen} onOpenChange={setEditWhatIOfferDialogOpen}>
-        <DialogContent className="sm:max-w-[525px]">
+        <DialogContent className="sm:max-w-[525px] neo-glass-card bg-transparent border-white/20">
           <DialogHeader>
-            <DialogTitle>Edit General Professional Offering</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-white text-xl font-semibold">Edit General Professional Offering</DialogTitle>
+            <DialogDescription className="text-gray-300">
               Describe your overall professional services and expertise.
             </DialogDescription>
           </DialogHeader>
@@ -420,14 +420,18 @@ export default function Services() {
               <textarea
                 id="whatIOffer"
                 rows={5}
-                className="w-full p-3 bg-slate-800/50 border border-slate-700 rounded-lg text-white"
+                className="w-full p-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder:text-white/50 backdrop-blur-sm focus:border-white/40 focus:ring-2 focus:ring-white/20 transition-all duration-200"
                 placeholder="Describe your professional services..."
                 value={whatIOffer || ''}
                 onChange={(e) => setWhatIOffer(e.target.value)}
               />
             </div>
             <div className="flex justify-end space-x-2">
-              <Button variant="outline" onClick={() => setEditWhatIOfferDialogOpen(false)}>
+              <Button 
+                variant="outline" 
+                onClick={() => setEditWhatIOfferDialogOpen(false)}
+                className="bg-white/10 border-white/20 text-white hover:bg-white/20 hover:border-white/30 backdrop-blur-sm"
+              >
                 Cancel
               </Button>
               <Button 
