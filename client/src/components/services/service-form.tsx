@@ -262,7 +262,7 @@ export default function ServiceForm({ service, initialData, onSubmit, isPending,
                             { value: 'USD', label: 'USD (US Dollar)' },
                             { value: 'INR', label: 'INR (Indian Rupee)' }
                           ]}
-                          className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30"
+                          className="custom-select-smart-radar bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 focus:border-white/50 focus:ring-2 focus:ring-white/30"
                         />
                       </div>
                     </FormControl>

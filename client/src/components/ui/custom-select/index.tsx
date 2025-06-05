@@ -59,7 +59,7 @@ export function CustomSelect({
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
           "flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
-          className?.includes("custom-select-smart-radar") && "h-10 px-3 py-2 border border-white/20 bg-[rgba(18,18,18,0.95)] backdrop-blur-md rounded-md text-white text-sm focus:outline-none focus:ring-1 focus:ring-white/30 shadow-md transition-all hover:border-white/30"
+          className?.includes("custom-select-smart-radar") && "h-10 px-3 py-2 border border-white/20 bg-[rgba(18,18,18,0.95)] backdrop-blur-md rounded-md text-white text-sm focus:outline-none focus:ring-2 focus:ring-white/30 shadow-md transition-all hover:border-white/30 placeholder:text-white/50"
         )}
       >
         <span className="truncate">{displayText}</span>
