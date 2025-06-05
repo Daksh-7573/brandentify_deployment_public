@@ -52,7 +52,7 @@ export function CustomSelect({
   };
 
   return (
-    <div className={cn("relative w-full", className)} ref={selectRef}>
+    <div className={cn("relative w-full z-[10000]", className)} ref={selectRef}>
       {/* Trigger button */}
       <button
         type="button"

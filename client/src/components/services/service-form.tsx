@@ -246,7 +246,7 @@ export default function ServiceForm({ service, initialData, onSubmit, isPending,
           
           {/* Currency Selection */}
           <div className="grid grid-cols-2 gap-4">
-            <div>
+            <div className="relative z-[10001]">
               <FormField
                 control={form.control}
                 name="currency"
