@@ -92,14 +92,12 @@ const ProfileInfoSection: React.FC<ProfileInfoSectionProps> = ({ userData, onEdi
           )}
           
           {/* Looking For */}
-          {userData.lookingFor && (
-            <div className="border-t pt-4">
-              <div className="text-sm font-medium mb-2">Looking For</div>
-              <div className="text-sm text-muted-foreground">
-                {convertDbToDisplayValue(userData.lookingFor)}
-              </div>
+          <div className="border-t pt-4">
+            <div className="text-sm font-medium mb-2">I am looking for</div>
+            <div className="text-sm text-muted-foreground">
+              {userData.lookingFor ? convertDbToDisplayValue(userData.lookingFor) : 'Not Specified'}
             </div>
-          )}
+          </div>
         </div>
       </CardContent>
     </Card>
