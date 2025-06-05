@@ -1144,6 +1144,96 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // PATCH endpoint for user updates (partial updates like Contact Information)
+  apiRouter.patch("/users/:id", async (req: Request, res: Response) => {
+    // Disable all caching for user updates
+    res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+    
+    try {
+      const idParam = req.params.id;
+      const userData = req.body;
+      
+      console.log(`[PATCH /users/:id] Updating user with ID: ${idParam}`);
+      console.log(`[PATCH /users/:id] Update data:`, userData);
+      
+      let user;
+      let updatedUser;
+      
+      // Improved detection of Firebase UIDs - they're long and contain non-numeric characters
+      const isFirebaseUid = idParam.length > 20 && /[^0-9]/.test(idParam);
+      
+      if (isFirebaseUid) {
+        // If it looks like a Firebase UID, check by username
+        console.log(`[PATCH /users/:id] ID appears to be a Firebase UID: ${idParam}`);
+        user = await storage.getUserByUsername(idParam);
+        
+        if (!user) {
+          console.log(`[PATCH /users/:id] No user found with Firebase UID: ${idParam}`);
+          return res.status(404).json({ message: "User not found" });
+        }
+        
+        console.log(`[PATCH /users/:id] Found existing user with Firebase UID: ${idParam}, numeric ID: ${user.id}`);
+        updatedUser = await storage.updateUser(user.id, userData);
+      } else {
+        // Numeric ID
+        const userId = parseInt(idParam);
+        if (isNaN(userId)) {
+          return res.status(400).json({ message: "Invalid user ID" });
+        }
+        
+        console.log(`[PATCH /users/:id] Updating user with numeric ID: ${userId}`);
+        updatedUser = await storage.updateUser(userId, userData);
+      }
+      
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      console.log(`[PATCH /users/:id] Successfully updated user:`, updatedUser);
+      
+      // Return fresh data from database
+      try {
+        const freshDataQuery = `
+          SELECT 
+            id, username, email, password, 
+            phone_number as "phoneNumber", 
+            name, brand_name as "brandName", 
+            photo_url as "photoURL", 
+            title, about_me as "aboutMe", 
+            location, industry, domain, 
+            looking_for as "lookingFor", 
+            what_i_offer as "whatIOffer", 
+            visiting_card_type as "visitingCardType", 
+            profile_completed as "profileCompleted", 
+            email_verified as "emailVerified", 
+            email_verification_token as "emailVerificationToken", 
+            email_verification_expires as "emailVerificationExpires", 
+            created_at as "createdAt"
+          FROM users 
+          WHERE id = $1
+        `;
+        
+        const freshResult = await pool.query(freshDataQuery, [updatedUser.id]);
+        
+        if (freshResult.rows.length > 0) {
+          const freshUser = freshResult.rows[0];
+          console.log(`[PATCH /users/:id] Returning fresh data from DB`);
+          res.json(freshUser);
+        } else {
+          res.json(updatedUser);
+        }
+      } catch (freshError) {
+        console.error(`[PATCH /users/:id] Fresh data fetch failed:`, freshError);
+        res.json(updatedUser);
+      }
+    } catch (error) {
+      console.error("Error updating user (PATCH):", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   // Resume routes
   apiRouter.post("/resumes", async (req: Request, res: Response) => {
     try {
