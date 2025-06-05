@@ -65,7 +65,7 @@ const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({ userData, onE
               <div className="flex-1">
                 <div className="text-xs text-white/60 mb-1">Profile URL</div>
                 <span className="text-white font-medium">
-                  {`${window.location.origin}/card/${userData.brandName.toLowerCase().replace(/\s+/g, '-')}`}
+                  {`${window.location.origin}/${userData.brandName.toLowerCase().replace(/\s+/g, '-')}`}
                 </span>
               </div>
             </div>
