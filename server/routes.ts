@@ -926,7 +926,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       console.log(`[GET /users/brand/:brandName] Looking up user with brand name: ${brandName}`);
       
-      // Query database for user with this brand name
+      // Query database for user with this brand name (case-insensitive)
       const result = await pool.query(
         `SELECT 
           id, username, email, password, 
@@ -945,7 +945,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           email_verification_token as "emailVerificationToken", 
           email_verification_expires as "emailVerificationExpires", 
           created_at as "createdAt"
-        FROM users WHERE brand_name = $1`,
+        FROM users WHERE LOWER(brand_name) = LOWER($1)`,
         [brandName]
       );
       
