@@ -1,10 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
-import { useParams } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { User, MapPin, Briefcase, Heart, Mail, Phone } from "lucide-react";
+import { User, MapPin, Briefcase, Heart } from "lucide-react";
 
 // Portfolio template imports
 import MinimalistPro from "@/components/portfolio/templates/minimalist-pro";
@@ -57,10 +56,11 @@ interface PortfolioData {
   userData: UserData;
 }
 
-export default function BrandProfile() {
-  const params = useParams();
-  const brandName = params.brandName;
+interface BrandProfileProps {
+  brandName: string;
+}
 
+export default function BrandProfile({ brandName }: BrandProfileProps) {
   console.log(`[BrandProfile] Loading profile for brand name: ${brandName}`);
 
   // Fetch user data by brand name
@@ -109,11 +109,11 @@ export default function BrandProfile() {
     featuredProjects: [],
     featuredSkills: [],
     featuredExperiences: [],
-    skills: userSkills,
-    experiences: userExperiences,
-    projects: userProjects,
-    educations: userEducations,
-    services: userServices,
+    skills: Array.isArray(userSkills) ? userSkills : [],
+    experiences: Array.isArray(userExperiences) ? userExperiences : [],
+    projects: Array.isArray(userProjects) ? userProjects : [],
+    educations: Array.isArray(userEducations) ? userEducations : [],
+    services: Array.isArray(userServices) ? userServices : [],
     userData: userData
   } : null;
 
@@ -157,64 +157,135 @@ export default function BrandProfile() {
     );
   }
 
-  // Show basic profile view for now
-  return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto py-6 max-w-6xl">
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex flex-col items-center md:flex-row md:items-start gap-6">
-              <Avatar className="h-24 w-24">
-                <AvatarImage src={userData?.photoURL || undefined} alt={userData?.name || userData?.username} />
-                <AvatarFallback>
-                  {userData?.name?.charAt(0) || userData?.username?.charAt(0) || 'U'}
-                </AvatarFallback>
-              </Avatar>
-              
-              <div className="flex-1 text-center md:text-left">
-                <h1 className="text-2xl font-bold">{userData?.name || userData?.username}</h1>
-                {userData?.title && (
-                  <p className="text-lg text-muted-foreground mt-1">{userData.title}</p>
-                )}
-                
-                <div className="flex flex-wrap gap-2 justify-center md:justify-start mt-3">
-                  {userData?.location && (
-                    <Badge variant="outline" className="gap-1">
-                      <MapPin className="w-3 h-3" />
-                      {userData.location}
-                    </Badge>
-                  )}
-                  {userData?.industry && (
-                    <Badge variant="outline" className="gap-1">
-                      <Briefcase className="w-3 h-3" />
-                      {userData.industry}
-                    </Badge>
-                  )}
-                  {userData?.lookingFor && (
-                    <Badge variant="outline" className="gap-1">
-                      <Heart className="w-3 h-3" />
-                      {userData.lookingFor.replace('_', ' ')}
-                    </Badge>
-                  )}
-                </div>
-                
-                {userData?.aboutMe && (
-                  <p className="mt-4 text-muted-foreground">{userData.aboutMe}</p>
-                )}
-
-                <div className="mt-4 p-4 bg-muted rounded-lg">
-                  <p className="text-sm text-muted-foreground">
-                    Portfolio Layout: <span className="font-medium">{userData?.selectedPortfolioLayout || 'professional'}</span>
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Profile URL: {window.location.host}/{userData?.brandName}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+  // Render loading state for portfolio data
+  if (isPortfolioLoading || !portfolioData) {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="container mx-auto py-6 max-w-6xl">
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          </div>
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
+
+  // Render the appropriate portfolio template based on selected layout
+  const renderPortfolioTemplate = () => {
+    const layout = portfolioData.layout;
+    
+    // Prepare data for portfolio templates
+    const templateProps = {
+      userInfo: {
+        id: userData.id,
+        name: userData.name || userData.username,
+        title: userData.title,
+        industry: userData.industry,
+        domain: userData.domain,
+        location: userData.location,
+        email: userData.email || null,
+        photoURL: userData.photoURL,
+        lookingFor: userData.lookingFor,
+        jobLevel: userData.jobLevel,
+        aboutMe: userData.aboutMe,
+        whatIOffer: userData.whatIOffer
+      },
+      userSkills: portfolioData.skills,
+      userExperiences: portfolioData.experiences,
+      userProjects: portfolioData.projects,
+      userEducations: portfolioData.educations,
+      userServices: portfolioData.services
+    };
+    
+    switch (layout) {
+      case 'minimalist':
+        return <MinimalistPro 
+          userInfo={templateProps.userInfo}
+          userSkills={templateProps.userSkills}
+          userExperiences={templateProps.userExperiences}
+          userProjects={templateProps.userProjects}
+          userEducations={templateProps.userEducations}
+          userServices={templateProps.userServices}
+        />;
+      case 'timeline':
+        return <TimelineStoryteller 
+          userInfo={templateProps.userInfo}
+          userSkills={templateProps.userSkills}
+          userExperiences={templateProps.userExperiences}
+          userProjects={templateProps.userProjects}
+          userEducations={templateProps.userEducations}
+          userServices={templateProps.userServices}
+        />;
+      case 'visual':
+        return <VisualExpert 
+          userInfo={templateProps.userInfo}
+          userSkills={templateProps.userSkills}
+          userExperiences={templateProps.userExperiences}
+          userProjects={templateProps.userProjects}
+          userEducations={templateProps.userEducations}
+          userServices={templateProps.userServices}
+        />;
+      case 'freelancer':
+        return <FreelancerHub 
+          userInfo={templateProps.userInfo}
+          userSkills={templateProps.userSkills}
+          userExperiences={templateProps.userExperiences}
+          userProjects={templateProps.userProjects}
+          userEducations={templateProps.userEducations}
+          userServices={templateProps.userServices}
+        />;
+      case 'scholar':
+        return <Scholar 
+          userInfo={templateProps.userInfo}
+          userSkills={templateProps.userSkills}
+          userExperiences={templateProps.userExperiences}
+          userProjects={templateProps.userProjects}
+          userEducations={templateProps.userEducations}
+          userServices={templateProps.userServices}
+        />;
+      case 'animated':
+        return <AnimatedOdyssey 
+          name={templateProps.userInfo.name}
+          title={templateProps.userInfo.title || ''}
+          industry={templateProps.userInfo.industry || ''}
+          domain={templateProps.userInfo.domain || ''}
+          location={templateProps.userInfo.location || ''}
+          email={templateProps.userInfo.email || ''}
+          photoURL={templateProps.userInfo.photoURL || ''}
+          lookingFor={templateProps.userInfo.lookingFor || ''}
+          jobLevel={templateProps.userInfo.jobLevel || ''}
+          aboutMe={templateProps.userInfo.aboutMe || ''}
+        />;
+      case 'dynamic':
+        return <DynamicInnovator 
+          userInfo={templateProps.userInfo}
+          userSkills={templateProps.userSkills}
+          userExperiences={templateProps.userExperiences}
+          userProjects={templateProps.userProjects}
+          userEducations={templateProps.userEducations}
+          userServices={templateProps.userServices}
+        />;
+      case 'corporate':
+        return <CorporateExecutive 
+          userInfo={templateProps.userInfo}
+          userSkills={templateProps.userSkills}
+          userExperiences={templateProps.userExperiences}
+          userProjects={templateProps.userProjects}
+          userEducations={templateProps.userEducations}
+          userServices={templateProps.userServices}
+        />;
+      case 'professional':
+      default:
+        return <CorporateExecutive 
+          userInfo={templateProps.userInfo}
+          userSkills={templateProps.userSkills}
+          userExperiences={templateProps.userExperiences}
+          userProjects={templateProps.userProjects}
+          userEducations={templateProps.userEducations}
+          userServices={templateProps.userServices}
+        />;
+    }
+  };
+
+  return renderPortfolioTemplate();
 }
