@@ -57,42 +57,19 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
     return LOOKING_FOR_OPTIONS[dbValue as keyof typeof LOOKING_FOR_OPTIONS] || dbValue;
   };
 
-  // Sanitize lookingFor value to prevent array index corruption
-  const sanitizeLookingForValue = (value: string | null | undefined): string => {
-    if (!value) return "";
-    
-    // If it's an array index (number as string), convert to empty string
-    if (/^\d+$/.test(value)) {
-      console.warn("[SANITIZE] Array index detected in lookingFor, resetting:", value);
-      return "";
-    }
-    
-    // Validate against allowed values
-    const validValues = Object.keys(LOOKING_FOR_OPTIONS);
-    if (validValues.includes(value)) {
-      return value;
-    }
-    
-    console.warn("[SANITIZE] Invalid lookingFor value detected, resetting:", value);
-    return "";
-  };
-
-  const [lookingFor, setLookingFor] = useState(sanitizeLookingForValue(userData.lookingFor));
+  const [lookingFor, setLookingFor] = useState(userData.lookingFor || "");
 
   // Parse existing combined job title on component load and when userData changes
   React.useEffect(() => {
-    // Reset form state when userData changes with sanitization
-    console.log("[FORM INIT] userData.lookingFor (raw):", userData.lookingFor);
-    const sanitizedLookingFor = sanitizeLookingForValue(userData.lookingFor);
-    console.log("[FORM INIT] userData.lookingFor (sanitized):", sanitizedLookingFor);
-    
+    // Reset form state when userData changes
+    console.log("[FORM INIT] userData.lookingFor:", userData.lookingFor);
     setName(userData.name || "");
     setLocation(userData.location || "");
     setIndustry(userData.industry || "");
     setDomain(userData.domain || "");
     setAboutMe(userData.aboutMe || "");
-    setLookingFor(sanitizedLookingFor);
-    console.log("[FORM INIT] Set lookingFor to:", sanitizedLookingFor);
+    setLookingFor(userData.lookingFor || "");
+    console.log("[FORM INIT] Set lookingFor to:", userData.lookingFor || "");
     
     if (userData.title && jobTitlesData?.jobTitles) {
       const existingTitle = userData.title;
@@ -402,12 +379,8 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
               id="lookingFor"
               value={lookingFor}
               onChange={(e) => {
-                const selectedValue = e.target.value;
-                console.log("[DROPDOWN] Raw selected value:", selectedValue);
-                console.log("[DROPDOWN] Selected value type:", typeof selectedValue);
-                console.log("[DROPDOWN] Selected option element:", e.target.selectedOptions[0]);
-                console.log("[DROPDOWN] Available options:", Object.keys(LOOKING_FOR_OPTIONS));
-                setLookingFor(selectedValue);
+                console.log("[DROPDOWN] Selected value:", e.target.value);
+                setLookingFor(e.target.value);
               }}
               className="!bg-[rgba(18,18,18,0.95)] !backdrop-blur-md !text-white !border-white/20 shadow-md transition-all hover:!border-white/30 w-full px-3 py-3 rounded-md border !placeholder-white/50 focus:!border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none appearance-none cursor-pointer"
               style={{ 
@@ -483,17 +456,11 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
               console.log("[BUTTON] Valid lookingFor values:", validLookingForValues);
               console.log("[BUTTON] Is lookingFor valid?", isValidLookingFor);
               
-              // Critical fix: Only send valid database values and prevent array indices
+              // Critical fix: Only send valid database values
               if (isValidLookingFor) {
                 updateData.lookingFor = lookingFor; // Keep the valid value
                 console.log("[BUTTON] Using valid lookingFor value:", lookingFor);
               } else if (lookingFor) {
-                // Check if it's an array index (number as string)
-                if (/^\d+$/.test(lookingFor.toString())) {
-                  console.error("[BUTTON] CRITICAL: Array index detected instead of database value:", lookingFor);
-                  alert("System error: Invalid dropdown state detected. Please refresh the page and try again.");
-                  return;
-                }
                 console.error("[BUTTON] CRITICAL: Invalid lookingFor detected, blocking save:", lookingFor);
                 alert("Invalid dropdown value detected. Please select a valid option.");
                 return;
@@ -522,23 +489,13 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
               const result = await response.json();
               console.log("[BUTTON] API response:", result);
 
-              // Force complete cache refresh for all user data queries
-              console.log("[BUTTON] Invalidating all user-related cache entries");
-              
+              // Invalidate queries to refresh data - match profile page query key
               if (user?.uid) {
                 await queryClient.invalidateQueries({ queryKey: ['/api/users', user.uid] });
-                await queryClient.invalidateQueries({ queryKey: [`/api/users/${user.uid}`] });
               }
               await queryClient.invalidateQueries({ queryKey: [`/api/users/${userData.id}`] });
               await queryClient.invalidateQueries({ queryKey: ['/api/users', userData.username] });
               await queryClient.invalidateQueries({ queryKey: ['/api/users'] });
-              
-              // Force immediate refetch to ensure fresh data
-              if (user?.uid) {
-                await queryClient.refetchQueries({ queryKey: [`/api/users/${user.uid}`] });
-              }
-              
-              console.log("[BUTTON] Cache invalidation complete");
 
               toast({
                 title: "Profile Updated",
