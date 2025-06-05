@@ -12,6 +12,7 @@ export interface UserData {
   industry: string | null;
   lookingFor: string | null;
   phoneNumber: string | null;
+  profileUrl?: string | null;
   whatIOffer?: string | null;
   company?: string | null;
   domain?: string | null;

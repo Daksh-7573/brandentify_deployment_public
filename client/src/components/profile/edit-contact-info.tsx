@@ -16,6 +16,7 @@ interface EditContactInfoProps {
 const EditContactInfo: React.FC<EditContactInfoProps> = ({ userData, onCancel, onSave }) => {
   const [phoneNumber, setPhoneNumber] = useState(userData.phoneNumber || "");
   const [brandName, setBrandName] = useState(userData.brandName || "");
+  const [profileUrl, setProfileUrl] = useState(userData.profileUrl || "");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
@@ -24,7 +25,8 @@ const EditContactInfo: React.FC<EditContactInfoProps> = ({ userData, onCancel, o
     try {
       await apiRequest('PATCH', `/api/users/${userData.username}`, {
         phoneNumber: phoneNumber || null,
-        brandName: brandName || null
+        brandName: brandName || null,
+        profileUrl: profileUrl || null
       });
       
       toast({
@@ -97,6 +99,19 @@ const EditContactInfo: React.FC<EditContactInfoProps> = ({ userData, onCancel, o
               placeholder="Enter your brand or company name..."
               value={brandName}
               onChange={(e) => setBrandName(e.target.value)}
+              className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20"
+            />
+          </div>
+
+          {/* Profile URL */}
+          <div className="space-y-2">
+            <Label htmlFor="profileUrl" className="text-white">Profile URL</Label>
+            <Input
+              id="profileUrl"
+              type="url"
+              placeholder="Enter your portfolio or LinkedIn URL..."
+              value={profileUrl}
+              onChange={(e) => setProfileUrl(e.target.value)}
               className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20"
             />
           </div>

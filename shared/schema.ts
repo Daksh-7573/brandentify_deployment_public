@@ -14,6 +14,7 @@ export const users = pgTable("users", {
   name: text("name"),
   brandName: text("brand_name").unique(), // Professional brand name for URL
   photoURL: text("photo_url"),
+  profileUrl: text("profile_url"), // Portfolio or LinkedIn URL
   title: text("title"), // Job title
   aboutMe: text("about_me"), // About Me section - max 350 words
   location: text("location"), // User location (city/state name)
