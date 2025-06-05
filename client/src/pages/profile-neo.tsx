@@ -45,36 +45,16 @@ import { JobTitleCombobox } from "@/components/ui/job-title-combobox";
 import { ProfilePageSkeleton } from "@/components/ui/skeleton-loaders";
 import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
 
-// Define "I am looking for" categories
+// Define "I am looking for" categories - matching the form constants
 const LOOKING_FOR_CATEGORIES = [
-  // Career & Job Seeking category
-  { value: "job_opportunities", label: "💼 Job Opportunities" },
-  { value: "job_seekers", label: "💼 Job Seekers / Candidates" },
-  { value: "internships", label: "💼 Internships" },
-  { value: "interns", label: "💼 Interns" },
-  { value: "mentors", label: "💼 Career Mentors" },
-  { value: "mentees", label: "💼 Career Mentees" },
-  
-  // Business & Investment category  
-  { value: "investors", label: "🚀 Investors" },
-  { value: "startups", label: "🚀 Startups" },
-  { value: "co_founders", label: "🚀 Co-Founders" },
-  { value: "business_partners", label: "🚀 Business Partners" },
-  { value: "advisors", label: "🚀 Legal/Financial Advisors" },
-  { value: "tech_partners", label: "🚀 Technical Partners" },
-  
-  // Learning & Upskilling category
-  { value: "skill_trainers", label: "🎓 Skill Trainers" },
-  { value: "learners", label: "🎓 Students/Learners" },
-  { value: "study_groups", label: "🎓 Study Groups" },
-  
-  // Networking & Collaborations category
-  { value: "industry_experts", label: "🤝 Industry Experts" },
-  { value: "share_expertise", label: "🤝 Sharing My Expertise" },
-  
-  // Freelance & Side Hustle category
-  { value: "freelance_gigs", label: "💰 Freelance Gigs" },
-  { value: "hiring_freelancers", label: "💰 Hiring Freelancers" }
+  { value: "job_opportunities", label: "Job Opportunities" },
+  { value: "networking", label: "Networking" },
+  { value: "mentorship", label: "Mentorship" },
+  { value: "collaboration", label: "Collaboration" },
+  { value: "investment", label: "Investment" },
+  { value: "learning", label: "Learning" },
+  { value: "career_advice", label: "Career Advice" },
+  { value: "business_partnerships", label: "Business Partnerships" }
 ];
 
 import { INDUSTRY_DOMAINS, INDUSTRIES } from '@shared/constants';
