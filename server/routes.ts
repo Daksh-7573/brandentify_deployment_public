@@ -919,66 +919,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Public profile endpoint - get user by brand name
-  apiRouter.get("/public-profile/:brandName", async (req: Request, res: Response) => {
-    try {
-      const brandName = req.params.brandName;
-      console.log(`[GET /public-profile/:brandName] Fetching public profile for brand: ${brandName}`);
-      
-      // Validate brand name format
-      if (!brandName || brandName.length < 2) {
-        return res.status(400).json({ message: "Invalid brand name format" });
-      }
-      
-      // Query user by brand name (case-insensitive)
-      let user;
-      try {
-        const result = await pool.query(
-          'SELECT * FROM users WHERE LOWER(brand_name) = LOWER($1)', 
-          [brandName]
-        );
-        
-        if (result.rows.length === 0) {
-          console.log(`[GET /public-profile/:brandName] No user found with brand name: ${brandName}`);
-          return res.status(404).json({ message: "Profile not found" });
-        }
-        
-        user = result.rows[0];
-        console.log(`[GET /public-profile/:brandName] Found user with ID: ${user.id} for brand: ${brandName}`);
-      } catch (dbError) {
-        console.error(`[GET /public-profile/:brandName] Database error:`, dbError);
-        return res.status(500).json({ message: "Database error" });
-      }
-      
-      // Convert database field names to camelCase for frontend
-      const publicUser = {
-        id: user.id,
-        username: user.username,
-        email: user.email, // Keep for internal use, filter in frontend if needed
-        name: user.name,
-        phoneNumber: user.phone_number,
-        brandName: user.brand_name,
-        photoURL: user.photo_url,
-        title: user.title || "Professional",
-        aboutMe: user.about_me,
-        location: user.location || "",
-        industry: user.industry,
-        domain: user.domain,
-        lookingFor: user.looking_for,
-        whatIOffer: user.what_i_offer,
-        visitingCardType: user.visiting_card_type || "professional-renewed",
-        profileCompleted: user.profile_completed,
-        createdAt: user.created_at
-      };
-      
-      console.log(`[GET /public-profile/:brandName] Returning public profile for: ${brandName}`);
-      return res.json(publicUser);
-    } catch (error) {
-      console.error("Error in public profile endpoint:", error);
-      res.status(500).json({ message: "Internal server error fetching public profile" });
-    }
-  });
-
   apiRouter.put("/users/:id", async (req: Request, res: Response) => {
     // BYPASS API Gateway health check for user updates - critical fix
     res.set('X-Service-Bypass', 'true');
