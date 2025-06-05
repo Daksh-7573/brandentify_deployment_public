@@ -45,16 +45,16 @@ import { JobTitleCombobox } from "@/components/ui/job-title-combobox";
 import { ProfilePageSkeleton } from "@/components/ui/skeleton-loaders";
 import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
 
-// Define "I am looking for" categories - matching the form constants
+// Define "I am looking for" categories - matching the form constants with icons
 const LOOKING_FOR_CATEGORIES = [
-  { value: "job_opportunities", label: "Job Opportunities" },
-  { value: "networking", label: "Networking" },
-  { value: "mentorship", label: "Mentorship" },
-  { value: "collaboration", label: "Collaboration" },
-  { value: "investment", label: "Investment" },
-  { value: "learning", label: "Learning" },
-  { value: "career_advice", label: "Career Advice" },
-  { value: "business_partnerships", label: "Business Partnerships" }
+  { value: "job_opportunities", label: "Job Opportunities", icon: "💼" },
+  { value: "networking", label: "Networking", icon: "🤝" },
+  { value: "mentorship", label: "Mentorship", icon: "🎯" },
+  { value: "collaboration", label: "Collaboration", icon: "👥" },
+  { value: "investment", label: "Investment", icon: "💰" },
+  { value: "learning", label: "Learning", icon: "📚" },
+  { value: "career_advice", label: "Career Advice", icon: "💡" },
+  { value: "business_partnerships", label: "Business Partnerships", icon: "🚀" }
 ];
 
 import { INDUSTRY_DOMAINS, INDUSTRIES } from '@shared/constants';
@@ -219,12 +219,13 @@ export default function ProfileNeo() {
   const profileCompletion = calculateOverallProfileCompletion(userData);
   const portfolioDataMissing = !userData?.hasPortfolio;
   
-  // Find looking for category label
+  // Find looking for category with icon and label
   console.log("[PROFILE NEO DEBUG] userData?.lookingFor:", userData?.lookingFor);
   const lookingForCategory = LOOKING_FOR_CATEGORIES.find(cat => cat.value === userData?.lookingFor);
   console.log("[PROFILE NEO DEBUG] Found category:", lookingForCategory);
   const lookingForLabel = lookingForCategory?.label || "Not specified";
-  console.log("[PROFILE NEO DEBUG] Final label:", lookingForLabel);
+  const lookingForIcon = lookingForCategory?.icon || "";
+  console.log("[PROFILE NEO DEBUG] Final label:", lookingForLabel, "Icon:", lookingForIcon);
 
   const handleSubmitAboutMe = () => {
     updateAboutMeMutation.mutate(aboutMe || "");
@@ -420,7 +421,8 @@ export default function ProfileNeo() {
                         </div>
                         <div className="flex flex-wrap gap-2">
                           {userData?.lookingFor ? (
-                            <span className="px-2 py-1 text-xs rounded-full bg-white/10 border border-white/20 text-white">
+                            <span className="px-2 py-1 text-xs rounded-full bg-white/10 border border-white/20 text-white flex items-center gap-1">
+                              <span className="text-sm">{lookingForIcon}</span>
                               {lookingForLabel}
                             </span>
                           ) : (
