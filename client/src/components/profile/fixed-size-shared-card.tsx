@@ -426,7 +426,14 @@ const FixedSizeSharedCard: React.FC<FixedSizeSharedCardProps> = ({
             {/* Profile Link */}
             <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "13px" }}>
               <Globe size={14} style={{ color: "#3b82f6" }} />
-              <span style={{ color: "#3b82f6" }}>{profileLink}</span>
+              <a 
+                href={`/${userData.brandName}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: "#3b82f6", textDecoration: "underline", cursor: "pointer" }}
+              >
+                {profileLink}
+              </a>
             </div>
           </div>
         </div>
@@ -709,7 +716,14 @@ const FixedSizeSharedCard: React.FC<FixedSizeSharedCardProps> = ({
             {/* Profile Link */}
             <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "13px" }}>
               <Globe size={14} style={{ color: "#64748b" }} />
-              <span style={{ color: "#3b82f6" }}>{profileLink}</span>
+              <a 
+                href={`/${userData.brandName}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: "#3b82f6", textDecoration: "underline", cursor: "pointer" }}
+              >
+                {profileLink}
+              </a>
             </div>
           </div>
         </div>
