@@ -133,7 +133,14 @@ const FixedSizeSharedCard: React.FC<FixedSizeSharedCardProps> = ({
             {/* Profile Link */}
             <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "13px" }}>
               <Globe size={14} style={{ opacity: 0.7 }} />
-              <span>{profileLink}</span>
+              <a 
+                href={`/${userData.brandName}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: "inherit", textDecoration: "underline", cursor: "pointer" }}
+              >
+                {profileLink}
+              </a>
             </div>
           </div>
         </div>

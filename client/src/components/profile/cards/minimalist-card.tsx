@@ -91,7 +91,14 @@ const MinimalistCard: React.FC<MinimalistCardProps> = ({ userData }) => {
           {/* Profile Link */}
           <div className="flex items-center gap-3 text-sm">
             <Globe className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-            <span className="text-blue-600 dark:text-blue-400">{profileLink}</span>
+            <a 
+              href={`/${userData.brandName}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors duration-200 cursor-pointer underline decoration-blue-600/50 hover:decoration-blue-700"
+            >
+              {profileLink}
+            </a>
           </div>
         </div>
       </div>

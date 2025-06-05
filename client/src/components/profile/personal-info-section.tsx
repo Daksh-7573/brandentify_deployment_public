@@ -64,9 +64,14 @@ const PersonalInfoSection: React.FC<PersonalInfoSectionProps> = ({ userData, onE
               <Globe className="h-5 w-5 text-white/70" />
               <div className="flex-1">
                 <div className="text-xs text-white/60 mb-1">Profile URL</div>
-                <span className="text-white font-medium">
+                <a 
+                  href={`/${userData.brandName.toLowerCase().replace(/\s+/g, '-')}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-400 hover:text-blue-300 font-medium transition-colors duration-200 cursor-pointer underline decoration-blue-400/50 hover:decoration-blue-300"
+                >
                   {`${window.location.origin}/${userData.brandName.toLowerCase().replace(/\s+/g, '-')}`}
-                </span>
+                </a>
               </div>
             </div>
           )}
