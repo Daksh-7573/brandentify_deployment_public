@@ -4,7 +4,8 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { UserData } from "@/types/user";
-import { INDUSTRIES, INDUSTRY_DOMAINS, LOOKING_FOR_OPTIONS } from "@shared/constants";
+import { INDUSTRIES, INDUSTRY_DOMAINS } from "@shared/constants";
+import { LOOKING_FOR_OPTIONS } from "@/lib/constants";
 import { useAuth } from "@/hooks/use-auth";
 import LocationAutocomplete from "@/components/ui/location-autocomplete";
 
