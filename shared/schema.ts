@@ -23,6 +23,7 @@ export const users = pgTable("users", {
   lookingFor: text("looking_for"), // What the user is looking for (networking type)
   whatIOffer: text("what_i_offer"), // What skills/services the user offers - max 250 words
   visitingCardType: text("visiting_card_type"), // Type of digital visiting card
+  selectedPortfolioLayout: text("selected_portfolio_layout").default("professional"), // User's preferred portfolio template
   profileCompleted: integer("profile_completed").default(0), // Percentage
   hasGeneratedResume: boolean("has_generated_resume").default(false), // Whether a resume has been auto-generated
   resumeUrl: text("resume_url"), // URL to the generated resume
