@@ -23,7 +23,21 @@ const ProfileInfoSection: React.FC<ProfileInfoSectionProps> = ({ userData, onEdi
       "career_advice": "Career Advice",
       "business_partnerships": "Business Partnerships"
     };
-    return lookingForOptions[dbValue as keyof typeof lookingForOptions] || dbValue;
+    
+    // Check if it's a valid database value
+    const displayValue = lookingForOptions[dbValue as keyof typeof lookingForOptions];
+    if (displayValue) {
+      return displayValue;
+    }
+    
+    // If it's an invalid array index, return "Not Specified"
+    if (/^\d+$/.test(dbValue)) {
+      console.warn(`[ProfileInfoSection] Invalid array index detected in lookingFor: ${dbValue}`);
+      return "Not Specified";
+    }
+    
+    // Return the original value if it's not a recognized option
+    return dbValue || "Not Specified";
   };
   return (
     <Card className="shadow-sm">

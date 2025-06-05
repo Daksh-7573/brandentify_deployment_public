@@ -460,11 +460,17 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
               console.log("[BUTTON] Valid lookingFor values:", validLookingForValues);
               console.log("[BUTTON] Is lookingFor valid?", isValidLookingFor);
               
-              // Critical fix: Only send valid database values
+              // Critical fix: Only send valid database values and prevent array indices
               if (isValidLookingFor) {
                 updateData.lookingFor = lookingFor; // Keep the valid value
                 console.log("[BUTTON] Using valid lookingFor value:", lookingFor);
               } else if (lookingFor) {
+                // Check if it's an array index (number as string)
+                if (/^\d+$/.test(lookingFor.toString())) {
+                  console.error("[BUTTON] CRITICAL: Array index detected instead of database value:", lookingFor);
+                  alert("System error: Invalid dropdown state detected. Please refresh the page and try again.");
+                  return;
+                }
                 console.error("[BUTTON] CRITICAL: Invalid lookingFor detected, blocking save:", lookingFor);
                 alert("Invalid dropdown value detected. Please select a valid option.");
                 return;
@@ -493,13 +499,23 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
               const result = await response.json();
               console.log("[BUTTON] API response:", result);
 
-              // Invalidate queries to refresh data - match profile page query key
+              // Force complete cache refresh for all user data queries
+              console.log("[BUTTON] Invalidating all user-related cache entries");
+              
               if (user?.uid) {
                 await queryClient.invalidateQueries({ queryKey: ['/api/users', user.uid] });
+                await queryClient.invalidateQueries({ queryKey: [`/api/users/${user.uid}`] });
               }
               await queryClient.invalidateQueries({ queryKey: [`/api/users/${userData.id}`] });
               await queryClient.invalidateQueries({ queryKey: ['/api/users', userData.username] });
               await queryClient.invalidateQueries({ queryKey: ['/api/users'] });
+              
+              // Force immediate refetch to ensure fresh data
+              if (user?.uid) {
+                await queryClient.refetchQueries({ queryKey: [`/api/users/${user.uid}`] });
+              }
+              
+              console.log("[BUTTON] Cache invalidation complete");
 
               toast({
                 title: "Profile Updated",
