@@ -77,27 +77,27 @@ const EditContactInfo: React.FC<EditContactInfoProps> = ({ userData, onCancel, o
 
           {/* Phone Number */}
           <div className="space-y-2">
-            <label htmlFor="phoneNumber" className="text-white text-sm font-medium">Phone Number</label>
-            <input
+            <Label htmlFor="phoneNumber" className="text-white">Phone Number</Label>
+            <Input
               id="phoneNumber"
               type="tel"
               placeholder="Enter your phone number..."
               value={phoneNumber}
               onChange={(e) => setPhoneNumber(e.target.value)}
-              className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 px-3 pr-10 rounded-md border appearance-none cursor-pointer focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none text-sm leading-relaxed placeholder-white/50"
+              className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20"
             />
           </div>
 
           {/* Brand Name */}
           <div className="space-y-2">
-            <label htmlFor="brandName" className="text-white text-sm font-medium">Brand Name</label>
-            <input
+            <Label htmlFor="brandName" className="text-white">Brand Name</Label>
+            <Input
               id="brandName"
               type="text"
               placeholder="Enter your brand or company name..."
               value={brandName}
               onChange={(e) => setBrandName(e.target.value)}
-              className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 px-3 pr-10 rounded-md border appearance-none cursor-pointer focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none text-sm leading-relaxed placeholder-white/50"
+              className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20"
             />
           </div>
 
