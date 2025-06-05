@@ -240,7 +240,11 @@ export default function ProfileNeo() {
   const portfolioDataMissing = !userData?.hasPortfolio;
   
   // Find looking for category label
-  const lookingForLabel = LOOKING_FOR_CATEGORIES.find(cat => cat.value === userData?.lookingFor)?.label || "Not specified";
+  console.log("[PROFILE NEO DEBUG] userData?.lookingFor:", userData?.lookingFor);
+  const lookingForCategory = LOOKING_FOR_CATEGORIES.find(cat => cat.value === userData?.lookingFor);
+  console.log("[PROFILE NEO DEBUG] Found category:", lookingForCategory);
+  const lookingForLabel = lookingForCategory?.label || "Not specified";
+  console.log("[PROFILE NEO DEBUG] Final label:", lookingForLabel);
 
   const handleSubmitAboutMe = () => {
     updateAboutMeMutation.mutate(aboutMe || "");

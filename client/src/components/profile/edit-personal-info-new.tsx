@@ -533,9 +533,12 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
                 variant: "default",
               });
 
-              // Invalidate user data cache to force fresh fetch
-              queryClient.invalidateQueries({ queryKey: ['/api/users', user?.uid] });
-              queryClient.invalidateQueries({ queryKey: [`/api/users/${user?.uid}`] });
+              // Force immediate cache refresh with multiple strategies
+              await queryClient.invalidateQueries({ queryKey: ['/api/users', user?.uid] });
+              await queryClient.invalidateQueries({ queryKey: [`/api/users/${user?.uid}`] });
+              
+              // Refetch user data immediately
+              await queryClient.refetchQueries({ queryKey: ['/api/users', user?.uid] });
               
               console.log("[BUTTON] Calling parent onSave callback");
               onSave();
