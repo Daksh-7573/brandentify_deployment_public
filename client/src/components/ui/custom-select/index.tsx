@@ -69,7 +69,7 @@ export function CustomSelect({
       {/* Dropdown content */}
       {isOpen && (
         <div className={cn(
-          "absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md border bg-popover text-popover-foreground shadow-md dropdown-content",
+          "absolute z-[9999] mt-1 max-h-60 w-full overflow-auto rounded-md border bg-popover text-popover-foreground shadow-md dropdown-content",
           className?.includes("custom-select-smart-radar") && "border border-white/20 bg-[rgba(18,18,18,0.95)] backdrop-blur-md shadow-2xl"
         )}>
           <div className="p-1">
