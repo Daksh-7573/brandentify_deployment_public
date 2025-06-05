@@ -11,6 +11,9 @@ interface ProfileInfoSectionProps {
 }
 
 const ProfileInfoSection: React.FC<ProfileInfoSectionProps> = ({ userData, onEdit }) => {
+  console.log("[PROFILE DISPLAY] ProfileInfoSection rendered with userData:", userData);
+  console.log("[PROFILE DISPLAY] userData.lookingFor value:", userData.lookingFor);
+  
   // Convert database value to display value for lookingFor
   const convertDbToDisplayValue = (dbValue: string) => {
     const lookingForOptions = {
@@ -23,10 +26,11 @@ const ProfileInfoSection: React.FC<ProfileInfoSectionProps> = ({ userData, onEdi
       "career_advice": "Career Advice",
       "business_partnerships": "Business Partnerships"
     };
-    console.log("[PROFILE DISPLAY] Raw lookingFor value:", dbValue);
-    console.log("[PROFILE DISPLAY] Type of lookingFor:", typeof dbValue);
-    console.log("[PROFILE DISPLAY] Converted value:", lookingForOptions[dbValue as keyof typeof lookingForOptions] || dbValue);
-    return lookingForOptions[dbValue as keyof typeof lookingForOptions] || dbValue;
+    console.log("[PROFILE DISPLAY] Converting value:", dbValue);
+    console.log("[PROFILE DISPLAY] Type:", typeof dbValue);
+    const converted = lookingForOptions[dbValue as keyof typeof lookingForOptions] || dbValue;
+    console.log("[PROFILE DISPLAY] Converted to:", converted);
+    return converted;
   };
   return (
     <Card className="shadow-sm">
