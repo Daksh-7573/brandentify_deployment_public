@@ -23,6 +23,9 @@ const ProfileInfoSection: React.FC<ProfileInfoSectionProps> = ({ userData, onEdi
       "career_advice": "Career Advice",
       "business_partnerships": "Business Partnerships"
     };
+    console.log("[PROFILE DISPLAY] Raw lookingFor value:", dbValue);
+    console.log("[PROFILE DISPLAY] Type of lookingFor:", typeof dbValue);
+    console.log("[PROFILE DISPLAY] Converted value:", lookingForOptions[dbValue as keyof typeof lookingForOptions] || dbValue);
     return lookingForOptions[dbValue as keyof typeof lookingForOptions] || dbValue;
   };
   return (
