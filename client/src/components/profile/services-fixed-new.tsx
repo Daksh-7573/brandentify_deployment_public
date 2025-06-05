@@ -389,7 +389,7 @@ export default function Services() {
               <textarea
                 id="whatIOffer"
                 rows={5}
-                className="w-full p-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder:text-white/50 backdrop-blur-sm focus:border-white/40 focus:ring-2 focus:ring-white/20 transition-all duration-200"
+                className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full p-3 rounded-md border focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none text-sm leading-relaxed placeholder:text-white/50"
                 placeholder="Describe your professional services..."
                 value={whatIOffer || ''}
                 onChange={(e) => setWhatIOffer(e.target.value)}
