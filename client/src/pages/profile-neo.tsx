@@ -105,52 +105,21 @@ export default function ProfileNeo() {
       setLocation('/auth');
     }
   }, [user, setLocation]);
-
-  // Force cache invalidation on component mount
-  useEffect(() => {
-    if (user) {
-      console.log("[PROFILE] Force invalidating cache for user:", user.uid);
-      // Clear all possible cache variations
-      queryClient.invalidateQueries({ queryKey: ['/api/users', user.uid] });
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${user.uid}`] });
-      queryClient.invalidateQueries({ queryKey: ['/api/users'] });
-      
-      // Force immediate refetch with fresh data
-      queryClient.refetchQueries({ queryKey: ['/api/users', user.uid] });
-      
-      // Clear any localStorage/sessionStorage
-      if (typeof window !== 'undefined') {
-        sessionStorage.removeItem(`userProfile_${user.uid}`);
-        localStorage.removeItem(`userProfile_${user.uid}`);
-      }
-    }
-  }, [user, queryClient]);
   
   if (!user) {
     return null;
   }
   
-  // Get user profile data with cache control
+  // Get user profile data
   const { data: userData, isLoading: isUserDataLoading } = useQuery({
     queryKey: ['/api/users', user.uid],
     queryFn: async () => {
-      console.log("[PROFILE] Fetching user data from:", `/api/users/${user.uid}`);
-      const response = await fetch(`/api/users/${user.uid}`, {
-        cache: 'no-cache',
-        headers: {
-          'Cache-Control': 'no-cache',
-          'Pragma': 'no-cache'
-        }
-      });
+      const response = await fetch(`/api/users/${user.uid}`);
       if (!response.ok) {
         throw new Error('Failed to fetch user data');
       }
-      const data = await response.json();
-      console.log("[PROFILE] Received user data, lookingFor:", data.lookingFor);
-      return data;
-    },
-    staleTime: 0,
-    gcTime: 0
+      return response.json();
+    }
   });
   
   // Query for user's industries and domain preferences

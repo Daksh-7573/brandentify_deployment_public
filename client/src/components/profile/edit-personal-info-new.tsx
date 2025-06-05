@@ -61,29 +61,9 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
   const sanitizeLookingForValue = (value: string | null | undefined): string => {
     if (!value) return "";
     
-    // If it's an array index (number as string), try to map to valid value
+    // If it's an array index (number as string), convert to empty string
     if (/^\d+$/.test(value)) {
-      console.warn("[SANITIZE] Array index detected in lookingFor:", value);
-      
-      // Map common array indices to their intended values
-      const indexToValueMap: Record<string, string> = {
-        "0": "job_opportunities",
-        "1": "mentorship", 
-        "2": "networking",
-        "3": "collaboration",
-        "4": "investment",
-        "5": "learning",
-        "6": "career_advice",
-        "7": "business_partnerships"
-      };
-      
-      const mappedValue = indexToValueMap[value];
-      if (mappedValue) {
-        console.log("[SANITIZE] Mapped array index", value, "to valid value:", mappedValue);
-        return mappedValue;
-      }
-      
-      console.warn("[SANITIZE] Unknown array index, resetting to empty:", value);
+      console.warn("[SANITIZE] Array index detected in lookingFor, resetting:", value);
       return "";
     }
     
@@ -111,14 +91,8 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
     setIndustry(userData.industry || "");
     setDomain(userData.domain || "");
     setAboutMe(userData.aboutMe || "");
-    
-    // Only update lookingFor if it's different from current state to prevent unnecessary re-renders
-    if (lookingFor !== sanitizedLookingFor) {
-      setLookingFor(sanitizedLookingFor);
-      console.log("[FORM INIT] Updated lookingFor from:", lookingFor, "to:", sanitizedLookingFor);
-    } else {
-      console.log("[FORM INIT] lookingFor unchanged:", sanitizedLookingFor);
-    }
+    setLookingFor(sanitizedLookingFor);
+    console.log("[FORM INIT] Set lookingFor to:", sanitizedLookingFor);
     
     if (userData.title && jobTitlesData?.jobTitles) {
       const existingTitle = userData.title;
