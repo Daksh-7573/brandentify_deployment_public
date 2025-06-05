@@ -102,7 +102,14 @@ const ProfileInfoSection: React.FC<ProfileInfoSectionProps> = ({ userData, onEdi
           <div className="border-t pt-4">
             <div className="text-sm font-medium mb-2">I am looking for</div>
             <div className="text-sm text-muted-foreground">
-              {userData.lookingFor ? convertDbToDisplayValue(userData.lookingFor) : 'Not Specified'}
+              {userData.lookingFor ? (
+                <span>
+                  {console.log("[LOOKING FOR DISPLAY] About to convert:", userData.lookingFor)}
+                  {convertDbToDisplayValue(userData.lookingFor)}
+                </span>
+              ) : (
+                'Not Specified'
+              )}
             </div>
           </div>
         </div>
