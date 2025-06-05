@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { X, Loader2 } from 'lucide-react';
+import { X, Loader2, Check, AlertCircle } from 'lucide-react';
 import { UserData } from '@/types/user';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
@@ -17,9 +17,60 @@ const EditContactInfo: React.FC<EditContactInfoProps> = ({ userData, onCancel, o
   const [phoneNumber, setPhoneNumber] = useState(userData.phoneNumber || "");
   const [brandName, setBrandName] = useState(userData.brandName || "");
   const [isLoading, setIsLoading] = useState(false);
+  const [brandNameStatus, setBrandNameStatus] = useState<'idle' | 'checking' | 'available' | 'taken' | 'error'>('idle');
+  const [brandNameMessage, setBrandNameMessage] = useState('');
   const { toast } = useToast();
 
+  // Debounced brand name availability check
+  useEffect(() => {
+    if (!brandName || brandName.length < 3) {
+      setBrandNameStatus('idle');
+      setBrandNameMessage('');
+      return;
+    }
+
+    // Don't check if it's the same as current brand name
+    if (brandName === userData.brandName) {
+      setBrandNameStatus('available');
+      setBrandNameMessage('Current brand name');
+      return;
+    }
+
+    const timeoutId = setTimeout(async () => {
+      setBrandNameStatus('checking');
+      setBrandNameMessage('Checking availability...');
+
+      try {
+        const response = await fetch(`/api/users/check-brand-name/${brandName}?currentUserId=${userData.id}`);
+        const result = await response.json();
+
+        if (result.available) {
+          setBrandNameStatus('available');
+          setBrandNameMessage('Brand name is available');
+        } else {
+          setBrandNameStatus('taken');
+          setBrandNameMessage(result.reason || 'Brand name is not available');
+        }
+      } catch (error) {
+        setBrandNameStatus('error');
+        setBrandNameMessage('Error checking availability');
+      }
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [brandName, userData.brandName, userData.id]);
+
   const handleSave = async () => {
+    // Validate brand name availability before saving
+    if (brandName && brandNameStatus === 'taken') {
+      toast({
+        title: "Cannot save changes",
+        description: "Please choose a different brand name as the current one is already taken.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setIsLoading(true);
     try {
       await apiRequest('PATCH', `/api/users/${userData.username}`, {
@@ -91,14 +142,47 @@ const EditContactInfo: React.FC<EditContactInfoProps> = ({ userData, onCancel, o
           {/* Brand Name */}
           <div className="space-y-2">
             <Label htmlFor="brandName" className="text-white">Brand Name</Label>
-            <Input
-              id="brandName"
-              type="text"
-              placeholder="Enter your brand or company name..."
-              value={brandName}
-              onChange={(e) => setBrandName(e.target.value)}
-              className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20"
-            />
+            <div className="relative">
+              <Input
+                id="brandName"
+                type="text"
+                placeholder="Enter your brand or company name..."
+                value={brandName}
+                onChange={(e) => setBrandName(e.target.value)}
+                className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 pr-10"
+              />
+              {/* Availability Status Icon */}
+              <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                {brandNameStatus === 'checking' && (
+                  <Loader2 className="h-4 w-4 animate-spin text-white/60" />
+                )}
+                {brandNameStatus === 'available' && (
+                  <Check className="h-4 w-4 text-green-400" />
+                )}
+                {brandNameStatus === 'taken' && (
+                  <AlertCircle className="h-4 w-4 text-red-400" />
+                )}
+                {brandNameStatus === 'error' && (
+                  <AlertCircle className="h-4 w-4 text-yellow-400" />
+                )}
+              </div>
+            </div>
+            {/* Availability Status Message */}
+            {brandNameMessage && (
+              <p className={`text-xs ${
+                brandNameStatus === 'available' ? 'text-green-400' :
+                brandNameStatus === 'taken' ? 'text-red-400' :
+                brandNameStatus === 'error' ? 'text-yellow-400' :
+                'text-white/60'
+              }`}>
+                {brandNameMessage}
+              </p>
+            )}
+            {brandName && brandNameStatus === 'available' && brandName !== userData.brandName && (
+              <p className="text-xs text-white/50">
+                Profile URL: {window.location.origin}/{brandName.toLowerCase().replace(/\s+/g, '-')}
+              </p>
+            )}
           </div>
 
 
@@ -114,7 +198,7 @@ const EditContactInfo: React.FC<EditContactInfoProps> = ({ userData, onCancel, o
             </Button>
             <Button
               onClick={handleSave}
-              disabled={isLoading}
+              disabled={isLoading || brandNameStatus === 'taken' || brandNameStatus === 'checking'}
               className="neo-glass-button"
             >
               {isLoading ? (
