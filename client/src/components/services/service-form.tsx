@@ -216,29 +216,6 @@ export default function ServiceForm({ service, initialData, onSubmit, isPending,
           )}
         />
         
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-white text-base">Description</FormLabel>
-              <FormDescription className="text-gray-300 text-xs mb-2">
-                Enter a brief description of your service.
-              </FormDescription>
-              <FormControl>
-                <textarea
-                  className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full min-h-[80px] px-3 py-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none resize-none"
-                  placeholder="Describe your service..."
-                  rows={3}
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage className="text-red-400" />
-            </FormItem>
-          )}
-        />
-        
-
         
         {/* Rate Fields */}
         <div className="space-y-4 border border-white/20 bg-[rgba(18,18,18,0.95)] backdrop-blur-md rounded-lg p-5 shadow-md transition-all hover:border-white/30">
@@ -341,27 +318,6 @@ export default function ServiceForm({ service, initialData, onSubmit, isPending,
           />
         </div>
         
-        <FormField
-          control={form.control}
-          name="isActive"
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-center justify-between rounded-lg border border-white/20 bg-[rgba(18,18,18,0.95)] backdrop-blur-md p-4 transition-all hover:border-white/30 shadow-md">
-              <div className="space-y-0.5">
-                <FormLabel className="text-white text-base">Active Status</FormLabel>
-                <FormDescription className="text-gray-300 text-xs">
-                  Is this service currently available?
-                </FormDescription>
-              </div>
-              <FormControl>
-                <Switch
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                  className="neo-glass-switch data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-500/50 border-white/20 bg-black/50"
-                />
-              </FormControl>
-            </FormItem>
-          )}
-        />
         
         <Button 
           type="submit" 
