@@ -110,9 +110,19 @@ export default function ProfileNeo() {
   useEffect(() => {
     if (user) {
       console.log("[PROFILE] Force invalidating cache for user:", user.uid);
+      // Clear all possible cache variations
       queryClient.invalidateQueries({ queryKey: ['/api/users', user.uid] });
       queryClient.invalidateQueries({ queryKey: [`/api/users/${user.uid}`] });
+      queryClient.invalidateQueries({ queryKey: ['/api/users'] });
+      
+      // Force immediate refetch with fresh data
       queryClient.refetchQueries({ queryKey: ['/api/users', user.uid] });
+      
+      // Clear any localStorage/sessionStorage
+      if (typeof window !== 'undefined') {
+        sessionStorage.removeItem(`userProfile_${user.uid}`);
+        localStorage.removeItem(`userProfile_${user.uid}`);
+      }
     }
   }, [user, queryClient]);
   
