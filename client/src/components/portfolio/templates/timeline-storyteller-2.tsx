@@ -94,9 +94,20 @@ export default function TimelineStoryteller2({
 }: TimelineStoryteller2Props) {
   
   // Debug logging
-  console.log("TimelineStoryteller2 - userInfo:", userInfo);
-  console.log("TimelineStoryteller2 - aboutMe:", userInfo?.aboutMe);
-  console.log("TimelineStoryteller2 - whatIOffer:", userInfo?.whatIOffer);
+  console.log("TimelineStoryteller2 - Complete data audit:", {
+    userInfo,
+    userSkillsCount: userSkills?.length || 0,
+    userSkillsData: userSkills,
+    userExperiencesCount: userExperiences?.length || 0,
+    userExperiencesData: userExperiences,
+    userProjectsCount: userProjects?.length || 0,
+    userProjectsData: userProjects,
+    userEducationsCount: userEducations?.length || 0,
+    userEducationsData: userEducations,
+    userServicesCount: userServices?.length || 0,
+    userServicesData: userServices,
+    whatIOfferValue: userInfo?.whatIOffer
+  });
   // Refs for scrolling to different sections
   const chapterRefs = {
     hero: useRef<HTMLDivElement>(null),

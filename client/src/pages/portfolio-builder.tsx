@@ -853,11 +853,16 @@ export default function PortfolioBuilder() {
                   userDataWhatIOffer: userData?.whatIOffer,
                   finalWhatIOffer: whatIOfferValue || userData?.whatIOffer || null,
                   aboutMe: userData?.aboutMe,
-                  userSkillsCount: userSkills?.length || 0,
-                  userExperiencesCount: userExperiences?.length || 0,
-                  userProjectsCount: userProjects?.length || 0,
-                  userEducationsCount: userEducations?.length || 0,
-                  userServicesCount: userServices?.length || 0
+                  skillsCount: skills?.length || 0,
+                  experiencesCount: experiences?.length || 0,
+                  projectsCount: projects?.length || 0,
+                  educationsCount: educations?.length || 0,
+                  servicesCount: services?.length || 0,
+                  skillsData: skills,
+                  experiencesData: experiences,
+                  projectsData: projects,
+                  educationsData: educations,
+                  servicesData: services
                 })}
                 <TimelineStoryteller 
                   userInfo={{
@@ -874,11 +879,11 @@ export default function PortfolioBuilder() {
                     aboutMe: userData?.aboutMe || null,
                     whatIOffer: whatIOfferValue || userData?.whatIOffer || null
                   }}
-                  userSkills={userSkills || []}
-                  userExperiences={userExperiences || []}
-                  userProjects={userProjects || []}
-                  userEducations={userEducations || []}
-                  userServices={userServices || []}
+                  userSkills={skills || []}
+                  userExperiences={experiences || []}
+                  userProjects={projects || []}
+                  userEducations={educations || []}
+                  userServices={services || []}
                 />
               </>
             )}
