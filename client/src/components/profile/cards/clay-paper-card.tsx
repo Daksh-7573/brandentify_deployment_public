@@ -58,8 +58,8 @@ const NeoGlowCard: React.FC<NeoGlowCardProps> = ({ userData }) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const [rotation, setRotation] = useState({ x: 0, y: 0 });
   
-  // Format profile link
-  const profileLink = `brandentifier.com/@${userData.name ? userData.name.replace(/\s+/g, '') : userData.username}`;
+  // Format profile link using username for consistent URL structure
+  const profileLink = `brandentifier.com/@${userData.username}`;
   
   // Industry tags
   const industryTags = userData.industry ? userData.industry.split(/,\s*/).filter(tag => tag.trim()) : [];

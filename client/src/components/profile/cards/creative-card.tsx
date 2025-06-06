@@ -46,8 +46,8 @@ const CreativeCard: React.FC<CreativeCardProps> = ({ userData }) => {
   const [hoveredSection, setHoveredSection] = useState<string | null>(null);
   const [copySuccess, setCopySuccess] = useState<string | null>(null);
   
-  // Format profile link
-  const profileLink = `brandentifier.com/@${userData.name ? userData.name.replace(/\\s+/g, '') : userData.username}`;
+  // Format profile link using username for consistent URL structure
+  const profileLink = `brandentifier.com/@${userData.username}`;
   
   // Define industry icons and tags
   const getIndustryIcon = (tag: string) => {

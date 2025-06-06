@@ -30,8 +30,8 @@ const VisitingCardPreview: React.FC<VisitingCardPreviewProps> = ({
   cardType,
   isLoading = false,
 }) => {
-  // Format profile link
-  const profileLink = `brandentifier.com/@${userData.name ? userData.name.replace(/\s+/g, '') : userData.username}`;
+  // Format profile link using username for consistent URL structure
+  const profileLink = `brandentifier.com/@${userData.username}`;
   
   // For 3D animated card style, use the specialized component
   if (cardType === "3d-animated") {
