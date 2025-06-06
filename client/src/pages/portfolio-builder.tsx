@@ -848,11 +848,17 @@ export default function PortfolioBuilder() {
             
             {form.watch("layout") === "timeline-storyteller-2" && (
               <>
-                {console.log("Timeline Storyteller - userInfo being passed:", userInfo)}
-                {console.log("Timeline Storyteller - userData being passed:", userData)}
-                {console.log("Timeline Storyteller - aboutMe field specifically:", userData?.aboutMe)}
-                {console.log("Timeline Storyteller - Education data being passed:", userEducations)}
-                {console.log("Timeline Storyteller - Services data being passed:", userServices)}
+                {console.log("Timeline Storyteller Preview - Complete data check:", {
+                  whatIOfferValue,
+                  userDataWhatIOffer: userData?.whatIOffer,
+                  finalWhatIOffer: whatIOfferValue || userData?.whatIOffer || null,
+                  aboutMe: userData?.aboutMe,
+                  userSkillsCount: userSkills?.length || 0,
+                  userExperiencesCount: userExperiences?.length || 0,
+                  userProjectsCount: userProjects?.length || 0,
+                  userEducationsCount: userEducations?.length || 0,
+                  userServicesCount: userServices?.length || 0
+                })}
                 <TimelineStoryteller 
                   userInfo={{
                     id: userData?.id,
@@ -866,11 +872,11 @@ export default function PortfolioBuilder() {
                     lookingFor: userData?.lookingFor || '',
                     jobLevel: userData?.jobLevel || null,
                     aboutMe: userData?.aboutMe || null,
-                    whatIOffer: userData?.whatIOffer || null
+                    whatIOffer: whatIOfferValue || userData?.whatIOffer || null
                   }}
-                  userSkills={userSkills}
+                  userSkills={userSkills || []}
                   userExperiences={userExperiences || []}
-                  userProjects={userProjects}
+                  userProjects={userProjects || []}
                   userEducations={userEducations || []}
                   userServices={userServices || []}
                 />
