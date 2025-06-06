@@ -141,17 +141,17 @@ export default function BrandProfile({ brandName }: BrandProfileProps) {
   // Construct portfolio data from all fetched components
   const portfolioData: PortfolioData | null = userData && publishedPortfolio ? {
     layout: publishedPortfolio.layout, // Use the actual portfolio layout from database
-    publicUrl: null,
-    isPublished: true,
-    customTitle: userData.name || userData.username,
-    customBio: userData.aboutMe || '',
-    customizationOptions: {
+    publicUrl: publishedPortfolio.publicUrl,
+    isPublished: publishedPortfolio.isPublished,
+    customTitle: publishedPortfolio.customTitle || userData.name || userData.username,
+    customBio: publishedPortfolio.customBio || userData.aboutMe || '',
+    customizationOptions: publishedPortfolio.customizationOptions || {
       theme: 'colorful',
       showContact: true
     },
-    featuredProjects: [],
-    featuredSkills: [],
-    featuredExperiences: [],
+    featuredProjects: publishedPortfolio.featuredProjects || [],
+    featuredSkills: publishedPortfolio.featuredSkills || [],
+    featuredExperiences: publishedPortfolio.featuredExperiences || [],
     skills: Array.isArray(userSkills) ? userSkills : [],
     experiences: Array.isArray(userExperiences) ? userExperiences : [],
     projects: Array.isArray(userProjects) ? userProjects : [],
@@ -161,7 +161,13 @@ export default function BrandProfile({ brandName }: BrandProfileProps) {
   } : null;
 
   const isPortfolioLoading = isSkillsLoading || isExperiencesLoading || isProjectsLoading || 
-                            isEducationsLoading || isServicesLoading;
+                            isEducationsLoading || isServicesLoading || isPortfolioDataLoading;
+
+  console.log("Portfolio data construction:");
+  console.log("- userData exists:", !!userData);
+  console.log("- publishedPortfolio exists:", !!publishedPortfolio);
+  console.log("- portfolioData result:", !!portfolioData);
+  console.log("- isPortfolioLoading:", isPortfolioLoading);
 
   // Handle loading state
   if (isUserLoading) {
