@@ -176,23 +176,33 @@ const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
   });
 
   // Fetch the user's published portfolio
-  const { data: publishedPortfolio, isLoading: isPortfolioDataLoading } = useQuery({
+  const { data: publishedPortfolio, isLoading: isPortfolioDataLoading, error: portfolioError } = useQuery({
     queryKey: [`/api/users/${userData?.id}/portfolio`], 
     queryFn: async () => {
       if (!userData?.id) return null;
       try {
         console.log(`Public profile - Fetching portfolio for user ID: ${userData.id}`);
+        console.log(`Public profile - Making API call to: /api/users/${userData.id}/portfolio`);
         const portfolioData = await apiRequest('GET', `/api/users/${userData.id}/portfolio`);
-        console.log('Public profile - Portfolio data:', portfolioData);
+        console.log('Public profile - Portfolio data received:', portfolioData);
         return portfolioData;
       } catch (error) {
         console.error('Error fetching portfolio:', error);
+        console.error('Portfolio API call failed with error:', error);
         return null;
       }
     },
-    enabled: !!userData?.id
+    enabled: !!userData?.id,
+    retry: false
   });
   
+  // Debug logging for portfolio data
+  console.log("Public profile debug:");
+  console.log("- userData:", userData);
+  console.log("- publishedPortfolio:", publishedPortfolio);
+  console.log("- portfolioError:", portfolioError);
+  console.log("- isPortfolioDataLoading:", isPortfolioDataLoading);
+
   // Construct portfolio data from all fetched components
   const portfolioData: PortfolioData | null = userData && publishedPortfolio ? {
     layout: publishedPortfolio.layout, // Use the actual portfolio layout
