@@ -179,7 +179,12 @@ const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
   const { data: publishedPortfolio, isLoading: isPortfolioDataLoading, error: portfolioError } = useQuery({
     queryKey: [`/api/users/${userData?.id}/portfolio`], 
     queryFn: async () => {
-      if (!userData?.id) return null;
+      console.log(`Public profile - Portfolio query triggered. userData:`, userData);
+      console.log(`Public profile - userData?.id:`, userData?.id);
+      if (!userData?.id) {
+        console.log('Public profile - No userData.id, skipping portfolio fetch');
+        return null;
+      }
       try {
         console.log(`Public profile - Fetching portfolio for user ID: ${userData.id}`);
         console.log(`Public profile - Making API call to: /api/users/${userData.id}/portfolio`);

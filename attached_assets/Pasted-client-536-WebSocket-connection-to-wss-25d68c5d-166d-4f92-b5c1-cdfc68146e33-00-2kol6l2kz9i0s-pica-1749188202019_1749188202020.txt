@@ -1,0 +1,65 @@
+client:536 WebSocket connection to 'wss://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/?token=SaWKZhkTLbKT' failed: 
+t @ Network.js:227
+setupWebSocket @ client:536
+(anonymous) @ client:531Understand this error
+Network.js:227 Uncaught (in promise) SyntaxError: Failed to construct 'WebSocket': The URL 'wss://localhost:undefined/?token=SaWKZhkTLbKT' is invalid.
+    at new t (Network.js:227:18)
+    at setupWebSocket (client:536:19)
+    at fallback (client:509:16)
+    at WebSocket.<anonymous> (client:555:7)
+t @ Network.js:227
+setupWebSocket @ client:536
+fallback @ client:509
+(anonymous) @ client:555Understand this error
+Console.js:61 Firebase initialization: {environment: 'development', hostname: '25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev', projectId: 'brandentifier-app', apiKeyPresent: true, apiKeyLength: 39, …}
+Console.js:61 Using simplified Google auth configuration for maximum compatibility
+Console.js:61 Firebase initialized successfully
+Console.js:61 Firebase initialization: {environment: 'development', hostname: '25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev', projectId: 'brandentifier-app', apiKeyPresent: true, apiKeyLength: 39, …}
+Console.js:61 Using simplified Google auth configuration for maximum compatibility
+Console.js:61 Firebase initialized successfully
+Console.js:61 [BrandProfile] Loading profile for brand name: Exile
+Console.js:61 Fetching data from: /api/users/brand/Exile
+Console.js:61  ⚠️ FIREBASE DOMAIN SETUP INFORMATION ⚠️ 
+Console.js:61  Add these domains to Firebase Auth > Settings > Authorized domains: 
+Console.js:61  1. 25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev 
+Console.js:61  2. 25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev.replit.app 
+Console.js:61  3. *.replit.dev 
+Console.js:61  4. *.replit.app 
+Console.js:61 AuthProvider useEffect running - checking auth state
+Console.js:61 On problematic domain, ensuring correct auth handling
+Console.js:61 Checking for redirect result from Google auth
+Console.js:61 No redirect result found - this is a normal page load, not a redirect callback
+Console.js:61 Redirect check completed, handled: false
+Console.js:61 Setting up auth state listener
+Console.js:61 Auth state changed: User signed in
+Console.js:61 New user detected in auth state, handling login for: Unvhj38FHSg36vbagvGL8MvDJuL2 {email: 'nishant.brodos@gmail.com', displayName: 'Nishant Chopra'}
+Console.js:61 Creating/updating user in backend from auth state change
+Console.js:61 Creating/updating user with Google profile: {uid: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', displayName: 'Nishant Chopra', photoURL: 'https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c', providerData: Array(1)}
+Console.js:61 [BrandProfile] Loading profile for brand name: Exile
+Console.js:61 Fetching data from: /api/users/2/skills
+Console.js:61 Fetching data from: /api/users/2/experiences
+Console.js:61 Fetching data from: /api/users/2/projects
+Console.js:61 Fetching data from: /api/users/2/educations
+Console.js:61 Fetching data from: /api/users/2/services
+4Console.js:61 [BrandProfile] Loading profile for brand name: Exile
+Console.js:61 User created in backend successfully: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 Fetching user data from backend
+Console.js:61 Fetching user data for user ID: Unvhj38FHSg36vbagvGL8MvDJuL2 with email: nishant.brodos@gmail.com
+Console.js:61 Fetching user data for user Firebase UID: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Google authentication detected: true
+Console.js:61 Including email in user lookup: nishant.brodos@gmail.com
+Console.js:61 Cached response for /api/users/Unvhj38FHSg36vbagvGL8MvDJuL2?email=nishant.brodos%40gmail.com
+Console.js:61 Backend user data: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 Setting user state with backend data
+Console.js:61 AuthProvider useEffect running - checking auth state
+Console.js:61 On problematic domain, ensuring correct auth handling
+Console.js:61 Checking for redirect result from Google auth
+Console.js:61 No redirect result found - this is a normal page load, not a redirect callback
+Console.js:61 Redirect check completed, handled: false
+Console.js:61 Setting up auth state listener
+Console.js:61 Auth state changed: User signed in
+Console.js:61 Cached response for /api/users/2/projects
+Console.js:61 Cached response for /api/users/2/skills
+Console.js:61 Cached response for /api/users/2/educations
+Console.js:61 Cached response for /api/users/2/experiences
+Console.js:61 Cached response for /api/users/2
