@@ -13,6 +13,7 @@ import VisualExpert from "@/components/portfolio/templates/visual-expert";
 import FreelancerHub from "@/components/portfolio/templates/freelancer-hub";
 import Scholar from "@/components/portfolio/templates/scholar";
 import AnimatedOdyssey from "@/components/portfolio/templates/animated-odyssey";
+import Animated from "@/components/portfolio/templates/animated";
 import DynamicInnovator from "@/components/portfolio/templates/dynamic-innovator";
 import CorporateExecutive from "@/components/portfolio/templates/corporate-executive";
 
@@ -287,6 +288,7 @@ export default function BrandProfile({ brandName }: BrandProfileProps) {
     console.log("- Projects data sample:", templateProps.userProjects?.[0]);
     
     switch (layout) {
+      case 'minimalist-pro':
       case 'minimalist':
         return <MinimalistPro 
           userInfo={templateProps.userInfo}
@@ -296,8 +298,8 @@ export default function BrandProfile({ brandName }: BrandProfileProps) {
           userEducations={templateProps.userEducations}
           userServices={templateProps.userServices}
         />;
-      case 'timeline':
       case 'timeline-storyteller-2':
+      case 'timeline':
         return <TimelineStoryteller 
           userInfo={templateProps.userInfo}
           userSkills={templateProps.userSkills}
@@ -306,6 +308,7 @@ export default function BrandProfile({ brandName }: BrandProfileProps) {
           userEducations={templateProps.userEducations}
           userServices={templateProps.userServices}
         />;
+      case 'visual-expert':
       case 'visual':
         return <VisualExpert 
           userInfo={templateProps.userInfo}
@@ -315,6 +318,7 @@ export default function BrandProfile({ brandName }: BrandProfileProps) {
           userEducations={templateProps.userEducations}
           userServices={templateProps.userServices}
         />;
+      case 'freelancer-hub':
       case 'freelancer':
         return <FreelancerHub 
           userInfo={templateProps.userInfo}
@@ -334,7 +338,7 @@ export default function BrandProfile({ brandName }: BrandProfileProps) {
           userServices={templateProps.userServices}
         />;
       case 'animated':
-        return <AnimatedOdyssey 
+        return <Animated 
           name={templateProps.userInfo.name}
           title={templateProps.userInfo.title || ''}
           industry={templateProps.userInfo.industry || ''}
@@ -343,9 +347,17 @@ export default function BrandProfile({ brandName }: BrandProfileProps) {
           email={templateProps.userInfo.email || ''}
           photoURL={templateProps.userInfo.photoURL || ''}
           lookingFor={templateProps.userInfo.lookingFor || ''}
-          jobLevel={templateProps.userInfo.jobLevel || ''}
           aboutMe={templateProps.userInfo.aboutMe || ''}
+          whatIOffer={templateProps.userInfo.whatIOffer || ''}
+          skills={templateProps.userSkills}
+          services={templateProps.userServices}
+          experiences={templateProps.userExperiences}
+          educations={templateProps.userEducations}
+          projects={templateProps.userProjects}
+          id={templateProps.userInfo.id}
+          currentUserId={undefined}
         />;
+      case 'dynamic-innovator':
       case 'dynamic':
         return <DynamicInnovator 
           userInfo={templateProps.userInfo}
@@ -355,6 +367,7 @@ export default function BrandProfile({ brandName }: BrandProfileProps) {
           userEducations={templateProps.userEducations}
           userServices={templateProps.userServices}
         />;
+      case 'corporate-executive':
       case 'corporate':
         return <CorporateExecutive 
           userInfo={templateProps.userInfo}
