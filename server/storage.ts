@@ -8732,6 +8732,183 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
+  async createPortfolio(insertPortfolio: InsertPortfolio): Promise<Portfolio> {
+    try {
+      console.log(`[db.createPortfolio] Creating portfolio for user ${insertPortfolio.userId}`);
+      
+      const result = await pool.query(`
+        INSERT INTO portfolios (
+          user_id, 
+          layout, 
+          custom_title, 
+          custom_bio, 
+          customization_options, 
+          is_published, 
+          public_url, 
+          featured_projects, 
+          featured_skills, 
+          featured_experiences
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+        RETURNING 
+          id, 
+          user_id as "userId", 
+          layout, 
+          custom_title as "customTitle", 
+          custom_bio as "customBio", 
+          customization_options as "customizationOptions", 
+          is_published as "isPublished", 
+          public_url as "publicUrl", 
+          featured_projects as "featuredProjects", 
+          featured_skills as "featuredSkills", 
+          featured_experiences as "featuredExperiences", 
+          created_at as "createdAt", 
+          updated_at as "updatedAt"
+      `, [
+        insertPortfolio.userId,
+        insertPortfolio.layout || "professional",
+        insertPortfolio.customTitle || null,
+        insertPortfolio.customBio || null,
+        JSON.stringify(insertPortfolio.customizationOptions || {}),
+        insertPortfolio.isPublished ?? false,
+        insertPortfolio.publicUrl || null,
+        JSON.stringify(insertPortfolio.featuredProjects || []),
+        JSON.stringify(insertPortfolio.featuredSkills || []),
+        JSON.stringify(insertPortfolio.featuredExperiences || [])
+      ]);
+      
+      console.log(`[db.createPortfolio] Created portfolio with ID: ${result.rows[0].id}`);
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.createPortfolio] Error creating portfolio:`, error);
+      throw error;
+    }
+  }
+
+  async updatePortfolio(id: number, portfolioData: Partial<Portfolio>): Promise<Portfolio | undefined> {
+    try {
+      console.log(`[db.updatePortfolio] Updating portfolio ${id} with data:`, portfolioData);
+      
+      // Build dynamic update query
+      const updateFields: string[] = [];
+      const updateValues: any[] = [];
+      let paramIndex = 1;
+      
+      if (portfolioData.layout !== undefined) {
+        updateFields.push(`layout = $${paramIndex}`);
+        updateValues.push(portfolioData.layout);
+        paramIndex++;
+      }
+      
+      if (portfolioData.customTitle !== undefined) {
+        updateFields.push(`custom_title = $${paramIndex}`);
+        updateValues.push(portfolioData.customTitle);
+        paramIndex++;
+      }
+      
+      if (portfolioData.customBio !== undefined) {
+        updateFields.push(`custom_bio = $${paramIndex}`);
+        updateValues.push(portfolioData.customBio);
+        paramIndex++;
+      }
+      
+      if (portfolioData.customizationOptions !== undefined) {
+        updateFields.push(`customization_options = $${paramIndex}`);
+        updateValues.push(JSON.stringify(portfolioData.customizationOptions));
+        paramIndex++;
+      }
+      
+      if (portfolioData.isPublished !== undefined) {
+        updateFields.push(`is_published = $${paramIndex}`);
+        updateValues.push(portfolioData.isPublished);
+        paramIndex++;
+      }
+      
+      if (portfolioData.publicUrl !== undefined) {
+        updateFields.push(`public_url = $${paramIndex}`);
+        updateValues.push(portfolioData.publicUrl);
+        paramIndex++;
+      }
+      
+      if (portfolioData.featuredProjects !== undefined) {
+        updateFields.push(`featured_projects = $${paramIndex}`);
+        updateValues.push(JSON.stringify(portfolioData.featuredProjects));
+        paramIndex++;
+      }
+      
+      if (portfolioData.featuredSkills !== undefined) {
+        updateFields.push(`featured_skills = $${paramIndex}`);
+        updateValues.push(JSON.stringify(portfolioData.featuredSkills));
+        paramIndex++;
+      }
+      
+      if (portfolioData.featuredExperiences !== undefined) {
+        updateFields.push(`featured_experiences = $${paramIndex}`);
+        updateValues.push(JSON.stringify(portfolioData.featuredExperiences));
+        paramIndex++;
+      }
+      
+      // Always update the updated_at timestamp
+      updateFields.push(`updated_at = NOW()`);
+      
+      if (updateFields.length === 1) { // Only updated_at field
+        console.log(`[db.updatePortfolio] No fields to update for portfolio ${id}`);
+        return this.getPortfolioById(id);
+      }
+      
+      // Add the WHERE clause
+      updateValues.push(id);
+      
+      const query = `
+        UPDATE portfolios 
+        SET ${updateFields.join(', ')}
+        WHERE id = $${paramIndex}
+        RETURNING 
+          id, 
+          user_id as "userId", 
+          layout, 
+          custom_title as "customTitle", 
+          custom_bio as "customBio", 
+          customization_options as "customizationOptions", 
+          is_published as "isPublished", 
+          public_url as "publicUrl", 
+          featured_projects as "featuredProjects", 
+          featured_skills as "featuredSkills", 
+          featured_experiences as "featuredExperiences", 
+          created_at as "createdAt", 
+          updated_at as "updatedAt"
+      `;
+      
+      const result = await pool.query(query, updateValues);
+      
+      if (result.rows.length === 0) {
+        console.log(`[db.updatePortfolio] No portfolio found with ID: ${id}`);
+        return undefined;
+      }
+      
+      console.log(`[db.updatePortfolio] Updated portfolio ${id} successfully`);
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.updatePortfolio] Error updating portfolio ${id}:`, error);
+      return undefined;
+    }
+  }
+
+  async deletePortfolio(id: number): Promise<boolean> {
+    try {
+      console.log(`[db.deletePortfolio] Deleting portfolio ${id}`);
+      
+      const result = await pool.query(`
+        DELETE FROM portfolios WHERE id = $1
+      `, [id]);
+      
+      console.log(`[db.deletePortfolio] Deleted ${result.rowCount} portfolios`);
+      return result.rowCount > 0;
+    } catch (error) {
+      console.error(`[db.deletePortfolio] Error deleting portfolio ${id}:`, error);
+      return false;
+    }
+  }
+
   // Service operations
   async getServicesByUserId(userId: number): Promise<Service[]> {
     console.log(`[storage.getServicesByUserId] Fetching services for user ${userId}`);
