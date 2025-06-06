@@ -97,6 +97,7 @@ export default function PortfolioBuilder() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isAnalyzingProfile, setIsAnalyzingProfile] = useState(false);
   const [generationComplete, setGenerationComplete] = useState(false);
+  const [portfolioPreviewData, setPortfolioPreviewData] = useState<any>(null);
 
   // Define User type to match server-side schema
   type User = {
@@ -112,6 +113,7 @@ export default function PortfolioBuilder() {
     jobLevel: string | null;
     lookingFor: string | null;
     whatIOffer: string | null;
+    aboutMe: string | null;
     // Add other fields as needed
   };
   
@@ -626,11 +628,23 @@ export default function PortfolioBuilder() {
           
           // Save the analyzed data for preview templates
           try {
-            localStorage.setItem('portfolio-preview-data', JSON.stringify(portfolioData));
+            const dataToSave = JSON.stringify(portfolioData);
+            localStorage.setItem('portfolio-preview-data', dataToSave);
             console.log("Portfolio - Saved preview data to localStorage");
           } catch (error) {
             console.error("Portfolio - Failed to save to localStorage:", error);
+            // Fallback: store in session state instead
+            console.log("Portfolio - Using session storage as fallback");
+            try {
+              sessionStorage.setItem('portfolio-preview-data', JSON.stringify(portfolioData));
+            } catch (sessionError) {
+              console.error("Portfolio - Session storage also failed:", sessionError);
+              // Continue anyway - we'll pass data directly to components
+            }
           }
+          
+          // Store data in component state as additional fallback
+          setPortfolioPreviewData(portfolioData);
           
           // Set the updated form values to include our personalized data
           form.setValue('isPublished', false);
@@ -1024,11 +1038,11 @@ export default function PortfolioBuilder() {
                       jobLevel: userData?.jobLevel || '',
                       aboutMe: userData?.aboutMe || ''
                     }}
-                    userSkills={userSkills || []}
-                    userServices={userServices || []}
-                    userExperiences={userExperiences || []}
-                    userEducations={userEducations || []}
-                    userProjects={userProjects || []}
+                    userSkills={portfolioPreviewData?.skills || userSkills || []}
+                    userServices={portfolioPreviewData?.services || userServices || []}
+                    userExperiences={portfolioPreviewData?.experiences || userExperiences || []}
+                    userEducations={portfolioPreviewData?.educations || userEducations || []}
+                    userProjects={portfolioPreviewData?.projects || userProjects || []}
                   />
                 </CardContent>
               </Card>
