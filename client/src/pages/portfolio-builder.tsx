@@ -34,7 +34,7 @@ import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-l
 // Import our portfolio templates
 import MinimalistPro from "@/components/portfolio/templates/minimalist-pro";
 import FreelancerHub from "@/components/portfolio/templates/freelancer-hub"; // Using the new improved template
-import TimelineStoryteller from "@/components/portfolio/templates/timeline-storyteller";
+import TimelineStoryteller from "@/components/portfolio/templates/timeline-storyteller-2";
 import VisualExpert from "@/components/portfolio/templates/visual-expert";
 import CorporateExecutive from "@/components/portfolio/templates/corporate-executive";
 import { DynamicInnovator } from "@/components/portfolio/templates/dynamic-innovator";
