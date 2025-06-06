@@ -526,6 +526,10 @@ export default function CorporateExecutive({
   
   return (
     <div className="corporate-executive-template bg-white">
+      {/* Debug indicator */}
+      <div className="fixed top-4 right-4 bg-green-500 text-white px-3 py-1 rounded text-sm z-50">
+        Portfolio Loaded: {userInfo.name}
+      </div>
       {/* Project Details Modal */}
       <Dialog open={!!selectedProjectId} onOpenChange={closeProjectDetails}>
         {selectedProject && (
