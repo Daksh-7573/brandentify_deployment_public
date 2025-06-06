@@ -889,27 +889,45 @@ export default function PortfolioBuilder() {
             )}
             
             {form.watch("layout") === "visual-expert" && (
-              <VisualExpert
-                userInfo={{
-                  id: userData?.id,
-                  name: userData?.name || user?.name || '',
-                  email: userData?.email || user?.email || null,
-                  title: userData?.title || null,
-                  aboutMe: userData?.aboutMe || null,
-                  location: userData?.location || null,
-                  industry: userData?.industry || null,
-                  domain: userData?.domain || null,
-                  lookingFor: userData?.lookingFor || null,
-                  whatIOffer: userData?.whatIOffer || null,
-                  photoURL: userData?.photoURL || user?.photoURL || null,
-                  jobLevel: userData?.jobLevel || null
-                }}
-                userSkills={userSkills || []}
-                userExperiences={userExperiences || []}
-                userProjects={userProjects || []}
-                userEducations={userEducations || []}
-                userServices={userServices || []}
-              />
+              <>
+                {console.log("Visual Expert Preview - Complete data check:", {
+                  whatIOfferValue,
+                  userDataWhatIOffer: userData?.whatIOffer,
+                  finalWhatIOffer: whatIOfferValue || userData?.whatIOffer || null,
+                  aboutMe: userData?.aboutMe,
+                  skillsCount: skills?.length || 0,
+                  experiencesCount: experiences?.length || 0,
+                  projectsCount: projects?.length || 0,
+                  educationsCount: educations?.length || 0,
+                  servicesCount: services?.length || 0,
+                  skillsData: skills,
+                  experiencesData: experiences,
+                  projectsData: projects,
+                  educationsData: educations,
+                  servicesData: services
+                })}
+                <VisualExpert
+                  userInfo={{
+                    id: userData?.id,
+                    name: userData?.name || user?.name || '',
+                    email: userData?.email || user?.email || null,
+                    title: userData?.title || null,
+                    aboutMe: userData?.aboutMe || null,
+                    location: userData?.location || null,
+                    industry: userData?.industry || null,
+                    domain: userData?.domain || null,
+                    lookingFor: userData?.lookingFor || null,
+                    whatIOffer: whatIOfferValue || userData?.whatIOffer || null,
+                    photoURL: userData?.photoURL || user?.photoURL || null,
+                    jobLevel: userData?.jobLevel || null
+                  }}
+                  userSkills={skills || []}
+                  userExperiences={experiences || []}
+                  userProjects={projects || []}
+                  userEducations={educations || []}
+                  userServices={services || []}
+                />
+              </>
             )}
             
             {form.watch("layout") === "corporate-executive" && (
