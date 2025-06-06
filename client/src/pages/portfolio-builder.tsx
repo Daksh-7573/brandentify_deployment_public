@@ -1004,13 +1004,14 @@ export default function PortfolioBuilder() {
                       email: userData?.email || user?.email || '',
                       photoURL: userData?.photoURL || user?.photoURL || null,
                       lookingFor: userData?.lookingFor || '',
-                      jobLevel: userData?.jobLevel || ''
+                      jobLevel: userData?.jobLevel || '',
+                      whatIOffer: whatIOfferValue || userData?.whatIOffer || null
                     }}
-                    userSkills={userSkills || []}
-                    userServices={userServices || []}
-                    userExperiences={userExperiences || []}
-                    userEducations={userEducations || []}
-                    userProjects={userProjects?.map(p => ({
+                    userSkills={skills || []}
+                    userServices={services || []}
+                    userExperiences={experiences || []}
+                    userEducations={educations || []}
+                    userProjects={projects?.map(p => ({
                       id: p.id,
                       title: p.title,
                       description: p.description,

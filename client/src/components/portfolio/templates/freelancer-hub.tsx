@@ -65,6 +65,7 @@ interface FreelancerHubProps {
     photoURL: string | null;
     lookingFor: string | null;
     jobLevel: string | null;
+    whatIOffer?: string | null;
   };
   userSkills: Skill[];
   userProjects: Project[];
@@ -1602,6 +1603,43 @@ export default function FreelancerHub({
         </div>
       </section>
       
+      {/* What I Offer Section */}
+      {userInfo.whatIOffer && (
+        <section className="py-16 px-6 md:px-10 relative overflow-hidden">
+          <motion.div 
+            className="absolute top-40 -left-20 w-60 h-60 bg-gradient-to-br from-violet-100 to-purple-50 rounded-full opacity-40 blur-3xl"
+            animate={{ 
+              scale: [1, 1.1, 1],
+              rotate: [0, 5, 0]
+            }}
+            transition={{
+              duration: 12,
+              repeat: Infinity,
+              repeatType: "reverse"
+            }}
+          />
+          
+          <div className="max-w-4xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: isShowing ? 1 : 0, y: isShowing ? 0 : 30 }}
+              transition={{ duration: 0.5 }}
+              className="text-center"
+            >
+              <h2 className="text-3xl md:text-4xl font-bold mb-6" style={{ fontFamily: 'Fredoka, sans-serif' }}>
+                <span className="highlight-text">What I Offer</span>
+              </h2>
+              <div className="bg-white rounded-2xl shadow-lg p-8 relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-violet-500 via-fuchsia-500 to-pink-500"></div>
+                <p className="text-gray-700 leading-relaxed text-lg" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  {userInfo.whatIOffer}
+                </p>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+      )}
+
       {/* Services Section */}
       <section className="py-16 px-6 md:px-10 relative overflow-hidden">
         {/* Decorative elements */}
