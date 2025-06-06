@@ -109,7 +109,16 @@ export default function BrandProfile({ brandName }: BrandProfileProps) {
       try {
         console.log(`Brand profile - Fetching portfolio for user ID: ${userData.id}`);
         console.log(`Brand profile - Making API call to: /api/users/${userData.id}/portfolio`);
-        const portfolioData = await apiRequest('GET', `/api/users/${userData.id}/portfolio`);
+        
+        const response = await fetch(`/api/users/${userData.id}/portfolio`);
+        console.log('Brand profile - Raw response:', response);
+        
+        if (!response.ok) {
+          console.error('Brand profile - API response not ok:', response.status, response.statusText);
+          return null;
+        }
+        
+        const portfolioData = await response.json();
         console.log('Brand profile - Portfolio data received:', portfolioData);
         return portfolioData;
       } catch (error) {
