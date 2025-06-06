@@ -10674,5 +10674,12 @@ export const storage = {
   unmarkInspiredByNowboardItem: (userId: number, itemId: number) => dbStorage.unmarkInspiredByNowboardItem(userId, itemId),
   isNowboardItemInspiredByUser: (userId: number, itemId: number) => dbStorage.isNowboardItemInspiredByUser(userId, itemId),
   getInspiredByForUserAndItem: (userId: number, itemId: number) => dbStorage.getInspiredByForUserAndItem(userId, itemId),
-  getUserInspiredCount: (userId: number) => dbStorage.getUserInspiredCount(userId)
+  getUserInspiredCount: (userId: number) => dbStorage.getUserInspiredCount(userId),
+  
+  // Portfolio methods
+  getPortfolioByUserId: (userId: number) => dbStorage.getPortfolioByUserId(userId),
+  getPortfolioById: (id: number) => dbStorage.getPortfolioById(id),
+  createPortfolio: (portfolio: InsertPortfolio) => dbStorage.createPortfolio(portfolio),
+  updatePortfolio: (id: number, portfolioData: Partial<Portfolio>) => dbStorage.updatePortfolio(id, portfolioData),
+  deletePortfolio: (id: number) => dbStorage.deletePortfolio(id)
 } as IStorage;
