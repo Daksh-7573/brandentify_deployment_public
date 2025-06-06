@@ -670,7 +670,9 @@ export default function PortfolioBuilder() {
 
   // Handle final publish
   const handlePublish = () => {
-    portfolioMutation.mutate(form.getValues());
+    const portfolioData = form.getValues();
+    portfolioData.isPublished = true;
+    portfolioMutation.mutate(portfolioData);
   };
 
   // Authentication check
