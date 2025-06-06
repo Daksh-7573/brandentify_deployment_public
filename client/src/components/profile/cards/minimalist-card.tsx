@@ -7,8 +7,8 @@ interface MinimalistCardProps {
 }
 
 const MinimalistCard: React.FC<MinimalistCardProps> = ({ userData }) => {
-  // Format profile link
-  const profileLink = `brandentifier.com/@${userData.name ? userData.name.replace(/\s+/g, '') : userData.username}`;
+  // Format profile link using username for consistent URL structure
+  const profileLink = `brandentifier.com/@${userData.username}`;
   
   return (
     <div className="w-full aspect-[2/3.5] bg-white dark:bg-slate-900 rounded-lg overflow-hidden shadow-md border border-gray-200 dark:border-gray-800 flex flex-col">

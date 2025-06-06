@@ -239,7 +239,7 @@ const FlipCard: React.FC<FlipCardProps> = ({ userData }) => {
               <div>
                 <p className={`text-xs opacity-70 ${textColor}`}>Profile</p>
                 <a 
-                  href={`/@${userData.name ? userData.name.replace(/\s+/g, '') : userData.username}`}
+                  href={`/@${userData.username}`}
                   className={`text-sm ${linkColor}`}
                   onClick={(e) => e.stopPropagation()}
                 >

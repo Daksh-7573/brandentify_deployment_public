@@ -25,8 +25,8 @@ const HolographicCard: React.FC<HolographicCardProps> = ({ userData }) => {
   const [copySuccess, setCopySuccess] = useState<string | null>(null);
   const cardRef = useRef<HTMLDivElement>(null);
 
-  // Format profile link
-  const profileLink = `brandentifier.com/@${userData.name ? userData.name.replace(/\s+/g, '') : userData.username}`;
+  // Format profile link using username for consistent URL structure
+  const profileLink = `brandentifier.com/@${userData.username}`;
   
   // Define industry tags
   const industryTags = userData.industry ? userData.industry.split(/,\s*/) : [];
