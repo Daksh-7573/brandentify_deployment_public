@@ -461,6 +461,15 @@ export default function Scholar({
   const hasProjects = userProjects && userProjects.length > 0;
   const hasServices = userServices && userServices.length > 0;
   
+  // Debug logging
+  console.log("Scholar template data validation:");
+  console.log("- userSkills:", userSkills, "hasSkills:", hasSkills);
+  console.log("- userExperiences:", userExperiences, "hasExperiences:", hasExperiences);
+  console.log("- userEducations:", userEducations, "hasEducation:", hasEducation);
+  console.log("- userProjects:", userProjects, "hasProjects:", hasProjects);
+  console.log("- userServices:", userServices, "hasServices:", hasServices);
+  console.log("- skillCategories:", skillCategories);
+  
   return (
     <div className="min-h-screen bg-white scholar-template">
       {/* Removing the top sticky header as we're moving the buttons into the personal details card */}

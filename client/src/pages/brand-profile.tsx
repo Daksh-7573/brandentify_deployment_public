@@ -277,6 +277,14 @@ export default function BrandProfile({ brandName }: BrandProfileProps) {
     };
     
     console.log("Template props prepared:", templateProps);
+    console.log("Detailed data for Scholar template:");
+    console.log("- userSkills count:", templateProps.userSkills?.length || 0);
+    console.log("- userExperiences count:", templateProps.userExperiences?.length || 0);
+    console.log("- userProjects count:", templateProps.userProjects?.length || 0);
+    console.log("- userEducations count:", templateProps.userEducations?.length || 0);
+    console.log("- userServices count:", templateProps.userServices?.length || 0);
+    console.log("- Skills data sample:", templateProps.userSkills?.[0]);
+    console.log("- Projects data sample:", templateProps.userProjects?.[0]);
     
     switch (layout) {
       case 'minimalist':
