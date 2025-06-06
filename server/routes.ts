@@ -5121,8 +5121,13 @@ ${extractedText.substring(0, 5000)}
         console.error(`[POST /portfolios] Validation error:`, error.errors);
         res.status(400).json({ message: error.errors });
       } else {
-        console.error(`[POST /portfolios] Server error:`, error);
-        res.status(500).json({ message: "Internal server error" });
+        console.error(`[POST /portfolios] Server error details:`, {
+          message: error.message,
+          stack: error.stack,
+          name: error.name,
+          requestBody: req.body
+        });
+        res.status(500).json({ message: "Internal server error", details: error.message });
       }
     }
   });
