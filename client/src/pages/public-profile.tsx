@@ -194,8 +194,8 @@ const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
   });
   
   // Construct portfolio data from all fetched components
-  const portfolioData: PortfolioData | null = userData ? {
-    layout: publishedPortfolio?.layout || 'animated-odyssey', // Use actual portfolio layout or fallback
+  const portfolioData: PortfolioData | null = userData && publishedPortfolio ? {
+    layout: publishedPortfolio.layout, // Use the actual portfolio layout
     publicUrl: publishedPortfolio?.publicUrl || null,
     isPublished: publishedPortfolio?.isPublished || false,
     customTitle: publishedPortfolio?.customTitle || userData.name || userData.username,
