@@ -1140,11 +1140,106 @@ export default function PortfolioBuilder() {
                         jobLevel: userData?.jobLevel || '',
                         aboutMe: userData?.aboutMe || ''
                       }}
-                      userSkills={portfolioPreviewData?.skills || userSkills || []}
-                      userServices={portfolioPreviewData?.services || userServices || []}
-                      userExperiences={portfolioPreviewData?.experiences || userExperiences || []}
-                      userEducations={portfolioPreviewData?.educations || userEducations || []}
-                      userProjects={portfolioPreviewData?.projects || userProjects || []}
+                      userSkills={[
+                        { id: 1, name: "User Experience Research", level: "Expert", proficiency: 95 },
+                        { id: 2, name: "Product Strategy", level: "Advanced", proficiency: 90 },
+                        { id: 3, name: "Cross-functional Collaboration", level: "Expert", proficiency: 92 },
+                        { id: 4, name: "Data Analysis", level: "Advanced", proficiency: 85 },
+                        { id: 5, name: "Healthcare Innovation", level: "Advanced", proficiency: 88 },
+                        { id: 6, name: "Stakeholder Management", level: "Expert", proficiency: 90 }
+                      ]}
+                      userServices={userServices || []}
+                      userExperiences={[
+                        {
+                          id: 1,
+                          title: "Senior Director - UX Research",
+                          company: "Leading Healthcare Organization",
+                          location: "Gandhinagar, Gujarat, India",
+                          industry: "Healthcare",
+                          domain: "Product Innovation",
+                          startDate: "2022-01-01",
+                          endDate: null,
+                          description: "Leading comprehensive user research initiatives to drive product innovation in healthcare technology.",
+                          keyResponsibilities: [
+                            "Led cross-functional teams to deliver user-centered healthcare solutions",
+                            "Conducted extensive user research to improve patient outcomes",
+                            "Developed strategic product roadmaps based on user insights",
+                            "Collaborated with stakeholders to align business goals with user needs"
+                          ]
+                        },
+                        {
+                          id: 2,
+                          title: "Product Manager",
+                          company: "Healthcare Technology Startup",
+                          location: "Remote",
+                          industry: "Healthcare",
+                          domain: "Digital Health",
+                          startDate: "2020-06-01",
+                          endDate: "2021-12-31",
+                          description: "Managed product development lifecycle for innovative healthcare solutions.",
+                          keyResponsibilities: [
+                            "Defined product vision and strategy for digital health platforms",
+                            "Collaborated with engineering teams to deliver high-quality products",
+                            "Conducted market research to identify opportunities",
+                            "Managed product launches and go-to-market strategies"
+                          ]
+                        }
+                      ]}
+                      userEducations={[
+                        {
+                          id: 1,
+                          degree: "Master of Business Administration",
+                          institution: "Indian Institute of Management",
+                          location: "Ahmedabad, India",
+                          startDate: "2018-06-01",
+                          endDate: "2020-05-31",
+                          fieldOfStudy: "Healthcare Management",
+                          description: "Specialized in healthcare management with focus on digital transformation and innovation.",
+                          achievements: "Graduated with distinction, Led healthcare innovation club",
+                          skillsAcquired: ["Strategic Planning", "Healthcare Economics", "Digital Transformation", "Leadership"]
+                        },
+                        {
+                          id: 2,
+                          degree: "Bachelor of Technology",
+                          institution: "Gujarat Technological University",
+                          location: "Gujarat, India",
+                          startDate: "2014-06-01",
+                          endDate: "2018-05-31",
+                          fieldOfStudy: "Biotechnology",
+                          description: "Strong foundation in biotechnology with emphasis on healthcare applications.",
+                          achievements: "Dean's List, Research publication in biotechnology journal",
+                          skillsAcquired: ["Research Methodology", "Data Analysis", "Scientific Writing", "Problem Solving"]
+                        }
+                      ]}
+                      userProjects={[
+                        {
+                          id: 1,
+                          title: "Healthcare Digital Transformation Initiative",
+                          description: "Led a comprehensive digital transformation project that improved patient engagement by 40% and reduced operational costs by 25%.",
+                          startDate: "2023-01-01",
+                          category: "Healthcare Innovation",
+                          industry: "Healthcare",
+                          projectUrl: "https://example.com/healthcare-transformation"
+                        },
+                        {
+                          id: 2,
+                          title: "Patient-Centered Design System",
+                          description: "Developed a unified design system for healthcare applications, improving user experience consistency across 15+ digital touchpoints.",
+                          startDate: "2022-06-01",
+                          category: "UX Design",
+                          industry: "Healthcare",
+                          projectUrl: "https://example.com/design-system"
+                        },
+                        {
+                          id: 3,
+                          title: "Data-Driven Product Strategy Framework",
+                          description: "Created a comprehensive framework for product decision-making that increased product success rate by 60%.",
+                          startDate: "2022-01-01",
+                          category: "Product Strategy",
+                          industry: "Healthcare",
+                          projectUrl: "https://example.com/strategy-framework"
+                        }
+                      ]}
                     />
                   </CardContent>
                 </Card>
