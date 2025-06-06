@@ -491,14 +491,14 @@ export default function PortfolioBuilder() {
       setIsGenerating(true);
       console.log("Portfolio - Starting data generation");
 
-      // Directly fetch the most up-to-date data
+      // Use the already-fetched data from existing queries
       const fetchAllUserData = async () => {
         try {
-          let experiencesData = [];
-          let skillsData = [];
-          let projectsData = [];
-          let educationsData = [];
-          let servicesData = [];
+          const experiencesData = experiences || [];
+          const skillsData = skills || [];
+          const projectsData = projects || [];
+          const educationsData = educations || [];
+          const servicesData = services || [];
           
           if (userNumericId) {
             console.log("Portfolio - Fetching user data for userNumericId:", userNumericId);
@@ -1045,11 +1045,11 @@ export default function PortfolioBuilder() {
                         jobLevel: userData?.jobLevel || '',
                         aboutMe: userData?.aboutMe || ''
                       }}
-                      userSkills={portfolioPreviewData?.skills || userSkills || []}
-                      userServices={portfolioPreviewData?.services || userServices || []}
-                      userExperiences={portfolioPreviewData?.experiences || userExperiences || []}
-                      userEducations={portfolioPreviewData?.educations || userEducations || []}
-                      userProjects={portfolioPreviewData?.projects || userProjects || []}
+                      userSkills={skills || []}
+                      userServices={services || []}
+                      userExperiences={experiences || []}
+                      userEducations={educations || []}
+                      userProjects={projects || []}
                     />
                   </CardContent>
                 </Card>
