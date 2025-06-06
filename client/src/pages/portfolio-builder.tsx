@@ -1023,29 +1023,37 @@ export default function PortfolioBuilder() {
             )}
             
             {form.watch("layout") === "scholar" && (
-              <Card className="overflow-hidden bg-white border-gray-200 shadow-lg">
-                <CardContent className="p-0">
-                  <Scholar 
-                    userInfo={{
-                      name: userData?.name || user?.name || '',
-                      title: userData?.title || '',
-                      industry: userData?.industry || '',
-                      domain: userData?.domain || '',
-                      location: userData?.location || '',
-                      email: userData?.email || user?.email || '',
-                      photoURL: userData?.photoURL || user?.photoURL || null,
-                      lookingFor: userData?.lookingFor || '',
-                      jobLevel: userData?.jobLevel || '',
-                      aboutMe: userData?.aboutMe || ''
-                    }}
-                    userSkills={portfolioPreviewData?.skills || userSkills || []}
-                    userServices={portfolioPreviewData?.services || userServices || []}
-                    userExperiences={portfolioPreviewData?.experiences || userExperiences || []}
-                    userEducations={portfolioPreviewData?.educations || userEducations || []}
-                    userProjects={portfolioPreviewData?.projects || userProjects || []}
-                  />
-                </CardContent>
-              </Card>
+              <>
+                {console.log("Scholar - portfolioPreviewData:", portfolioPreviewData)}
+                {console.log("Scholar - userSkills:", portfolioPreviewData?.skills || userSkills)}
+                {console.log("Scholar - userServices:", portfolioPreviewData?.services || userServices)}
+                {console.log("Scholar - userExperiences:", portfolioPreviewData?.experiences || userExperiences)}
+                {console.log("Scholar - userEducations:", portfolioPreviewData?.educations || userEducations)}
+                {console.log("Scholar - userProjects:", portfolioPreviewData?.projects || userProjects)}
+                <Card className="overflow-hidden bg-white border-gray-200 shadow-lg">
+                  <CardContent className="p-0">
+                    <Scholar 
+                      userInfo={{
+                        name: userData?.name || user?.name || '',
+                        title: userData?.title || '',
+                        industry: userData?.industry || '',
+                        domain: userData?.domain || '',
+                        location: userData?.location || '',
+                        email: userData?.email || user?.email || '',
+                        photoURL: userData?.photoURL || user?.photoURL || null,
+                        lookingFor: userData?.lookingFor || '',
+                        jobLevel: userData?.jobLevel || '',
+                        aboutMe: userData?.aboutMe || ''
+                      }}
+                      userSkills={portfolioPreviewData?.skills || userSkills || []}
+                      userServices={portfolioPreviewData?.services || userServices || []}
+                      userExperiences={portfolioPreviewData?.experiences || userExperiences || []}
+                      userEducations={portfolioPreviewData?.educations || userEducations || []}
+                      userProjects={portfolioPreviewData?.projects || userProjects || []}
+                    />
+                  </CardContent>
+                </Card>
+              </>
             )}
             
             {form.watch("layout") === "animated-odyssey" && (

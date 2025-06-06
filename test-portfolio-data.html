@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Data Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; }
+        .data { background: #f5f5f5; padding: 10px; margin: 10px 0; }
+        pre { white-space: pre-wrap; word-wrap: break-word; }
+    </style>
+</head>
+<body>
+    <h1>Portfolio Data Structure Test</h1>
+    
+    <div class="section">
+        <h2>Test Portfolio Preview Data</h2>
+        <button onclick="testPortfolioData()">Test Portfolio Data Structure</button>
+        <div id="results"></div>
+    </div>
+
+    <script>
+        async function testPortfolioData() {
+            const resultsDiv = document.getElementById('results');
+            
+            try {
+                // Test fetching user skills
+                console.log('Testing skills data...');
+                const skillsResponse = await fetch('/api/users/2/skills');
+                const skillsData = await skillsResponse.json();
+                
+                // Test fetching user experiences  
+                console.log('Testing experiences data...');
+                const expResponse = await fetch('/api/users/2/experiences');
+                const expData = await expResponse.json();
+                
+                // Test fetching user projects
+                console.log('Testing projects data...');
+                const projectsResponse = await fetch('/api/users/2/projects');
+                const projectsData = await projectsResponse.json();
+                
+                // Test fetching user educations
+                console.log('Testing educations data...');
+                const educationsResponse = await fetch('/api/users/2/educations');
+                const educationsData = await educationsResponse.json();
+                
+                // Test fetching user services
+                console.log('Testing services data...');
+                const servicesResponse = await fetch('/api/users/2/services');
+                const servicesData = await servicesResponse.json();
+                
+                // Display results
+                resultsDiv.innerHTML = `
+                    <div class="data">
+                        <h3>Skills Data (${skillsData.length} items):</h3>
+                        <pre>${JSON.stringify(skillsData, null, 2)}</pre>
+                    </div>
+                    
+                    <div class="data">
+                        <h3>Experiences Data (${expData.length} items):</h3>
+                        <pre>${JSON.stringify(expData, null, 2)}</pre>
+                    </div>
+                    
+                    <div class="data">
+                        <h3>Projects Data (${projectsData.length} items):</h3>
+                        <pre>${JSON.stringify(projectsData, null, 2)}</pre>
+                    </div>
+                    
+                    <div class="data">
+                        <h3>Educations Data (${educationsData.length} items):</h3>
+                        <pre>${JSON.stringify(educationsData, null, 2)}</pre>
+                    </div>
+                    
+                    <div class="data">
+                        <h3>Services Data (${servicesData.length} items):</h3>
+                        <pre>${JSON.stringify(servicesData, null, 2)}</pre>
+                    </div>
+                `;
+                
+                // Test localStorage portfolio data
+                const portfolioPreviewData = localStorage.getItem('portfolio-preview-data');
+                if (portfolioPreviewData) {
+                    const parsedData = JSON.parse(portfolioPreviewData);
+                    resultsDiv.innerHTML += `
+                        <div class="data">
+                            <h3>Portfolio Preview Data from localStorage:</h3>
+                            <pre>${JSON.stringify(parsedData, null, 2)}</pre>
+                        </div>
+                    `;
+                } else {
+                    resultsDiv.innerHTML += `
+                        <div class="data">
+                            <h3>Portfolio Preview Data:</h3>
+                            <p>No portfolio preview data found in localStorage</p>
+                        </div>
+                    `;
+                }
+                
+            } catch (error) {
+                resultsDiv.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+                console.error('Error testing portfolio data:', error);
+            }
+        }
+    </script>
+</body>
+</html>
