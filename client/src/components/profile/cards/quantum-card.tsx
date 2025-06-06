@@ -8,8 +8,8 @@ interface QuantumCardProps {
 }
 
 const QuantumCard: React.FC<QuantumCardProps> = ({ userData, isLoading = false }) => {
-  // Format profile link
-  const profileLink = `brandentifier.com/@${userData.name ? userData.name.replace(/\s+/g, '') : userData.username}`;
+  // Format profile link using username for consistent URL structure
+  const profileLink = `brandentifier.com/@${userData.username}`;
 
   return (
     <div className="quantum-card w-full h-full aspect-[2/3.5] relative overflow-hidden rounded-xl">
