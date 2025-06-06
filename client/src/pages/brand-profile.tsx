@@ -4,6 +4,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { User, MapPin, Briefcase, Heart } from "lucide-react";
+import { apiRequest } from "@/lib/queryClient";
 
 // Portfolio template imports
 import MinimalistPro from "@/components/portfolio/templates/minimalist-pro";
@@ -95,9 +96,42 @@ export default function BrandProfile({ brandName }: BrandProfileProps) {
     enabled: !!userData?.id,
   });
 
+  // Fetch the user's published portfolio
+  const { data: publishedPortfolio, isLoading: isPortfolioDataLoading, error: portfolioError } = useQuery({
+    queryKey: [`/api/users/${userData?.id}/portfolio`], 
+    queryFn: async () => {
+      console.log(`Brand profile - Portfolio query triggered. userData:`, userData);
+      console.log(`Brand profile - userData?.id:`, userData?.id);
+      if (!userData?.id) {
+        console.log('Brand profile - No userData.id, skipping portfolio fetch');
+        return null;
+      }
+      try {
+        console.log(`Brand profile - Fetching portfolio for user ID: ${userData.id}`);
+        console.log(`Brand profile - Making API call to: /api/users/${userData.id}/portfolio`);
+        const portfolioData = await apiRequest('GET', `/api/users/${userData.id}/portfolio`);
+        console.log('Brand profile - Portfolio data received:', portfolioData);
+        return portfolioData;
+      } catch (error) {
+        console.error('Brand profile - Error fetching portfolio:', error);
+        console.error('Brand profile - Portfolio API call failed with error:', error);
+        return null;
+      }
+    },
+    enabled: !!userData?.id,
+    retry: false
+  });
+
+  // Debug logging for portfolio data
+  console.log("Brand profile debug:");
+  console.log("- userData:", userData);
+  console.log("- publishedPortfolio:", publishedPortfolio);
+  console.log("- portfolioError:", portfolioError);
+  console.log("- isPortfolioDataLoading:", isPortfolioDataLoading);
+
   // Construct portfolio data from all fetched components
-  const portfolioData: PortfolioData | null = userData ? {
-    layout: userData.selectedPortfolioLayout || 'professional',
+  const portfolioData: PortfolioData | null = userData && publishedPortfolio ? {
+    layout: publishedPortfolio.layout, // Use the actual portfolio layout from database
     publicUrl: null,
     isPublished: true,
     customTitle: userData.name || userData.username,
