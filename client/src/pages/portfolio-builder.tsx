@@ -1044,11 +1044,11 @@ export default function PortfolioBuilder() {
                     lookingFor={userData?.lookingFor || ''}
                     aboutMe={userData?.aboutMe || ''}
                     whatIOffer={whatIOfferValue || userData?.whatIOffer || ''}
-                    skills={userSkills || []}
-                    services={userServices || []}
-                    experiences={userExperiences || []}
-                    educations={userEducations || []}
-                    projects={userProjects?.map(p => ({
+                    skills={skills || []}
+                    services={services || []}
+                    experiences={experiences || []}
+                    educations={educations || []}
+                    projects={projects?.map(p => ({
                       id: p.id,
                       title: p.title,
                       description: p.description,
