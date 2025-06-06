@@ -34,7 +34,7 @@ import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-l
 // Import our portfolio templates
 import MinimalistPro from "@/components/portfolio/templates/minimalist-pro";
 import FreelancerHub from "@/components/portfolio/templates/freelancer-hub"; // Using the new improved template
-import TimelineStoryteller2 from "@/components/portfolio/templates/timeline-storyteller-2"; // Timeline Storyteller with comprehensive interactive timeline
+import TimelineStoryteller from "@/components/portfolio/templates/timeline-storyteller";
 import VisualExpert from "@/components/portfolio/templates/visual-expert";
 import CorporateExecutive from "@/components/portfolio/templates/corporate-executive";
 import { DynamicInnovator } from "@/components/portfolio/templates/dynamic-innovator";
@@ -848,13 +848,14 @@ export default function PortfolioBuilder() {
             
             {form.watch("layout") === "timeline-storyteller-2" && (
               <>
-                {console.log("Timeline Storyteller 2.0 - userInfo being passed:", userInfo)}
-                {console.log("Timeline Storyteller 2.0 - userData being passed:", userData)}
-                {console.log("Timeline Storyteller 2.0 - aboutMe field specifically:", userData?.aboutMe)}
-                {console.log("Timeline Storyteller 2.0 - Education data being passed:", userEducations)}
-                {console.log("Timeline Storyteller 2.0 - Services data being passed:", userServices)}
-                <TimelineStoryteller2 
+                {console.log("Timeline Storyteller - userInfo being passed:", userInfo)}
+                {console.log("Timeline Storyteller - userData being passed:", userData)}
+                {console.log("Timeline Storyteller - aboutMe field specifically:", userData?.aboutMe)}
+                {console.log("Timeline Storyteller - Education data being passed:", userEducations)}
+                {console.log("Timeline Storyteller - Services data being passed:", userServices)}
+                <TimelineStoryteller 
                   userInfo={{
+                    id: userData?.id,
                     name: userData?.name || user?.name || '',
                     title: userData?.title || '',
                     industry: userData?.industry || '',
@@ -863,8 +864,9 @@ export default function PortfolioBuilder() {
                     email: userData?.email || user?.email || '',
                     photoURL: userData?.photoURL || user?.photoURL || null,
                     lookingFor: userData?.lookingFor || '',
-                    aboutMe: userData?.aboutMe || "I am a software developer with experience in React, Node.js, and PostgreSQL.",
-                    whatIOffer: userData?.whatIOffer || ''
+                    jobLevel: userData?.jobLevel || null,
+                    aboutMe: userData?.aboutMe || null,
+                    whatIOffer: userData?.whatIOffer || null
                   }}
                   userSkills={userSkills}
                   userExperiences={userExperiences || []}
