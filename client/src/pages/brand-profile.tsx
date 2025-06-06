@@ -8,7 +8,7 @@ import { apiRequest } from "@/lib/queryClient";
 
 // Portfolio template imports
 import MinimalistPro from "@/components/portfolio/templates/minimalist-pro";
-import TimelineStoryteller from "@/components/portfolio/templates/timeline-storyteller";
+import TimelineStoryteller from "@/components/portfolio/templates/timeline-storyteller-2";
 import VisualExpert from "@/components/portfolio/templates/visual-expert";
 import FreelancerHub from "@/components/portfolio/templates/freelancer-hub";
 import Scholar from "@/components/portfolio/templates/scholar";
