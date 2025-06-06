@@ -374,6 +374,9 @@ const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
             currentUserId={templateProps.currentUserId}
           />
         );
+      case 'professional':
+      case 'scholar':
+        return <MinimalistPro {...templateProps} />;
       default:
         return <VisualExpert {...templateProps} />;
     }
