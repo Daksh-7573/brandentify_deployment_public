@@ -954,8 +954,21 @@ export default function PortfolioBuilder() {
             
             {form.watch("layout") === "dynamic-innovator" && (
               <>
-                {console.log("Dynamic Innovator - userInfo being passed:", userData)}
-                {console.log("Dynamic Innovator - Services data being passed:", userServices)}
+                {console.log("Dynamic Innovator Preview - Complete data check:", {
+                  whatIOfferValue,
+                  userDataWhatIOffer: userData?.whatIOffer,
+                  finalWhatIOffer: whatIOfferValue || userData?.whatIOffer || null,
+                  skillsCount: skills?.length || 0,
+                  experiencesCount: experiences?.length || 0,
+                  projectsCount: projects?.length || 0,
+                  educationsCount: educations?.length || 0,
+                  servicesCount: services?.length || 0,
+                  skillsData: skills,
+                  experiencesData: experiences,
+                  projectsData: projects,
+                  educationsData: educations,
+                  servicesData: services
+                })}
                 <DynamicInnovator
                   userInfo={{
                     name: userData?.name || user?.name || '',
@@ -967,13 +980,13 @@ export default function PortfolioBuilder() {
                     photoURL: userData?.photoURL || user?.photoURL || null,
                     lookingFor: userData?.lookingFor || null,
                     jobLevel: userData?.jobLevel || null,
-                    whatIOffer: userData?.whatIOffer || '' // Added whatIOffer field
+                    whatIOffer: whatIOfferValue || userData?.whatIOffer || null
                   }}
-                  userSkills={userSkills || []}
-                  userExperiences={userExperiences || []}
-                  userProjects={userProjects || []}
-                  userEducations={userEducations || []}
-                  userServices={userServices || []} // Added userServices
+                  userSkills={skills || []}
+                  userExperiences={experiences || []}
+                  userProjects={projects || []}
+                  userEducations={educations || []}
+                  userServices={services || []}
                 />
               </>
             )}
