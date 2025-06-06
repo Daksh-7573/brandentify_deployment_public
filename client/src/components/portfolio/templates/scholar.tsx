@@ -371,40 +371,81 @@ export default function Scholar({
     }
   };
 
-  // Group skills by category with safety checks
+  // Group skills by category with safety checks - simplified to show all skills
   const safeSkills = userSkills || [];
   const skillCategories = {
     technical: safeSkills.filter(skill => 
-      skill && skill.name && skill.name.toLowerCase().includes('programming') || 
-      (skill && skill.name && skill.name.toLowerCase().includes('technical')) ||
-      (skill && skill.name && skill.name.toLowerCase().includes('coding')) ||
-      (skill && skill.name && skill.name.toLowerCase().includes('development'))
+      skill && skill.name && (
+        skill.name.toLowerCase().includes('programming') || 
+        skill.name.toLowerCase().includes('technical') ||
+        skill.name.toLowerCase().includes('coding') ||
+        skill.name.toLowerCase().includes('development') ||
+        skill.name.toLowerCase().includes('javascript') ||
+        skill.name.toLowerCase().includes('python') ||
+        skill.name.toLowerCase().includes('java') ||
+        skill.name.toLowerCase().includes('react') ||
+        skill.name.toLowerCase().includes('node') ||
+        skill.name.toLowerCase().includes('sql') ||
+        skill.name.toLowerCase().includes('html') ||
+        skill.name.toLowerCase().includes('css')
+      )
     ),
     soft: safeSkills.filter(skill => 
-      skill && skill.name && skill.name.toLowerCase().includes('communication') || 
-      (skill && skill.name && skill.name.toLowerCase().includes('leadership')) ||
-      (skill && skill.name && skill.name.toLowerCase().includes('teamwork')) ||
-      (skill && skill.name && skill.name.toLowerCase().includes('collaboration'))
+      skill && skill.name && (
+        skill.name.toLowerCase().includes('communication') || 
+        skill.name.toLowerCase().includes('leadership') ||
+        skill.name.toLowerCase().includes('teamwork') ||
+        skill.name.toLowerCase().includes('collaboration') ||
+        skill.name.toLowerCase().includes('management') ||
+        skill.name.toLowerCase().includes('problem') ||
+        skill.name.toLowerCase().includes('analytical')
+      )
     ),
     tools: safeSkills.filter(skill => 
-      skill && skill.name && skill.name.toLowerCase().includes('tool') || 
-      (skill && skill.name && skill.name.toLowerCase().includes('software')) ||
-      (skill && skill.name && skill.name.toLowerCase().includes('platform'))
+      skill && skill.name && (
+        skill.name.toLowerCase().includes('tool') || 
+        skill.name.toLowerCase().includes('software') ||
+        skill.name.toLowerCase().includes('platform') ||
+        skill.name.toLowerCase().includes('adobe') ||
+        skill.name.toLowerCase().includes('figma') ||
+        skill.name.toLowerCase().includes('sketch')
+      )
     ),
     other: safeSkills.filter(skill => 
-      skill && skill.name && !skill.name.toLowerCase().includes('programming') && 
-      !skill.name.toLowerCase().includes('technical') &&
-      !skill.name.toLowerCase().includes('coding') &&
-      !skill.name.toLowerCase().includes('development') &&
-      !skill.name.toLowerCase().includes('communication') && 
-      !skill.name.toLowerCase().includes('leadership') &&
-      !skill.name.toLowerCase().includes('teamwork') &&
-      !skill.name.toLowerCase().includes('collaboration') &&
-      !skill.name.toLowerCase().includes('tool') && 
-      !skill.name.toLowerCase().includes('software') &&
-      !skill.name.toLowerCase().includes('platform')
+      skill && skill.name && (
+        !skill.name.toLowerCase().includes('programming') && 
+        !skill.name.toLowerCase().includes('technical') &&
+        !skill.name.toLowerCase().includes('coding') &&
+        !skill.name.toLowerCase().includes('development') &&
+        !skill.name.toLowerCase().includes('javascript') &&
+        !skill.name.toLowerCase().includes('python') &&
+        !skill.name.toLowerCase().includes('java') &&
+        !skill.name.toLowerCase().includes('react') &&
+        !skill.name.toLowerCase().includes('node') &&
+        !skill.name.toLowerCase().includes('sql') &&
+        !skill.name.toLowerCase().includes('html') &&
+        !skill.name.toLowerCase().includes('css') &&
+        !skill.name.toLowerCase().includes('communication') && 
+        !skill.name.toLowerCase().includes('leadership') &&
+        !skill.name.toLowerCase().includes('teamwork') &&
+        !skill.name.toLowerCase().includes('collaboration') &&
+        !skill.name.toLowerCase().includes('management') &&
+        !skill.name.toLowerCase().includes('problem') &&
+        !skill.name.toLowerCase().includes('analytical') &&
+        !skill.name.toLowerCase().includes('tool') && 
+        !skill.name.toLowerCase().includes('software') &&
+        !skill.name.toLowerCase().includes('platform') &&
+        !skill.name.toLowerCase().includes('adobe') &&
+        !skill.name.toLowerCase().includes('figma') &&
+        !skill.name.toLowerCase().includes('sketch')
+      )
     )
   };
+
+  // If no skills fit into categories, put them all in 'other'
+  if (skillCategories.technical.length === 0 && skillCategories.soft.length === 0 && skillCategories.tools.length === 0 && skillCategories.other.length === 0 && safeSkills.length > 0) {
+    skillCategories.other = safeSkills;
+  }
 
   // Sort educations by date (most recent first) with safety check
   const sortedEducations = userEducations && userEducations.length > 0 
@@ -682,18 +723,75 @@ export default function Scholar({
                 </div>
               )}
               
-              {/* Skills categorized as "other" are still displayed but without a separate section header */}
+              {/* Other Skills */}
               {skillCategories.other.length > 0 && (
                 <div className="graph-paper fade-in-up delay-300 p-6 rounded-lg">
+                  <h3 className="text-lg font-serif font-semibold mb-4 flex items-center text-green-800">
+                    <Star className="h-5 w-5 mr-2 text-green-600" /> Other Skills
+                  </h3>
                   <div className="flex flex-wrap gap-2">
                     {skillCategories.other.map((skill) => (
-                      <Badge 
-                        key={skill.id} 
-                        variant="outline"
-                        className={`text-sm py-2 px-3 skill-badge ${getSkillColor(skill.name)}`}
-                      >
-                        {skill.name} {skill.level && <span className="ml-1 text-xs bg-green-50 px-2 py-1 rounded-md text-green-700">{skill.level} - {skill.proficiency}%</span>}
-                      </Badge>
+                      <div key={skill.id} className="w-full mb-4">
+                        <div className="flex justify-between mb-1">
+                          <span className="text-sm font-medium">{skill.name}</span>
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-medium px-2 py-1 rounded-md bg-green-50 text-green-700">
+                              {skill.level} - {skill.proficiency}%
+                            </span>
+                            <div className="flex">
+                              {Array.from({ length: 5 }).map((_, i) => (
+                                <Star
+                                  key={i}
+                                  className={`h-4 w-4 ${i < Math.round(skill.proficiency / 20) ? 'text-green-600 fill-green-600' : 'text-gray-300'}`}
+                                />
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="progress-bar">
+                          <div 
+                            className="progress-fill bg-green-500" 
+                            style={{ width: `${skill.proficiency}%` }}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {/* If no skills are categorized anywhere, show all skills */}
+              {skillCategories.technical.length === 0 && skillCategories.soft.length === 0 && skillCategories.tools.length === 0 && skillCategories.other.length === 0 && safeSkills.length > 0 && (
+                <div className="notebook-card fade-in-up p-6 rounded-lg">
+                  <h3 className="text-lg font-serif font-semibold mb-4 flex items-center text-blue-800">
+                    <Star className="h-5 w-5 mr-2 text-blue-600" /> My Skills
+                  </h3>
+                  <div className="space-y-4">
+                    {safeSkills.map((skill) => (
+                      <div key={skill.id} className="w-full mb-4">
+                        <div className="flex justify-between mb-1">
+                          <span className="text-sm font-medium">{skill.name}</span>
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-medium px-2 py-1 rounded-md bg-blue-50 text-blue-700">
+                              {skill.level} - {skill.proficiency}%
+                            </span>
+                            <div className="flex">
+                              {Array.from({ length: 5 }).map((_, i) => (
+                                <Star
+                                  key={i}
+                                  className={`h-4 w-4 ${i < Math.round(skill.proficiency / 20) ? 'text-blue-600 fill-blue-600' : 'text-gray-300'}`}
+                                />
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="progress-bar">
+                          <div 
+                            className="progress-fill" 
+                            style={{ width: `${skill.proficiency}%` }}
+                          />
+                        </div>
+                      </div>
                     ))}
                   </div>
                 </div>
@@ -703,46 +801,7 @@ export default function Scholar({
         </div>
       </section>
 
-      {/* Services Section (if services exist) */}
-      {hasServices && (
-        <section className="py-12 bg-white">
-          <div className="container mx-auto px-4 md:px-8">
-            <h2 className="text-2xl font-serif font-bold text-gray-800 mb-6 flex items-center">
-              <BookOpen className="h-6 w-6 mr-3 text-blue-600" />
-              What I Offer
-            </h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {userServices.slice(0, 6).map((service, index) => (
-                <div key={service.id} className={`notebook-paper fade-in-up delay-${index * 100} rounded-lg border-l-[3px] border-l-blue-500 hover:shadow-md transition-shadow p-6`}>
-                  <div className="flex justify-between mb-3">
-                    <h3 className="text-lg font-serif font-semibold text-blue-800">{service.title}</h3>
-                    {service.isActive ? (
-                      <Badge className="bg-green-100 text-green-800 hover:bg-green-200">Active</Badge>
-                    ) : (
-                      <Badge variant="outline" className="text-gray-500">Inactive</Badge>
-                    )}
-                  </div>
-                  <p className="text-gray-600 mb-4">{service.description}</p>
-                  {(service.priceUsd || service.priceInr) && (
-                    <div className="text-blue-600 font-medium mb-4">
-                      {service.priceUsd && (
-                        <span className="mr-2">${service.priceUsd}{service.isHourly ? '/hr' : ''}</span>
-                      )}
-                      {service.priceInr && (
-                        <span>₹{service.priceInr}{service.isHourly ? '/hr' : ''}</span>
-                      )}
-                    </div>
-                  )}
-                  <Button variant="outline" className="text-blue-600 border-blue-200 hover:bg-blue-50">
-                    Request Service
-                  </Button>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
+
 
       {/* Projects & Portfolio Section */}
       <section className="py-12 bg-gray-50">
