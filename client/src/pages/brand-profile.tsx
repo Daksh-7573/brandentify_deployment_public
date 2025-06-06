@@ -223,6 +223,10 @@ export default function BrandProfile({ brandName }: BrandProfileProps) {
   const renderPortfolioTemplate = () => {
     const layout = portfolioData.layout;
     
+    console.log("Rendering portfolio template:");
+    console.log("- layout:", layout);
+    console.log("- portfolioData:", portfolioData);
+    
     // Prepare data for portfolio templates
     const templateProps = {
       userInfo: {
@@ -245,6 +249,8 @@ export default function BrandProfile({ brandName }: BrandProfileProps) {
       userEducations: portfolioData.educations,
       userServices: portfolioData.services
     };
+    
+    console.log("Template props prepared:", templateProps);
     
     switch (layout) {
       case 'minimalist':
@@ -325,6 +331,7 @@ export default function BrandProfile({ brandName }: BrandProfileProps) {
         />;
       case 'professional':
       default:
+        console.log("Rendering CorporateExecutive template with professional layout");
         return <CorporateExecutive 
           userInfo={templateProps.userInfo}
           userSkills={templateProps.userSkills}
