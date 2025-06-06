@@ -545,6 +545,47 @@ export default function Scholar({
         </div>
       </section>
 
+      {/* What I Offer Section - Services */}
+      {hasServices && (
+        <section className="py-12 bg-gray-50">
+          <div className="container mx-auto px-4 md:px-8">
+            <h2 className="text-2xl font-serif font-bold text-gray-800 mb-6 flex items-center">
+              <Lightbulb className="h-6 w-6 mr-3 text-blue-600" />
+              What I Offer
+            </h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {userServices.map((service, index) => (
+                <div key={service.id} className="notebook-card p-6 rounded-lg fade-in-up" style={{ animationDelay: `${index * 100}ms` }}>
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex-1">
+                      <h3 className="text-lg font-serif font-semibold text-blue-800 mb-2">{service.title}</h3>
+                      {service.description && (
+                        <p className="text-gray-700 text-sm leading-relaxed mb-3">{service.description}</p>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center justify-between mt-4">
+                    <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                      {service.category}
+                    </Badge>
+                    {(service.priceUsd || service.priceInr) && (
+                      <div className="text-right">
+                        <div className="text-lg font-bold text-blue-800">
+                          {service.priceUsd ? `$${service.priceUsd}` : service.priceInr ? `₹${service.priceInr}` : ''}
+                          {service.isHourly && <span className="text-sm font-normal text-gray-600">/hr</span>}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Skills Section */}
       <section className="py-12 bg-gray-50">
         <div className="container mx-auto px-4 md:px-8">
