@@ -297,6 +297,7 @@ export default function BrandProfile({ brandName }: BrandProfileProps) {
           userServices={templateProps.userServices}
         />;
       case 'timeline':
+      case 'timeline-storyteller-2':
         return <TimelineStoryteller 
           userInfo={templateProps.userInfo}
           userSkills={templateProps.userSkills}
