@@ -174,21 +174,39 @@ const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
     },
     enabled: !!userData?.id
   });
+
+  // Fetch the user's published portfolio
+  const { data: publishedPortfolio, isLoading: isPortfolioDataLoading } = useQuery({
+    queryKey: [`/api/users/${userData?.id}/portfolio`], 
+    queryFn: async () => {
+      if (!userData?.id) return null;
+      try {
+        console.log(`Public profile - Fetching portfolio for user ID: ${userData.id}`);
+        const portfolioData = await apiRequest('GET', `/api/users/${userData.id}/portfolio`);
+        console.log('Public profile - Portfolio data:', portfolioData);
+        return portfolioData;
+      } catch (error) {
+        console.error('Error fetching portfolio:', error);
+        return null;
+      }
+    },
+    enabled: !!userData?.id
+  });
   
   // Construct portfolio data from all fetched components
   const portfolioData: PortfolioData | null = userData ? {
-    layout: 'animated-odyssey', // Default to our new animated-odyssey template
-    publicUrl: null,
-    isPublished: true,
-    customTitle: userData.name || userData.username,
-    customBio: '',
-    customizationOptions: {
+    layout: publishedPortfolio?.layout || 'animated-odyssey', // Use actual portfolio layout or fallback
+    publicUrl: publishedPortfolio?.publicUrl || null,
+    isPublished: publishedPortfolio?.isPublished || false,
+    customTitle: publishedPortfolio?.customTitle || userData.name || userData.username,
+    customBio: publishedPortfolio?.customBio || '',
+    customizationOptions: publishedPortfolio?.customizationOptions || {
       theme: 'colorful',
       showContact: true
     },
-    featuredProjects: [],
-    featuredSkills: [],
-    featuredExperiences: [],
+    featuredProjects: publishedPortfolio?.featuredProjects || [],
+    featuredSkills: publishedPortfolio?.featuredSkills || [],
+    featuredExperiences: publishedPortfolio?.featuredExperiences || [],
     skills: userSkills,
     experiences: userExperiences,
     projects: userProjects,
@@ -198,7 +216,7 @@ const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
   } : null;
   
   const isPortfolioLoading = isSkillsLoading || isExperiencesLoading || isProjectsLoading || 
-                            isEducationsLoading || isServicesLoading;
+                            isEducationsLoading || isServicesLoading || isPortfolioDataLoading;
   
   // If there's no username or if there's an error, show not found
   useEffect(() => {
