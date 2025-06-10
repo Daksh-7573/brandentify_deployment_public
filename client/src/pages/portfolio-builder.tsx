@@ -1235,7 +1235,7 @@ export default function PortfolioBuilder() {
       return (
         <div className="container mx-auto p-4">
           <div className="flex flex-col space-y-6">
-            <SectionSkeleton title="Analyzing Your Profile" />
+            <SectionSkeleton title="Analyzing Your Profile" isLoading={true} />
             <div className="space-y-4">
               <ProfileSkeleton />
               <div className="flex flex-col items-center justify-center py-4 space-y-2">
@@ -1256,7 +1256,7 @@ export default function PortfolioBuilder() {
       return (
         <div className="container mx-auto p-4">
           <div className="flex flex-col space-y-6">
-            <SectionSkeleton title="Creating Your Portfolio" />
+            <SectionSkeleton title="Creating Your Portfolio" isLoading={true} />
             <div className="space-y-4">
               <ProfileSkeleton />
               <div className="flex flex-col items-center justify-center py-4 space-y-2">
@@ -1277,7 +1277,7 @@ export default function PortfolioBuilder() {
       return (
         <div className="container mx-auto p-4">
           <div className="flex flex-col space-y-6">
-            <SectionSkeleton title="Portfolio Preview" />
+            <SectionSkeleton title="Portfolio Preview" isLoading={true} />
             <ProfileSkeleton />
           </div>
         </div>
