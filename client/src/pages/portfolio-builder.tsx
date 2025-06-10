@@ -1017,13 +1017,13 @@ export default function PortfolioBuilder() {
                       userId: p.userId,
                       startDate: p.startDate,
                       industry: p.industry || null,
-                      createdAt: p.createdAt || null,
+                      createdAt: p.createdAt || new Date().toISOString(),
                       projectUrl: p.projectUrl || null,
                       category: p.category || null,
                       thumbnailUrl: p.thumbnailUrl || null,
                       thumbnailFile: p.thumbnailFile || null,
                       mediaUrls: Array.isArray(p.mediaUrls) ? p.mediaUrls : [],
-                      updatedAt: null
+                      updatedAt: p.updatedAt || new Date().toISOString()
                     })) || []}
                   />
                 </CardContent>
@@ -1048,20 +1048,20 @@ export default function PortfolioBuilder() {
                     services={services || []}
                     experiences={experiences || []}
                     educations={educations || []}
-                    projects={projects?.map(p => ({
+                    projects={projects?.map((p: any) => ({
                       id: p.id,
                       title: p.title,
                       description: p.description,
                       userId: p.userId,
                       startDate: p.startDate,
                       industry: p.industry || null,
-                      createdAt: p.createdAt || null,
+                      createdAt: p.createdAt || new Date().toISOString(),
                       projectUrl: p.projectUrl || null,
                       category: p.category || null,
                       thumbnailUrl: p.thumbnailUrl || null,
                       thumbnailFile: p.thumbnailFile || null,
                       mediaUrls: p.mediaUrls || [],
-                      updatedAt: p.updatedAt || null
+                      updatedAt: p.updatedAt || new Date().toISOString()
                     })) || []}
                   />
                 </CardContent>
