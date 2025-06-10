@@ -1010,7 +1010,7 @@ export default function PortfolioBuilder() {
                     userServices={services || []}
                     userExperiences={experiences || []}
                     userEducations={educations || []}
-                    userProjects={projects?.map(p => ({
+                    userProjects={projects?.map((p: any) => ({
                       id: p.id,
                       title: p.title,
                       description: p.description,
@@ -1022,7 +1022,7 @@ export default function PortfolioBuilder() {
                       category: p.category || null,
                       thumbnailUrl: p.thumbnailUrl || null,
                       thumbnailFile: p.thumbnailFile || null,
-                      mediaUrls: p.mediaUrls || [],
+                      mediaUrls: Array.isArray(p.mediaUrls) ? p.mediaUrls : [],
                       updatedAt: null
                     })) || []}
                   />
@@ -1092,10 +1092,28 @@ export default function PortfolioBuilder() {
                         aboutMe: userData?.aboutMe || ''
                       }}
                       userSkills={skills || []}
-                      userServices={services || []}
-                      userExperiences={experiences || []}
-                      userEducations={educations || []}
-                      userProjects={projects || []}
+                      userServices={services?.map(service => ({
+                        ...service,
+                        isHourly: service.isHourly === null ? undefined : service.isHourly,
+                        isActive: service.isActive === null ? undefined : service.isActive
+                      })) || []}
+                      userExperiences={experiences?.map(exp => ({
+                        ...exp,
+                        location: exp.location || '',
+                        description: exp.description || '',
+                        industry: exp.industry || '',
+                        domain: exp.domain || '',
+                        keyResponsibilities: Array.isArray(exp.keyResponsibilities) ? exp.keyResponsibilities : []
+                      })) || []}
+                      userEducations={educations?.map(edu => ({
+                        ...edu,
+                        skillsAcquired: Array.isArray(edu.skillsAcquired) ? edu.skillsAcquired : []
+                      })) || []}
+                      userProjects={projects?.map(project => ({
+                        ...project,
+                        startDate: project.startDate || '',
+                        mediaUrls: Array.isArray(project.mediaUrls) ? project.mediaUrls : []
+                      })) || []}
                     />
                   </CardContent>
                 </Card>

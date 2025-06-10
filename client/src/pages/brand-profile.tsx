@@ -304,7 +304,11 @@ export default function BrandProfile({ brandName }: BrandProfileProps) {
       case 'timeline-storyteller-2':
       case 'timeline':
         return <TimelineStoryteller 
-          userInfo={templateProps.userInfo}
+          userInfo={{
+            ...templateProps.userInfo,
+            email: templateProps.userInfo.email || '',
+            jobLevel: templateProps.userInfo.jobLevel || null
+          }}
           userSkills={templateProps.userSkills}
           userExperiences={templateProps.userExperiences}
           userProjects={templateProps.userProjects}
