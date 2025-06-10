@@ -538,7 +538,7 @@ export default function ContentManagementPage() {
                       </TableCell>
                     </TableRow>
                   ) : (
-                    filteredContent.map((item) => (
+                    filteredContent.map((item: any) => (
                       <TableRow key={item.id}>
                         <TableCell className="font-medium">{item.title}</TableCell>
                         <TableCell>{getContentTypeBadge(item.type)}</TableCell>
