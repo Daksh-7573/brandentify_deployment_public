@@ -248,7 +248,7 @@ export default function BrandProfile({ brandName }: BrandProfileProps) {
 
   // Render the appropriate portfolio template based on selected layout
   const renderPortfolioTemplate = () => {
-    const layout = portfolioData.layout;
+    const layout = portfolioData?.layout || 'professional';
     
     console.log("Rendering portfolio template:");
     console.log("- layout:", layout);
@@ -270,11 +270,11 @@ export default function BrandProfile({ brandName }: BrandProfileProps) {
         aboutMe: userData.aboutMe,
         whatIOffer: userData.whatIOffer
       },
-      userSkills: portfolioData.skills,
-      userExperiences: portfolioData.experiences,
-      userProjects: portfolioData.projects,
-      userEducations: portfolioData.educations,
-      userServices: portfolioData.services
+      userSkills: portfolioData?.skills || [],
+      userExperiences: portfolioData?.experiences || [],
+      userProjects: portfolioData?.projects || [],
+      userEducations: portfolioData?.educations || [],
+      userServices: portfolioData?.services || []
     };
     
     console.log("Template props prepared:", templateProps);
@@ -318,7 +318,10 @@ export default function BrandProfile({ brandName }: BrandProfileProps) {
       case 'visual-expert':
       case 'visual':
         return <VisualExpert 
-          userInfo={templateProps.userInfo}
+          userInfo={{
+            ...templateProps.userInfo,
+            jobLevel: templateProps.userInfo.jobLevel || null
+          }}
           userSkills={templateProps.userSkills}
           userExperiences={templateProps.userExperiences}
           userProjects={templateProps.userProjects}
@@ -328,7 +331,11 @@ export default function BrandProfile({ brandName }: BrandProfileProps) {
       case 'freelancer-hub':
       case 'freelancer':
         return <FreelancerHub 
-          userInfo={templateProps.userInfo}
+          userInfo={{
+            ...templateProps.userInfo,
+            email: templateProps.userInfo.email || '',
+            jobLevel: templateProps.userInfo.jobLevel || null
+          }}
           userSkills={templateProps.userSkills}
           userExperiences={templateProps.userExperiences}
           userProjects={templateProps.userProjects}
@@ -337,7 +344,10 @@ export default function BrandProfile({ brandName }: BrandProfileProps) {
         />;
       case 'scholar':
         return <Scholar 
-          userInfo={templateProps.userInfo}
+          userInfo={{
+            ...templateProps.userInfo,
+            jobLevel: templateProps.userInfo.jobLevel || null
+          }}
           userSkills={templateProps.userSkills}
           userExperiences={templateProps.userExperiences}
           userProjects={templateProps.userProjects}
@@ -377,7 +387,10 @@ export default function BrandProfile({ brandName }: BrandProfileProps) {
       case 'corporate-executive':
       case 'corporate':
         return <CorporateExecutive 
-          userInfo={templateProps.userInfo}
+          userInfo={{
+            ...templateProps.userInfo,
+            jobLevel: templateProps.userInfo.jobLevel || null
+          }}
           userSkills={templateProps.userSkills}
           userExperiences={templateProps.userExperiences}
           userProjects={templateProps.userProjects}
@@ -388,7 +401,10 @@ export default function BrandProfile({ brandName }: BrandProfileProps) {
       default:
         console.log("Rendering CorporateExecutive template with professional layout");
         return <CorporateExecutive 
-          userInfo={templateProps.userInfo}
+          userInfo={{
+            ...templateProps.userInfo,
+            jobLevel: templateProps.userInfo.jobLevel || null
+          }}
           userSkills={templateProps.userSkills}
           userExperiences={templateProps.userExperiences}
           userProjects={templateProps.userProjects}
