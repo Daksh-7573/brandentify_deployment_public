@@ -170,8 +170,8 @@ export default function PortfolioBuilder() {
     retry: 3,
     retryDelay: 1000,
     // If portfolio not found, we'll create one in the portfolioMutation
-    meta: {
-      errorMessage: "Portfolio not found, will create one when user selects a template"
+    onError: (error) => {
+      console.log("Portfolio not found, will create one when user selects a template");
     }
   });
   
@@ -220,8 +220,9 @@ export default function PortfolioBuilder() {
     queryKey: [`/api/users/${userNumericId}/educations`],
     enabled: !!user && !!userNumericId, // Only fetch when we have the numeric ID
     staleTime: 30000,
-    meta: {
-      successMessage: "Education data fetched successfully"
+    onSuccess: (data) => {
+      console.log("Education Query - Fetched educations data:", data);
+      console.log("Education Query - Data length:", data?.length);
     }
   });
   
@@ -250,8 +251,10 @@ export default function PortfolioBuilder() {
     queryKey: [`/api/users/${userNumericId}/services`],
     enabled: !!user && !!userNumericId, // Only fetch when we have the numeric ID
     staleTime: 30000,
-    meta: {
-      successMessage: "Services data fetched successfully"
+    onSuccess: (data) => {
+      console.log("Portfolio builder - Fetched services data:", data);
+      console.log("Portfolio builder - Services data length:", data?.length);
+      console.log("Portfolio builder - Services data type:", typeof data, Array.isArray(data));
     }
   });
   
