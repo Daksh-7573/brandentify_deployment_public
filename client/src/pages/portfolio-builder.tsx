@@ -170,9 +170,6 @@ export default function PortfolioBuilder() {
     retry: 3,
     retryDelay: 1000,
     // If portfolio not found, we'll create one in the portfolioMutation
-    onError: (error) => {
-      console.log("Portfolio not found, will create one when user selects a template");
-    }
   });
   
   // Define types for experiences, skills, and projects
@@ -220,10 +217,7 @@ export default function PortfolioBuilder() {
     queryKey: [`/api/users/${userNumericId}/educations`],
     enabled: !!user && !!userNumericId, // Only fetch when we have the numeric ID
     staleTime: 30000,
-    onSuccess: (data) => {
-      console.log("Education Query - Fetched educations data:", data);
-      console.log("Education Query - Data length:", data?.length);
-    }
+
   });
   
   // Direct education data fetch to verify data from API
