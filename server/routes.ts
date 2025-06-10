@@ -1494,6 +1494,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Internal server error" });
     }
   });
+
+  // Alternative endpoint pattern for work experiences (used by dashboard)
+  apiRouter.get("/work-experiences/user/:userId", async (req: Request, res: Response) => {
+    try {
+      const userIdParam = req.params.userId;
+      console.log(`[GET /work-experiences/user/:userId] Request for experiences with userId: ${userIdParam}`);
+      
+      let userId: number;
+      
+      // Improved detection of Firebase UIDs - they're long and contain non-numeric characters
+      const isFirebaseUid = userIdParam.length > 20 && /[^0-9]/.test(userIdParam);
+      
+      if (isFirebaseUid) {
+        console.log(`[GET /work-experiences/user/:userId] userId appears to be a Firebase UID: ${userIdParam}`);
+        // Try to find user with this username (Firebase UID)
+        const user = await storage.getUserByUsername(userIdParam);
+        
+        if (!user) {
+          console.log(`[GET /work-experiences/user/:userId] No user found with Firebase UID: ${userIdParam}`);
+          return res.status(404).json({ message: "User not found" });
+        }
+        
+        console.log(`[GET /work-experiences/user/:userId] Found user with ID: ${user.id} for Firebase UID: ${userIdParam}`);
+        userId = user.id;
+      } else {
+        // Try to parse as numeric ID
+        userId = parseInt(userIdParam);
+        
+        if (isNaN(userId)) {
+          console.log(`[GET /work-experiences/user/:userId] ID is not a valid numeric ID: ${userIdParam}`);
+          return res.status(400).json({ message: "Invalid user ID format" });
+        }
+        
+        console.log(`[GET /work-experiences/user/:userId] Using numeric userId: ${userId}`);
+      }
+      
+      const experiences = await storage.getWorkExperiencesByUserId(userId);
+      console.log(`[GET /work-experiences/user/:userId] Found ${experiences.length} experiences for userId: ${userId}`);
+      res.json(experiences);
+    } catch (error) {
+      console.error("Error fetching work experiences:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
   
   // Education routes
   apiRouter.get("/users/:userId/educations", async (req: Request, res: Response) => {
