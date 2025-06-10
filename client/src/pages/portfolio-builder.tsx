@@ -201,14 +201,14 @@ export default function PortfolioBuilder() {
     title: string;
     description: string | null;
     startDate: string | null;
-    industry?: string | null;
-    createdAt?: Date | null;
-    category?: string | null;
-    updatedAt?: Date | null;
-    projectUrl?: string | null;
-    thumbnailUrl?: string | null;
-    thumbnailFile?: string | null;
-    mediaUrls?: unknown;
+    industry: string | null;
+    createdAt: Date | null;
+    category: string | null;
+    updatedAt: Date | null;
+    projectUrl: string | null;
+    thumbnailUrl: string | null;
+    thumbnailFile: string | null;
+    mediaUrls: unknown;
   };
   
   // Education and Service types are imported from @shared/schema at the top of file
@@ -875,7 +875,6 @@ export default function PortfolioBuilder() {
                     email: userData?.email || user?.email || '',
                     photoURL: userData?.photoURL || user?.photoURL || null,
                     lookingFor: userData?.lookingFor || '',
-                    jobLevel: userData?.jobLevel || null,
                     aboutMe: userData?.aboutMe || null,
                     whatIOffer: whatIOfferValue || userData?.whatIOffer || null
                   }}
@@ -979,7 +978,6 @@ export default function PortfolioBuilder() {
                     email: userData?.email || user?.email || null,
                     photoURL: userData?.photoURL || user?.photoURL || null,
                     lookingFor: userData?.lookingFor || null,
-                    jobLevel: userData?.jobLevel || null,
                     whatIOffer: whatIOfferValue || userData?.whatIOffer || null
                   }}
                   userSkills={skills || []}
@@ -1017,11 +1015,12 @@ export default function PortfolioBuilder() {
                       description: p.description,
                       userId: p.userId,
                       startDate: p.startDate,
-                      createdAt: null,
-                      projectUrl: p.projectUrl,
-                      category: p.category,
-                      thumbnailUrl: p.thumbnailUrl,
-                      thumbnailFile: p.thumbnailFile,
+                      industry: p.industry || null,
+                      createdAt: p.createdAt || null,
+                      projectUrl: p.projectUrl || null,
+                      category: p.category || null,
+                      thumbnailUrl: p.thumbnailUrl || null,
+                      thumbnailFile: p.thumbnailFile || null,
                       mediaUrls: p.mediaUrls || [],
                       updatedAt: null
                     })) || []}
@@ -1054,13 +1053,14 @@ export default function PortfolioBuilder() {
                       description: p.description,
                       userId: p.userId,
                       startDate: p.startDate,
-                      createdAt: null,
+                      industry: p.industry || null,
+                      createdAt: p.createdAt || null,
                       projectUrl: p.projectUrl || null,
                       category: p.category || null,
                       thumbnailUrl: p.thumbnailUrl || null,
-                      thumbnailFile: null,
+                      thumbnailFile: p.thumbnailFile || null,
                       mediaUrls: p.mediaUrls || [],
-                      updatedAt: null
+                      updatedAt: p.updatedAt || null
                     })) || []}
                   />
                 </CardContent>
