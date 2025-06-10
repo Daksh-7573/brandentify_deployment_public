@@ -178,12 +178,13 @@ export default function PortfolioBuilder() {
     userId: number;
     title: string;
     company: string;
-    industry: string;
-    domain: string;
-    location: string;
+    industry: string | null;
+    domain: string | null;
+    location: string | null;
     startDate: string;
     endDate: string | null;
-    description: string;
+    description: string | null;
+    keyResponsibilities: unknown;
   };
   
   type Skill = {
@@ -199,8 +200,15 @@ export default function PortfolioBuilder() {
     userId: number;
     title: string;
     description: string | null;
-    startDate: string;
-    // Other project fields
+    startDate: string | null;
+    industry?: string | null;
+    createdAt?: Date | null;
+    category?: string | null;
+    updatedAt?: Date | null;
+    projectUrl?: string | null;
+    thumbnailUrl?: string | null;
+    thumbnailFile?: string | null;
+    mediaUrls?: unknown;
   };
   
   // Education and Service types are imported from @shared/schema at the top of file
@@ -245,11 +253,7 @@ export default function PortfolioBuilder() {
     queryKey: [`/api/users/${userNumericId}/services`],
     enabled: !!user && !!userNumericId, // Only fetch when we have the numeric ID
     staleTime: 30000,
-    onSuccess: (data) => {
-      console.log("Portfolio builder - Fetched services data:", data);
-      console.log("Portfolio builder - Services data length:", data?.length);
-      console.log("Portfolio builder - Services data type:", typeof data, Array.isArray(data));
-    }
+
   });
   
   // Direct fetch for services data to compare with the useQuery result
@@ -488,11 +492,11 @@ export default function PortfolioBuilder() {
       // Use the already-fetched data from existing queries
       const fetchAllUserData = async () => {
         try {
-          const experiencesData = experiences || [];
-          const skillsData = skills || [];
-          const projectsData = projects || [];
-          const educationsData = educations || [];
-          const servicesData = services || [];
+          let experiencesData = experiences || [];
+          let skillsData = skills || [];
+          let projectsData = projects || [];
+          let educationsData = educations || [];
+          let servicesData = services || [];
           
           if (userNumericId) {
             console.log("Portfolio - Fetching user data for userNumericId:", userNumericId);
@@ -502,7 +506,7 @@ export default function PortfolioBuilder() {
               const expResponse = await Promise.race([
                 fetch(`/api/users/${userNumericId}/experiences`),
                 new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000))
-              ]);
+              ]) as Response;
               if (expResponse.ok) {
                 experiencesData = await expResponse.json();
                 console.log("Portfolio - Got experiences:", experiencesData?.length || 0);
@@ -517,7 +521,7 @@ export default function PortfolioBuilder() {
               const skillsResponse = await Promise.race([
                 fetch(`/api/users/${userNumericId}/skills`),
                 new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000))
-              ]);
+              ]) as Response;
               if (skillsResponse.ok) {
                 skillsData = await skillsResponse.json();
                 console.log("Portfolio - Got skills:", skillsData?.length || 0);
@@ -532,7 +536,7 @@ export default function PortfolioBuilder() {
               const projectsResponse = await Promise.race([
                 fetch(`/api/users/${userNumericId}/projects`),
                 new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000))
-              ]);
+              ]) as Response;
               if (projectsResponse.ok) {
                 projectsData = await projectsResponse.json();
                 console.log("Portfolio - Got projects:", projectsData?.length || 0);
@@ -547,7 +551,7 @@ export default function PortfolioBuilder() {
               const educationsResponse = await Promise.race([
                 fetch(`/api/users/${userNumericId}/educations`),
                 new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000))
-              ]);
+              ]) as Response;
               if (educationsResponse.ok) {
                 educationsData = await educationsResponse.json();
                 console.log("Portfolio - Got educations:", educationsData?.length || 0);
@@ -562,7 +566,7 @@ export default function PortfolioBuilder() {
               const servicesResponse = await Promise.race([
                 fetch(`/api/users/${userNumericId}/services`),
                 new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000))
-              ]);
+              ]) as Response;
               if (servicesResponse.ok) {
                 servicesData = await servicesResponse.json();
                 console.log("Portfolio - Got services:", servicesData?.length || 0);
