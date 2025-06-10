@@ -645,7 +645,7 @@ export default function PortfolioBuilder() {
           setPortfolioPreviewData(portfolioData);
           
           // Set the updated form values to include our personalized data
-          form.setValue('isPublished', false);
+          form.setValue('isPublished', false as boolean);
           
           // AI generation simulation complete
           console.log("Portfolio - AI generation complete, moving to preview");
@@ -978,6 +978,7 @@ export default function PortfolioBuilder() {
                     email: userData?.email || user?.email || null,
                     photoURL: userData?.photoURL || user?.photoURL || null,
                     lookingFor: userData?.lookingFor || null,
+                    jobLevel: userData?.jobLevel || null,
                     whatIOffer: whatIOfferValue || userData?.whatIOffer || null
                   }}
                   userSkills={skills || []}

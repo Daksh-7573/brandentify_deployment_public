@@ -291,7 +291,10 @@ export default function BrandProfile({ brandName }: BrandProfileProps) {
       case 'minimalist-pro':
       case 'minimalist':
         return <MinimalistPro 
-          userInfo={templateProps.userInfo}
+          userInfo={{
+            ...templateProps.userInfo,
+            jobLevel: templateProps.userInfo.jobLevel || null
+          }}
           userSkills={templateProps.userSkills}
           userExperiences={templateProps.userExperiences}
           userProjects={templateProps.userProjects}
