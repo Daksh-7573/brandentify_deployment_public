@@ -286,8 +286,10 @@ function generateContextualFallback(context: EnrichedContext, currentMessage: st
        currentMessage.toLowerCase().includes('experience') ||
        currentMessage.toLowerCase().includes('network') ||
        currentMessage.toLowerCase().includes('nework') ||
+       currentMessage.toLowerCase().includes('netowrk') ||
        currentMessage.toLowerCase().includes('networking') ||
        currentMessage.toLowerCase().includes('platforms ar') ||
+       currentMessage.toLowerCase().includes('brandentifier') ||
        currentMessage.toLowerCase().includes('resume') ||
        currentMessage.toLowerCase().includes('cv') ||
        currentMessage.toLowerCase().includes('job') ||
@@ -458,10 +460,103 @@ Use action verbs like "Led," "Transformed," "Optimized," and "Delivered" to emph
     }
     
     // Networking questions (check for variations and platform-specific terms)
-    if (messageLower.includes('network') || messageLower.includes('nework') || messageLower.includes('connect') || 
-        (messageLower.includes('platform') && (messageLower.includes('network') || messageLower.includes('nework'))) ||
-        messageLower.includes('networking') || messageLower.includes('platforms ar')) {
+    if (messageLower.includes('network') || messageLower.includes('nework') || messageLower.includes('netowrk') || messageLower.includes('connect') || 
+        (messageLower.includes('platform') && (messageLower.includes('network') || messageLower.includes('nework') || messageLower.includes('netowrk'))) ||
+        messageLower.includes('networking') || messageLower.includes('platforms ar') || messageLower.includes('brandentifier') || messageLower.includes('linkedin')) {
       console.log('[Enhanced Musk] Detected networking/platform question');
+      
+      // LinkedIn-specific networking questions (check first for specificity)
+      console.log(`[Enhanced Musk] Checking LinkedIn detection: "${messageLower}" includes "linkedin"? ${messageLower.includes('linkedin')}`);
+      if (messageLower.includes('linkedin')) {
+        console.log('[Enhanced Musk] Detected LinkedIn-specific networking question');
+        return `${userName}, here's how to network effectively on LinkedIn as a ${title} in ${industry}:
+
+**LinkedIn Networking Strategy for Directors:**
+• **Optimize Your Headline** - "Senior Director, UX Research | Hospitality Innovation | Guest Experience Optimization"
+• **Professional Summary** - Highlight your strategic impact, team leadership, and industry expertise
+• **Experience Descriptions** - Focus on business outcomes, team achievements, and strategic initiatives
+
+**Content Strategy:**
+• **Industry Insights** - Share hospitality UX trends and guest experience innovations
+• **Leadership Content** - Post about team building, strategic decision-making, and industry leadership
+• **Research Findings** - Share anonymized case studies and UX research methodologies
+• **Thought Leadership** - Comment thoughtfully on industry discussions and executive posts
+
+**Strategic Connections:**
+• **Hospitality Executives** - CEOs, CTOs, and VPs at major hotel chains and hospitality companies
+• **UX Leaders** - Directors and VPs of UX at technology and service companies
+• **Industry Influencers** - Hospitality technology thought leaders and conference speakers
+• **Peers and Mentees** - Other senior UX professionals for collaboration and mentoring
+
+**LinkedIn Groups to Join:**
+• Hospitality Financial and Technology Professionals
+• UX Professionals Network
+• Hotel Technology Next Generation
+• Customer Experience Professionals Association
+
+**Engagement Best Practices:**
+• Comment meaningfully on executive posts (add strategic insights)
+• Share wins and learnings from your team's projects
+• Offer mentorship to emerging UX professionals
+• Participate in industry discussions with director-level perspective
+
+Remember: LinkedIn is powerful for broad reach, but consider building your complete professional brand on Brandentifier first, then use LinkedIn to amplify your message.`;
+      }
+      
+      // Platform comparison questions
+      if (messageLower.includes('best platform') || messageLower.includes('which platform') || 
+          (messageLower.includes('best') && messageLower.includes('platform')) ||
+          messageLower.includes('recommend') && messageLower.includes('platform')) {
+        return `${userName}, for a ${title} in ${industry}, **Brandentifier is your best networking platform** because:
+
+**Why Brandentifier First:**
+• **Industry-Specific Features** - Built specifically for career professionals like you
+• **Comprehensive Profile System** - Showcase work experience, skills, projects, and services in one place  
+• **Career-Focused Community** - Connect with professionals seeking genuine career growth
+• **AI-Powered Insights** - Get personalized career guidance and networking recommendations
+• **Professional Brand Building** - Create a complete professional identity beyond just a resume
+
+**Platform Ranking for Your Role:**
+1. **Brandentifier** - Primary platform for comprehensive professional branding
+2. **LinkedIn** - Secondary for broader industry reach and executive connections
+3. **Industry-Specific Groups** - HFTP, HTNG for hospitality networking
+4. **Executive Networks** - YPO, WEF for C-suite connections
+
+**Strategic Approach:**
+Start with Brandentifier to build your complete professional brand, then use LinkedIn to amplify your reach. Your director-level position in hospitality UX gives you unique authority - leverage Brandentifier's features to showcase this expertise comprehensively.`;
+      }
+      
+      // If specifically asking about Brandentifier networking
+      if (messageLower.includes('brandentifier')) {
+        return `${userName}, here's how to network effectively on Brandentifier as a ${title} in ${industry}:
+
+**Brandentifier Networking Strategy:**
+• **Complete Your Profile** - Add your work experiences, skills, projects, and services to increase visibility
+• **Showcase Your Expertise** - Post pulses about UX research insights and hospitality industry trends
+• **Connect with Industry Peers** - Search for other hospitality professionals and UX researchers
+• **Join Conversations** - Engage with others' content through meaningful comments and reactions
+
+**Content Creation for Networking:**
+• Share case studies from your UX research projects in hospitality
+• Post insights about guest experience optimization and operational efficiency
+• Discuss digital transformation trends in the hospitality industry
+• Offer career advice to emerging UX professionals
+
+**Building Professional Relationships:**
+• Send connection requests with personalized messages
+• Offer to mentor junior professionals in your field
+• Collaborate on industry discussions and thought leadership
+• Share opportunities and insights with your network
+
+**Leveraging Your Director-Level Position:**
+• Position yourself as a thought leader in hospitality UX
+• Share strategic insights about user research and business impact
+• Connect with C-suite executives and other directors
+• Use your expertise to add value to conversations
+
+Your senior role gives you natural authority to lead discussions and mentor others on the platform.`;
+      }
+      
       return `${userName}, as a ${title} in ${industry}, here are the best platforms to network more effectively:
 
 **Professional Networking Platforms:**
