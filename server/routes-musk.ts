@@ -450,7 +450,10 @@ export const handleMuskChat = async (req: Request, res: Response) => {
         
       } catch (error) {
         console.error('[Musk Chat] Enhanced system failed, using original system:', error);
+        console.error('[Musk Chat] Error details:', error.stack);
         response = await generateMuskResponse(message, enrichedContext);
+        enhanced = false;
+        metadata = {};
       }
     } else {
       // No user ID, use original system

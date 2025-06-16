@@ -150,7 +150,7 @@ async function testContextEnrichment() {
 // Run all tests
 async function runAllTests() {
   console.log('🚀 Starting Enhanced Musk Persona System Tests\n');
-  console.log('=' * 80);
+  console.log('='.repeat(80));
   
   await testEnhancedMuskPersonas();
   await testContextEnrichment();
