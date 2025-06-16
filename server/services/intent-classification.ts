@@ -77,7 +77,8 @@ export function classifyIntent(message: string, context?: ClassificationContext)
     ],
     resume_help: [
       'resume', 'cv', 'application', 'cover letter', 'portfolio',
-      'profile', 'linkedin', 'experience section', 'summary'
+      'profile', 'linkedin', 'experience section', 'summary', 'compelling',
+      'showcase', 'highlight', 'present', 'demonstrate', 'enhance', 'improve'
     ],
     confidence_issues: [
       'imposter', 'not good enough', 'qualified', 'worthy', 'deserve',

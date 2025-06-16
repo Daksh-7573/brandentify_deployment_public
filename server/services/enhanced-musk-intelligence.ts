@@ -228,7 +228,8 @@ function enhanceResponseWithPersonalization(response: string, context: EnrichedC
     enhancedResponse += '\n\n💡 *Pro tip: Use Brandentifier\'s Smart Connect feature to find professionals with similar backgrounds in your target industry.*';
   }
 
-  if (context.user.profileCompleteness.score < 80 && !enhancedResponse.includes('profile')) {
+  // Only suggest profile completion for genuinely incomplete profiles (under 60%)
+  if (context.user.profileCompleteness.score < 60 && context.user.profileCompleteness.missingAreas.length > 3) {
     enhancedResponse += '\n\n📝 *I noticed your profile could be more complete. Adding missing sections would help me provide even more targeted advice.*';
   }
 
@@ -240,9 +241,59 @@ function enhanceResponseWithPersonalization(response: string, context: EnrichedC
  */
 function generateContextualFallback(context: EnrichedContext): string {
   const userName = context.user.basicInfo.name;
-  const experienceLevel = context.user.basicInfo.experienceLevel;
+  const title = context.user.basicInfo.title;
   const industry = context.user.basicInfo.industry || 'your field';
+  const experienceLevel = context.user.basicInfo.experienceLevel;
+  
+  // Check if this is about profile enhancement
+  const isProfileQuestion = context.conversation.currentSession.topicFocus.some(topic => 
+    topic.includes('profile') || topic.includes('compelling') || topic.includes('showcase')
+  );
 
+  if (isProfileQuestion && context.user.profileCompleteness.score >= 75) {
+    // Generate specific profile enhancement advice
+    let advice = `${userName}, as a ${title} in ${industry}, here are specific ways to make your profile more compelling:\n\n`;
+    
+    // Experience-specific advice
+    if (context.user.professional.experiences.length > 0) {
+      advice += `**Experience Enhancement:**\n`;
+      advice += `- Quantify your impact with specific metrics (team size, budget managed, efficiency improvements)\n`;
+      advice += `- Highlight cross-functional collaboration and stakeholder management achievements\n`;
+      if (title.includes('Director') || title.includes('Senior')) {
+        advice += `- Emphasize strategic initiatives you've led and their business outcomes\n`;
+      }
+      advice += `\n`;
+    }
+    
+    // Skills and expertise
+    if (context.user.professional.skills.length > 0) {
+      advice += `**Skills Positioning:**\n`;
+      advice += `- Create skill narratives showing progression from foundational to advanced expertise\n`;
+      advice += `- Connect each skill to specific project outcomes or business value delivered\n`;
+      advice += `\n`;
+    }
+    
+    // Projects showcase
+    if (context.user.professional.projects.length > 0) {
+      advice += `**Project Portfolio:**\n`;
+      advice += `- Lead with problem-solving approach and measurable results\n`;
+      advice += `- Include stakeholder testimonials or endorsements where possible\n`;
+      advice += `- Demonstrate innovation and thought leadership in your solutions\n`;
+      advice += `\n`;
+    }
+    
+    // Industry-specific recommendations
+    if (industry === 'Hospitality') {
+      advice += `**Hospitality Industry Focus:**\n`;
+      advice += `- Highlight guest experience improvements and satisfaction metrics\n`;
+      advice += `- Showcase operational efficiency initiatives and cost optimization\n`;
+      advice += `- Demonstrate digital transformation or technology integration experience\n`;
+    }
+    
+    return advice;
+  }
+
+  // Standard career guidance for non-profile questions
   let fallback = `${userName}, I understand you're looking for career guidance. `;
 
   if (experienceLevel === 'entry') {
