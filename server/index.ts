@@ -25,8 +25,13 @@ app.use(firebaseAuthRedirectHandler);
 
 // Request timeout middleware (45 seconds)
 const requestTimeout = (req: Request, res: Response, next: NextFunction) => {
-  // Skip timeout for non-AI-related endpoints
-  if (!req.path.includes('/ai/')) {
+  // Apply timeout for AI-related endpoints including Musk chat
+  const isAIEndpoint = req.path.includes('/ai/') || 
+                      req.path.includes('/musk/') || 
+                      req.path.includes('/api/musk/') ||
+                      req.path.includes('/resume/analyze');
+  
+  if (!isAIEndpoint) {
     return next();
   }
   
@@ -34,9 +39,9 @@ const requestTimeout = (req: Request, res: Response, next: NextFunction) => {
   res.setTimeout(timeout, () => {
     console.log(`Request to ${req.path} timed out after ${timeout}ms`);
     if (!res.headersSent) {
-      res.status(503).json({
-        error: "TIMEOUT",
-        message: "The request took too long to process. Please try again with a shorter resume text or contact support."
+      res.status(504).json({
+        error: "Request timeout",
+        message: "I'm sorry, I'm having trouble connecting to my intelligence center. Please try again in a moment."
       });
     }
   });

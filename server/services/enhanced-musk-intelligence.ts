@@ -203,8 +203,9 @@ async function generateIntelligentResponse(prompt: string, context: EnrichedCont
           content: prompt
         }
       ],
-      max_tokens: 2000,
+      max_tokens: 1500,
       temperature: 0.7,
+      timeout: 30000, // 30 second timeout
     });
 
     const aiResponse = response.choices[0]?.message?.content || '';
