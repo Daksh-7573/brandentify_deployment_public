@@ -311,7 +311,33 @@ function generateContextualFallback(context: EnrichedContext, currentMessage: st
     console.log(`[Enhanced Musk] Analyzing question: "${currentMessage}"`);
     console.log(`[Enhanced Musk] Message keywords: ${messageLower}`);
     
-    // Job search and career goal questions (check first as highest priority)
+    // Platform comparison questions (check first for highest priority)
+    console.log(`[Enhanced Musk] Platform comparison check: best platform=${messageLower.includes('best platform')}, which platform=${messageLower.includes('which platform')}, best+platform=${messageLower.includes('best') && messageLower.includes('platform')}, best+from all=${messageLower.includes('best') && messageLower.includes('from all')}, best+these=${messageLower.includes('best') && messageLower.includes('these')}`);
+    if (messageLower.includes('best platform') || messageLower.includes('which platform') || 
+        (messageLower.includes('best') && messageLower.includes('platform')) ||
+        (messageLower.includes('best') && (messageLower.includes('from all') || messageLower.includes('these'))) ||
+        (messageLower.includes('recommend') && messageLower.includes('platform'))) {
+      console.log('[Enhanced Musk] Detected platform comparison question');
+      return `${userName}, for a ${title} in ${industry}, **Brandentifier is your best networking platform** because:
+
+**Why Brandentifier First:**
+• **Industry-Specific Features** - Built specifically for career professionals like you
+• **Comprehensive Profile System** - Showcase work experience, skills, projects, and services in one place  
+• **Career-Focused Community** - Connect with professionals seeking genuine career growth
+• **AI-Powered Insights** - Get personalized career guidance and networking recommendations
+• **Professional Brand Building** - Create a complete professional identity beyond just a resume
+
+**Platform Ranking for Your Role:**
+1. **Brandentifier** - Primary platform for comprehensive professional branding
+2. **LinkedIn** - Secondary for broader industry reach and executive connections
+3. **Industry-Specific Groups** - HFTP, HTNG for hospitality networking
+4. **Executive Networks** - YPO, WEF for C-suite connections
+
+**Strategic Approach:**
+Start with Brandentifier to build your complete professional brand, then use LinkedIn to amplify your reach. Your director-level position in hospitality UX gives you unique authority - leverage Brandentifier's features to showcase this expertise comprehensively.`;
+    }
+    
+    // Job search and career goal questions
     if ((messageLower.includes('job') && (messageLower.includes('get') || messageLower.includes('find') || messageLower.includes('search') || messageLower.includes('goal'))) || 
         (messageLower.includes('new') && messageLower.includes('position')) ||
         (messageLower.includes('career') && (messageLower.includes('goal') || messageLower.includes('change') || messageLower.includes('move') || messageLower.includes('advice'))) ||
