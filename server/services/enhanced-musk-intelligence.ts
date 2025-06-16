@@ -420,25 +420,34 @@ async function generateAdvancedFallback(context: EnrichedContext, message: strin
   const title = user.basicInfo.title || 'professional';
   const industry = user.basicInfo.industry || 'your field';
   
-  // Analyze message intent for intelligent responses
-  const isNetworking = /network|connect|relationship|mentor|professional|colleague/i.test(message);
-  const isSkills = /skill|learn|improve|develop|capability|expertise/i.test(message);
-  const isCareer = /career|job|position|role|advancement|growth/i.test(message);
+  // Analyze message intent for intelligent responses with typo handling
+  const isNetworking = /network|netowrk|nework|netwrok|connect|connection|relationship|mentor|professional|colleague|linkedin|reach out|meet people|contacts|events|community|feature/i.test(message);
+  const isSkills = /skill|learn|improve|develop|capability|expertise|training|course|certification|upskill/i.test(message);
+  const isCareer = /career|job|position|role|advancement|growth|future|plan|goal|strategy/i.test(message);
+  
+  console.log(`[Enhanced Musk] Intent Analysis: networking=${isNetworking}, skills=${isSkills}, career=${isCareer}, message="${message}"`);
   
   let response = `Hello ${userName},\n\n`;
   
   if (isNetworking) {
-    response += `As a ${title} in ${industry}, building strong professional networks is crucial for career advancement. Here's my guidance:\n\n`;
-    response += `**On Brandentifier (Start Here):**\n`;
-    response += `• Complete your profile with compelling projects and achievements\n`;
-    response += `• Share insights through professional posts to demonstrate expertise\n`;
-    response += `• Engage with industry professionals in your domain\n`;
-    response += `• Use the networking features to discover relevant connections\n\n`;
-    response += `**Additional Strategies:**\n`;
-    response += `• Attend industry conferences and virtual events\n`;
-    response += `• Join professional associations in ${industry}\n`;
-    response += `• Offer value before asking for favors\n`;
-    response += `• Follow up consistently with new connections\n\n`;
+    response += `Great question about networking! As a ${title} in ${industry}, here's how to leverage Brandentifier's networking features effectively:\n\n`;
+    response += `**Brandentifier Networking Features:**\n`;
+    response += `• **Professional Discovery**: Use the explore section to find professionals in ${industry} and related fields\n`;
+    response += `• **Smart Connections**: The platform suggests relevant connections based on your industry, role, and interests\n`;
+    response += `• **Industry Pulses**: Share valuable insights to attract like-minded professionals\n`;
+    response += `• **Direct Messaging**: Connect directly with professionals for mentorship and collaboration\n`;
+    response += `• **Professional Groups**: Join ${industry}-specific communities and discussions\n\n`;
+    response += `**How to Use These Features:**\n`;
+    response += `1. Complete your profile to 100% for maximum visibility\n`;
+    response += `2. Upload portfolio projects that showcase your expertise\n`;
+    response += `3. Post regular updates about your work and industry insights\n`;
+    response += `4. Engage meaningfully with others' content through thoughtful comments\n`;
+    response += `5. Use the search filters to find professionals by location, industry, and role\n\n`;
+    response += `**Strategic Networking Tips:**\n`;
+    response += `• Start with quality over quantity - focus on meaningful connections\n`;
+    response += `• Always personalize your connection requests with context\n`;
+    response += `• Share knowledge and insights before asking for help\n`;
+    response += `• Follow up with connections through valuable content sharing\n\n`;
   } else if (isSkills) {
     response += `Skill development is key for your growth as a ${title}. Here's a strategic approach:\n\n`;
     response += `**On Brandentifier:**\n`;
