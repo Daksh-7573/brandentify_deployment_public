@@ -146,6 +146,7 @@ Brandentifier is a comprehensive career development platform that combines AI-dr
 - **Performance**: Successfully tested with real user data, enhanced responses active, question-specific responses operational, Brandentifier suggestions verified as first priority
 
 ## Changelog
+- June 16, 2025: Networking question detection fixed - enhanced detection for "nework" typos and platform-specific queries, separated profile questions from networking questions, all follow-up questions including networking platforms now provide dynamic, specific responses instead of static generic advice
 - June 16, 2025: Static answer issue resolved - fixed career question detection logic, separated profile enhancement from career-specific questions, all 8 question types (portfolio, skills, experience, networking, resume, job application, career change, job search goals) now provide dynamic, personalized responses instead of static generic advice
 - June 16, 2025: Job application question system completed - fixed syntax error in conditional logic, all 6 question types (portfolio, skills, experience, networking, resume, job application) now provide detailed, personalized advice based on user profile
 - June 16, 2025: Question-specific response system completed - resume creation, portfolio layout, skills improvement, experience showcase, and networking questions now provide tailored advice instead of generic responses
