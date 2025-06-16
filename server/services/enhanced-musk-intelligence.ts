@@ -290,6 +290,32 @@ function generateContextualFallback(context: EnrichedContext, currentMessage: st
     console.log(`[Enhanced Musk] Analyzing question: "${currentMessage}"`);
     console.log(`[Enhanced Musk] Message keywords: ${messageLower}`);
     
+    // Resume creation/improvement questions (check first as high priority)
+    if (messageLower.includes('resume') || (messageLower.includes('make') && messageLower.includes('cv'))) {
+      console.log('[Enhanced Musk] Detected resume creation question');
+      return `${userName}, here's how to create a compelling resume for your ${title} role in ${industry}:
+
+**Resume Structure for Directors:**
+• **Executive Summary** - 3-4 lines highlighting your leadership impact and strategic value
+• **Core Competencies** - 8-12 key skills relevant to ${industry} and UX research
+• **Professional Experience** - Focus on achievements, not just responsibilities
+• **Education & Certifications** - Include relevant credentials and continuous learning
+
+**Content Strategy for ${industry}:**
+• Quantify guest experience improvements (satisfaction scores, retention rates)
+• Highlight team leadership (size, budget, cross-functional collaboration)
+• Showcase strategic initiatives with business outcomes
+• Include technology and digital transformation experience
+
+**Director-Level Formatting:**
+• Clean, professional layout with consistent formatting
+• Use action verbs and quantified achievements
+• Keep to 2 pages maximum for executive-level positions
+• Include industry-specific keywords for ATS optimization
+
+Focus on strategic impact rather than tactical tasks to match your seniority level.`;
+    }
+    
     // Skills improvement questions (check first to avoid conflicts)
     if (messageLower.includes('skill') && (messageLower.includes('improve') || messageLower.includes('enhance') || messageLower.includes('presentation'))) {
       console.log('[Enhanced Musk] Detected skills improvement question');
