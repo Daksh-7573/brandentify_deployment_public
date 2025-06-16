@@ -312,7 +312,6 @@ function generateContextualFallback(context: EnrichedContext, currentMessage: st
     console.log(`[Enhanced Musk] Message keywords: ${messageLower}`);
     
     // Platform comparison questions (check first for highest priority)
-    console.log(`[Enhanced Musk] Platform comparison check: best platform=${messageLower.includes('best platform')}, which platform=${messageLower.includes('which platform')}, best+platform=${messageLower.includes('best') && messageLower.includes('platform')}, best+from all=${messageLower.includes('best') && messageLower.includes('from all')}, best+these=${messageLower.includes('best') && messageLower.includes('these')}`);
     if (messageLower.includes('best platform') || messageLower.includes('which platform') || 
         (messageLower.includes('best') && messageLower.includes('platform')) ||
         (messageLower.includes('best') && (messageLower.includes('from all') || messageLower.includes('these'))) ||
