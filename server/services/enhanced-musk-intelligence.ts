@@ -23,6 +23,8 @@ import {
   rewriteMessageWithContext,
   generateContextAwarePrefix 
 } from './follow-up-handler';
+import { analyzeModelSwitchingNeeds, generateEnhancedResponse, assessResponseQuality } from './model-switching';
+import { resolveReferences } from './reference-resolution';
 
 export interface EnhancedMuskRequest {
   message: string;
@@ -62,12 +64,85 @@ export async function processEnhancedMuskRequest(request: EnhancedMuskRequest): 
   console.log('[Enhanced Musk] Processing request with intelligent persona system');
   
   try {
-    // Step 1: Analyze follow-up context and conversation memory
-    const followUpAnalysis = analyzeFollowUpContext(request.message, request.userId);
-    const activeGuidanceNeeds = detectActiveGuidanceNeeds(request.message, request.userId);
+    // Step 1: Resolve references in the message using conversation context
+    const referenceResolution = resolveReferences(request.message, request.userId, request.userProfile);
+    let processedMessage = referenceResolution.resolvedMessage;
+    
+    console.log(`[Enhanced Musk] Reference resolution: "${request.message}" -> "${processedMessage}" (confidence: ${referenceResolution.confidence})`);
+
+    // Step 2: Analyze model switching needs based on complexity
+    const modelAnalysis = analyzeModelSwitchingNeeds(
+      processedMessage,
+      request.conversationHistory,
+      request.userProfile
+    );
+
+    console.log(`[Enhanced Musk] Model analysis: complexity=${modelAnalysis.complexity}, shouldSwitch=${modelAnalysis.shouldSwitchModel}, reason=${modelAnalysis.reason}`);
+
+    // Step 3: Analyze follow-up context and conversation memory
+    const followUpAnalysis = analyzeFollowUpContext(processedMessage, request.userId);
+    const activeGuidanceNeeds = detectActiveGuidanceNeeds(processedMessage, request.userId);
     const conversationMemory = getConversationMemory(request.userId);
     
     console.log(`[Enhanced Musk] Follow-up analysis: isFollowUp=${followUpAnalysis.isFollowUp}, needsClarification=${followUpAnalysis.needsClarification}, confidence=${followUpAnalysis.confidence}`);
+
+    // Step 4: Handle complex queries with stronger models first
+    if (modelAnalysis.shouldSwitchModel && modelAnalysis.recommendedModel !== 'local') {
+      console.log(`[Enhanced Musk] Switching to ${modelAnalysis.recommendedModel} for complex query`);
+      
+      try {
+        const enhancedContext = {
+          userProfile: request.userProfile,
+          userExperiences: request.userExperiences,
+          userSkills: request.userSkills,
+          userEducations: request.userEducations,
+          userProjects: request.userProjects,
+          conversationHistory: request.conversationHistory,
+          referenceResolution
+        };
+
+        const enhancedResponse = await generateEnhancedResponse(
+          processedMessage,
+          enhancedContext,
+          modelAnalysis.recommendedModel as 'openai' | 'anthropic'
+        );
+
+        // Assess response quality
+        const qualityScore = assessResponseQuality(enhancedResponse, processedMessage);
+        
+        console.log(`[Enhanced Musk] Enhanced response quality: ${qualityScore.overall} (coherence: ${qualityScore.coherence}, relevance: ${qualityScore.relevance})`);
+
+        // Store conversation exchange
+        addConversationExchange(request.userId, 'User', request.message);
+        addConversationExchange(request.userId, 'Musk', enhancedResponse, modelAnalysis.recommendedModel);
+
+        return {
+          response: enhancedResponse,
+          metadata: {
+            intent: {
+              type: 'general_advice',
+              confidence: qualityScore.overall,
+              emotionalState: 'confident',
+              advisorPersona: 'expert',
+              urgency: 'medium',
+              subCategories: ['enhanced-model', modelAnalysis.complexity]
+            },
+            persona: 'expert',
+            confidence: qualityScore.overall,
+            proactiveSuggestions: [],
+            contextUsed: {
+              profileCompleteness: 95,
+              keyInsights: [`Enhanced ${modelAnalysis.recommendedModel} response`, `Complexity: ${modelAnalysis.complexity}`],
+              recommendedActions: ['Follow enhanced guidance', 'Ask follow-up questions if needed'],
+
+            }
+          }
+        };
+      } catch (enhancedError) {
+        console.error('[Enhanced Musk] Enhanced model failed, falling back to standard processing:', enhancedError);
+        // Continue with standard processing below
+      }
+    }
 
     // Step 2: Handle clarification or active guidance needs
     if (followUpAnalysis.needsClarification && followUpAnalysis.clarificationPrompt) {
@@ -126,8 +201,7 @@ export async function processEnhancedMuskRequest(request: EnhancedMuskRequest): 
       };
     }
 
-    // Step 3: Process message with context enhancement
-    let processedMessage = request.message;
+    // Step 5: Process message with context enhancement for standard flow
     let contextPrefix = '';
     
     if (followUpAnalysis.isFollowUp) {
