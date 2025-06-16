@@ -110,7 +110,7 @@ async function identifySkillGaps(context: ProactiveContext): Promise<ProactiveIn
   const currentSkills = (context.userProfile?.skills || []).map((s: any) => s.name?.toLowerCase());
   
   const missingSkills = industrySkills.filter(skill => 
-    !currentSkills.some(current => current.includes(skill.toLowerCase()))
+    !currentSkills.some((current: string) => current.includes(skill.toLowerCase()))
   ).slice(0, 3);
   
   if (missingSkills.length > 0) {

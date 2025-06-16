@@ -10,6 +10,8 @@ import { generatePersonaResponse, selectOptimalPersona } from './persona-engine'
 import { enrichUserContext, EnrichedContext } from './context-enricher';
 import { generateEnhancedPrompt, generateProactiveSuggestions } from './prompt-library';
 import { LocalAIService } from './local-ai-service';
+import { generateProactiveInsights, generateImmediateSuggestions, ProactiveContext } from './proactive-engine';
+import { getIndustryMentoring, enhanceResponseWithIndustryContext } from './industry-mentoring';
 
 export interface EnhancedMuskRequest {
   message: string;
@@ -114,26 +116,50 @@ export async function processEnhancedMuskRequest(request: EnhancedMuskRequest): 
     // Step 6: Generate AI response using enhanced prompt
     const aiResponse = await generateIntelligentResponse(enhancedPrompt, enrichedContext);
 
-    // Step 7: Generate proactive suggestions
-    const proactiveSuggestions = generateProactiveSuggestions(enrichedContext);
+    // Step 7: Generate enhanced proactive suggestions
+    const proactiveContext: ProactiveContext = {
+      userId: request.userId,
+      userProfile: enrichedContext.user.basicInfo,
+      recentActivity: [],
+      careerGoals: [],
+      industryTrends: [],
+      profileCompleteness: enrichedContext.user.profileCompleteness.score
+    };
+    
+    const proactiveInsights = await generateProactiveInsights(proactiveContext);
+    const immediateSuggestions = generateImmediateSuggestions(
+      request.message, 
+      enrichedContext.user.basicInfo, 
+      enrichedContext.user.profileCompleteness.score
+    );
 
-    console.log(`[Enhanced Musk] Generated ${proactiveSuggestions.length} proactive suggestions`);
+    console.log(`[Enhanced Musk] Generated ${immediateSuggestions.length} immediate suggestions and ${proactiveInsights.length} proactive insights`);
+
+    // Apply industry-specific enhancements to response
+    const enhancedResponse = enhanceResponseWithIndustryContext(
+      aiResponse,
+      enrichedContext.user.basicInfo.industry || '',
+      enrichedContext.user.basicInfo.title || '',
+      intent.type
+    );
 
     // Compile response metadata
     const metadata = {
       intent,
       persona: optimalPersona,
       confidence: intent.confidence,
-      proactiveSuggestions,
+      proactiveSuggestions: immediateSuggestions,
+      proactiveInsights: proactiveInsights.slice(0, 3),
       contextUsed: {
         profileCompleteness: enrichedContext.user.profileCompleteness.score,
         keyInsights: extractKeyInsights(enrichedContext),
-        recommendedActions: enrichedContext.recommendations.immediate_actions
+        recommendedActions: enrichedContext.recommendations.immediate_actions,
+        industrySpecific: true
       }
     };
 
     return {
-      response: aiResponse,
+      response: enhancedResponse,
       metadata
     };
 
