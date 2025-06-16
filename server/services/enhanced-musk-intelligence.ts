@@ -290,46 +290,9 @@ function generateContextualFallback(context: EnrichedContext, currentMessage: st
     console.log(`[Enhanced Musk] Analyzing question: "${currentMessage}"`);
     console.log(`[Enhanced Musk] Message keywords: ${messageLower}`);
     
-    // Portfolio layout questions
-    if (messageLower.includes('portfolio') && (messageLower.includes('layout') || messageLower.includes('best'))) {
-      console.log('[Enhanced Musk] Detected portfolio layout question');
-      return `${userName}, for a ${title} at your ${experienceLevel} level in ${industry}, I recommend the **Corporate Executive** portfolio layout. This theme emphasizes:
-
-• **Strategic Leadership Focus** - Perfect for director-level positions
-• **Clean, Professional Design** - Builds trust with stakeholders  
-• **Achievement-Driven Layout** - Highlights your business impact
-• **Industry Authority Positioning** - Establishes thought leadership
-
-Key sections to emphasize:
-- Executive summary with quantified achievements
-- Strategic initiatives you've led
-- Cross-functional team leadership examples
-- Industry-specific metrics and outcomes
-
-This layout positions you as a strategic leader rather than just an individual contributor.`;
-    }
-    
-    // Skills improvement questions  
+    // Skills improvement questions (check first to avoid conflicts)
     if (messageLower.includes('skill') && (messageLower.includes('improve') || messageLower.includes('enhance') || messageLower.includes('presentation'))) {
       console.log('[Enhanced Musk] Detected skills improvement question');
-      return `${userName}, for a ${title} at your ${experienceLevel} level in ${industry}, I recommend the **Corporate Executive** portfolio layout. This theme emphasizes:
-
-• **Strategic Leadership Focus** - Perfect for director-level positions
-• **Clean, Professional Design** - Builds trust with stakeholders  
-• **Achievement-Driven Layout** - Highlights your business impact
-• **Industry Authority Positioning** - Establishes thought leadership
-
-Key sections to emphasize:
-- Executive summary with quantified achievements
-- Strategic initiatives you've led
-- Cross-functional team leadership examples
-- Industry-specific metrics and outcomes
-
-This layout positions you as a strategic leader rather than just an individual contributor.`;
-    }
-    
-    // Skills improvement questions
-    if (messageLower.includes('skill') && (messageLower.includes('improve') || messageLower.includes('enhance'))) {
       return `${userName}, to enhance your skills presentation as a ${title}:
 
 **Technical Skills Enhancement:**
@@ -349,6 +312,8 @@ This layout positions you as a strategic leader rather than just an individual c
 
 Consider adding skill endorsements from colleagues and quantified skill applications.`;
     }
+    
+
     
     // Experience showcase questions
     if (messageLower.includes('experience') && (messageLower.includes('showcase') || messageLower.includes('highlight'))) {
