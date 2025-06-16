@@ -167,7 +167,7 @@ export async function processEnhancedMuskRequest(request: EnhancedMuskRequest): 
 /**
  * Generate contextual response based on enriched context and message analysis
  */
-async function generateContextualResponse(context: EnrichedContext, message: string): Promise<string> {
+async function generateContextualResponse(context: EnrichedContext, message: string, conversationContext?: string): Promise<string> {
   const userName = context.user.basicInfo.name;
   const title = context.user.basicInfo.title;
   const industry = context.user.basicInfo.industry || 'your field';
@@ -193,12 +193,16 @@ User Context:
 - Location: ${location}
 - Looking for: ${lookingFor}
 
-Provide specific, actionable networking strategies that:
+${conversationContext ? `Previous Conversation:
+${conversationContext}
+
+` : ''}Provide specific, actionable networking strategies that:
 1. Prioritize Brandentifier as the primary platform for comprehensive professional branding
 2. Include LinkedIn and other platforms as secondary options
 3. Give industry-specific networking advice for ${industry}
 4. Address the user's role as ${title}
 5. Provide concrete steps they can take immediately
+${conversationContext ? '6. Build upon any previous discussion points mentioned in the conversation' : ''}
 
 Make the response personal, encouraging, and professional. Include specific examples relevant to their industry and role.`;
 
@@ -216,12 +220,16 @@ User Context:
 - Looking for: ${context.user.basicInfo.lookingFor || 'career_advice'}
 - User Message: "${message}"
 
-Provide specific, actionable advice that:
+${conversationContext ? `Previous Conversation:
+${conversationContext}
+
+` : ''}Provide specific, actionable advice that:
 1. Addresses their specific question or concern
 2. Uses their industry (${industry}) and role (${title}) context
 3. Prioritizes Brandentifier platform recommendations first
 4. Includes concrete next steps they can take
 5. Maintains an encouraging, professional tone
+${conversationContext ? '6. References and builds upon previous conversation points when relevant' : ''}
 
 Make the response personal and relevant to their career level and industry.`;
 
