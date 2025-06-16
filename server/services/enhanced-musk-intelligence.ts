@@ -258,13 +258,13 @@ async function generatePhase3EnhancedResponse(
   emotionalResponseStrategy: any
 ): Promise<string> {
   try {
-    console.log(`[Enhanced Musk] Generating ${personaAnalysis.selectedPersona.name} response`);
+    console.log(`[Enhanced Musk] Generating Phase 3 ${personaAnalysis.selectedPersona.name} response`);
     
     const userName = context.user.basicInfo.name;
     const title = context.user.basicInfo.title;
     const industry = context.user.basicInfo.industry || 'your field';
     
-    // Build enhanced prompt with persona awareness
+    // Build Phase 3 enhanced prompt with all AI capabilities
     const basePrompt = `Generate comprehensive career advice for ${userName}, a ${title} in ${industry}.
 
 User Context:
@@ -274,36 +274,53 @@ User Context:
 - Location: ${context.user.basicInfo.location || 'your area'}
 - Looking for: ${context.user.basicInfo.lookingFor || 'career_advice'}
 - User Message: "${message}"
+- Emotional State: ${emotionalContext.currentState.primary} (${emotionalContext.currentState.intensity} intensity)
+- Career Trajectory: ${predictiveInsights.overallCareerTrajectory}
 
 ${conversationContext ? `Previous Conversation:
 ${conversationContext}
 
 ` : ''}Personalized Response Guidelines:
 - Length: ${personalizedGuidelines.responseLength}
-- Tone: ${personalizedGuidelines.tone}
+- Tone: ${personalizedGuidelines.tone} with ${emotionalResponseStrategy.tone} emotional approach
 - Focus Areas: ${personalizedGuidelines.focus.join(', ')}
 - Approach: ${personalizedGuidelines.approachStyle}
+- Emotional Response Strategy: ${emotionalResponseStrategy.approach}
 
 ${proactiveInsight.suggestions.length > 0 ? `Proactive Suggestions to Include:
 ${proactiveInsight.suggestions.slice(0, 2).map(s => `- ${s.title}: ${s.description}`).join('\n')}
 
+` : ''}${predictiveInsights.predictions.length > 0 ? `Predictive Career Insights:
+- Next Likely Move: ${predictiveInsights.nextLikelyMove}
+- Key Prediction: ${predictiveInsights.predictions[0].prediction}
+- Confidence: ${Math.round(predictiveInsights.confidence * 100)}%
+
+` : ''}${crossUserRecommendations.length > 0 ? `Peer Intelligence (based on similar professionals):
+${crossUserRecommendations.slice(0, 2).map(r => `- ${r.title}: ${r.description}`).join('\n')}
+
+` : ''}${emotionalResponseStrategy.supportElements.length > 0 ? `Emotional Support Elements to Include:
+${emotionalResponseStrategy.supportElements.slice(0, 2).map(element => `- ${element}`).join('\n')}
+
 ` : ''}Provide specific, actionable advice that:
-1. Addresses their specific question or concern
+1. Addresses their specific question with emotional awareness
 2. Uses their industry (${industry}) and role (${title}) context
 3. Prioritizes Brandentifier platform recommendations first
-4. Includes concrete next steps they can take
-5. Maintains the ${personaAnalysis.selectedPersona.name} approach
-6. References and builds upon previous conversation points when relevant
+4. Incorporates predictive insights about their career trajectory
+5. Includes peer intelligence from similar professionals
+6. Maintains the ${personaAnalysis.selectedPersona.name} approach
+7. Provides emotional support based on their current state
+8. References and builds upon previous conversation points when relevant
 
-Make the response personal and relevant to their career level and industry.`;
+Make the response deeply personal, emotionally intelligent, and forward-looking based on predictive insights.`;
 
-    // Enhance prompt with persona-specific guidelines
-    const enhancedPrompt = enhancePromptWithPersona(basePrompt, personaAnalysis, conversationFlow);
+    // Enhance prompt with all Phase 3 capabilities
+    let enhancedPrompt = enhancePromptWithPersona(basePrompt, personaAnalysis, conversationFlow);
+    enhancedPrompt = enhancePromptWithEmotionalIntelligence(enhancedPrompt, emotionalContext, emotionalResponseStrategy);
     
     return await generateIntelligentResponse(enhancedPrompt, context, message);
     
   } catch (error) {
-    console.error('[Enhanced Musk] Error in generatePersonaAwareResponse:', error);
+    console.error('[Enhanced Musk] Error in generatePhase3EnhancedResponse:', error);
     return await generateContextualResponse(context, message, conversationContext);
   }
 }
