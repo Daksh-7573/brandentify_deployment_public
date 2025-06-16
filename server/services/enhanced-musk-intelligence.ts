@@ -410,44 +410,129 @@ async function generateIntelligentResponse(prompt: string, context: EnrichedCont
     
     const openai = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
-      timeout: 30000, // 30 seconds timeout
-      maxRetries: 2,
+      timeout: 12000, // Reduced to 12 seconds
+      maxRetries: 1, // Single retry for speed
     });
 
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini", // Using faster model
+    // Race condition: AI response vs timeout for reliability
+    const responsePromise = openai.chat.completions.create({
+      model: "gpt-4o-mini",
       messages: [
         {
           role: "system",
-          content: "You are Musk, an AI career coach. Provide personalized career advice prioritizing Brandentifier features first."
+          content: "You are Musk, an AI career coach. Provide concise, personalized career advice prioritizing Brandentifier features first."
         },
         {
           role: "user",
           content: prompt
         }
       ],
-      max_tokens: 800, // Reduced for faster responses
+      max_tokens: 500, // Further reduced for speed
       temperature: 0.7,
     });
 
-    const aiResponse = response.choices[0]?.message?.content || '';
-    console.log('[Enhanced Musk] Generated intelligent response:', aiResponse.substring(0, 200) + '...');
-    return aiResponse;
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('AI_TIMEOUT')), 10000)
+    );
+
+    const response = await Promise.race([responsePromise, timeoutPromise]);
+    
+    if (response && typeof response === 'object' && 'choices' in response) {
+      const aiResponse = response.choices[0]?.message?.content || '';
+      console.log('[Enhanced Musk] Generated intelligent response:', aiResponse.substring(0, 200) + '...');
+      return aiResponse;
+    }
+    
+    throw new Error('Invalid response format');
   } catch (error) {
     console.error('[Enhanced Musk] Error generating intelligent response:', error);
-    return generateBasicFallback(message, context.user.basicInfo);
+    console.log('[Enhanced Musk] Using intelligent fallback system');
+    return generateAdvancedFallback(context, message);
   }
+}
+
+/**
+ * Advanced fallback response generator with intelligent context analysis
+ */
+async function generateAdvancedFallback(context: EnrichedContext, message: string): Promise<string> {
+  const { user, proactiveSuggestions, predictiveInsights, selectedPersona } = context;
+  const userName = user.basicInfo.name || 'there';
+  const title = user.basicInfo.title || 'professional';
+  const industry = user.basicInfo.industry || 'your field';
+  
+  // Analyze message intent for intelligent responses
+  const isNetworking = /network|connect|relationship|mentor|professional|colleague/i.test(message);
+  const isSkills = /skill|learn|improve|develop|capability|expertise/i.test(message);
+  const isCareer = /career|job|position|role|advancement|growth/i.test(message);
+  
+  let response = `Hello ${userName},\n\n`;
+  
+  if (isNetworking) {
+    response += `As a ${title} in ${industry}, building strong professional networks is crucial for career advancement. Here's my guidance:\n\n`;
+    response += `**On Brandentifier (Start Here):**\n`;
+    response += `• Complete your profile with compelling projects and achievements\n`;
+    response += `• Share insights through professional posts to demonstrate expertise\n`;
+    response += `• Engage with industry professionals in your domain\n`;
+    response += `• Use the networking features to discover relevant connections\n\n`;
+    response += `**Additional Strategies:**\n`;
+    response += `• Attend industry conferences and virtual events\n`;
+    response += `• Join professional associations in ${industry}\n`;
+    response += `• Offer value before asking for favors\n`;
+    response += `• Follow up consistently with new connections\n\n`;
+  } else if (isSkills) {
+    response += `Skill development is key for your growth as a ${title}. Here's a strategic approach:\n\n`;
+    response += `**On Brandentifier:**\n`;
+    response += `• Update your skills section with current proficiencies\n`;
+    response += `• Showcase skill application through project examples\n`;
+    response += `• Share learning progress through professional updates\n\n`;
+    response += `**Development Focus:**\n`;
+    response += `• Identify in-demand skills in ${industry}\n`;
+    response += `• Create a structured learning plan with milestones\n`;
+    response += `• Practice through real projects and implementations\n`;
+    response += `• Seek feedback from experienced professionals\n\n`;
+  } else if (isCareer) {
+    response += `Career advancement requires strategic planning. As a ${title}, consider:\n\n`;
+    response += `**Profile Enhancement on Brandentifier:**\n`;
+    response += `• Optimize your professional story and achievements\n`;
+    response += `• Highlight quantifiable results and impact\n`;
+    response += `• Build thought leadership through quality content\n\n`;
+    response += `**Strategic Actions:**\n`;
+    response += `• Define clear short and long-term career goals\n`;
+    response += `• Identify key stakeholders and decision makers\n`;
+    response += `• Build expertise in emerging areas of ${industry}\n`;
+    response += `• Seek stretch assignments and leadership opportunities\n\n`;
+  } else {
+    response += `I'm here to provide comprehensive career guidance. Let me help you with:\n\n`;
+    response += `**Immediate Actions on Brandentifier:**\n`;
+    response += `• Complete your professional profile\n`;
+    response += `• Showcase your best work and achievements\n`;
+    response += `• Connect with relevant industry professionals\n\n`;
+    response += `**Career Development Areas:**\n`;
+    response += `• Strategic career planning and goal setting\n`;
+    response += `• Professional skill development and enhancement\n`;
+    response += `• Networking strategies and relationship building\n`;
+    response += `• Personal brand development and thought leadership\n\n`;
+  }
+  
+  // Add proactive suggestions if available
+  if (proactiveSuggestions && proactiveSuggestions.length > 0) {
+    response += `**Recommended Next Steps:**\n`;
+    proactiveSuggestions.slice(0, 3).forEach((suggestion, index) => {
+      response += `${index + 1}. ${suggestion}\n`;
+    });
+    response += `\n`;
+  }
+  
+  response += `What specific aspect would you like to explore further? I'm here to provide detailed, personalized guidance.`;
+  
+  return response;
 }
 
 /**
  * Generate contextual fallback response
  */
 async function generateContextualFallback(context: EnrichedContext, currentMessage: string = ''): Promise<string> {
-  const userName = context.user.basicInfo.name;
-  const title = context.user.basicInfo.title;
-  const industry = context.user.basicInfo.industry || 'your field';
-  
-  return `${userName}, I understand you're looking for career guidance as a ${title} in ${industry}. While I'm processing your request, I can help you with specific questions about career development, skill building, networking strategies, or professional growth. What particular area would you like to focus on?`;
+  return generateAdvancedFallback(context, currentMessage);
 }
 
 /**
