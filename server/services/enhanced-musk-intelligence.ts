@@ -37,6 +37,19 @@ import {
   analyzeUserPatterns,
   getPersonalizedGuidelines 
 } from './learning-pattern-recognition';
+import { 
+  generatePredictiveInsights,
+  PredictiveInsight 
+} from './predictive-career-modeling';
+import { 
+  generateCrossUserRecommendations,
+  updateCohortData 
+} from './cross-user-intelligence';
+import { 
+  analyzeEmotionalContext,
+  generateEmotionalResponseStrategy,
+  enhancePromptWithEmotionalIntelligence 
+} from './emotional-intelligence';
 
 export interface EnhancedMuskRequest {
   message: string;
@@ -85,6 +98,14 @@ export async function processEnhancedMuskRequest(request: EnhancedMuskRequest): 
     const personalizedGuidelines = getPersonalizedGuidelines(userIdString);
     console.log(`[Enhanced Musk] User patterns analyzed with confidence: ${userPatterns.confidence}`);
     
+    // Phase 3: Update cross-user intelligence cohorts
+    updateCohortData(userIdString, request.userProfile, userPatterns);
+    
+    // Phase 3: Analyze emotional context and generate response strategy
+    const emotionalContext = analyzeEmotionalContext(userIdString, request.message);
+    const emotionalResponseStrategy = generateEmotionalResponseStrategy(emotionalContext, request.userProfile);
+    console.log(`[Enhanced Musk] Emotional state: ${emotionalContext.currentState.primary} (${emotionalContext.currentState.intensity})`);
+    
     // Phase 1: Check if clarification is needed for ambiguous input
     if (shouldRequestClarification(userIdString, request.message)) {
       console.log('[Enhanced Musk] Requesting clarification for ambiguous input');
@@ -126,6 +147,19 @@ export async function processEnhancedMuskRequest(request: EnhancedMuskRequest): 
     const proactiveInsight = generateProactiveSuggestions(userIdString, request.userProfile, processedMessage);
     console.log(`[Enhanced Musk] Generated ${proactiveInsight.suggestions.length} proactive suggestions`);
     
+    // Phase 3: Generate predictive career insights
+    const predictiveInsights = generatePredictiveInsights(
+      userIdString, 
+      request.userProfile, 
+      request.userExperiences, 
+      request.userSkills
+    );
+    console.log(`[Enhanced Musk] Generated ${predictiveInsights.predictions.length} predictive insights`);
+    
+    // Phase 3: Generate cross-user recommendations
+    const crossUserRecommendations = generateCrossUserRecommendations(userIdString, request.userProfile, userPatterns);
+    console.log(`[Enhanced Musk] Generated ${crossUserRecommendations.length} cross-user recommendations`);
+    
     // Step 1: Enrich user context with comprehensive data analysis
     const enrichedContext = await enrichUserContext(
       request.userId,
@@ -140,16 +174,20 @@ export async function processEnhancedMuskRequest(request: EnhancedMuskRequest): 
 
     console.log('[Enhanced Musk] Context enriched with profile completeness:', enrichedContext.user.profileCompleteness.score + '%');
 
-    // Step 2: Generate persona-enhanced contextual response
+    // Step 2: Generate Phase 3 enhanced contextual response
     const conversationContext = formatConversationForAI(userIdString, processedMessage);
-    const response = await generatePersonaAwareResponse(
+    const response = await generatePhase3EnhancedResponse(
       enrichedContext, 
       processedMessage, 
       conversationContext, 
       personaAnalysis, 
       conversationFlow,
       personalizedGuidelines,
-      proactiveInsight
+      proactiveInsight,
+      predictiveInsights,
+      crossUserRecommendations,
+      emotionalContext,
+      emotionalResponseStrategy
     );
 
     // Phase 1: Add Musk response to conversation memory
@@ -204,16 +242,20 @@ export async function processEnhancedMuskRequest(request: EnhancedMuskRequest): 
 }
 
 /**
- * Generate persona-aware response with Phase 2 enhancements
+ * Generate Phase 3 enhanced response with all advanced AI capabilities
  */
-async function generatePersonaAwareResponse(
+async function generatePhase3EnhancedResponse(
   context: EnrichedContext, 
   message: string, 
   conversationContext: string,
   personaAnalysis: PersonaAnalysis,
   conversationFlow: any,
   personalizedGuidelines: any,
-  proactiveInsight: ProactiveInsight
+  proactiveInsight: ProactiveInsight,
+  predictiveInsights: PredictiveInsight,
+  crossUserRecommendations: any[],
+  emotionalContext: any,
+  emotionalResponseStrategy: any
 ): Promise<string> {
   try {
     console.log(`[Enhanced Musk] Generating ${personaAnalysis.selectedPersona.name} response`);
