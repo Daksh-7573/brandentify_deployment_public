@@ -313,7 +313,24 @@ function generateContextualFallback(context: EnrichedContext, currentMessage: st
 Consider adding skill endorsements from colleagues and quantified skill applications.`;
     }
     
+    // Portfolio layout questions (move to top priority)
+    if (messageLower.includes('portfolio') && (messageLower.includes('layout') || messageLower.includes('best') || messageLower.includes('level'))) {
+      console.log('[Enhanced Musk] Detected portfolio layout question');
+      return `${userName}, for a ${title} at your ${experienceLevel} level in ${industry}, I recommend the **Corporate Executive** portfolio layout. This theme emphasizes:
 
+• **Strategic Leadership Focus** - Perfect for director-level positions
+• **Clean, Professional Design** - Builds trust with stakeholders  
+• **Achievement-Driven Layout** - Highlights your business impact
+• **Industry Authority Positioning** - Establishes thought leadership
+
+Key sections to emphasize:
+- Executive summary with quantified achievements
+- Strategic initiatives you've led
+- Cross-functional team leadership examples
+- Industry-specific metrics and outcomes
+
+This layout positions you as a strategic leader rather than just an individual contributor.`;
+    }
     
     // Experience showcase questions
     if (messageLower.includes('experience') && (messageLower.includes('showcase') || messageLower.includes('highlight'))) {
