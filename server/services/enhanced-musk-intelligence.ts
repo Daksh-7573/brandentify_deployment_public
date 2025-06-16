@@ -275,8 +275,10 @@ function generateContextualFallback(context: EnrichedContext, currentMessage: st
        currentMessage.toLowerCase().includes('showcase') ||
        currentMessage.toLowerCase().includes('enhance') ||
        currentMessage.toLowerCase().includes('improve') ||
-       currentMessage.toLowerCase().includes('better') ||
-       currentMessage.toLowerCase().includes('portfolio') ||
+       currentMessage.toLowerCase().includes('better');
+
+  // Check if this is a career-specific question that should get specialized advice
+  const isCareerSpecificQuestion = currentMessage.toLowerCase().includes('portfolio') ||
        currentMessage.toLowerCase().includes('skill') ||
        currentMessage.toLowerCase().includes('experience') ||
        currentMessage.toLowerCase().includes('network') ||
@@ -284,11 +286,12 @@ function generateContextualFallback(context: EnrichedContext, currentMessage: st
        currentMessage.toLowerCase().includes('cv') ||
        currentMessage.toLowerCase().includes('job') ||
        currentMessage.toLowerCase().includes('apply') ||
-       currentMessage.toLowerCase().includes('application');
+       currentMessage.toLowerCase().includes('application') ||
+       currentMessage.toLowerCase().includes('career');
 
-  console.log(`[Enhanced Musk] isProfileQuestion: ${isProfileQuestion}, profile completeness: ${context.user.profileCompleteness.score}%`);
+  console.log(`[Enhanced Musk] isProfileQuestion: ${isProfileQuestion}, isCareerSpecificQuestion: ${isCareerSpecificQuestion}, profile completeness: ${context.user.profileCompleteness.score}%`);
 
-  if (isProfileQuestion && context.user.profileCompleteness.score >= 75) {
+  if ((isProfileQuestion || isCareerSpecificQuestion) && context.user.profileCompleteness.score >= 75) {
     // Generate question-specific responses based on the actual question asked
     const messageLower = currentMessage.toLowerCase();
     
@@ -298,7 +301,7 @@ function generateContextualFallback(context: EnrichedContext, currentMessage: st
     // Job search and career goal questions (check first as highest priority)
     if ((messageLower.includes('job') && (messageLower.includes('get') || messageLower.includes('find') || messageLower.includes('search') || messageLower.includes('goal'))) || 
         (messageLower.includes('new') && messageLower.includes('position')) ||
-        (messageLower.includes('career') && (messageLower.includes('goal') || messageLower.includes('change') || messageLower.includes('move'))) ||
+        (messageLower.includes('career') && (messageLower.includes('goal') || messageLower.includes('change') || messageLower.includes('move') || messageLower.includes('advice'))) ||
         messageLower.includes('job search')) {
       console.log('[Enhanced Musk] Detected job search/career goal question');
       return `${userName}, here's your strategic roadmap to securing a high-level position as a ${title} in ${industry}:
@@ -571,9 +574,21 @@ function extractKeyInsights(context: EnrichedContext): string[] {
 export function shouldUseEnhancedIntelligence(message: string, userProfile: any): boolean {
   // Use enhanced intelligence for all requests with sufficient user data
   const hasBasicProfile = userProfile?.name && userProfile?.title;
-  const isComplexQuery = message.length > 20;
+  const isComplexQuery = message.length > 15;
   
-  return hasBasicProfile && isComplexQuery;
+  // Always use enhanced intelligence for career-related questions
+  const messageLower = message.toLowerCase();
+  const isCareerQuestion = messageLower.includes('career') || 
+                          messageLower.includes('job') || 
+                          messageLower.includes('position') || 
+                          messageLower.includes('application') ||
+                          messageLower.includes('resume') ||
+                          messageLower.includes('portfolio') ||
+                          messageLower.includes('skills') ||
+                          messageLower.includes('experience') ||
+                          messageLower.includes('network');
+  
+  return hasBasicProfile && (isComplexQuery || isCareerQuestion);
 }
 
 /**
