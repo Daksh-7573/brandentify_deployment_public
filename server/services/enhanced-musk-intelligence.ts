@@ -264,6 +264,14 @@ async function generatePhase3EnhancedResponse(
     const title = context.user.basicInfo.title;
     const industry = context.user.basicInfo.industry || 'your field';
     
+    // Check for specific networking feature questions first
+    const isNetworkingFeature = /network|netowrk|nework|netwrok.*feature|feature.*network/i.test(message);
+    
+    if (isNetworkingFeature) {
+      console.log(`[Enhanced Musk] Detected networking feature question, generating specific response`);
+      return generateNetworkingFeatureResponse(userName || 'there', title || 'professional', industry || 'your field');
+    }
+    
     // Build Phase 3 enhanced prompt with all AI capabilities
     const basePrompt = `Generate comprehensive career advice for ${userName}, a ${title} in ${industry}.
 
@@ -493,6 +501,45 @@ async function generateAdvancedFallback(context: EnrichedContext, message: strin
   response += `What specific aspect would you like to explore further? I'm here to provide detailed, personalized guidance.`;
   
   return response;
+}
+
+/**
+ * Generate specific networking feature response
+ */
+function generateNetworkingFeatureResponse(userName: string, title: string, industry: string): string {
+  return `Hello ${userName},
+
+Great question about Brandentifier's networking features! As a ${title} in ${industry}, here's how to leverage our platform's networking capabilities effectively:
+
+**Brandentifier Networking Features:**
+• **Professional Discovery**: Use the explore section to find professionals in ${industry} and related fields
+• **Smart Connections**: The platform suggests relevant connections based on your industry, role, and interests  
+• **Industry Pulses**: Share valuable insights to attract like-minded professionals
+• **Direct Messaging**: Connect directly with professionals for mentorship and collaboration
+• **Professional Groups**: Join ${industry}-specific communities and discussions
+
+**How to Use These Features:**
+1. Complete your profile to 100% for maximum visibility
+2. Upload portfolio projects that showcase your expertise
+3. Post regular updates about your work and industry insights
+4. Engage meaningfully with others' content through thoughtful comments
+5. Use the search filters to find professionals by location, industry, and role
+
+**Strategic Networking Tips for ${industry}:**
+• Start with quality over quantity - focus on meaningful connections
+• Always personalize your connection requests with context
+• Share knowledge and insights before asking for help
+• Follow up with connections through valuable content sharing
+• Attend industry events and share your participation on the platform
+
+**Getting Started Today:**
+1. Navigate to the explore section on your dashboard
+2. Use filters to find professionals in your area and industry
+3. Review their profiles and find common ground for connection
+4. Send personalized connection requests mentioning shared interests
+5. Start engaging with their content to build authentic relationships
+
+What specific aspect of networking would you like to focus on first?`;
 }
 
 /**
