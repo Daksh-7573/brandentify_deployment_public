@@ -281,7 +281,10 @@ function generateContextualFallback(context: EnrichedContext, currentMessage: st
        currentMessage.toLowerCase().includes('experience') ||
        currentMessage.toLowerCase().includes('network') ||
        currentMessage.toLowerCase().includes('resume') ||
-       currentMessage.toLowerCase().includes('cv');
+       currentMessage.toLowerCase().includes('cv') ||
+       currentMessage.toLowerCase().includes('job') ||
+       currentMessage.toLowerCase().includes('apply') ||
+       currentMessage.toLowerCase().includes('application');
 
   console.log(`[Enhanced Musk] isProfileQuestion: ${isProfileQuestion}, profile completeness: ${context.user.profileCompleteness.score}%`);
 
@@ -292,7 +295,34 @@ function generateContextualFallback(context: EnrichedContext, currentMessage: st
     console.log(`[Enhanced Musk] Analyzing question: "${currentMessage}"`);
     console.log(`[Enhanced Musk] Message keywords: ${messageLower}`);
     
-    // Resume creation/improvement questions (check first as high priority)
+    // Job application questions (check first as high priority)
+    console.log(`[Enhanced Musk] Checking job application: includes('apply'): ${messageLower.includes('apply')}, includes('job'): ${messageLower.includes('job')}, includes('application'): ${messageLower.includes('application')}`);
+    if ((messageLower.includes('apply') && messageLower.includes('job')) || messageLower.includes('application')) {
+      console.log('[Enhanced Musk] Detected job application question');
+      return `${userName}, here's your strategic approach to job applications as a ${title} in ${industry}:
+
+**Application Strategy for Director-Level Roles:**
+• **Target Selection** - Focus on positions 1-2 levels above your current role or lateral moves with strategic value
+• **Research Phase** - Study company culture, recent initiatives, and leadership team before applying
+• **Timing** - Apply within 48-72 hours of job posting for maximum visibility
+• **Follow-up** - Connect with hiring managers on LinkedIn before or after application
+
+**Application Materials for ${industry}:**
+• **Executive Resume** - Highlight P&L responsibility, team leadership, and strategic initiatives
+• **Cover Letter** - Address specific business challenges the company faces
+• **Portfolio** - Include case studies showing guest experience improvements and operational efficiency
+• **References** - Prepare 3-5 executive-level references who can speak to your leadership impact
+
+**Director-Level Application Process:**
+• Apply through multiple channels (company website, LinkedIn, executive recruiters)
+• Leverage your professional network for warm introductions
+• Demonstrate thought leadership through industry content
+• Prepare for behavioral and strategic scenario interviews
+
+Focus on demonstrating how you'll drive business outcomes from day one.`;
+    }
+    
+    // Resume creation/improvement questions (check second as high priority)
     if (messageLower.includes('resume') || (messageLower.includes('make') && messageLower.includes('cv'))) {
       console.log('[Enhanced Musk] Detected resume creation question');
       return `${userName}, here's how to create a compelling resume for your ${title} role in ${industry}:
