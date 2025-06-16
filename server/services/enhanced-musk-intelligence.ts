@@ -474,7 +474,7 @@ function enhanceResponseWithPersonalization(response: string, context: EnrichedC
 /**
  * Generate contextual fallback response
  */
-function generateContextualFallback(context: EnrichedContext, currentMessage: string = ''): string {
+async function generateContextualFallback(context: EnrichedContext, currentMessage: string = ''): Promise<string> {
   const userName = context.user.basicInfo.name;
   const title = context.user.basicInfo.title;
   const industry = context.user.basicInfo.industry || 'your field';
@@ -723,7 +723,7 @@ User Context:
 - Title: ${title}
 - Industry: ${industry}
 - Location: ${location}
-- Looking for: ${lookingFor}
+- Looking for: ${context.user.basicInfo.lookingFor || 'career_advice'}
 
 Provide specific, actionable networking strategies that:
 1. Prioritize Brandentifier as the primary platform for comprehensive professional branding
@@ -760,69 +760,44 @@ Make the response personal and relevant to their career level and industry.`;
     return await generateIntelligentResponse(careerPrompt, context, currentMessage);
   } catch (error) {
     console.error('[Enhanced Musk] Error in generateContextualResponse:', error);
-    return generateContextualFallback(context, currentMessage);
+    return await generateContextualFallback(context, currentMessage);
   }
 }
 
 /**
- * Generate fallback response for errors
+ * Generate AI response using enhanced prompt
  */
-async function generateFallbackResponse(message: string, userProfile: any): Promise<string> {
-  const userName = userProfile?.name || 'there';
-  return `Hi ${userName}, I'm experiencing some technical difficulties with my advanced analysis systems, but I'm still here to help with your career questions. Could you provide a bit more context about your specific situation so I can give you the most relevant advice?`;
-}
-
-/**
- * Determine experience level from work experiences
- */
-function determineExperienceLevel(experiences: any[]): string {
-  if (!experiences || experiences.length === 0) return 'entry';
-  
-  const totalYears = experiences.reduce((total, exp) => {
-    const startYear = new Date(exp.startDate).getFullYear();
-    const endYear = exp.endDate ? new Date(exp.endDate).getFullYear() : new Date().getFullYear();
-    return total + (endYear - startYear);
-  }, 0);
-
-  if (totalYears < 3) return 'entry';
-  if (totalYears < 7) return 'mid';
-  if (totalYears < 12) return 'senior';
-  return 'executive';
-}
-
-/**
- * Extract key insights from enriched context
- */
-function extractKeyInsights(context: EnrichedContext): string[] {
-  const insights: string[] = [];
-  
-  // Profile insights
-  if (context.user.profileCompleteness.score < 70) {
-    insights.push('Profile completion could improve visibility');
-  }
-
-  // Skill insights
-  if (context.insights.skillRecommendations.length > 0) {
-    const topSkill = context.insights.skillRecommendations[0];
-    insights.push(`${topSkill.skill} is a high-demand skill in your field`);
-  }
-
-  // Career opportunity insights
-  if (context.insights.careerOpportunities.length > 0) {
-    const bestMatch = context.insights.careerOpportunities
-      .sort((a, b) => b.match_percentage - a.match_percentage)[0];
+async function generateIntelligentResponse(prompt: string, context: EnrichedContext, message: string = ''): Promise<string> {
+  try {
+    console.log('[Enhanced Musk] Generating intelligent response with OpenAI');
     
-    if (bestMatch.match_percentage > 70) {
-      insights.push(`Strong match for ${bestMatch.role} positions`);
-    }
-  }
+    const openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
 
-  // Mood insights
-  if (context.mood.current_confidence === 'low') {
-    insights.push('Confidence building would accelerate progress');
-  }
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o",
+      messages: [
+        {
+          role: "system",
+          content: "You are Musk, an expert AI career coach on the Brandentifier platform. Provide comprehensive, personalized career advice that prioritizes Brandentifier features while including other platforms as secondary options."
+        },
+        {
+          role: "user",
+          content: prompt
+        }
+      ],
+      max_tokens: 2000,
+      temperature: 0.7,
+    });
 
-  return insights;
+    const aiResponse = response.choices[0]?.message?.content || '';
+    console.log('[Enhanced Musk] Generated intelligent response:', aiResponse.substring(0, 200) + '...');
+    return aiResponse;
+  } catch (error) {
+    console.error('[Enhanced Musk] Error generating intelligent response:', error);
+    return generateBasicFallback(message, context.user.basicInfo);
+  }
 }
 
 /**
@@ -926,4 +901,65 @@ function generateBasicFallback(message: string, userProfile: any): string {
   
   // General career advice response
   return `Hello ${userName}! I'm here to help with your career development. As a ${userTitle}, you have unique strengths and opportunities. I can provide guidance on career transitions, skill development, goal setting, and professional growth strategies. What specific career challenge would you like to discuss?`;
+}
+
+/**
+ * Determine experience level from work experiences
+ */
+function determineExperienceLevel(experiences: any[]): string {
+  if (!experiences || experiences.length === 0) return 'entry';
+  
+  const totalYears = experiences.reduce((total, exp) => {
+    const startYear = new Date(exp.startDate).getFullYear();
+    const endYear = exp.endDate ? new Date(exp.endDate).getFullYear() : new Date().getFullYear();
+    return total + (endYear - startYear);
+  }, 0);
+
+  if (totalYears < 3) return 'entry';
+  if (totalYears < 7) return 'mid';
+  if (totalYears < 12) return 'senior';
+  return 'executive';
+}
+
+/**
+ * Extract key insights from enriched context
+ */
+function extractKeyInsights(context: EnrichedContext): string[] {
+  const insights: string[] = [];
+  
+  // Profile insights
+  if (context.user.profileCompleteness.score < 70) {
+    insights.push('Profile completion could improve visibility');
+  }
+
+  // Skill insights
+  if (context.insights.skillRecommendations.length > 0) {
+    const topSkill = context.insights.skillRecommendations[0];
+    insights.push(`${topSkill.skill} is a high-demand skill in your field`);
+  }
+
+  // Career opportunity insights
+  if (context.insights.careerOpportunities.length > 0) {
+    const bestMatch = context.insights.careerOpportunities
+      .sort((a, b) => b.match_percentage - a.match_percentage)[0];
+    
+    if (bestMatch.match_percentage > 70) {
+      insights.push(`Strong match for ${bestMatch.role} positions`);
+    }
+  }
+
+  // Mood insights
+  if (context.mood.current_confidence === 'low') {
+    insights.push('Confidence building would accelerate progress');
+  }
+
+  return insights;
+}
+
+/**
+ * Generate fallback response for errors
+ */
+async function generateFallbackResponse(message: string, userProfile: any): Promise<string> {
+  const userName = userProfile?.name || 'there';
+  return `Hi ${userName}, I'm experiencing some technical difficulties with my advanced analysis systems, but I'm still here to help with your career questions. Could you provide a bit more context about your specific situation so I can give you the most relevant advice?`;
 }
