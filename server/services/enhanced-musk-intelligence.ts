@@ -279,7 +279,9 @@ function generateContextualFallback(context: EnrichedContext, currentMessage: st
        currentMessage.toLowerCase().includes('portfolio') ||
        currentMessage.toLowerCase().includes('skill') ||
        currentMessage.toLowerCase().includes('experience') ||
-       currentMessage.toLowerCase().includes('network');
+       currentMessage.toLowerCase().includes('network') ||
+       currentMessage.toLowerCase().includes('resume') ||
+       currentMessage.toLowerCase().includes('cv');
 
   console.log(`[Enhanced Musk] isProfileQuestion: ${isProfileQuestion}, profile completeness: ${context.user.profileCompleteness.score}%`);
 
