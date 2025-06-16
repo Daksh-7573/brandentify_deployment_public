@@ -1,0 +1,111 @@
+🧠 Core Issues Breakdown
+Problem	Why It Happens	Fix
+❌ No Conversation Threading	LLM is stateless without explicit past message input	Add recent messages into each prompt
+❌ Unclear Follow-up Semantics	Follow-up lacks reference to what it's about	Rephrase user inputs before sending
+❌ Prompt Overload or Confusion	Overloaded context window or unclear system prompt	Optimize and structure prompts better
+❌ Local Model Limitations	LLaMA 3 3B is lightweight and not great with vague/implicit logic	Use fallback to stronger model (like GPT-4 or Claude) for such cases
+❌ No Intent + Reference Resolver	Musk can't guess what “that” or “both” means	Build an intent+reference engine to inject clarity
+
+✅ Solutions with Implementation Details
+1. Conversation Memory Stack (Structured)
+Store recent messages in backend and construct prompt like this:
+
+🧩 Example:
+text
+Copy
+Edit
+User: I’m a frontend engineer but want to explore product roles.
+Musk: That’s a great transition. Have you tried building side projects to demonstrate product thinking?
+User: A few.
+Musk: Awesome. What kind of projects did you work on?
+User: Two web tools for startups.
+User: Should I add them to my resume?
+✅ Construct final prompt using:
+
+System Prompt
+
+Summary of key context (last 3–4 messages)
+
+Latest message
+
+This helps maintain reference resolution in vague follow-ups.
+
+2. Rewriter Function for Follow-Up Inputs
+Add a lightweight NLP module before feeding user input to Musk:
+
+✨ Example:
+User types: “Can I do both?”
+System rewrites: “Can I pursue both frontend development and product management at the same time?”
+
+✅ Tools:
+
+spaCy or GPT-based input expander
+
+Include previous user + Musk turns to rephrase
+
+3. Clarification Fallback System
+For vague inputs, let Musk respond:
+
+“Just to clarify — when you said ‘both,’ are you referring to product and engineering roles?”
+
+This fallback gets triggered if:
+
+Input is under 5 words
+
+Input contains vague pronouns: it, that, this, both, one
+
+✅ You can use regex + heuristics + GPT fallback to ask clarification.
+
+4. Intent+Reference Classification Engine
+Use a simple intent resolver like:
+
+json
+Copy
+Edit
+{
+  "intent": "follow_up",
+  "refers_to": "project_resume_addition",
+  "user_needs": "clarity_on_resume_impact"
+}
+Use this metadata to generate a richer prompt:
+
+“User is following up on whether side projects should be included in resume. Respond in the voice of a resume expert.”
+
+✅ You can build this as a classifier (fine-tune or rules-based).
+
+5. Model Switching Logic
+If the local model (LLaMA 3.2 3B) fails to resolve vague inputs well:
+
+✅ Auto-fallback condition:
+If message length < 5 AND contains ambiguous references → use OpenAI GPT-4 or Claude for that response only.
+
+You can log these as “ambiguous attempts” and redirect selectively.
+
+🛠 Bonus: Use Prompt Skeleton Format
+Use a scaffolded prompt like:
+
+text
+Copy
+Edit
+System: You are Musk, the world’s best career coach.
+
+Context Summary:
+- User is a frontend engineer
+- Wants to explore product management
+- Mentioned two side projects
+
+Latest User Input:
+- “Should I add them to my resume?”
+
+Your Goal:
+- Help the user with tailored resume advice
+- Mention what impact such projects can show
+✅ This format forces clarity and better reply quality from the LLM.
+
+🧩 Summary Checklist
+Fix	Status
+Structured memory stack	🔄 Should be active for all prompt builds
+Rephrasing layer for vague inputs	🔄 Use regex + reference resolver
+Clarification fallback mechanism	🔄 Add to prompt logic or output pipeline
+Switch to higher-capacity model for low-confidence responses	🔄 Use hybrid fallback only when needed
+Explicit prompt scaffolding	🔄 Improves focus and reply quality
