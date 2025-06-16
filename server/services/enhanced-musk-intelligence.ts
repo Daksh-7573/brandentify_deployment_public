@@ -10,7 +10,7 @@ import { generatePersonaResponse, selectOptimalPersona } from './persona-engine'
 import { enrichUserContext, EnrichedContext } from './context-enricher';
 import { generateEnhancedPrompt, generateProactiveSuggestions } from './prompt-library';
 import { LocalAIService } from './local-ai-service';
-import { generateProactiveInsights, generateImmediateSuggestions, ProactiveContext } from './proactive-engine';
+import { generateProactiveInsights, ProactiveContext } from './proactive-engine';
 import { getIndustryMentoring, enhanceResponseWithIndustryContext } from './industry-mentoring';
 
 export interface EnhancedMuskRequest {
@@ -127,11 +127,7 @@ export async function processEnhancedMuskRequest(request: EnhancedMuskRequest): 
     };
     
     const proactiveInsights = await generateProactiveInsights(proactiveContext);
-    const immediateSuggestions = generateImmediateSuggestions(
-      request.message, 
-      enrichedContext.user.basicInfo, 
-      enrichedContext.user.profileCompleteness.score
-    );
+    const immediateSuggestions = generateProactiveSuggestions(enrichedContext);
 
     console.log(`[Enhanced Musk] Generated ${immediateSuggestions.length} immediate suggestions and ${proactiveInsights.length} proactive insights`);
 
