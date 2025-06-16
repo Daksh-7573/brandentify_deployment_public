@@ -296,7 +296,6 @@ function generateContextualFallback(context: EnrichedContext, currentMessage: st
     console.log(`[Enhanced Musk] Message keywords: ${messageLower}`);
     
     // Job application questions (check first as high priority)
-    console.log(`[Enhanced Musk] Checking job application: includes('apply'): ${messageLower.includes('apply')}, includes('job'): ${messageLower.includes('job')}, includes('application'): ${messageLower.includes('application')}`);
     if ((messageLower.includes('apply') && messageLower.includes('job')) || messageLower.includes('application')) {
       console.log('[Enhanced Musk] Detected job application question');
       return `${userName}, here's your strategic approach to job applications as a ${title} in ${industry}:
