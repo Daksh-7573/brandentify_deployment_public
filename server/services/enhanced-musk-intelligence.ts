@@ -290,6 +290,10 @@ function generateContextualFallback(context: EnrichedContext, currentMessage: st
        currentMessage.toLowerCase().includes('networking') ||
        currentMessage.toLowerCase().includes('platforms ar') ||
        currentMessage.toLowerCase().includes('brandentifier') ||
+       currentMessage.toLowerCase().includes('linkedin') ||
+       currentMessage.toLowerCase().includes('platform') ||
+       currentMessage.toLowerCase().includes('best') ||
+       currentMessage.toLowerCase().includes('recommend') ||
        currentMessage.toLowerCase().includes('resume') ||
        currentMessage.toLowerCase().includes('cv') ||
        currentMessage.toLowerCase().includes('job') ||
@@ -298,6 +302,7 @@ function generateContextualFallback(context: EnrichedContext, currentMessage: st
        currentMessage.toLowerCase().includes('career');
 
   console.log(`[Enhanced Musk] isProfileQuestion: ${isProfileQuestion}, isCareerSpecificQuestion: ${isCareerSpecificQuestion}, profile completeness: ${context.user.profileCompleteness.score}%`);
+  console.log(`[Enhanced Musk] Message analysis: "${currentMessage}" contains - best: ${currentMessage.toLowerCase().includes('best')}, platform: ${currentMessage.toLowerCase().includes('platform')}, from all: ${currentMessage.toLowerCase().includes('from all')}, these: ${currentMessage.toLowerCase().includes('these')}`);
 
   if ((isProfileQuestion || isCareerSpecificQuestion) && context.user.profileCompleteness.score >= 75) {
     // Generate question-specific responses based on the actual question asked
@@ -506,7 +511,8 @@ Remember: LinkedIn is powerful for broad reach, but consider building your compl
       // Platform comparison questions
       if (messageLower.includes('best platform') || messageLower.includes('which platform') || 
           (messageLower.includes('best') && messageLower.includes('platform')) ||
-          messageLower.includes('recommend') && messageLower.includes('platform')) {
+          (messageLower.includes('best') && (messageLower.includes('from all') || messageLower.includes('these'))) ||
+          (messageLower.includes('recommend') && messageLower.includes('platform'))) {
         return `${userName}, for a ${title} in ${industry}, **Brandentifier is your best networking platform** because:
 
 **Why Brandentifier First:**
