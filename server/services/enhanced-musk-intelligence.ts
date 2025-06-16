@@ -160,11 +160,11 @@ export async function processEnhancedMuskRequest(request: EnhancedMuskRequest): 
       intent: 'career_guidance' as any,
       persona: personaAnalysis.selectedPersona.name,
       confidence: personaAnalysis.confidence,
-      proactiveSuggestions: proactiveInsight.suggestions.slice(0, 3), // Top 3 suggestions
+      proactiveSuggestions: proactiveInsight.suggestions.slice(0, 3).map(s => s.title), // Top 3 suggestions
       contextUsed: {
         profileCompleteness: enrichedContext.user.profileCompleteness.score,
         keyInsights: extractKeyInsights(enrichedContext),
-        recommendedActions: proactiveInsight.suggestions.map(s => s.actionText),
+        recommendedActions: proactiveInsight.suggestions.slice(0, 3).map(s => s.actionText),
         conversationMemoryUsed: true,
         referenceResolutionApplied: processedMessage !== request.message,
         personaSelected: personaAnalysis.selectedPersona.name,
