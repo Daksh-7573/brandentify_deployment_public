@@ -78,7 +78,14 @@ export async function processEnhancedMuskRequest(request: EnhancedMuskRequest): 
       return {
         response: followUpAnalysis.clarificationPrompt,
         metadata: {
-          intent: { type: 'clarification_needed', confidence: followUpAnalysis.confidence },
+          intent: {
+            type: 'clarification_needed' as const,
+            confidence: followUpAnalysis.confidence,
+            emotionalState: 'uncertain',
+            advisorPersona: 'coach',
+            urgency: 'medium',
+            subCategories: ['follow-up', 'vague-reference']
+          },
           persona: 'coach',
           confidence: followUpAnalysis.confidence,
           proactiveSuggestions: [],
@@ -183,13 +190,14 @@ export async function processEnhancedMuskRequest(request: EnhancedMuskRequest): 
       intent.type,
       intent.emotionalState,
       enrichedContext,
-      request.message
-    );
+      processedMessage
+    ) + conversationHistory;
 
     console.log(`[Enhanced Musk] Generated enhanced prompt (${enhancedPrompt.length} characters)`);
 
     // Step 6: Generate AI response using enhanced prompt
-    const aiResponse = await generateIntelligentResponse(enhancedPrompt, enrichedContext, request.message);
+    const aiResponse = await generateIntelligentResponse(enhancedPrompt, enrichedContext, processedMessage);
+    const finalResponse = contextPrefix + aiResponse;
 
     // Step 7: Generate enhanced proactive suggestions
     const proactiveContext: ProactiveContext = {

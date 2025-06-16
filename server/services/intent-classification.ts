@@ -27,6 +27,8 @@ export type IntentType =
   | 'workplace_issues'    // Problems at current job
   | 'salary_negotiation'  // Compensation discussions
   | 'general_advice'      // General career guidance
+  | 'clarification_needed' // User message needs clarification
+  | 'active_guidance'     // User needs structured guidance for complex tasks
 
 export type EmotionalState = 
   | 'confident'      // User feels positive and assured
@@ -206,6 +208,8 @@ function mapIntentToPersona(intent: IntentType, emotional: EmotionalState): Advi
     career_planning: 'strategist',
     workplace_issues: 'coach',
     salary_negotiation: 'expert',
+    clarification_needed: 'coach',
+    active_guidance: 'strategist',
     general_advice: 'strategist'
   };
 
