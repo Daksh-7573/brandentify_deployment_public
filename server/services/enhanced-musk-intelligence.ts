@@ -268,20 +268,26 @@ function generateContextualFallback(context: EnrichedContext, currentMessage: st
   
   // Check if this is about profile enhancement based on message content and topic focus
   const topicFocus = context.conversation.currentSession.topicFocus || [];
+  const messageLower = currentMessage.toLowerCase();
+  
+  // Only consider profile questions if they specifically mention profile-related terms
   const isProfileQuestion = topicFocus.some(topic => 
     topic.includes('profile_enhancement') || topic.includes('profile') || topic.includes('compelling') || topic.includes('showcase')
-  ) || currentMessage.toLowerCase().includes('profile') || 
-       currentMessage.toLowerCase().includes('compelling') ||
-       currentMessage.toLowerCase().includes('showcase') ||
-       currentMessage.toLowerCase().includes('enhance') ||
-       currentMessage.toLowerCase().includes('improve') ||
-       currentMessage.toLowerCase().includes('better');
+  ) || messageLower.includes('profile') || 
+       messageLower.includes('compelling') ||
+       messageLower.includes('showcase') ||
+       (messageLower.includes('enhance') && !messageLower.includes('platform')) ||
+       (messageLower.includes('improve') && !messageLower.includes('platform') && !messageLower.includes('network')) ||
+       (messageLower.includes('better') && !messageLower.includes('platform') && !messageLower.includes('network') && !messageLower.includes('nework'));
 
   // Check if this is a career-specific question that should get specialized advice
   const isCareerSpecificQuestion = currentMessage.toLowerCase().includes('portfolio') ||
        currentMessage.toLowerCase().includes('skill') ||
        currentMessage.toLowerCase().includes('experience') ||
        currentMessage.toLowerCase().includes('network') ||
+       currentMessage.toLowerCase().includes('nework') ||
+       currentMessage.toLowerCase().includes('networking') ||
+       currentMessage.toLowerCase().includes('platforms ar') ||
        currentMessage.toLowerCase().includes('resume') ||
        currentMessage.toLowerCase().includes('cv') ||
        currentMessage.toLowerCase().includes('job') ||
@@ -451,26 +457,34 @@ This layout positions you as a strategic leader rather than just an individual c
 Use action verbs like "Led," "Transformed," "Optimized," and "Delivered" to emphasize leadership.`;
     }
     
-    // Networking questions
-    if (messageLower.includes('network') || messageLower.includes('connect')) {
-      return `${userName}, as a ${title} in ${industry}, here's how to leverage networking effectively:
+    // Networking questions (check for variations and platform-specific terms)
+    if (messageLower.includes('network') || messageLower.includes('nework') || messageLower.includes('connect') || 
+        (messageLower.includes('platform') && (messageLower.includes('network') || messageLower.includes('nework'))) ||
+        messageLower.includes('networking') || messageLower.includes('platforms ar')) {
+      console.log('[Enhanced Musk] Detected networking/platform question');
+      return `${userName}, as a ${title} in ${industry}, here are the best platforms to network more effectively:
 
-**Strategic Networking for Directors:**
-• Target C-suite executives and VP-level peers in hospitality
-• Focus on industry conferences and executive roundtables
-• Join hospitality leadership associations and boards
+**Professional Networking Platforms:**
+• **Brandentifier** - Your primary platform for showcasing career achievements and connecting with industry peers
+• **LinkedIn** - Essential for executive networking, join hospitality industry groups and UX research communities
+• **Indeed Career Guide** - Access to job market insights and industry connections
 
-**Digital Presence Optimization:**
-• Update your Brandentifier profile to highlight thought leadership
-• Share insights about hospitality trends and UX research
-• Engage with industry discussions on key platforms
+**Industry-Specific Platforms:**
+• **Hospitality Financial and Technology Professionals (HFTP)** - Finance and tech leaders in hospitality
+• **Hotel Technology Next Generation (HTNG)** - Technology innovation in hospitality
+• **UX Mastery Community** - UX research professionals across industries
 
-**Relationship Building:**
-• Offer value first - share research insights or industry knowledge
-• Mentor emerging professionals in UX and hospitality
-• Collaborate on industry whitepapers or speaking opportunities
+**Executive Networking:**
+• **Young Presidents' Organization (YPO)** - Executive leadership network
+• **World Economic Forum Young Global Leaders** - Global business leadership
+• **Industry conference networking events** - Direct contact with hospitality C-suite executives
 
-Your director-level experience gives you unique insights to share with the hospitality community.`;
+**Digital Strategy:**
+• Start with your Brandentifier profile to establish credibility
+• Share hospitality UX insights and research findings
+• Engage authentically with industry discussions and thought leaders
+
+Focus on quality connections over quantity - your director-level expertise provides natural conversation starters.`;
     }
     
     // General compelling profile questions - fallback to concise advice
