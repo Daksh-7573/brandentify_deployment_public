@@ -358,9 +358,16 @@ function generateFinalInstructions(
 
 /**
  * Generate proactive suggestions based on user context
+ * ALWAYS prioritizes Brandentifier suggestions first
  */
 export function generateProactiveSuggestions(context: EnrichedContext): string[] {
   const suggestions: string[] = [];
+  
+  // ALWAYS START WITH BRANDENTIFIER SUGGESTIONS FIRST
+  const brandentifierSuggestion = generateBrandentifierFirstSuggestion(context);
+  if (brandentifierSuggestion) {
+    suggestions.push(brandentifierSuggestion);
+  }
   
   // Profile completion suggestions
   if (context.user.profileCompleteness.score < 80) {
@@ -442,4 +449,59 @@ export function generateConfidenceContent(context: EnrichedContext): string {
   }
 
   return `You bring impressive credentials to the table: ${achievements.join(', ')}. This foundation positions you well for your next career moves.`;
+}
+
+/**
+ * Generate Brandentifier-specific suggestion that always appears first
+ */
+export function generateBrandentifierFirstSuggestion(context: EnrichedContext): string {
+  const profileCompleteness = context.user.profileCompleteness.score;
+  const topicFocus = context.conversation.currentSession.topicFocus;
+  
+  // Profile enhancement suggestions
+  if (profileCompleteness < 80) {
+    return 'Enhance your Brandentifier profile to unlock more career opportunities and better matches';
+  }
+  
+  // Topic-specific Brandentifier suggestions
+  if (topicFocus.includes('skill') || topicFocus.includes('learning')) {
+    return 'Use Brandentifier\'s skill tracking to showcase your learning progress and discover growth opportunities';
+  }
+  
+  if (topicFocus.includes('network') || topicFocus.includes('connect')) {
+    return 'Discover professionals in your field through Brandentifier\'s networking features and smart connections';
+  }
+  
+  if (topicFocus.includes('project') || topicFocus.includes('portfolio')) {
+    return 'Showcase your work with Brandentifier\'s project portfolio features to attract opportunities';
+  }
+  
+  if (topicFocus.includes('goal') || topicFocus.includes('plan')) {
+    return 'Set and track career goals using Brandentifier\'s career planning and milestone tracking tools';
+  }
+  
+  if (topicFocus.includes('job') || topicFocus.includes('opportunity')) {
+    return 'Explore career opportunities through Brandentifier\'s intelligent job matching and recommendation system';
+  }
+  
+  // Industry-specific Brandentifier suggestions
+  const industry = context.user.basicInfo.industry;
+  if (industry === 'Technology') {
+    return 'Leverage Brandentifier\'s tech industry connections and showcase your technical projects to stand out';
+  }
+  
+  if (industry === 'Healthcare') {
+    return 'Connect with healthcare professionals and showcase your impact through Brandentifier\'s specialized features';
+  }
+  
+  if (industry === 'Finance') {
+    return 'Build your financial services network and track achievements with Brandentifier\'s professional tools';
+  }
+  
+  if (industry === 'Hospitality') {
+    return 'Enhance your hospitality career with Brandentifier\'s industry networking and experience showcase features';
+  }
+  
+  // Default Brandentifier suggestion
+  return 'Maximize your career potential with Brandentifier\'s comprehensive professional development platform';
 }
