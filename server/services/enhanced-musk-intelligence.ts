@@ -194,16 +194,21 @@ export async function processEnhancedMuskRequest(request: EnhancedMuskRequest): 
  */
 async function generateIntelligentResponse(prompt: string, context: EnrichedContext, message: string = ''): Promise<string> {
   try {
-    console.log('[Enhanced Musk] Generating enhanced response with custom prompt');
+    console.log(`[Enhanced Musk] Generating enhanced response with custom prompt for message: "${message}"`);
     
     // Generate the contextual response (which includes question-specific logic)
+    console.log('[Enhanced Musk] About to call generateContextualFallback');
     const fallbackResponse = generateContextualFallback(context, message);
+    console.log(`[Enhanced Musk] Generated fallback response length: ${fallbackResponse.length}`);
+    console.log(`[Enhanced Musk] Response preview: ${fallbackResponse.substring(0, 100)}...`);
     
     // Check if this is a question-specific response (contains specific formatting)
     const isQuestionSpecific = fallbackResponse.includes('**') || 
                               fallbackResponse.includes('Corporate Executive') ||
                               fallbackResponse.includes('Technical Skills Enhancement') ||
                               fallbackResponse.includes('Strategic Networking');
+    
+    console.log(`[Enhanced Musk] Is question-specific: ${isQuestionSpecific}`);
     
     // If it's a question-specific response, return it directly without generic enhancement
     if (isQuestionSpecific) {
@@ -212,6 +217,7 @@ async function generateIntelligentResponse(prompt: string, context: EnrichedCont
     }
     
     // For generic responses, apply personalization enhancement
+    console.log('[Enhanced Musk] Applying personalization enhancement to generic response');
     return enhanceResponseWithPersonalization(fallbackResponse, context);
 
   } catch (error) {
@@ -258,6 +264,8 @@ function generateContextualFallback(context: EnrichedContext, currentMessage: st
   const industry = context.user.basicInfo.industry || 'your field';
   const experienceLevel = context.user.basicInfo.experienceLevel;
   
+  console.log(`[Enhanced Musk] generateContextualFallback called with message: "${currentMessage}"`);
+  
   // Check if this is about profile enhancement based on message content and topic focus
   const topicFocus = context.conversation.currentSession.topicFocus || [];
   const isProfileQuestion = topicFocus.some(topic => 
@@ -267,14 +275,43 @@ function generateContextualFallback(context: EnrichedContext, currentMessage: st
        currentMessage.toLowerCase().includes('showcase') ||
        currentMessage.toLowerCase().includes('enhance') ||
        currentMessage.toLowerCase().includes('improve') ||
-       currentMessage.toLowerCase().includes('better');
+       currentMessage.toLowerCase().includes('better') ||
+       currentMessage.toLowerCase().includes('portfolio') ||
+       currentMessage.toLowerCase().includes('skill') ||
+       currentMessage.toLowerCase().includes('experience') ||
+       currentMessage.toLowerCase().includes('network');
+
+  console.log(`[Enhanced Musk] isProfileQuestion: ${isProfileQuestion}, profile completeness: ${context.user.profileCompleteness.score}%`);
 
   if (isProfileQuestion && context.user.profileCompleteness.score >= 75) {
     // Generate question-specific responses based on the actual question asked
     const messageLower = currentMessage.toLowerCase();
     
+    console.log(`[Enhanced Musk] Analyzing question: "${currentMessage}"`);
+    console.log(`[Enhanced Musk] Message keywords: ${messageLower}`);
+    
     // Portfolio layout questions
     if (messageLower.includes('portfolio') && (messageLower.includes('layout') || messageLower.includes('best'))) {
+      console.log('[Enhanced Musk] Detected portfolio layout question');
+      return `${userName}, for a ${title} at your ${experienceLevel} level in ${industry}, I recommend the **Corporate Executive** portfolio layout. This theme emphasizes:
+
+• **Strategic Leadership Focus** - Perfect for director-level positions
+• **Clean, Professional Design** - Builds trust with stakeholders  
+• **Achievement-Driven Layout** - Highlights your business impact
+• **Industry Authority Positioning** - Establishes thought leadership
+
+Key sections to emphasize:
+- Executive summary with quantified achievements
+- Strategic initiatives you've led
+- Cross-functional team leadership examples
+- Industry-specific metrics and outcomes
+
+This layout positions you as a strategic leader rather than just an individual contributor.`;
+    }
+    
+    // Skills improvement questions  
+    if (messageLower.includes('skill') && (messageLower.includes('improve') || messageLower.includes('enhance') || messageLower.includes('presentation'))) {
+      console.log('[Enhanced Musk] Detected skills improvement question');
       return `${userName}, for a ${title} at your ${experienceLevel} level in ${industry}, I recommend the **Corporate Executive** portfolio layout. This theme emphasizes:
 
 • **Strategic Leadership Focus** - Perfect for director-level positions
