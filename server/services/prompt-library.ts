@@ -291,6 +291,24 @@ function generateContextualPrompt(context: EnrichedContext, intent: IntentType):
     }
   }
 
+  // Add detailed project information for profile enhancement questions
+  if (context.user.professional.projects.length > 0) {
+    contextPrompt += `\nProject Portfolio: ${context.user.professional.projects.length} projects including:\n`;
+    context.user.professional.projects.slice(0, 3).forEach(project => {
+      contextPrompt += `- ${project.title}: ${project.description}\n`;
+    });
+  }
+
+  // Add education details
+  if (context.user.professional.education.length > 0) {
+    contextPrompt += `\nEducation Background:\n`;
+    context.user.professional.education.forEach(edu => {
+      contextPrompt += `- ${edu.degree} from ${edu.institution}`;
+      if (edu.field) contextPrompt += ` in ${edu.field}`;
+      contextPrompt += `\n`;
+    });
+  }
+
   return contextPrompt + '\n';
 }
 
@@ -352,6 +370,17 @@ function generateFinalInstructions(
   }
 
   instructions += '\nRemember: Every response must be personalized, actionable, and help them take a meaningful step forward in their career.';
+  
+  // Add specific instructions for profile enhancement questions
+  if (context.conversation.currentSession.topicFocus.includes('profile') || 
+      context.conversation.currentSession.topicFocus.includes('compelling')) {
+    instructions += '\n\nSPECIFIC GUIDANCE FOR PROFILE ENHANCEMENT:';
+    instructions += '\n- Analyze their actual experience, skills, and projects to provide specific recommendations';
+    instructions += '\n- Focus on quantifiable achievements and unique value propositions based on their background';
+    instructions += '\n- Suggest specific ways to highlight their hospitality industry expertise';
+    instructions += '\n- Recommend concrete actions to enhance their UX Research leadership profile';
+    instructions += '\n- Avoid generic advice about "completing profile sections" - give actionable content improvements';
+  }
 
   return instructions;
 }
@@ -369,8 +398,8 @@ export function generateProactiveSuggestions(context: EnrichedContext): string[]
     suggestions.push(brandentifierSuggestion);
   }
   
-  // Profile completion suggestions
-  if (context.user.profileCompleteness.score < 80) {
+  // Profile completion suggestions (only for genuinely incomplete profiles)
+  if (context.user.profileCompleteness.score < 60) {
     if (context.user.profileCompleteness.missingAreas.includes('projects')) {
       suggestions.push("I noticed you haven't added any projects yet. Would you like help describing your most impactful work?");
     }
@@ -378,6 +407,9 @@ export function generateProactiveSuggestions(context: EnrichedContext): string[]
     if (context.user.profileCompleteness.missingAreas.includes('skills')) {
       suggestions.push("Adding your key skills would help me provide more targeted career advice. Shall we work on that?");
     }
+  } else if (context.user.profileCompleteness.score >= 80) {
+    // For complete profiles, focus on enhancement rather than completion
+    suggestions.push("I can help you optimize your profile content to better showcase your unique value proposition");
   }
 
   // Skill development suggestions

@@ -234,7 +234,7 @@ function calculateProfileCompleteness(
   const sections = {
     basicInfo: profile?.name && profile?.title ? 1 : 0,
     workExperience: experiences.length > 0 ? 1 : 0,
-    skills: skills.length > 2 ? 1 : 0,
+    skills: skills.length > 0 ? 1 : 0,
     education: educations.length > 0 ? 1 : 0,
     projects: projects.length > 0 ? 1 : 0,
     aboutMe: profile?.aboutMe ? 1 : 0,
