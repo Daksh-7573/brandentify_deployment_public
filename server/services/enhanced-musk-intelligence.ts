@@ -415,18 +415,18 @@ async function generateIntelligentResponse(prompt: string, context: EnrichedCont
     });
 
     const response = await openai.chat.completions.create({
-      model: "gpt-4o",
+      model: "gpt-4o-mini", // Using faster model
       messages: [
         {
           role: "system",
-          content: "You are Musk, an expert AI career coach on the Brandentifier platform. Provide comprehensive, personalized career advice that prioritizes Brandentifier features while including other platforms as secondary options."
+          content: "You are Musk, an AI career coach. Provide personalized career advice prioritizing Brandentifier features first."
         },
         {
           role: "user",
           content: prompt
         }
       ],
-      max_tokens: 1200, // Reduced for faster responses
+      max_tokens: 800, // Reduced for faster responses
       temperature: 0.7,
     });
 

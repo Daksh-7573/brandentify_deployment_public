@@ -7428,6 +7428,11 @@ ${extractedText.substring(0, 5000)}
 
   const httpServer = createServer(app);
   
+  // Configure server timeouts for AI processing
+  httpServer.timeout = 60000; // 60 seconds
+  httpServer.keepAliveTimeout = 65000; // 65 seconds
+  httpServer.headersTimeout = 66000; // 66 seconds
+  
   // Setup WebSocket server for real-time messaging
   const wss = new WebSocketServer({ server: httpServer, path: '/ws' });
   
