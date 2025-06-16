@@ -398,6 +398,8 @@ Provide personalized, actionable career advice that's specific to their role and
       ],
       max_tokens: 1500,
       temperature: 0.7,
+    }, {
+      timeout: 15000 // 15 second timeout for complex career questions
     });
 
     const aiResponse = completion.choices[0]?.message?.content || "I'm here to help with your career development. Could you please provide more details about what you'd like guidance on?";
