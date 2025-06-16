@@ -114,7 +114,7 @@ export async function processEnhancedMuskRequest(request: EnhancedMuskRequest): 
     console.log(`[Enhanced Musk] Generated enhanced prompt (${enhancedPrompt.length} characters)`);
 
     // Step 6: Generate AI response using enhanced prompt
-    const aiResponse = await generateIntelligentResponse(enhancedPrompt, enrichedContext);
+    const aiResponse = await generateIntelligentResponse(enhancedPrompt, enrichedContext, request.message);
 
     // Step 7: Generate enhanced proactive suggestions
     const proactiveContext: ProactiveContext = {
@@ -192,12 +192,12 @@ export async function processEnhancedMuskRequest(request: EnhancedMuskRequest): 
 /**
  * Generate AI response using enhanced prompt
  */
-async function generateIntelligentResponse(prompt: string, context: EnrichedContext): Promise<string> {
+async function generateIntelligentResponse(prompt: string, context: EnrichedContext, message: string = ''): Promise<string> {
   try {
     console.log('[Enhanced Musk] Generating enhanced response with custom prompt');
     
     // Use the enhanced prompt with a simplified AI call
-    const fallbackResponse = generateContextualFallback(context);
+    const fallbackResponse = generateContextualFallback(context, message);
     
     // For now, return the contextual fallback enhanced with personalization
     // In a full implementation, this would use the enhanced prompt with the AI service
@@ -207,7 +207,7 @@ async function generateIntelligentResponse(prompt: string, context: EnrichedCont
     console.error('[Enhanced Musk] Error in intelligent response generation:', error);
     
     // Fallback response generation
-    return generateContextualFallback(context);
+    return generateContextualFallback(context, message);
   }
 }
 
