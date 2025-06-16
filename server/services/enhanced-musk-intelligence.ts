@@ -9,7 +9,7 @@ import OpenAI from 'openai';
 import { classifyIntent, analyzeConversationContext, MessageIntent } from './intent-classification';
 import { generatePersonaResponse, selectOptimalPersona } from './persona-engine';
 import { enrichUserContext, EnrichedContext } from './context-enricher';
-import { generateEnhancedPrompt, generateProactiveSuggestions } from './prompt-library';
+import { generateEnhancedPrompt } from './prompt-library';
 import { LocalAIService } from './local-ai-service';
 import { generateProactiveInsights, ProactiveContext } from './proactive-engine';
 import { getIndustryMentoring, enhanceResponseWithIndustryContext } from './industry-mentoring';
@@ -23,6 +23,20 @@ import {
   shouldRequestClarification,
   generateClarificationRequest 
 } from './reference-resolution';
+import { 
+  analyzePersonaNeed,
+  analyzeConversationFlow,
+  enhancePromptWithPersona,
+  PersonaAnalysis 
+} from './dynamic-persona-engine';
+import { 
+  generateProactiveSuggestions,
+  ProactiveInsight 
+} from './proactive-suggestion-engine';
+import { 
+  analyzeUserPatterns,
+  getPersonalizedGuidelines 
+} from './learning-pattern-recognition';
 
 export interface EnhancedMuskRequest {
   message: string;
@@ -60,11 +74,16 @@ export interface EnhancedMuskResponse {
  */
 export async function processEnhancedMuskRequest(request: EnhancedMuskRequest): Promise<EnhancedMuskResponse> {
   try {
-    console.log('[Enhanced Musk] Processing enhanced request for user:', request.userId);
+    console.log('[Enhanced Musk] Processing Phase 2 enhanced request for user:', request.userId);
     const userIdString = request.userId.toString();
     
     // Phase 1: Add user message to conversation memory
     addMessageToMemory(userIdString, 'user', request.message);
+    
+    // Phase 2: Analyze user patterns and update learning profile
+    const userPatterns = analyzeUserPatterns(userIdString);
+    const personalizedGuidelines = getPersonalizedGuidelines(userIdString);
+    console.log(`[Enhanced Musk] User patterns analyzed with confidence: ${userPatterns.confidence}`);
     
     // Phase 1: Check if clarification is needed for ambiguous input
     if (shouldRequestClarification(userIdString, request.message)) {
@@ -97,6 +116,15 @@ export async function processEnhancedMuskRequest(request: EnhancedMuskRequest): 
       processedMessage = await enhancedReferenceResolution(userIdString, request.message);
       console.log(`[Enhanced Musk] Message after reference resolution: "${processedMessage}"`);
     }
+
+    // Phase 2: Dynamic persona analysis and selection
+    const personaAnalysis = analyzePersonaNeed(userIdString, processedMessage, request.userProfile);
+    const conversationFlow = analyzeConversationFlow(userIdString);
+    console.log(`[Enhanced Musk] Selected persona: ${personaAnalysis.selectedPersona.name} with confidence ${personaAnalysis.confidence}`);
+
+    // Phase 2: Generate proactive suggestions
+    const proactiveInsight = generateProactiveSuggestions(userIdString, request.userProfile, processedMessage);
+    console.log(`[Enhanced Musk] Generated ${proactiveInsight.suggestions.length} proactive suggestions`);
     
     // Step 1: Enrich user context with comprehensive data analysis
     const enrichedContext = await enrichUserContext(
@@ -112,29 +140,40 @@ export async function processEnhancedMuskRequest(request: EnhancedMuskRequest): 
 
     console.log('[Enhanced Musk] Context enriched with profile completeness:', enrichedContext.user.profileCompleteness.score + '%');
 
-    // Step 2: Generate contextual response using conversation memory
+    // Step 2: Generate persona-enhanced contextual response
     const conversationContext = formatConversationForAI(userIdString, processedMessage);
-    const response = await generateContextualResponse(enrichedContext, processedMessage, conversationContext);
+    const response = await generatePersonaAwareResponse(
+      enrichedContext, 
+      processedMessage, 
+      conversationContext, 
+      personaAnalysis, 
+      conversationFlow,
+      personalizedGuidelines,
+      proactiveInsight
+    );
 
     // Phase 1: Add Musk response to conversation memory
-    addMessageToMemory(userIdString, 'musk', response);
+    addMessageToMemory(userIdString, 'musk', response, personaAnalysis.selectedPersona.name);
 
-    // Step 3: Extract metadata for response tracking
+    // Step 3: Extract enhanced metadata for response tracking
     const metadata = {
       intent: 'career_guidance' as any,
-      persona: 'career_strategist',
-      confidence: 0.9,
-      proactiveSuggestions: [],
+      persona: personaAnalysis.selectedPersona.name,
+      confidence: personaAnalysis.confidence,
+      proactiveSuggestions: proactiveInsight.suggestions.slice(0, 3), // Top 3 suggestions
       contextUsed: {
         profileCompleteness: enrichedContext.user.profileCompleteness.score,
         keyInsights: extractKeyInsights(enrichedContext),
-        recommendedActions: [],
+        recommendedActions: proactiveInsight.suggestions.map(s => s.actionText),
         conversationMemoryUsed: true,
-        referenceResolutionApplied: processedMessage !== request.message
+        referenceResolutionApplied: processedMessage !== request.message,
+        personaSelected: personaAnalysis.selectedPersona.name,
+        userPatternConfidence: userPatterns.confidence,
+        conversationStage: conversationFlow.conversationStage
       }
     };
 
-    console.log('[Enhanced Musk] Enhanced response generated successfully with conversation memory');
+    console.log('[Enhanced Musk] Phase 2 enhanced response generated with persona awareness and proactive insights');
     
     return {
       response,
@@ -161,6 +200,69 @@ export async function processEnhancedMuskRequest(request: EnhancedMuskRequest): 
         }
       }
     };
+  }
+}
+
+/**
+ * Generate persona-aware response with Phase 2 enhancements
+ */
+async function generatePersonaAwareResponse(
+  context: EnrichedContext, 
+  message: string, 
+  conversationContext: string,
+  personaAnalysis: PersonaAnalysis,
+  conversationFlow: any,
+  personalizedGuidelines: any,
+  proactiveInsight: ProactiveInsight
+): Promise<string> {
+  try {
+    console.log(`[Enhanced Musk] Generating ${personaAnalysis.selectedPersona.name} response`);
+    
+    const userName = context.user.basicInfo.name;
+    const title = context.user.basicInfo.title;
+    const industry = context.user.basicInfo.industry || 'your field';
+    
+    // Build enhanced prompt with persona awareness
+    const basePrompt = `Generate comprehensive career advice for ${userName}, a ${title} in ${industry}.
+
+User Context:
+- Name: ${userName}
+- Title: ${title}
+- Industry: ${industry}
+- Location: ${context.user.basicInfo.location || 'your area'}
+- Looking for: ${context.user.basicInfo.lookingFor || 'career_advice'}
+- User Message: "${message}"
+
+${conversationContext ? `Previous Conversation:
+${conversationContext}
+
+` : ''}Personalized Response Guidelines:
+- Length: ${personalizedGuidelines.responseLength}
+- Tone: ${personalizedGuidelines.tone}
+- Focus Areas: ${personalizedGuidelines.focus.join(', ')}
+- Approach: ${personalizedGuidelines.approachStyle}
+
+${proactiveInsight.suggestions.length > 0 ? `Proactive Suggestions to Include:
+${proactiveInsight.suggestions.slice(0, 2).map(s => `- ${s.title}: ${s.description}`).join('\n')}
+
+` : ''}Provide specific, actionable advice that:
+1. Addresses their specific question or concern
+2. Uses their industry (${industry}) and role (${title}) context
+3. Prioritizes Brandentifier platform recommendations first
+4. Includes concrete next steps they can take
+5. Maintains the ${personaAnalysis.selectedPersona.name} approach
+6. References and builds upon previous conversation points when relevant
+
+Make the response personal and relevant to their career level and industry.`;
+
+    // Enhance prompt with persona-specific guidelines
+    const enhancedPrompt = enhancePromptWithPersona(basePrompt, personaAnalysis, conversationFlow);
+    
+    return await generateIntelligentResponse(enhancedPrompt, context, message);
+    
+  } catch (error) {
+    console.error('[Enhanced Musk] Error in generatePersonaAwareResponse:', error);
+    return await generateContextualResponse(context, message, conversationContext);
   }
 }
 
