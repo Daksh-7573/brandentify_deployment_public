@@ -349,10 +349,38 @@ export async function processWithBackwardCompatibility(
 
   // Fallback to basic processing
   console.log('[Enhanced Musk] Using basic processing');
-  const basicResponse = await generateFallbackResponse(message, userProfile);
+  const basicResponse = generateBasicFallback(message, userProfile);
   
   return {
     response: basicResponse,
     enhanced: false
   };
+}
+
+/**
+ * Generate basic fallback response when enhanced system fails
+ */
+function generateBasicFallback(message: string, userProfile: any): string {
+  const userName = userProfile?.name || 'there';
+  const userTitle = userProfile?.title || 'professional';
+  
+  // Simple contextual responses based on message content
+  if (message.toLowerCase().includes('transition') || message.toLowerCase().includes('switch')) {
+    return `Hi ${userName}, career transitions require strategic planning. As a ${userTitle}, you already have valuable experience that can transfer to new roles. I'd recommend identifying your transferable skills, researching target industries, and building relevant connections. What specific area are you looking to transition into?`;
+  }
+  
+  if (message.toLowerCase().includes('stuck') || message.toLowerCase().includes('confidence')) {
+    return `${userName}, feeling stuck is a common experience in career development. Your background as a ${userTitle} shows you've already achieved significant milestones. Sometimes we need to step back and reassess our goals. What specific challenges are you facing right now?`;
+  }
+  
+  if (message.toLowerCase().includes('skills') || message.toLowerCase().includes('develop')) {
+    return `Great question, ${userName}! Skill development is crucial for career growth. Based on your role as a ${userTitle}, I'd suggest focusing on both technical and soft skills relevant to your field. What particular skills are you most interested in developing?`;
+  }
+  
+  if (message.toLowerCase().includes('goals') || message.toLowerCase().includes('planning')) {
+    return `${userName}, setting clear career goals is essential for success. As a ${userTitle}, you're in a good position to plan your next steps strategically. I recommend the SMART goals framework - making them Specific, Measurable, Achievable, Relevant, and Time-bound. What timeframe are you considering for your career goals?`;
+  }
+  
+  // General career advice response
+  return `Hello ${userName}! I'm here to help with your career development. As a ${userTitle}, you have unique strengths and opportunities. I can provide guidance on career transitions, skill development, goal setting, and professional growth strategies. What specific career challenge would you like to discuss?`;
 }

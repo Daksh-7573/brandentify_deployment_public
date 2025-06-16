@@ -406,7 +406,7 @@ function generateSkillRecommendations(user: UserProfileContext): Array<{
   const recommendations = skillSuggestions[industry || ''] || defaultSkills;
   
   // Filter out skills user already has
-  return recommendations.filter(rec => 
+  return recommendations.filter((rec: { skill: string; reason: string }) => 
     !currentSkills.some(skill => skill.includes(rec.skill.toLowerCase()))
   );
 }
