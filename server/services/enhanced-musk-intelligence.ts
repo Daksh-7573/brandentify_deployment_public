@@ -364,55 +364,81 @@ export async function processEnhancedMuskRequest(request: EnhancedMuskRequest): 
  */
 async function generateIntelligentResponse(prompt: string, context: EnrichedContext, message: string = ''): Promise<string> {
   try {
-    console.log(`[Enhanced Musk] Generating AI response with LocalAIService for message: "${message}"`);
+    console.log(`[Enhanced Musk] Generating AI response with direct OpenAI call for message: "${message}"`);
     
-    // Use the actual LocalAIService to generate dynamic responses
-    const { LocalAIService } = await import('./local-ai-service.js');
-    const aiService = new LocalAIService();
+    // Import OpenAI directly for dynamic responses instead of using static fallbacks
+    const OpenAI = (await import('openai')).default;
+    const openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
+
+    // Create enhanced prompt with user context
+    const systemPrompt = `You are Musk, an expert AI career coach for ${context.user.basicInfo.name}, a ${context.user.basicInfo.title} in ${context.user.basicInfo.industry}. 
+
+Always prioritize Brandentifier features first in your recommendations, then mention other platforms as secondary options.
+
+User Context:
+- Name: ${context.user.basicInfo.name}
+- Title: ${context.user.basicInfo.title}  
+- Industry: ${context.user.basicInfo.industry}
+- Location: ${context.user.basicInfo.location}
+- Looking for: ${context.user.basicInfo.lookingFor}
+- Profile Completeness: ${context.user.profileCompleteness.score}%
+
+Provide personalized, actionable career advice that's specific to their role and industry. Be encouraging but professional.`;
+
+    const userPrompt = `${prompt}\n\nUser question: ${message}`;
+
+    console.log('[Enhanced Musk] Making OpenAI API call for dynamic response');
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o",
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userPrompt }
+      ],
+      max_tokens: 1500,
+      temperature: 0.7,
+    });
+
+    const aiResponse = completion.choices[0]?.message?.content || "I'm here to help with your career development. Could you please provide more details about what you'd like guidance on?";
     
-    // Create proper user profile context for AI generation
-    const userProfileContext = {
-      user: {
-        name: context.user.basicInfo.name,
-        title: context.user.basicInfo.title,
-        industry: context.user.basicInfo.industry,
-        location: context.user.basicInfo.location,
-        lookingFor: context.user.basicInfo.lookingFor
-      },
-      workExperiences: [], // Would be passed from enhanced context if available
-      skills: [], // Would be passed from enhanced context if available
-      educations: [], // Would be passed from enhanced context if available
-      adviceType: 'career_guidance',
-      customAdviceText: `${prompt}\n\nUser question: ${message}`
-    };
-    
-    console.log('[Enhanced Musk] Calling LocalAIService for dynamic response generation');
-    const aiResponse = await aiService.generateCareerAdvice(userProfileContext);
-    
-    console.log(`[Enhanced Musk] AI response generated (${aiResponse.length} characters)`);
+    console.log(`[Enhanced Musk] OpenAI response generated (${aiResponse.length} characters)`);
     console.log(`[Enhanced Musk] Response preview: ${aiResponse.substring(0, 100)}...`);
     
     return aiResponse;
 
   } catch (error) {
-    console.error('[Enhanced Musk] Error in AI response generation:', error);
+    console.error('[Enhanced Musk] Error in OpenAI response generation:', error);
     
-    // Only fallback to contextual response if AI fails
-    console.log('[Enhanced Musk] Falling back to basic AI response due to error');
+    // Fallback to local AI if OpenAI fails
+    console.log('[Enhanced Musk] Falling back to local AI due to OpenAI error');
     try {
-      const { generateCareerAdvice } = await import('./local-ai-service.js');
-      const basicContext = {
-        name: context.user.basicInfo.name || 'User',
-        title: context.user.basicInfo.title || 'Professional',
-        industry: context.user.basicInfo.industry || 'your field',
-        adviceType: 'career_guidance',
-        message: message
-      };
-      return await generateCareerAdvice(basicContext);
-    } catch (fallbackError) {
-      console.error('[Enhanced Musk] Even fallback AI failed:', fallbackError);
-      return `I'm here to help with your career development. Could you please rephrase your question or provide more specific details about what you'd like guidance on?`;
+      const fetch = (await import('node-fetch')).default;
+      const response = await fetch('http://localhost:11434/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'llama3.2:3b',
+          prompt: `You are a career advisor helping ${context.user.basicInfo.name}, a ${context.user.basicInfo.title} in ${context.user.basicInfo.industry}. 
+
+User question: ${message}
+
+Provide helpful, personalized career advice:`,
+          stream: false
+        })
+      });
+      
+      if (response.ok) {
+        const data = await response.json() as any;
+        const localResponse = data.response || "I'm here to help with your career development.";
+        console.log(`[Enhanced Musk] Local AI response generated (${localResponse.length} characters)`);
+        return localResponse;
+      }
+    } catch (localError) {
+      console.error('[Enhanced Musk] Local AI also failed:', localError);
     }
+    
+    return `Hello ${context.user.basicInfo.name}! I'm here to help with your career as a ${context.user.basicInfo.title}. Could you please provide more specific details about what career guidance you're looking for?`;
   }
 }
 
