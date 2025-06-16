@@ -364,37 +364,55 @@ export async function processEnhancedMuskRequest(request: EnhancedMuskRequest): 
  */
 async function generateIntelligentResponse(prompt: string, context: EnrichedContext, message: string = ''): Promise<string> {
   try {
-    console.log(`[Enhanced Musk] Generating enhanced response with custom prompt for message: "${message}"`);
+    console.log(`[Enhanced Musk] Generating AI response with LocalAIService for message: "${message}"`);
     
-    // Generate the contextual response (which includes question-specific logic)
-    console.log('[Enhanced Musk] About to call generateContextualFallback');
-    const fallbackResponse = generateContextualFallback(context, message);
-    console.log(`[Enhanced Musk] Generated fallback response length: ${fallbackResponse.length}`);
-    console.log(`[Enhanced Musk] Response preview: ${fallbackResponse.substring(0, 100)}...`);
+    // Use the actual LocalAIService to generate dynamic responses
+    const { LocalAIService } = await import('./local-ai-service.js');
+    const aiService = new LocalAIService();
     
-    // Check if this is a question-specific response (contains specific formatting)
-    const isQuestionSpecific = fallbackResponse.includes('**') || 
-                              fallbackResponse.includes('Corporate Executive') ||
-                              fallbackResponse.includes('Technical Skills Enhancement') ||
-                              fallbackResponse.includes('Strategic Networking');
+    // Create proper user profile context for AI generation
+    const userProfileContext = {
+      user: {
+        name: context.user.basicInfo.name,
+        title: context.user.basicInfo.title,
+        industry: context.user.basicInfo.industry,
+        location: context.user.basicInfo.location,
+        lookingFor: context.user.basicInfo.lookingFor
+      },
+      workExperiences: [], // Would be passed from enhanced context if available
+      skills: [], // Would be passed from enhanced context if available
+      educations: [], // Would be passed from enhanced context if available
+      adviceType: 'career_guidance',
+      customAdviceText: `${prompt}\n\nUser question: ${message}`
+    };
     
-    console.log(`[Enhanced Musk] Is question-specific: ${isQuestionSpecific}`);
+    console.log('[Enhanced Musk] Calling LocalAIService for dynamic response generation');
+    const aiResponse = await aiService.generateCareerAdvice(userProfileContext);
     
-    // If it's a question-specific response, return it directly without generic enhancement
-    if (isQuestionSpecific) {
-      console.log('[Enhanced Musk] Using question-specific response without generic enhancement');
-      return fallbackResponse;
-    }
+    console.log(`[Enhanced Musk] AI response generated (${aiResponse.length} characters)`);
+    console.log(`[Enhanced Musk] Response preview: ${aiResponse.substring(0, 100)}...`);
     
-    // For generic responses, apply personalization enhancement
-    console.log('[Enhanced Musk] Applying personalization enhancement to generic response');
-    return enhanceResponseWithPersonalization(fallbackResponse, context);
+    return aiResponse;
 
   } catch (error) {
-    console.error('[Enhanced Musk] Error in intelligent response generation:', error);
+    console.error('[Enhanced Musk] Error in AI response generation:', error);
     
-    // Fallback response generation
-    return generateContextualFallback(context, message);
+    // Only fallback to contextual response if AI fails
+    console.log('[Enhanced Musk] Falling back to basic AI response due to error');
+    try {
+      const { generateCareerAdvice } = await import('./local-ai-service.js');
+      const basicContext = {
+        name: context.user.basicInfo.name || 'User',
+        title: context.user.basicInfo.title || 'Professional',
+        industry: context.user.basicInfo.industry || 'your field',
+        adviceType: 'career_guidance',
+        message: message
+      };
+      return await generateCareerAdvice(basicContext);
+    } catch (fallbackError) {
+      console.error('[Enhanced Musk] Even fallback AI failed:', fallbackError);
+      return `I'm here to help with your career development. Could you please rephrase your question or provide more specific details about what you'd like guidance on?`;
+    }
   }
 }
 
