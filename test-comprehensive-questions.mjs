@@ -37,6 +37,16 @@ async function testComprehensiveQuestions() {
       question: "how to apply the job?",
       expectedKeywords: ["Application Strategy", "Director-Level Roles", "business outcomes"],
       category: "Job Application"
+    },
+    {
+      question: "career change advice",
+      expectedKeywords: ["Executive Job Search Strategy", "strategic roadmap", "high-level position"],
+      category: "Career Change"
+    },
+    {
+      question: "goal to get new job in high position",
+      expectedKeywords: ["Executive Job Search Strategy", "Target Identification", "hospitality executives"],
+      category: "Job Search Goals"
     }
   ];
 
