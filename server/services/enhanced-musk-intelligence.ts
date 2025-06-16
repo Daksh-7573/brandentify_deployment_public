@@ -106,7 +106,14 @@ export async function processEnhancedMuskRequest(request: EnhancedMuskRequest): 
       return {
         response: activeGuidanceNeeds.guidancePrompt,
         metadata: {
-          intent: { type: 'active_guidance', confidence: 0.9 },
+          intent: {
+            type: 'active_guidance' as const,
+            confidence: 0.9,
+            emotionalState: 'determined',
+            advisorPersona: 'strategist',
+            urgency: 'medium',
+            subCategories: [activeGuidanceNeeds.taskType, 'structured-guidance']
+          },
           persona: 'strategist',
           confidence: 0.9,
           proactiveSuggestions: [],
@@ -222,6 +229,10 @@ export async function processEnhancedMuskRequest(request: EnhancedMuskRequest): 
       intent.type
     );
 
+    // Store conversation exchange for future context
+    addConversationExchange(request.userId, 'User', request.message, intent.type);
+    addConversationExchange(request.userId, 'Musk', finalResponse, optimalPersona);
+
     // Compile response metadata
     const metadata = {
       intent,
@@ -237,8 +248,10 @@ export async function processEnhancedMuskRequest(request: EnhancedMuskRequest): 
       }
     };
 
+    console.log(`[Enhanced Musk] Final response length: ${finalResponse.length} characters`);
+
     return {
-      response: enhancedResponse,
+      response: finalResponse,
       metadata
     };
 
