@@ -12,6 +12,17 @@ import { generateEnhancedPrompt, generateProactiveSuggestions } from './prompt-l
 import { LocalAIService } from './local-ai-service';
 import { generateProactiveInsights, ProactiveContext } from './proactive-engine';
 import { getIndustryMentoring, enhanceResponseWithIndustryContext } from './industry-mentoring';
+import { 
+  getConversationMemory, 
+  addConversationExchange, 
+  getFormattedConversationHistory 
+} from './conversation-memory';
+import { 
+  analyzeFollowUpContext, 
+  detectActiveGuidanceNeeds, 
+  rewriteMessageWithContext,
+  generateContextAwarePrefix 
+} from './follow-up-handler';
 
 export interface EnhancedMuskRequest {
   message: string;
@@ -51,7 +62,71 @@ export async function processEnhancedMuskRequest(request: EnhancedMuskRequest): 
   console.log('[Enhanced Musk] Processing request with intelligent persona system');
   
   try {
-    // Step 1: Classify user intent and analyze conversation context
+    // Step 1: Analyze follow-up context and conversation memory
+    const followUpAnalysis = analyzeFollowUpContext(request.message, request.userId);
+    const activeGuidanceNeeds = detectActiveGuidanceNeeds(request.message, request.userId);
+    const conversationMemory = getConversationMemory(request.userId);
+    
+    console.log(`[Enhanced Musk] Follow-up analysis: isFollowUp=${followUpAnalysis.isFollowUp}, needsClarification=${followUpAnalysis.needsClarification}, confidence=${followUpAnalysis.confidence}`);
+
+    // Step 2: Handle clarification or active guidance needs
+    if (followUpAnalysis.needsClarification && followUpAnalysis.clarificationPrompt) {
+      console.log('[Enhanced Musk] Providing clarification prompt');
+      addConversationExchange(request.userId, 'User', request.message);
+      addConversationExchange(request.userId, 'Musk', followUpAnalysis.clarificationPrompt);
+      
+      return {
+        response: followUpAnalysis.clarificationPrompt,
+        metadata: {
+          intent: { type: 'clarification_needed', confidence: followUpAnalysis.confidence },
+          persona: 'coach',
+          confidence: followUpAnalysis.confidence,
+          proactiveSuggestions: [],
+          contextUsed: {
+            profileCompleteness: 0,
+            keyInsights: ['Clarification needed for better guidance'],
+            recommendedActions: ['Provide more specific details']
+          }
+        }
+      };
+    }
+
+    if (activeGuidanceNeeds.isGuidanceNeeded && activeGuidanceNeeds.guidancePrompt) {
+      console.log(`[Enhanced Musk] Providing active guidance for ${activeGuidanceNeeds.taskType}`);
+      addConversationExchange(request.userId, 'User', request.message);
+      addConversationExchange(request.userId, 'Musk', activeGuidanceNeeds.guidancePrompt);
+      
+      return {
+        response: activeGuidanceNeeds.guidancePrompt,
+        metadata: {
+          intent: { type: 'active_guidance', confidence: 0.9 },
+          persona: 'strategist',
+          confidence: 0.9,
+          proactiveSuggestions: [],
+          contextUsed: {
+            profileCompleteness: 0,
+            keyInsights: [`Structured guidance needed for ${activeGuidanceNeeds.taskType}`],
+            recommendedActions: activeGuidanceNeeds.requiredInfo
+          }
+        }
+      };
+    }
+
+    // Step 3: Process message with context enhancement
+    let processedMessage = request.message;
+    let contextPrefix = '';
+    
+    if (followUpAnalysis.isFollowUp) {
+      processedMessage = followUpAnalysis.expandedMessage || rewriteMessageWithContext(request.message, conversationMemory);
+      contextPrefix = generateContextAwarePrefix(request.message, conversationMemory);
+      console.log(`[Enhanced Musk] Enhanced follow-up message: "${processedMessage}"`);
+    }
+
+    // Step 4: Include conversation history context
+    const conversationHistory = getFormattedConversationHistory(request.userId, 3);
+    console.log(`[Enhanced Musk] Including conversation context: ${conversationHistory.length} characters`);
+
+    // Step 5: Classify user intent and analyze conversation context
     const intent = classifyIntent(request.message, {
       userProfile: {
         currentRole: request.userProfile?.title,
