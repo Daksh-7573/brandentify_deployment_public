@@ -7,6 +7,7 @@ import { analyzeResume } from './services/fixed-openai-service';
 import { storage } from './storage';
 import { generatePersonalizedResponse, MuskContext } from './services/musk-intelligence-system';
 import { handleResumeUploadFixed } from './routes-musk-resume-fix';
+import { processWithBackwardCompatibility } from './services/enhanced-musk-intelligence';
 
 // Initialize global variable for resume context storage and user interaction memory
 declare global {
@@ -402,8 +403,59 @@ export const handleMuskChat = async (req: Request, res: Response) => {
       }
     }
     
-    // Generate response using the appropriate AI model
-    const response = await generateMuskResponse(message, enrichedContext);
+    // Try enhanced persona system first, fallback to original system
+    let response: string;
+    let enhanced = false;
+    let metadata: any = {};
+    
+    if (userId) {
+      try {
+        console.log('[Musk Chat] Attempting enhanced persona response');
+        
+        // Gather conversation history from memory
+        const conversationHistory = global.userInteractionMemory?.[userId.toString()]?.messageHistory || [];
+        
+        // Get user data for enhanced processing
+        const userProfile = enrichedContext.userData?.profile;
+        const userExperiences = enrichedContext.userData?.experiences || [];
+        const userSkills = enrichedContext.userData?.skills || [];
+        const userEducations = enrichedContext.userData?.educations || [];
+        const userProjects = enrichedContext.userData?.projects || [];
+        
+        // Process with enhanced intelligence
+        const enhancedResult = await processWithBackwardCompatibility(
+          message,
+          userId,
+          userProfile,
+          userExperiences,
+          userSkills,
+          userEducations,
+          userProjects,
+          conversationHistory.map(h => ({
+            message: h.message,
+            response: h.response,
+            timestamp: h.timestamp
+          }))
+        );
+        
+        response = enhancedResult.response;
+        enhanced = enhancedResult.enhanced;
+        metadata = enhancedResult.metadata || {};
+        
+        if (enhanced) {
+          console.log(`[Musk Chat] Enhanced persona system used: ${metadata.persona}`);
+        } else {
+          console.log('[Musk Chat] Fallback to basic processing');
+        }
+        
+      } catch (error) {
+        console.error('[Musk Chat] Enhanced system failed, using original system:', error);
+        response = await generateMuskResponse(message, enrichedContext);
+      }
+    } else {
+      // No user ID, use original system
+      response = await generateMuskResponse(message, enrichedContext);
+    }
     
     // Update user interaction memory with this conversation
     if (userId) {
@@ -413,16 +465,27 @@ export const handleMuskChat = async (req: Request, res: Response) => {
       }
     }
     
-    // Return the response
+    // Return the response with enhanced metadata
     return res.status(200).json({
       id: 'response-' + Date.now(),
       message: response,
       timestamp: new Date(),
+      enhanced,
+      ...(enhanced && metadata ? {
+        persona: metadata.persona,
+        confidence: metadata.confidence,
+        intent: metadata.intent?.type,
+        proactiveSuggestions: metadata.proactiveSuggestions
+      } : {}),
       contextUsed: {
         dataSource: enrichedContext.dataSource || 'profile',
         hasResumeData: !!enrichedContext.resumeData,
         detectedRole: enrichedContext.resumeData?.detectedRole || null,
-        hasUserMemory: !!enrichedContext.userMemory
+        hasUserMemory: !!enrichedContext.userMemory,
+        ...(enhanced && metadata ? {
+          profileCompleteness: metadata.contextUsed?.profileCompleteness,
+          keyInsights: metadata.contextUsed?.keyInsights
+        } : {})
       }
     });
   } catch (error) {
