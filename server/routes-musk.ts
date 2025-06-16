@@ -469,31 +469,35 @@ export const handleMuskChat = async (req: Request, res: Response) => {
     }
     
     // Return the response with enhanced metadata
-    return res.status(200).json({
-      id: 'response-' + Date.now(),
-      message: response,
-      timestamp: new Date(),
-      enhanced,
-      ...(enhanced && metadata ? {
-        persona: metadata.persona,
-        confidence: metadata.confidence,
-        intent: metadata.intent?.type,
-        proactiveSuggestions: metadata.proactiveSuggestions
-      } : {}),
-      contextUsed: {
-        dataSource: enrichedContext.dataSource || 'profile',
-        hasResumeData: !!enrichedContext.resumeData,
-        detectedRole: enrichedContext.resumeData?.detectedRole || null,
-        hasUserMemory: !!enrichedContext.userMemory,
+    if (!res.headersSent) {
+      return res.status(200).json({
+        id: 'response-' + Date.now(),
+        message: response,
+        timestamp: new Date(),
+        enhanced,
         ...(enhanced && metadata ? {
-          profileCompleteness: metadata.contextUsed?.profileCompleteness,
-          keyInsights: metadata.contextUsed?.keyInsights
-        } : {})
-      }
-    });
+          persona: metadata.persona,
+          confidence: metadata.confidence,
+          intent: metadata.intent?.type,
+          proactiveSuggestions: metadata.proactiveSuggestions
+        } : {}),
+        contextUsed: {
+          dataSource: enrichedContext.dataSource || 'profile',
+          hasResumeData: !!enrichedContext.resumeData,
+          detectedRole: enrichedContext.resumeData?.detectedRole || null,
+          hasUserMemory: !!enrichedContext.userMemory,
+          ...(enhanced && metadata ? {
+            profileCompleteness: metadata.contextUsed?.profileCompleteness,
+            keyInsights: metadata.contextUsed?.keyInsights
+          } : {})
+        }
+      });
+    }
   } catch (error) {
     console.error("Error in Musk chat handler:", error);
-    return res.status(500).json({ error: "Failed to process chat request" });
+    if (!res.headersSent) {
+      return res.status(500).json({ error: "Failed to process chat request" });
+    }
   }
 };
 
