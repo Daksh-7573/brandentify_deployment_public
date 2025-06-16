@@ -706,12 +706,16 @@ Use action verbs like "Led," "Transformed," "Optimized," and "Delivered" to emph
     }
     
     // For networking questions, use full OpenAI intelligence instead of static responses
+    try {
     if (messageLower.includes('network') || messageLower.includes('nework') || messageLower.includes('netowrk') || messageLower.includes('connect') || 
         (messageLower.includes('platform') && (messageLower.includes('network') || messageLower.includes('nework') || messageLower.includes('netowrk'))) ||
         messageLower.includes('networking') || messageLower.includes('platforms ar') || messageLower.includes('brandentifier') || messageLower.includes('linkedin')) {
       console.log('[Enhanced Musk] Detected networking question - using OpenAI for dynamic response');
       
       // Generate dynamic networking advice using OpenAI
+      const location = context.user.basicInfo.location || 'your area';
+      const lookingFor = context.user.basicInfo.lookingFor || 'career_advice';
+      
       const networkingPrompt = `Generate comprehensive networking advice for ${userName}, a ${title} in ${industry}. 
 
 User Context:
@@ -730,7 +734,7 @@ Provide specific, actionable networking strategies that:
 
 Make the response personal, encouraging, and professional. Include specific examples relevant to their industry and role.`;
 
-      return await generateIntelligentResponse(networkingPrompt, context, message);
+      return await generateIntelligentResponse(networkingPrompt, context, currentMessage);
     }
     
     // All other career questions should use OpenAI for dynamic responses
@@ -741,8 +745,8 @@ User Context:
 - Title: ${title}
 - Industry: ${industry}
 - Location: ${location}
-- Looking for: ${lookingFor}
-- User Message: "${message}"
+- Looking for: ${context.user.basicInfo.lookingFor || 'career_advice'}
+- User Message: "${currentMessage}"
 
 Provide specific, actionable advice that:
 1. Addresses their specific question or concern
@@ -753,27 +757,11 @@ Provide specific, actionable advice that:
 
 Make the response personal and relevant to their career level and industry.`;
 
-    return await generateIntelligentResponse(careerPrompt, context, message);
+    return await generateIntelligentResponse(careerPrompt, context, currentMessage);
   } catch (error) {
     console.error('[Enhanced Musk] Error in generateContextualResponse:', error);
-    return generateContextualFallback(context, message);
+    return generateContextualFallback(context, currentMessage);
   }
-}
-
-  // Standard career guidance for non-profile questions
-  let fallback = `${userName}, I understand you're looking for career guidance. `;
-
-  if (experienceLevel === 'entry') {
-    fallback += `As someone early in your career in ${industry}, focus on building foundational skills and gaining diverse experience. `;
-  } else if (experienceLevel === 'mid') {
-    fallback += `At your career stage in ${industry}, consider specializing in key areas while developing leadership skills. `;
-  } else {
-    fallback += `With your senior experience in ${industry}, you're well-positioned to mentor others while expanding into strategic roles. `;
-  }
-
-  fallback += 'I\'m here to provide specific guidance once you share more details about your goals.';
-
-  return fallback;
 }
 
 /**
