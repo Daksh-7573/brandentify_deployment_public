@@ -245,21 +245,25 @@ function generateContextualFallback(context: EnrichedContext): string {
   const industry = context.user.basicInfo.industry || 'your field';
   const experienceLevel = context.user.basicInfo.experienceLevel;
   
-  // Check if this is about profile enhancement
-  const isProfileQuestion = context.conversation.currentSession.topicFocus.some(topic => 
-    topic.includes('profile') || topic.includes('compelling') || topic.includes('showcase')
-  );
+  // Check if this is about profile enhancement based on message content
+  const userMessage = context.conversation.currentSession.lastMessage || '';
+  const isProfileQuestion = userMessage.toLowerCase().includes('profile') || 
+                           userMessage.toLowerCase().includes('compelling') ||
+                           userMessage.toLowerCase().includes('showcase') ||
+                           userMessage.toLowerCase().includes('enhance') ||
+                           userMessage.toLowerCase().includes('improve') ||
+                           userMessage.toLowerCase().includes('better');
 
   if (isProfileQuestion && context.user.profileCompleteness.score >= 75) {
     // Generate specific profile enhancement advice
-    let advice = `${userName}, as a ${title} in ${industry}, here are specific ways to make your profile more compelling:\n\n`;
+    let advice = `${userName}, as a ${title || 'professional'} in ${industry}, here are specific ways to make your profile more compelling:\n\n`;
     
     // Experience-specific advice
     if (context.user.professional.experiences.length > 0) {
       advice += `**Experience Enhancement:**\n`;
       advice += `- Quantify your impact with specific metrics (team size, budget managed, efficiency improvements)\n`;
       advice += `- Highlight cross-functional collaboration and stakeholder management achievements\n`;
-      if (title.includes('Director') || title.includes('Senior')) {
+      if (title && (title.includes('Director') || title.includes('Senior'))) {
         advice += `- Emphasize strategic initiatives you've led and their business outcomes\n`;
       }
       advice += `\n`;
