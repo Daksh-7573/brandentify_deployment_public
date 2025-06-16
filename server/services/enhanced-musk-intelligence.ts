@@ -295,7 +295,42 @@ function generateContextualFallback(context: EnrichedContext, currentMessage: st
     console.log(`[Enhanced Musk] Analyzing question: "${currentMessage}"`);
     console.log(`[Enhanced Musk] Message keywords: ${messageLower}`);
     
-    // Job application questions (check first as high priority)
+    // Job search and career goal questions (check first as highest priority)
+    if ((messageLower.includes('job') && (messageLower.includes('get') || messageLower.includes('find') || messageLower.includes('search') || messageLower.includes('goal'))) || 
+        (messageLower.includes('new') && messageLower.includes('position')) ||
+        (messageLower.includes('career') && (messageLower.includes('goal') || messageLower.includes('change') || messageLower.includes('move'))) ||
+        messageLower.includes('job search')) {
+      console.log('[Enhanced Musk] Detected job search/career goal question');
+      return `${userName}, here's your strategic roadmap to securing a high-level position as a ${title} in ${industry}:
+
+**Executive Job Search Strategy:**
+• **Target Identification** - Focus on VP/SVP roles or lateral Director positions with expanded scope
+• **Market Research** - Analyze ${industry} leaders, identify growing companies needing UX transformation
+• **Timeline Planning** - Executive searches typically take 6-12 months, plan accordingly
+• **Personal Branding** - Establish thought leadership through industry publications and speaking engagements
+
+**Positioning for High-Level Roles:**
+• **Value Proposition** - Articulate how you transform guest experiences into business growth
+• **Executive Presence** - Develop C-suite communication skills and strategic thinking
+• **Network Activation** - Leverage relationships with hospitality executives and board members
+• **Portfolio Enhancement** - Showcase transformational projects with measurable ROI
+
+**Search Execution for ${industry} Leadership:**
+• Work with executive search firms specializing in hospitality and customer experience
+• Target companies undergoing digital transformation or customer experience initiatives
+• Demonstrate expertise in both traditional hospitality and emerging travel technologies
+• Prepare for board-level presentations and strategic planning discussions
+
+**Immediate Action Plan:**
+• Update your Brandentifier profile to highlight strategic achievements
+• Connect with hospitality C-suite executives through industry events
+• Develop case studies showing business impact of your UX initiatives
+• Consider hospitality-focused executive coaching to refine your leadership narrative
+
+Your experience in hospitality UX research positions you perfectly for senior leadership roles where customer experience drives business strategy.`;
+    }
+    
+    // Job application questions (check second as high priority)
     if ((messageLower.includes('apply') && messageLower.includes('job')) || messageLower.includes('application')) {
       console.log('[Enhanced Musk] Detected job application question');
       return `${userName}, here's your strategic approach to job applications as a ${title} in ${industry}:
