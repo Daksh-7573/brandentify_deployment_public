@@ -410,6 +410,8 @@ async function generateIntelligentResponse(prompt: string, context: EnrichedCont
     
     const openai = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
+      timeout: 30000, // 30 seconds timeout
+      maxRetries: 2,
     });
 
     const response = await openai.chat.completions.create({
@@ -424,7 +426,7 @@ async function generateIntelligentResponse(prompt: string, context: EnrichedCont
           content: prompt
         }
       ],
-      max_tokens: 1500,
+      max_tokens: 1200, // Reduced for faster responses
       temperature: 0.7,
     });
 
