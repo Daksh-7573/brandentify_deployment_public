@@ -98,7 +98,7 @@ export async function processEnhancedMuskRequest(request: EnhancedMuskRequest): 
     return {
       response: fallbackResponse,
       metadata: {
-        intent: 'general_guidance' as MessageIntent,
+        intent: 'general_guidance' as any,
         persona: 'generalist',
         confidence: 0.5,
         proactiveSuggestions: [],
@@ -312,7 +312,7 @@ export async function processWithBackwardCompatibility(
     return {
       response: fallbackResponse,
       metadata: {
-        intent: 'general_guidance' as MessageIntent,
+        intent: 'general_guidance' as any,
         persona: 'generalist',
         confidence: 0.5,
         proactiveSuggestions: [],
