@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brandentifier-First Musk AI Demo</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+        }
+        h1 {
+            color: #4a5568;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.2em;
+        }
+        .demo-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+        }
+        .test-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+            transition: all 0.3s ease;
+        }
+        .test-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        .response-area {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            color: #667eea;
+            font-style: italic;
+        }
+        .suggestion-list {
+            margin-top: 15px;
+        }
+        .suggestion-item {
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 8px;
+            border-left: 4px solid #48bb78;
+        }
+        .suggestion-item:first-child {
+            background: #f0fff4;
+            border-left-color: #38a169;
+            font-weight: bold;
+        }
+        .suggestion-item:not(:first-child) {
+            background: #f7fafc;
+            border-left-color: #cbd5e0;
+        }
+        .success-badge {
+            display: inline-block;
+            background: #48bb78;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        .error-badge {
+            display: inline-block;
+            background: #f56565;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Enhanced Musk AI Demo</h1>
+        <p style="text-align: center; color: #666; font-size: 18px;">
+            Testing Brandentifier-First Prioritization System
+        </p>
+        
+        <div class="demo-section">
+            <h3>🚀 Test Different Career Questions</h3>
+            <p>Click any button to test how Musk AI now prioritizes Brandentifier suggestions first:</p>
+            
+            <button class="test-button" onclick="testQuestion('What skills should I develop for my career?')">
+                Skills Development
+            </button>
+            
+            <button class="test-button" onclick="testQuestion('How can I expand my professional network?')">
+                Networking Advice
+            </button>
+            
+            <button class="test-button" onclick="testQuestion('I need help with my career planning')">
+                Career Planning
+            </button>
+            
+            <button class="test-button" onclick="testQuestion('How should I showcase my projects?')">
+                Portfolio Guidance
+            </button>
+            
+            <button class="test-button" onclick="testQuestion('I want to switch industries')">
+                Industry Switch
+            </button>
+        </div>
+        
+        <div class="demo-section">
+            <h3>💬 Musk AI Response</h3>
+            <div class="loading" id="loading">
+                Generating intelligent response with enhanced persona system...
+            </div>
+            <div class="response-area" id="response-area">
+                <p style="color: #666; font-style: italic;">
+                    Click a test button above to see the enhanced Musk AI in action!
+                </p>
+            </div>
+        </div>
+        
+        <div class="demo-section">
+            <h3>✨ Key Features Demonstrated</h3>
+            <ul style="line-height: 1.8;">
+                <li><strong>Brandentifier-First Suggestions:</strong> Every response leads with Brandentifier features</li>
+                <li><strong>Intelligent Persona Selection:</strong> Strategist, Coach, or Expert based on your question</li>
+                <li><strong>Context-Aware Responses:</strong> Personalized based on your profile and industry</li>
+                <li><strong>Proactive Recommendations:</strong> Multiple actionable suggestions beyond just answering</li>
+                <li><strong>Industry-Specific Guidance:</strong> Tailored advice for your specific field</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        async function testQuestion(question) {
+            const loadingEl = document.getElementById('loading');
+            const responseEl = document.getElementById('response-area');
+            
+            // Show loading
+            loadingEl.style.display = 'block';
+            responseEl.innerHTML = '';
+            
+            try {
+                const response = await fetch('/api/musk/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: question,
+                        userId: 2
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const result = await response.json();
+                
+                // Hide loading
+                loadingEl.style.display = 'none';
+                
+                // Display results
+                let html = `
+                    <div style="border-bottom: 2px solid #e2e8f0; padding-bottom: 15px; margin-bottom: 20px;">
+                        <h4 style="color: #4a5568; margin: 0 0 10px 0;">❓ Question: "${question}"</h4>
+                        <div style="color: #666;">
+                            Enhanced System: <strong>${result.enhanced ? 'YES' : 'NO'}</strong>
+                            ${result.persona ? `| Persona: <strong>${result.persona}</strong>` : ''}
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <h4 style="color: #4a5568;">🤖 Musk AI Response:</h4>
+                        <div style="background: #f8fafc; padding: 15px; border-radius: 8px; line-height: 1.6;">
+                            ${result.message}
+                        </div>
+                    </div>
+                `;
+                
+                if (result.proactiveSuggestions && result.proactiveSuggestions.length > 0) {
+                    html += `
+                        <div>
+                            <h4 style="color: #4a5568;">💡 Proactive Suggestions:</h4>
+                            <div class="suggestion-list">
+                    `;
+                    
+                    result.proactiveSuggestions.forEach((suggestion, index) => {
+                        const isBrandentifier = suggestion.toLowerCase().includes('brandentifier');
+                        const badge = index === 0 && isBrandentifier ? 
+                            '<span class="success-badge">BRANDENTIFIER FIRST ✓</span>' : 
+                            index === 0 && !isBrandentifier ? 
+                            '<span class="error-badge">NOT BRANDENTIFIER FIRST ✗</span>' : '';
+                        
+                        html += `
+                            <div class="suggestion-item">
+                                <strong>${index === 0 ? '🥇 FIRST:' : `${index + 1}.`}</strong> ${suggestion}
+                                ${badge}
+                            </div>
+                        `;
+                    });
+                    
+                    html += `
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                responseEl.innerHTML = html;
+                
+            } catch (error) {
+                // Hide loading
+                loadingEl.style.display = 'none';
+                
+                responseEl.innerHTML = `
+                    <div style="color: #f56565; padding: 15px; background: #fed7d7; border-radius: 8px;">
+                        <strong>Error:</strong> ${error.message}
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
