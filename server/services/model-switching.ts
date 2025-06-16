@@ -62,7 +62,7 @@ export function analyzeModelSwitchingNeeds(
     shouldSwitch = true;
     reason = 'High complexity query requiring advanced reasoning';
     confidence = 0.3;
-    recommendedModel = 'anthropic'; // Claude excels at nuanced career advice
+    recommendedModel = 'openai'; // Use OpenAI as primary enhanced model
   } else if (complexityScore >= 2 || conversationComplexity) {
     complexity = 'medium';
     shouldSwitch = messageLength < 30 && complexityIndicators.vague;

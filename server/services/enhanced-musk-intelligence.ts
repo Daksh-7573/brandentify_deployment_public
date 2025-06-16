@@ -77,7 +77,7 @@ export async function processEnhancedMuskRequest(request: EnhancedMuskRequest): 
       request.userProfile
     );
 
-    console.log(`[Enhanced Musk] Model analysis: complexity=${modelAnalysis.complexity}, shouldSwitch=${modelAnalysis.shouldSwitchModel}, reason=${modelAnalysis.reason}`);
+    console.log(`[Enhanced Musk] Model analysis: complexity=${modelAnalysis.complexity}, shouldSwitch=${modelAnalysis.shouldSwitchModel}, recommended=${modelAnalysis.recommendedModel}, reason=${modelAnalysis.reason}`);
 
     // Step 3: Analyze follow-up context and conversation memory
     const followUpAnalysis = analyzeFollowUpContext(processedMessage, request.userId);
@@ -104,7 +104,7 @@ export async function processEnhancedMuskRequest(request: EnhancedMuskRequest): 
         const enhancedResponse = await generateEnhancedResponse(
           processedMessage,
           enhancedContext,
-          modelAnalysis.recommendedModel as 'openai' | 'anthropic'
+          'openai' // Use OpenAI as primary enhanced model
         );
 
         // Assess response quality
