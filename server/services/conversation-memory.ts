@@ -1,301 +1,184 @@
 /**
  * Conversation Memory Service
  * 
- * Implements conversation context retention, follow-up detection,
- * and clarification handling for enhanced Musk intelligence.
+ * This service manages conversation history for contextual responses.
+ * Stores the last few interactions per user to enable follow-up detection
+ * and context-aware responses.
  */
 
-export interface ConversationExchange {
-  speaker: 'User' | 'Musk';
+export interface ConversationMessage {
+  role: 'user' | 'musk';
   message: string;
   timestamp: Date;
   intent?: string;
-  context?: any;
 }
 
 export interface ConversationMemory {
-  userId: number;
-  exchanges: ConversationExchange[];
-  userPreferences: {
-    responseStyle: 'brief' | 'detailed' | 'lists' | 'examples';
-    responseLength: 'short' | 'medium' | 'long';
-    followUpDepth: 'low' | 'medium' | 'high';
-    preferredFormat: 'conversational' | 'structured' | 'bullet-points';
-  };
-  contextualReferences: Map<string, string>; // Maps pronouns/references to actual entities
-  lastTopic: string;
-  sessionGoal?: string;
+  userId: string;
+  messages: ConversationMessage[];
+  lastUpdated: Date;
 }
 
-// In-memory storage for conversation history (could be moved to Redis/DB later)
-const conversationMemories = new Map<number, ConversationMemory>();
+// In-memory storage for conversation histories
+// TODO: Move to Redis or database for production scaling
+const conversationStore = new Map<string, ConversationMemory>();
+
+// Maximum number of messages to keep in memory per user
+const MAX_MESSAGES_PER_USER = 10;
 
 /**
- * Initialize or get conversation memory for a user
+ * Add a message to user's conversation memory
  */
-export function getConversationMemory(userId: number): ConversationMemory {
-  if (!conversationMemories.has(userId)) {
-    conversationMemories.set(userId, {
-      userId,
-      exchanges: [],
-      userPreferences: {
-        responseStyle: 'detailed',
-        responseLength: 'medium',
-        followUpDepth: 'medium',
-        preferredFormat: 'conversational'
-      },
-      contextualReferences: new Map(),
-      lastTopic: ''
-    });
-  }
-  return conversationMemories.get(userId)!;
-}
-
-/**
- * Add a new exchange to conversation memory
- */
-export function addConversationExchange(
-  userId: number, 
-  speaker: 'User' | 'Musk', 
-  message: string, 
-  intent?: string,
-  context?: any
+export function addMessageToMemory(
+  userId: string, 
+  role: 'user' | 'musk', 
+  message: string,
+  intent?: string
 ): void {
-  const memory = getConversationMemory(userId);
-  
-  const exchange: ConversationExchange = {
-    speaker,
+  const userMemory = conversationStore.get(userId) || {
+    userId,
+    messages: [],
+    lastUpdated: new Date()
+  };
+
+  // Add new message
+  userMemory.messages.push({
+    role,
     message,
     timestamp: new Date(),
-    intent,
-    context
-  };
+    intent
+  });
 
-  memory.exchanges.push(exchange);
-  
-  // Keep only last 5 exchanges to maintain context without overwhelming the prompt
-  if (memory.exchanges.length > 10) {
-    memory.exchanges = memory.exchanges.slice(-10);
+  // Keep only the last MAX_MESSAGES_PER_USER messages
+  if (userMemory.messages.length > MAX_MESSAGES_PER_USER) {
+    userMemory.messages = userMemory.messages.slice(-MAX_MESSAGES_PER_USER);
   }
 
-  // Update last topic for context
-  if (speaker === 'User') {
-    memory.lastTopic = extractTopicFromMessage(message);
-    updateContextualReferences(memory, message);
-  }
+  userMemory.lastUpdated = new Date();
+  conversationStore.set(userId, userMemory);
+
+  console.log(`[Conversation Memory] Added ${role} message for user ${userId}. Total messages: ${userMemory.messages.length}`);
 }
 
 /**
- * Get formatted conversation history for prompt inclusion
+ * Get conversation history for a user
  */
-export function getFormattedConversationHistory(userId: number, includeLastN: number = 5): string {
-  const memory = getConversationMemory(userId);
-  const recentExchanges = memory.exchanges.slice(-includeLastN * 2); // Get last N exchanges (user + musk pairs)
-  
-  if (recentExchanges.length === 0) {
-    return '';
-  }
-
-  const formatted = recentExchanges
-    .map(exchange => `${exchange.speaker}: ${exchange.message}`)
-    .join('\n');
-
-  return `\n**Recent Conversation:**\n${formatted}\n`;
+export function getConversationMemory(userId: string): ConversationMemory | null {
+  return conversationStore.get(userId) || null;
 }
 
 /**
- * Detect if a message is a follow-up question that needs context
+ * Get the last few messages for context (default: last 6 messages)
  */
-export function isFollowUpQuestion(message: string, memory: ConversationMemory): boolean {
-  const followUpIndicators = [
-    // Vague references
-    /\b(that|it|this|one|them|those|these)\b/i,
-    // Comparison words without context
-    /\b(both|either|also|too|as well)\b/i,
-    // Continuation words
-    /\b(and then|what about|how about|what if)\b/i,
-    // Pronouns without clear antecedents
-    /\b(he|she|they|we|you mentioned)\b/i,
-    // Short questions
-    /^.{1,15}\?$/,
-    // References to previous conversation
-    /\b(like you said|as you mentioned|from before)\b/i
-  ];
+export function getRecentMessages(userId: string, count: number = 6): ConversationMessage[] {
+  const memory = conversationStore.get(userId);
+  if (!memory || memory.messages.length === 0) {
+    return [];
+  }
 
-  return followUpIndicators.some(pattern => pattern.test(message)) && memory.exchanges.length > 0;
+  return memory.messages.slice(-count);
 }
 
 /**
- * Detect if a message needs clarification
+ * Get the last Musk response for reference resolution
  */
-export function needsClarification(message: string): boolean {
-  // Very short messages
-  if (message.trim().length < 5) return true;
-  
-  // Messages with only vague words
-  const vagueOnlyPattern = /^(yes|no|ok|sure|maybe|both|either|that|it|this)\.?$/i;
-  if (vagueOnlyPattern.test(message.trim())) return true;
-  
-  // Questions with no clear subject
-  const vagueQuestionPattern = /^(what about|how about|can I|should I|what if).{0,20}\?$/i;
-  if (vagueQuestionPattern.test(message.trim())) return true;
-  
-  return false;
-}
-
-/**
- * Expand vague follow-up questions using conversation context
- */
-export function expandFollowUpQuestion(message: string, memory: ConversationMemory): string {
-  if (!isFollowUpQuestion(message, memory)) {
-    return message;
+export function getLastMuskResponse(userId: string): string | null {
+  const memory = conversationStore.get(userId);
+  if (!memory || memory.messages.length === 0) {
+    return null;
   }
 
-  const lastUserMessage = memory.exchanges
-    .filter(e => e.speaker === 'User')
-    .slice(-1)[0];
-    
-  const lastMuskMessage = memory.exchanges
-    .filter(e => e.speaker === 'Musk')
-    .slice(-1)[0];
-
-  let expandedMessage = message;
-
-  // Replace pronouns and vague references with context
-  const referenceMap = memory.contextualReferences;
-  
-  // Handle common patterns
-  if (/\b(both|either)\b/i.test(message) && memory.lastTopic) {
-    expandedMessage = message.replace(
-      /\b(both|either)\b/gi, 
-      `$1 ${memory.lastTopic} options`
-    );
-  }
-
-  if (/\b(that|it|this)\b/i.test(message) && memory.lastTopic) {
-    expandedMessage = expandedMessage.replace(
-      /\b(that|it|this)\b/gi, 
-      memory.lastTopic
-    );
-  }
-
-  if (/^what about/i.test(message) && lastMuskMessage) {
-    // Extract key topics from last Musk response
-    const topics = extractTopicsFromResponse(lastMuskMessage.message);
-    if (topics.length > 0) {
-      expandedMessage = `What about ${topics[0]} in the context of ${memory.lastTopic}?`;
+  // Find the last message from Musk
+  for (let i = memory.messages.length - 1; i >= 0; i--) {
+    if (memory.messages[i].role === 'musk') {
+      return memory.messages[i].message;
     }
   }
 
-  return expandedMessage;
+  return null;
 }
 
 /**
- * Generate clarification prompt for unclear messages
+ * Check if user input appears to be a follow-up to previous conversation
  */
-export function generateClarificationPrompt(message: string, memory: ConversationMemory): string {
-  const userName = memory.contextualReferences.get('userName') || '';
-  
-  if (message.trim().length < 5) {
-    return `${userName}, could you provide more details about what you'd like to know? I want to give you the most helpful guidance.`;
+export function isFollowUpMessage(userId: string, message: string): boolean {
+  const memory = conversationStore.get(userId);
+  if (!memory || memory.messages.length < 2) {
+    return false;
   }
 
-  if (/\b(both|either)\b/i.test(message)) {
-    return `${userName}, when you say "both," are you referring to the options we just discussed? Could you clarify which specific choices you're considering?`;
-  }
-
-  if (/\b(that|it|this)\b/i.test(message)) {
-    return `${userName}, could you be more specific about what you're referring to? I want to make sure I understand your question correctly.`;
-  }
-
-  if (/^(what about|how about)/i.test(message)) {
-    return `${userName}, I'd like to help you explore that option. Could you provide more context about what specific aspect you'd like to discuss?`;
-  }
-
-  return `${userName}, could you provide a bit more detail about your question? The more specific you are, the better guidance I can provide.`;
-}
-
-/**
- * Update user interaction preferences based on their behavior
- */
-export function updateUserPreferences(userId: number, responseLength: number, followUpPattern: string): void {
-  const memory = getConversationMemory(userId);
-  
-  // Adapt response length preference
-  if (responseLength < 200) {
-    memory.userPreferences.responseLength = 'short';
-  } else if (responseLength > 800) {
-    memory.userPreferences.responseLength = 'long';
-  }
-
-  // Detect preferred response style
-  if (followUpPattern.includes('list') || followUpPattern.includes('bullet')) {
-    memory.userPreferences.responseStyle = 'lists';
-  } else if (followUpPattern.includes('example')) {
-    memory.userPreferences.responseStyle = 'examples';
-  }
-}
-
-/**
- * Extract main topic from a user message
- */
-function extractTopicFromMessage(message: string): string {
-  // Simple topic extraction - could be enhanced with NLP
-  const topicPatterns = [
-    /\b(resume|cv)\b/i,
-    /\b(portfolio|project)\b/i,
-    /\b(networking|linkedin)\b/i,
-    /\b(job search|career)\b/i,
-    /\b(skills|experience)\b/i,
-    /\b(interview|application)\b/i
+  // Check for vague references or short responses that likely refer to previous context
+  const vaguePhrases = [
+    'that', 'this', 'it', 'both', 'them', 'those', 'these',
+    'again', 'also', 'too', 'as well', 'like you said',
+    'what about', 'how about', 'and what', 'but what'
   ];
 
-  for (const pattern of topicPatterns) {
-    const match = message.match(pattern);
-    if (match) return match[0].toLowerCase();
-  }
-
-  // Fallback: extract first meaningful noun
-  const words = message.toLowerCase().split(' ')
-    .filter(word => word.length > 3 && !['what', 'how', 'when', 'where', 'why'].includes(word));
+  const lowerMessage = message.toLowerCase().trim();
   
-  return words[0] || 'career advice';
+  // Check for vague terms
+  const hasVagueTerms = vaguePhrases.some(phrase => 
+    lowerMessage.includes(phrase.toLowerCase())
+  );
+
+  // Check for short responses (under 5 words)
+  const wordCount = message.trim().split(/\s+/).length;
+  const isShort = wordCount < 5;
+
+  // Check if it starts with connectors that suggest continuation
+  const startsWithConnector = /^(and|but|or|so|also|what about|how about|what if)/i.test(lowerMessage);
+
+  return hasVagueTerms || (isShort && startsWithConnector);
 }
 
 /**
- * Update contextual references map
+ * Format conversation history for AI context
  */
-function updateContextualReferences(memory: ConversationMemory, message: string): void {
-  // Extract and store references for future use
-  const roleMatch = message.match(/\b(director|manager|engineer|developer|designer)\b/i);
-  if (roleMatch) {
-    memory.contextualReferences.set('currentRole', roleMatch[0]);
+export function formatConversationForAI(userId: string, currentMessage: string): string {
+  const recentMessages = getRecentMessages(userId, 6);
+  
+  if (recentMessages.length === 0) {
+    return `User's current message: "${currentMessage}"`;
   }
 
-  const industryMatch = message.match(/\b(tech|healthcare|finance|education|hospitality)\b/i);
-  if (industryMatch) {
-    memory.contextualReferences.set('industry', industryMatch[0]);
-  }
+  let contextString = "Recent conversation context:\n";
+  
+  recentMessages.forEach((msg, index) => {
+    const roleLabel = msg.role === 'user' ? 'User' : 'Musk';
+    contextString += `${roleLabel}: "${msg.message}"\n`;
+  });
+
+  contextString += `\nUser's current message: "${currentMessage}"`;
+  
+  return contextString;
 }
 
 /**
- * Extract topics from Musk's response for context
+ * Clear conversation memory for a user (useful for testing or privacy)
  */
-function extractTopicsFromResponse(response: string): string[] {
-  const topics: string[] = [];
-  
-  // Extract from headers (marked with **)
-  const headerMatches = response.match(/\*\*(.*?)\*\*/g);
-  if (headerMatches) {
-    topics.push(...headerMatches.map(h => h.replace(/\*\*/g, '').trim()));
-  }
+export function clearConversationMemory(userId: string): void {
+  conversationStore.delete(userId);
+  console.log(`[Conversation Memory] Cleared memory for user ${userId}`);
+}
 
-  // Extract key career terms
-  const careerTerms = response.match(/\b(resume|portfolio|networking|linkedin|skills|experience|interview)\b/gi);
-  if (careerTerms) {
-    topics.push(...careerTerms.map(t => t.toLowerCase()));
-  }
+/**
+ * Get conversation statistics for monitoring
+ */
+export function getConversationStats(): {
+  totalUsers: number;
+  totalMessages: number;
+  averageMessagesPerUser: number;
+} {
+  const totalUsers = conversationStore.size;
+  let totalMessages = 0;
 
-  const uniqueTopics = topics.filter((topic, index) => topics.indexOf(topic) === index);
-  return uniqueTopics.slice(0, 3); // Return unique topics, max 3
+  conversationStore.forEach(memory => {
+    totalMessages += memory.messages.length;
+  });
+
+  return {
+    totalUsers,
+    totalMessages,
+    averageMessagesPerUser: totalUsers > 0 ? Math.round(totalMessages / totalUsers) : 0
+  };
 }

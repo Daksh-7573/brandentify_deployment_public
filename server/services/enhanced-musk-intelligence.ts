@@ -13,6 +13,16 @@ import { generateEnhancedPrompt, generateProactiveSuggestions } from './prompt-l
 import { LocalAIService } from './local-ai-service';
 import { generateProactiveInsights, ProactiveContext } from './proactive-engine';
 import { getIndustryMentoring, enhanceResponseWithIndustryContext } from './industry-mentoring';
+import { 
+  addMessageToMemory, 
+  formatConversationForAI,
+  isFollowUpMessage 
+} from './conversation-memory';
+import { 
+  enhancedReferenceResolution,
+  shouldRequestClarification,
+  generateClarificationRequest 
+} from './reference-resolution';
 
 export interface EnhancedMuskRequest {
   message: string;
@@ -51,11 +61,47 @@ export interface EnhancedMuskResponse {
 export async function processEnhancedMuskRequest(request: EnhancedMuskRequest): Promise<EnhancedMuskResponse> {
   try {
     console.log('[Enhanced Musk] Processing enhanced request for user:', request.userId);
+    const userIdString = request.userId.toString();
+    
+    // Phase 1: Add user message to conversation memory
+    addMessageToMemory(userIdString, 'user', request.message);
+    
+    // Phase 1: Check if clarification is needed for ambiguous input
+    if (shouldRequestClarification(userIdString, request.message)) {
+      console.log('[Enhanced Musk] Requesting clarification for ambiguous input');
+      const clarificationRequest = generateClarificationRequest(userIdString, request.message);
+      
+      // Add clarification to memory
+      addMessageToMemory(userIdString, 'musk', clarificationRequest);
+      
+      return {
+        response: clarificationRequest,
+        metadata: {
+          intent: 'clarification_request' as any,
+          persona: 'clarifier',
+          confidence: 1.0,
+          proactiveSuggestions: [],
+          contextUsed: {
+            profileCompleteness: 0,
+            keyInsights: ['Required clarification for ambiguous input'],
+            recommendedActions: ['Provide more specific details']
+          }
+        }
+      };
+    }
+
+    // Phase 1: Apply reference resolution for follow-up messages
+    let processedMessage = request.message;
+    if (isFollowUpMessage(userIdString, request.message)) {
+      console.log('[Enhanced Musk] Detected follow-up message, applying reference resolution');
+      processedMessage = await enhancedReferenceResolution(userIdString, request.message);
+      console.log(`[Enhanced Musk] Message after reference resolution: "${processedMessage}"`);
+    }
     
     // Step 1: Enrich user context with comprehensive data analysis
     const enrichedContext = await enrichUserContext(
       request.userId,
-      request.message,
+      processedMessage, // Use the processed message with resolved references
       request.conversationHistory,
       request.userProfile,
       request.userExperiences,
@@ -66,8 +112,12 @@ export async function processEnhancedMuskRequest(request: EnhancedMuskRequest): 
 
     console.log('[Enhanced Musk] Context enriched with profile completeness:', enrichedContext.user.profileCompleteness.score + '%');
 
-    // Step 2: Generate contextual response using OpenAI for dynamic responses
-    const response = await generateContextualResponse(enrichedContext, request.message);
+    // Step 2: Generate contextual response using conversation memory
+    const conversationContext = formatConversationForAI(userIdString, processedMessage);
+    const response = await generateContextualResponse(enrichedContext, processedMessage, conversationContext);
+
+    // Phase 1: Add Musk response to conversation memory
+    addMessageToMemory(userIdString, 'musk', response);
 
     // Step 3: Extract metadata for response tracking
     const metadata = {
@@ -78,11 +128,13 @@ export async function processEnhancedMuskRequest(request: EnhancedMuskRequest): 
       contextUsed: {
         profileCompleteness: enrichedContext.user.profileCompleteness.score,
         keyInsights: extractKeyInsights(enrichedContext),
-        recommendedActions: []
+        recommendedActions: [],
+        conversationMemoryUsed: true,
+        referenceResolutionApplied: processedMessage !== request.message
       }
     };
 
-    console.log('[Enhanced Musk] Enhanced response generated successfully');
+    console.log('[Enhanced Musk] Enhanced response generated successfully with conversation memory');
     
     return {
       response,
@@ -205,7 +257,6 @@ async function generateIntelligentResponse(prompt: string, context: EnrichedCont
       ],
       max_tokens: 1500,
       temperature: 0.7,
-      timeout: 30000, // 30 second timeout
     });
 
     const aiResponse = response.choices[0]?.message?.content || '';
