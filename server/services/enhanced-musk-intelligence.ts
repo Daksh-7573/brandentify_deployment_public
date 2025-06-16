@@ -239,20 +239,22 @@ function enhanceResponseWithPersonalization(response: string, context: EnrichedC
 /**
  * Generate contextual fallback response
  */
-function generateContextualFallback(context: EnrichedContext): string {
+function generateContextualFallback(context: EnrichedContext, currentMessage: string = ''): string {
   const userName = context.user.basicInfo.name;
   const title = context.user.basicInfo.title;
   const industry = context.user.basicInfo.industry || 'your field';
   const experienceLevel = context.user.basicInfo.experienceLevel;
   
-  // Check if this is about profile enhancement based on message content
-  const userMessage = context.conversation.currentSession.lastMessage || '';
-  const isProfileQuestion = userMessage.toLowerCase().includes('profile') || 
-                           userMessage.toLowerCase().includes('compelling') ||
-                           userMessage.toLowerCase().includes('showcase') ||
-                           userMessage.toLowerCase().includes('enhance') ||
-                           userMessage.toLowerCase().includes('improve') ||
-                           userMessage.toLowerCase().includes('better');
+  // Check if this is about profile enhancement based on message content and topic focus
+  const topicFocus = context.conversation.currentSession.topicFocus || [];
+  const isProfileQuestion = topicFocus.some(topic => 
+    topic.includes('profile_enhancement') || topic.includes('profile') || topic.includes('compelling') || topic.includes('showcase')
+  ) || currentMessage.toLowerCase().includes('profile') || 
+       currentMessage.toLowerCase().includes('compelling') ||
+       currentMessage.toLowerCase().includes('showcase') ||
+       currentMessage.toLowerCase().includes('enhance') ||
+       currentMessage.toLowerCase().includes('improve') ||
+       currentMessage.toLowerCase().includes('better');
 
   if (isProfileQuestion && context.user.profileCompleteness.score >= 75) {
     // Generate specific profile enhancement advice

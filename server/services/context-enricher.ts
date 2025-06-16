@@ -57,6 +57,7 @@ export interface ConversationContext {
     sessionDuration: number;
     topicFocus: string[];
     intentHistory: MessageIntent[];
+    lastMessage: string;
   };
   historicalPatterns: {
     preferredPersona?: string;
@@ -283,7 +284,8 @@ function analyzeConversationContext(
       messageCount: history.length + 1,
       sessionDuration,
       topicFocus: topicKeywords,
-      intentHistory: [] // This would be populated with actual intent history
+      intentHistory: [], // This would be populated with actual intent history
+      lastMessage: currentMessage
     },
     historicalPatterns: {
       commonTopics: topicKeywords,
@@ -313,6 +315,7 @@ function extractTopicKeywords(messages: string[]): string[] {
     'skill_development': ['skill', 'learn', 'course', 'training', 'certification'],
     'job_search': ['job', 'position', 'application', 'interview', 'hiring'],
     'resume': ['resume', 'cv', 'portfolio', 'profile'],
+    'profile_enhancement': ['compelling', 'showcase', 'enhance', 'improve', 'better', 'standout', 'attractive', 'professional'],
     'networking': ['network', 'connection', 'linkedin', 'meet'],
     'industry_change': ['switch', 'transition', 'change', 'pivot'],
     'confidence': ['confidence', 'imposter', 'doubt', 'nervous', 'afraid'],
