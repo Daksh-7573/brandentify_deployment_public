@@ -5,17 +5,29 @@ import { pool } from './db';
 
 const router = Router();
 
-// Direct JSON parsing middleware - completely independent
-router.use('/users/:userId/career-capsule', express.json({ limit: '10mb' }));
-
-// Debug middleware
-router.use((req, res, next) => {
-  console.log('[Career Capsule Router] Method:', req.method);
-  console.log('[Career Capsule Router] URL:', req.url);
-  console.log('[Career Capsule Router] Content-Type:', req.headers['content-type']);
-  console.log('[Career Capsule Router] Body after router parsing:', req.body);
-  console.log('[Career Capsule Router] Body keys:', Object.keys(req.body || {}));
-  next();
+// Raw stream parser for career capsule POST - capture before any middleware interference
+router.use('/users/:userId/career-capsule', (req, res, next) => {
+  if (req.method === 'POST') {
+    let data = '';
+    req.setEncoding('utf8');
+    req.on('data', chunk => {
+      data += chunk;
+    });
+    req.on('end', () => {
+      try {
+        if (data) {
+          req.body = JSON.parse(data);
+          console.log('[Career Capsule Raw Parser] Successfully parsed body:', req.body);
+        }
+      } catch (error) {
+        console.log('[Career Capsule Raw Parser] JSON parse error:', error);
+        req.body = {};
+      }
+      next();
+    });
+  } else {
+    next();
+  }
 });
 
 // Test endpoint to verify JSON parsing works
