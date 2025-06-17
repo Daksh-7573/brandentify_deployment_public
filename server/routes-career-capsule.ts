@@ -5,6 +5,28 @@ import { pool } from './db';
 
 const router = Router();
 
+// Add JSON middleware to parse request bodies
+router.use((req, res, next) => {
+  if (req.headers['content-type'] && req.headers['content-type'].includes('application/json')) {
+    let body = '';
+    req.on('data', chunk => {
+      body += chunk.toString();
+    });
+    req.on('end', () => {
+      try {
+        req.body = JSON.parse(body);
+        console.log('[Career Capsule Router] Parsed JSON body:', req.body);
+      } catch (error) {
+        console.error('[Career Capsule Router] JSON parsing error:', error);
+        req.body = {};
+      }
+      next();
+    });
+  } else {
+    next();
+  }
+});
+
 // Get user's career capsule
 router.get('/users/:userId/career-capsule', async (req, res) => {
   try {

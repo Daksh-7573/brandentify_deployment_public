@@ -10009,6 +10009,10 @@ export class DatabaseStorage implements IStorage {
     
     return executeWithRetry(async () => {
       try {
+        // Ensure title is never null or undefined
+        const safeTitle = capsule.title || 'Career Goal';
+        console.log(`[db.createCareerCapsule] Using safe title: "${safeTitle}" (original: "${capsule.title}")`);
+
         const result = await pool.query(`
           INSERT INTO career_capsules (
             user_id, title, goal_type, custom_goal, timeframe, description, 
@@ -10023,7 +10027,7 @@ export class DatabaseStorage implements IStorage {
             updated_at as "updatedAt"
         `, [
           capsule.userId,
-          capsule.title,
+          safeTitle,
           capsule.goalType,
           capsule.customGoal || null,
           capsule.timeframe || 5,
