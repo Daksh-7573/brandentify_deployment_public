@@ -5,14 +5,15 @@ import { pool } from './db';
 
 const router = Router();
 
-// Force JSON parsing for this router specifically
-router.use(express.json({ limit: '10mb' }));
-
-// Debug middleware - body should already be parsed by main server
+// Enhanced debug middleware - body should already be parsed by main server
 router.use((req, res, next) => {
   console.log('[Career Capsule Router] Method:', req.method);
+  console.log('[Career Capsule Router] URL:', req.url);
   console.log('[Career Capsule Router] Content-Type:', req.headers['content-type']);
-  console.log('[Career Capsule Router] Parsed body:', JSON.stringify(req.body, null, 2));
+  console.log('[Career Capsule Router] Content-Length:', req.headers['content-length']);
+  console.log('[Career Capsule Router] Raw body:', req.body);
+  console.log('[Career Capsule Router] Body type:', typeof req.body);
+  console.log('[Career Capsule Router] Body keys:', Object.keys(req.body || {}));
   next();
 });
 

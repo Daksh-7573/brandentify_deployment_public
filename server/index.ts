@@ -152,6 +152,36 @@ app.use((req, res, next) => {
   next();
 });
 
+// Configure JSON and URL-encoded body parsing BEFORE other middleware with debugging
+app.use((req, res, next) => {
+  if (req.path.includes('/career-capsule')) {
+    console.log('[JSON Parser Debug] Before parsing - Path:', req.path);
+    console.log('[JSON Parser Debug] Content-Type:', req.headers['content-type']);
+    console.log('[JSON Parser Debug] Content-Length:', req.headers['content-length']);
+  }
+  next();
+});
+
+app.use(express.json({ 
+  limit: '50mb',
+  verify: (req, res, buf, encoding) => {
+    if (req.url.includes('/career-capsule')) {
+      console.log('[JSON Parser Debug] Raw buffer length:', buf.length);
+      console.log('[JSON Parser Debug] Raw buffer content:', buf.toString('utf8'));
+    }
+  }
+}));
+
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+
+app.use((req, res, next) => {
+  if (req.path.includes('/career-capsule') && req.method === 'POST') {
+    console.log('[JSON Parser Debug] After parsing - Body:', req.body);
+    console.log('[JSON Parser Debug] Body type:', typeof req.body);
+  }
+  next();
+});
+
 // Apply the optimized quest progress tracking middleware
 console.log("Setting up Optimized Quest Progress Tracking Middleware");
 app.use(questProgressMiddleware);
