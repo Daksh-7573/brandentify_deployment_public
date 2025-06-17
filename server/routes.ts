@@ -51,6 +51,7 @@ import careerCapsuleRoutes from "./routes-career-capsule";
 import muskPulseAutomationRoutes from "./routes-musk-pulse-automation";
 import aiMonitoringRoutes from "./routes-ai-monitoring";
 import { setupPersonalizedHashtagRoutes } from "./routes-personalized-hashtags";
+import personalizedFeedRoutes from "./routes-personalized-feed";
 import notificationRoutes from "./routes-notifications";
 import directAccessRoutes from "./routes-direct-access";
 import directAnalyticsRoutes from "./routes-direct-analytics";
@@ -6863,6 +6864,10 @@ ${extractedText.substring(0, 5000)}
   // Personalized Hashtag routes
   setupPersonalizedHashtagRoutes(app);
   console.log("Personalized Hashtag routes loaded");
+  
+  // Personalized Feed routes for comprehensive feed system
+  apiRouter.use('/personalized-feed', personalizedFeedRoutes);
+  console.log("Personalized Feed routes loaded");
   
   // Notification routes
   apiRouter.use('/notifications', notificationRoutes);

@@ -231,9 +231,23 @@ export interface IStorage {
   // User Hashtag Follow operations
   followHashtag(userId: number, hashtagId: number): Promise<UserHashtagFollow>;
   unfollowHashtag(userId: number, hashtagId: number): Promise<boolean>;
-  getFollowedHashtagsByUserId(userId: number): Promise<Hashtag[]>;
+  getFollowedHashtagsByUserId(userId: number): Promise<any[]>;
   isHashtagFollowedByUser(userId: number, hashtagId: number): Promise<boolean>;
   getPulsesByFollowedHashtags(userId: number): Promise<Pulse[]>;
+  
+  // Personalized Feed System Methods
+  getFollowedUsersByUserId(userId: number): Promise<any[]>;
+  getPulsesByHashtagIds(hashtagIds: number[], includeTypes?: string[]): Promise<any[]>;
+  getPulsesByUserIds(userIds: number[], includeTypes?: string[]): Promise<any[]>;
+  getHashtagsFromUserEngagements(userId: number): Promise<number[]>;
+  getPulsesByIndustryAndDomain(industry?: string, domain?: string, includeTypes?: string[]): Promise<any[]>;
+  getPulsesByInterests(interests: string[], includeTypes?: string[]): Promise<any[]>;
+  getUserInterests(userId: number): Promise<any[]>;
+  createPulseEngagement(engagement: any): Promise<any>;
+  upsertUserInterest(interest: any): Promise<any>;
+  followUser(followerId: number, followeeId: number): Promise<any>;
+  unfollowUser(followerId: number, followeeId: number): Promise<boolean>;
+  isUserFollowing(followerId: number, followeeId: number): Promise<boolean>;
   
   // User operations
   getUser(id: number): Promise<User | undefined>;
