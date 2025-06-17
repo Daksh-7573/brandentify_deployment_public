@@ -11739,6 +11739,9 @@ export const storage = {
   // Pulse methods
   getPulses: () => dbStorage.getPulses(),
   createPulse: (pulse: InsertPulse) => dbStorage.createPulse(pulse),
+  getPulsesByFollowedHashtags: (userId: number) => dbStorage.getPulsesByFollowedHashtags(userId),
+  getFollowedHashtagsByUserId: (userId: number) => dbStorage.getFollowedHashtagsByUserId(userId),
+  isHashtagFollowedByUser: (userId: number, hashtagId: number) => dbStorage.isHashtagFollowedByUser(userId, hashtagId),
   
   // Poll Vote methods
   getPollVoteByUserAndPulse: (userId: number, pulseId: number) => dbStorage.getPollVoteByUserAndPulse(userId, pulseId),
