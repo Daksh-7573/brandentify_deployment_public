@@ -7160,6 +7160,52 @@ export class MemStorage implements IStorage {
     }
   }
 
+  async getAllQuestDefinitions(): Promise<QuestDefinition[]> {
+    try {
+      console.log('[db.getAllQuestDefinitions] Fetching all quest definitions');
+      
+      const tableCheck = await pool.query(`
+        SELECT EXISTS (
+          SELECT 1 
+          FROM information_schema.tables 
+          WHERE table_name = 'quest_definitions'
+        );
+      `);
+      
+      if (!tableCheck.rows[0].exists) {
+        console.log('[db.getAllQuestDefinitions] quest_definitions table does not exist');
+        return [];
+      }
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          title,
+          description,
+          type,
+          target_count as "targetCount",
+          target_action as "targetAction",
+          xp_reward as "xpReward",
+          badge_reward as "badgeReward",
+          required_profile_completion as "requiredProfileCompletion",
+          required_career_stage as "requiredCareerStage",
+          required_industry as "requiredIndustry",
+          musk_tip as "muskTip",
+          is_active as "isActive",
+          created_at as "createdAt",
+          updated_at as "updatedAt"
+        FROM quest_definitions
+        ORDER BY created_at DESC
+      `);
+      
+      console.log(`[db.getAllQuestDefinitions] Found ${result.rows.length} quest definitions`);
+      return result.rows;
+    } catch (error) {
+      console.error('[db.getAllQuestDefinitions] Error fetching quest definitions:', error);
+      return [];
+    }
+  }
+
   async getQuestDefinitionsByType(type: string): Promise<QuestDefinition[]> {
     try {
       console.log(`[db.getQuestDefinitionsByType] Fetching quest definitions for type: ${type}`);
@@ -7207,29 +7253,7 @@ export class MemStorage implements IStorage {
     }
   }
 
-  async createQuestDefinition(quest: InsertQuestDefinition): Promise<QuestDefinition> {
-    const id = this.currentQuestDefinitionId++;
-    const createdAt = new Date();
-    const updatedAt = new Date();
-    
-    const questDefinition: QuestDefinition = {
-      ...quest,
-      id,
-      createdAt,
-      updatedAt,
-      targetCount: quest.targetCount ?? 1,
-      xpReward: quest.xpReward ?? 50,
-      requiredProfileCompletion: quest.requiredProfileCompletion ?? 0,
-      requiredCareerStage: quest.requiredCareerStage ?? null,
-      requiredIndustry: quest.requiredIndustry ?? null,
-      muskTip: quest.muskTip ?? null,
-      badgeReward: quest.badgeReward ?? null,
-      isActive: quest.isActive ?? true
-    };
-    
-    this.questDefinitions.set(id, questDefinition);
-    return questDefinition;
-  }
+
 
   async updateQuestDefinition(id: number, quest: Partial<QuestDefinition>): Promise<QuestDefinition | undefined> {
     const existingQuest = this.questDefinitions.get(id);
@@ -11080,7 +11104,7 @@ export const storage = {
   deleteCareerGoal: (id: number) => dbStorage.deleteCareerGoal(id),
 
   // Quest Definition methods
-  getQuestDefinitions: () => dbStorage.getQuestDefinitions(),
+  getAllQuestDefinitions: () => dbStorage.getAllQuestDefinitions(),
   getQuestDefinitionById: (id: number) => dbStorage.getQuestDefinitionById(id),
   getActiveQuestDefinitions: () => dbStorage.getActiveQuestDefinitions(),
   getQuestDefinitionsByType: (type: string) => dbStorage.getQuestDefinitionsByType(type),
