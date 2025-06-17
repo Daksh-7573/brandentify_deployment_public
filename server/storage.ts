@@ -7110,12 +7110,101 @@ export class MemStorage implements IStorage {
   }
 
   async getQuestDefinitionById(id: number): Promise<QuestDefinition | undefined> {
-    return this.questDefinitions.get(id);
+    try {
+      console.log(`[db.getQuestDefinitionById] Fetching quest definition with ID: ${id}`);
+      
+      const tableCheck = await pool.query(`
+        SELECT EXISTS (
+          SELECT 1 
+          FROM information_schema.tables 
+          WHERE table_name = 'quest_definitions'
+        );
+      `);
+      
+      if (!tableCheck.rows[0].exists) {
+        console.log(`[db.getQuestDefinitionById] quest_definitions table does not exist`);
+        return undefined;
+      }
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          title,
+          description,
+          type,
+          target_count as "targetCount",
+          target_action as "targetAction",
+          xp_reward as "xpReward",
+          badge_reward as "badgeReward",
+          required_profile_completion as "requiredProfileCompletion",
+          required_career_stage as "requiredCareerStage",
+          required_industry as "requiredIndustry",
+          musk_tip as "muskTip",
+          is_active as "isActive",
+          created_at as "createdAt",
+          updated_at as "updatedAt"
+        FROM quest_definitions
+        WHERE id = $1
+      `, [id]);
+      
+      if (result.rows.length === 0) {
+        console.log(`[db.getQuestDefinitionById] No quest definition found with ID ${id}`);
+        return undefined;
+      }
+      
+      console.log(`[db.getQuestDefinitionById] Found quest definition with ID ${id}`);
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.getQuestDefinitionById] Error fetching quest definition with ID ${id}:`, error);
+      return undefined;
+    }
   }
 
   async getActiveQuestDefinitions(): Promise<QuestDefinition[]> {
-    return Array.from(this.questDefinitions.values())
-      .filter(quest => quest.isActive);
+    try {
+      console.log('[db.getActiveQuestDefinitions] Fetching active quest definitions');
+      
+      const tableCheck = await pool.query(`
+        SELECT EXISTS (
+          SELECT 1 
+          FROM information_schema.tables 
+          WHERE table_name = 'quest_definitions'
+        );
+      `);
+      
+      if (!tableCheck.rows[0].exists) {
+        console.log(`[db.getActiveQuestDefinitions] quest_definitions table does not exist`);
+        return [];
+      }
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          title,
+          description,
+          type,
+          target_count as "targetCount",
+          target_action as "targetAction",
+          xp_reward as "xpReward",
+          badge_reward as "badgeReward",
+          required_profile_completion as "requiredProfileCompletion",
+          required_career_stage as "requiredCareerStage",
+          required_industry as "requiredIndustry",
+          musk_tip as "muskTip",
+          is_active as "isActive",
+          created_at as "createdAt",
+          updated_at as "updatedAt"
+        FROM quest_definitions
+        WHERE is_active = true
+        ORDER BY created_at DESC
+      `);
+      
+      console.log(`[db.getActiveQuestDefinitions] Found ${result.rows.length} active quest definitions`);
+      return result.rows;
+    } catch (error) {
+      console.error('[db.getActiveQuestDefinitions] Error fetching active quest definitions:', error);
+      return [];
+    }
   }
 
   async getQuestDefinitionsByType(type: string): Promise<QuestDefinition[]> {
