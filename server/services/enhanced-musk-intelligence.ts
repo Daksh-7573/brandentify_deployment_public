@@ -439,39 +439,39 @@ async function generateDynamicCareerAdvice(context: EnrichedContext, message: st
   const lookingFor = user.basicInfo.lookingFor || 'career_advice';
 
   try {
-    // Use OpenAI directly for dynamic content generation
+    // Use OpenAI directly for dynamic content generation with optimized settings
     const { default: OpenAI } = await import('openai');
-    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    const openai = new OpenAI({ 
+      apiKey: process.env.OPENAI_API_KEY,
+    });
     
     const userLocation = user.basicInfo.location || 'their area';
-    const careerPrompt = `Generate personalized career advice for ${userName}, a ${title} working in ${industry}, located in ${userLocation}.
+    const careerPrompt = `As an expert career strategist, provide specific advice for ${userName}, a ${title} in ${industry} located in ${userLocation}.
 
-User Context:
-- Current Role: ${title}
+User Profile:
+- Role: ${title} 
 - Industry: ${industry}
 - Location: ${userLocation}
-- Looking for: ${lookingFor}
-- Experience Level: Based on Senior Director role, this is a senior-level professional
-- Skills: UX Research, Product Management, Healthcare/Biotechnology background
-- Current Focus: Career advancement and professional development
+- Career Goals: ${lookingFor}
+- Experience: Senior-level professional seeking advancement
 
-Generate comprehensive, personalized career advice that:
-1. Addresses their specific role and industry context
-2. Provides actionable next steps for career advancement
-3. Includes strategic recommendations for their level
-4. Considers current market trends in ${industry}
-5. Prioritizes Brandentifier platform usage for networking and professional growth
+Provide concise, actionable career advancement advice covering:
+1. Specific next steps for role progression
+2. Key skills to develop for VP-level positions
+3. Strategic networking recommendations
+4. Leadership development priorities
+5. Industry-specific career moves
 
-Format as a detailed, professional response with specific recommendations and actionable insights.`;
+Keep response under 500 words with clear, actionable recommendations.`;
 
     console.log(`[Enhanced Musk] Generating AI career advice for ${title} in ${industry}`);
     
+    // Optimized OpenAI call with reduced token limit for faster response
     const completion = await openai.chat.completions.create({
-      model: "gpt-4",
+      model: "gpt-3.5-turbo",
       messages: [{ role: "user", content: careerPrompt }],
-      max_tokens: 800,
+      max_tokens: 400,
       temperature: 0.7,
-      timeout: 3000,
     });
 
     const aiAdvice = completion.choices[0].message.content;
@@ -498,7 +498,7 @@ What specific aspect of your career development would you like to explore furthe
   } catch (error) {
     console.error('[Enhanced Musk] Error generating dynamic career advice:', error);
     
-    // Fallback to contextual static response if AI fails
+    // Generate enhanced contextual response when AI is unavailable
     return `Hello ${userName},
 
 As a ${title} in ${industry}, here's strategic career guidance tailored for your role:
