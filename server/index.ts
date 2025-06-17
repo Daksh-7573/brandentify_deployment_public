@@ -174,16 +174,35 @@ app.use(express.json({
 
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
+// Global request body store for career capsule routes
+const requestBodyStore = new Map<string, any>();
+
 app.use((req, res, next) => {
   if (req.path.includes('/career-capsule') && req.method === 'POST') {
     console.log('[JSON Parser Debug] After parsing - Body:', req.body);
     console.log('[JSON Parser Debug] Body type:', typeof req.body);
-    // Store the parsed body to prevent loss with deep clone
-    (req as any)._originalBody = JSON.parse(JSON.stringify(req.body));
-    console.log('[JSON Parser Debug] Stored original body:', (req as any)._originalBody);
+    
+    // Generate unique request ID and store body
+    const requestId = `${Date.now()}-${Math.random()}`;
+    requestBodyStore.set(requestId, JSON.parse(JSON.stringify(req.body)));
+    (req as any)._requestId = requestId;
+    
+    console.log('[JSON Parser Debug] Stored body with ID:', requestId, req.body);
+    
+    // Clean up old entries (older than 30 seconds)
+    const now = Date.now();
+    for (const [key] of requestBodyStore) {
+      const timestamp = parseInt(key.split('-')[0]);
+      if (now - timestamp > 30000) {
+        requestBodyStore.delete(key);
+      }
+    }
   }
   next();
 });
+
+// Export the store for use in routes
+(global as any).requestBodyStore = requestBodyStore;
 
 // Apply the optimized quest progress tracking middleware
 console.log("Setting up Optimized Quest Progress Tracking Middleware");
