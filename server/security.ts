@@ -325,24 +325,7 @@ export function setupSecurity(app: any) {
   // 1. Enable helmet for secure headers with a permissive but useful Content Security Policy
   app.use(
     helmet({
-      contentSecurityPolicy: {
-        directives: {
-          defaultSrc: ["'self'"],
-          scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://apis.google.com", "https://www.googletagmanager.com", "https://www.google-analytics.com"],
-          styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-          imgSrc: ["'self'", "data:", "https:", "blob:"],
-          fontSrc: ["'self'", "https://fonts.gstatic.com", "data:"],
-          connectSrc: ["'self'", "https://api.x.ai", "https://api.openai.com", "https://firestore.googleapis.com", "https://identitytoolkit.googleapis.com", "https://securetoken.googleapis.com", "wss:", "ws:", "https:", "*"],
-          frameSrc: ["'self'", "https://accounts.google.com"],
-          objectSrc: ["'none'"],
-          mediaSrc: ["'self'", "https:", "blob:"],
-          workerSrc: ["'self'", "blob:"],
-          reportTo: '/api/csp-report',
-          reportUri: '/api/csp-report',
-          upgradeInsecureRequests: [],
-        },
-        reportOnly: false // Disable CSP temporarily to fix WebSocket connection issues
-      },
+      contentSecurityPolicy: false, // Completely disable CSP to fix WebSocket connection issues
       crossOriginEmbedderPolicy: false, // Disable COEP to prevent breaking existing functionality
     })
   );
