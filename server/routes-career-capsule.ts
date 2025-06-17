@@ -127,9 +127,20 @@ router.post('/users/:userId/career-capsule', async (req, res) => {
       return res.status(400).json({ message: 'Invalid user ID' });
     }
 
+    // Debug: Log the entire request body
+    console.log('[Career Capsule] Raw request body:', JSON.stringify(req.body, null, 2));
+    console.log('[Career Capsule] Title field value:', req.body.title);
+    console.log('[Career Capsule] Title type:', typeof req.body.title);
+
+    // Validate required fields
+    if (!req.body.title || req.body.title.trim() === '') {
+      console.log('[Career Capsule] Validation failed - title is missing or empty');
+      return res.status(400).json({ message: 'Title is required for career goal' });
+    }
+
     const capsuleData = {
       userId,
-      title: req.body.title,
+      title: req.body.title.trim(),
       description: req.body.description || null,
       overallProgress: 0,
       goalType: req.body.goalType || 'position_change', // Ensures goalType is never null

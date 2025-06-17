@@ -10003,6 +10003,9 @@ export class DatabaseStorage implements IStorage {
   
   async createCareerCapsule(capsule: InsertCareerCapsule): Promise<CareerCapsule> {
     console.log(`[db.createCareerCapsule] Creating career capsule for user ${capsule.userId}`);
+    console.log(`[db.createCareerCapsule] Capsule data:`, JSON.stringify(capsule, null, 2));
+    console.log(`[db.createCareerCapsule] Title value:`, capsule.title);
+    console.log(`[db.createCareerCapsule] Title type:`, typeof capsule.title);
     
     return executeWithRetry(async () => {
       try {
