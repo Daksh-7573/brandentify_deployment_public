@@ -5,9 +5,58 @@ import { pool } from './db';
 
 const router = Router();
 
-// Add Express JSON middleware explicitly for this router
-router.use(express.json({ limit: '10mb' }));
-router.use(express.urlencoded({ extended: true, limit: '10mb' }));
+// Debug middleware to check body parsing
+router.use((req, res, next) => {
+  console.log('[Career Capsule Router] Request method:', req.method);
+  console.log('[Career Capsule Router] Content-Type:', req.headers['content-type']);
+  console.log('[Career Capsule Router] Body before parsing:', req.body);
+  console.log('[Career Capsule Router] Body is readable:', req.readable);
+  
+  // Check if body has already been parsed by another middleware
+  if (req.body && Object.keys(req.body).length > 0) {
+    console.log('[Career Capsule Router] Body already parsed by previous middleware:', req.body);
+    next();
+    return;
+  }
+  
+  // For JSON content type, parse manually
+  if ((req.method === 'POST' || req.method === 'PUT' || req.method === 'PATCH') && 
+      req.headers['content-type']?.includes('application/json')) {
+    
+    let rawBody = '';
+    req.setEncoding('utf8');
+    
+    req.on('data', (chunk) => {
+      rawBody += chunk;
+      console.log('[Career Capsule Router] Received chunk:', chunk);
+    });
+    
+    req.on('end', () => {
+      console.log('[Career Capsule Router] Full raw body received:', rawBody);
+      try {
+        if (rawBody.trim()) {
+          req.body = JSON.parse(rawBody);
+          console.log('[Career Capsule Router] Successfully parsed JSON:', req.body);
+        } else {
+          req.body = {};
+          console.log('[Career Capsule Router] Empty raw body - using empty object');
+        }
+      } catch (error) {
+        console.error('[Career Capsule Router] JSON parsing failed:', error);
+        req.body = {};
+      }
+      next();
+    });
+    
+    req.on('error', (error) => {
+      console.error('[Career Capsule Router] Request error:', error);
+      req.body = {};
+      next();
+    });
+  } else {
+    next();
+  }
+});
 
 // Get user's career capsule
 router.get('/users/:userId/career-capsule', async (req, res) => {

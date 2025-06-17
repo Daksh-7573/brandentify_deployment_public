@@ -97,6 +97,13 @@ export class APIGateway {
     const startTime = Date.now();
     const path = req.path;
     
+    // BYPASS API Gateway routing for career capsule routes - critical fix
+    if (path.includes('/career-capsule') || path.includes('/career-goals')) {
+      console.log(`[API Gateway] Bypassing service routing for career capsule: ${path}`);
+      next();
+      return;
+    }
+    
     // Determine target service
     const serviceName = this.getServiceForPath(path);
     
