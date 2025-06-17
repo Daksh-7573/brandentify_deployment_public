@@ -415,7 +415,15 @@ Make the response personal and relevant to their career level and industry.`;
 async function generateIntelligentResponse(prompt: string, context: EnrichedContext, message: string = ''): Promise<string> {
   console.log('[Enhanced Musk] Using advanced contextual intelligence for reliability');
   
-  // Use intelligent fallback as primary response system for reliability
+  // Check for career questions first and use dynamic AI generation
+  const isCareer = /career|job|position|role|advancement|growth|future|plan|goal|strategy|transition|promote|director|vp|vice president|executive|leadership|next step|move up|climb|ladder/i.test(message);
+  
+  if (isCareer) {
+    console.log('[Enhanced Musk] Detected career question, using dynamic AI generation');
+    return generateDynamicCareerAdvice(context, message);
+  }
+  
+  // Use intelligent fallback for other questions
   return generateAdvancedFallback(context, message);
 }
 
@@ -533,7 +541,7 @@ async function generateAdvancedFallback(context: EnrichedContext, message: strin
   // Analyze message intent for intelligent responses with typo handling
   const isNetworking = /network|netowrk|nework|netwrok|connect|connection|relationship|mentor|professional|colleague|linkedin|reach out|meet people|contacts|events|community|feature/i.test(message);
   const isSkills = /skill|learn|improve|develop|capability|expertise|training|course|certification|upskill/i.test(message);
-  const isCareer = /career|job|position|role|advancement|growth|future|plan|goal|strategy/i.test(message);
+  const isCareer = /career|job|position|role|advancement|growth|future|plan|goal|strategy|transition|promote|director|vp|vice president|executive|leadership|next step|move up|climb|ladder/i.test(message);
   
   console.log(`[Enhanced Musk] Intent Analysis: networking=${isNetworking}, skills=${isSkills}, career=${isCareer}, message="${message}"`);
   
@@ -576,12 +584,13 @@ async function generateAdvancedFallback(context: EnrichedContext, message: strin
       const { default: OpenAI } = await import('openai');
       const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
       
-      const careerPrompt = `Generate personalized career advice for ${userName}, a ${title} working in ${industry}, located in ${location || 'their area'}.
+      const userLocation = user.basicInfo.location || 'their area';
+      const careerPrompt = `Generate personalized career advice for ${userName}, a ${title} working in ${industry}, located in ${userLocation}.
 
 User Context:
 - Current Role: ${title}
 - Industry: ${industry}
-- Location: ${location || 'Not specified'}
+- Location: ${userLocation}
 - Looking for: ${user.basicInfo.lookingFor || 'career advancement'}
 - Experience Level: Based on Senior Director role, this is a senior-level professional
 - Skills: UX Research, Product Management, Healthcare/Biotechnology background
