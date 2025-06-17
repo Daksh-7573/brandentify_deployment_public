@@ -10749,6 +10749,502 @@ export class DatabaseStorage implements IStorage {
     return parseInt(result.rows[0].count) || 0;
   }
 
+  // Quest Definition methods
+  async getAllQuestDefinitions(): Promise<QuestDefinition[]> {
+    try {
+      console.log('[db.getAllQuestDefinitions] Fetching all quest definitions');
+      const result = await pool.query(`
+        SELECT 
+          id, title, description, category, difficulty, xp_reward as "xpReward",
+          estimated_time_minutes as "estimatedTimeMinutes", instructions,
+          success_criteria as "successCriteria", is_active as "isActive",
+          created_at as "createdAt", updated_at as "updatedAt"
+        FROM quest_definitions
+        ORDER BY category, difficulty, title
+      `);
+      
+      console.log(`[db.getAllQuestDefinitions] Found ${result.rows.length} quest definitions`);
+      return result.rows;
+    } catch (error) {
+      console.error('[db.getAllQuestDefinitions] Error:', error);
+      return [];
+    }
+  }
+
+  async getQuestDefinitionById(id: number): Promise<QuestDefinition | undefined> {
+    try {
+      const result = await pool.query(`
+        SELECT 
+          id, title, description, category, difficulty, xp_reward as "xpReward",
+          estimated_time_minutes as "estimatedTimeMinutes", instructions,
+          success_criteria as "successCriteria", is_active as "isActive",
+          created_at as "createdAt", updated_at as "updatedAt"
+        FROM quest_definitions
+        WHERE id = $1
+      `, [id]);
+      
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.getQuestDefinitionById] Error fetching quest ${id}:`, error);
+      return undefined;
+    }
+  }
+
+  async getActiveQuestDefinitions(): Promise<QuestDefinition[]> {
+    try {
+      const result = await pool.query(`
+        SELECT 
+          id, title, description, category, difficulty, xp_reward as "xpReward",
+          estimated_time_minutes as "estimatedTimeMinutes", instructions,
+          success_criteria as "successCriteria", is_active as "isActive",
+          created_at as "createdAt", updated_at as "updatedAt"
+        FROM quest_definitions
+        WHERE is_active = true
+        ORDER BY category, difficulty, title
+      `);
+      
+      return result.rows;
+    } catch (error) {
+      console.error('[db.getActiveQuestDefinitions] Error:', error);
+      return [];
+    }
+  }
+
+  async getQuestDefinitionsByType(type: string): Promise<QuestDefinition[]> {
+    try {
+      const result = await pool.query(`
+        SELECT 
+          id, title, description, category, difficulty, xp_reward as "xpReward",
+          estimated_time_minutes as "estimatedTimeMinutes", instructions,
+          success_criteria as "successCriteria", is_active as "isActive",
+          created_at as "createdAt", updated_at as "updatedAt"
+        FROM quest_definitions
+        WHERE category = $1 AND is_active = true
+        ORDER BY difficulty, title
+      `, [type]);
+      
+      return result.rows;
+    } catch (error) {
+      console.error(`[db.getQuestDefinitionsByType] Error fetching quests for type ${type}:`, error);
+      return [];
+    }
+  }
+
+  async createQuestDefinition(quest: InsertQuestDefinition): Promise<QuestDefinition> {
+    try {
+      const result = await pool.query(`
+        INSERT INTO quest_definitions (
+          title, description, category, difficulty, xp_reward,
+          estimated_time_minutes, instructions, success_criteria, is_active
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+        RETURNING 
+          id, title, description, category, difficulty, xp_reward as "xpReward",
+          estimated_time_minutes as "estimatedTimeMinutes", instructions,
+          success_criteria as "successCriteria", is_active as "isActive",
+          created_at as "createdAt", updated_at as "updatedAt"
+      `, [
+        quest.title, quest.description, quest.category, quest.difficulty,
+        quest.xpReward, quest.estimatedTimeMinutes, quest.instructions,
+        quest.successCriteria, quest.isActive
+      ]);
+      
+      return result.rows[0];
+    } catch (error) {
+      console.error('[db.createQuestDefinition] Error:', error);
+      throw error;
+    }
+  }
+
+  async updateQuestDefinition(id: number, quest: Partial<QuestDefinition>): Promise<QuestDefinition | undefined> {
+    try {
+      const updateFields: string[] = [];
+      const values: any[] = [];
+      let valueIndex = 1;
+
+      if (quest.title !== undefined) {
+        updateFields.push(`title = $${valueIndex++}`);
+        values.push(quest.title);
+      }
+      if (quest.description !== undefined) {
+        updateFields.push(`description = $${valueIndex++}`);
+        values.push(quest.description);
+      }
+      if (quest.category !== undefined) {
+        updateFields.push(`category = $${valueIndex++}`);
+        values.push(quest.category);
+      }
+      if (quest.difficulty !== undefined) {
+        updateFields.push(`difficulty = $${valueIndex++}`);
+        values.push(quest.difficulty);
+      }
+      if (quest.xpReward !== undefined) {
+        updateFields.push(`xp_reward = $${valueIndex++}`);
+        values.push(quest.xpReward);
+      }
+      if (quest.estimatedTimeMinutes !== undefined) {
+        updateFields.push(`estimated_time_minutes = $${valueIndex++}`);
+        values.push(quest.estimatedTimeMinutes);
+      }
+      if (quest.instructions !== undefined) {
+        updateFields.push(`instructions = $${valueIndex++}`);
+        values.push(quest.instructions);
+      }
+      if (quest.successCriteria !== undefined) {
+        updateFields.push(`success_criteria = $${valueIndex++}`);
+        values.push(quest.successCriteria);
+      }
+      if (quest.isActive !== undefined) {
+        updateFields.push(`is_active = $${valueIndex++}`);
+        values.push(quest.isActive);
+      }
+
+      if (updateFields.length === 0) {
+        return this.getQuestDefinitionById(id);
+      }
+
+      values.push(id);
+      const result = await pool.query(`
+        UPDATE quest_definitions 
+        SET ${updateFields.join(', ')}, updated_at = CURRENT_TIMESTAMP
+        WHERE id = $${valueIndex}
+        RETURNING 
+          id, title, description, category, difficulty, xp_reward as "xpReward",
+          estimated_time_minutes as "estimatedTimeMinutes", instructions,
+          success_criteria as "successCriteria", is_active as "isActive",
+          created_at as "createdAt", updated_at as "updatedAt"
+      `, values);
+
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.updateQuestDefinition] Error updating quest ${id}:`, error);
+      return undefined;
+    }
+  }
+
+  async deleteQuestDefinition(id: number): Promise<boolean> {
+    try {
+      const result = await pool.query('DELETE FROM quest_definitions WHERE id = $1', [id]);
+      return result.rowCount > 0;
+    } catch (error) {
+      console.error(`[db.deleteQuestDefinition] Error deleting quest ${id}:`, error);
+      return false;
+    }
+  }
+
+  // User Quest methods
+  async getUserQuestsByUserId(userId: number): Promise<UserQuest[]> {
+    try {
+      const result = await pool.query(`
+        SELECT 
+          uq.id, uq.user_id as "userId", uq.quest_definition_id as "questDefinitionId",
+          uq.status, uq.progress, uq.started_at as "startedAt", 
+          uq.completed_at as "completedAt", uq.dismissed_at as "dismissedAt",
+          uq.earned_xp as "earnedXp", uq.dismiss_reason as "dismissReason",
+          uq.created_at as "createdAt", uq.updated_at as "updatedAt",
+          qd.title, qd.description, qd.category, qd.difficulty, qd.xp_reward as "xpReward"
+        FROM user_quests uq
+        JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
+        WHERE uq.user_id = $1
+        ORDER BY uq.created_at DESC
+      `, [userId]);
+      
+      return result.rows;
+    } catch (error) {
+      console.error(`[db.getUserQuestsByUserId] Error fetching user quests for ${userId}:`, error);
+      return [];
+    }
+  }
+
+  async getUserQuestById(id: number): Promise<UserQuest | undefined> {
+    try {
+      const result = await pool.query(`
+        SELECT 
+          uq.id, uq.user_id as "userId", uq.quest_definition_id as "questDefinitionId",
+          uq.status, uq.progress, uq.started_at as "startedAt", 
+          uq.completed_at as "completedAt", uq.dismissed_at as "dismissedAt",
+          uq.earned_xp as "earnedXp", uq.dismiss_reason as "dismissReason",
+          uq.created_at as "createdAt", uq.updated_at as "updatedAt"
+        FROM user_quests uq
+        WHERE uq.id = $1
+      `, [id]);
+      
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.getUserQuestById] Error fetching user quest ${id}:`, error);
+      return undefined;
+    }
+  }
+
+  async getActiveUserQuests(userId: number): Promise<UserQuest[]> {
+    try {
+      const result = await pool.query(`
+        SELECT 
+          uq.id, uq.user_id as "userId", uq.quest_definition_id as "questDefinitionId",
+          uq.status, uq.progress, uq.started_at as "startedAt", 
+          uq.completed_at as "completedAt", uq.dismissed_at as "dismissedAt",
+          uq.earned_xp as "earnedXp", uq.dismiss_reason as "dismissReason",
+          uq.created_at as "createdAt", uq.updated_at as "updatedAt",
+          qd.title, qd.description, qd.category, qd.difficulty, qd.xp_reward as "xpReward"
+        FROM user_quests uq
+        JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
+        WHERE uq.user_id = $1 AND uq.status = 'active'
+        ORDER BY uq.created_at DESC
+      `, [userId]);
+      
+      return result.rows;
+    } catch (error) {
+      console.error(`[db.getActiveUserQuests] Error fetching active quests for ${userId}:`, error);
+      return [];
+    }
+  }
+
+  async getCompletedUserQuests(userId: number): Promise<UserQuest[]> {
+    try {
+      const result = await pool.query(`
+        SELECT 
+          uq.id, uq.user_id as "userId", uq.quest_definition_id as "questDefinitionId",
+          uq.status, uq.progress, uq.started_at as "startedAt", 
+          uq.completed_at as "completedAt", uq.dismissed_at as "dismissedAt",
+          uq.earned_xp as "earnedXp", uq.dismiss_reason as "dismissReason",
+          uq.created_at as "createdAt", uq.updated_at as "updatedAt",
+          qd.title, qd.description, qd.category, qd.difficulty, qd.xp_reward as "xpReward"
+        FROM user_quests uq
+        JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
+        WHERE uq.user_id = $1 AND uq.status = 'completed'
+        ORDER BY uq.completed_at DESC
+      `, [userId]);
+      
+      return result.rows;
+    } catch (error) {
+      console.error(`[db.getCompletedUserQuests] Error fetching completed quests for ${userId}:`, error);
+      return [];
+    }
+  }
+
+  async getCurrentWeekUserQuests(userId: number): Promise<UserQuest[]> {
+    try {
+      const result = await pool.query(`
+        SELECT 
+          uq.id, uq.user_id as "userId", uq.quest_definition_id as "questDefinitionId",
+          uq.status, uq.progress, uq.started_at as "startedAt", 
+          uq.completed_at as "completedAt", uq.dismissed_at as "dismissedAt",
+          uq.earned_xp as "earnedXp", uq.dismiss_reason as "dismissReason",
+          uq.created_at as "createdAt", uq.updated_at as "updatedAt",
+          qd.title, qd.description, qd.category, qd.difficulty, qd.xp_reward as "xpReward"
+        FROM user_quests uq
+        JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
+        WHERE uq.user_id = $1 
+        AND uq.created_at >= date_trunc('week', CURRENT_DATE)
+        ORDER BY uq.created_at DESC
+      `, [userId]);
+      
+      return result.rows;
+    } catch (error) {
+      console.error(`[db.getCurrentWeekUserQuests] Error fetching current week quests for ${userId}:`, error);
+      return [];
+    }
+  }
+
+  async createUserQuest(quest: InsertUserQuest): Promise<UserQuest> {
+    try {
+      const result = await pool.query(`
+        INSERT INTO user_quests (
+          user_id, quest_definition_id, status, progress, started_at
+        ) VALUES ($1, $2, $3, $4, $5)
+        RETURNING 
+          id, user_id as "userId", quest_definition_id as "questDefinitionId",
+          status, progress, started_at as "startedAt", 
+          completed_at as "completedAt", dismissed_at as "dismissedAt",
+          earned_xp as "earnedXp", dismiss_reason as "dismissReason",
+          created_at as "createdAt", updated_at as "updatedAt"
+      `, [
+        quest.userId, quest.questDefinitionId, quest.status || 'active',
+        quest.progress || 0, quest.startedAt || new Date()
+      ]);
+      
+      return result.rows[0];
+    } catch (error) {
+      console.error('[db.createUserQuest] Error:', error);
+      throw error;
+    }
+  }
+
+  async updateUserQuest(id: number, quest: Partial<UserQuest>): Promise<UserQuest | undefined> {
+    try {
+      const updateFields: string[] = [];
+      const values: any[] = [];
+      let valueIndex = 1;
+
+      if (quest.status !== undefined) {
+        updateFields.push(`status = $${valueIndex++}`);
+        values.push(quest.status);
+      }
+      if (quest.progress !== undefined) {
+        updateFields.push(`progress = $${valueIndex++}`);
+        values.push(quest.progress);
+      }
+      if (quest.startedAt !== undefined) {
+        updateFields.push(`started_at = $${valueIndex++}`);
+        values.push(quest.startedAt);
+      }
+      if (quest.completedAt !== undefined) {
+        updateFields.push(`completed_at = $${valueIndex++}`);
+        values.push(quest.completedAt);
+      }
+      if (quest.dismissedAt !== undefined) {
+        updateFields.push(`dismissed_at = $${valueIndex++}`);
+        values.push(quest.dismissedAt);
+      }
+      if (quest.earnedXp !== undefined) {
+        updateFields.push(`earned_xp = $${valueIndex++}`);
+        values.push(quest.earnedXp);
+      }
+      if (quest.dismissReason !== undefined) {
+        updateFields.push(`dismiss_reason = $${valueIndex++}`);
+        values.push(quest.dismissReason);
+      }
+
+      if (updateFields.length === 0) {
+        return this.getUserQuestById(id);
+      }
+
+      values.push(id);
+      const result = await pool.query(`
+        UPDATE user_quests 
+        SET ${updateFields.join(', ')}, updated_at = CURRENT_TIMESTAMP
+        WHERE id = $${valueIndex}
+        RETURNING 
+          id, user_id as "userId", quest_definition_id as "questDefinitionId",
+          status, progress, started_at as "startedAt", 
+          completed_at as "completedAt", dismissed_at as "dismissedAt",
+          earned_xp as "earnedXp", dismiss_reason as "dismissReason",
+          created_at as "createdAt", updated_at as "updatedAt"
+      `, values);
+
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.updateUserQuest] Error updating user quest ${id}:`, error);
+      return undefined;
+    }
+  }
+
+  async completeUserQuest(id: number, earnedXp?: number): Promise<UserQuest | undefined> {
+    try {
+      const result = await pool.query(`
+        UPDATE user_quests 
+        SET status = 'completed', completed_at = CURRENT_TIMESTAMP, 
+            earned_xp = $2, updated_at = CURRENT_TIMESTAMP
+        WHERE id = $1
+        RETURNING 
+          id, user_id as "userId", quest_definition_id as "questDefinitionId",
+          status, progress, started_at as "startedAt", 
+          completed_at as "completedAt", dismissed_at as "dismissedAt",
+          earned_xp as "earnedXp", dismiss_reason as "dismissReason",
+          created_at as "createdAt", updated_at as "updatedAt"
+      `, [id, earnedXp]);
+
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.completeUserQuest] Error completing user quest ${id}:`, error);
+      return undefined;
+    }
+  }
+
+  async dismissUserQuest(id: number, reason?: string): Promise<UserQuest | undefined> {
+    try {
+      const result = await pool.query(`
+        UPDATE user_quests 
+        SET status = 'dismissed', dismissed_at = CURRENT_TIMESTAMP, 
+            dismiss_reason = $2, updated_at = CURRENT_TIMESTAMP
+        WHERE id = $1
+        RETURNING 
+          id, user_id as "userId", quest_definition_id as "questDefinitionId",
+          status, progress, started_at as "startedAt", 
+          completed_at as "completedAt", dismissed_at as "dismissedAt",
+          earned_xp as "earnedXp", dismiss_reason as "dismissReason",
+          created_at as "createdAt", updated_at as "updatedAt"
+      `, [id, reason]);
+
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.dismissUserQuest] Error dismissing user quest ${id}:`, error);
+      return undefined;
+    }
+  }
+
+  async incrementQuestProgress(id: number): Promise<UserQuest | undefined> {
+    try {
+      const result = await pool.query(`
+        UPDATE user_quests 
+        SET progress = progress + 1, updated_at = CURRENT_TIMESTAMP
+        WHERE id = $1
+        RETURNING 
+          id, user_id as "userId", quest_definition_id as "questDefinitionId",
+          status, progress, started_at as "startedAt", 
+          completed_at as "completedAt", dismissed_at as "dismissedAt",
+          earned_xp as "earnedXp", dismiss_reason as "dismissReason",
+          created_at as "createdAt", updated_at as "updatedAt"
+      `, [id]);
+
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.incrementQuestProgress] Error incrementing progress for quest ${id}:`, error);
+      return undefined;
+    }
+  }
+
+  async assignWeeklyQuestsToUser(userId: number): Promise<UserQuest[]> {
+    try {
+      console.log(`[db.assignWeeklyQuestsToUser] Assigning weekly quests to user ${userId}`);
+      
+      // Get 3 random active quest definitions
+      const questDefinitions = await pool.query(`
+        SELECT id, xp_reward FROM quest_definitions 
+        WHERE is_active = true 
+        ORDER BY RANDOM() 
+        LIMIT 3
+      `);
+
+      const assignedQuests: UserQuest[] = [];
+      
+      for (const questDef of questDefinitions.rows) {
+        const result = await pool.query(`
+          INSERT INTO user_quests (user_id, quest_definition_id, status, progress, started_at)
+          VALUES ($1, $2, 'active', 0, CURRENT_TIMESTAMP)
+          RETURNING 
+            id, user_id as "userId", quest_definition_id as "questDefinitionId",
+            status, progress, started_at as "startedAt", 
+            completed_at as "completedAt", dismissed_at as "dismissedAt",
+            earned_xp as "earnedXp", dismiss_reason as "dismissReason",
+            created_at as "createdAt", updated_at as "updatedAt"
+        `, [userId, questDef.id]);
+        
+        assignedQuests.push(result.rows[0]);
+      }
+
+      console.log(`[db.assignWeeklyQuestsToUser] Assigned ${assignedQuests.length} quests to user ${userId}`);
+      return assignedQuests;
+    } catch (error) {
+      console.error(`[db.assignWeeklyQuestsToUser] Error assigning quests to user ${userId}:`, error);
+      return [];
+    }
+  }
+
+  async resetMonthlyXp(userId: number): Promise<boolean> {
+    try {
+      const result = await pool.query(`
+        UPDATE user_xp 
+        SET balance = 0, updated_at = CURRENT_TIMESTAMP
+        WHERE user_id = $1
+      `, [userId]);
+      
+      return result.rowCount > 0;
+    } catch (error) {
+      console.error(`[db.resetMonthlyXp] Error resetting XP for user ${userId}:`, error);
+      return false;
+    }
+  }
+
   async checkAutoDeleteConditions(itemType: string, itemId: number): Promise<{
     shouldDelete: boolean;
     reason: string;
