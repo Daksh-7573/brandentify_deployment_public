@@ -264,11 +264,20 @@ async function generatePhase3EnhancedResponse(
     const title = context.user.basicInfo.title;
     const industry = context.user.basicInfo.industry || 'your field';
     
-    // Check for specific networking feature questions first
-    const isNetworkingFeature = /network|netowrk|nework|netwrok.*feature|feature.*network/i.test(message);
+    // Check for specific Brandentifier networking feature questions (not other platforms)
+    const messageLower = message.toLowerCase();
+    const isBrandentifierNetworkingQuestion = (messageLower.includes('brandentifier') && messageLower.includes('network')) ||
+                                             (messageLower.includes('use') && messageLower.includes('brandentifier') && messageLower.includes('network')) ||
+                                             (messageLower.includes('how') && messageLower.includes('brandentifier') && messageLower.includes('network'));
     
-    if (isNetworkingFeature) {
-      console.log(`[Enhanced Musk] Detected networking feature question, generating specific response`);
+    const isOtherPlatformQuestion = messageLower.includes('other platform') || 
+                                   messageLower.includes('other than brandentifier') ||
+                                   messageLower.includes('besides brandentifier') ||
+                                   messageLower.includes('platforms other than');
+    
+    // Only use the static Brandentifier response for questions specifically about Brandentifier features
+    if (isBrandentifierNetworkingQuestion && !isOtherPlatformQuestion) {
+      console.log(`[Enhanced Musk] Detected Brandentifier-specific networking feature question, generating specific response`);
       return generateNetworkingFeatureResponse(userName || 'there', title || 'professional', industry || 'your field');
     }
     
@@ -343,37 +352,96 @@ async function generateContextualResponse(context: EnrichedContext, message: str
   const messageLower = message.toLowerCase();
   
   try {
-    // For networking questions, use full OpenAI intelligence instead of static responses
-    if (messageLower.includes('network') || messageLower.includes('nework') || messageLower.includes('netowrk') || messageLower.includes('connect') || 
-        (messageLower.includes('platform') && (messageLower.includes('network') || messageLower.includes('nework') || messageLower.includes('netowrk'))) ||
-        messageLower.includes('networking') || messageLower.includes('platforms ar') || messageLower.includes('brandentifier') || messageLower.includes('linkedin')) {
-      console.log('[Enhanced Musk] Detected networking question - using OpenAI for dynamic response');
+    // Classify networking questions more precisely to avoid duplicate responses
+    const isNetworkingQuestion = messageLower.includes('network') || messageLower.includes('nework') || 
+                                messageLower.includes('netowrk') || messageLower.includes('networking');
+    
+    // Check if asking about OTHER platforms (not Brandentifier)
+    const isOtherPlatformsQuestion = messageLower.includes('other platform') || 
+                                   messageLower.includes('other than brandentifier') ||
+                                   messageLower.includes('besides brandentifier') ||
+                                   messageLower.includes('platforms other than') ||
+                                   messageLower.includes('linkedin') ||
+                                   messageLower.includes('twitter') ||
+                                   messageLower.includes('facebook');
+    
+    // Check if asking about Brandentifier specifically
+    const isBrandentifierQuestion = messageLower.includes('brandentifier') && 
+                                  !isOtherPlatformsQuestion;
+    
+    if (isNetworkingQuestion) {
+      console.log('[Enhanced Musk] Detected networking question - analyzing intent');
       
-      // Generate dynamic networking advice using OpenAI
+      // Generate dynamic networking advice using OpenAI with proper context
       const location = context.user.basicInfo.location || 'your area';
       const lookingFor = context.user.basicInfo.lookingFor || 'career_advice';
       
-      const networkingPrompt = `Generate comprehensive networking advice for ${userName}, a ${title} in ${industry}. 
+      let networkingPrompt;
+      
+      if (isOtherPlatformsQuestion) {
+        // Question about OTHER platforms besides Brandentifier
+        networkingPrompt = `Answer this networking question for ${userName}, a ${title} in ${industry}: "${message}"
 
 User Context:
 - Name: ${userName}
 - Title: ${title}
 - Industry: ${industry}
 - Location: ${location}
-- Looking for: ${lookingFor}
 
 ${conversationContext ? `Previous Conversation:
 ${conversationContext}
 
-` : ''}Provide specific, actionable networking strategies that:
-1. Prioritize Brandentifier as the primary platform for comprehensive professional branding
-2. Include LinkedIn and other platforms as secondary options
-3. Give industry-specific networking advice for ${industry}
-4. Address the user's role as ${title}
-5. Provide concrete steps they can take immediately
-${conversationContext ? '6. Build upon any previous discussion points mentioned in the conversation' : ''}
+` : ''}The user is asking about networking on platforms OTHER than Brandentifier. Provide a balanced response that:
+1. Acknowledges that yes, they can network on other platforms
+2. Mentions popular alternatives like LinkedIn, industry forums, conferences
+3. Explains the benefits of multi-platform networking
+4. Still positions Brandentifier as a comprehensive solution
+5. Gives specific advice for their industry (${industry}) and role (${title})
 
-Make the response personal, encouraging, and professional. Include specific examples relevant to their industry and role.`;
+Be honest about other platforms while highlighting Brandentifier's unique value proposition.`;
+      } else if (isBrandentifierQuestion) {
+        // Question specifically about Brandentifier features
+        networkingPrompt = `Answer this Brandentifier networking question for ${userName}, a ${title} in ${industry}: "${message}"
+
+User Context:
+- Name: ${userName}
+- Title: ${title}
+- Industry: ${industry}
+- Location: ${location}
+
+${conversationContext ? `Previous Conversation:
+${conversationContext}
+
+` : ''}The user is asking specifically about Brandentifier's networking features. Provide detailed guidance on:
+1. How to use Brandentifier's networking features effectively
+2. Specific features available on the platform
+3. Step-by-step instructions for their industry (${industry})
+4. Tips for maximizing networking success on Brandentifier
+5. Industry-specific networking strategies for ${title} professionals
+
+Focus entirely on Brandentifier's capabilities and how to leverage them.`;
+      } else {
+        // General networking question
+        networkingPrompt = `Answer this general networking question for ${userName}, a ${title} in ${industry}: "${message}"
+
+User Context:
+- Name: ${userName}
+- Title: ${title}
+- Industry: ${industry}
+- Location: ${location}
+
+${conversationContext ? `Previous Conversation:
+${conversationContext}
+
+` : ''}Provide comprehensive networking advice that:
+1. Addresses their specific question
+2. Includes both Brandentifier and other platform strategies
+3. Gives industry-specific advice for ${industry}
+4. Provides actionable steps for ${title} professionals
+5. Maintains a balanced perspective on networking approaches
+
+Make the response specific to their question and professional context.`;
+      }
 
       return await generateIntelligentResponse(networkingPrompt, context, message);
     }
