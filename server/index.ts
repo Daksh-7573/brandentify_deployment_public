@@ -54,17 +54,23 @@ const requestTimeout = (req: Request, res: Response, next: NextFunction) => {
 
 app.use(requestTimeout);
 
-// Setup express-fileupload middleware with enhanced security
-app.use(fileUpload({
-  limits: { fileSize: 25 * 1024 * 1024 }, // 25MB max file size (to accommodate 20MB images + overhead)
-  useTempFiles: true,
-  tempFileDir: path.join(process.cwd(), 'tmp'),
-  createParentPath: true,
-  debug: process.env.NODE_ENV === 'development', // Enable debug mode in development
-  abortOnLimit: true, // Prevent DOS attacks
-  safeFileNames: true, // Remove special characters 
-  preserveExtension: true // Preserve file extension
-}));
+// Setup express-fileupload middleware only for multipart requests
+app.use((req, res, next) => {
+  // Only apply file upload middleware for multipart content
+  if (req.headers['content-type']?.includes('multipart/form-data')) {
+    return fileUpload({
+      limits: { fileSize: 25 * 1024 * 1024 }, // 25MB max file size
+      useTempFiles: true,
+      tempFileDir: path.join(process.cwd(), 'tmp'),
+      createParentPath: true,
+      debug: process.env.NODE_ENV === 'development',
+      abortOnLimit: true,
+      safeFileNames: true,
+      preserveExtension: true
+    })(req, res, next);
+  }
+  next();
+});
 
 // Add secure file validation middleware
 app.use((req: Request, res: Response, next: NextFunction) => {

@@ -5,57 +5,12 @@ import { pool } from './db';
 
 const router = Router();
 
-// Debug middleware to check body parsing
+// Debug middleware - body should already be parsed by main server
 router.use((req, res, next) => {
-  console.log('[Career Capsule Router] Request method:', req.method);
+  console.log('[Career Capsule Router] Method:', req.method);
   console.log('[Career Capsule Router] Content-Type:', req.headers['content-type']);
-  console.log('[Career Capsule Router] Body before parsing:', req.body);
-  console.log('[Career Capsule Router] Body is readable:', req.readable);
-  
-  // Check if body has already been parsed by another middleware
-  if (req.body && Object.keys(req.body).length > 0) {
-    console.log('[Career Capsule Router] Body already parsed by previous middleware:', req.body);
-    next();
-    return;
-  }
-  
-  // For JSON content type, parse manually
-  if ((req.method === 'POST' || req.method === 'PUT' || req.method === 'PATCH') && 
-      req.headers['content-type']?.includes('application/json')) {
-    
-    let rawBody = '';
-    req.setEncoding('utf8');
-    
-    req.on('data', (chunk) => {
-      rawBody += chunk;
-      console.log('[Career Capsule Router] Received chunk:', chunk);
-    });
-    
-    req.on('end', () => {
-      console.log('[Career Capsule Router] Full raw body received:', rawBody);
-      try {
-        if (rawBody.trim()) {
-          req.body = JSON.parse(rawBody);
-          console.log('[Career Capsule Router] Successfully parsed JSON:', req.body);
-        } else {
-          req.body = {};
-          console.log('[Career Capsule Router] Empty raw body - using empty object');
-        }
-      } catch (error) {
-        console.error('[Career Capsule Router] JSON parsing failed:', error);
-        req.body = {};
-      }
-      next();
-    });
-    
-    req.on('error', (error) => {
-      console.error('[Career Capsule Router] Request error:', error);
-      req.body = {};
-      next();
-    });
-  } else {
-    next();
-  }
+  console.log('[Career Capsule Router] Parsed body:', JSON.stringify(req.body, null, 2));
+  next();
 });
 
 // Get user's career capsule
