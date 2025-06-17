@@ -6648,15 +6648,15 @@ export class MemStorage implements IStorage {
           title,
           description,
           type,
-          difficulty,
+          target_count as "targetCount",
+          target_action as "targetAction",
           xp_reward as "xpReward",
           badge_reward as "badgeReward",
+          required_profile_completion as "requiredProfileCompletion",
+          required_career_stage as "requiredCareerStage",
+          required_industry as "requiredIndustry",
+          musk_tip as "muskTip",
           is_active as "isActive",
-          completion_criteria as "completionCriteria",
-          progress_tracking_field as "progressTrackingField",
-          progress_goal as "progressGoal",
-          is_repeatable as "isRepeatable",
-          tags,
           created_at as "createdAt",
           updated_at as "updatedAt"
         FROM quest_definitions
@@ -6667,6 +6667,151 @@ export class MemStorage implements IStorage {
     } catch (error) {
       console.error('[db.getQuestDefinitions] Error fetching quest definitions:', error);
       return [];
+    }
+  }
+
+  async getActiveQuestDefinitions(): Promise<QuestDefinition[]> {
+    try {
+      console.log('[db.getActiveQuestDefinitions] Fetching active quest definitions');
+      
+      const tableCheck = await pool.query(`
+        SELECT EXISTS (
+          SELECT 1 
+          FROM information_schema.tables 
+          WHERE table_name = 'quest_definitions'
+        );
+      `);
+      
+      if (!tableCheck.rows[0].exists) {
+        console.log(`[db.getActiveQuestDefinitions] quest_definitions table does not exist`);
+        return [];
+      }
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          title,
+          description,
+          type,
+          target_count as "targetCount",
+          target_action as "targetAction",
+          xp_reward as "xpReward",
+          badge_reward as "badgeReward",
+          required_profile_completion as "requiredProfileCompletion",
+          required_career_stage as "requiredCareerStage",
+          required_industry as "requiredIndustry",
+          musk_tip as "muskTip",
+          is_active as "isActive",
+          created_at as "createdAt",
+          updated_at as "updatedAt"
+        FROM quest_definitions
+        WHERE is_active = true
+        ORDER BY created_at DESC
+      `);
+      
+      console.log(`[db.getActiveQuestDefinitions] Found ${result.rows.length} active quest definitions`);
+      return result.rows;
+    } catch (error) {
+      console.error('[db.getActiveQuestDefinitions] Error fetching active quest definitions:', error);
+      return [];
+    }
+  }
+
+  async getQuestDefinitionsByType(type: string): Promise<QuestDefinition[]> {
+    try {
+      console.log(`[db.getQuestDefinitionsByType] Fetching quest definitions for type: ${type}`);
+      
+      const tableCheck = await pool.query(`
+        SELECT EXISTS (
+          SELECT 1 
+          FROM information_schema.tables 
+          WHERE table_name = 'quest_definitions'
+        );
+      `);
+      
+      if (!tableCheck.rows[0].exists) {
+        console.log(`[db.getQuestDefinitionsByType] quest_definitions table does not exist`);
+        return [];
+      }
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          title,
+          description,
+          type,
+          target_count as "targetCount",
+          target_action as "targetAction",
+          xp_reward as "xpReward",
+          badge_reward as "badgeReward",
+          required_profile_completion as "requiredProfileCompletion",
+          required_career_stage as "requiredCareerStage",
+          required_industry as "requiredIndustry",
+          musk_tip as "muskTip",
+          is_active as "isActive",
+          created_at as "createdAt",
+          updated_at as "updatedAt"
+        FROM quest_definitions
+        WHERE type = $1 AND is_active = true
+        ORDER BY created_at DESC
+      `, [type]);
+      
+      console.log(`[db.getQuestDefinitionsByType] Found ${result.rows.length} quest definitions for type ${type}`);
+      return result.rows;
+    } catch (error) {
+      console.error(`[db.getQuestDefinitionsByType] Error fetching quest definitions for type ${type}:`, error);
+      return [];
+    }
+  }
+
+  async getQuestDefinitionById(id: number): Promise<QuestDefinition | undefined> {
+    try {
+      console.log(`[db.getQuestDefinitionById] Fetching quest definition with ID: ${id}`);
+      
+      const tableCheck = await pool.query(`
+        SELECT EXISTS (
+          SELECT 1 
+          FROM information_schema.tables 
+          WHERE table_name = 'quest_definitions'
+        );
+      `);
+      
+      if (!tableCheck.rows[0].exists) {
+        console.log(`[db.getQuestDefinitionById] quest_definitions table does not exist`);
+        return undefined;
+      }
+      
+      const result = await pool.query(`
+        SELECT 
+          id,
+          title,
+          description,
+          type,
+          target_count as "targetCount",
+          target_action as "targetAction",
+          xp_reward as "xpReward",
+          badge_reward as "badgeReward",
+          required_profile_completion as "requiredProfileCompletion",
+          required_career_stage as "requiredCareerStage",
+          required_industry as "requiredIndustry",
+          musk_tip as "muskTip",
+          is_active as "isActive",
+          created_at as "createdAt",
+          updated_at as "updatedAt"
+        FROM quest_definitions
+        WHERE id = $1
+      `, [id]);
+      
+      if (result.rows.length === 0) {
+        console.log(`[db.getQuestDefinitionById] No quest definition found with ID ${id}`);
+        return undefined;
+      }
+      
+      console.log(`[db.getQuestDefinitionById] Found quest definition with ID ${id}`);
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.getQuestDefinitionById] Error fetching quest definition with ID ${id}:`, error);
+      return undefined;
     }
   }
   
@@ -10681,6 +10826,49 @@ export const storage = {
   createCareerGoal: (goal: any) => dbStorage.createCareerGoal(goal),
   updateCareerGoal: (id: number, data: any) => dbStorage.updateCareerGoal(id, data),
   deleteCareerGoal: (id: number) => dbStorage.deleteCareerGoal(id),
+
+  // Quest Definition methods
+  getQuestDefinitions: () => dbStorage.getQuestDefinitions(),
+  getQuestDefinitionById: (id: number) => dbStorage.getQuestDefinitionById(id),
+  getActiveQuestDefinitions: () => dbStorage.getActiveQuestDefinitions(),
+  getQuestDefinitionsByType: (type: string) => dbStorage.getQuestDefinitionsByType(type),
+  createQuestDefinition: (quest: InsertQuestDefinition) => dbStorage.createQuestDefinition(quest),
+  updateQuestDefinition: (id: number, quest: Partial<QuestDefinition>) => dbStorage.updateQuestDefinition(id, quest),
+  deleteQuestDefinition: (id: number) => dbStorage.deleteQuestDefinition(id),
+  
+  // User Quest methods
+  getUserQuestsByUserId: (userId: number) => dbStorage.getUserQuestsByUserId(userId),
+  getUserQuestById: (id: number) => dbStorage.getUserQuestById(id),
+  getActiveUserQuests: (userId: number) => dbStorage.getActiveUserQuests(userId),
+  getCompletedUserQuests: (userId: number) => dbStorage.getCompletedUserQuests(userId),
+  getCurrentWeekUserQuests: (userId: number) => dbStorage.getCurrentWeekUserQuests(userId),
+  createUserQuest: (quest: InsertUserQuest) => dbStorage.createUserQuest(quest),
+  updateUserQuest: (id: number, quest: Partial<UserQuest>) => dbStorage.updateUserQuest(id, quest),
+  completeUserQuest: (id: number, earnedXp?: number) => dbStorage.completeUserQuest(id, earnedXp),
+  dismissUserQuest: (id: number, reason?: string) => dbStorage.dismissUserQuest(id, reason),
+  incrementQuestProgress: (id: number) => dbStorage.incrementQuestProgress(id),
+  assignWeeklyQuestsToUser: (userId: number) => dbStorage.assignWeeklyQuestsToUser(userId),
+
+  // User XP methods
+  getUserXp: (userId: number) => dbStorage.getUserXp(userId),
+  createUserXp: (userXp: InsertUserXp) => dbStorage.createUserXp(userXp),
+  updateUserXp: (id: number, userXp: Partial<UserXp>) => dbStorage.updateUserXp(id, userXp),
+  incrementUserXp: (userId: number, amount: number, source: string, sourceId?: number) => dbStorage.incrementUserXp(userId, amount, source, sourceId),
+  resetMonthlyXp: (userId: number) => dbStorage.resetMonthlyXp(userId),
+  
+  // User Badge methods
+  getUserBadges: (userId: number) => dbStorage.getUserBadges(userId),
+  getUserBadgeById: (id: number) => dbStorage.getUserBadgeById(id),
+  getUserBadgesByType: (userId: number, badgeType: string) => dbStorage.getUserBadgesByType(userId, badgeType),
+  createUserBadge: (badge: InsertUserBadge) => dbStorage.createUserBadge(badge),
+  updateUserBadge: (id: number, badge: Partial<UserBadge>) => dbStorage.updateUserBadge(id, badge),
+  toggleBadgeDisplay: (id: number, displayOnProfile: boolean, displayOnResume: boolean) => dbStorage.toggleBadgeDisplay(id, displayOnProfile, displayOnResume),
+  
+  // XP Transaction methods
+  getXpTransactions: (userId: number) => dbStorage.getXpTransactions(userId),
+  getXpTransactionById: (id: number) => dbStorage.getXpTransactionById(id),
+  getXpTransactionsBySource: (userId: number, source: string) => dbStorage.getXpTransactionsBySource(userId, source),
+  createXpTransaction: (transaction: InsertXpTransaction) => dbStorage.createXpTransaction(transaction),
   
   // Career Capsule methods
   getUserCareerCapsule: (userId: number) => dbStorage.getUserCareerCapsule(userId),
