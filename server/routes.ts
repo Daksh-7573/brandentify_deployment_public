@@ -6868,6 +6868,64 @@ ${extractedText.substring(0, 5000)}
   apiRouter.use('/notifications', notificationRoutes);
   console.log("Notification routes loaded");
   
+  // Direct career capsule POST handler - bypass all middleware issues
+  apiRouter.post('/users/:userId/career-capsule', async (req: Request, res: Response) => {
+    console.log('[Direct Career Capsule] Received body:', req.body);
+    console.log('[Direct Career Capsule] Body keys:', Object.keys(req.body || {}));
+    
+    try {
+      const { userId } = req.params;
+      const { title, description, goalType, timeframe } = req.body;
+
+      console.log('[Direct Career Capsule] Title:', title);
+      console.log('[Direct Career Capsule] Description:', description);
+      console.log('[Direct Career Capsule] Goal Type:', goalType);
+      console.log('[Direct Career Capsule] Timeframe:', timeframe);
+
+      // Validate required fields
+      if (!title || title.trim() === '') {
+        return res.status(400).json({ message: 'Title is required for career goal' });
+      }
+
+      if (!goalType) {
+        return res.status(400).json({ message: 'Goal type is required' });
+      }
+
+      // Create the career capsule with correct data format
+      const capsuleData = {
+        userId: parseInt(userId),
+        title: title.trim(),
+        description: description || null,
+        goalType,
+        customGoal: null,
+        timeframe: timeframe || 5,
+        industry: null,
+        isPrivate: false,
+        isMuskGenerated: true,
+        overallProgress: 0
+      };
+
+      console.log('[Direct Career Capsule] Creating capsule with data:', capsuleData);
+
+      const newCapsule = await storage.createCareerCapsule(capsuleData);
+
+      console.log('[Direct Career Capsule] Capsule created successfully:', newCapsule);
+
+      res.status(201).json({
+        message: 'Career capsule created successfully',
+        capsule: newCapsule
+      });
+
+    } catch (error) {
+      console.error('[Direct Career Capsule] Error creating goal:', error);
+      res.status(500).json({ 
+        message: 'Failed to create career goal',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+  console.log("Direct career capsule POST handler registered");
+  
   // Career Capsule routes - MUST be before conflicting career-goals routes
   apiRouter.use(careerCapsuleRoutes);
   console.log("Career Capsule routes registered");

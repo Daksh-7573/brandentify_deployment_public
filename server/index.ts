@@ -162,63 +162,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// Direct career capsule POST handler - bypass all middleware issues
-app.post('/api/users/:userId/career-capsule', express.json({ limit: '10mb' }), async (req, res) => {
-  console.log('[Direct Career Capsule] Received body:', req.body);
-  console.log('[Direct Career Capsule] Body keys:', Object.keys(req.body || {}));
-  
-  try {
-    const { userId } = req.params;
-    const { title, description, goalType, timeframe } = req.body;
-
-    console.log('[Direct Career Capsule] Title:', title);
-    console.log('[Direct Career Capsule] Description:', description);
-    console.log('[Direct Career Capsule] Goal Type:', goalType);
-    console.log('[Direct Career Capsule] Timeframe:', timeframe);
-
-    // Validate required fields
-    if (!title || title.trim() === '') {
-      return res.status(400).json({ message: 'Title is required for career goal' });
-    }
-
-    if (!goalType) {
-      return res.status(400).json({ message: 'Goal type is required' });
-    }
-
-    // Create the career goal
-    const goalData = {
-      userId: parseInt(userId),
-      title: title.trim(),
-      description: description || null,
-      goalType,
-      timeframeMonths: timeframe || null,
-      status: 'not_started' as const,
-      createdAt: new Date(),
-      lastUpdated: new Date()
-    };
-
-    console.log('[Direct Career Capsule] Creating goal with data:', goalData);
-
-    // Import storage dynamically to avoid circular dependencies
-    const { storage } = await import('./storage');
-    const newGoal = await storage.createCareerGoal(goalData);
-
-    console.log('[Direct Career Capsule] Goal created successfully:', newGoal);
-
-    res.status(201).json({
-      message: 'Career goal created successfully',
-      goal: newGoal
-    });
-
-  } catch (error) {
-    console.error('[Direct Career Capsule] Error creating goal:', error);
-    res.status(500).json({ 
-      message: 'Failed to create career goal',
-      error: error instanceof Error ? error.message : 'Unknown error'
-    });
-  }
-});
-
 app.use(express.json({ 
   limit: '50mb',
   verify: (req, res, buf, encoding) => {
