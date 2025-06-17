@@ -1366,30 +1366,9 @@ export default function IndustryPulsePage() {
   const [hasPremiumContent, setHasPremiumContent] = useState(false);
   const refreshTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
-  // Fetch pulses based on user's feed preference
-  const { data: allPulses = [], isLoading: isLoadingAll, refetch: refetchAll } = useQuery<PulseWithUser[]>({
+  // Fetch all pulses
+  const { data: pulses = [], isLoading, refetch } = useQuery<PulseWithUser[]>({
     queryKey: ["/api/pulses"],
-  });
-
-  // Fetch personalized feed (followed hashtags)
-  const { user } = useAuth();
-  const userId = user?.id;
-  const { data: personalizedPulses = [], isLoading: isLoadingPersonalized, refetch: refetchPersonalized } = useQuery<PulseWithUser[]>({
-    queryKey: [`/api/users/${userId}/hashtag-feed`],
-    enabled: !!userId,
-  });
-
-  // Determine which feed to use and loading state
-  const usePrimarilyPersonalized = personalizedPulses.length > 0;
-  const pulses = usePrimarilyPersonalized ? personalizedPulses : allPulses;
-  const isLoading = usePrimarilyPersonalized ? isLoadingPersonalized : isLoadingAll;
-  const refetch = usePrimarilyPersonalized ? refetchPersonalized : refetchAll;
-
-  // Process data for caching optimization
-  const processedPulses = pulses || [];
-  useQuery<PulseWithUser[]>({
-    queryKey: ["/api/pulses"],
-    enabled: false, // Don't auto-fetch, just use for caching
     // @ts-ignore - onSuccess is valid but TS is complaining
     onSuccess: (data: PulseWithUser[]) => {
       // Initialize project cache for faster loading
