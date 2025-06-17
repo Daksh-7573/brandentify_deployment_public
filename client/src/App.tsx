@@ -52,7 +52,7 @@ import ResumeCV from "@/pages/resume-cv";
 import ResumeEditor from "@/pages/resume-editor";
 // Resume Parser page removed per request
 import UnifiedProfilePage from "@/pages/unified-profile";
-import FeedTestPage from "@/pages/feed-test";
+
 import CareerQuestsPage from "@/pages/career-quests";
 import BrandQuestsPage from "@/pages/brand-quests";
 import CareerCapsulePage from "@/pages/career-capsule"; // Career Capsule feature (renamed from Roadmap)
@@ -254,9 +254,7 @@ function Router() {
         }} />}
       </Route>
       {/* Resume parser route removed per request */}
-      <Route path="/feed-test">
-        <ProtectedRoute path="/feed-test" component={FeedTestPage} />
-      </Route>
+
       <Route path="/neo-glass-demo">
         <ProtectedRoute path="/neo-glass-demo" component={NeoGlassDemoPage} />
       </Route>
