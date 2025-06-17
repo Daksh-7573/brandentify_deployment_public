@@ -96,9 +96,14 @@ export function useFollowUser() {
 
   return useMutation({
     mutationFn: async ({ followerId, followeeId }: { followerId: number; followeeId: number }) => {
-      return apiRequest(`/personalized-feed/users/${followerId}/follow/${followeeId}`, {
-        method: 'POST'
+      const response = await fetch(`/api/personalized-feed/users/${followerId}/follow/${followeeId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
       });
+      if (!response.ok) throw new Error('Failed to follow user');
+      return response.json();
     },
     onSuccess: (_, variables) => {
       // Invalidate relevant queries
@@ -114,9 +119,14 @@ export function useUnfollowUser() {
 
   return useMutation({
     mutationFn: async ({ followerId, followeeId }: { followerId: number; followeeId: number }) => {
-      return apiRequest(`/personalized-feed/users/${followerId}/follow/${followeeId}`, {
-        method: 'DELETE'
+      const response = await fetch(`/api/personalized-feed/users/${followerId}/follow/${followeeId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
       });
+      if (!response.ok) throw new Error('Failed to unfollow user');
+      return response.json();
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['mentor-feed', variables.followerId] });
@@ -154,8 +164,11 @@ export function useTrackEngagement() {
       engagementType: string; 
       weight?: number;
     }) => {
-      return apiRequest('/personalized-feed/engagements', {
+      const response = await fetch('/api/personalized-feed/engagements', {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({
           userId,
           pulseId,
@@ -163,6 +176,8 @@ export function useTrackEngagement() {
           weight
         })
       });
+      if (!response.ok) throw new Error('Failed to track engagement');
+      return response.json();
     },
     onSuccess: (_, variables) => {
       // Invalidate personalized feed to reflect engagement learning

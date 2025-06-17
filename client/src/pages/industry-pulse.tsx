@@ -26,7 +26,10 @@ import {
   Newspaper,
   Share,
   AlertTriangle,
-  Flame
+  Flame,
+  Sparkles,
+  Hash,
+  Brain
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
@@ -45,6 +48,7 @@ import {
   DialogFooter,
   DialogTrigger
 } from "@/components/ui/dialog";
+import PersonalizedFeedDashboard from "@/components/feed/PersonalizedFeedDashboard";
 import {
   Tooltip,
   TooltipContent,
