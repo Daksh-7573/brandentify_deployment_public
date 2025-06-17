@@ -16,6 +16,112 @@ import { messageQueue, TaskTypes } from "./services/message-queue";
 import { muskPulseScheduler } from "./services/musk-pulse-scheduler";
 
 const app = express();
+
+// Very first handler - career capsule POST bypass (before any middleware that touches the body)
+app.use('/api/users/:userId/career-capsule', (req, res, next) => {
+  if (req.method === 'POST') {
+    console.log('[Ultra Early Career Capsule Handler] Intercepting POST before any body parsing');
+    console.log('[Ultra Early Career Capsule Handler] Request headers:', req.headers);
+    console.log('[Ultra Early Career Capsule Handler] Content-Length:', req.headers['content-length']);
+    
+    let rawBody = '';
+    req.setEncoding('utf8');
+    
+    req.on('data', (chunk) => {
+      console.log('[Ultra Early Career Capsule Handler] Received data chunk:', chunk.length, 'bytes');
+      rawBody += chunk;
+    });
+    
+    req.on('end', async () => {
+      console.log('[Ultra Early Career Capsule Handler] Request end event fired');
+      console.log('[Ultra Early Career Capsule Handler] Raw body received:', rawBody);
+      console.log('[Ultra Early Career Capsule Handler] Body length:', rawBody.length);
+      
+      try {
+        if (!rawBody.trim()) {
+          console.log('[Ultra Early Career Capsule Handler] Empty body received');
+          return res.status(400).json({ message: 'Empty request body' });
+        }
+
+        const body = JSON.parse(rawBody);
+        console.log('[Ultra Early Career Capsule Handler] Parsed body:', body);
+        
+        const userId = req.params.userId;
+        const { title, description, goalType, timeframe } = body;
+
+        console.log('[Ultra Early Career Capsule Handler] UserId:', userId);
+        console.log('[Ultra Early Career Capsule Handler] Title:', title);
+        console.log('[Ultra Early Career Capsule Handler] Goal Type:', goalType);
+
+        // Validate required fields
+        if (!title || title.trim() === '') {
+          console.log('[Ultra Early Career Capsule Handler] Validation failed: Title is required');
+          return res.status(400).json({ message: 'Title is required for career goal' });
+        }
+
+        if (!goalType) {
+          console.log('[Ultra Early Career Capsule Handler] Validation failed: Goal type is required');
+          return res.status(400).json({ message: 'Goal type is required' });
+        }
+
+        // Create the career capsule
+        const capsuleData = {
+          userId: parseInt(userId!),
+          title: title.trim(),
+          description: description || null,
+          goalType,
+          customGoal: null,
+          timeframe: timeframe || 5,
+          industry: null,
+          isPrivate: false,
+          isMuskGenerated: true,
+          overallProgress: 0
+        };
+
+        console.log('[Ultra Early Career Capsule Handler] Creating capsule with data:', capsuleData);
+
+        // Import storage dynamically
+        const { storage } = await import('./storage');
+        console.log('[Ultra Early Career Capsule Handler] Storage imported successfully');
+        
+        const newCapsule = await storage.createCareerCapsule(capsuleData);
+        console.log('[Ultra Early Career Capsule Handler] Capsule created successfully:', newCapsule);
+
+        const response = {
+          message: 'Career capsule created successfully',
+          capsule: newCapsule
+        };
+
+        console.log('[Ultra Early Career Capsule Handler] Sending response:', response);
+        res.status(201).json(response);
+        console.log('[Ultra Early Career Capsule Handler] Response sent');
+
+      } catch (error) {
+        console.error('[Ultra Early Career Capsule Handler] Error in processing:', error);
+        console.error('[Ultra Early Career Capsule Handler] Error stack:', error instanceof Error ? error.stack : 'No stack');
+        res.status(500).json({ 
+          message: 'Failed to create career capsule',
+          error: error instanceof Error ? error.message : 'Unknown error'
+        });
+      }
+    });
+
+    req.on('error', (error) => {
+      console.error('[Ultra Early Career Capsule Handler] Request error:', error);
+      res.status(400).json({ 
+        message: 'Invalid request',
+        error: error.message 
+      });
+    });
+    
+    console.log('[Ultra Early Career Capsule Handler] Event listeners attached, waiting for data...');
+    // Stop here, don't call next()
+    return;
+  }
+  
+  next();
+});
+
 // Increase body size limit to handle file uploads (25MB)
 app.use(express.json({ limit: '25mb' }));
 app.use(express.urlencoded({ extended: false, limit: '25mb' }));
