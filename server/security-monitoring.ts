@@ -192,8 +192,13 @@ export function securityMonitoringMiddleware(req: Request, res: Response, next: 
     return originalEnd.call(this, chunk, encoding, callback);
   } as any;
   
-  // Intercept responses to log errors
+  // Intercept responses to log errors - Fixed to prevent duplicate responses
   res.send = function(body?: any): Response {
+    // Check if headers have already been sent to prevent duplicate responses
+    if (res.headersSent) {
+      return this;
+    }
+    
     const statusCode = res.statusCode;
     
     // Log client errors (4xx)
@@ -221,8 +226,13 @@ export function securityMonitoringMiddleware(req: Request, res: Response, next: 
     return originalSend.call(this, body);
   };
   
-  // Intercept JSON responses
+  // Intercept JSON responses - Fixed to prevent duplicate responses
   res.json = function(body?: any): Response {
+    // Check if headers have already been sent to prevent duplicate responses
+    if (res.headersSent) {
+      return this;
+    }
+    
     return originalJson.call(this, body);
   };
   
