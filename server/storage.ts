@@ -6941,6 +6941,174 @@ export class MemStorage implements IStorage {
     return weekNumber;
   }
 
+  async createQuestDefinition(quest: InsertQuestDefinition): Promise<QuestDefinition> {
+    try {
+      console.log(`[db.createQuestDefinition] Creating quest definition:`, quest);
+      
+      const result = await pool.query(`
+        INSERT INTO quest_definitions (
+          title, description, type, target_count, target_action,
+          xp_reward, badge_reward, required_profile_completion,
+          required_career_stage, required_industry, musk_tip, is_active
+        ) VALUES (
+          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12
+        ) RETURNING 
+          id,
+          title,
+          description,
+          type,
+          target_count as "targetCount",
+          target_action as "targetAction",
+          xp_reward as "xpReward",
+          badge_reward as "badgeReward",
+          required_profile_completion as "requiredProfileCompletion",
+          required_career_stage as "requiredCareerStage",
+          required_industry as "requiredIndustry",
+          musk_tip as "muskTip",
+          is_active as "isActive",
+          created_at as "createdAt",
+          updated_at as "updatedAt"
+      `, [
+        quest.title,
+        quest.description,
+        quest.type,
+        quest.targetCount,
+        quest.targetAction,
+        quest.xpReward,
+        quest.badgeReward,
+        quest.requiredProfileCompletion,
+        quest.requiredCareerStage,
+        quest.requiredIndustry,
+        quest.muskTip,
+        quest.isActive
+      ]);
+      
+      console.log(`[db.createQuestDefinition] Created quest definition with ID ${result.rows[0].id}`);
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.createQuestDefinition] Error creating quest definition:`, error);
+      throw error;
+    }
+  }
+
+  async updateQuestDefinition(id: number, quest: Partial<QuestDefinition>): Promise<QuestDefinition | undefined> {
+    try {
+      console.log(`[db.updateQuestDefinition] Updating quest definition ${id} with:`, quest);
+      
+      const updateFields = [];
+      const values = [];
+      let paramIndex = 1;
+      
+      if (quest.title !== undefined) {
+        updateFields.push(`title = $${paramIndex++}`);
+        values.push(quest.title);
+      }
+      if (quest.description !== undefined) {
+        updateFields.push(`description = $${paramIndex++}`);
+        values.push(quest.description);
+      }
+      if (quest.type !== undefined) {
+        updateFields.push(`type = $${paramIndex++}`);
+        values.push(quest.type);
+      }
+      if (quest.targetCount !== undefined) {
+        updateFields.push(`target_count = $${paramIndex++}`);
+        values.push(quest.targetCount);
+      }
+      if (quest.targetAction !== undefined) {
+        updateFields.push(`target_action = $${paramIndex++}`);
+        values.push(quest.targetAction);
+      }
+      if (quest.xpReward !== undefined) {
+        updateFields.push(`xp_reward = $${paramIndex++}`);
+        values.push(quest.xpReward);
+      }
+      if (quest.badgeReward !== undefined) {
+        updateFields.push(`badge_reward = $${paramIndex++}`);
+        values.push(quest.badgeReward);
+      }
+      if (quest.requiredProfileCompletion !== undefined) {
+        updateFields.push(`required_profile_completion = $${paramIndex++}`);
+        values.push(quest.requiredProfileCompletion);
+      }
+      if (quest.requiredCareerStage !== undefined) {
+        updateFields.push(`required_career_stage = $${paramIndex++}`);
+        values.push(quest.requiredCareerStage);
+      }
+      if (quest.requiredIndustry !== undefined) {
+        updateFields.push(`required_industry = $${paramIndex++}`);
+        values.push(quest.requiredIndustry);
+      }
+      if (quest.muskTip !== undefined) {
+        updateFields.push(`musk_tip = $${paramIndex++}`);
+        values.push(quest.muskTip);
+      }
+      if (quest.isActive !== undefined) {
+        updateFields.push(`is_active = $${paramIndex++}`);
+        values.push(quest.isActive);
+      }
+      
+      if (updateFields.length === 0) {
+        return this.getQuestDefinitionById(id);
+      }
+      
+      updateFields.push(`updated_at = $${paramIndex++}`);
+      values.push(new Date());
+      values.push(id);
+      
+      const result = await pool.query(`
+        UPDATE quest_definitions
+        SET ${updateFields.join(', ')}
+        WHERE id = $${paramIndex}
+        RETURNING 
+          id,
+          title,
+          description,
+          type,
+          target_count as "targetCount",
+          target_action as "targetAction",
+          xp_reward as "xpReward",
+          badge_reward as "badgeReward",
+          required_profile_completion as "requiredProfileCompletion",
+          required_career_stage as "requiredCareerStage",
+          required_industry as "requiredIndustry",
+          musk_tip as "muskTip",
+          is_active as "isActive",
+          created_at as "createdAt",
+          updated_at as "updatedAt"
+      `, values);
+      
+      if (result.rows.length === 0) {
+        console.log(`[db.updateQuestDefinition] No quest definition found with ID ${id}`);
+        return undefined;
+      }
+      
+      console.log(`[db.updateQuestDefinition] Updated quest definition with ID ${id}`);
+      return result.rows[0];
+    } catch (error) {
+      console.error(`[db.updateQuestDefinition] Error updating quest definition with ID ${id}:`, error);
+      throw error;
+    }
+  }
+
+  async deleteQuestDefinition(id: number): Promise<boolean> {
+    try {
+      console.log(`[db.deleteQuestDefinition] Deleting quest definition with ID: ${id}`);
+      
+      const result = await pool.query(`
+        DELETE FROM quest_definitions
+        WHERE id = $1
+      `, [id]);
+      
+      const deleted = result.rowCount > 0;
+      console.log(`[db.deleteQuestDefinition] Quest definition ${id} deletion result: ${deleted}`);
+      return deleted;
+    } catch (error) {
+      console.error(`[db.deleteQuestDefinition] Error deleting quest definition with ID ${id}:`, error);
+      return false;
+    }
+  }
+
   async getQuestDefinitionById(id: number): Promise<QuestDefinition | undefined> {
     return this.questDefinitions.get(id);
   }
