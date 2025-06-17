@@ -700,6 +700,62 @@ export const insertUserHashtagFollowSchema = createInsertSchema(userHashtagFollo
 export type UserHashtagFollow = typeof userHashtagFollows.$inferSelect;
 export type InsertUserHashtagFollow = z.infer<typeof insertUserHashtagFollowSchema>;
 
+// User mentor following relationship model - tracks which mentors/users a user follows
+export const userFollows = pgTable("user_follows", {
+  id: serial("id").primaryKey(),
+  followerId: integer("follower_id").references(() => users.id).notNull(),
+  followeeId: integer("followee_id").references(() => users.id).notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// User interests model - AI-detected interests based on engagement patterns
+export const userInterests = pgTable("user_interests", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  interest: text("interest").notNull(), // AI-detected interest topic
+  confidence: decimal("confidence", { precision: 5, scale: 2 }).default("0.5"), // AI confidence score 0-1
+  source: text("source").default("ai_detected"), // How interest was detected: ai_detected, manual, engagement
+  lastUpdated: timestamp("last_updated").defaultNow(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Pulse engagement tracking for personalization
+export const pulseEngagements = pgTable("pulse_engagements", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  pulseId: integer("pulse_id").references(() => pulses.id).notNull(),
+  engagementType: text("engagement_type").notNull(), // insightful, misinformed, inspired, share, comment, view
+  weight: decimal("weight", { precision: 3, scale: 2 }).default("1.0"), // Engagement weight for personalization
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Insert schemas for new tables
+export const insertUserFollowSchema = createInsertSchema(userFollows).omit({
+  id: true,
+  createdAt: true
+});
+
+export const insertUserInterestSchema = createInsertSchema(userInterests).omit({
+  id: true,
+  lastUpdated: true,
+  createdAt: true
+});
+
+export const insertPulseEngagementSchema = createInsertSchema(pulseEngagements).omit({
+  id: true,
+  createdAt: true
+});
+
+// Export types for new tables
+export type UserFollow = typeof userFollows.$inferSelect;
+export type InsertUserFollow = z.infer<typeof insertUserFollowSchema>;
+
+export type UserInterest = typeof userInterests.$inferSelect;
+export type InsertUserInterest = z.infer<typeof insertUserInterestSchema>;
+
+export type PulseEngagement = typeof pulseEngagements.$inferSelect;
+export type InsertPulseEngagement = z.infer<typeof insertPulseEngagementSchema>;
+
 // News source categories enum
 export const newsSourceCategoryEnum = pgEnum("news_source_category", [
   "technology",

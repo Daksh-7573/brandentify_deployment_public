@@ -11478,6 +11478,311 @@ export class DatabaseStorage implements IStorage {
 
     return { isRestricted: false };
   }
+
+  // Personalized Feed System Methods
+  
+  async getFollowedHashtagsByUserId(userId: number): Promise<any[]> {
+    try {
+      const result = await pool.query(`
+        SELECT uhf.*, h.tag, h.count
+        FROM user_hashtag_follows uhf
+        JOIN hashtags h ON uhf.hashtag_id = h.id
+        WHERE uhf.user_id = $1
+        ORDER BY uhf.created_at DESC
+      `, [userId]);
+      
+      return result.rows;
+    } catch (error) {
+      console.error('[db.getFollowedHashtagsByUserId] Error:', error);
+      return [];
+    }
+  }
+
+  async getFollowedUsersByUserId(userId: number): Promise<any[]> {
+    try {
+      const result = await pool.query(`
+        SELECT uf.*, u.name, u.photo_url as "photoURL", u.title, u.industry
+        FROM user_follows uf
+        JOIN users u ON uf.followee_id = u.id
+        WHERE uf.follower_id = $1
+        ORDER BY uf.created_at DESC
+      `, [userId]);
+      
+      return result.rows;
+    } catch (error) {
+      console.error('[db.getFollowedUsersByUserId] Error:', error);
+      return [];
+    }
+  }
+
+  async getPulsesByHashtagIds(hashtagIds: number[], includeTypes?: string[]): Promise<any[]> {
+    if (!hashtagIds.length) return [];
+    
+    try {
+      let typeCondition = '';
+      let params = [hashtagIds];
+      
+      if (includeTypes && includeTypes.length > 0) {
+        typeCondition = 'AND p.type = ANY($2)';
+        params.push(includeTypes);
+      }
+      
+      const result = await pool.query(`
+        SELECT DISTINCT p.*, u.name, u.photo_url as "photoURL", u.title,
+          ARRAY_AGG(h.tag) as hashtags
+        FROM pulses p
+        JOIN pulse_hashtags ph ON p.id = ph.pulse_id
+        JOIN hashtags h ON ph.hashtag_id = h.id
+        JOIN users u ON p.user_id = u.id
+        WHERE ph.hashtag_id = ANY($1) ${typeCondition}
+        GROUP BY p.id, u.name, u.photo_url, u.title
+        ORDER BY p.created_at DESC
+        LIMIT 50
+      `, params);
+      
+      return result.rows;
+    } catch (error) {
+      console.error('[db.getPulsesByHashtagIds] Error:', error);
+      return [];
+    }
+  }
+
+  async getPulsesByUserIds(userIds: number[], includeTypes?: string[]): Promise<any[]> {
+    if (!userIds.length) return [];
+    
+    try {
+      let typeCondition = '';
+      let params = [userIds];
+      
+      if (includeTypes && includeTypes.length > 0) {
+        typeCondition = 'AND p.type = ANY($2)';
+        params.push(includeTypes);
+      }
+      
+      const result = await pool.query(`
+        SELECT p.*, u.name, u.photo_url as "photoURL", u.title,
+          COALESCE(
+            ARRAY_AGG(h.tag) FILTER (WHERE h.tag IS NOT NULL),
+            '{}'::text[]
+          ) as hashtags
+        FROM pulses p
+        JOIN users u ON p.user_id = u.id
+        LEFT JOIN pulse_hashtags ph ON p.id = ph.pulse_id
+        LEFT JOIN hashtags h ON ph.hashtag_id = h.id
+        WHERE p.user_id = ANY($1) ${typeCondition}
+        GROUP BY p.id, u.name, u.photo_url, u.title
+        ORDER BY p.created_at DESC
+        LIMIT 50
+      `, params);
+      
+      return result.rows;
+    } catch (error) {
+      console.error('[db.getPulsesByUserIds] Error:', error);
+      return [];
+    }
+  }
+
+  async getHashtagsFromUserEngagements(userId: number): Promise<number[]> {
+    try {
+      const result = await pool.query(`
+        SELECT DISTINCT ph.hashtag_id
+        FROM pulse_engagements pe
+        JOIN pulse_hashtags ph ON pe.pulse_id = ph.pulse_id
+        WHERE pe.user_id = $1
+        AND pe.engagement_type IN ('insightful', 'inspired', 'share', 'comment')
+        ORDER BY ph.hashtag_id
+      `, [userId]);
+      
+      return result.rows.map(row => row.hashtag_id);
+    } catch (error) {
+      console.error('[db.getHashtagsFromUserEngagements] Error:', error);
+      return [];
+    }
+  }
+
+  async getPulsesByIndustryAndDomain(industry?: string, domain?: string, includeTypes?: string[]): Promise<any[]> {
+    if (!industry && !domain) return [];
+    
+    try {
+      let conditions = [];
+      let params: any[] = [];
+      let paramIndex = 1;
+      
+      if (industry) {
+        conditions.push(`p.industry = $${paramIndex++}`);
+        params.push(industry);
+      }
+      
+      if (domain) {
+        conditions.push(`p.category = $${paramIndex++}`);
+        params.push(domain);
+      }
+      
+      if (includeTypes && includeTypes.length > 0) {
+        conditions.push(`p.type = ANY($${paramIndex++})`);
+        params.push(includeTypes);
+      }
+      
+      const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+      
+      const result = await pool.query(`
+        SELECT p.*, u.name, u.photo_url as "photoURL", u.title,
+          COALESCE(
+            ARRAY_AGG(h.tag) FILTER (WHERE h.tag IS NOT NULL),
+            '{}'::text[]
+          ) as hashtags
+        FROM pulses p
+        JOIN users u ON p.user_id = u.id
+        LEFT JOIN pulse_hashtags ph ON p.id = ph.pulse_id
+        LEFT JOIN hashtags h ON ph.hashtag_id = h.id
+        ${whereClause}
+        GROUP BY p.id, u.name, u.photo_url, u.title
+        ORDER BY p.created_at DESC
+        LIMIT 30
+      `, params);
+      
+      return result.rows;
+    } catch (error) {
+      console.error('[db.getPulsesByIndustryAndDomain] Error:', error);
+      return [];
+    }
+  }
+
+  async getPulsesByInterests(interests: string[], includeTypes?: string[]): Promise<any[]> {
+    if (!interests.length) return [];
+    
+    try {
+      let typeCondition = '';
+      let params = [interests];
+      
+      if (includeTypes && includeTypes.length > 0) {
+        typeCondition = 'AND p.type = ANY($2)';
+        params.push(includeTypes);
+      }
+      
+      const result = await pool.query(`
+        SELECT p.*, u.name, u.photo_url as "photoURL", u.title,
+          COALESCE(
+            ARRAY_AGG(h.tag) FILTER (WHERE h.tag IS NOT NULL),
+            '{}'::text[]
+          ) as hashtags
+        FROM pulses p
+        JOIN users u ON p.user_id = u.id
+        LEFT JOIN pulse_hashtags ph ON p.id = ph.pulse_id
+        LEFT JOIN hashtags h ON ph.hashtag_id = h.id
+        WHERE (
+          p.title ILIKE ANY(SELECT '%' || unnest($1) || '%') OR
+          p.content ILIKE ANY(SELECT '%' || unnest($1) || '%') OR
+          h.tag = ANY($1)
+        ) ${typeCondition}
+        GROUP BY p.id, u.name, u.photo_url, u.title
+        ORDER BY p.created_at DESC
+        LIMIT 30
+      `, params);
+      
+      return result.rows;
+    } catch (error) {
+      console.error('[db.getPulsesByInterests] Error:', error);
+      return [];
+    }
+  }
+
+  async getUserInterests(userId: number): Promise<any[]> {
+    try {
+      const result = await pool.query(`
+        SELECT *
+        FROM user_interests
+        WHERE user_id = $1
+        ORDER BY confidence DESC, last_updated DESC
+      `, [userId]);
+      
+      return result.rows;
+    } catch (error) {
+      console.error('[db.getUserInterests] Error:', error);
+      return [];
+    }
+  }
+
+  async createPulseEngagement(engagement: any): Promise<any> {
+    try {
+      const result = await pool.query(`
+        INSERT INTO pulse_engagements (user_id, pulse_id, engagement_type, weight)
+        VALUES ($1, $2, $3, $4)
+        ON CONFLICT (user_id, pulse_id, engagement_type) 
+        DO UPDATE SET weight = EXCLUDED.weight, created_at = NOW()
+        RETURNING *
+      `, [engagement.userId, engagement.pulseId, engagement.engagementType, engagement.weight || 1.0]);
+      
+      return result.rows[0];
+    } catch (error) {
+      console.error('[db.createPulseEngagement] Error:', error);
+      throw error;
+    }
+  }
+
+  async upsertUserInterest(interest: any): Promise<any> {
+    try {
+      const result = await pool.query(`
+        INSERT INTO user_interests (user_id, interest, confidence, source)
+        VALUES ($1, $2, $3, $4)
+        ON CONFLICT (user_id, interest) 
+        DO UPDATE SET 
+          confidence = GREATEST(user_interests.confidence, EXCLUDED.confidence),
+          last_updated = NOW()
+        RETURNING *
+      `, [interest.userId, interest.interest, interest.confidence || 0.5, interest.source || 'ai_detected']);
+      
+      return result.rows[0];
+    } catch (error) {
+      console.error('[db.upsertUserInterest] Error:', error);
+      throw error;
+    }
+  }
+
+  async followUser(followerId: number, followeeId: number): Promise<any> {
+    try {
+      const result = await pool.query(`
+        INSERT INTO user_follows (follower_id, followee_id)
+        VALUES ($1, $2)
+        ON CONFLICT (follower_id, followee_id) DO NOTHING
+        RETURNING *
+      `, [followerId, followeeId]);
+      
+      return result.rows[0];
+    } catch (error) {
+      console.error('[db.followUser] Error:', error);
+      throw error;
+    }
+  }
+
+  async unfollowUser(followerId: number, followeeId: number): Promise<boolean> {
+    try {
+      const result = await pool.query(`
+        DELETE FROM user_follows
+        WHERE follower_id = $1 AND followee_id = $2
+        RETURNING *
+      `, [followerId, followeeId]);
+      
+      return result.rows.length > 0;
+    } catch (error) {
+      console.error('[db.unfollowUser] Error:', error);
+      return false;
+    }
+  }
+
+  async isUserFollowing(followerId: number, followeeId: number): Promise<boolean> {
+    try {
+      const result = await pool.query(`
+        SELECT 1 FROM user_follows
+        WHERE follower_id = $1 AND followee_id = $2
+      `, [followerId, followeeId]);
+      
+      return result.rows.length > 0;
+    } catch (error) {
+      console.error('[db.isUserFollowing] Error:', error);
+      return false;
+    }
+  }
 }
 
 // Create a properly typed storage instance
@@ -11766,5 +12071,20 @@ export const storage = {
   getPortfolioById: (id: number) => dbStorage.getPortfolioById(id),
   createPortfolio: (portfolio: InsertPortfolio) => dbStorage.createPortfolio(portfolio),
   updatePortfolio: (id: number, portfolioData: Partial<Portfolio>) => dbStorage.updatePortfolio(id, portfolioData),
-  deletePortfolio: (id: number) => dbStorage.deletePortfolio(id)
+  deletePortfolio: (id: number) => dbStorage.deletePortfolio(id),
+  
+  // Personalized Feed methods
+  getFollowedHashtagsByUserId: (userId: number) => dbStorage.getFollowedHashtagsByUserId(userId),
+  getFollowedUsersByUserId: (userId: number) => dbStorage.getFollowedUsersByUserId(userId),
+  getPulsesByHashtagIds: (hashtagIds: number[], includeTypes?: string[]) => dbStorage.getPulsesByHashtagIds(hashtagIds, includeTypes),
+  getPulsesByUserIds: (userIds: number[], includeTypes?: string[]) => dbStorage.getPulsesByUserIds(userIds, includeTypes),
+  getHashtagsFromUserEngagements: (userId: number) => dbStorage.getHashtagsFromUserEngagements(userId),
+  getPulsesByIndustryAndDomain: (industry?: string, domain?: string, includeTypes?: string[]) => dbStorage.getPulsesByIndustryAndDomain(industry, domain, includeTypes),
+  getPulsesByInterests: (interests: string[], includeTypes?: string[]) => dbStorage.getPulsesByInterests(interests, includeTypes),
+  getUserInterests: (userId: number) => dbStorage.getUserInterests(userId),
+  createPulseEngagement: (engagement: any) => dbStorage.createPulseEngagement(engagement),
+  upsertUserInterest: (interest: any) => dbStorage.upsertUserInterest(interest),
+  followUser: (followerId: number, followeeId: number) => dbStorage.followUser(followerId, followeeId),
+  unfollowUser: (followerId: number, followeeId: number) => dbStorage.unfollowUser(followerId, followeeId),
+  isUserFollowing: (followerId: number, followeeId: number) => dbStorage.isUserFollowing(followerId, followeeId)
 } as IStorage;
