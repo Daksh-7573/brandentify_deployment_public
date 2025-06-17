@@ -524,7 +524,7 @@ export interface IStorage {
   
   // Career Quests operations
   // Quest Definition operations
-  getQuestDefinitions(): Promise<QuestDefinition[]>;
+  getAllQuestDefinitions(): Promise<QuestDefinition[]>;
   getQuestDefinitionById(id: number): Promise<QuestDefinition | undefined>;
   getActiveQuestDefinitions(): Promise<QuestDefinition[]>;
   getQuestDefinitionsByType(type: string): Promise<QuestDefinition[]>;
@@ -7160,9 +7160,9 @@ export class MemStorage implements IStorage {
     }
   }
 
-  async getActiveQuestDefinitions(): Promise<QuestDefinition[]> {
+  async getQuestDefinitionsByType(type: string): Promise<QuestDefinition[]> {
     try {
-      console.log('[db.getActiveQuestDefinitions] Fetching active quest definitions');
+      console.log(`[db.getQuestDefinitionsByType] Fetching quest definitions for type: ${type}`);
       
       const tableCheck = await pool.query(`
         SELECT EXISTS (
@@ -7173,7 +7173,7 @@ export class MemStorage implements IStorage {
       `);
       
       if (!tableCheck.rows[0].exists) {
-        console.log(`[db.getActiveQuestDefinitions] quest_definitions table does not exist`);
+        console.log(`[db.getQuestDefinitionsByType] quest_definitions table does not exist`);
         return [];
       }
       
@@ -7195,21 +7195,16 @@ export class MemStorage implements IStorage {
           created_at as "createdAt",
           updated_at as "updatedAt"
         FROM quest_definitions
-        WHERE is_active = true
+        WHERE type = $1 AND is_active = true
         ORDER BY created_at DESC
-      `);
+      `, [type]);
       
-      console.log(`[db.getActiveQuestDefinitions] Found ${result.rows.length} active quest definitions`);
+      console.log(`[db.getQuestDefinitionsByType] Found ${result.rows.length} quest definitions for type ${type}`);
       return result.rows;
     } catch (error) {
-      console.error('[db.getActiveQuestDefinitions] Error fetching active quest definitions:', error);
+      console.error(`[db.getQuestDefinitionsByType] Error fetching quest definitions for type ${type}:`, error);
       return [];
     }
-  }
-
-  async getQuestDefinitionsByType(type: string): Promise<QuestDefinition[]> {
-    return Array.from(this.questDefinitions.values())
-      .filter(quest => quest.type === type && quest.isActive);
   }
 
   async createQuestDefinition(quest: InsertQuestDefinition): Promise<QuestDefinition> {

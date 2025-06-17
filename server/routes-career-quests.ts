@@ -18,7 +18,7 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
   // Quest Definition routes
   apiRouter.get("/quest-definitions", async (req, res) => {
     try {
-      const questDefinitions = await storage.getQuestDefinitions();
+      const questDefinitions = await storage.getAllQuestDefinitions();
       res.json(questDefinitions);
     } catch (error) {
       console.error('[GET /quest-definitions] Error:', error);
