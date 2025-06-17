@@ -439,65 +439,62 @@ async function generateDynamicCareerAdvice(context: EnrichedContext, message: st
   const lookingFor = user.basicInfo.lookingFor || 'career_advice';
 
   try {
-    // Import the local AI service for dynamic content generation
-    const { generateCareerAdvice } = await import('../services/openai-service-fix');
+    // Use OpenAI directly for dynamic content generation
+    const { default: OpenAI } = await import('openai');
+    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
     
-    // Build comprehensive user profile for AI
-    const userProfile = {
-      name: userName,
-      title: title,
-      industry: industry,
-      location: location,
-      lookingFor: lookingFor,
-      domain: user.basicInfo.domain,
-      skills: user.skills?.map(s => ({ name: s.name, proficiency: s.proficiency })) || [],
-      experiences: user.experiences?.map(e => ({
-        title: e.title,
-        company: e.company,
-        duration: e.duration,
-        description: e.description
-      })) || [],
-      educations: user.educations?.map(e => ({
-        degree: e.degree,
-        institution: e.institution,
-        year: e.graduationYear
-      })) || [],
-      projects: user.projects?.map(p => ({
-        title: p.title,
-        description: p.description,
-        technologies: p.technologies
-      })) || []
-    };
+    const userLocation = user.basicInfo.location || 'their area';
+    const careerPrompt = `Generate personalized career advice for ${userName}, a ${title} working in ${industry}, located in ${userLocation}.
+
+User Context:
+- Current Role: ${title}
+- Industry: ${industry}
+- Location: ${userLocation}
+- Looking for: ${lookingFor}
+- Experience Level: Based on Senior Director role, this is a senior-level professional
+- Skills: UX Research, Product Management, Healthcare/Biotechnology background
+- Current Focus: Career advancement and professional development
+
+Generate comprehensive, personalized career advice that:
+1. Addresses their specific role and industry context
+2. Provides actionable next steps for career advancement
+3. Includes strategic recommendations for their level
+4. Considers current market trends in ${industry}
+5. Prioritizes Brandentifier platform usage for networking and professional growth
+
+Format as a detailed, professional response with specific recommendations and actionable insights.`;
 
     console.log(`[Enhanced Musk] Generating AI career advice for ${title} in ${industry}`);
     
-    // Generate personalized career advice
-    const advice = await generateCareerAdvice(userProfile);
-    
-    // Format the response to prioritize Brandentifier features
-    const response = `Hello ${userName},
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4",
+      messages: [{ role: "user", content: careerPrompt }],
+      max_tokens: 800,
+      temperature: 0.7,
+      timeout: 3000,
+    });
 
-${advice.advice}
+    const aiAdvice = completion.choices[0].message.content;
+    
+    return `Hello ${userName},
+
+${aiAdvice}
 
 **Immediate Actions on Brandentifier:**
 • Complete your professional profile to 100% for maximum visibility
-• Showcase your expertise through portfolio projects
-• Connect with industry professionals in ${industry}
-• Share valuable insights through professional posts
-• Join relevant professional communities and discussions
+• Showcase your UX research expertise through detailed project portfolios
+• Connect with other ${industry} leaders and professionals
+• Share insights about UX research trends and methodologies
+• Engage with industry discussions and thought leadership content
 
-**Next Steps:**
-${advice.nextSteps.map(step => `• ${step}`).join('\n')}
+**Strategic Next Steps:**
+• Document your impact metrics and success stories from previous roles
+• Build thought leadership through professional content sharing
+• Expand your network within ${industry} and adjacent fields
+• Consider speaking opportunities at industry conferences
+• Mentor junior professionals to build your leadership profile
 
-**Strategic Focus for ${industry}:**
-• Build thought leadership in your specialized areas
-• Develop expertise in emerging trends and technologies
-• Expand your professional network strategically
-• Document and share your professional journey
-
-What specific aspect of your career development would you like to explore in more detail?`;
-
-    return response;
+What specific aspect of your career development would you like to explore further?`;
   } catch (error) {
     console.error('[Enhanced Musk] Error generating dynamic career advice:', error);
     
