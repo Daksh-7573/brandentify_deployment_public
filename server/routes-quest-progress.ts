@@ -42,7 +42,7 @@ export async function trackUserAction(
     }
 
     // 2. Get all quest definitions to match actions to target_action
-    const questDefinitions = await storage.getQuestDefinitions();
+    const questDefinitions = await storage.getAllQuestDefinitions();
     if (!questDefinitions || questDefinitions.length === 0) {
       console.log(`[trackUserAction] No quest definitions found`);
       return;
