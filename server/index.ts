@@ -178,6 +178,9 @@ app.use((req, res, next) => {
   if (req.path.includes('/career-capsule') && req.method === 'POST') {
     console.log('[JSON Parser Debug] After parsing - Body:', req.body);
     console.log('[JSON Parser Debug] Body type:', typeof req.body);
+    // Store the parsed body to prevent loss with deep clone
+    (req as any)._originalBody = JSON.parse(JSON.stringify(req.body));
+    console.log('[JSON Parser Debug] Stored original body:', (req as any)._originalBody);
   }
   next();
 });

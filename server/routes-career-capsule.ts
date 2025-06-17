@@ -5,7 +5,7 @@ import { pool } from './db';
 
 const router = Router();
 
-// Enhanced debug middleware - body should already be parsed by main server
+// Body restoration middleware - fix for req.body being cleared
 router.use((req, res, next) => {
   console.log('[Career Capsule Router] Method:', req.method);
   console.log('[Career Capsule Router] URL:', req.url);
@@ -14,6 +14,20 @@ router.use((req, res, next) => {
   console.log('[Career Capsule Router] Raw body:', req.body);
   console.log('[Career Capsule Router] Body type:', typeof req.body);
   console.log('[Career Capsule Router] Body keys:', Object.keys(req.body || {}));
+  
+  // Restore the original parsed body if it was cleared
+  if (req.method === 'POST') {
+    const originalBody = (req as any)._originalBody;
+    const bodyIsEmpty = !req.body || Object.keys(req.body).length === 0;
+    console.log('[Career Capsule Router] Body is empty:', bodyIsEmpty, 'Original body exists:', !!originalBody);
+    
+    if (bodyIsEmpty && originalBody) {
+      console.log('[Career Capsule Router] Restoring original body:', originalBody);
+      req.body = originalBody;
+      console.log('[Career Capsule Router] Body after restoration:', req.body);
+    }
+  }
+  
   next();
 });
 
