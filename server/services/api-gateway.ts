@@ -149,6 +149,13 @@ export class APIGateway {
       return;
     }
     
+    // BYPASS health check for career capsule routes - critical fix
+    if (req.path.includes('/career-capsule') || req.path.includes('/career-goals')) {
+      console.log(`[API Gateway] Bypassing health check for career capsule: ${req.path}`);
+      next();
+      return;
+    }
+    
     const serviceName = req.serviceContext?.serviceName;
     
     if (serviceName && !this.serviceHealth.get(serviceName)) {

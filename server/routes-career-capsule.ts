@@ -1,31 +1,13 @@
-import { Router } from 'express';
+import express, { Router } from 'express';
 import { storage } from './storage';
 import { generateCapsuleMilestones, saveCapsuleMilestones } from './services/musk-capsule-milestones';
 import { pool } from './db';
 
 const router = Router();
 
-// Add JSON middleware to parse request bodies
-router.use((req, res, next) => {
-  if (req.headers['content-type'] && req.headers['content-type'].includes('application/json')) {
-    let body = '';
-    req.on('data', chunk => {
-      body += chunk.toString();
-    });
-    req.on('end', () => {
-      try {
-        req.body = JSON.parse(body);
-        console.log('[Career Capsule Router] Parsed JSON body:', req.body);
-      } catch (error) {
-        console.error('[Career Capsule Router] JSON parsing error:', error);
-        req.body = {};
-      }
-      next();
-    });
-  } else {
-    next();
-  }
-});
+// Add Express JSON middleware explicitly for this router
+router.use(express.json({ limit: '10mb' }));
+router.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Get user's career capsule
 router.get('/users/:userId/career-capsule', async (req, res) => {
@@ -188,41 +170,34 @@ router.post('/users/:userId/career-capsule', async (req, res) => {
       description: capsuleData.description,
     };
     
-    console.log('Generating AI milestones for new capsule:', capsule.id);
+    // Start AI milestone generation asynchronously (don't wait for it)
+    console.log('Starting async AI milestone generation for capsule:', capsule.id);
     
-    try {
-      // Generate milestones using Musk AI
-      const result = await generateCapsuleMilestones(options);
-      
-      if (result.success && result.years) {
-        console.log(`Successfully generated ${result.years.length} years of milestones with Musk AI`);
-        
-        // Save the AI-generated milestones
-        const saved = await saveCapsuleMilestones(capsule.id, result.years);
-        
-        if (saved) {
-          // Update the capsule to indicate AI milestones were generated
-          await storage.updateCareerCapsule(capsule.id, {
-            isMuskGenerated: true
-          });
+    // Fire and forget - generate milestones in the background
+    generateCapsuleMilestones(options)
+      .then(async (result) => {
+        if (result.success && result.years) {
+          console.log(`Successfully generated ${result.years.length} years of milestones with Musk AI for capsule ${capsule.id}`);
           
-          // Return the created capsule with success message
-          return res.status(201).json({
-            ...capsule,
-            milestonesGenerated: true,
-            message: 'Career capsule created with AI-generated milestones'
-          });
+          // Save the AI-generated milestones
+          const saved = await saveCapsuleMilestones(capsule.id, result.years);
+          
+          if (saved) {
+            // Update the capsule to indicate AI milestones were generated
+            await storage.updateCareerCapsule(capsule.id, {
+              isMuskGenerated: true
+            });
+            console.log(`AI milestones saved successfully for capsule ${capsule.id}`);
+          } else {
+            console.error(`Failed to save AI-generated milestones for capsule ${capsule.id}`);
+          }
         } else {
-          console.error('Failed to save AI-generated milestones. Falling back to default milestones.');
+          console.error(`Failed to generate AI milestones for capsule ${capsule.id}:`, result.message);
         }
-      } else {
-        console.error('Failed to generate AI milestones:', result.message);
-        console.log('Falling back to default milestones');
-      }
-    } catch (error) {
-      console.error('Error during AI milestone generation:', error);
-      console.log('Falling back to default milestones');
-    }
+      })
+      .catch(error => {
+        console.error(`Error during AI milestone generation for capsule ${capsule.id}:`, error);
+      });
     
     // FALLBACK: Create default milestones if AI generation fails
     console.log('Creating default milestones for new capsule:', capsule.id);
