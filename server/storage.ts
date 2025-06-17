@@ -7162,7 +7162,7 @@ export class MemStorage implements IStorage {
 
   async getAllQuestDefinitions(): Promise<QuestDefinition[]> {
     try {
-      console.log('[db.getAllQuestDefinitions] Fetching all quest definitions');
+      console.log('[db.getAllQuestDefinitions] Starting quest definitions fetch');
       
       const tableCheck = await pool.query(`
         SELECT EXISTS (
@@ -7172,11 +7172,14 @@ export class MemStorage implements IStorage {
         );
       `);
       
+      console.log('[db.getAllQuestDefinitions] Table check result:', tableCheck.rows[0]);
+      
       if (!tableCheck.rows[0].exists) {
         console.log('[db.getAllQuestDefinitions] quest_definitions table does not exist');
         return [];
       }
       
+      console.log('[db.getAllQuestDefinitions] Executing main query');
       const result = await pool.query(`
         SELECT 
           id,
@@ -7198,11 +7201,16 @@ export class MemStorage implements IStorage {
         ORDER BY created_at DESC
       `);
       
-      console.log(`[db.getAllQuestDefinitions] Found ${result.rows.length} quest definitions`);
+      console.log(`[db.getAllQuestDefinitions] Query completed successfully with ${result.rows.length} quest definitions`);
+      console.log('[db.getAllQuestDefinitions] Sample result:', result.rows[0]);
       return result.rows;
     } catch (error) {
-      console.error('[db.getAllQuestDefinitions] Error fetching quest definitions:', error);
-      return [];
+      console.error('[db.getAllQuestDefinitions] Detailed error:', {
+        message: error.message,
+        stack: error.stack,
+        name: error.name
+      });
+      throw error; // Re-throw to see the actual error in the API
     }
   }
 
