@@ -174,13 +174,88 @@ app.use(express.json({
 
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
-// Skip all middleware processing for career capsule routes
-app.use((req, res, next) => {
-  if (req.path.includes('/career-capsule') && req.method === 'POST') {
-    console.log('[Career Capsule Skip] Bypassing all middleware for:', req.path);
-    // Skip to the career capsule router immediately
-    return next();
+// Direct raw handler for career capsule POST - complete bypass of middleware
+app.use('/api/users/:userId/career-capsule', (req, res, next) => {
+  if (req.method === 'POST') {
+    console.log('[Raw Career Capsule Handler] Intercepting POST request');
+    
+    let rawBody = '';
+    req.setEncoding('utf8');
+    
+    req.on('data', (chunk) => {
+      rawBody += chunk;
+    });
+    
+    req.on('end', async () => {
+      console.log('[Raw Career Capsule Handler] Raw body received:', rawBody);
+      
+      try {
+        const body = JSON.parse(rawBody);
+        console.log('[Raw Career Capsule Handler] Parsed body:', body);
+        
+        const userId = req.params.userId;
+        const { title, description, goalType, timeframe } = body;
+
+        console.log('[Raw Career Capsule Handler] Title:', title);
+        console.log('[Raw Career Capsule Handler] Goal Type:', goalType);
+
+        // Validate required fields
+        if (!title || title.trim() === '') {
+          return res.status(400).json({ message: 'Title is required for career goal' });
+        }
+
+        if (!goalType) {
+          return res.status(400).json({ message: 'Goal type is required' });
+        }
+
+        // Create the career capsule
+        const capsuleData = {
+          userId: parseInt(userId!),
+          title: title.trim(),
+          description: description || null,
+          goalType,
+          customGoal: null,
+          timeframe: timeframe || 5,
+          industry: null,
+          isPrivate: false,
+          isMuskGenerated: true,
+          overallProgress: 0
+        };
+
+        console.log('[Raw Career Capsule Handler] Creating capsule with data:', capsuleData);
+
+        // Import storage dynamically
+        const { storage } = await import('./storage');
+        const newCapsule = await storage.createCareerCapsule(capsuleData);
+
+        console.log('[Raw Career Capsule Handler] Capsule created successfully:', newCapsule);
+
+        res.status(201).json({
+          message: 'Career capsule created successfully',
+          capsule: newCapsule
+        });
+
+      } catch (error) {
+        console.error('[Raw Career Capsule Handler] Error:', error);
+        res.status(500).json({ 
+          message: 'Failed to create career capsule',
+          error: error instanceof Error ? error.message : 'Unknown error'
+        });
+      }
+    });
+
+    req.on('error', (error) => {
+      console.error('[Raw Career Capsule Handler] Request error:', error);
+      res.status(400).json({ 
+        message: 'Invalid request',
+        error: error.message 
+      });
+    });
+    
+    // Stop here, don't call next()
+    return;
   }
+  
   next();
 });
 
