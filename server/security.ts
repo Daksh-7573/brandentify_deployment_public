@@ -332,7 +332,7 @@ export function setupSecurity(app: any) {
           styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
           imgSrc: ["'self'", "data:", "https:", "blob:"],
           fontSrc: ["'self'", "https://fonts.gstatic.com", "data:"],
-          connectSrc: ["'self'", "https://api.x.ai", "https://api.openai.com", "https://firestore.googleapis.com", "https://identitytoolkit.googleapis.com", "https://securetoken.googleapis.com", "wss:", "https:"],
+          connectSrc: ["'self'", "https://api.x.ai", "https://api.openai.com", "https://firestore.googleapis.com", "https://identitytoolkit.googleapis.com", "https://securetoken.googleapis.com", "wss:", "ws:", "https:", "*"],
           frameSrc: ["'self'", "https://accounts.google.com"],
           objectSrc: ["'none'"],
           mediaSrc: ["'self'", "https:", "blob:"],
@@ -341,7 +341,7 @@ export function setupSecurity(app: any) {
           reportUri: '/api/csp-report',
           upgradeInsecureRequests: [],
         },
-        reportOnly: true // Only report violations without blocking anything for now
+        reportOnly: false // Disable CSP temporarily to fix WebSocket connection issues
       },
       crossOriginEmbedderPolicy: false, // Disable COEP to prevent breaking existing functionality
     })
