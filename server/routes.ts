@@ -6860,10 +6860,6 @@ ${extractedText.substring(0, 5000)}
   addProjectUpdateRoutes(apiRouter);
   console.log("Project Update routes loaded");
 
-  // Career Capsule routes
-  apiRouter.use(careerCapsuleRoutes);
-  console.log("Career Capsule routes registered");
-  
   // Personalized Hashtag routes
   setupPersonalizedHashtagRoutes(app);
   console.log("Personalized Hashtag routes loaded");
@@ -6872,6 +6868,10 @@ ${extractedText.substring(0, 5000)}
   apiRouter.use('/notifications', notificationRoutes);
   console.log("Notification routes loaded");
   
+  // Career Capsule routes - MUST be before conflicting career-goals routes
+  apiRouter.use(careerCapsuleRoutes);
+  console.log("Career Capsule routes registered");
+
   apiRouter.use('/messaging', messagingRoutes);
   console.log("Messaging routes loaded");
   

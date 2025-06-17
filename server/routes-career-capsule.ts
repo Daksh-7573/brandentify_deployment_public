@@ -5,12 +5,21 @@ import { pool } from './db';
 
 const router = Router();
 
+// Force JSON parsing for this router specifically
+router.use(express.json({ limit: '10mb' }));
+
 // Debug middleware - body should already be parsed by main server
 router.use((req, res, next) => {
   console.log('[Career Capsule Router] Method:', req.method);
   console.log('[Career Capsule Router] Content-Type:', req.headers['content-type']);
   console.log('[Career Capsule Router] Parsed body:', JSON.stringify(req.body, null, 2));
   next();
+});
+
+// Test endpoint to verify JSON parsing works
+router.post('/test-json', (req, res) => {
+  console.log('[Career Capsule Test] Received body:', req.body);
+  res.json({ received: req.body, success: true });
 });
 
 // Get user's career capsule
