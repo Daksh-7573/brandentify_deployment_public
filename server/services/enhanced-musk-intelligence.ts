@@ -264,22 +264,11 @@ async function generatePhase3EnhancedResponse(
     const title = context.user.basicInfo.title;
     const industry = context.user.basicInfo.industry || 'your field';
     
-    // Check for specific Brandentifier networking feature questions (not other platforms)
-    const messageLower = message.toLowerCase();
-    const isBrandentifierNetworkingQuestion = (messageLower.includes('brandentifier') && messageLower.includes('network')) ||
-                                             (messageLower.includes('use') && messageLower.includes('brandentifier') && messageLower.includes('network')) ||
-                                             (messageLower.includes('how') && messageLower.includes('brandentifier') && messageLower.includes('network'));
+    // IMPORTANT: Skip static responses - always use dynamic AI generation for unique answers
+    // This ensures each question gets a contextually appropriate, different response
+    console.log(`[Enhanced Musk] Processing question with dynamic AI: "${message}"`);
     
-    const isOtherPlatformQuestion = messageLower.includes('other platform') || 
-                                   messageLower.includes('other than brandentifier') ||
-                                   messageLower.includes('besides brandentifier') ||
-                                   messageLower.includes('platforms other than');
-    
-    // Only use the static Brandentifier response for questions specifically about Brandentifier features
-    if (isBrandentifierNetworkingQuestion && !isOtherPlatformQuestion) {
-      console.log(`[Enhanced Musk] Detected Brandentifier-specific networking feature question, generating specific response`);
-      return generateNetworkingFeatureResponse(userName || 'there', title || 'professional', industry || 'your field');
-    }
+    // Always use AI-generated responses to ensure uniqueness and context awareness
     
     // Build Phase 3 enhanced prompt with all AI capabilities
     const basePrompt = `Generate comprehensive career advice for ${userName}, a ${title} in ${industry}.
@@ -613,24 +602,82 @@ async function generateAdvancedFallback(context: EnrichedContext, message: strin
   let response = `Hello ${userName},\n\n`;
   
   if (isNetworking) {
-    response += `Great question about networking! As a ${title} in ${industry}, here's how to leverage Brandentifier's networking features effectively:\n\n`;
-    response += `**Brandentifier Networking Features:**\n`;
-    response += `• **Professional Discovery**: Use the explore section to find professionals in ${industry} and related fields\n`;
-    response += `• **Smart Connections**: The platform suggests relevant connections based on your industry, role, and interests\n`;
-    response += `• **Industry Pulses**: Share valuable insights to attract like-minded professionals\n`;
-    response += `• **Direct Messaging**: Connect directly with professionals for mentorship and collaboration\n`;
-    response += `• **Professional Groups**: Join ${industry}-specific communities and discussions\n\n`;
-    response += `**How to Use These Features:**\n`;
-    response += `1. Complete your profile to 100% for maximum visibility\n`;
-    response += `2. Upload portfolio projects that showcase your expertise\n`;
-    response += `3. Post regular updates about your work and industry insights\n`;
-    response += `4. Engage meaningfully with others' content through thoughtful comments\n`;
-    response += `5. Use the search filters to find professionals by location, industry, and role\n\n`;
-    response += `**Strategic Networking Tips:**\n`;
-    response += `• Start with quality over quantity - focus on meaningful connections\n`;
-    response += `• Always personalize your connection requests with context\n`;
-    response += `• Share knowledge and insights before asking for help\n`;
-    response += `• Follow up with connections through valuable content sharing\n\n`;
+    // Generate dynamic, context-aware networking advice using OpenAI
+    console.log(`[Enhanced Musk] NETWORKING DETECTED - Generating dynamic advice for: "${message}"`);
+    
+    // Determine if asking about other platforms vs Brandentifier specifically
+    const isOtherPlatformQuestion = /other platform|other than brandentifier|besides brandentifier|platforms other than|linkedin|twitter|facebook/i.test(message);
+    const isBrandentifierQuestion = /brandentifier/i.test(message) && !isOtherPlatformQuestion;
+    
+    console.log(`[Enhanced Musk] Platform analysis: isOtherPlatform=${isOtherPlatformQuestion}, isBrandentifier=${isBrandentifierQuestion}`);
+    
+    try {
+      const { default: OpenAI } = await import('openai');
+      const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+      
+      let networkingPrompt;
+      
+      if (isOtherPlatformQuestion) {
+        console.log(`[Enhanced Musk] Generating response for OTHER PLATFORMS question`);
+        networkingPrompt = `Answer this networking question for ${userName}, a ${title} in ${industry}: "${message}"
+
+The user is asking about networking on platforms OTHER than Brandentifier. Provide a balanced, honest response that:
+1. Acknowledges that yes, they can network on other platforms
+2. Lists popular networking platforms (LinkedIn, industry forums, conferences, Twitter, etc.)
+3. Explains the benefits of multi-platform networking
+4. Provides specific networking strategies for their industry (${industry})
+5. Still mentions Brandentifier as one comprehensive option among others
+
+Be honest about other platforms while positioning Brandentifier appropriately.`;
+      } else if (isBrandentifierQuestion) {
+        console.log(`[Enhanced Musk] Generating response for BRANDENTIFIER-specific question`);
+        networkingPrompt = `Answer this Brandentifier networking question for ${userName}, a ${title} in ${industry}: "${message}"
+
+The user is asking specifically about Brandentifier's networking features. Focus on:
+1. Detailed Brandentifier networking capabilities
+2. Step-by-step usage instructions
+3. Industry-specific tips for ${industry} professionals
+4. How to maximize networking success on the platform
+
+Focus entirely on Brandentifier's features and capabilities.`;
+      } else {
+        console.log(`[Enhanced Musk] Generating response for GENERAL networking question`);
+        networkingPrompt = `Answer this general networking question for ${userName}, a ${title} in ${industry}: "${message}"
+
+Provide comprehensive networking advice that:
+1. Addresses their specific question directly
+2. Includes both digital and in-person networking strategies
+3. Mentions relevant platforms including Brandentifier
+4. Gives industry-specific advice for ${industry}
+5. Provides actionable steps for ${title} professionals
+
+Make the response specific to their question and professional context.`;
+      }
+      
+      console.log(`[Enhanced Musk] Making OpenAI API call for networking advice`);
+      const completion = await openai.chat.completions.create({
+        model: "gpt-3.5-turbo",
+        messages: [{ role: "user", content: networkingPrompt }],
+        max_tokens: 400,
+        temperature: 0.7,
+      });
+
+      const networkingAdvice = completion.choices[0].message.content;
+      console.log(`[Enhanced Musk] OpenAI response generated successfully`);
+      return `Hello ${userName},\n\n${networkingAdvice}`;
+      
+    } catch (error) {
+      console.error('[Enhanced Musk] Error generating dynamic networking advice:', error);
+      // Fallback to generic networking advice
+      console.log(`[Enhanced Musk] Using fallback networking response`);
+      response += `Here's strategic networking guidance for a ${title} in ${industry}:\n\n`;
+      response += `**Multi-Platform Networking Approach:**\n`;
+      response += `• LinkedIn: Essential for professional connections and industry insights\n`;
+      response += `• Brandentifier: Comprehensive platform for career development and networking\n`;
+      response += `• Industry conferences and events for face-to-face connections\n`;
+      response += `• Professional associations in ${industry}\n`;
+      response += `• Twitter/X for thought leadership and industry discussions\n\n`;
+    }
   } else if (isSkills) {
     response += `Skill development is key for your growth as a ${title}. Here's a strategic approach:\n\n`;
     response += `**On Brandentifier:**\n`;
