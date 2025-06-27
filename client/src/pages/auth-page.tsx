@@ -54,24 +54,22 @@ export default function AuthPage() {
               </div>
               
               <Tabs defaultValue="email" onValueChange={(v) => setAuthMethod(v as "email" | "phone")}>
-                <div className="bg-[var(--spotify-glass-bg)] rounded-lg p-1 mb-6 border border-[var(--spotify-glass-border)]">
-                  <div className="grid grid-cols-2 gap-1">
-                    <TabsTrigger 
-                      value="email" 
-                      className="flex items-center justify-center gap-1.5 px-3 py-2 text-sm font-medium text-[var(--spotify-light-gray)] rounded-md transition-all data-[state=active]:bg-[var(--spotify-green)] data-[state=active]:text-[var(--spotify-black)] hover:text-white"
-                    >
-                      <Mail className="h-4 w-4" />
-                      <span>Email</span>
-                    </TabsTrigger>
-                    <TabsTrigger 
-                      value="phone" 
-                      className="flex items-center justify-center gap-1.5 px-3 py-2 text-sm font-medium text-[var(--spotify-light-gray)] rounded-md transition-all data-[state=active]:bg-[var(--spotify-green)] data-[state=active]:text-[var(--spotify-black)] hover:text-white"
-                    >
-                      <Phone className="h-4 w-4" />
-                      <span>Phone</span>
-                    </TabsTrigger>
-                  </div>
-                </div>
+                <TabsList className="bg-[var(--spotify-glass-bg)] rounded-lg p-1 mb-6 border border-[var(--spotify-glass-border)] grid grid-cols-2">
+                  <TabsTrigger 
+                    value="email" 
+                    className="flex items-center justify-center gap-1.5 px-3 py-2 text-sm font-medium text-[var(--spotify-light-gray)] rounded-md transition-all data-[state=active]:bg-[var(--spotify-green)] data-[state=active]:text-[var(--spotify-black)] hover:text-white"
+                  >
+                    <Mail className="h-4 w-4" />
+                    <span>Email</span>
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="phone" 
+                    className="flex items-center justify-center gap-1.5 px-3 py-2 text-sm font-medium text-[var(--spotify-light-gray)] rounded-md transition-all data-[state=active]:bg-[var(--spotify-green)] data-[state=active]:text-[var(--spotify-black)] hover:text-white"
+                  >
+                    <Phone className="h-4 w-4" />
+                    <span>Phone</span>
+                  </TabsTrigger>
+                </TabsList>
 
                 {/* Email Authentication */}
                 <TabsContent value="email">
