@@ -28,8 +28,8 @@ export function GoogleAuth() {
 
   return (
     <div className="space-y-4">
-      {/* Show domain auth alert for problematic domains */}
-      <DomainAuthAlert />
+      {/* Domain auth alert removed per user request */}
+      {/* <DomainAuthAlert /> */}
       
       {/* Show error message if any */}
       {errorMessage && (
