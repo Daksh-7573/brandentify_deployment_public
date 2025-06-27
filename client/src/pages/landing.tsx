@@ -11,12 +11,20 @@ export default function Landing() {
   // Demo mode function removed as per request
   const [_, setLocation] = useLocation();
 
+  // Check if user wants to stay on landing page (via query parameter)
+  const urlParams = new URLSearchParams(window.location.search);
+  const stayOnLanding = urlParams.get('stay') === 'true';
+
   // Redirect to dashboard if already authenticated - using useEffect to avoid state updates during render
   useEffect(() => {
-    if (isAuthenticated) {
-      setLocation('/dashboard');
+    if (isAuthenticated && !stayOnLanding) {
+      // Add a small delay to allow users to see the landing page URL briefly
+      const timer = setTimeout(() => {
+        setLocation('/dashboard');
+      }, 100);
+      return () => clearTimeout(timer);
     }
-  }, [isAuthenticated, setLocation]);
+  }, [isAuthenticated, setLocation, stayOnLanding]);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -29,16 +37,26 @@ export default function Landing() {
                 <span className="text-primary text-2xl font-bold">Brandentifier</span>
               </div>
             </div>
-            <div className="flex items-center">
-              {/* Demo button removed as per request */}
-              <Button 
-                variant="default" 
-                className="ml-4"
-                onClick={() => setLocation('/auth')}
-                disabled={isLoading}
-              >
-                {isLoading ? "Loading..." : "Sign in"}
-              </Button>
+            <div className="flex items-center space-x-4">
+              {isAuthenticated ? (
+                <>
+                  <span className="text-sm text-gray-600">Welcome back!</span>
+                  <Button 
+                    variant="default" 
+                    onClick={() => setLocation('/dashboard')}
+                  >
+                    Go to Dashboard
+                  </Button>
+                </>
+              ) : (
+                <Button 
+                  variant="default" 
+                  onClick={() => setLocation('/auth')}
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Loading..." : "Sign in"}
+                </Button>
+              )}
             </div>
           </div>
         </div>

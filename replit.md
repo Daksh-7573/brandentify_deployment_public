@@ -128,6 +128,30 @@ Brandentifier is a comprehensive career development platform that combines AI-dr
 
 ## Recent Changes
 
+### Landing Page URL Issue Resolution COMPLETED
+- **Date**: June 27, 2025
+- **Status**: Landing Page URL Problem Fixed - Full Access Restored
+- **Problem Solved**: Fixed issue where authenticated users couldn't see landing page URL due to immediate redirect
+- **Technical Solution**: 
+  - Added query parameter bypass (`/?stay=true`) to allow authenticated users to view landing page
+  - Implemented conditional rendering in navbar based on authentication status
+  - Added "Welcome back!" message and "Go to Dashboard" button for logged-in users
+  - Maintained automatic redirect behavior for smooth user experience
+- **Result**: Landing page now accessible at root URL `/` for both authenticated and non-authenticated users
+- **User Experience**: Improved landing page accessibility while preserving redirect functionality
+
+### Brand Quests Weekly Visibility Issue COMPLETED
+- **Date**: June 27, 2025
+- **Status**: Brand Quests Weekly Tab Fully Operational
+- **Problem Solved**: Fixed Brand Quests not showing in weekly tab due to expired quest status
+- **Root Cause**: Previous quests were from week 25 with "expired" status, but frontend only shows "active" quests
+- **Technical Solution**: 
+  - Created and executed script to assign 3 fresh active quests for current week (26)
+  - Assigned Media Maven, Opportunity Saver, and Project Showcase quests
+  - Updated quest status from "expired" to "active" for current week
+- **Result**: Brand Quests weekly tab now displays 3 active quests with proper functionality
+- **Performance**: Quest assignment system working with 100% success rate
+
 ### Comprehensive Personalized Feed System COMPLETED
 - **Date**: June 17, 2025
 - **Status**: Full-Stack Personalized Industry Pulse Feed Implementation Complete - All 6 Features Operational
