@@ -3,22 +3,23 @@ import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
+import Header from "@/components/layout/header";
+import { ArrowRight, Sparkles, Target, Users, Brain, Zap } from "lucide-react";
 
 export default function Landing() {
   const { isLoading, isAuthenticated } = useAuth();
   const { toast } = useToast();
   
-  // Demo mode function removed as per request
   const [_, setLocation] = useLocation();
 
   // Check if user wants to stay on landing page (via query parameter)
   const urlParams = new URLSearchParams(window.location.search);
   const stayOnLanding = urlParams.get('stay') === 'true';
 
-  // Redirect to dashboard if already authenticated - using useEffect to avoid state updates during render
+  // Redirect to dashboard if already authenticated
   useEffect(() => {
     if (isAuthenticated && !stayOnLanding) {
-      // Add a small delay to allow users to see the landing page URL briefly
       const timer = setTimeout(() => {
         setLocation('/dashboard');
       }, 100);
@@ -26,166 +27,163 @@ export default function Landing() {
     }
   }, [isAuthenticated, setLocation, stayOnLanding]);
 
+  if (isAuthenticated && !stayOnLanding) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen flex flex-col">
-      {/* Navbar */}
-      <nav className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex items-center">
-              <div className="flex-shrink-0 flex items-center">
-                <span className="text-primary text-2xl font-bold">Brandentifier</span>
-              </div>
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800">
+      <Header />
+      
+      <NeoGlassLayout className="mt-0 pt-8">
+        {/* Hero Section */}
+        <NeoGlassSection className="text-center mb-8">
+          <div className="space-y-6">
+            <div className="flex items-center justify-center space-x-2 mb-4">
+              <Sparkles className="h-8 w-8 text-blue-400" />
+              <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                Brandentifier
+              </h1>
+              <Sparkles className="h-8 w-8 text-purple-400" />
             </div>
-            <div className="flex items-center space-x-4">
+            
+            <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+              AI-Powered Career Development Platform that transforms your professional journey with intelligent insights and personalized guidance
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-8">
               {isAuthenticated ? (
+                <Button 
+                  onClick={() => setLocation('/dashboard')}
+                  size="lg"
+                  className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-8 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105"
+                >
+                  Go to Dashboard
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              ) : (
                 <>
-                  <span className="text-sm text-gray-600">Welcome back!</span>
                   <Button 
-                    variant="default" 
-                    onClick={() => setLocation('/dashboard')}
+                    onClick={() => setLocation('/auth')}
+                    disabled={isLoading}
+                    size="lg"
+                    className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-8 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105"
                   >
-                    Go to Dashboard
+                    {isLoading ? "Loading..." : "Get Started"}
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                  <Button 
+                    variant="outline"
+                    onClick={() => setLocation('/auth')}
+                    size="lg"
+                    className="border-gray-600 text-gray-300 hover:bg-gray-800 px-8 py-3 rounded-lg font-semibold transition-all duration-300"
+                  >
+                    Sign In
                   </Button>
                 </>
-              ) : (
-                <Button 
-                  variant="default" 
-                  onClick={() => setLocation('/auth')}
-                  disabled={isLoading}
-                >
-                  {isLoading ? "Loading..." : "Sign in"}
-                </Button>
               )}
             </div>
           </div>
-        </div>
-      </nav>
+        </NeoGlassSection>
 
-      {/* Hero Section */}
-      <div className="relative bg-white overflow-hidden">
-        <div className="max-w-7xl mx-auto">
-          <div className="relative z-10 pb-8 bg-white sm:pb-16 md:pb-20 lg:max-w-2xl lg:w-full lg:pb-28 xl:pb-32">
-            <main className="mt-10 mx-auto max-w-7xl px-4 sm:mt-12 sm:px-6 md:mt-16 lg:mt-20 lg:px-8 xl:mt-28">
-              <div className="sm:text-center lg:text-left">
-                <h1 className="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl">
-                  <span className="block">Elevate your career with</span>
-                  <span className="block text-primary">AI-powered insights</span>
-                </h1>
-                <p className="mt-3 text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
-                  Brandentifier analyzes your professional profile, identifies skill gaps, and connects you with personalized opportunities to advance your career.
-                </p>
-                <div className="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start">
-                  <div className="rounded-md shadow">
-                    <Button 
-                      size="lg"
-                      className="w-full flex items-center justify-center px-8 py-3 md:py-4 md:text-lg md:px-10"
-                      onClick={() => setLocation('/auth')}
-                      disabled={isLoading}
-                    >
-                      Sign up now
-                    </Button>
-                  </div>
-                  {/* "Try Demo Mode" button removed per request */}
-                </div>
-                {/* "Try Brand Quests Demo" and "Test Resume Parser" buttons removed per request */}
+        {/* Features Section */}
+        <NeoGlassSection title="Platform Features" className="mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* AI Career Advisor */}
+            <div className="neo-glass-card p-6 rounded-lg transition-all duration-300 hover:scale-105">
+              <div className="flex items-center mb-4">
+                <Brain className="h-8 w-8 text-blue-400 mr-3" />
+                <h3 className="text-xl font-semibold text-white">AI Career Advisor</h3>
               </div>
-            </main>
-          </div>
-        </div>
-        <div className="lg:absolute lg:inset-y-0 lg:right-0 lg:w-1/2">
-          <img 
-            className="h-56 w-full object-cover sm:h-72 md:h-96 lg:w-full lg:h-full" 
-            src="https://images.unsplash.com/photo-1573164574572-cb89e39749b4?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" 
-            alt="Professional working on laptop" 
-          />
-        </div>
-      </div>
+              <p className="text-gray-300 leading-relaxed">
+                Get personalized career guidance from our advanced AI system that understands your goals and industry trends.
+              </p>
+            </div>
 
-      {/* Features Section */}
-      <div className="py-12 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="lg:text-center mb-10">
-            <h2 className="text-base text-primary font-semibold tracking-wide uppercase">Features</h2>
-            <p className="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
-              Transform your career journey
-            </p>
-          </div>
-
-          <div className="mt-10">
-            <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-              <div className="bg-white p-6 rounded-lg shadow">
-                <div className="text-primary text-2xl mb-4">
-                  <i className="fas fa-robot"></i>
-                </div>
-                <h3 className="text-lg font-medium text-gray-900">AI Career Advisor</h3>
-                <p className="mt-2 text-base text-gray-500">
-                  Get personalized career guidance from Musk, our AI career coach, available 24/7.
-                </p>
+            {/* Brand Quests */}
+            <div className="neo-glass-card p-6 rounded-lg transition-all duration-300 hover:scale-105">
+              <div className="flex items-center mb-4">
+                <Target className="h-8 w-8 text-purple-400 mr-3" />
+                <h3 className="text-xl font-semibold text-white">Brand Quests</h3>
               </div>
+              <p className="text-gray-300 leading-relaxed">
+                Complete weekly challenges to build your professional brand and earn XP while developing essential skills.
+              </p>
+            </div>
 
-              <div className="bg-white p-6 rounded-lg shadow">
-                <div className="text-primary text-2xl mb-4">
-                  <i className="fas fa-file-alt"></i>
-                </div>
-                <h3 className="text-lg font-medium text-gray-900">Resume Optimization</h3>
-                <p className="mt-2 text-base text-gray-500">
-                  AI-powered resume analysis with keyword optimization for higher interview rates.
-                </p>
+            {/* Networking Hub */}
+            <div className="neo-glass-card p-6 rounded-lg transition-all duration-300 hover:scale-105">
+              <div className="flex items-center mb-4">
+                <Users className="h-8 w-8 text-green-400 mr-3" />
+                <h3 className="text-xl font-semibold text-white">Networking Hub</h3>
               </div>
+              <p className="text-gray-300 leading-relaxed">
+                Connect with industry professionals and discover opportunities through our intelligent networking system.
+              </p>
+            </div>
 
-              <div className="bg-white p-6 rounded-lg shadow">
-                <div className="text-primary text-2xl mb-4">
-                  <i className="fas fa-chart-line"></i>
-                </div>
-                <h3 className="text-lg font-medium text-gray-900">Skill Gap Analysis</h3>
-                <p className="mt-2 text-base text-gray-500">
-                  Identify missing skills for your dream job and get personalized learning paths.
-                </p>
+            {/* Industry Pulse */}
+            <div className="neo-glass-card p-6 rounded-lg transition-all duration-300 hover:scale-105">
+              <div className="flex items-center mb-4">
+                <Zap className="h-8 w-8 text-yellow-400 mr-3" />
+                <h3 className="text-xl font-semibold text-white">Industry Pulse</h3>
               </div>
+              <p className="text-gray-300 leading-relaxed">
+                Stay updated with personalized industry insights and trending topics relevant to your career path.
+              </p>
+            </div>
 
-              <div className="bg-white p-6 rounded-lg shadow">
-                <div className="text-primary text-2xl mb-4">
-                  <i className="fas fa-search"></i>
-                </div>
-                <h3 className="text-lg font-medium text-gray-900">Smart Job Matching</h3>
-                <p className="mt-2 text-base text-gray-500">
-                  Discover jobs that match your profile with AI-powered recommendations.
-                </p>
+            {/* Portfolio Builder */}
+            <div className="neo-glass-card p-6 rounded-lg transition-all duration-300 hover:scale-105">
+              <div className="flex items-center mb-4">
+                <Sparkles className="h-8 w-8 text-pink-400 mr-3" />
+                <h3 className="text-xl font-semibold text-white">Portfolio Builder</h3>
               </div>
+              <p className="text-gray-300 leading-relaxed">
+                Showcase your projects and achievements with our intelligent portfolio management system.
+              </p>
+            </div>
 
-              <div className="bg-white p-6 rounded-lg shadow">
-                <div className="text-primary text-2xl mb-4">
-                  <i className="fas fa-graduation-cap"></i>
-                </div>
-                <h3 className="text-lg font-medium text-gray-900">Learning Recommendations</h3>
-                <p className="mt-2 text-base text-gray-500">
-                  Course suggestions from top platforms like LinkedIn Learning, Udemy, and Coursera.
-                </p>
+            {/* Career Analytics */}
+            <div className="neo-glass-card p-6 rounded-lg transition-all duration-300 hover:scale-105">
+              <div className="flex items-center mb-4">
+                <Target className="h-8 w-8 text-cyan-400 mr-3" />
+                <h3 className="text-xl font-semibold text-white">Career Analytics</h3>
               </div>
-
-              <div className="bg-white p-6 rounded-lg shadow">
-                <div className="text-primary text-2xl mb-4">
-                  <i className="fas fa-newspaper"></i>
-                </div>
-                <h3 className="text-lg font-medium text-gray-900">Industry Insights</h3>
-                <p className="mt-2 text-base text-gray-500">
-                  Stay updated with AI-curated industry news and trends relevant to your career path.
-                </p>
-              </div>
+              <p className="text-gray-300 leading-relaxed">
+                Track your professional growth with detailed analytics and personalized recommendations for improvement.
+              </p>
             </div>
           </div>
-        </div>
-      </div>
+        </NeoGlassSection>
 
-      {/* Footer */}
-      <footer className="bg-white mt-auto">
-        <div className="max-w-7xl mx-auto py-12 px-4 overflow-hidden sm:px-6 lg:px-8">
-          <p className="text-center text-base text-gray-400">
-            &copy; {new Date().getFullYear()} Brandentifier. All rights reserved.
-          </p>
-        </div>
-      </footer>
+        {/* Call to Action */}
+        <NeoGlassSection className="text-center">
+          <div className="space-y-6">
+            <h2 className="text-3xl font-bold text-white">
+              Ready to Transform Your Career?
+            </h2>
+            <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+              Join thousands of professionals who are already accelerating their careers with AI-powered insights
+            </p>
+            {!isAuthenticated && (
+              <Button 
+                onClick={() => setLocation('/auth')}
+                disabled={isLoading}
+                size="lg"
+                className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-12 py-4 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105"
+              >
+                {isLoading ? "Loading..." : "Start Your Journey"}
+                <ArrowRight className="ml-2 h-6 w-6" />
+              </Button>
+            )}
+          </div>
+        </NeoGlassSection>
+      </NeoGlassLayout>
     </div>
   );
 }
