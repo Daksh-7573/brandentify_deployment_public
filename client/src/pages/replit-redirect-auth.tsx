@@ -81,9 +81,9 @@ const ReplitRedirectAuth: React.FC = () => {
           description: `Logged in as ${user.displayName || user.email}`,
         });
         
-        // Redirect to dashboard after success
+        // Redirect to profile after success
         setTimeout(() => {
-          navigate('/dashboard');
+          navigate('/profile');
         }, 1500);
       } else {
         // No redirect result, back to pending
@@ -237,10 +237,10 @@ const ReplitRedirectAuth: React.FC = () => {
             </div>
             
             <Button 
-              onClick={() => navigate('/dashboard')}
+              onClick={() => navigate('/profile')}
               className="w-full bg-blue-600 hover:bg-blue-700"
             >
-              Go to Dashboard
+              Go to Profile
             </Button>
             
             <Button 

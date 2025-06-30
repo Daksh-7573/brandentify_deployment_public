@@ -31,10 +31,10 @@ export default function AuthPage() {
     setUseDemoBypass(false);
   }, []);
 
-  // Redirect to dashboard if already authenticated
+  // Redirect to profile if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
-      setLocation("/dashboard");
+      setLocation("/profile");
     }
   }, [isAuthenticated, setLocation]);
 
