@@ -24,11 +24,13 @@ export default function AuthPage() {
   const [authMethod, setAuthMethod] = useState<"email" | "phone">("email");
   const [useDemoBypass, setUseDemoBypass] = useState(false);
   
-  // We used to bypass Google auth on the problematic domain, but now we're properly 
-  // supporting it directly and want to use Google auth instead
+  // Enable demo bypass for the problematic domain until Google auth is fully resolved
   useEffect(() => {
-    // Instead of automatically enabling demo mode, we now properly support Google auth on all domains
-    setUseDemoBypass(false);
+    const currentHostname = window.location.hostname;
+    const isProblematicDomain = currentHostname === "25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev";
+    
+    // Enable demo mode for the problematic domain to provide immediate access
+    setUseDemoBypass(isProblematicDomain);
   }, []);
 
   // Redirect to dashboard if already authenticated
