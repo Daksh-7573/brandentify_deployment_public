@@ -219,6 +219,11 @@ function Router() {
       <Route path="/industry-pulse">
         <ProtectedRoute path="/industry-pulse" component={IndustryPulsePage} />
       </Route>
+      
+      {/* Redirect dashboard to Industry Pulse */}
+      <Route path="/dashboard">
+        <PageRedirect to="/industry-pulse" />
+      </Route>
       <Route path="/search">
         <ProtectedRoute path="/search" component={SearchPage} />
       </Route>

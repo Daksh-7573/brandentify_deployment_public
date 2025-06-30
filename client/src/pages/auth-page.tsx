@@ -31,10 +31,10 @@ export default function AuthPage() {
     setUseDemoBypass(false);
   }, []);
 
-  // Redirect to profile if already authenticated
+  // Redirect to industry pulse if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
-      setLocation("/profile");
+      setLocation("/industry-pulse");
     }
   }, [isAuthenticated, setLocation]);
 

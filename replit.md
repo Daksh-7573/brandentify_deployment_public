@@ -128,6 +128,19 @@ Brandentifier is a comprehensive career development platform that combines AI-dr
 
 ## Recent Changes
 
+### Industry Pulse as Main Home Page COMPLETED
+- **Date**: June 30, 2025
+- **Status**: Industry Pulse Set as Main Home Page - Dashboard URL Redirects Implemented
+- **Problem Solved**: User requested to remove dashboard URL and make Industry Pulse the main home page
+- **Technical Solution**: 
+  - Added dashboard redirect route that automatically redirects `/dashboard` to `/industry-pulse`
+  - Updated all authentication redirect logic to route users to Industry Pulse instead of Profile page
+  - Updated auth-page.tsx, replit-redirect-auth.tsx, replit-domain-login.tsx, and cross-domain-google-auth.tsx redirects
+  - Industry Pulse now serves as the primary landing page for authenticated users
+  - Preserved all existing functionality while centralizing user experience around Industry Pulse
+- **Result**: Clean application with Industry Pulse as main home page, automatic dashboard URL redirection
+- **User Experience**: Streamlined application flow with users redirected to Industry Pulse after authentication
+
 ### Dashboard Page Complete Removal COMPLETED
 - **Date**: June 30, 2025
 - **Status**: Dashboard Page Completely Removed - All Authentication Redirects Updated
