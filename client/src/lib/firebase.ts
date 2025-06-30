@@ -52,13 +52,9 @@ const isExactProblemDomain = currentHostname === "25d68c5d-166d-4f92-b5c1-cdfc68
 // For Firebase auth with Google on Replit, we need a special configuration
 const firebaseConfig: FirebaseOptions = {
   apiKey,
-  // CRITICAL: Use a configuration that works with both Replit domains and preview URLs
-  // For auth to work on both domains, we need to use this specific setup
-  authDomain: isReplitDomain ? 
-    // When on Replit domain: use Firebase's official domain which works universally
-    `${projectId}.firebaseapp.com` : 
-    // When on preview URL: use the current host
-    window.location.host,
+  // CRITICAL: Always use Firebase's official domain to avoid "refused to connect" errors
+  // This ensures Google's authentication servers can establish a secure connection
+  authDomain: `${projectId}.firebaseapp.com`,
   projectId,
   storageBucket: projectId ? `${projectId}.appspot.com` : undefined,
   // Common defaults for Firebase initialization
@@ -79,39 +75,18 @@ try {
   // Initialize Firebase Auth
   auth = getAuth(app);
   
-  // Configure Google Auth Provider with strong parameters for explicit Google authentication
+  // Configure Google Auth Provider with compatible parameters for Replit domains
   googleProvider = new GoogleAuthProvider();
   
-  // Force explicit Google selection with strict parameters
-  // These settings ensure the user must actively select a Google account
+  // Use minimal, compatible configuration to avoid connection issues
   googleProvider.setCustomParameters({
-    // Always force account selection UI - critical for ensuring Google auth
-    prompt: 'select_account',
-    
-    // Always force Google to re-validate credentials
-    auth_type: 'reauthenticate',
-    
-    // Request offline access for tokens that work across sessions
-    access_type: 'offline',
-    
-    // Include all previously granted scopes
-    include_granted_scopes: 'true',
-    
-    // Suppress the password credential sign-in option
-    disable_auto_sign_in: 'true',
-    
-    // Ensure native sign-in without federation with other providers
-    provider_id: 'google.com',
-    
-    // Set the preferred type of credentials
-    credential_type: 'google.com'
+    // Force account selection to ensure fresh authentication
+    prompt: 'select_account'
   });
   
-  // Add all OAuth scopes needed for complete Google profile access
+  // Add essential OAuth scopes only
   googleProvider.addScope('email');
   googleProvider.addScope('profile');
-  googleProvider.addScope('https://www.googleapis.com/auth/userinfo.profile');
-  googleProvider.addScope('https://www.googleapis.com/auth/userinfo.email');
   
   // Ensure the auth provider trusts our domain
   auth.useDeviceLanguage();

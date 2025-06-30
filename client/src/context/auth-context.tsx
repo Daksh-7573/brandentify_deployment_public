@@ -547,213 +547,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
   }, [user, toast]);
 
-  // Sign in with Google - using fallback authentication methods if needed
+  // Sign in with Google - simplified approach to avoid connection issues
   const signInWithGoogle = async () => {
     try {
       setIsLoading(true);
       
-      // Clear previous auth state
-      localStorage.removeItem('auth_redirect_attempt');
-      localStorage.removeItem('auth_redirect_time');
-      localStorage.removeItem('popup_auth_attempt');
-      localStorage.removeItem('popup_auth_time');
-      
       console.log("Starting Google sign-in with direct Google Authentication");
       
-      // Create a dedicated Google provider configured for Google authentication
-      const googleProvider = new GoogleAuthProvider();
+      // Use the globally configured provider from firebase.ts to avoid issues
+      const { googleProvider } = await import('@/lib/firebase');
       
-      // Add extensive scopes to ensure we get complete Google profile data
-      googleProvider.addScope('email');
-      googleProvider.addScope('profile');
-      googleProvider.addScope('https://www.googleapis.com/auth/userinfo.profile');
+      console.log("Using pre-configured Google provider with compatible settings");
       
-      // Force Google account selection with these critical parameters
-      googleProvider.setCustomParameters({
-        prompt: 'select_account',
-        // Force reauthentication to ensure Google account selection appears
-        auth_type: 'reauthenticate',
-        // Additional parameters to ensure Google authentication
-        access_type: 'offline',
-        include_granted_scopes: 'true'
+      console.log("Auth environment:", {
+        domain: window.location.hostname,
+        isReplitDomain: window.location.hostname.includes('replit'),
+        usingRedirect: true
       });
       
-      console.log("Configured Google provider with all required parameters");
+      console.log("Using redirect method for reliable authentication");
       
-      // Track this as an explicit Google authentication attempt
-      localStorage.setItem('using_google_auth', 'true');
-      
-      let result;
-      
-      try {
-        // Check if we should use redirect-based auth based on environment
-        const shouldUseRedirect = shouldUseRedirectAuth();
-        const domainIsReplit = isReplitDomain();
-        
-        console.log("Auth environment:", {
-          domain: window.location.hostname,
-          isReplitDomain: domainIsReplit,
-          usingRedirect: shouldUseRedirect
-        });
-        
-        // Create an enhanced Google provider with optimized parameters
-        const enhancedProvider = createEnhancedGoogleProvider();
-        
-        if (shouldUseRedirect) {
-          // Use redirect for Replit domains - this works better with Replit's development domains
-          console.log("Using redirect method for reliable authentication");
-          
-          // Track this authentication attempt
-          localStorage.setItem('auth_redirect_attempt', 'true');
-          localStorage.setItem('auth_redirect_time', Date.now().toString());
-          localStorage.setItem('dev_auth_redirect', 'true');
-          
-          // Clear any stale auth data
-          clearAuthStorageData();
-          
-          // Use our enhanced provider with redirect
-          await signInWithRedirect(auth, enhancedProvider);
-          console.log("Redirect initiated - page will reload after Google authentication");
-          return; // Function will exit here and auth will continue after redirect
-        } else {
-          // For other domains, try popup with enhanced provider
-          console.log("Using Google authentication popup with enhanced parameters");
-          result = await signInWithPopup(auth, enhancedProvider);
-          
-          // Verify this was actually a Google authentication
-          const credential = GoogleAuthProvider.credentialFromResult(result);
-          if (credential && credential.providerId === 'google.com') {
-            console.log("Confirmed authentic Google authentication");
-          } else {
-            console.warn("Authentication succeeded but may not be Google-based");
-          }
-        }
-      } catch (popupError: any) {
-        console.log("Google authentication failed:", popupError.code);
-        console.error("Error details:", popupError);
-        
-        // For specific errors that suggest UI issues, try redirect method
-        if (
-          popupError.code === 'auth/popup-blocked' || 
-          popupError.code === 'auth/popup-closed-by-user' ||
-          popupError.code === 'auth/cancelled-popup-request' ||
-          popupError.code === 'auth/internal-error' ||
-          popupError.code === 'auth/network-request-failed' ||
-          // Handle any Firebase auth errors on Replit domains with redirect
-          (isReplitDomain() && popupError.code?.startsWith('auth/'))
-        ) {
-          console.log("Falling back to Google redirect authentication with enhanced parameters");
-          
-          // Clear any stale auth data
-          clearAuthStorageData();
-          
-          // Track redirect attempt
-          localStorage.setItem('auth_redirect_attempt', 'true');
-          localStorage.setItem('auth_redirect_time', Date.now().toString());
-          localStorage.setItem('dev_auth_redirect', 'true');
-          
-          // Always use the enhanced provider for redirects
-          const enhancedProvider = createEnhancedGoogleProvider();
-          await signInWithRedirect(auth, enhancedProvider);
-          
-          console.log("Redirect initiated after popup failure - page will reload after authentication");
-          return; // Page will reload after redirect
-        } else {
-          // Log detailed error information for non-standard errors
-          console.error("Non-standard authentication error:", popupError);
-          
-          // Suggest using the dev-login page if on a Replit domain
-          if (isReplitDomain()) {
-            toast({
-              title: "Authentication Error",
-              description: "Having trouble with Google login? Try using the special dev-login page instead.",
-              variant: "destructive",
-              action: (
-                <a href="/dev-login" className="bg-blue-600 text-white px-3 py-1 rounded text-xs">
-                  Dev Login
-                </a>
-              )
-            });
-            
-            // Navigate user to the dev-login page automatically after a brief delay
-            setTimeout(() => {
-              window.location.href = '/dev-login';
-            }, 3000);
-            
-            setIsLoading(false);
-            return; // Exit early without re-throwing
-          } else {
-            // For non-Replit domains, show a more general error
-            toast({
-              title: "Google Authentication Failed",
-              description: "Please try again or contact support if the issue persists.",
-              variant: "destructive"
-            });
-          }
-          
-          // Re-throw error for general case
-          throw popupError;
-        }
-      }
-      
-      console.log("Google authentication successful:", result.user);
-      
-      if (result.user) {
-        // Create or update the user in the backend
-        console.log("Creating/updating user in backend after successful authentication");
-        await createOrUpdateUserInBackend(result.user);
-        
-        // Fetch the complete user data from backend
-        console.log("Fetching user data from backend");
-        
-        // Check for Google provider data to get email
-        const googleProvider = result.user.providerData?.find(provider => 
-          provider.providerId === "google.com"
-        );
-        const userEmail = googleProvider?.email || result.user.email;
-        
-        console.log(`Fetching user data with Google email if available: ${userEmail || 'not available'}`);
-        const userData = await fetchUserData(result.user.uid, userEmail);
-        
-        if (userData) {
-          // Set the user in state if we got valid data
-          console.log("Setting user state with backend data");
-          setUser(userData);
-          
-          // Show welcome toast
-          toast({
-            title: "Signed in successfully",
-            description: `Welcome${userData.name ? ` ${userData.name}` : ''}!`,
-          });
-        } else {
-          // If we couldn't get user data from backend, use a minimal representation
-          console.warn("Could not get user data from backend after authentication");
-          
-          // Check for Google provider data
-          const isGoogleProvider = result.user.providerData && 
-            result.user.providerData.some(provider => provider.providerId === "google.com");
-          
-          const googleProvider = isGoogleProvider ? 
-            result.user.providerData.find(provider => provider.providerId === "google.com") : null;
-            
-          // Create a fallback user with Google data when available
-          const fallbackUser = {
-            uid: result.user.uid,
-            id: parseInt(result.user.uid.substring(0, 5), 36) || 999,
-            username: googleProvider?.email?.split('@')[0] || result.user.uid,
-            email: googleProvider?.email || result.user.email,
-            name: googleProvider?.displayName || result.user.displayName,
-            photoURL: googleProvider?.photoURL || result.user.photoURL
-          };
-          
-          setUser(fallbackUser);
-          
-          toast({
-            title: "Signed in with limited data",
-            description: "Welcome! Some profile data may be missing.",
-          });
-        }
-      }
+      // Always use redirect method for compatibility
+      await signInWithRedirect(auth, googleProvider);
+      console.log("Redirect initiated - page will reload after Google authentication");
+      return;
     } catch (error: any) {
       console.error("Google sign-in error:", error);
       
