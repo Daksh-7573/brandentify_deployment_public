@@ -76,14 +76,6 @@ export default function Landing() {
                     {isLoading ? "Loading..." : "Get Started"}
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
-                  <Button 
-                    variant="outline"
-                    onClick={() => setLocation('/auth')}
-                    size="lg"
-                    className="border-gray-600 text-gray-300 hover:bg-gray-800 px-8 py-3 rounded-lg font-semibold transition-all duration-300"
-                  >
-                    Sign In
-                  </Button>
                 </>
               )}
             </div>
