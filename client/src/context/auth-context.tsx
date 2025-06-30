@@ -565,12 +565,59 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         usingRedirect: true
       });
       
-      console.log("Using redirect method for reliable authentication");
+      console.log("Attempting popup authentication first, then redirect fallback");
       
-      // Always use redirect method for compatibility
-      await signInWithRedirect(auth, googleProvider);
-      console.log("Redirect initiated - page will reload after Google authentication");
-      return;
+      try {
+        // Try popup method first - often works better on Replit domains
+        console.log("Trying popup authentication...");
+        const result = await signInWithPopup(auth, googleProvider);
+        
+        if (result?.user) {
+          console.log("Popup authentication successful:", result.user.email);
+          
+          // Create or update user in backend
+          await createOrUpdateUserInBackend(result.user);
+          
+          // Fetch complete user data
+          const userData = await fetchUserData(result.user.uid, result.user.email);
+          
+          if (userData) {
+            setUser(userData);
+            toast({
+              title: "Signed in successfully",
+              description: `Welcome ${userData.name || userData.email}!`,
+            });
+          } else {
+            // Create fallback user
+            const fallbackUser = {
+              uid: result.user.uid,
+              id: parseInt(result.user.uid.substring(0, 8), 36) || 999,
+              username: result.user.email?.split('@')[0] || result.user.uid,
+              email: result.user.email,
+              name: result.user.displayName || result.user.email,
+              photoURL: result.user.photoURL
+            };
+            setUser(fallbackUser);
+            toast({
+              title: "Signed in successfully",
+              description: `Welcome ${result.user.displayName || result.user.email}!`,
+            });
+          }
+          return;
+        }
+      } catch (popupError: any) {
+        console.log("Popup failed, trying redirect:", popupError.code);
+        
+        if (popupError.code === 'auth/popup-blocked' || 
+            popupError.code === 'auth/popup-closed-by-user') {
+          console.log("Using redirect method as fallback");
+          await signInWithRedirect(auth, googleProvider);
+          return;
+        } else {
+          // For other errors, throw to be handled by outer catch
+          throw popupError;
+        }
+      }
     } catch (error: any) {
       console.error("Google sign-in error:", error);
       
