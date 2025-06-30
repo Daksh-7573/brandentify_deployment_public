@@ -55,12 +55,12 @@ export default function AuthPage() {
           <NeoGlassSection>
             <div className="space-y-6">
               <Tabs defaultValue="email" onValueChange={(v) => setAuthMethod(v as "email" | "phone")}>
-                <TabsList className="grid grid-cols-2 mb-6 bg-white/10 border border-white/20">
-                  <TabsTrigger value="email" className="flex items-center gap-1.5 text-white data-[state=active]:bg-white/20">
+                <TabsList className="grid grid-cols-2 mb-6 dark-tabs-list">
+                  <TabsTrigger value="email" className="flex items-center gap-1.5 dark-tabs-trigger">
                     <Mail className="h-4 w-4" />
                     <span>Email</span>
                   </TabsTrigger>
-                  <TabsTrigger value="phone" className="flex items-center gap-1.5 text-white data-[state=active]:bg-white/20">
+                  <TabsTrigger value="phone" className="flex items-center gap-1.5 dark-tabs-trigger">
                     <Phone className="h-4 w-4" />
                     <span>Phone</span>
                   </TabsTrigger>
