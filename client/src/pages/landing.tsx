@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
 import Header from "@/components/layout/header";
-import { ArrowRight, Sparkles, Target, Users, Brain, Zap } from "lucide-react";
+import { ArrowRight, Sparkles, Target, Users, Brain, Zap, FileText, TrendingUp, Building, Calendar, Trophy, Search, Heart, Newspaper, MessageCircle } from "lucide-react";
 
 export default function Landing() {
   const { isLoading, isAuthenticated } = useAuth();
@@ -92,70 +92,136 @@ export default function Landing() {
 
         {/* Features Section */}
         <NeoGlassSection title="Platform Features" className="mb-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* AI Career Advisor */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {/* Career Clarity */}
             <div className="neo-glass-card p-6 rounded-lg transition-all duration-300 hover:scale-105">
               <div className="flex items-center mb-4">
                 <Brain className="h-8 w-8 text-blue-400 mr-3" />
-                <h3 className="text-xl font-semibold text-white">AI Career Advisor</h3>
+                <h3 className="text-xl font-semibold text-white">Career Clarity</h3>
               </div>
               <p className="text-gray-300 leading-relaxed">
-                Get personalized career guidance from our advanced AI system that understands your goals and industry trends.
+                Confused about your next move? Get smart, personalized career advice instantly.
               </p>
             </div>
 
-            {/* Brand Quests */}
+            {/* AI Mentorship */}
             <div className="neo-glass-card p-6 rounded-lg transition-all duration-300 hover:scale-105">
               <div className="flex items-center mb-4">
-                <Target className="h-8 w-8 text-purple-400 mr-3" />
-                <h3 className="text-xl font-semibold text-white">Brand Quests</h3>
+                <MessageCircle className="h-8 w-8 text-purple-400 mr-3" />
+                <h3 className="text-xl font-semibold text-white">AI Mentorship</h3>
               </div>
               <p className="text-gray-300 leading-relaxed">
-                Complete weekly challenges to build your professional brand and earn XP while developing essential skills.
+                Talk to AI mentors modeled after industry legends — anytime, anywhere.
               </p>
             </div>
 
-            {/* Networking Hub */}
+            {/* Smart Resume */}
             <div className="neo-glass-card p-6 rounded-lg transition-all duration-300 hover:scale-105">
               <div className="flex items-center mb-4">
-                <Users className="h-8 w-8 text-green-400 mr-3" />
-                <h3 className="text-xl font-semibold text-white">Networking Hub</h3>
+                <FileText className="h-8 w-8 text-green-400 mr-3" />
+                <h3 className="text-xl font-semibold text-white">Smart Resume</h3>
               </div>
               <p className="text-gray-300 leading-relaxed">
-                Connect with industry professionals and discover opportunities through our intelligent networking system.
+                Upload your resume and get instant feedback, scoring, and styling tips.
               </p>
             </div>
 
-            {/* Industry Pulse */}
+            {/* Skill Matching */}
             <div className="neo-glass-card p-6 rounded-lg transition-all duration-300 hover:scale-105">
               <div className="flex items-center mb-4">
-                <Zap className="h-8 w-8 text-yellow-400 mr-3" />
-                <h3 className="text-xl font-semibold text-white">Industry Pulse</h3>
+                <TrendingUp className="h-8 w-8 text-yellow-400 mr-3" />
+                <h3 className="text-xl font-semibold text-white">Skill Matching</h3>
               </div>
               <p className="text-gray-300 leading-relaxed">
-                Stay updated with personalized industry insights and trending topics relevant to your career path.
+                Find out which skills you need to grow in your dream career path.
+              </p>
+            </div>
+
+            {/* Pro Network */}
+            <div className="neo-glass-card p-6 rounded-lg transition-all duration-300 hover:scale-105">
+              <div className="flex items-center mb-4">
+                <Users className="h-8 w-8 text-pink-400 mr-3" />
+                <h3 className="text-xl font-semibold text-white">Pro Network</h3>
+              </div>
+              <p className="text-gray-300 leading-relaxed">
+                Build a professional network that actually helps — not just connects.
               </p>
             </div>
 
             {/* Portfolio Builder */}
             <div className="neo-glass-card p-6 rounded-lg transition-all duration-300 hover:scale-105">
               <div className="flex items-center mb-4">
-                <Sparkles className="h-8 w-8 text-pink-400 mr-3" />
+                <Building className="h-8 w-8 text-cyan-400 mr-3" />
                 <h3 className="text-xl font-semibold text-white">Portfolio Builder</h3>
               </div>
               <p className="text-gray-300 leading-relaxed">
-                Showcase your projects and achievements with our intelligent portfolio management system.
+                Showcase your skills with real, categorized projects recruiters care about.
               </p>
             </div>
 
-            {/* Career Analytics */}
+            {/* Experience Tracker */}
             <div className="neo-glass-card p-6 rounded-lg transition-all duration-300 hover:scale-105">
               <div className="flex items-center mb-4">
-                <Target className="h-8 w-8 text-cyan-400 mr-3" />
-                <h3 className="text-xl font-semibold text-white">Career Analytics</h3>
+                <Calendar className="h-8 w-8 text-orange-400 mr-3" />
+                <h3 className="text-xl font-semibold text-white">Experience Tracker</h3>
               </div>
               <p className="text-gray-300 leading-relaxed">
-                Track your professional growth with detailed analytics and personalized recommendations for improvement.
+                Add internships, jobs, and learnings — everything that shapes your journey.
+              </p>
+            </div>
+
+            {/* Goal Planner */}
+            <div className="neo-glass-card p-6 rounded-lg transition-all duration-300 hover:scale-105">
+              <div className="flex items-center mb-4">
+                <Target className="h-8 w-8 text-red-400 mr-3" />
+                <h3 className="text-xl font-semibold text-white">Goal Planner</h3>
+              </div>
+              <p className="text-gray-300 leading-relaxed">
+                Set career goals and let AI guide you step-by-step to reach them.
+              </p>
+            </div>
+
+            {/* XP Quests */}
+            <div className="neo-glass-card p-6 rounded-lg transition-all duration-300 hover:scale-105">
+              <div className="flex items-center mb-4">
+                <Trophy className="h-8 w-8 text-gold-400 mr-3" />
+                <h3 className="text-xl font-semibold text-white">XP Quests</h3>
+              </div>
+              <p className="text-gray-300 leading-relaxed">
+                Level up your career with gamified challenges and win badges as you grow.
+              </p>
+            </div>
+
+            {/* Job Radar */}
+            <div className="neo-glass-card p-6 rounded-lg transition-all duration-300 hover:scale-105">
+              <div className="flex items-center mb-4">
+                <Search className="h-8 w-8 text-indigo-400 mr-3" />
+                <h3 className="text-xl font-semibold text-white">Job Radar</h3>
+              </div>
+              <p className="text-gray-300 leading-relaxed">
+                Get alerts for jobs, collaborations, and career opportunities in your domain.
+              </p>
+            </div>
+
+            {/* Real Feedback */}
+            <div className="neo-glass-card p-6 rounded-lg transition-all duration-300 hover:scale-105">
+              <div className="flex items-center mb-4">
+                <Heart className="h-8 w-8 text-rose-400 mr-3" />
+                <h3 className="text-xl font-semibold text-white">Real Feedback</h3>
+              </div>
+              <p className="text-gray-300 leading-relaxed">
+                Get reactions and endorsements that boost your credibility — not just likes.
+              </p>
+            </div>
+
+            {/* Insight Feed */}
+            <div className="neo-glass-card p-6 rounded-lg transition-all duration-300 hover:scale-105">
+              <div className="flex items-center mb-4">
+                <Newspaper className="h-8 w-8 text-emerald-400 mr-3" />
+                <h3 className="text-xl font-semibold text-white">Insight Feed</h3>
+              </div>
+              <p className="text-gray-300 leading-relaxed">
+                Stay ahead with personalized industry news, tips, and AI-powered posts.
               </p>
             </div>
           </div>
