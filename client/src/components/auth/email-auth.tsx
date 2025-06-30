@@ -289,9 +289,9 @@ export function EmailAuth() {
       )}
       
       <Tabs defaultValue="login" onValueChange={(v) => setAuthMode(v as "login" | "register")}>
-        <TabsList className="grid grid-cols-2 mb-6">
-          <TabsTrigger value="login">Login</TabsTrigger>
-          <TabsTrigger value="register">Create Account</TabsTrigger>
+        <TabsList className="grid grid-cols-2 mb-6 dark-tabs-list">
+          <TabsTrigger value="login" className="dark-tabs-trigger">Login</TabsTrigger>
+          <TabsTrigger value="register" className="dark-tabs-trigger">Create Account</TabsTrigger>
         </TabsList>
         
         {/* Login Form */}
