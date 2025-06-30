@@ -255,10 +255,10 @@ const CrossDomainGoogleAuth: React.FC = () => {
               </div>
               
               <Button 
-                onClick={() => navigate('/dashboard')}
+                onClick={() => navigate('/profile')}
                 className="w-full bg-blue-600 hover:bg-blue-700"
               >
-                Go to Dashboard
+                Go to Profile
               </Button>
               
               <Button 
