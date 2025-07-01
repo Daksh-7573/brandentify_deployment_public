@@ -1,20 +1,67 @@
 import { useAuth } from "@/hooks/use-auth";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
 import { ArrowRight, Sparkles, Target, Users, Brain, Zap, FileText, TrendingUp, Building, Calendar, Trophy, Search, Heart, Newspaper, MessageCircle } from "lucide-react";
 import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
+import CSSAdaptiveRobot from "@/components/3d/CSSAdaptiveRobot";
+import CSSParticleSystem from "@/components/3d/CSSParticleSystem";
 
 export default function PlanALandingSimple() {
   const { isLoading, isAuthenticated } = useAuth();
   const { toast } = useToast();
   const [_, setLocation] = useLocation();
+  
+  // 3D Robot interaction states
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [robotInteractions, setRobotInteractions] = useState({
+    onEnter: false,
+    onHover: false,
+    onFeaturePoint: false,
+    onCelebrate: false
+  });
+  const containerRef = useRef<HTMLDivElement>(null);
 
   // Check if user wants to stay on landing page (via query parameter)
   const urlParams = new URLSearchParams(window.location.search);
   const stayOnLanding = urlParams.get('stay') === 'true';
+
+  // Mouse tracking for robot interactions
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({ x: e.clientX, y: e.clientY });
+    };
+
+    const handleMouseEnter = () => {
+      setRobotInteractions(prev => ({ ...prev, onEnter: true }));
+      setTimeout(() => setRobotInteractions(prev => ({ ...prev, onEnter: false })), 2000);
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseenter', handleMouseEnter, { once: true });
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseenter', handleMouseEnter);
+    };
+  }, []);
+
+  // Feature hover handler
+  const handleFeatureHover = () => {
+    setRobotInteractions(prev => ({ ...prev, onFeaturePoint: true }));
+    setTimeout(() => setRobotInteractions(prev => ({ ...prev, onFeaturePoint: false })), 3000);
+  };
+
+  // CTA click handler
+  const handleCTAClick = () => {
+    setRobotInteractions(prev => ({ ...prev, onCelebrate: true }));
+    setTimeout(() => {
+      setRobotInteractions(prev => ({ ...prev, onCelebrate: false }));
+      setLocation('/auth');
+    }, 1500);
+  };
 
   // Redirect to dashboard if already authenticated
   useEffect(() => {
