@@ -51,8 +51,8 @@ export default function AuthPage() {
       
       {/* Content layer */}
       <div className="relative z-10">
-        <NeoGlassLayout className="mt-0 pt-0">
-          <div className="text-center mb-8 mt-4">
+        <NeoGlassLayout>
+          <div className="text-center mb-8">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-white via-blue-200 to-purple-200 bg-clip-text text-transparent mb-4">
             Welcome to Brandentifier
           </h1>
