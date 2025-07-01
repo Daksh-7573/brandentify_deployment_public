@@ -8,6 +8,7 @@ import { ArrowRight, Sparkles, Target, Users, Brain, Zap, FileText, TrendingUp, 
 import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
 import CSSAdaptiveRobot from "@/components/3d/CSSAdaptiveRobot";
 import CSSParticleSystem from "@/components/3d/CSSParticleSystem";
+import AdvancedParallax from "@/components/3d/AdvancedParallax";
 
 export default function PlanALandingSimple() {
   const { isLoading, isAuthenticated } = useAuth();
@@ -89,8 +90,14 @@ export default function PlanALandingSimple() {
         backgroundImage: `url(${backgroundImage})`
       }}
     >
+      {/* Advanced Multi-Layer Parallax System */}
+      <AdvancedParallax 
+        containerRef={containerRef}
+        mousePosition={mousePosition}
+      />
+      
       {/* Enhanced Glass UI overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-900/60 via-black/50 to-gray-800/60 backdrop-blur-sm"></div>
       
       {/* Advanced Particle System */}
       <CSSParticleSystem 
@@ -158,12 +165,16 @@ export default function PlanALandingSimple() {
           </NeoGlassSection>
 
           {/* Features Section with Enhanced 3D Cards */}
-          <NeoGlassSection title="Platform Features" className="mb-16">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <NeoGlassSection title="Platform Features" className="mb-16 relative z-20">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" style={{ transformStyle: 'preserve-3d' }}>
               {/* Career Clarity */}
               <div 
                 className="neo-glass-3d p-6 rounded-lg transition-3d hover:scale-105 magnetic glow-blue perspective-1000 gpu-accelerated"
                 onMouseEnter={handleFeatureHover}
+                style={{ 
+                  transform: 'translateZ(50px)',
+                  animation: 'floatCard 6s ease-in-out infinite 0s'
+                }}
               >
                 <div className="flex items-center mb-4">
                   <Brain className="h-8 w-8 text-blue-400 mr-3 float" />

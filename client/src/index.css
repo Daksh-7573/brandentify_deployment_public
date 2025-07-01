@@ -960,3 +960,40 @@ input.smart-radar-input::placeholder {
     background-position: center;
   }
 }
+
+/* Advanced Parallax Card Animations */
+@keyframes floatCard {
+  0%, 100% { 
+    transform: translateZ(50px) translateY(0px) rotateX(0deg) rotateY(0deg);
+  }
+  25% { 
+    transform: translateZ(60px) translateY(-5px) rotateX(2deg) rotateY(1deg);
+  }
+  50% { 
+    transform: translateZ(55px) translateY(-8px) rotateX(0deg) rotateY(-1deg);
+  }
+  75% { 
+    transform: translateZ(65px) translateY(-3px) rotateX(-2deg) rotateY(1deg);
+  }
+}
+
+@keyframes floatCardDeep {
+  0%, 100% { 
+    transform: translateZ(80px) translateY(0px) rotateX(0deg) rotateY(0deg);
+  }
+  33% { 
+    transform: translateZ(90px) translateY(-10px) rotateX(3deg) rotateY(-2deg);
+  }
+  66% { 
+    transform: translateZ(75px) translateY(-15px) rotateX(-1deg) rotateY(2deg);
+  }
+}
+
+@keyframes floatCardNear {
+  0%, 100% { 
+    transform: translateZ(30px) translateY(0px) rotateX(0deg) rotateY(0deg);
+  }
+  50% { 
+    transform: translateZ(40px) translateY(-3px) rotateX(1deg) rotateY(-1deg);
+  }
+}
