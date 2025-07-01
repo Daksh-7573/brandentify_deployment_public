@@ -186,7 +186,14 @@ export default function PlanALandingSimple() {
               </div>
 
               {/* AI Mentorship */}
-              <div className="neo-glass-3d p-6 rounded-lg transition-3d hover:scale-105 magnetic glow-purple perspective-1000 gpu-accelerated">
+              <div 
+                className="neo-glass-3d p-6 rounded-lg transition-3d hover:scale-105 magnetic glow-purple perspective-1000 gpu-accelerated"
+                onMouseEnter={handleFeatureHover}
+                style={{ 
+                  transform: 'translateZ(80px)',
+                  animation: 'floatCardDeep 8s ease-in-out infinite 1s'
+                }}
+              >
                 <div className="flex items-center mb-4">
                   <MessageCircle className="h-8 w-8 text-purple-400 mr-3 float" style={{ animationDelay: '0.2s' }} />
                   <h3 className="text-xl font-semibold text-white">AI Mentorship</h3>
@@ -197,7 +204,14 @@ export default function PlanALandingSimple() {
               </div>
 
               {/* Smart Resume */}
-              <div className="neo-glass-3d p-6 rounded-lg transition-3d hover:scale-105 magnetic glow-blue perspective-1000 gpu-accelerated">
+              <div 
+                className="neo-glass-3d p-6 rounded-lg transition-3d hover:scale-105 magnetic glow-blue perspective-1000 gpu-accelerated"
+                onMouseEnter={handleFeatureHover}
+                style={{ 
+                  transform: 'translateZ(30px)',
+                  animation: 'floatCardNear 5s ease-in-out infinite 1.5s'
+                }}
+              >
                 <div className="flex items-center mb-4">
                   <FileText className="h-8 w-8 text-green-400 mr-3 float" style={{ animationDelay: '0.4s' }} />
                   <h3 className="text-xl font-semibold text-white">Smart Resume</h3>
@@ -208,7 +222,14 @@ export default function PlanALandingSimple() {
               </div>
 
               {/* Skill Matching */}
-              <div className="neo-glass-3d p-6 rounded-lg transition-3d hover:scale-105 magnetic glow-purple perspective-1000 gpu-accelerated">
+              <div 
+                className="neo-glass-3d p-6 rounded-lg transition-3d hover:scale-105 magnetic glow-purple perspective-1000 gpu-accelerated"
+                onMouseEnter={handleFeatureHover}
+                style={{ 
+                  transform: 'translateZ(65px)',
+                  animation: 'floatCard 7s ease-in-out infinite 2s'
+                }}
+              >
                 <div className="flex items-center mb-4">
                   <TrendingUp className="h-8 w-8 text-yellow-400 mr-3 float" style={{ animationDelay: '0.6s' }} />
                   <h3 className="text-xl font-semibold text-white">Skill Matching</h3>
