@@ -353,9 +353,9 @@ export function EmailAuth() {
                 )}
               />
               
-              <Button
+              <button
                 type="submit"
-                className="w-full"
+                className="neo-glass-button w-full flex items-center justify-center gap-2"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? (
@@ -363,7 +363,7 @@ export function EmailAuth() {
                 ) : (
                   "Sign In"
                 )}
-              </Button>
+              </button>
             </form>
           </Form>
         </TabsContent>
@@ -479,9 +479,9 @@ export function EmailAuth() {
                 )}
               />
               
-              <Button
+              <button
                 type="submit"
-                className="w-full"
+                className="neo-glass-button w-full flex items-center justify-center gap-2"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? (
@@ -489,7 +489,7 @@ export function EmailAuth() {
                 ) : (
                   "Create Account"
                 )}
-              </Button>
+              </button>
             </form>
           </Form>
         </TabsContent>
