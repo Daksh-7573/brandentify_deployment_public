@@ -56,7 +56,7 @@ const DashboardLayout = ({ children, hideRightSidebar = false }: DashboardLayout
       <Header />
 
       {/* Main Content */}
-      <div className="flex-1 flex overflow-hidden pt-16"> {/* Padding-top for fixed header */}
+      <div className="flex-1 flex flex-col lg:flex-row overflow-hidden pt-16"> {/* Padding-top for fixed header */}
         {/* Main Content */}
         <main className="flex-1 overflow-y-auto bg-gray-50">
           <div className="min-h-screen">
@@ -64,8 +64,12 @@ const DashboardLayout = ({ children, hideRightSidebar = false }: DashboardLayout
           </div>
         </main>
 
-        {/* Right sidebar */}
-        {!hideRightSidebar && <RightSidebar />}
+        {/* Right sidebar - Mobile-responsive */}
+        {!hideRightSidebar && (
+          <div className="w-full lg:w-80 h-64 lg:h-auto border-t lg:border-t-0 lg:border-l border-gray-200">
+            <RightSidebar />
+          </div>
+        )}
       </div>
     </div>
   );
