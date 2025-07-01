@@ -1,17 +1,24 @@
 import { useAuth } from "@/hooks/use-auth";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
 import { ArrowRight, Sparkles, Target, Users, Brain, Zap, FileText, TrendingUp, Building, Calendar, Trophy, Search, Heart, Newspaper, MessageCircle } from "lucide-react";
 import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
+import RobotCompanion from "@/components/landing/robot-companion";
+import FloatingParticles from "@/components/landing/floating-particles";
+import InteractiveCard from "@/components/landing/interactive-card";
+import ParallaxBackground from "@/components/landing/parallax-background";
 
 export default function Landing() {
   const { isLoading, isAuthenticated } = useAuth();
   const { toast } = useToast();
   
   const [_, setLocation] = useLocation();
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isHovering, setIsHovering] = useState(false);
+  const [currentSection, setCurrentSection] = useState('default');
 
   // Check if user wants to stay on landing page (via query parameter)
   const urlParams = new URLSearchParams(window.location.search);
@@ -27,6 +34,38 @@ export default function Landing() {
     }
   }, [isAuthenticated, setLocation, stayOnLanding]);
 
+  // Mouse tracking for interactive effects
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({ x: e.clientX, y: e.clientY });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
+  // Intersection observer for section tracking
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const sectionId = entry.target.getAttribute('data-section');
+            if (sectionId) {
+              setCurrentSection(sectionId);
+            }
+          }
+        });
+      },
+      { threshold: 0.3 }
+    );
+
+    const sections = document.querySelectorAll('[data-section]');
+    sections.forEach((section) => observer.observe(section));
+
+    return () => observer.disconnect();
+  }, []);
+
   if (isAuthenticated && !stayOnLanding) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -37,30 +76,44 @@ export default function Landing() {
 
   return (
     <div 
-      className="responsive-background min-h-screen w-full relative overflow-hidden"
-      style={{ 
-        backgroundImage: `url(${backgroundImage})`
-      }}
+      className="min-h-screen w-full relative overflow-hidden"
+      style={{ perspective: '1000px' }}
     >
-      {/* Glass UI overlay to maintain design consistency */}
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm"></div>
+      {/* Advanced Parallax Background */}
+      <ParallaxBackground mousePosition={mousePosition} />
+      
+      {/* Floating Particles */}
+      <FloatingParticles />
+      
+      {/* Original background image as overlay */}
+      <div 
+        className="absolute inset-0 opacity-20 mix-blend-overlay"
+        style={{ 
+          backgroundImage: `url(${backgroundImage})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center'
+        }}
+      />
       
       {/* Content layer */}
-      <div className="relative z-10">
+      <div className="relative z-20">
         <NeoGlassLayout className="mt-0 pt-4 px-4 min-h-screen flex flex-col justify-start py-8">
           {/* Hero Section */}
-          <NeoGlassSection className="text-center mb-12">
-          <div className="space-y-6">
+          <NeoGlassSection className="text-center mb-12" data-section="default">
+          <div className="space-y-6"
+               onMouseEnter={() => setIsHovering(true)}
+               onMouseLeave={() => setIsHovering(false)}>
             <div className="flex items-center justify-center space-x-2 mb-4">
-              <Sparkles className="h-8 w-8 text-blue-400" />
-              <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+              <Sparkles className="h-8 w-8 text-blue-400 animate-pulse" />
+              <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent transform transition-all duration-300 hover:scale-105">
                 Brandentifier
               </h1>
-              <Sparkles className="h-8 w-8 text-purple-400" />
+              <Sparkles className="h-8 w-8 text-purple-400 animate-pulse" style={{ animationDelay: '0.5s' }} />
             </div>
             
             <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
-              AI-Powered Career Development Platform that transforms your professional journey with intelligent insights and personalized guidance
+              Your AI Career Buddy is Ready! 🚀 Transform your professional journey with intelligent insights, 
+              epic networking, and guidance so good it feels like magic ✨
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-8">
