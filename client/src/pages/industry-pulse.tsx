@@ -3,6 +3,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { Pulse } from "@shared/schema";
 import { useLocation } from "wouter";
 import Header from "@/components/layout/header";
+import "@/styles/mobile-responsive.css";
 // Removed Sidebar import, using top navigation only
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -1513,7 +1514,7 @@ export default function IndustryPulsePage() {
                 </div>
                 <Button 
                   onClick={() => setLocation("/create-pulse")}
-                  className="w-full sm:w-auto flex-shrink-0 h-8 sm:h-9"
+                  className="w-full sm:w-auto flex-shrink-0 h-8 sm:h-9 create-button-mobile"
                   size="sm"
                 >
                   <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
@@ -1525,11 +1526,11 @@ export default function IndustryPulsePage() {
             <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab}>
               <div className="mb-4 sm:mb-6 w-full overflow-x-auto">
                 <TabsList className="grid w-full grid-cols-5 h-auto p-1">
-                  <TabsTrigger value="all" className="text-xs px-2 py-2 sm:text-sm sm:px-3">All</TabsTrigger>
-                  <TabsTrigger value="poll" className="text-xs px-2 py-2 sm:text-sm sm:px-3">Polls</TabsTrigger>
-                  <TabsTrigger value="media-pulse" className="text-xs px-2 py-2 sm:text-sm sm:px-3">Media</TabsTrigger>
-                  <TabsTrigger value="project" className="text-xs px-2 py-2 sm:text-sm sm:px-3">Projects</TabsTrigger>
-                  <TabsTrigger value="musk-news" className="flex items-center justify-center gap-1 text-xs px-1 py-2 sm:text-sm sm:px-3">
+                  <TabsTrigger value="all" className="text-xs px-2 py-2 sm:text-sm sm:px-3 tabs-trigger-mobile">All</TabsTrigger>
+                  <TabsTrigger value="poll" className="text-xs px-2 py-2 sm:text-sm sm:px-3 tabs-trigger-mobile">Polls</TabsTrigger>
+                  <TabsTrigger value="media-pulse" className="text-xs px-2 py-2 sm:text-sm sm:px-3 tabs-trigger-mobile">Media</TabsTrigger>
+                  <TabsTrigger value="project" className="text-xs px-2 py-2 sm:text-sm sm:px-3 tabs-trigger-mobile">Projects</TabsTrigger>
+                  <TabsTrigger value="musk-news" className="flex items-center justify-center gap-1 text-xs px-1 py-2 sm:text-sm sm:px-3 tabs-trigger-mobile">
                     <span className="text-amber-500">⚡</span> 
                     <span className="hidden sm:inline">Musk </span>
                     <span>News</span>
@@ -1578,11 +1579,11 @@ export default function IndustryPulsePage() {
                 ) : (
                   <div className="space-y-3 sm:space-y-4 md:space-y-6">
                     {filteredPulses.map((pulse: PulseWithUser) => (
-                      <Card key={pulse.id} className="overflow-hidden">
-                        <CardHeader className="pb-2 sm:pb-3 px-2 sm:px-4 md:px-6 py-3 sm:py-4">
+                      <Card key={pulse.id} className="overflow-hidden pulse-card-mobile">
+                        <CardHeader className="pb-2 sm:pb-3 px-2 sm:px-4 md:px-6 py-3 sm:py-4 pulse-header-mobile">
                           <div className="flex justify-between items-start">
                             <div className="flex gap-2 sm:gap-3 items-center min-w-0 flex-1">
-                              <Avatar className="h-7 w-7 sm:h-8 sm:w-8 md:h-10 md:w-10 flex-shrink-0">
+                              <Avatar className="h-7 w-7 sm:h-8 sm:w-8 md:h-10 md:w-10 flex-shrink-0 pulse-avatar-mobile">
                                 <AvatarImage src={pulse.user?.photoURL || ""} alt={pulse.user?.name || ""} />
                                 <AvatarFallback className="text-xs sm:text-sm">{pulse.user?.name?.charAt(0) || "U"}</AvatarFallback>
                               </Avatar>
@@ -1604,8 +1605,8 @@ export default function IndustryPulsePage() {
                           </div>
                         </CardHeader>
                         <CardContent className="px-2 sm:px-4 md:px-6 pb-2 sm:pb-3">
-                          <CardTitle className="mb-2 sm:mb-3 text-sm sm:text-base md:text-lg leading-tight">{pulse.title}</CardTitle>
-                          <p className="text-muted-foreground text-xs sm:text-sm md:text-base leading-relaxed">{pulse.content}</p>
+                          <CardTitle className="mb-2 sm:mb-3 text-sm sm:text-base md:text-lg leading-tight pulse-title-mobile">{pulse.title}</CardTitle>
+                          <p className="text-muted-foreground text-xs sm:text-sm md:text-base leading-relaxed pulse-content-mobile">{pulse.content}</p>
                           
                           {/* Render pulse content based on type */}
                           {pulse.type === 'poll' && (
