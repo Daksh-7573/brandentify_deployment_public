@@ -96,8 +96,8 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
     if (!quests || quests.length === 0) {
       return (
         <div className="text-center py-8">
-          <h3 className="text-lg font-medium">No quests available</h3>
-          <p className="text-muted-foreground mt-2">
+          <h3 className="text-lg font-medium text-white">No quests available</h3>
+          <p className="text-white/70 mt-2">
             Check back later for new brand quests.
           </p>
         </div>
