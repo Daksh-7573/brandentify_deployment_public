@@ -29,9 +29,9 @@ interface NeoGlassSectionProps extends NeoGlassLayoutProps {
 
 export function NeoGlassSection({ children, className = '', title }: NeoGlassSectionProps) {
   return (
-    <div className={`neo-glass-card rounded-lg p-4 mb-6 ${className}`}>
+    <div className={`neo-glass-card rounded-lg p-3 sm:p-4 md:p-6 mb-4 sm:mb-6 ${className}`}>
       {title && (
-        <h2 className="text-xl font-semibold mb-4 text-white">{title}</h2>
+        <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-white">{title}</h2>
       )}
       {children}
     </div>
