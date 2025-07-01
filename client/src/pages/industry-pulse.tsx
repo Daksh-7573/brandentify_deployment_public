@@ -1502,37 +1502,40 @@ export default function IndustryPulsePage() {
       <Header />
       <div className="flex flex-1 overflow-hidden pt-16"> {/* Added padding-top for fixed header */}
         <div className="flex-1 overflow-auto w-full">
-          <div className="max-w-5xl w-full mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-8">
-            <div className="mb-6 md:mb-8 flex flex-col sm:flex-row gap-4 sm:gap-0 justify-between items-start sm:items-center">
-              <div className="flex-1 min-w-0">
-                <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Industry Pulse</h1>
-                <p className="text-muted-foreground mt-1 text-sm sm:text-base">
-                  Discover insights, polls, and media from your professional network
-                </p>
+          <div className="max-w-5xl w-full mx-auto px-2 sm:px-4 md:px-6 lg:px-8 py-2 sm:py-4 md:py-6 lg:py-8">
+            <div className="mb-4 sm:mb-6 md:mb-8">
+              <div className="flex flex-col gap-3 sm:flex-row sm:gap-4 justify-between items-start sm:items-center">
+                <div className="flex-1 min-w-0">
+                  <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight">Industry Pulse</h1>
+                  <p className="text-muted-foreground mt-1 text-xs sm:text-sm md:text-base leading-tight">
+                    Discover insights, polls, and media from your professional network
+                  </p>
+                </div>
+                <Button 
+                  onClick={() => setLocation("/create-pulse")}
+                  className="w-full sm:w-auto flex-shrink-0 h-8 sm:h-9"
+                  size="sm"
+                >
+                  <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                  <span className="text-xs sm:text-sm">Create Pulse</span>
+                </Button>
               </div>
-              <Button 
-                onClick={() => setLocation("/create-pulse")}
-                className="w-full sm:w-auto flex-shrink-0"
-                size="sm"
-              >
-                <MessageSquare className="h-4 w-4 mr-2 sm:mr-1" />
-                <span className="sm:hidden">Create Pulse</span>
-                <span className="hidden sm:inline">Create Pulse</span>
-              </Button>
             </div>
             
             <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="mb-4 sm:mb-6 w-full overflow-x-auto">
-                <div className="flex min-w-max">
-                  <TabsTrigger value="all" className="text-xs sm:text-sm">All</TabsTrigger>
-                  <TabsTrigger value="poll" className="text-xs sm:text-sm">Polls</TabsTrigger>
-                  <TabsTrigger value="media-pulse" className="text-xs sm:text-sm">Media</TabsTrigger>
-                  <TabsTrigger value="project" className="text-xs sm:text-sm">Projects</TabsTrigger>
-                  <TabsTrigger value="musk-news" className="flex items-center gap-1 text-xs sm:text-sm">
-                    <span className="text-amber-500">⚡</span> <span className="hidden sm:inline">Musk </span>News
+              <div className="mb-4 sm:mb-6 w-full overflow-x-auto">
+                <TabsList className="grid w-full grid-cols-5 h-auto p-1">
+                  <TabsTrigger value="all" className="text-xs px-2 py-2 sm:text-sm sm:px-3">All</TabsTrigger>
+                  <TabsTrigger value="poll" className="text-xs px-2 py-2 sm:text-sm sm:px-3">Polls</TabsTrigger>
+                  <TabsTrigger value="media-pulse" className="text-xs px-2 py-2 sm:text-sm sm:px-3">Media</TabsTrigger>
+                  <TabsTrigger value="project" className="text-xs px-2 py-2 sm:text-sm sm:px-3">Projects</TabsTrigger>
+                  <TabsTrigger value="musk-news" className="flex items-center justify-center gap-1 text-xs px-1 py-2 sm:text-sm sm:px-3">
+                    <span className="text-amber-500">⚡</span> 
+                    <span className="hidden sm:inline">Musk </span>
+                    <span>News</span>
                   </TabsTrigger>
-                </div>
-              </TabsList>
+                </TabsList>
+              </div>
               
               <TabsContent value={activeTab} className="mt-0">
                 {/* Smart Refresh Banner */}
@@ -1573,21 +1576,21 @@ export default function IndustryPulsePage() {
                     </CardContent>
                   </Card>
                 ) : (
-                  <div className="space-y-4 sm:space-y-6">
+                  <div className="space-y-3 sm:space-y-4 md:space-y-6">
                     {filteredPulses.map((pulse: PulseWithUser) => (
                       <Card key={pulse.id} className="overflow-hidden">
-                        <CardHeader className="pb-3 px-3 sm:px-6">
-                          <div className="flex justify-between">
+                        <CardHeader className="pb-2 sm:pb-3 px-2 sm:px-4 md:px-6 py-3 sm:py-4">
+                          <div className="flex justify-between items-start">
                             <div className="flex gap-2 sm:gap-3 items-center min-w-0 flex-1">
-                              <Avatar className="h-8 w-8 sm:h-10 sm:w-10 flex-shrink-0">
+                              <Avatar className="h-7 w-7 sm:h-8 sm:w-8 md:h-10 md:w-10 flex-shrink-0">
                                 <AvatarImage src={pulse.user?.photoURL || ""} alt={pulse.user?.name || ""} />
-                                <AvatarFallback>{pulse.user?.name?.charAt(0) || "U"}</AvatarFallback>
+                                <AvatarFallback className="text-xs sm:text-sm">{pulse.user?.name?.charAt(0) || "U"}</AvatarFallback>
                               </Avatar>
                               <div className="min-w-0 flex-1">
-                                <div className="font-semibold text-sm sm:text-base truncate">{pulse.user?.name || "User"}</div>
-                                <div className="text-xs text-muted-foreground flex items-center gap-1">
-                                  <Calendar className="h-3 w-3 flex-shrink-0" />
-                                  <span className="truncate">
+                                <div className="font-semibold text-xs sm:text-sm md:text-base truncate">{pulse.user?.name || "User"}</div>
+                                <div className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
+                                  <Calendar className="h-2.5 w-2.5 sm:h-3 sm:w-3 flex-shrink-0" />
+                                  <span className="truncate text-xs">
                                     {pulse.createdAt 
                                       ? formatDistanceToNow(new Date(pulse.createdAt), { addSuffix: true }) 
                                       : "Recently"}
@@ -1595,14 +1598,14 @@ export default function IndustryPulsePage() {
                                 </div>
                               </div>
                             </div>
-                            <div className="flex-shrink-0">
+                            <div className="flex-shrink-0 ml-2">
                               {getPulseIcon(pulse)}
                             </div>
                           </div>
                         </CardHeader>
-                        <CardContent className="px-3 sm:px-6">
-                          <CardTitle className="mb-3 text-base sm:text-lg">{pulse.title}</CardTitle>
-                          <p className="text-muted-foreground text-sm sm:text-base">{pulse.content}</p>
+                        <CardContent className="px-2 sm:px-4 md:px-6 pb-2 sm:pb-3">
+                          <CardTitle className="mb-2 sm:mb-3 text-sm sm:text-base md:text-lg leading-tight">{pulse.title}</CardTitle>
+                          <p className="text-muted-foreground text-xs sm:text-sm md:text-base leading-relaxed">{pulse.content}</p>
                           
                           {/* Render pulse content based on type */}
                           {pulse.type === 'poll' && (
@@ -1621,7 +1624,7 @@ export default function IndustryPulsePage() {
                             <ProjectDetails pulse={pulse} />
                           )}
                         </CardContent>
-                        <CardFooter className="flex justify-between pt-0 px-3 sm:px-6">
+                        <CardFooter className="flex justify-between pt-2 sm:pt-3 px-2 sm:px-4 md:px-6 pb-3 sm:pb-4">
                           <PulseReactions pulse={pulse} />
                         </CardFooter>
                       </Card>
