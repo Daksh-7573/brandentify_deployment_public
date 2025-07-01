@@ -6,10 +6,10 @@ import { useToast } from "@/hooks/use-toast";
 import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
 import { ArrowRight, Sparkles, Target, Users, Brain, Zap, FileText, TrendingUp, Building, Calendar, Trophy, Search, Heart, Newspaper, MessageCircle } from "lucide-react";
 import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
-import RobotCompanion from "@/components/landing/robot-companion";
-import FloatingParticles from "@/components/landing/floating-particles";
-import InteractiveCard from "@/components/landing/interactive-card";
-import ParallaxBackground from "@/components/landing/parallax-background";
+// import RobotCompanion from "@/components/landing/robot-companion";
+// import FloatingParticles from "@/components/landing/floating-particles";
+// import InteractiveCard from "@/components/landing/interactive-card";
+// import ParallaxBackground from "@/components/landing/parallax-background";
 import "@/styles/landing-3d.css";
 
 export default function Landing() {
@@ -80,11 +80,30 @@ export default function Landing() {
       className="min-h-screen w-full relative overflow-hidden"
       style={{ perspective: '1000px' }}
     >
-      {/* Advanced Parallax Background */}
-      <ParallaxBackground mousePosition={mousePosition} />
+      {/* Advanced Parallax Background - CSS Only */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+        {/* Dynamic gradient background */}
+        <div 
+          className="absolute inset-0"
+          style={{
+            background: 'linear-gradient(135deg, hsl(220, 50%, 15%) 0%, hsl(250, 60%, 10%) 50%, hsl(200, 55%, 8%) 100%)'
+          }}
+        />
+        
+        {/* Animated background orbs */}
+        <div className="absolute top-20 left-1/4 w-64 h-64 bg-gradient-to-br from-blue-500/10 to-transparent rounded-full blur-3xl opacity-20" />
+        <div className="absolute bottom-20 right-1/4 w-96 h-96 bg-gradient-to-br from-purple-500/10 to-transparent rounded-full blur-3xl opacity-20" />
+        <div className="absolute top-1/3 right-1/3 w-48 h-48 bg-gradient-to-br from-cyan-500/10 to-transparent rounded-full blur-2xl opacity-30" />
+      </div>
       
-      {/* Floating Particles */}
-      <FloatingParticles />
+      {/* Floating Particles - CSS Only */}
+      <div className="fixed inset-0 pointer-events-none z-10">
+        <div className="absolute top-20 left-10 w-4 h-4 bg-blue-400/30 rounded-full animate-pulse float-animation"></div>
+        <div className="absolute top-40 right-20 w-6 h-6 bg-purple-400/20 rounded-lg rotate-45 float-rotate-animation"></div>
+        <div className="absolute bottom-40 left-20 w-3 h-3 bg-pink-400/40 rounded-full animate-pulse" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute top-60 left-1/2 w-5 h-5 bg-yellow-400/30 rounded-full float-animation" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute bottom-60 right-10 w-4 h-4 bg-green-400/25 rounded-lg rotate-12 animate-pulse" style={{ animationDelay: '1.5s' }}></div>
+      </div>
       
       {/* Original background image as overlay */}
       <div 
@@ -148,44 +167,46 @@ export default function Landing() {
         <NeoGlassSection title="What Makes Us Awesome! 🎯" className="mb-16" data-section="features">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {/* Career Clarity */}
-            <InteractiveCard
-              icon={<Brain className="h-8 w-8 text-blue-400" />}
-              title="Career Clarity"
-              description="Confused about your next move? Your AI buddy has got your back! Get smart, personalized career advice that actually makes sense 🎯"
-              delay={0.1}
-              onHover={(hovering) => hovering && setCurrentSection('career')}
-            />
+            <div className="neo-glass-card p-6 rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-2xl cursor-pointer group">
+              <div className="flex items-center mb-4">
+                <Brain className="h-8 w-8 text-blue-400 mr-3 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-12" />
+                <h3 className="text-xl font-semibold text-white">Career Clarity</h3>
+              </div>
+              <p className="text-gray-300 leading-relaxed">
+                Confused about your next move? Your AI buddy has got your back! Get smart, personalized career advice that actually makes sense 🎯
+              </p>
+            </div>
 
             {/* AI Mentorship */}
-            <div className="neo-glass-card p-6 rounded-lg transition-all duration-300 hover:scale-105">
+            <div className="neo-glass-card p-6 rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-2xl cursor-pointer group">
               <div className="flex items-center mb-4">
-                <MessageCircle className="h-8 w-8 text-purple-400 mr-3" />
+                <MessageCircle className="h-8 w-8 text-purple-400 mr-3 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-12" />
                 <h3 className="text-xl font-semibold text-white">AI Mentorship</h3>
               </div>
               <p className="text-gray-300 leading-relaxed">
-                Talk to AI mentors modeled after industry legends — anytime, anywhere.
+                Meet your 24/7 career coach! Our AI mentor knows your industry inside-out and gives advice that actually works 🤖✨
               </p>
             </div>
 
             {/* Smart Resume */}
-            <div className="neo-glass-card p-6 rounded-lg transition-all duration-300 hover:scale-105">
+            <div className="neo-glass-card p-6 rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-2xl cursor-pointer group">
               <div className="flex items-center mb-4">
-                <FileText className="h-8 w-8 text-green-400 mr-3" />
+                <FileText className="h-8 w-8 text-green-400 mr-3 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-12" />
                 <h3 className="text-xl font-semibold text-white">Smart Resume</h3>
               </div>
               <p className="text-gray-300 leading-relaxed">
-                Upload your resume and get instant feedback, scoring, and styling tips.
+                Upload your resume and watch the magic happen! Get instant feedback, killer scoring, and styling tips that'll make recruiters go "WOW!" 📄✨
               </p>
             </div>
 
             {/* Skill Matching */}
-            <div className="neo-glass-card p-6 rounded-lg transition-all duration-300 hover:scale-105">
+            <div className="neo-glass-card p-6 rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-2xl cursor-pointer group">
               <div className="flex items-center mb-4">
-                <TrendingUp className="h-8 w-8 text-yellow-400 mr-3" />
+                <TrendingUp className="h-8 w-8 text-yellow-400 mr-3 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-12" />
                 <h3 className="text-xl font-semibold text-white">Skill Matching</h3>
               </div>
               <p className="text-gray-300 leading-relaxed">
-                Find out which skills you need to grow in your dream career path.
+                Discover exactly which superpowers you need to unlock for your dream career! No more guessing, just pure skill-matching genius 🎯🚀
               </p>
             </div>
 
