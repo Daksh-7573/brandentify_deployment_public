@@ -47,9 +47,9 @@ export default function Landing() {
       
       {/* Content layer */}
       <div className="relative z-10">
-        <NeoGlassLayout className="mt-0 pt-4 px-4 min-h-screen flex flex-col justify-start py-8">
+        <NeoGlassLayout className="mt-0 pt-0 px-4 min-h-screen flex flex-col justify-start">
           {/* Hero Section */}
-          <NeoGlassSection className="text-center mb-12">
+          <NeoGlassSection className="text-center mb-12 mt-8">
           <div className="space-y-6">
             <div className="flex items-center justify-center space-x-2 mb-4">
               <Sparkles className="h-8 w-8 text-blue-400" />
