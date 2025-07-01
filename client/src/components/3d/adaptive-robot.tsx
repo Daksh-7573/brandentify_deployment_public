@@ -72,7 +72,7 @@ export function AdaptiveRobot({ containerRef, mousePosition, interactions }: Ada
     // Robot eyes
     const eyes = new THREE.Group();
     const eyeGeometry = new THREE.SphereGeometry(0.15, 8, 8);
-    const eyeMaterial = new THREE.MeshBasicMaterial({ color: 0x00ffff, emissive: 0x004444 });
+    const eyeMaterial = new THREE.MeshBasicMaterial({ color: 0x00ffff });
     
     const leftEye = new THREE.Mesh(eyeGeometry, eyeMaterial);
     leftEye.position.set(-0.2, 1.3, 0.4);
