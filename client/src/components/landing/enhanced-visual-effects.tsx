@@ -190,7 +190,7 @@ export default function EnhancedVisualEffects({ mousePosition, isActive = true }
       </div>
 
       {/* CSS for additional effects */}
-      <style jsx>{`
+      <style>{`
         @keyframes scanline {
           0% { opacity: 0; }
           50% { opacity: 1; }

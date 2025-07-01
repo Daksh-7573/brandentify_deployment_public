@@ -73,6 +73,12 @@ export default function Landing() {
     return () => observer.disconnect();
   }, []);
 
+  // Handle entrance choreography completion
+  const handleEntranceComplete = () => {
+    setShowEntranceChoreography(false);
+    setIsMainContentVisible(true);
+  };
+
   if (isAuthenticated && !stayOnLanding) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -82,15 +88,27 @@ export default function Landing() {
   }
 
   return (
-    <div 
-      className="min-h-screen w-full relative overflow-hidden"
-      style={{ perspective: '1000px' }}
-    >
-      {/* Advanced Multi-Layer Parallax Background */}
-      <AdvancedParallaxBackground mousePosition={mousePosition} />
-      
-      {/* Advanced Particle System */}
-      <AdvancedParticleSystem mousePosition={mousePosition} isActive={true} />
+    <ScrollNarrativeSystem onSectionChange={setCurrentSection}>
+      <div 
+        className="min-h-screen w-full relative overflow-hidden"
+        style={{ perspective: '1000px' }}
+      >
+        {/* Entrance Choreography */}
+        {showEntranceChoreography && (
+          <EntranceChoreography onComplete={handleEntranceComplete} />
+        )}
+
+        {/* Enhanced Visual Effects */}
+        <EnhancedVisualEffects mousePosition={mousePosition} isActive={isMainContentVisible} />
+        
+        {/* Micro Interactions */}
+        <MicroInteractions mousePosition={mousePosition} isActive={isMainContentVisible} />
+
+        {/* Advanced Multi-Layer Parallax Background */}
+        <AdvancedParallaxBackground mousePosition={mousePosition} />
+        
+        {/* Advanced Particle System */}
+        <AdvancedParticleSystem mousePosition={mousePosition} isActive={true} />
       
       {/* Original background image as overlay */}
       <div 
@@ -106,7 +124,7 @@ export default function Landing() {
       <div className="relative z-20">
         <NeoGlassLayout className="mt-0 pt-4 px-4 min-h-screen flex flex-col justify-start py-8">
           {/* Hero Section */}
-          <NeoGlassSection className="text-center mb-12" data-section="default">
+          <NeoGlassSection className="text-center mb-12" data-section="hero">
           <div className="space-y-6"
                onMouseEnter={() => setIsHovering(true)}
                onMouseLeave={() => setIsHovering(false)}>
@@ -318,6 +336,7 @@ export default function Landing() {
         />
         </NeoGlassLayout>
       </div>
-    </div>
+      </div>
+    </ScrollNarrativeSystem>
   );
 }

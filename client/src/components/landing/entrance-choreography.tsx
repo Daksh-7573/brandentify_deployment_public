@@ -144,7 +144,7 @@ export default function EntranceChoreography({ onComplete }: EntranceChoreograph
       )}
 
       {/* CSS Animations */}
-      <style jsx>{`
+      <style>{`
         @keyframes particleBurst {
           0% {
             transform: rotate(var(--rotation)) translateX(0px) scale(1);
