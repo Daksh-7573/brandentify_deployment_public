@@ -38,8 +38,10 @@ export default function Landing() {
 
   return (
     <div 
-      className="min-h-screen relative bg-cover bg-center bg-no-repeat"
-      style={{ backgroundImage: `url(${backgroundImage})` }}
+      className="responsive-background min-h-screen w-full relative overflow-hidden"
+      style={{ 
+        backgroundImage: `url(${backgroundImage})`
+      }}
     >
       {/* Glass UI overlay to maintain design consistency */}
       <div className="absolute inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm"></div>

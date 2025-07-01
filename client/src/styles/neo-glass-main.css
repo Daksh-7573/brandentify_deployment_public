@@ -48,6 +48,46 @@ body.neo-glass-theme {
   background-repeat: no-repeat;
 }
 
+/* Responsive background image class */
+.responsive-background {
+  width: 100vw;
+  min-height: 100vh;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-attachment: scroll;
+}
+
+/* Media queries for different screen sizes */
+@media (max-width: 768px) {
+  .responsive-background {
+    background-size: cover;
+    background-position: center top;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .responsive-background {
+    background-size: cover;
+    background-position: center center;
+  }
+}
+
+@media (min-width: 1025px) {
+  .responsive-background {
+    background-size: cover;
+    background-position: center center;
+  }
+}
+
+/* For very wide screens */
+@media (min-width: 1920px) {
+  .responsive-background {
+    background-size: cover;
+    background-position: center center;
+  }
+}
+
 .neo-glass-container::before {
   content: "";
   position: absolute;
