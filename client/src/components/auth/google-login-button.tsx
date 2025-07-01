@@ -42,7 +42,7 @@ export function GoogleLoginButton({
       size={size}
       onClick={handleGoogleLogin}
       disabled={isLoading}
-      className={`flex items-center gap-2 ${fullWidth ? 'w-full' : ''}`}
+      className={`neo-glass-button flex items-center gap-2 ${fullWidth ? 'w-full' : ''} text-white border border-white/20 bg-white/10 hover:bg-white/15 backdrop-blur-sm`}
     >
       {/* Google Icon */}
       <svg 
