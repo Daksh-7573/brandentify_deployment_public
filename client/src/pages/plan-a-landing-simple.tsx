@@ -83,6 +83,7 @@ export default function PlanALandingSimple() {
 
   return (
     <div 
+      ref={containerRef}
       className="responsive-background min-h-screen w-full relative overflow-hidden perspective-1000"
       style={{ 
         backgroundImage: `url(${backgroundImage})`
@@ -91,39 +92,21 @@ export default function PlanALandingSimple() {
       {/* Enhanced Glass UI overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm"></div>
       
-      {/* Floating particles background */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(30)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute w-2 h-2 bg-blue-400 rounded-full opacity-20 animate-pulse"
-            style={{
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
-              animationDelay: `${i * 0.2}s`,
-              animationDuration: `${3 + Math.random() * 2}s`
-            }}
-          />
-        ))}
-        {[...Array(20)].map((_, i) => (
-          <div
-            key={`purple-${i}`}
-            className="absolute w-1 h-1 bg-purple-400 rounded-full opacity-30 animate-pulse"
-            style={{
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
-              animationDelay: `${i * 0.3}s`,
-              animationDuration: `${4 + Math.random() * 2}s`
-            }}
-          />
-        ))}
-      </div>
+      {/* Advanced Particle System */}
+      <CSSParticleSystem 
+        containerRef={containerRef}
+        mousePosition={mousePosition}
+        particleCount={200}
+        colorScheme="multi"
+      />
 
-      {/* Floating AI Assistant */}
-      <div className="fixed top-1/2 right-8 transform -translate-y-1/2 z-30 float gpu-accelerated">
-        <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-xl glow-multi transition-3d hover:scale-110 magnetic">
-          <Brain className="h-8 w-8 text-white" />
-        </div>
+      {/* 3D Adaptive AI Robot */}
+      <div className="fixed top-1/2 right-8 transform -translate-y-1/2 z-40">
+        <CSSAdaptiveRobot 
+          containerRef={containerRef}
+          mousePosition={mousePosition}
+          interactions={robotInteractions}
+        />
       </div>
 
       {/* Progress indicator */}
@@ -152,7 +135,7 @@ export default function PlanALandingSimple() {
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-8">
                 {isAuthenticated ? (
                   <Button 
-                    onClick={() => setLocation('/industry-pulse')}
+                    onClick={handleCTAClick}
                     size="lg"
                     className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-8 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 button-3d glow-blue"
                   >
@@ -161,7 +144,7 @@ export default function PlanALandingSimple() {
                   </Button>
                 ) : (
                   <Button 
-                    onClick={() => setLocation('/auth')}
+                    onClick={handleCTAClick}
                     disabled={isLoading}
                     size="lg"
                     className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-8 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 button-3d glow-blue"
@@ -178,7 +161,10 @@ export default function PlanALandingSimple() {
           <NeoGlassSection title="Platform Features" className="mb-16">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {/* Career Clarity */}
-              <div className="neo-glass-3d p-6 rounded-lg transition-3d hover:scale-105 magnetic glow-blue perspective-1000 gpu-accelerated">
+              <div 
+                className="neo-glass-3d p-6 rounded-lg transition-3d hover:scale-105 magnetic glow-blue perspective-1000 gpu-accelerated"
+                onMouseEnter={handleFeatureHover}
+              >
                 <div className="flex items-center mb-4">
                   <Brain className="h-8 w-8 text-blue-400 mr-3 float" />
                   <h3 className="text-xl font-semibold text-white">Career Clarity</h3>
@@ -322,7 +308,7 @@ export default function PlanALandingSimple() {
               </p>
               {!isAuthenticated && (
                 <Button 
-                  onClick={() => setLocation('/auth')}
+                  onClick={handleCTAClick}
                   disabled={isLoading}
                   size="lg"
                   className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-12 py-4 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 button-3d glow-multi magnetic"
