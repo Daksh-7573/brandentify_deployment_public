@@ -6,6 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
 import Header from "@/components/layout/header";
 import { ArrowRight, Sparkles, Target, Users, Brain, Zap, FileText, TrendingUp, Building, Calendar, Trophy, Search, Heart, Newspaper, MessageCircle } from "lucide-react";
+import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
 
 export default function Landing() {
   const { isLoading, isAuthenticated } = useAuth();
@@ -36,12 +37,20 @@ export default function Landing() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800">
-      <Header />
+    <div 
+      className="min-h-screen relative bg-cover bg-center bg-no-repeat"
+      style={{ backgroundImage: `url(${backgroundImage})` }}
+    >
+      {/* Glass UI overlay to maintain design consistency */}
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm"></div>
       
-      <NeoGlassLayout className="mt-0 pt-8">
-        {/* Hero Section */}
-        <NeoGlassSection className="text-center mb-8">
+      {/* Content layer */}
+      <div className="relative z-10">
+        <Header />
+        
+        <NeoGlassLayout className="mt-0 pt-8">
+          {/* Hero Section */}
+          <NeoGlassSection className="text-center mb-8">
           <div className="space-y-6">
             <div className="flex items-center justify-center space-x-2 mb-4">
               <Sparkles className="h-8 w-8 text-blue-400" />
@@ -240,8 +249,9 @@ export default function Landing() {
               </Button>
             )}
           </div>
-        </NeoGlassSection>
-      </NeoGlassLayout>
+          </NeoGlassSection>
+        </NeoGlassLayout>
+      </div>
     </div>
   );
 }
