@@ -10,6 +10,10 @@ import AdvancedRobotCompanion from "@/components/landing/advanced-robot-companio
 import AdvancedParticleSystem from "@/components/landing/advanced-particle-system";
 import Advanced3DCard from "@/components/landing/advanced-3d-card";
 import AdvancedParallaxBackground from "@/components/landing/advanced-parallax-background";
+import EnhancedVisualEffects from "@/components/landing/enhanced-visual-effects";
+import EntranceChoreography from "@/components/landing/entrance-choreography";
+import ScrollNarrativeSystem from "@/components/landing/scroll-narrative-system";
+import MicroInteractions from "@/components/landing/micro-interactions";
 import "@/styles/landing-3d.css";
 
 export default function Landing() {
@@ -20,6 +24,8 @@ export default function Landing() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isHovering, setIsHovering] = useState(false);
   const [currentSection, setCurrentSection] = useState('default');
+  const [showEntranceChoreography, setShowEntranceChoreography] = useState(true);
+  const [isMainContentVisible, setIsMainContentVisible] = useState(false);
 
   // Check if user wants to stay on landing page (via query parameter)
   const urlParams = new URLSearchParams(window.location.search);
