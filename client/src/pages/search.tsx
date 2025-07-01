@@ -396,15 +396,15 @@ function SearchPage() {
     <div className="flex h-screen flex-col">
       <Header />
       <div className="flex flex-1 overflow-hidden pt-16"> {/* Added padding-top for fixed header */}
-        {/* Main content area */}
+        {/* Main content area - Mobile responsive */}
         <div className="flex-1 overflow-auto">
-          <NeoGlassLayout className="mt-3 mx-6"> {/* Matched Industry Pulse's margin */}
+          <NeoGlassLayout className="mt-3 mx-2 sm:mx-4 lg:mx-6"> {/* Responsive margins */}
             {/* Main content */}
             <div className="flex-1 max-w-4xl">
-              <div className="mb-8 flex justify-between items-center">
-                <div>
-                  <h1 className="text-3xl font-bold tracking-tight text-white">Discover & Connect</h1>
-                  <p className="text-white/80 mt-1">
+              <div className="mb-4 sm:mb-6 lg:mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div className="w-full sm:w-auto">
+                  <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">Discover & Connect</h1>
+                  <p className="text-white/80 mt-1 text-sm sm:text-base">
                     Find content, professionals, and networking opportunities in one place
                   </p>
                 </div>
