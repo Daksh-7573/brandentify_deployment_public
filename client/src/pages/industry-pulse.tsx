@@ -1503,12 +1503,12 @@ export default function IndustryPulsePage() {
       <Header />
       <div className="flex flex-1 overflow-hidden pt-16"> {/* Added padding-top for fixed header */}
         <div className="flex-1 overflow-auto w-full">
-          <div className="max-w-5xl w-full mx-auto px-2 sm:px-4 md:px-6 lg:px-8 py-2 sm:py-4 md:py-6 lg:py-8">
+          <div className="max-w-5xl w-full mx-auto px-2 sm:px-4 md:px-6 lg:px-8 py-2 sm:py-4 md:py-6 lg:py-8 industry-pulse-container">
             <div className="mb-4 sm:mb-6 md:mb-8">
-              <div className="flex flex-col gap-3 sm:flex-row sm:gap-4 justify-between items-start sm:items-center">
+              <div className="flex flex-col gap-3 sm:flex-row sm:gap-4 justify-between items-start sm:items-center industry-pulse-header">
                 <div className="flex-1 min-w-0">
-                  <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight">Industry Pulse</h1>
-                  <p className="text-muted-foreground mt-1 text-xs sm:text-sm md:text-base leading-tight">
+                  <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight industry-pulse-title">Industry Pulse</h1>
+                  <p className="text-muted-foreground mt-1 text-xs sm:text-sm md:text-base leading-tight industry-pulse-subtitle">
                     Discover insights, polls, and media from your professional network
                   </p>
                 </div>
@@ -1524,8 +1524,8 @@ export default function IndustryPulsePage() {
             </div>
             
             <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab}>
-              <div className="mb-4 sm:mb-6 w-full overflow-x-auto">
-                <TabsList className="grid w-full grid-cols-5 h-auto p-1">
+              <div className="mb-4 sm:mb-6 w-full overflow-x-auto tabs-container-mobile">
+                <TabsList className="grid w-full grid-cols-5 h-auto p-1 tabs-list-mobile">
                   <TabsTrigger value="all" className="text-xs px-2 py-2 sm:text-sm sm:px-3 tabs-trigger-mobile">All</TabsTrigger>
                   <TabsTrigger value="poll" className="text-xs px-2 py-2 sm:text-sm sm:px-3 tabs-trigger-mobile">Polls</TabsTrigger>
                   <TabsTrigger value="media-pulse" className="text-xs px-2 py-2 sm:text-sm sm:px-3 tabs-trigger-mobile">Media</TabsTrigger>
@@ -1587,9 +1587,9 @@ export default function IndustryPulsePage() {
                                 <AvatarImage src={pulse.user?.photoURL || ""} alt={pulse.user?.name || ""} />
                                 <AvatarFallback className="text-xs sm:text-sm">{pulse.user?.name?.charAt(0) || "U"}</AvatarFallback>
                               </Avatar>
-                              <div className="min-w-0 flex-1">
-                                <div className="font-semibold text-xs sm:text-sm md:text-base truncate">{pulse.user?.name || "User"}</div>
-                                <div className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
+                              <div className="min-w-0 flex-1 pulse-user-info">
+                                <div className="font-semibold text-xs sm:text-sm md:text-base truncate pulse-username">{pulse.user?.name || "User"}</div>
+                                <div className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5 pulse-timestamp">
                                   <Calendar className="h-2.5 w-2.5 sm:h-3 sm:w-3 flex-shrink-0" />
                                   <span className="truncate text-xs">
                                     {pulse.createdAt 
@@ -1604,9 +1604,9 @@ export default function IndustryPulsePage() {
                             </div>
                           </div>
                         </CardHeader>
-                        <CardContent className="px-2 sm:px-4 md:px-6 pb-2 sm:pb-3">
+                        <CardContent className="px-2 sm:px-4 md:px-6 pb-2 sm:pb-3 pulse-content-mobile">
                           <CardTitle className="mb-2 sm:mb-3 text-sm sm:text-base md:text-lg leading-tight pulse-title-mobile">{pulse.title}</CardTitle>
-                          <p className="text-muted-foreground text-xs sm:text-sm md:text-base leading-relaxed pulse-content-mobile">{pulse.content}</p>
+                          <p className="text-muted-foreground text-xs sm:text-sm md:text-base leading-relaxed pulse-text-mobile">{pulse.content}</p>
                           
                           {/* Render pulse content based on type */}
                           {pulse.type === 'poll' && (
@@ -1625,7 +1625,7 @@ export default function IndustryPulsePage() {
                             <ProjectDetails pulse={pulse} />
                           )}
                         </CardContent>
-                        <CardFooter className="flex justify-between pt-2 sm:pt-3 px-2 sm:px-4 md:px-6 pb-3 sm:pb-4">
+                        <CardFooter className="flex justify-between pt-2 sm:pt-3 px-2 sm:px-4 md:px-6 pb-3 sm:pb-4 pulse-reactions-mobile">
                           <PulseReactions pulse={pulse} />
                         </CardFooter>
                       </Card>
