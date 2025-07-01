@@ -143,71 +143,7 @@ export default function EntranceChoreography({ onComplete }: EntranceChoreograph
         </div>
       )}
 
-      {/* CSS Animations */}
-      <style>{`
-        @keyframes particleBurst {
-          0% {
-            transform: rotate(var(--rotation)) translateX(0px) scale(1);
-            opacity: 1;
-          }
-          100% {
-            transform: rotate(var(--rotation)) translateX(200px) scale(0);
-            opacity: 0;
-          }
-        }
 
-        @keyframes robotFlyIn {
-          0% {
-            transform: translateX(300px) translateY(300px) rotate(45deg) scale(0.5);
-            opacity: 0;
-          }
-          70% {
-            transform: translateX(-20px) translateY(-20px) rotate(-5deg) scale(1.1);
-            opacity: 1;
-          }
-          100% {
-            transform: translateX(0px) translateY(0px) rotate(0deg) scale(1);
-            opacity: 1;
-          }
-        }
-
-        @keyframes rocketTrail {
-          0% {
-            height: 100px;
-            opacity: 1;
-          }
-          100% {
-            height: 20px;
-            opacity: 0;
-          }
-        }
-
-        @keyframes cascadeIn {
-          0% {
-            transform: translateY(-100px) rotateX(90deg);
-            opacity: 0;
-          }
-          100% {
-            transform: translateY(0px) rotateX(0deg);
-            opacity: 1;
-          }
-        }
-
-        @keyframes sparkleIn {
-          0% {
-            transform: scale(0) rotate(0deg);
-            opacity: 0;
-          }
-          50% {
-            transform: scale(1.5) rotate(180deg);
-            opacity: 1;
-          }
-          100% {
-            transform: scale(1) rotate(360deg);
-            opacity: 0.8;
-          }
-        }
-      `}</style>
     </div>
   );
 }
