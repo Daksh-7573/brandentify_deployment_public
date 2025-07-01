@@ -6,10 +6,10 @@ import { useToast } from "@/hooks/use-toast";
 import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
 import { ArrowRight, Sparkles, Target, Users, Brain, Zap, FileText, TrendingUp, Building, Calendar, Trophy, Search, Heart, Newspaper, MessageCircle } from "lucide-react";
 import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
-// import RobotCompanion from "@/components/landing/robot-companion";
-// import FloatingParticles from "@/components/landing/floating-particles";
-// import InteractiveCard from "@/components/landing/interactive-card";
-// import ParallaxBackground from "@/components/landing/parallax-background";
+import AdvancedRobotCompanion from "@/components/landing/advanced-robot-companion";
+import AdvancedParticleSystem from "@/components/landing/advanced-particle-system";
+import Advanced3DCard from "@/components/landing/advanced-3d-card";
+import AdvancedParallaxBackground from "@/components/landing/advanced-parallax-background";
 import "@/styles/landing-3d.css";
 
 export default function Landing() {
@@ -80,38 +80,11 @@ export default function Landing() {
       className="min-h-screen w-full relative overflow-hidden"
       style={{ perspective: '1000px' }}
     >
-      {/* Advanced Parallax Background - CSS Only */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        {/* Dynamic gradient background */}
-        <div 
-          className="absolute inset-0"
-          style={{
-            background: 'linear-gradient(135deg, hsl(220, 50%, 15%) 0%, hsl(250, 60%, 10%) 50%, hsl(200, 55%, 8%) 100%)'
-          }}
-        />
-        
-        {/* Animated background orbs */}
-        <div className="absolute top-20 left-1/4 w-64 h-64 bg-gradient-to-br from-blue-500/10 to-transparent rounded-full blur-3xl opacity-20" />
-        <div className="absolute bottom-20 right-1/4 w-96 h-96 bg-gradient-to-br from-purple-500/10 to-transparent rounded-full blur-3xl opacity-20" />
-        <div className="absolute top-1/3 right-1/3 w-48 h-48 bg-gradient-to-br from-cyan-500/10 to-transparent rounded-full blur-2xl opacity-30" />
-      </div>
+      {/* Advanced Multi-Layer Parallax Background */}
+      <AdvancedParallaxBackground mousePosition={mousePosition} />
       
-      {/* Enhanced Floating Particles */}
-      <div className="fixed inset-0 pointer-events-none z-10">
-        {/* Floating orbs */}
-        <div className="absolute top-20 left-10 w-4 h-4 bg-blue-400/30 rounded-full animate-pulse float-animation shadow-lg shadow-blue-400/20"></div>
-        <div className="absolute top-40 right-20 w-6 h-6 bg-purple-400/20 rounded-lg rotate-45 float-rotate-animation shadow-lg shadow-purple-400/20"></div>
-        <div className="absolute bottom-40 left-20 w-3 h-3 bg-pink-400/40 rounded-full pulse-3d" style={{ animationDelay: '1s' }}></div>
-        <div className="absolute top-60 left-1/2 w-5 h-5 bg-yellow-400/30 rounded-full float-animation shadow-lg shadow-yellow-400/20" style={{ animationDelay: '2s' }}></div>
-        <div className="absolute bottom-60 right-10 w-4 h-4 bg-green-400/25 rounded-lg rotate-12 pulse-3d shadow-lg shadow-green-400/20" style={{ animationDelay: '1.5s' }}></div>
-        
-        {/* Additional geometric shapes */}
-        <div className="absolute top-32 left-1/3 w-2 h-8 bg-cyan-400/20 rounded-full rotate-45 float-animation" style={{ animationDelay: '0.5s' }}></div>
-        <div className="absolute bottom-32 right-1/3 w-6 h-2 bg-indigo-400/30 rounded-full rotate-12 float-rotate-animation"></div>
-        <div className="absolute top-1/2 left-20 w-3 h-3 border-2 border-blue-300/30 rotate-45 animate-spin" style={{ animationDuration: '8s' }}></div>
-        <div className="absolute top-1/4 right-40 w-4 h-4 border border-purple-300/40 rounded-full animate-ping" style={{ animationDelay: '3s' }}></div>
-        <div className="absolute bottom-1/4 left-1/4 w-2 h-2 bg-pink-300/50 animate-bounce" style={{ animationDelay: '2.5s' }}></div>
-      </div>
+      {/* Advanced Particle System */}
+      <AdvancedParticleSystem mousePosition={mousePosition} isActive={true} />
       
       {/* Original background image as overlay */}
       <div 
@@ -173,99 +146,47 @@ export default function Landing() {
 
         {/* Features Section */}
         <NeoGlassSection title="What Makes Us Awesome! 🎯" className="mb-16" data-section="features">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {/* Career Clarity - Enhanced 3D */}
-            <div className="relative group perspective-1000">
-              {/* Glow effect */}
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-lg blur-xl opacity-0 group-hover:opacity-60 transition-opacity duration-300" />
-              
-              {/* Main card */}
-              <div className="relative neo-glass-card p-6 rounded-lg transition-all duration-300 cursor-pointer transform-gpu hover:scale-105 hover:rotate-y-5 hover:rotate-x-5 hover:translate-z-20 card-3d"
-                   style={{ transformStyle: 'preserve-3d', backfaceVisibility: 'hidden' }}>
-                <div className="relative z-10">
-                  <div className="flex items-center mb-4">
-                    <div className="mr-3 text-4xl transform transition-transform duration-300 group-hover:scale-110 group-hover:rotate-12 float-animation">
-                      <Brain className="h-8 w-8 text-blue-400" />
-                    </div>
-                    <h3 className="text-xl font-semibold text-white">Career Clarity</h3>
-                  </div>
-                  <p className="text-gray-300 leading-relaxed">
-                    Confused about your next move? Your AI buddy has got your back! Get smart, personalized career advice that actually makes sense 🎯
-                  </p>
-                  <div className="absolute bottom-4 right-4 w-2 h-2 bg-blue-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-pulse" />
-                </div>
-                
-                {/* 3D depth layer */}
-                <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                     style={{ transform: 'translateZ(5px)' }} />
-              </div>
-            </div>
-
-            {/* AI Mentorship - Enhanced 3D */}
-            <div className="relative group perspective-1000">
-              <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-lg blur-xl opacity-0 group-hover:opacity-60 transition-opacity duration-300" />
-              <div className="relative neo-glass-card p-6 rounded-lg transition-all duration-300 cursor-pointer transform-gpu hover:scale-105 hover:rotate-y-5 hover:rotate-x-5 hover:translate-z-20 card-3d"
-                   style={{ transformStyle: 'preserve-3d', backfaceVisibility: 'hidden' }}>
-                <div className="relative z-10">
-                  <div className="flex items-center mb-4">
-                    <div className="mr-3 text-4xl transform transition-transform duration-300 group-hover:scale-110 group-hover:rotate-12 float-animation" style={{ animationDelay: '0.5s' }}>
-                      <MessageCircle className="h-8 w-8 text-purple-400" />
-                    </div>
-                    <h3 className="text-xl font-semibold text-white">AI Mentorship</h3>
-                  </div>
-                  <p className="text-gray-300 leading-relaxed">
-                    Meet your 24/7 career coach! Our AI mentor knows your industry inside-out and gives advice that actually works 🤖✨
-                  </p>
-                  <div className="absolute bottom-4 right-4 w-2 h-2 bg-purple-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-pulse" />
-                </div>
-                <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                     style={{ transform: 'translateZ(5px)' }} />
-              </div>
-            </div>
-
-            {/* Smart Resume - Enhanced 3D */}
-            <div className="relative group perspective-1000">
-              <div className="absolute inset-0 bg-gradient-to-r from-green-500/20 to-emerald-500/20 rounded-lg blur-xl opacity-0 group-hover:opacity-60 transition-opacity duration-300" />
-              <div className="relative neo-glass-card p-6 rounded-lg transition-all duration-300 cursor-pointer transform-gpu hover:scale-105 hover:rotate-y-5 hover:rotate-x-5 hover:translate-z-20 card-3d"
-                   style={{ transformStyle: 'preserve-3d', backfaceVisibility: 'hidden' }}>
-                <div className="relative z-10">
-                  <div className="flex items-center mb-4">
-                    <div className="mr-3 text-4xl transform transition-transform duration-300 group-hover:scale-110 group-hover:rotate-12 float-animation" style={{ animationDelay: '1s' }}>
-                      <FileText className="h-8 w-8 text-green-400" />
-                    </div>
-                    <h3 className="text-xl font-semibold text-white">Smart Resume</h3>
-                  </div>
-                  <p className="text-gray-300 leading-relaxed">
-                    Upload your resume and watch the magic happen! Get instant feedback, killer scoring, and styling tips that'll make recruiters go "WOW!" 📄✨
-                  </p>
-                  <div className="absolute bottom-4 right-4 w-2 h-2 bg-green-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-pulse" />
-                </div>
-                <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                     style={{ transform: 'translateZ(5px)' }} />
-              </div>
-            </div>
-
-            {/* Skill Matching - Enhanced 3D */}
-            <div className="relative group perspective-1000">
-              <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 rounded-lg blur-xl opacity-0 group-hover:opacity-60 transition-opacity duration-300" />
-              <div className="relative neo-glass-card p-6 rounded-lg transition-all duration-300 cursor-pointer transform-gpu hover:scale-105 hover:rotate-y-5 hover:rotate-x-5 hover:translate-z-20 card-3d"
-                   style={{ transformStyle: 'preserve-3d', backfaceVisibility: 'hidden' }}>
-                <div className="relative z-10">
-                  <div className="flex items-center mb-4">
-                    <div className="mr-3 text-4xl transform transition-transform duration-300 group-hover:scale-110 group-hover:rotate-12 float-animation" style={{ animationDelay: '1.5s' }}>
-                      <TrendingUp className="h-8 w-8 text-yellow-400" />
-                    </div>
-                    <h3 className="text-xl font-semibold text-white">Skill Matching</h3>
-                  </div>
-                  <p className="text-gray-300 leading-relaxed">
-                    Discover exactly which superpowers you need to unlock for your dream career! No more guessing, just pure skill-matching genius 🎯🚀
-                  </p>
-                  <div className="absolute bottom-4 right-4 w-2 h-2 bg-yellow-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-pulse" />
-                </div>
-                <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                     style={{ transform: 'translateZ(5px)' }} />
-              </div>
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            <Advanced3DCard
+              icon={Brain}
+              title="Career Clarity"
+              description="Confused about your next move? Your AI buddy has got your back! Get smart, personalized career advice that actually makes sense 🎯"
+              color="rgba(59, 130, 246, 0.8)"
+              glowColor="rgba(59, 130, 246, 0.4)"
+              delay={0}
+              mousePosition={mousePosition}
+              onHover={(isHovered) => setCurrentSection(isHovered ? 'features' : '')}
+            />
+            
+            <Advanced3DCard
+              icon={MessageCircle}
+              title="AI Mentorship"
+              description="Meet your 24/7 career coach! Our AI mentor knows your industry inside-out and gives advice that actually works 🤖✨"
+              color="rgba(147, 51, 234, 0.8)"
+              glowColor="rgba(147, 51, 234, 0.4)"
+              delay={200}
+              mousePosition={mousePosition}
+            />
+            
+            <Advanced3DCard
+              icon={FileText}
+              title="Smart Resume"
+              description="Upload your resume and watch the magic happen! Get instant feedback, killer scoring, and styling tips that'll make recruiters go 'WOW!' 📄✨"
+              color="rgba(34, 197, 94, 0.8)"
+              glowColor="rgba(34, 197, 94, 0.4)"
+              delay={400}
+              mousePosition={mousePosition}
+            />
+            
+            <Advanced3DCard
+              icon={TrendingUp}
+              title="Skill Matching"
+              description="Discover exactly which superpowers you need to unlock for your dream career! No more guessing, just pure skill-matching genius 🎯🚀"
+              color="rgba(251, 191, 36, 0.8)"
+              glowColor="rgba(251, 191, 36, 0.4)"
+              delay={600}
+              mousePosition={mousePosition}
+            />
 
             {/* Pro Network */}
             <div className="neo-glass-card p-6 rounded-lg transition-all duration-300 hover:scale-105">
@@ -384,48 +305,11 @@ export default function Landing() {
           </div>
           </NeoGlassSection>
 
-        {/* CSS Robot Companion */}
-        <div className="fixed bottom-8 right-8 z-50 pointer-events-none select-none">
-          {/* Speech Bubble */}
-          <div className="absolute bottom-full right-0 mb-4 mr-4 bg-white/90 backdrop-blur-sm text-gray-800 px-4 py-2 rounded-2xl shadow-lg max-w-xs text-sm font-medium border border-white/20 animate-pulse"
-               style={{ clipPath: 'polygon(0% 0%, 100% 0%, 100% 75%, 85% 75%, 85% 100%, 75% 75%, 0% 75%)' }}>
-            Ready to boost your career? Let's go! 🚀
-          </div>
-
-          {/* Robot Body */}
-          <div className="relative w-20 h-24 transform-gpu float-animation hover-glow"
-               style={{ filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.3))' }}>
-            {/* Robot Head */}
-            <div className="relative w-16 h-16 mx-auto bg-gradient-to-br from-blue-400 to-purple-500 rounded-2xl shadow-lg">
-              {/* Eyes */}
-              <div className="absolute top-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
-                <div className="w-3 h-3 bg-white rounded-full flex items-center justify-center">
-                  <div className="w-1.5 h-1.5 bg-blue-600 rounded-full animate-ping"></div>
-                </div>
-                <div className="w-3 h-3 bg-white rounded-full flex items-center justify-center">
-                  <div className="w-1.5 h-1.5 bg-blue-600 rounded-full animate-ping" style={{ animationDelay: '0.5s' }}></div>
-                </div>
-              </div>
-
-              {/* Mouth */}
-              <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 w-6 h-1 bg-white rounded-full opacity-80"></div>
-
-              {/* Antenna */}
-              <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-0.5 h-4 bg-gray-300 rounded-full">
-                <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-red-400 rounded-full animate-pulse"></div>
-              </div>
-            </div>
-
-            {/* Robot Body */}
-            <div className="relative w-12 h-8 mx-auto mt-1 bg-gradient-to-br from-gray-300 to-gray-400 rounded-lg">
-              {/* Chest Panel */}
-              <div className="absolute top-1 left-1/2 transform -translate-x-1/2 w-6 h-2 bg-blue-500 rounded opacity-80"></div>
-              {/* Status Lights */}
-              <div className="absolute bottom-1 left-2 w-1 h-1 bg-green-400 rounded-full animate-pulse"></div>
-              <div className="absolute bottom-1 right-2 w-1 h-1 bg-yellow-400 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }}></div>
-            </div>
-          </div>
-        </div>
+        {/* Advanced AI Robot Companion */}
+        <AdvancedRobotCompanion 
+          mousePosition={mousePosition} 
+          currentSection={currentSection}
+        />
         </NeoGlassLayout>
       </div>
     </div>
