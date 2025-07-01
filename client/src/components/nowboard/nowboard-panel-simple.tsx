@@ -281,7 +281,7 @@ export default function NowboardPanelSimple() {
               </Select>
               <button
                 onClick={handleSubmit}
-                className="px-4 py-1.5 bg-blue-500/20 border border-blue-400/30 text-blue-300 rounded-lg hover:bg-blue-500/30 transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed ml-auto"
+                className="neo-glass-button px-4 py-1.5 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed ml-auto flex items-center gap-2"
                 disabled={createMutation.isPending || !newItemContent.trim()}
               >
                 {createMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
