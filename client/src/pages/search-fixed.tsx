@@ -390,13 +390,13 @@ function SearchPage() {
       <div className="flex flex-1 overflow-hidden pt-16"> {/* Added padding-top for fixed header */}
         {/* Main content area */}
         <div className="flex-1 overflow-auto">
-          <NeoGlassLayout className="mt-3 mx-6"> {/* Matched Industry Pulse's margin */}
+          <NeoGlassLayout className="mt-3 mx-3 sm:mx-6"> {/* Mobile-responsive margin */}
             {/* Main content */}
             <div className="flex-1 max-w-4xl">
-              <div className="mb-8 flex justify-between items-center">
+              <div className="mb-6 sm:mb-8">
                 <div>
-                  <h1 className="text-3xl font-bold tracking-tight text-white">Discover & Connect</h1>
-                  <p className="text-white/80 mt-1">
+                  <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">Discover & Connect</h1>
+                  <p className="text-white/80 mt-1 text-sm sm:text-base">
                     Find content, professionals, and networking opportunities in one place
                   </p>
                 </div>
@@ -404,32 +404,32 @@ function SearchPage() {
 
               {/* Main Tabs: Search vs Smart Connect */}
               <Tabs defaultValue={activeCategory === "smart-connect" ? "search" : "search"} className="w-full">
-                <TabsList className="mb-6 dark-tabs-list">
+                <TabsList className="mb-4 sm:mb-6 dark-tabs-list w-full sm:w-auto">
                   <TabsTrigger 
                     value="search" 
-                    className="dark-tabs-trigger"
+                    className="dark-tabs-trigger flex-1 sm:flex-none"
                     onClick={() => setActiveCategory("pulses")}
                   >
-                    <SearchIcon size={16} className="mr-1.5" />
-                    <span>Search</span>
+                    <SearchIcon size={16} className="mr-1 sm:mr-1.5" />
+                    <span className="text-sm sm:text-base">Search</span>
                   </TabsTrigger>
                   <TabsTrigger 
                     value="smart-connect" 
-                    className="dark-tabs-trigger"
+                    className="dark-tabs-trigger flex-1 sm:flex-none"
                     onClick={() => {
                       setActiveCategory("smart-connect");
                       setShowMatchForm(true);
                     }}
                   >
-                    <Users size={16} className="mr-1.5" />
-                    <span>Smart Connect</span>
+                    <Users size={16} className="mr-1 sm:mr-1.5" />
+                    <span className="text-sm sm:text-base">Smart Connect</span>
                   </TabsTrigger>
                 </TabsList>
 
                 {/* Search Tab */}
-                <TabsContent value="search" className="space-y-6">
+                <TabsContent value="search" className="space-y-4 sm:space-y-6">
                   {/* Search Form */}
-                  <form onSubmit={handleSearch} className="flex gap-2 mb-6">
+                  <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-2 mb-4 sm:mb-6">
                     <Input
                       type="text"
                       value={query}
@@ -439,7 +439,7 @@ function SearchPage() {
                     />
                     <button
                       type="submit"
-                      className="neo-glass-button flex items-center gap-2 py-2 px-4"
+                      className="neo-glass-button flex items-center justify-center gap-2 py-2 px-4 h-10 sm:h-auto"
                       disabled={isLoading}
                     >
                       {isLoading ? (
@@ -458,26 +458,26 @@ function SearchPage() {
 
                   {/* Search Category Tabs */}
                   <Tabs defaultValue={activeCategory === "smart-connect" ? "pulses" : activeCategory} onValueChange={handleTabChange}>
-                    <TabsList className="mb-6 dark-tabs-list">
+                    <TabsList className="mb-4 sm:mb-6 dark-tabs-list w-full sm:w-auto grid grid-cols-3 sm:flex">
                       <TabsTrigger 
                         value="pulses" 
-                        className="dark-tabs-trigger"
+                        className="dark-tabs-trigger text-xs sm:text-sm"
                       >
-                        <MessageSquare size={16} className="mr-1.5" />
+                        <MessageSquare size={14} className="mr-1 sm:mr-1.5" />
                         <span>Pulses</span>
                       </TabsTrigger>
                       <TabsTrigger 
                         value="profiles" 
-                        className="dark-tabs-trigger"
+                        className="dark-tabs-trigger text-xs sm:text-sm"
                       >
-                        <Users size={16} className="mr-1.5" />
+                        <Users size={14} className="mr-1 sm:mr-1.5" />
                         <span>Profiles</span>
                       </TabsTrigger>
                       <TabsTrigger 
                         value="hashtags" 
-                        className="dark-tabs-trigger"
+                        className="dark-tabs-trigger text-xs sm:text-sm"
                       >
-                        <Hash size={16} className="mr-1.5" />
+                        <Hash size={14} className="mr-1 sm:mr-1.5" />
                         <span>Hashtags</span>
                       </TabsTrigger>
                     </TabsList>
@@ -913,54 +913,63 @@ function SearchPage() {
                               {matchMutation.data.map((match: any) => (
                                 <Card key={match.id} className="border border-white/20 bg-gray-800/40 overflow-hidden shadow-lg hover:shadow-xl transition-all hover:bg-gray-700/40">
                                   <CardContent className="p-4">
-                                    <div className="flex gap-4 items-center">
-                                      <Avatar className="h-16 w-16 border-2 border-white/20">
-                                        <AvatarImage src={match.photoURL || undefined} />
-                                        <AvatarFallback className="text-lg bg-white/10 text-white">{getInitials(match.name)}</AvatarFallback>
-                                      </Avatar>
-                                      
-                                      <div className="flex-grow">
-                                        <h4 className="font-medium text-white">{match.name}</h4>
-                                        <p className="text-sm text-gray-300">{match.title}</p>
+                                    <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+                                      <div className="flex items-center gap-4 w-full sm:w-auto">
+                                        <Avatar className="h-16 w-16 border-2 border-white/20 flex-shrink-0">
+                                          <AvatarImage src={match.photoURL || undefined} />
+                                          <AvatarFallback className="text-lg bg-white/10 text-white">{getInitials(match.name)}</AvatarFallback>
+                                        </Avatar>
                                         
-                                        <div className="flex flex-wrap gap-1 mt-2">
-                                          {match.skills.map((skill: string, i: number) => (
+                                        <div className="flex-grow sm:flex-none min-w-0">
+                                          <h4 className="font-medium text-white truncate">{match.name}</h4>
+                                          <p className="text-sm text-gray-300 truncate">{match.title}</p>
+                                          
+                                          <div className="flex items-center mt-2 text-xs text-gray-300">
+                                            <MapPin size={12} className="mr-1 flex-shrink-0" />
+                                            <span className="truncate">{match.location}</span>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      
+                                      <div className="flex justify-between items-center w-full sm:w-auto sm:flex-col sm:text-center gap-4">
+                                        <div className="flex flex-wrap gap-1">
+                                          {match.skills.slice(0, 3).map((skill: string, i: number) => (
                                             <Badge key={i} variant="outline" className="text-xs font-normal bg-white/10 text-white border-white/20">
                                               {skill}
                                             </Badge>
                                           ))}
+                                          {match.skills.length > 3 && (
+                                            <Badge variant="outline" className="text-xs font-normal bg-white/10 text-white border-white/20">
+                                              +{match.skills.length - 3}
+                                            </Badge>
+                                          )}
                                         </div>
                                         
-                                        <div className="flex items-center mt-3 text-xs text-gray-300">
-                                          <MapPin size={12} className="mr-1" />
-                                          {match.location}
-                                        </div>
-                                      </div>
-                                      
-                                      <div className="text-center">
-                                        <div className="mb-1 relative w-16 h-16">
-                                          <div className="absolute inset-0 flex items-center justify-center">
-                                            <span className="text-lg font-bold text-white">{match.matchPercentage}%</span>
+                                        <div className="flex items-center gap-4 sm:flex-col sm:gap-2">
+                                          <div className="relative w-12 h-12 sm:w-16 sm:h-16">
+                                            <div className="absolute inset-0 flex items-center justify-center">
+                                              <span className="text-sm sm:text-lg font-bold text-white">{match.matchPercentage}%</span>
+                                            </div>
+                                            <Progress 
+                                              value={match.matchPercentage} 
+                                              className="w-12 h-12 sm:w-16 sm:h-16 rounded-full [&>div]:bg-white/60 [&>div]:rounded-full" 
+                                            />
                                           </div>
-                                          <Progress 
-                                            value={match.matchPercentage} 
-                                            className="w-16 h-16 rounded-full [&>div]:bg-white/60 [&>div]:rounded-full" 
-                                          />
+                                          <button 
+                                            className="px-3 py-1.5 sm:px-4 sm:py-1.5 rounded-full bg-white/20 text-white hover:bg-white/30 focus:outline-none focus:ring-2 focus:ring-white/20 shadow-sm font-medium transition-all text-sm flex items-center justify-center whitespace-nowrap"
+                                            onClick={() => setLocation(`/profile/${match.id}`)}
+                                          >
+                                            <Plus className="h-3.5 w-3.5 mr-1" />
+                                            <span>Connect</span>
+                                          </button>
                                         </div>
-                                        <button 
-                                          className="mt-2 w-full px-4 py-1.5 rounded-full bg-white/20 text-white hover:bg-white/30 focus:outline-none focus:ring-2 focus:ring-white/20 shadow-sm font-medium transition-all text-sm flex items-center justify-center"
-                                          onClick={() => setLocation(`/profile/${match.id}`)}
-                                        >
-                                          <Plus className="h-3.5 w-3.5 mr-1" />
-                                          <span>Connect</span>
-                                        </button>
                                       </div>
                                     </div>
                                     
                                     {/* Match Details */}
                                     <div className="mt-3 pt-3 border-t border-white/10">
                                       <h5 className="text-xs font-medium mb-2 text-white">Match Details</h5>
-                                      <div className="grid grid-cols-4 gap-2">
+                                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                                         {match.matchDetails.complementaryMatch && (
                                           <div>
                                             <p className="text-xs text-gray-300">Goals Match</p>
