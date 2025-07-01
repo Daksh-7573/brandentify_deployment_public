@@ -51,11 +51,10 @@ export function GoogleLoginButton({ className = '' }: { className?: string }) {
   };
   
   return (
-    <Button 
-      variant="outline" 
+    <button 
       onClick={handleGoogleLogin} 
       disabled={isLoading}
-      className={`neo-glass-button w-full flex items-center justify-center gap-2 text-white border border-white/20 bg-white/10 hover:bg-white/15 backdrop-blur-sm ${className}`}
+      className={`neo-glass-button w-full flex items-center justify-center gap-2 ${className}`}
     >
       {isLoading ? (
         <Loader2 className="h-4 w-4 animate-spin" />
@@ -63,7 +62,7 @@ export function GoogleLoginButton({ className = '' }: { className?: string }) {
         <FaGoogle className="h-4 w-4" />
       )}
       Continue with Google
-    </Button>
+    </button>
   );
 }
 
