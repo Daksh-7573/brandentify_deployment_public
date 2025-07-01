@@ -435,58 +435,59 @@ function SearchPage() {
                 </TabsList>
 
                 {/* Search Tab */}
-                <TabsContent value="search" className="space-y-6">
-                  {/* Search Form */}
-                  <form onSubmit={handleSearch} className="flex gap-2 mb-6">
+                <TabsContent value="search" className="space-y-4 sm:space-y-6">
+                  {/* Search Form - Mobile responsive */}
+                  <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-2 sm:gap-2 mb-4 sm:mb-6">
                     <Input
                       type="text"
                       value={query}
                       onChange={(e) => setQuery(e.target.value)}
                       placeholder="Search pulses, profiles, or hashtags..."
-                      className="neo-glass-input flex-1"
+                      className="neo-glass-input flex-1 text-sm sm:text-base"
                     />
                     <button
                       type="submit"
-                      className="neo-glass-button flex items-center gap-2 py-2 px-4"
+                      className="neo-glass-button flex items-center justify-center gap-2 py-2 px-4 w-full sm:w-auto min-h-[40px] text-sm sm:text-base"
                       disabled={isLoading}
                     >
                       {isLoading ? (
                         <span className="flex items-center">
                           <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2" />
-                          <span>Searching...</span>
+                          <span className="hidden sm:inline">Searching...</span>
+                          <span className="sm:hidden">...</span>
                         </span>
                       ) : (
                         <span className="flex items-center">
-                          <SearchIcon className="h-4 w-4 mr-2" />
-                          Search
+                          <SearchIcon className="h-4 w-4 sm:mr-2" />
+                          <span className="hidden sm:inline">Search</span>
                         </span>
                       )}
                     </button>
                   </form>
 
-                  {/* Search Category Tabs */}
+                  {/* Search Category Tabs - Mobile responsive */}
                   <Tabs defaultValue={activeCategory === "smart-connect" ? "pulses" : activeCategory} onValueChange={handleTabChange}>
-                    <TabsList className="mb-6 dark-tabs-list">
+                    <TabsList className="mb-4 sm:mb-6 dark-tabs-list w-full grid grid-cols-3 h-auto">
                       <TabsTrigger 
                         value="pulses" 
-                        className="dark-tabs-trigger"
+                        className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 sm:gap-1.5 py-2 px-2 text-xs sm:text-sm"
                       >
-                        <MessageSquare size={16} className="mr-1.5" />
-                        <span>Pulses</span>
+                        <MessageSquare size={14} className="sm:mr-1" />
+                        <span className="text-center">Pulses</span>
                       </TabsTrigger>
                       <TabsTrigger 
                         value="profiles" 
-                        className="dark-tabs-trigger"
+                        className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 sm:gap-1.5 py-2 px-2 text-xs sm:text-sm"
                       >
-                        <Users size={16} className="mr-1.5" />
-                        <span>Profiles</span>
+                        <Users size={14} className="sm:mr-1" />
+                        <span className="text-center">Profiles</span>
                       </TabsTrigger>
                       <TabsTrigger 
                         value="hashtags" 
-                        className="dark-tabs-trigger"
+                        className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 sm:gap-1.5 py-2 px-2 text-xs sm:text-sm"
                       >
-                        <Hash size={16} className="mr-1.5" />
-                        <span>Hashtags</span>
+                        <Hash size={14} className="sm:mr-1" />
+                        <span className="text-center">Hashtags</span>
                       </TabsTrigger>
                     </TabsList>
 
@@ -527,13 +528,13 @@ function SearchPage() {
                           ))}
                         </div>
                       ) : searchResults && searchResults.pulses && searchResults.pulses.length > 0 ? (
-                        <div className="space-y-4">
+                        <div className="space-y-3 sm:space-y-4">
                           {searchResults.pulses.map((pulse) => (
-                            <NeoGlassSection key={pulse.id} className="overflow-hidden mb-6">
-                              <div className="pb-3">
+                            <NeoGlassSection key={pulse.id} className="overflow-hidden mb-4 sm:mb-6">
+                              <div className="pb-2 sm:pb-3">
                                 <div className="flex justify-between">
-                                  <div className="flex items-start gap-3">
-                                    <Avatar className="h-9 w-9">
+                                  <div className="flex items-start gap-2 sm:gap-3">
+                                    <Avatar className="h-8 w-8 sm:h-9 sm:w-9">
                                       {pulse.user?.photoURL ? (
                                         <AvatarImage src={pulse.user.photoURL} alt={pulse.user.name || "User"} />
                                       ) : (
@@ -542,35 +543,35 @@ function SearchPage() {
                                         </AvatarFallback>
                                       )}
                                     </Avatar>
-                                    <div>
-                                      <div className="font-medium text-white">
+                                    <div className="flex-1 min-w-0">
+                                      <div className="font-medium text-white text-sm sm:text-base truncate">
                                         {pulse.user?.name || "Anonymous User"}
                                       </div>
-                                      <div className="flex items-center gap-2 text-xs text-white/70">
-                                        <span>
+                                      <div className="flex items-center gap-1 sm:gap-2 text-xs text-white/70">
+                                        <span className="truncate">
                                           {formatDistanceToNow(new Date(pulse.createdAt), { addSuffix: true })}
                                         </span>
-                                        <span>•</span>
-                                        <span className="flex items-center gap-1">
-                                          {pulse.type === 'poll' && <MessageSquare className="h-5 w-5" />}
-                                          {pulse.type === 'media-pulse' && <Image className="h-5 w-5" />}
-                                          {pulse.type === 'project' && <FileCode className="h-5 w-5" />}
-                                          {pulse.type}
+                                        <span className="hidden sm:inline">•</span>
+                                        <span className="flex items-center gap-1 text-xs">
+                                          {pulse.type === 'poll' && <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4" />}
+                                          {pulse.type === 'media-pulse' && <Image className="h-3 w-3 sm:h-4 sm:w-4" />}
+                                          {pulse.type === 'project' && <FileCode className="h-3 w-3 sm:h-4 sm:w-4" />}
+                                          <span className="hidden sm:inline">{pulse.type}</span>
                                         </span>
                                       </div>
                                     </div>
                                   </div>
                                 </div>
                               </div>
-                              <div className="px-4 py-2">
-                                <h3 className="text-xl font-semibold mb-3 text-white">{pulse.title}</h3>
-                                <p className="text-white/70">{pulse.content}</p>
+                              <div className="px-3 sm:px-4 py-2">
+                                <h3 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-3 text-white line-clamp-2">{pulse.title}</h3>
+                                <p className="text-white/70 text-sm sm:text-base line-clamp-3">{pulse.content}</p>
                               </div>
-                              <div className="flex justify-between pt-0 px-4 pb-4">
+                              <div className="flex justify-between pt-0 px-3 sm:px-4 pb-3 sm:pb-4">
                                 <Button 
                                   variant="ghost" 
                                   size="sm" 
-                                  className="text-gray-300 hover:text-white hover:bg-white/10"
+                                  className="text-gray-300 hover:text-white hover:bg-white/10 text-xs sm:text-sm"
                                   onClick={() => setLocation(`/pulses/${pulse.id}`)}
                                 >
                                   View details
