@@ -13,7 +13,7 @@ import CatchAllAuthHandler from "@/routes/CatchAllAuthHandler";
 
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
-import PlanALanding from "@/pages/plan-a-landing";
+import PlanALandingSimple from "@/pages/plan-a-landing-simple";
 
 import Profile from "@/pages/profile";
 import ProfileNeo from "@/pages/profile-neo";
@@ -118,7 +118,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Landing} />
-      <Route path="/planA" component={PlanALanding} />
+      <Route path="/planA" component={PlanALandingSimple} />
       {/* Dedicated login page for Google auth */}
       <Route path="/login" component={LoginPage} />
       {/* Add multiple routes to catch all possible auth callback paths */}
