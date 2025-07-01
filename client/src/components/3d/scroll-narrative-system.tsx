@@ -1,11 +1,5 @@
 import { useRef, useEffect, useState, ReactNode } from 'react';
 import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
-// Register GSAP plugins
-if (typeof window !== 'undefined') {
-  gsap.registerPlugin(ScrollTrigger);
-}
 
 interface ScrollNarrativeSystemProps {
   children: ReactNode;
@@ -21,39 +15,13 @@ export function ScrollNarrativeSystem({ children, onStoryProgress }: ScrollNarra
 
     const container = containerRef.current;
 
-    // Create master timeline for the narrative
-    const masterTimeline = gsap.timeline({
-      scrollTrigger: {
-        trigger: container,
-        start: "top top",
-        end: "bottom bottom",
-        scrub: 1,
-        onUpdate: (self) => {
-          const progress = self.progress;
-          setStoryProgress(progress);
-          onStoryProgress?.(progress);
-        }
-      }
-    });
-
-    // Background parallax layers
-    const createParallaxLayers = () => {
-      const layers = container.querySelectorAll('[data-parallax]');
-      
-      layers.forEach((layer) => {
-        const speed = parseFloat(layer.getAttribute('data-parallax') || '1');
-        
-        gsap.to(layer, {
-          y: () => -window.innerHeight * speed,
-          ease: "none",
-          scrollTrigger: {
-            trigger: container,
-            start: "top bottom",
-            end: "bottom top",
-            scrub: true
-          }
-        });
-      });
+    // Create scroll-based progress tracking
+    const handleScroll = () => {
+      const scrollTop = window.pageYOffset;
+      const documentHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = Math.min(scrollTop / documentHeight, 1);
+      setStoryProgress(progress);
+      onStoryProgress?.(progress);
     };
 
     // Create floating elements animation
@@ -85,80 +53,90 @@ export function ScrollNarrativeSystem({ children, onStoryProgress }: ScrollNarra
       });
     };
 
-    // Create entrance animations for sections
+    // Create entrance animations for sections with Intersection Observer
     const createSectionAnimations = () => {
       const sections = container.querySelectorAll('[data-section]');
       
-      sections.forEach((section, index) => {
-        const animationType = section.getAttribute('data-animation') || 'fadeUp';
-        
-        let fromVars: any = {};
-        let toVars: any = {};
-        
-        switch (animationType) {
-          case 'fadeUp':
-            fromVars = { opacity: 0, y: 100 };
-            toVars = { opacity: 1, y: 0 };
-            break;
-          case 'slideLeft':
-            fromVars = { opacity: 0, x: 100 };
-            toVars = { opacity: 1, x: 0 };
-            break;
-          case 'scale':
-            fromVars = { opacity: 0, scale: 0.8 };
-            toVars = { opacity: 1, scale: 1 };
-            break;
-          case 'rotate':
-            fromVars = { opacity: 0, rotation: -90 };
-            toVars = { opacity: 1, rotation: 0 };
-            break;
-        }
-        
-        gsap.fromTo(section, fromVars, {
-          ...toVars,
-          duration: 1,
-          ease: "back.out(1.7)",
-          scrollTrigger: {
-            trigger: section,
-            start: "top 80%",
-            end: "bottom 20%",
-            toggleActions: "play none none reverse"
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const section = entry.target;
+            const animationType = section.getAttribute('data-animation') || 'fadeUp';
+            
+            let fromVars: any = {};
+            let toVars: any = {};
+            
+            switch (animationType) {
+              case 'fadeUp':
+                fromVars = { opacity: 0, y: 100 };
+                toVars = { opacity: 1, y: 0 };
+                break;
+              case 'slideLeft':
+                fromVars = { opacity: 0, x: 100 };
+                toVars = { opacity: 1, x: 0 };
+                break;
+              case 'scale':
+                fromVars = { opacity: 0, scale: 0.8 };
+                toVars = { opacity: 1, scale: 1 };
+                break;
+              case 'rotate':
+                fromVars = { opacity: 0, rotation: -90 };
+                toVars = { opacity: 1, rotation: 0 };
+                break;
+            }
+            
+            gsap.fromTo(section, fromVars, {
+              ...toVars,
+              duration: 1,
+              ease: "back.out(1.7)"
+            });
+            
+            observer.unobserve(section);
           }
         });
-      });
+      }, { threshold: 0.1 });
+      
+      sections.forEach(section => observer.observe(section));
+      
+      return observer;
     };
 
     // Create card cascade animations
     const createCardAnimations = () => {
       const cardContainers = container.querySelectorAll('[data-cards]');
       
-      cardContainers.forEach((cardContainer) => {
-        const cards = cardContainer.querySelectorAll('[data-card]');
-        
-        gsap.fromTo(cards, 
-          { 
-            opacity: 0, 
-            y: 60,
-            scale: 0.9,
-            rotationX: -45
-          },
-          {
-            opacity: 1,
-            y: 0,
-            scale: 1,
-            rotationX: 0,
-            duration: 0.8,
-            ease: "back.out(1.7)",
-            stagger: 0.1,
-            scrollTrigger: {
-              trigger: cardContainer,
-              start: "top 70%",
-              end: "bottom 30%",
-              toggleActions: "play none none reverse"
-            }
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const cardContainer = entry.target;
+            const cards = cardContainer.querySelectorAll('[data-card]');
+            
+            gsap.fromTo(cards, 
+              { 
+                opacity: 0, 
+                y: 60,
+                scale: 0.9,
+                rotationX: -45
+              },
+              {
+                opacity: 1,
+                y: 0,
+                scale: 1,
+                rotationX: 0,
+                duration: 0.8,
+                ease: "back.out(1.7)",
+                stagger: 0.1
+              }
+            );
+            
+            observer.unobserve(cardContainer);
           }
-        );
-      });
+        });
+      }, { threshold: 0.1 });
+      
+      cardContainers.forEach(container => observer.observe(container));
+      
+      return observer;
     };
 
     // Create magnetic cursor effects
@@ -195,14 +173,17 @@ export function ScrollNarrativeSystem({ children, onStoryProgress }: ScrollNarra
     };
 
     // Initialize all animations
-    createParallaxLayers();
+    const sectionObserver = createSectionAnimations();
+    const cardObserver = createCardAnimations();
     createFloatingElements();
-    createSectionAnimations();
-    createCardAnimations();
     createMagneticEffects();
 
+    window.addEventListener('scroll', handleScroll);
+
     return () => {
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+      window.removeEventListener('scroll', handleScroll);
+      sectionObserver?.disconnect();
+      cardObserver?.disconnect();
     };
   }, [onStoryProgress]);
 

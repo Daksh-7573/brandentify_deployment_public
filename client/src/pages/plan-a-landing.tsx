@@ -6,9 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { ArrowRight, Sparkles, Target, Users, Brain, Zap, FileText, TrendingUp, Building, Calendar, Trophy, Search, Heart, Newspaper, MessageCircle } from "lucide-react";
 import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
 
-// 3D Components
-import { AdaptiveRobot } from "@/components/3d/adaptive-robot";
-import { ParticleSystem } from "@/components/3d/particle-system";
+// Enhanced Components
 import { EnhancedFeatureCard } from "@/components/3d/enhanced-feature-card";
 import { ScrollNarrativeSystem } from "@/components/3d/scroll-narrative-system";
 import { EntranceChoreography } from "@/components/3d/entrance-choreography";
@@ -18,14 +16,8 @@ export default function PlanALanding() {
   const { toast } = useToast();
   const [_, setLocation] = useLocation();
   
-  // 3D interaction states
+  // Enhanced interaction states
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [robotInteractions, setRobotInteractions] = useState({
-    onEnter: false,
-    onHover: false,
-    onFeaturePoint: false,
-    onCelebrate: false
-  });
   const [storyProgress, setStoryProgress] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -33,23 +25,16 @@ export default function PlanALanding() {
   const urlParams = new URLSearchParams(window.location.search);
   const stayOnLanding = urlParams.get('stay') === 'true';
 
-  // Mouse tracking for 3D effects
+  // Mouse tracking for enhanced effects
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       setMousePosition({ x: e.clientX, y: e.clientY });
     };
 
-    const handleMouseEnter = () => {
-      setRobotInteractions(prev => ({ ...prev, onEnter: true }));
-      setTimeout(() => setRobotInteractions(prev => ({ ...prev, onEnter: false })), 1000);
-    };
-
     window.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseenter', handleMouseEnter, { once: true });
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseenter', handleMouseEnter);
     };
   }, []);
 
@@ -64,16 +49,14 @@ export default function PlanALanding() {
   }, [isAuthenticated, setLocation, stayOnLanding]);
 
   const handleFeatureHover = () => {
-    setRobotInteractions(prev => ({ ...prev, onFeaturePoint: true }));
-    setTimeout(() => setRobotInteractions(prev => ({ ...prev, onFeaturePoint: false })), 2500);
+    // Enhanced visual feedback can be added here
   };
 
   const handleCTAClick = () => {
-    setRobotInteractions(prev => ({ ...prev, onCelebrate: true }));
+    // Add celebration animation before navigation
     setTimeout(() => {
-      setRobotInteractions(prev => ({ ...prev, onCelebrate: false }));
       setLocation('/auth');
-    }, 1000);
+    }, 300);
   };
 
   if (isAuthenticated && !stayOnLanding) {
@@ -167,16 +150,24 @@ export default function PlanALanding() {
         backgroundImage: `url(${backgroundImage})`
       }}
     >
-      {/* Background overlay */}
+      {/* Background overlay with enhanced effects */}
       <div className="absolute inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm"></div>
       
-      {/* Particle System Background */}
-      <ParticleSystem 
-        containerRef={containerRef}
-        mousePosition={mousePosition}
-        particleCount={150}
-        colorScheme="multi"
-      />
+      {/* Floating particles background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {[...Array(50)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute w-2 h-2 bg-blue-400 rounded-full opacity-20 animate-pulse particle"
+            style={{
+              top: `${Math.random() * 100}%`,
+              left: `${Math.random() * 100}%`,
+              animationDelay: `${i * 0.1}s`,
+              animationDuration: `${3 + Math.random() * 2}s`
+            }}
+          />
+        ))}
+      </div>
 
       {/* Main Content with Entrance Choreography */}
       <EntranceChoreography>
@@ -185,13 +176,11 @@ export default function PlanALanding() {
         >
           <div className="relative z-20 min-h-screen">
             
-            {/* Floating Robot Assistant */}
-            <div className="fixed top-1/2 right-8 transform -translate-y-1/2 z-30" data-float-continuous>
-              <AdaptiveRobot 
-                containerRef={containerRef}
-                mousePosition={mousePosition}
-                interactions={robotInteractions}
-              />
+            {/* Floating Assistant Indicator */}
+            <div className="fixed top-1/2 right-8 transform -translate-y-1/2 z-30 float">
+              <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-xl glow-multi">
+                <Brain className="h-8 w-8 text-white" />
+              </div>
             </div>
 
             {/* Hero Section */}
