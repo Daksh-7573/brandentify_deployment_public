@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
-import Header from "@/components/layout/header";
 import { ArrowRight, Sparkles, Target, Users, Brain, Zap, FileText, TrendingUp, Building, Calendar, Trophy, Search, Heart, Newspaper, MessageCircle } from "lucide-react";
 import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
 
@@ -48,11 +47,9 @@ export default function Landing() {
       
       {/* Content layer */}
       <div className="relative z-10">
-        <Header />
-        
-        <NeoGlassLayout className="mt-0 pt-8">
+        <NeoGlassLayout className="mt-0 pt-20 px-4 min-h-screen flex flex-col justify-center">
           {/* Hero Section */}
-          <NeoGlassSection className="text-center mb-8">
+          <NeoGlassSection className="text-center mb-12">
           <div className="space-y-6">
             <div className="flex items-center justify-center space-x-2 mb-4">
               <Sparkles className="h-8 w-8 text-blue-400" />
@@ -94,7 +91,7 @@ export default function Landing() {
         </NeoGlassSection>
 
         {/* Features Section */}
-        <NeoGlassSection title="Platform Features" className="mb-8">
+        <NeoGlassSection title="Platform Features" className="mb-16">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {/* Career Clarity */}
             <div className="neo-glass-card p-6 rounded-lg transition-all duration-300 hover:scale-105">
@@ -231,7 +228,7 @@ export default function Landing() {
         </NeoGlassSection>
 
         {/* Call to Action */}
-        <NeoGlassSection className="text-center">
+        <NeoGlassSection className="text-center mb-20">
           <div className="space-y-6">
             <h2 className="text-3xl font-bold text-white">
               Ready to Transform Your Career?
