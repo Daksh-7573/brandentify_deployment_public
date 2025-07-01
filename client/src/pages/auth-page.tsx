@@ -17,6 +17,7 @@ import { PhoneAuth } from "@/components/auth/phone-auth";
 import { EmailAuth } from "@/components/auth/email-auth";
 import { DemoLogin } from "@/components/auth/demo-login";
 import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
+import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
 
 export default function AuthPage() {
   const { isAuthenticated, isLoading, signInWithPhone } = useAuth();
@@ -39,9 +40,19 @@ export default function AuthPage() {
   }, [isAuthenticated, setLocation]);
 
   return (
-    <div className="neo-spotify-container">
-      <NeoGlassLayout>
-        <div className="text-center mb-8">
+    <div 
+      className="responsive-background min-h-screen w-full relative overflow-hidden"
+      style={{ 
+        backgroundImage: `url(${backgroundImage})`
+      }}
+    >
+      {/* Glass UI overlay to maintain design consistency */}
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm"></div>
+      
+      {/* Content layer */}
+      <div className="relative z-10">
+        <NeoGlassLayout>
+          <div className="text-center mb-8">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-white via-blue-200 to-purple-200 bg-clip-text text-transparent mb-4">
             Welcome to Brandentifier
           </h1>
@@ -153,8 +164,9 @@ export default function AuthPage() {
               </div>
             </div>
           </NeoGlassSection>
-        </div>
-      </NeoGlassLayout>
+          </div>
+        </NeoGlassLayout>
+      </div>
     </div>
   );
 }
