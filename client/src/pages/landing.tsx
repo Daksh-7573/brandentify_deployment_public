@@ -10,6 +10,7 @@ import RobotCompanion from "@/components/landing/robot-companion";
 import FloatingParticles from "@/components/landing/floating-particles";
 import InteractiveCard from "@/components/landing/interactive-card";
 import ParallaxBackground from "@/components/landing/parallax-background";
+import "@/styles/landing-3d.css";
 
 export default function Landing() {
   const { isLoading, isAuthenticated } = useAuth();
@@ -144,18 +145,16 @@ export default function Landing() {
         </NeoGlassSection>
 
         {/* Features Section */}
-        <NeoGlassSection title="Platform Features" className="mb-16">
+        <NeoGlassSection title="What Makes Us Awesome! 🎯" className="mb-16" data-section="features">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {/* Career Clarity */}
-            <div className="neo-glass-card p-6 rounded-lg transition-all duration-300 hover:scale-105">
-              <div className="flex items-center mb-4">
-                <Brain className="h-8 w-8 text-blue-400 mr-3" />
-                <h3 className="text-xl font-semibold text-white">Career Clarity</h3>
-              </div>
-              <p className="text-gray-300 leading-relaxed">
-                Confused about your next move? Get smart, personalized career advice instantly.
-              </p>
-            </div>
+            <InteractiveCard
+              icon={<Brain className="h-8 w-8 text-blue-400" />}
+              title="Career Clarity"
+              description="Confused about your next move? Your AI buddy has got your back! Get smart, personalized career advice that actually makes sense 🎯"
+              delay={0.1}
+              onHover={(hovering) => hovering && setCurrentSection('career')}
+            />
 
             {/* AI Mentorship */}
             <div className="neo-glass-card p-6 rounded-lg transition-all duration-300 hover:scale-105">
@@ -281,27 +280,38 @@ export default function Landing() {
         </NeoGlassSection>
 
         {/* Call to Action */}
-        <NeoGlassSection className="text-center mb-20">
-          <div className="space-y-6">
-            <h2 className="text-3xl font-bold text-white">
-              Ready to Transform Your Career?
+        <NeoGlassSection className="text-center mb-20" data-section="cta">
+          <div className="space-y-6"
+               onMouseEnter={() => setCurrentSection('cta')}>
+            <h2 className="text-3xl font-bold text-white transform transition-all duration-300 hover:scale-105">
+              Ready to Absolutely Crush It? 🚀
             </h2>
             <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-              Join thousands of professionals who are already accelerating their careers with AI-powered insights
+              Join thousands of amazing professionals who are already living their best career life with our AI magic! 
+              Your future self is gonna thank you ⭐
             </p>
             {!isAuthenticated && (
               <Button 
                 onClick={() => setLocation('/auth')}
                 disabled={isLoading}
                 size="lg"
-                className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-12 py-4 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105"
+                className="neo-glass-button bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-12 py-4 rounded-lg font-semibold transition-all duration-300 transform hover:scale-110 hover:shadow-2xl hover:shadow-blue-500/25"
+                onMouseEnter={() => setIsHovering(true)}
+                onMouseLeave={() => setIsHovering(false)}
               >
-                {isLoading ? "Loading..." : "Start Your Journey"}
+                {isLoading ? "Loading..." : "Let's Go! Start My Journey 🎉"}
                 <ArrowRight className="ml-2 h-6 w-6" />
               </Button>
             )}
           </div>
           </NeoGlassSection>
+
+        {/* Robot Companion - Coming Soon */}
+        {/* <RobotCompanion 
+          mousePosition={mousePosition}
+          isHovering={isHovering}
+          currentSection={currentSection}
+        /> */}
         </NeoGlassLayout>
       </div>
     </div>

@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-import { gsap } from 'gsap';
 
 interface RobotCompanionProps {
   mousePosition: { x: number; y: number };
@@ -28,24 +27,6 @@ export default function RobotCompanion({ mousePosition, isHovering, currentSecti
     // Robot entrance animation
     setTimeout(() => {
       setIsVisible(true);
-      if (robotRef.current) {
-        gsap.fromTo(robotRef.current, 
-          { 
-            y: -200, 
-            opacity: 0, 
-            scale: 0.5,
-            rotation: -20 
-          },
-          { 
-            y: 0, 
-            opacity: 1, 
-            scale: 1,
-            rotation: 0,
-            duration: 1.5, 
-            ease: "bounce.out" 
-          }
-        );
-      }
     }, 500);
   }, []);
 
@@ -71,19 +52,15 @@ export default function RobotCompanion({ mousePosition, isHovering, currentSecti
     // Body tilts slightly toward cursor
     const bodyTilt = Math.max(-5, Math.min(5, deltaX * 0.01));
 
-    gsap.to(eyes, {
-      x: eyeMovementX,
-      y: eyeMovementY,
-      duration: 0.3,
-      ease: "power2.out"
-    });
+    // Use CSS transforms instead of GSAP
+    if (eyes) {
+      eyes.style.transform = `translate(${eyeMovementX}px, ${eyeMovementY}px)`;
+      eyes.style.transition = 'transform 0.3s ease-out';
+    }
 
     if (body) {
-      gsap.to(body, {
-        rotation: bodyTilt,
-        duration: 0.5,
-        ease: "power2.out"
-      });
+      body.style.transform = `rotate(${bodyTilt}deg)`;
+      body.style.transition = 'transform 0.5s ease-out';
     }
   }, [mousePosition]);
 
@@ -93,12 +70,15 @@ export default function RobotCompanion({ mousePosition, isHovering, currentSecti
     if (newMessage !== currentMessage) {
       setCurrentMessage(newMessage);
       
-      // Animate speech bubble
+      // Animate speech bubble with CSS
       if (speechBubbleRef.current) {
-        gsap.fromTo(speechBubbleRef.current,
-          { scale: 0.8, opacity: 0.7 },
-          { scale: 1, opacity: 1, duration: 0.5, ease: "back.out(1.7)" }
-        );
+        speechBubbleRef.current.style.transform = 'scale(1.05)';
+        speechBubbleRef.current.style.transition = 'transform 0.5s ease';
+        setTimeout(() => {
+          if (speechBubbleRef.current) {
+            speechBubbleRef.current.style.transform = 'scale(1)';
+          }
+        }, 500);
       }
     }
   }, [currentSection]);
@@ -107,40 +87,14 @@ export default function RobotCompanion({ mousePosition, isHovering, currentSecti
     // Hover animations
     if (robotRef.current && bodyRef.current) {
       if (isHovering) {
-        gsap.to(bodyRef.current, {
-          scale: 1.1,
-          y: -10,
-          duration: 0.3,
-          ease: "back.out(1.7)"
-        });
+        bodyRef.current.style.transform = 'scale(1.1) translateY(-10px)';
+        bodyRef.current.style.transition = 'transform 0.3s ease';
       } else {
-        gsap.to(bodyRef.current, {
-          scale: 1,
-          y: 0,
-          duration: 0.3,
-          ease: "power2.out"
-        });
+        bodyRef.current.style.transform = 'scale(1) translateY(0px)';
+        bodyRef.current.style.transition = 'transform 0.3s ease';
       }
     }
   }, [isHovering]);
-
-  // Idle animations
-  useEffect(() => {
-    if (!bodyRef.current) return;
-
-    const idleAnimation = () => {
-      gsap.to(bodyRef.current, {
-        y: "+=3",
-        duration: 2,
-        ease: "power1.inOut",
-        yoyo: true,
-        repeat: -1
-      });
-    };
-
-    const timer = setTimeout(idleAnimation, 2000);
-    return () => clearTimeout(timer);
-  }, []);
 
   if (!isVisible) return null;
 
