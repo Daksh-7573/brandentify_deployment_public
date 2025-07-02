@@ -66,24 +66,27 @@ const ChatPage: React.FC = () => {
   }
 
   return (
-    <div className="neo-spotify-container">
+    <div className="neo-spotify-container min-h-screen">
       {/* Top Navigation Bar */}
       <Header />
       
-      {/* Main Content Area with Neo-Glass Layout - matches Industry Pulse page */}
-      <div className="flex flex-1 overflow-hidden pt-20"> 
-        <div className="flex-1 overflow-auto px-3 sm:px-4 md:px-6">
-          <NeoGlassLayout className="mt-3 sm:mt-4">
-            <div className="flex-1 max-w-7xl mx-auto">
-              {/* Page Heading (Now inside the card, without border) */}
-              <div className="p-3 sm:p-4 md:p-6">
+      {/* Main Content Area with proper height management */}
+      <div className="flex flex-col h-screen pt-20">
+        <div className="flex-1 overflow-hidden px-3 sm:px-4 md:px-6">
+          <NeoGlassLayout className="h-full mt-3 sm:mt-4">
+            <div className="flex flex-col h-full max-w-7xl mx-auto">
+              {/* Page Heading - Fixed height */}
+              <div className="flex-shrink-0 p-3 sm:p-4 md:p-6 border-b border-white/10">
                 <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-spotify-white mb-1 md:mb-2">Messages</h1>
                 <p className="text-xs sm:text-sm md:text-base text-spotify-light-gray">Connect with professionals in your network</p>
               </div>
               
-              <ChatProvider userId={userId}>
-                <Chat userId={userId} />
-              </ChatProvider>
+              {/* Chat Area - Flexible height */}
+              <div className="flex-1 overflow-hidden">
+                <ChatProvider userId={userId}>
+                  <Chat userId={userId} />
+                </ChatProvider>
+              </div>
             </div>
           </NeoGlassLayout>
         </div>
