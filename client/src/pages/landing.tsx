@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
 import { ArrowRight, Sparkles, Target, Users, Brain, Zap, FileText, TrendingUp, Building, Calendar, Trophy, Search, Heart, Newspaper, MessageCircle } from "lucide-react";
-import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
+// Background image now handled by global CSS for consistency
 
 export default function Landing() {
   const { isLoading, isAuthenticated } = useAuth();
@@ -36,12 +36,7 @@ export default function Landing() {
   }
 
   return (
-    <div 
-      className="responsive-background min-h-screen w-full relative overflow-hidden"
-      style={{ 
-        backgroundImage: `url(${backgroundImage})`
-      }}
-    >
+    <div className="min-h-screen w-full relative overflow-hidden">
       {/* Glass UI overlay to maintain design consistency */}
       <div className="absolute inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm"></div>
       
