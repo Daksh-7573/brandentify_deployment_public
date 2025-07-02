@@ -91,9 +91,9 @@ const Chat: React.FC<{ userId: number }> = ({ userId }) => {
   const otherUser = currentConversation?.participants?.find(p => p.userId !== userId);
 
   return (
-    <div className="flex flex-col md:flex-row gap-2 sm:gap-4 h-full">
+    <div className="flex flex-col md:flex-row gap-3 sm:gap-4 md:gap-6 h-full">
       {/* Left sidebar - Hidden on mobile when a conversation is selected */}
-      <div className={`${currentConversation ? 'hidden md:block' : 'block'} md:w-1/3 lg:w-1/4 xl:w-1/5 h-full`}>
+      <div className={`${currentConversation ? 'hidden md:block' : 'block'} md:w-1/3 lg:w-1/4 xl:w-1/5 h-full md:min-w-[280px] lg:min-w-[300px]`}>
         <div className="neo-spotify-sidebar h-full">
           <div className="sidebar-top">
             <div className="user-profile">
@@ -135,8 +135,8 @@ const Chat: React.FC<{ userId: number }> = ({ userId }) => {
       </div>
       
       {/* Main chat area - Full width on mobile when a conversation is selected */}
-      <div className={`${currentConversation ? 'block' : 'hidden md:block'} flex-1 h-full`}>
-        <div className="neo-spotify-main h-full">
+      <div className={`${currentConversation ? 'block' : 'hidden md:block'} flex-1 h-full md:max-w-[calc(100%-280px)] lg:max-w-[calc(100%-300px)]`}>
+        <div className="neo-spotify-main h-full w-full">
           {currentConversation ? (
             <>
               {/* Message header */}
@@ -186,8 +186,8 @@ const Chat: React.FC<{ userId: number }> = ({ userId }) => {
               </div>
             </>
           ) : (
-            <div className="neo-spotify-content flex items-center justify-center text-center p-4 sm:p-6">
-              <div className="max-w-sm sm:max-w-md">
+            <div className="neo-spotify-content flex items-center justify-center text-center p-4 sm:p-6 md:p-8">
+              <div className="max-w-sm sm:max-w-md md:max-w-lg mx-auto">
                 <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-full bg-spotify-glass-highlight flex items-center justify-center mb-4 sm:mb-6">
                   <MessageSquare className="h-8 w-8 sm:h-10 sm:w-10 text-spotify-white" />
                 </div>
