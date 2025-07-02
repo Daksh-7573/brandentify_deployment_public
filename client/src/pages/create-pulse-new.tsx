@@ -830,9 +830,9 @@ export default function CreatePulsePage() {
                               </div>
 
                               {mediaType === 'image' ? (
-                                <div className="space-y-2">
-                                  <Label htmlFor="project-images" className="text-white">Upload Images</Label>
-                                  <div className="flex flex-col space-y-2">
+                                <div className="space-y-1 sm:space-y-2">
+                                  <Label htmlFor="project-images" className="text-white text-sm sm:text-base">Upload Images</Label>
+                                  <div className="flex flex-col space-y-1 sm:space-y-2">
                                     <Input
                                       ref={imageInputRef}
                                       id="project-images"
@@ -840,7 +840,7 @@ export default function CreatePulsePage() {
                                       accept="image/*"
                                       multiple
                                       onChange={handleMediaUpload}
-                                      className="w-full min-h-[56px] px-4 py-3 bg-[rgba(18,18,18,0.95)] text-white border border-white/20 rounded-lg"
+                                      className="w-full min-h-[48px] sm:min-h-[56px] px-3 sm:px-4 py-2 sm:py-3 bg-[rgba(18,18,18,0.95)] text-white border border-white/20 rounded-lg text-sm sm:text-base"
                                       style={{
                                         lineHeight: '1.5',
                                         display: 'flex',
@@ -851,7 +851,7 @@ export default function CreatePulsePage() {
                                   </div>
                                   
                                   {mediaUrls.length > 0 && (
-                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-4">
+                                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-3 sm:mt-4">
                                       {mediaUrls.map((url, index) => (
                                         <div key={index} className="relative group">
                                           <img 
@@ -872,16 +872,16 @@ export default function CreatePulsePage() {
                                   )}
                                 </div>
                               ) : (
-                                <div className="space-y-2">
-                                  <Label htmlFor="project-video" className="text-white">Upload Video</Label>
-                                  <div className="flex flex-col space-y-2">
+                                <div className="space-y-1 sm:space-y-2">
+                                  <Label htmlFor="project-video" className="text-white text-sm sm:text-base">Upload Video</Label>
+                                  <div className="flex flex-col space-y-1 sm:space-y-2">
                                     <Input
                                       ref={videoInputRef}
                                       id="project-video"
                                       type="file"
                                       accept="video/*"
                                       onChange={handleMediaUpload}
-                                      className="w-full min-h-[56px] px-4 py-3 bg-[rgba(18,18,18,0.95)] text-white border border-white/20 rounded-lg"
+                                      className="w-full min-h-[48px] sm:min-h-[56px] px-3 sm:px-4 py-2 sm:py-3 bg-[rgba(18,18,18,0.95)] text-white border border-white/20 rounded-lg text-sm sm:text-base"
                                       style={{
                                         lineHeight: '1.5',
                                         display: 'flex',
@@ -892,7 +892,7 @@ export default function CreatePulsePage() {
                                   </div>
                                   
                                   {mediaUrls.length > 0 && (
-                                    <div className="mt-4">
+                                    <div className="mt-3 sm:mt-4">
                                       <div className="relative group border border-white/20 rounded-md overflow-hidden">
                                         <video
                                           src={mediaUrls[0]}
