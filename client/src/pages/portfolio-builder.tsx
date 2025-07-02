@@ -704,11 +704,11 @@ export default function PortfolioBuilder() {
                 Browse through multiple portfolio designs and select a layout that best represents your professional brand.
               </p>
             
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                 {layoutOptions.map(layout => (
                   <div 
                     key={layout.id}
-                    className={`neo-glass-card cursor-pointer transition-all rounded-lg p-4 hover:shadow-xl hover:border-white/20 hover:-translate-y-1 ${
+                    className={`neo-glass-card cursor-pointer transition-all rounded-lg p-3 sm:p-4 hover:shadow-xl hover:border-white/20 hover:-translate-y-1 ${
                       form.watch("layout") === layout.id 
                         ? "ring-1 ring-white/20 border border-white/15 bg-black/70" 
                         : "border border-white/10 bg-black/60"
@@ -717,23 +717,23 @@ export default function PortfolioBuilder() {
                   >
                     <div className="flex flex-col h-full">
                       <div className="pb-2">
-                        <h3 className="text-lg font-medium text-white">{layout.name}</h3>
+                        <h3 className="text-base sm:text-lg font-medium text-white">{layout.name}</h3>
                       </div>
                       <div className="flex-grow">
                         <div 
-                          className="text-sm text-white/70 whitespace-pre-line" 
+                          className="text-xs sm:text-sm text-white/70 whitespace-pre-line" 
                           style={{
-                            maxHeight: '220px',
+                            maxHeight: '180px',
                             overflowY: 'auto'
                           }}
                         >
                           {layout.description}
                         </div>
                       </div>
-                      <div className="pt-3 flex justify-end">
+                      <div className="pt-2 sm:pt-3 flex justify-end">
                         {form.watch("layout") === layout.id && (
-                          <div className="w-6 h-6 rounded-full bg-slate-800 border border-white/20 flex items-center justify-center shadow-md">
-                            <Check className="h-4 w-4 text-white" />
+                          <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-slate-800 border border-white/20 flex items-center justify-center shadow-md">
+                            <Check className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
                           </div>
                         )}
                       </div>
@@ -742,10 +742,10 @@ export default function PortfolioBuilder() {
                 ))}
               </div>
               
-              <div className="flex justify-end mt-6">
+              <div className="flex justify-center sm:justify-end mt-6">
                 <button 
                   onClick={handleCreatePortfolio}
-                  className="neo-glass-button flex items-center gap-2 py-2 px-4 whitespace-nowrap"
+                  className="neo-glass-button flex items-center gap-2 py-2 px-4 text-sm sm:text-base whitespace-nowrap w-full sm:w-auto justify-center"
                 >
                   <Bot className="h-4 w-4" />
                   <span>Create with Musk AI</span>
@@ -1254,18 +1254,18 @@ export default function PortfolioBuilder() {
     
     if (isGenerating) {
       return (
-        <div className="container mx-auto p-4">
-          <div className="flex flex-col space-y-6">
+        <div className="container mx-auto p-3 sm:p-4">
+          <div className="flex flex-col space-y-4 sm:space-y-6">
             <SectionSkeleton title="Creating Your Portfolio" isLoading={true} />
             <div className="space-y-4">
               <ProfileSkeleton />
               <div className="flex flex-col items-center justify-center py-4 space-y-2">
                 <div className="relative">
-                  <Loader2 className="h-10 w-10 animate-spin text-primary" />
-                  <Bot className="h-5 w-5 text-white absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
+                  <Loader2 className="h-8 w-8 sm:h-10 sm:w-10 animate-spin text-primary" />
+                  <Bot className="h-4 w-4 sm:h-5 sm:w-5 text-white absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
                 </div>
-                <h3 className="text-lg font-medium text-white">Creating your personalized portfolio</h3>
-                <p className="text-white/60">Musk AI is designing your portfolio with the {layoutOptions.find(l => l.id === form.watch("layout"))?.name.toLowerCase()} layout...</p>
+                <h3 className="text-base sm:text-lg font-medium text-white text-center">Creating your personalized portfolio</h3>
+                <p className="text-white/60 text-sm sm:text-base text-center px-4">Musk AI is designing your portfolio with the {layoutOptions.find(l => l.id === form.watch("layout"))?.name.toLowerCase()} layout...</p>
               </div>
             </div>
           </div>
@@ -1275,8 +1275,8 @@ export default function PortfolioBuilder() {
     
     if (isLoadingPortfolio) {
       return (
-        <div className="container mx-auto p-4">
-          <div className="flex flex-col space-y-6">
+        <div className="container mx-auto p-3 sm:p-4">
+          <div className="flex flex-col space-y-4 sm:space-y-6">
             <SectionSkeleton title="Portfolio Preview" isLoading={true} />
             <ProfileSkeleton />
           </div>
@@ -1297,13 +1297,27 @@ export default function PortfolioBuilder() {
       </div>
       <Header />
       <div className="pt-16 relative z-10">
-        <NeoGlassLayout>
-          <div className="flex items-center justify-between mb-8">
+        <NeoGlassLayout className="mx-3 sm:mx-4 md:mx-6 mt-3">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-white">Portfolio Builder</h1>
-              <p className="text-white/70">Create a personalized portfolio with Musk AI</p>
+              <h1 className="text-2xl sm:text-3xl font-bold text-white">Portfolio Builder</h1>
+              <p className="text-white/70 text-sm sm:text-base">Create a personalized portfolio with Musk AI</p>
             </div>
             {/* Progress indicator */}
+            <div className="flex sm:hidden items-center space-x-1 w-full">
+              {Object.values(STEPS).filter(step => typeof step === 'number').map((step) => (
+                <div 
+                  key={step} 
+                  className={`h-2 flex-1 rounded-full ${
+                    currentStep === step 
+                      ? 'bg-primary' 
+                      : currentStep > step 
+                        ? 'bg-primary/70' 
+                        : 'bg-slate-600'
+                  }`}
+                />
+              ))}
+            </div>
             <div className="hidden sm:flex items-center space-x-2">
               {Object.values(STEPS).filter(step => typeof step === 'number').map((step) => (
                 <div 
