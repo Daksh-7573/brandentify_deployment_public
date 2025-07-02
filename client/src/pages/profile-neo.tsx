@@ -207,7 +207,7 @@ export default function ProfileNeo() {
         <Header />
         <div className="flex flex-1 overflow-hidden pt-16">
           <div className="flex-1 overflow-auto">
-            <NeoGlassLayout className="mt-3 mx-6">
+            <NeoGlassLayout className="mt-3 mx-3 sm:mx-4 md:mx-6">
               <ProfilePageSkeleton />
             </NeoGlassLayout>
           </div>
@@ -245,18 +245,18 @@ export default function ProfileNeo() {
       <div className="flex flex-1 overflow-hidden pt-16"> {/* Added padding-top for fixed header */}
         {/* Main content area */}
         <div className="flex-1 overflow-auto">
-          <NeoGlassLayout className="mt-3 mx-6"> {/* Matching Industry Pulse layout with reduced top margin */}
+          <NeoGlassLayout className="mt-3 mx-3 sm:mx-4 md:mx-6"> {/* Matching Industry Pulse layout with responsive margins */}
             {/* Profile Header */}
-            <div className="mb-8">
+            <div className="mb-6 sm:mb-8">
               <div className="flex flex-col md:flex-row items-start md:items-center justify-between">
                 <div>
-                  <h1 className="text-3xl font-bold tracking-tight text-white">Profile</h1>
-                  <p className="text-white/80 mt-1">
+                  <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">Profile</h1>
+                  <p className="text-white/80 mt-1 text-sm sm:text-base">
                     Manage your professional information and career details
                   </p>
                 </div>
-                <div className="flex flex-col md:flex-row items-start md:items-center gap-4 mt-4 md:mt-0">
-                  <div className="flex items-center gap-4">
+                <div className="flex flex-col sm:flex-row md:flex-row items-start sm:items-center md:items-center gap-2 sm:gap-3 md:gap-4 mt-4 md:mt-0 w-full sm:w-auto">
+                  <div className="flex flex-wrap items-center gap-2 sm:gap-3 md:gap-4 w-full sm:w-auto">
                     <button 
                     onClick={() => {
                       // Create a loading state in the button
@@ -284,23 +284,23 @@ export default function ProfileNeo() {
                       setLocation('/portfolio/edit');
                     }}
                     id="portfolio-btn"
-                    className="neo-glass-button flex items-center gap-1 py-1.5 px-3 whitespace-nowrap"
+                    className="neo-glass-button flex items-center gap-1 py-2 px-3 text-xs sm:text-sm whitespace-nowrap min-h-[40px] flex-1 sm:flex-none justify-center"
                   >
-                    <User2 className="w-4 h-4" />
+                    <User2 className="w-3 h-3 sm:w-4 sm:h-4" />
                     <span>Portfolio</span>
                   </button>
                   <button 
                     onClick={() => setLocation('/resume-builder')}
-                    className="neo-glass-button flex items-center gap-1 py-1.5 px-3 whitespace-nowrap"
+                    className="neo-glass-button flex items-center gap-1 py-2 px-3 text-xs sm:text-sm whitespace-nowrap min-h-[40px] flex-1 sm:flex-none justify-center"
                   >
-                    <FileText className="w-4 h-4" />
+                    <FileText className="w-3 h-3 sm:w-4 sm:h-4" />
                     <span>Resume Builder</span>
                   </button>
                   <button 
                     onClick={() => setLocation('/quantum-card')}
-                    className="neo-glass-button flex items-center gap-1 py-1.5 px-3 whitespace-nowrap"
+                    className="neo-glass-button flex items-center gap-1 py-2 px-3 text-xs sm:text-sm whitespace-nowrap min-h-[40px] flex-1 sm:flex-none justify-center"
                   >
-                    <CreditCard className="w-4 h-4" />
+                    <CreditCard className="w-3 h-3 sm:w-4 sm:h-4" />
                     <span>Quantum Card</span>
                     </button>
                   </div>
@@ -310,12 +310,12 @@ export default function ProfileNeo() {
             
             {/* Personal Info Section */}
             <NeoGlassSection className="mb-6">
-              <div className="p-4">
-                <div className="flex flex-col md:flex-row gap-6">
+              <div className="p-3 sm:p-4 md:p-6">
+                <div className="flex flex-col md:flex-row gap-4 sm:gap-6">
                   {/* Profile Image */}
                   <div className="flex-shrink-0 flex flex-col items-center">
                     <div className="relative group">
-                      <div className="w-32 h-32 rounded-full overflow-hidden border-2 border-white/20 bg-black/30 backdrop-blur-md">
+                      <div className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-full overflow-hidden border-2 border-white/20 bg-black/30 backdrop-blur-md">
                         <img 
                           src={profilePictureUrl || "https://api.dicebear.com/7.x/initials/svg?seed=" + userData?.name} 
                           alt={userData?.name || "Profile"} 
@@ -338,14 +338,14 @@ export default function ProfileNeo() {
                           console.log("Camera button clicked");
                           setShowProfileDialog(true);
                         }}
-                        className="absolute bottom-1 right-1 p-2 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm text-white hover:bg-white/20 transition-all"
+                        className="absolute bottom-0 right-0 sm:bottom-1 sm:right-1 p-1.5 sm:p-2 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm text-white hover:bg-white/20 transition-all"
                       >
-                        <Camera className="h-4 w-4" />
+                        <Camera className="h-3 w-3 sm:h-4 sm:w-4" />
                       </button>
                     </div>
                     
-                    <div className="text-center mt-4">
-                      <h2 className="text-xl font-bold text-white">{userData?.name}</h2>
+                    <div className="text-center mt-3 sm:mt-4">
+                      <h2 className="text-lg sm:text-xl font-bold text-white">{userData?.name}</h2>
                       
                       {/* Edit Profile Button */}
                       <button
