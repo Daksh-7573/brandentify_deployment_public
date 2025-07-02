@@ -438,24 +438,24 @@ export default function CreatePulsePage() {
     <div className="min-h-screen bg-[url('/bg-dark-room.jpg')] bg-cover bg-center">
       <div className="min-h-screen bg-black/50 backdrop-blur-sm">
         <Header />
-        <div className="pt-20 pb-4 px-4 overflow-y-auto neo-glass-scroll-container" style={{ height: 'calc(100vh - 4rem)' }}>
-          <div className="container mx-auto">
-            <div className="flex items-center mb-6">
-              <Link to="/industry-pulse" className="text-white hover:text-white/80 flex items-center">
-                <ChevronLeft className="h-5 w-5 mr-1" />
+        <div className="pt-16 sm:pt-20 pb-4 px-3 sm:px-4 overflow-y-auto neo-glass-scroll-container" style={{ height: 'calc(100vh - 4rem)' }}>
+          <div className="container mx-auto max-w-4xl">
+            <div className="flex items-center mb-4 sm:mb-6">
+              <Link to="/industry-pulse" className="text-white hover:text-white/80 flex items-center text-sm sm:text-base">
+                <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5 mr-1" />
                 <span>Back to Industry Pulse</span>
               </Link>
             </div>
             
             <NeoGlassLayout>
               <div className="w-full">
-              <div className="mb-6">
-                <h1 className="text-2xl font-bold text-white">Create Pulse</h1>
-                <p className="text-white/70">Share your thoughts, projects, or expertise with the professional community</p>
+              <div className="mb-4 sm:mb-6">
+                <h1 className="text-xl sm:text-2xl font-bold text-white">Create Pulse</h1>
+                <p className="text-white/70 text-sm sm:text-base">Share your thoughts, projects, or expertise with the professional community</p>
               </div>
               
-              <NeoGlassSection className="mb-6">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <NeoGlassSection className="mb-4 sm:mb-6">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
                   <Card 
                     className={cn(
                       "cursor-pointer transition-all hover:shadow-md bg-[rgba(18,18,18,0.95)] text-white border-white/20",
@@ -463,12 +463,12 @@ export default function CreatePulsePage() {
                     )}
                     onClick={() => setPulseType('poll')}
                   >
-                    <CardContent className="p-4 flex flex-col items-center justify-center text-center">
+                    <CardContent className="p-3 sm:p-4 flex flex-col items-center justify-center text-center">
                       <BarChart className={cn(
-                        "h-10 w-10 mb-2",
+                        "h-8 w-8 sm:h-10 sm:w-10 mb-2",
                         pulseType === 'poll' ? 'text-white' : 'text-white/70'
                       )} />
-                      <h3 className="font-medium">Trends</h3>
+                      <h3 className="font-medium text-sm sm:text-base">Trends</h3>
                       <p className="text-xs text-gray-300 mt-1">Ask questions with options</p>
                     </CardContent>
                   </Card>
@@ -480,19 +480,19 @@ export default function CreatePulsePage() {
                     )}
                     onClick={() => setPulseType('media-pulse')}
                   >
-                    <CardContent className="p-4 flex flex-col items-center justify-center text-center">
+                    <CardContent className="p-3 sm:p-4 flex flex-col items-center justify-center text-center">
                       {mediaType === 'video' ? (
                         <Video className={cn(
-                          "h-10 w-10 mb-2",
+                          "h-8 w-8 sm:h-10 sm:w-10 mb-2",
                           pulseType === 'media-pulse' ? 'text-white' : 'text-white/70'
                         )} />
                       ) : (
                         <Image className={cn(
-                          "h-10 w-10 mb-2",
+                          "h-8 w-8 sm:h-10 sm:w-10 mb-2",
                           pulseType === 'media-pulse' ? 'text-white' : 'text-white/70'
                         )} />
                       )}
-                      <h3 className="font-medium">Insights</h3>
+                      <h3 className="font-medium text-sm sm:text-base">Insights</h3>
                       <p className="text-xs text-gray-300 mt-1">Images or video for your branding</p>
                     </CardContent>
                   </Card>
@@ -504,12 +504,12 @@ export default function CreatePulsePage() {
                     )}
                     onClick={() => setPulseType('project')}
                   >
-                    <CardContent className="p-4 flex flex-col items-center justify-center text-center">
+                    <CardContent className="p-3 sm:p-4 flex flex-col items-center justify-center text-center">
                       <FileCode className={cn(
-                        "h-10 w-10 mb-2",
+                        "h-8 w-8 sm:h-10 sm:w-10 mb-2",
                         pulseType === 'project' ? 'text-white' : 'text-white/70'
                       )} />
-                      <h3 className="font-medium">Projects</h3>
+                      <h3 className="font-medium text-sm sm:text-base">Projects</h3>
                       <p className="text-xs text-gray-300 mt-1">Add or select a project</p>
                     </CardContent>
                   </Card>
@@ -519,34 +519,34 @@ export default function CreatePulsePage() {
               {/* Form fields for non-project pulses only - project fields are in tabs */}
               {pulseType !== 'project' && (
                 <NeoGlassSection>
-                  <div className="space-y-6">
+                  <div className="space-y-4 sm:space-y-6">
                     <>
-                      <div className="space-y-2">
-                        <Label htmlFor="title" className="text-white">Title</Label>
+                      <div className="space-y-1 sm:space-y-2">
+                        <Label htmlFor="title" className="text-white text-sm sm:text-base">Title</Label>
                         <Input 
                           id="title" 
                           placeholder="Enter a title for your pulse" 
                           value={pulseTitle}
                           onChange={(e) => setPulseTitle(e.target.value)}
-                          className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20"
+                          className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 h-9 sm:h-10 text-sm sm:text-base"
                         />
                       </div>
                       
-                      <div className="space-y-2">
-                        <Label htmlFor="content" className="text-white">Content</Label>
+                      <div className="space-y-1 sm:space-y-2">
+                        <Label htmlFor="content" className="text-white text-sm sm:text-base">Content</Label>
                         <Textarea 
                           id="content" 
                           placeholder="What's on your mind? Share your professional thoughts, insights, or ask a question." 
-                          rows={4}
+                          rows={3}
                           value={pulseContent}
                           onChange={(e) => setPulseContent(e.target.value)}
-                          className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20"
+                          className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 text-sm sm:text-base min-h-[80px] sm:min-h-[100px] resize-y"
                         />
                       </div>
                       
-                      <div className="space-y-2">
-                        <Label htmlFor="industry" className="text-white flex items-center gap-2">
-                          <Briefcase className="h-4 w-4" />
+                      <div className="space-y-1 sm:space-y-2">
+                        <Label htmlFor="industry" className="text-white flex items-center gap-2 text-sm sm:text-base">
+                          <Briefcase className="h-3 w-3 sm:h-4 sm:w-4" />
                           Industry
                         </Label>
                         <div className="relative">
@@ -559,7 +559,7 @@ export default function CreatePulsePage() {
                                 setPulseCategory("");
                               }
                             }}
-                            className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 px-3 pr-10 rounded-md border appearance-none cursor-pointer focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none text-sm leading-relaxed"
+                            className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-10 sm:h-12 px-2 sm:px-3 pr-8 sm:pr-10 rounded-md border appearance-none cursor-pointer focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none text-sm leading-relaxed"
                           >
                             <option value="">Select your industry</option>
                             {INDUSTRIES.map((ind) => (
@@ -568,8 +568,8 @@ export default function CreatePulsePage() {
                               </option>
                             ))}
                           </select>
-                          <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                            <svg className="h-4 w-4 text-white/70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                          <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:pr-3 pointer-events-none">
+                            <svg className="h-3 w-3 sm:h-4 sm:w-4 text-white/70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                               <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
                             </svg>
                           </div>
@@ -577,9 +577,9 @@ export default function CreatePulsePage() {
                       </div>
                       
                       {pulseIndustry && INDUSTRY_DOMAINS[pulseIndustry] && (
-                        <div className="space-y-2">
-                          <Label htmlFor="domain" className="text-white flex items-center gap-2">
-                            <Award className="h-4 w-4" />
+                        <div className="space-y-1 sm:space-y-2">
+                          <Label htmlFor="domain" className="text-white flex items-center gap-2 text-sm sm:text-base">
+                            <Award className="h-3 w-3 sm:h-4 sm:w-4" />
                             Domain Specialty
                           </Label>
                           <div className="relative">
@@ -587,7 +587,7 @@ export default function CreatePulsePage() {
                               id="domain"
                               value={pulseCategory}
                               onChange={(e) => setPulseCategory(e.target.value)}
-                              className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 px-3 pr-10 rounded-md border appearance-none cursor-pointer focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none text-sm leading-relaxed"
+                              className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-10 sm:h-12 px-2 sm:px-3 pr-8 sm:pr-10 rounded-md border appearance-none cursor-pointer focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none text-sm leading-relaxed"
                             >
                               <option value="">Select domain specialty</option>
                               {INDUSTRY_DOMAINS[pulseIndustry].map((dom) => (
