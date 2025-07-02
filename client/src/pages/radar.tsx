@@ -578,11 +578,11 @@ const Radar = () => {
                     Connect with professionals near your current location.
                   </p>
                   
-                  <div className="flex flex-col md:flex-row gap-6">
-                    <div className="flex-1 space-y-4">
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-0.5">
-                          <Label htmlFor="visible" className="text-white">Show me in nearby list</Label>
+                  <div className="flex flex-col lg:flex-row gap-4 sm:gap-6">
+                    <div className="flex-1 space-y-3 sm:space-y-4">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
+                        <div className="space-y-0.5 flex-1">
+                          <Label htmlFor="visible" className="text-white text-sm sm:text-base">Show me in nearby list</Label>
                           <p className="text-xs text-white/60">
                             Other professionals can discover your profile based on proximity
                           </p>
@@ -592,7 +592,7 @@ const Radar = () => {
                           checked={visibleInRadar}
                           onCheckedChange={handleVisibilityToggle}
                           disabled={updateVisibilityMutation.isPending}
-                          className="neo-glass-switch data-[state=checked]:bg-white/60 data-[state=unchecked]:bg-white/20 shadow-md border border-white/10 backdrop-blur-md"
+                          className="neo-glass-switch data-[state=checked]:bg-white/60 data-[state=unchecked]:bg-white/20 shadow-md border border-white/10 backdrop-blur-md self-start sm:self-center"
                         />
                       </div>
                       
@@ -612,13 +612,13 @@ const Radar = () => {
                         </Select>
                       </div>
                       
-                      <div className="flex items-center justify-between mb-2">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-2 mb-2">
                         <h4 className="text-sm font-medium text-white">Filter Professionals</h4>
                         {userData && (
                           <Button 
                             variant="outline" 
                             size="sm"
-                            className="border-white/20 bg-white/10 text-white hover:bg-white/20 backdrop-blur-md shadow-md transition-all hover:scale-105"
+                            className="border-white/20 bg-white/10 text-white hover:bg-white/20 backdrop-blur-md shadow-md transition-all hover:scale-105 text-xs sm:text-sm w-full sm:w-auto"
                             onClick={() => {
                         if (userData.title) setJobTitleFilter(userData.title);
                         if (userData.industry) setIndustryFilter(userData.industry);
@@ -629,18 +629,18 @@ const Radar = () => {
                         });
                       }}
                     >
-                      <UserIcon className="mr-2 h-3 w-3" />
+                      <UserIcon className="mr-1 sm:mr-2 h-3 w-3" />
                       Use My Profile
                     </Button>
                   )}
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="job-title" className="text-white">Job Title</Label>
+                  <Label htmlFor="job-title" className="text-white text-sm sm:text-base">Job Title</Label>
                   <div className="relative">
                     <input
                       id="job-title"
-                      className="w-full h-10 px-3 py-2 border border-white/20 bg-[rgba(18,18,18,0.95)] backdrop-blur-md rounded-md text-white text-sm focus:outline-none focus:ring-1 focus:ring-white/30 placeholder:text-white/50 shadow-md transition-all hover:border-white/30 neo-glass-input"
+                      className="w-full h-10 sm:h-11 px-3 py-2 border border-white/20 bg-[rgba(18,18,18,0.95)] backdrop-blur-md rounded-md text-white text-sm sm:text-base focus:outline-none focus:ring-1 focus:ring-white/30 placeholder:text-white/50 shadow-md transition-all hover:border-white/30 neo-glass-input"
                       placeholder="e.g. Software Engineer"
                       value={jobTitleFilter}
                       onChange={(e) => setJobTitleFilter(e.target.value)}
@@ -650,12 +650,12 @@ const Radar = () => {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="industry" className="text-white">Industry</Label>
+                  <Label htmlFor="industry" className="text-white text-sm sm:text-base">Industry</Label>
                   <Select
                     value={industryFilter}
                     onValueChange={setIndustryFilter}
                   >
-                    <SelectTrigger id="industry" className="w-full bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30">
+                    <SelectTrigger id="industry" className="w-full h-10 sm:h-11 bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 text-sm sm:text-base">
                       <SelectValue placeholder="Select an industry" />
                     </SelectTrigger>
                     <SelectContent className="max-h-80 bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-lg shadow-black/10">
@@ -670,12 +670,12 @@ const Radar = () => {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="looking-for" className="text-white">Looking For</Label>
+                  <Label htmlFor="looking-for" className="text-white text-sm sm:text-base">Looking For</Label>
                   <Select
                     value={lookingForFilter}
                     onValueChange={setLookingForFilter}
                   >
-                    <SelectTrigger id="looking-for" className="w-full bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30">
+                    <SelectTrigger id="looking-for" className="w-full h-10 sm:h-11 bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 text-sm sm:text-base">
                       <SelectValue placeholder="Select what you're looking for" />
                     </SelectTrigger>
                     <SelectContent className="max-h-80 bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-lg shadow-black/10">
@@ -690,35 +690,35 @@ const Radar = () => {
                 </div>
               </div>
               
-              <div className="flex-1 space-y-4">
-                <div className="p-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-lg shadow-md">
+              <div className="flex-1 space-y-3 sm:space-y-4">
+                <div className="p-3 sm:p-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-lg shadow-md">
                   <h4 className="text-sm font-medium mb-2 text-white">Your Location Status</h4>
                   <div className="flex items-center">
                     <div className={`h-2.5 w-2.5 rounded-full mr-2 shadow-sm ${
                       locationStatus === 'granted' ? 'bg-green-500' : 
                       locationStatus === 'denied' ? 'bg-red-500' : 'bg-amber-500'
                     }`} />
-                    <span className="text-sm text-white/70">
+                    <span className="text-xs sm:text-sm text-white/70">
                       {locationStatus === 'granted' ? 'Location access granted' : 
                        locationStatus === 'denied' ? 'Location access denied' : 'Pending location access'}
                     </span>
                   </div>
                   {coordinates && (
-                    <p className="text-xs text-white/70 mt-2">
+                    <p className="text-xs text-white/70 mt-2 break-all">
                       Current coordinates: {coordinates.lat.toFixed(6)}, {coordinates.lng.toFixed(6)}
                     </p>
                   )}
                 </div>
                 
                 <button 
-                  className="neo-glass-button flex items-center gap-2 py-2 px-4 w-full justify-center"
+                  className="neo-glass-button flex items-center gap-2 py-2 sm:py-3 px-3 sm:px-4 w-full justify-center text-sm sm:text-base"
                   onClick={handleRefreshLocation}
                   disabled={locationStatus !== 'granted' || updateGeoLocationMutation.isPending}
                 >
                   {updateGeoLocationMutation.isPending ? (
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    <Loader2 className="h-4 w-4 mr-1 sm:mr-2 animate-spin" />
                   ) : (
-                    <RefreshCw className="h-4 w-4 mr-2" />
+                    <RefreshCw className="h-4 w-4 mr-1 sm:mr-2" />
                   )}
                   <span>Refresh Location</span>
                 </button>
@@ -728,22 +728,23 @@ const Radar = () => {
         </NeoGlassSection>
         
         {/* Nearby users section */}
-        <NeoGlassSection className="mt-6">
-          <div className="p-4">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold text-white">Nearby Professionals</h2>
+        <NeoGlassSection className="mt-4 sm:mt-6">
+          <div className="p-3 sm:p-4">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-4">
+              <h2 className="text-lg sm:text-xl font-semibold text-white">Nearby Professionals</h2>
               <Button 
                 variant="ghost" 
                 size="sm" 
                 onClick={() => refetchNearby()}
                 disabled={isLoadingNearby}
-                className="bg-white/10 text-white hover:bg-white/20 border border-white/20 backdrop-blur-md shadow-md"
+                className="bg-white/10 text-white hover:bg-white/20 border border-white/20 backdrop-blur-md shadow-md text-xs sm:text-sm w-full sm:w-auto"
               >
                 {isLoadingNearby ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <Loader2 className="h-4 w-4 animate-spin mr-1 sm:mr-0" />
                 ) : (
-                  <RefreshCw className="h-4 w-4" />
+                  <RefreshCw className="h-4 w-4 mr-1 sm:mr-0" />
                 )}
+                <span className="sm:hidden ml-1">Refresh</span>
               </Button>
             </div>
           
@@ -752,15 +753,15 @@ const Radar = () => {
           {locationStatus === 'granted' && (
             <>
               {isLoadingNearby ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   {[...Array(4)].map((_, i) => (
                     <UserCardSkeleton key={i} />
                   ))}
                 </div>
               ) : filteredNearbyUsers && filteredNearbyUsers.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="col-span-2 mb-2">
-                    <p className="text-sm text-white/70">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                  <div className="col-span-1 sm:col-span-2 mb-2">
+                    <p className="text-xs sm:text-sm text-white/70">
                       Showing {filteredNearbyUsers.length} of {nearbyUsersData.length} nearby professionals
                       {(jobTitleFilter || industryFilter || lookingForFilter) && ' with your filters'}
                     </p>
