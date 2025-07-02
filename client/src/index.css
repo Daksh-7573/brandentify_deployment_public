@@ -801,9 +801,17 @@ input.smart-radar-input::placeholder {
 
   body {
     @apply font-sans antialiased bg-[#121212] text-foreground;
-    background-image: url('/assets/interior-background-of-a-cozy-dark-living-room-ai-generated-photo.jpg');
+    background-image: url('/assets/Brandentifier Landing_1751376023002.png');
     background-size: cover;
     background-attachment: fixed;
     background-position: center;
+  }
+
+  /* Responsive background class for platform consistency */
+  .responsive-background {
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    background-attachment: fixed !important;
   }
 }
