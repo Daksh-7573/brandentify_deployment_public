@@ -3,7 +3,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useLocation } from "wouter";
 import Header from "@/components/layout/header";
 import RightSidebar from "@/components/layout/right-sidebar";
-import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
+// Background image now handled by global CSS for consistency
 
 type DashboardLayoutProps = {
   children: ReactNode;
@@ -52,12 +52,7 @@ const DashboardLayout = ({ children, hideRightSidebar = false }: DashboardLayout
   }
 
   return (
-    <div 
-      className="min-h-screen flex flex-col responsive-background"
-      style={{ 
-        backgroundImage: `url(${backgroundImage})`
-      }}
-    >
+    <div className="min-h-screen flex flex-col">
       {/* Glass UI overlay to maintain design consistency */}
       <div className="absolute inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm"></div>
       
