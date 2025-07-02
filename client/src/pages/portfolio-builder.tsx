@@ -30,6 +30,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
+import { ArrowLeft } from "lucide-react";
 
 // Import our portfolio templates
 import MinimalistPro from "@/components/portfolio/templates/minimalist-pro";
@@ -62,7 +63,7 @@ type AuthUser = {
 };
 import { ProfileImage } from "@/components/ui/profile-image";
 import { 
-  Loader2, Eye, ChevronRight, Check, ArrowLeft, Bot, 
+  Loader2, Eye, ChevronRight, Check, Bot, 
   Mail, Linkedin, Instagram, Briefcase, Award, User,
   Code, Github, Terminal
 } from "lucide-react";
@@ -1299,9 +1300,19 @@ export default function PortfolioBuilder() {
       <div className="pt-16 relative z-10">
         <NeoGlassLayout className="mx-3 sm:mx-4 md:mx-6 mt-3">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 gap-4">
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-white">Portfolio Builder</h1>
-              <p className="text-white/70 text-sm sm:text-base">Create a personalized portfolio with Musk AI</p>
+            <div className="flex items-center gap-3">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setLocation('/profile-neo')}
+                className="text-white/70 hover:text-white hover:bg-white/10 p-2"
+              >
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
+              <div>
+                <h1 className="text-2xl sm:text-3xl font-bold text-white">Portfolio Builder</h1>
+                <p className="text-white/70 text-sm sm:text-base">Create a personalized portfolio with Musk AI</p>
+              </div>
             </div>
             {/* Progress indicator */}
             <div className="flex sm:hidden items-center space-x-1 w-full">
