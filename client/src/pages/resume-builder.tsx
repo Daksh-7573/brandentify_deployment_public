@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/use-auth';
 import { NeoGlassLayout, NeoGlassSection } from '@/components/layout/neo-glass-layout';
 import Header from '@/components/layout/header';
+import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { FileText, Upload, Database, ArrowRight, Eye, Edit2, Loader2, AlertCircle } from 'lucide-react';
@@ -206,9 +207,16 @@ export default function ResumeBuilder() {
   const hasExistingResume = shadowResumeData?.resume;
 
   return (
-    <div className="flex h-screen flex-col">
+    <div 
+      className="flex h-screen flex-col responsive-background"
+      style={{ 
+        backgroundImage: `url(${backgroundImage})`
+      }}
+    >
+      {/* Glass UI overlay to maintain design consistency */}
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm"></div>
       <Header />
-      <div className="flex flex-1 overflow-hidden pt-16">
+      <div className="flex flex-1 overflow-hidden pt-16 relative z-10">
         <div className="flex-1 overflow-auto">
           <NeoGlassLayout className="mt-3 mx-3 sm:mx-4 md:mx-6">
             {/* Page Header */}

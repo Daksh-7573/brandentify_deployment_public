@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import DashboardLayout from '@/components/layout/dashboard-layout';
 import MuskButton from '@/components/musk/musk-button';
+import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/use-auth';

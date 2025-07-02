@@ -3,6 +3,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useLocation } from "wouter";
 import Header from "@/components/layout/header";
 import RightSidebar from "@/components/layout/right-sidebar";
+import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
 
 type DashboardLayoutProps = {
   children: ReactNode;
@@ -51,14 +52,22 @@ const DashboardLayout = ({ children, hideRightSidebar = false }: DashboardLayout
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div 
+      className="min-h-screen flex flex-col responsive-background"
+      style={{ 
+        backgroundImage: `url(${backgroundImage})`
+      }}
+    >
+      {/* Glass UI overlay to maintain design consistency */}
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm"></div>
+      
       {/* Top Navigation */}
       <Header />
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col lg:flex-row overflow-hidden pt-16"> {/* Padding-top for fixed header */}
+      <div className="flex-1 flex flex-col lg:flex-row overflow-hidden pt-16 relative z-10"> {/* Padding-top for fixed header */}
         {/* Main Content */}
-        <main className="flex-1 overflow-y-auto bg-gray-50">
+        <main className="flex-1 overflow-y-auto bg-transparent">
           <div className="min-h-screen">
             {children}
           </div>

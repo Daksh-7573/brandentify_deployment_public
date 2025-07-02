@@ -4,6 +4,7 @@ import { Pulse } from "@shared/schema";
 import { useLocation } from "wouter";
 import Header from "@/components/layout/header";
 import "@/styles/mobile-responsive.css";
+import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
 // Removed Sidebar import, using top navigation only
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -1499,9 +1500,17 @@ export default function IndustryPulsePage() {
   };
 
   return (
-    <div className="flex h-screen flex-col">
+    <div 
+      className="flex h-screen flex-col responsive-background"
+      style={{ 
+        backgroundImage: `url(${backgroundImage})`
+      }}
+    >
+      {/* Glass UI overlay to maintain design consistency */}
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm"></div>
+      
       <Header />
-      <div className="flex flex-1 overflow-hidden pt-16"> {/* Added padding-top for fixed header */}
+      <div className="flex flex-1 overflow-hidden pt-16 relative z-10"> {/* Added padding-top for fixed header */}
         <div className="flex-1 overflow-auto w-full">
           <div className="max-w-5xl w-full mx-auto px-2 sm:px-4 md:px-6 lg:px-8 py-2 sm:py-4 md:py-6 lg:py-8 industry-pulse-container">
             <div className="mb-4 sm:mb-6 md:mb-8">

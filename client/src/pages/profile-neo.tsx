@@ -1,6 +1,7 @@
 import { useAuth } from "@/hooks/use-auth";
 import { useLocation } from "wouter";
 import Header from "@/components/layout/header";
+import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
 import { Button } from "@/components/ui/button";
 import WorkExperience from "@/components/profile/work-experience";
 import Education from "@/components/profile/education";
@@ -240,9 +241,17 @@ export default function ProfileNeo() {
   };
   
   return (
-    <div className="flex h-screen flex-col">
+    <div 
+      className="flex h-screen flex-col responsive-background"
+      style={{ 
+        backgroundImage: `url(${backgroundImage})`
+      }}
+    >
+      {/* Glass UI overlay to maintain design consistency */}
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm"></div>
+      
       <Header />
-      <div className="flex flex-1 overflow-hidden pt-16"> {/* Added padding-top for fixed header */}
+      <div className="flex flex-1 overflow-hidden pt-16 relative z-10"> {/* Added padding-top for fixed header */}
         {/* Main content area */}
         <div className="flex-1 overflow-auto">
           <NeoGlassLayout className="mt-3 mx-3 sm:mx-4 md:mx-6"> {/* Matching Industry Pulse layout with responsive margins */}

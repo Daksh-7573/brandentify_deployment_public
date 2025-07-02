@@ -1,6 +1,7 @@
 import React from 'react';
 import { ChatProvider } from '@/contexts/ChatContext';
 import Chat from '@/components/messaging/Chat';
+import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
 import { Loader2, MessageSquare, Home, Search, MapPin, Trophy, Flag, Shield, Zap, MessageCircle, Settings, BellRing, User } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/use-auth';
@@ -66,7 +67,16 @@ const ChatPage: React.FC = () => {
   }
 
   return (
-    <div className="neo-spotify-container">
+    <div 
+      className="neo-spotify-container responsive-background"
+      style={{ 
+        backgroundImage: `url(${backgroundImage})`
+      }}
+    >
+      {/* Glass UI overlay to maintain design consistency */}
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm"></div>
+      
+      <div className="relative z-10">
       {/* Top Navigation Bar */}
       <Header />
       
@@ -87,6 +97,7 @@ const ChatPage: React.FC = () => {
             </div>
           </NeoGlassLayout>
         </div>
+      </div>
       </div>
     </div>
   );
