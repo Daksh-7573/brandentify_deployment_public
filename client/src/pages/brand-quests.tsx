@@ -48,24 +48,24 @@ export default function BrandQuestsPage() {
   return (
     <>
       <Header />
-      <NeoGlassLayout className="mt-3 mx-6">
+      <NeoGlassLayout className="mt-3 mx-3 sm:mx-6">
         <div className="flex-1 max-w-4xl">
-          <div className="mb-6 flex justify-between items-center">
+          <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0">
             <div>
-              <h1 className="text-3xl font-bold tracking-tight text-white">Brand Quests</h1>
-              <p className="text-white/80 mt-1">
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">Brand Quests</h1>
+              <p className="text-white/80 mt-1 text-sm sm:text-base">
                 Complete quests to earn XP and badges for your professional growth
               </p>
             </div>
           </div>
 
-          <NeoGlassSection className="mb-6">
-            <div className="mb-4">
-              <h2 className="text-xl font-semibold text-white">Your Brand Growth</h2>
-              <p className="text-white/70 text-sm">Track your professional development progress</p>
+          <NeoGlassSection className="mb-4 sm:mb-6">
+            <div className="mb-3 sm:mb-4">
+              <h2 className="text-lg sm:text-xl font-semibold text-white">Your Brand Growth</h2>
+              <p className="text-white/70 text-xs sm:text-sm">Track your professional development progress</p>
             </div>
             {isLoadingXp ? (
-              <Skeleton className="w-full h-[50px] bg-gray-800/60" />
+              <Skeleton className="w-full h-[40px] sm:h-[50px] bg-gray-800/60" />
             ) : userXp ? (
               <XpProgressBar 
                 balance={userXp.balance || 0}
@@ -73,15 +73,15 @@ export default function BrandQuestsPage() {
                 lifetimeEarned={userXp.lifetimeEarned || 0}
               />
             ) : (
-              <div className="text-center py-4 text-white/60">
+              <div className="text-center py-3 sm:py-4 text-white/60 text-sm">
                 No XP data available
               </div>
             )}
           </NeoGlassSection>
           
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
             {/* Main content - Quests */}
-            <div className="lg:col-span-2">
+            <div className="lg:col-span-2 order-2 lg:order-1">
               {/* Quests Panel */}
               <NeoGlassSection>
                 <QuestPanel userId={userId} />
@@ -89,7 +89,7 @@ export default function BrandQuestsPage() {
             </div>
             
             {/* Sidebar - Badges */}
-            <div>
+            <div className="order-1 lg:order-2">
               <NeoGlassSection>
                 <BadgeDisplay userId={userId} />
               </NeoGlassSection>

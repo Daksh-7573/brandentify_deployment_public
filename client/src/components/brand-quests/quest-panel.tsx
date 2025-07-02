@@ -122,47 +122,50 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
 
   return (
     <div className={cn("w-full", className)}>
-      <div className="mb-4">
-        <h2 className="text-xl font-semibold text-white">Brand Quests</h2>
-        <p className="text-white/70 text-sm">Complete quests to increase your influence</p>
+      <div className="mb-3 sm:mb-4">
+        <h2 className="text-lg sm:text-xl font-semibold text-white">Brand Quests</h2>
+        <p className="text-white/70 text-xs sm:text-sm">Complete quests to increase your influence</p>
       </div>
       
       {isLoadingWeekly ? (
-        <div className="space-y-3">
-          <Skeleton className="h-24 w-full rounded-md bg-gray-800/60" />
-          <Skeleton className="h-24 w-full rounded-md bg-gray-800/60" />
-          <Skeleton className="h-24 w-full rounded-md bg-gray-800/60" />
+        <div className="space-y-2 sm:space-y-3">
+          <Skeleton className="h-20 sm:h-24 w-full rounded-md bg-gray-800/60" />
+          <Skeleton className="h-20 sm:h-24 w-full rounded-md bg-gray-800/60" />
+          <Skeleton className="h-20 sm:h-24 w-full rounded-md bg-gray-800/60" />
         </div>
       ) : (
         <Tabs defaultValue="weekly" value={tabValue} onValueChange={setTabValue}>
-          <TabsList className="grid grid-cols-3 mb-4 dark-tabs-list border border-white/5">
-            <TabsTrigger value="weekly" className="dark-tabs-trigger">
-              Weekly ({weeklyQuests?.length || 0})
+          <TabsList className="grid grid-cols-3 mb-3 sm:mb-4 dark-tabs-list border border-white/5 w-full h-auto">
+            <TabsTrigger value="weekly" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-1 sm:px-2 text-xs sm:text-sm">
+              <span className="text-center">Weekly</span>
+              <span className="text-xs">({weeklyQuests?.length || 0})</span>
             </TabsTrigger>
-            <TabsTrigger value="completed" className="dark-tabs-trigger">
-              Completed ({completedQuests.length})
+            <TabsTrigger value="completed" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-1 sm:px-2 text-xs sm:text-sm">
+              <span className="text-center">Completed</span>
+              <span className="text-xs">({completedQuests.length})</span>
             </TabsTrigger>
-            <TabsTrigger value="expired" className="dark-tabs-trigger">
-              Missed ({expiredQuests.length})
+            <TabsTrigger value="expired" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-1 sm:px-2 text-xs sm:text-sm">
+              <span className="text-center">Missed</span>
+              <span className="text-xs">({expiredQuests.length})</span>
             </TabsTrigger>
           </TabsList>
           
-          <TabsContent value="weekly" className="space-y-4">
-            <div className="text-sm text-white/70 mb-2">
+          <TabsContent value="weekly" className="space-y-3 sm:space-y-4">
+            <div className="text-xs sm:text-sm text-white/70 mb-2">
               Week {currentWeek}, {currentYear} - Weekly quests refresh every Monday
             </div>
             {renderQuestsList(weeklyQuests, isLoadingWeekly)}
           </TabsContent>
           
-          <TabsContent value="expired" className="space-y-4">
-            <div className="text-sm text-white/70 mb-2">
+          <TabsContent value="expired" className="space-y-3 sm:space-y-4">
+            <div className="text-xs sm:text-sm text-white/70 mb-2">
               Quests that expired without completion - missed XP opportunities
             </div>
             {renderQuestsList(expiredQuests, isLoadingAll)}
           </TabsContent>
           
-          <TabsContent value="completed" className="space-y-4">
-            <div className="text-sm text-white/70 mb-2">
+          <TabsContent value="completed" className="space-y-3 sm:space-y-4">
+            <div className="text-xs sm:text-sm text-white/70 mb-2">
               Completed quests that earned you XP rewards
             </div>
             {renderQuestsList(completedQuests, isLoadingAll)}
