@@ -91,9 +91,9 @@ const Chat: React.FC<{ userId: number }> = ({ userId }) => {
   const otherUser = currentConversation?.participants?.find(p => p.userId !== userId);
 
   return (
-    <div className="flex flex-col md:flex-row gap-4 h-full">
+    <div className="flex flex-col md:flex-row gap-2 sm:gap-4 h-full">
       {/* Left sidebar - Hidden on mobile when a conversation is selected */}
-      <div className={`${currentConversation ? 'hidden md:block' : 'block'} md:w-1/4 lg:w-1/5 xl:w-1/6 h-full`}>
+      <div className={`${currentConversation ? 'hidden md:block' : 'block'} md:w-1/3 lg:w-1/4 xl:w-1/5 h-full`}>
         <div className="neo-spotify-sidebar h-full">
           <div className="sidebar-top">
             <div className="user-profile">
@@ -142,12 +142,12 @@ const Chat: React.FC<{ userId: number }> = ({ userId }) => {
               {/* Message header */}
               <div className="neo-spotify-header">
                 <div className="flex items-center">
-                  <div className="header-nav mr-4 md:hidden">
+                  <div className="header-nav mr-2 sm:mr-4 md:hidden">
                     <button 
-                      className="header-nav-btn"
+                      className="header-nav-btn p-2"
                       onClick={() => setCurrentConversation(null)}
                     >
-                      <ChevronLeft className="h-4 w-4" />
+                      <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5" />
                     </button>
                   </div>
                   
@@ -161,15 +161,15 @@ const Chat: React.FC<{ userId: number }> = ({ userId }) => {
                     )}
                   </div>
                   
-                  <div className="ml-3">
-                    <div className="font-semibold text-sm">
+                  <div className="ml-2 sm:ml-3">
+                    <div className="font-semibold text-sm sm:text-base">
                       {otherUser?.userName || 'Conversation'}
                     </div>
                   </div>
                 </div>
                 
                 <div className="flex items-center">
-                  <button className="sidebar-action-btn ml-3">
+                  <button className="sidebar-action-btn ml-2 sm:ml-3 p-2">
                     <Users className="w-4 h-4" />
                   </button>
                 </div>
@@ -181,23 +181,23 @@ const Chat: React.FC<{ userId: number }> = ({ userId }) => {
               </div>
               
               {/* Message input */}
-              <div className="p-4 border-t border-spotify-glass-border backdrop-filter backdrop-blur-[15px] bg-spotify-glass-bg">
+              <div className="p-3 sm:p-4 border-t border-spotify-glass-border backdrop-filter backdrop-blur-[15px] bg-spotify-glass-bg">
                 <MessageInput />
               </div>
             </>
           ) : (
-            <div className="neo-spotify-content flex items-center justify-center text-center">
-              <div className="max-w-md">
-                <div className="w-20 h-20 mx-auto rounded-full bg-spotify-glass-highlight flex items-center justify-center mb-6">
-                  <MessageSquare className="h-10 w-10 text-spotify-white" />
+            <div className="neo-spotify-content flex items-center justify-center text-center p-4 sm:p-6">
+              <div className="max-w-sm sm:max-w-md">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-full bg-spotify-glass-highlight flex items-center justify-center mb-4 sm:mb-6">
+                  <MessageSquare className="h-8 w-8 sm:h-10 sm:w-10 text-spotify-white" />
                 </div>
-                <h3 className="text-2xl font-bold mb-2 text-spotify-white">Connect & Collaborate</h3>
-                <p className="text-spotify-light-gray mb-8 text-lg">
+                <h3 className="text-xl sm:text-2xl font-bold mb-2 text-spotify-white">Connect & Collaborate</h3>
+                <p className="text-spotify-light-gray mb-6 sm:mb-8 text-base sm:text-lg">
                   Start meaningful conversations with professionals in your network
                 </p>
                 <button 
                   onClick={() => setIsNewConversationModalOpen(true)}
-                  className="px-6 py-3 rounded-full bg-spotify-white text-spotify-black hover:scale-105 transition-transform font-medium"
+                  className="px-4 sm:px-6 py-2 sm:py-3 rounded-full bg-spotify-white text-spotify-black hover:scale-105 transition-transform font-medium text-sm sm:text-base"
                 >
                   Find professionals
                   <ChevronRight className="ml-1 h-4 w-4 inline-block" />
