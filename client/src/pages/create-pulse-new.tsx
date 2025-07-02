@@ -596,8 +596,8 @@ export default function CreatePulsePage() {
                                 </option>
                               ))}
                             </select>
-                            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                              <svg className="h-4 w-4 text-white/70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:pr-3 pointer-events-none">
+                              <svg className="h-3 w-3 sm:h-4 sm:w-4 text-white/70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                                 <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
                               </svg>
                             </div>
@@ -612,13 +612,13 @@ export default function CreatePulsePage() {
               {/* Poll Options */}
               {pulseType === 'poll' && (
                 <NeoGlassSection>
-                  <div className="space-y-4">
+                  <div className="space-y-3 sm:space-y-4">
                       <div className="flex items-center justify-between">
-                        <Label className="text-white">Poll Options</Label>
+                        <Label className="text-white text-sm sm:text-base">Poll Options</Label>
                         <button
                           type="button"
                           onClick={addPollOption}
-                          className="neo-glass-button"
+                          className="neo-glass-button text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-2"
                           disabled={pollOptions.length >= 5}
                         >
                           Add Option
@@ -631,15 +631,15 @@ export default function CreatePulsePage() {
                             placeholder={`Option ${index + 1}`}
                             value={option}
                             onChange={(e) => updatePollOption(index, e.target.value)}
-                            className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20"
+                            className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 h-9 sm:h-10 text-sm sm:text-base"
                           />
                           {pollOptions.length > 2 && (
                             <button
                               type="button"
                               onClick={() => removePollOption(index)}
-                              className="neo-glass-button neo-glass-icon-button"
+                              className="neo-glass-button neo-glass-icon-button min-w-[32px] h-8 sm:min-w-[36px] sm:h-9"
                             >
-                              <X className="h-4 w-4" />
+                              <X className="h-3 w-3 sm:h-4 sm:w-4" />
                             </button>
                           )}
                         </div>
@@ -652,28 +652,28 @@ export default function CreatePulsePage() {
               {pulseType === 'project' && (
                 <NeoGlassSection>
                   <Tabs defaultValue="details" value={activeProjectTab} onValueChange={setActiveProjectTab}>
-                    <TabsList className="mb-0 dark-tabs-list">
+                    <TabsList className="mb-0 dark-tabs-list grid grid-cols-2 sm:grid-cols-4 w-full">
                       <TabsTrigger 
                         value="details" 
-                        className="dark-tabs-trigger"
+                        className="dark-tabs-trigger text-xs sm:text-sm"
                       >
-                        Project Details
+                        Details
                       </TabsTrigger>
                       <TabsTrigger 
                         value="media" 
-                        className="dark-tabs-trigger"
+                        className="dark-tabs-trigger text-xs sm:text-sm"
                       >
                         Media
                       </TabsTrigger>
                       <TabsTrigger 
                         value="team" 
-                        className="dark-tabs-trigger"
+                        className="dark-tabs-trigger text-xs sm:text-sm"
                       >
-                        Team Members
+                        Team
                       </TabsTrigger>
                       <TabsTrigger 
                         value="client" 
-                        className="dark-tabs-trigger"
+                        className="dark-tabs-trigger text-xs sm:text-sm"
                       >
                         Client
                       </TabsTrigger>
@@ -687,38 +687,38 @@ export default function CreatePulsePage() {
                 <NeoGlassSection>
                   <Tabs defaultValue="details" value={activeProjectTab} onValueChange={setActiveProjectTab}>
                         
-                        <TabsContent value="details" className="space-y-6 pt-6">
-                          <div className="space-y-6">
+                        <TabsContent value="details" className="space-y-4 sm:space-y-6 pt-4 sm:pt-6">
+                          <div className="space-y-4 sm:space-y-6">
                             {/* Project Title */}
-                            <div className="space-y-2">
-                              <Label htmlFor="project-title" className="text-white">Project Title*</Label>
+                            <div className="space-y-1 sm:space-y-2">
+                              <Label htmlFor="project-title" className="text-white text-sm sm:text-base">Project Title*</Label>
                               <Input
                                 id="project-title"
                                 placeholder="Enter your project title"
                                 value={pulseTitle}
                                 onChange={(e) => setPulseTitle(e.target.value)}
-                                className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20"
+                                className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 h-9 sm:h-10 text-sm sm:text-base"
                                 required
                               />
                             </div>
                             
                             {/* Project Description */}
-                            <div className="space-y-2">
-                              <Label htmlFor="project-description" className="text-white">Project Description*</Label>
+                            <div className="space-y-1 sm:space-y-2">
+                              <Label htmlFor="project-description" className="text-white text-sm sm:text-base">Project Description*</Label>
                               <Textarea
                                 id="project-description"
                                 placeholder="Describe your project, challenges faced, and solutions implemented"
                                 value={pulseContent}
                                 onChange={(e) => setPulseContent(e.target.value)}
-                                className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 min-h-[120px]"
+                                className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 min-h-[80px] sm:min-h-[120px] text-sm sm:text-base resize-y"
                                 required
                               />
                             </div>
                             
                             {/* Industry Selection */}
-                            <div className="space-y-2">
-                              <Label htmlFor="project-industry" className="text-white flex items-center gap-2">
-                                <Briefcase className="h-4 w-4" />
+                            <div className="space-y-1 sm:space-y-2">
+                              <Label htmlFor="project-industry" className="text-white flex items-center gap-2 text-sm sm:text-base">
+                                <Briefcase className="h-3 w-3 sm:h-4 sm:w-4" />
                                 Industry*
                               </Label>
                               <div className="relative">
@@ -731,7 +731,7 @@ export default function CreatePulsePage() {
                                       setPulseCategory("");
                                     }
                                   }}
-                                  className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 px-3 pr-10 rounded-md border appearance-none cursor-pointer focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none text-sm leading-relaxed"
+                                  className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-10 sm:h-12 px-2 sm:px-3 pr-8 sm:pr-10 rounded-md border appearance-none cursor-pointer focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none text-sm leading-relaxed"
                                   required
                                 >
                                   <option value="">Select project industry</option>
@@ -741,8 +741,8 @@ export default function CreatePulsePage() {
                                     </option>
                                   ))}
                                 </select>
-                                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                                  <svg className="h-4 w-4 text-white/70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:pr-3 pointer-events-none">
+                                  <svg className="h-3 w-3 sm:h-4 sm:w-4 text-white/70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                                     <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
                                   </svg>
                                 </div>
@@ -751,9 +751,9 @@ export default function CreatePulsePage() {
                             
                             {/* Domain Specialty */}
                             {pulseIndustry && INDUSTRY_DOMAINS[pulseIndustry] && (
-                              <div className="space-y-2">
-                                <Label htmlFor="project-domain" className="text-white flex items-center gap-2">
-                                  <Award className="h-4 w-4" />
+                              <div className="space-y-1 sm:space-y-2">
+                                <Label htmlFor="project-domain" className="text-white flex items-center gap-2 text-sm sm:text-base">
+                                  <Award className="h-3 w-3 sm:h-4 sm:w-4" />
                                   Domain Specialty
                                 </Label>
                                 <div className="relative">
@@ -761,7 +761,7 @@ export default function CreatePulsePage() {
                                     id="project-domain"
                                     value={pulseCategory}
                                     onChange={(e) => setPulseCategory(e.target.value)}
-                                    className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 px-3 pr-10 rounded-md border appearance-none cursor-pointer focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none text-sm leading-relaxed"
+                                    className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-10 sm:h-12 px-2 sm:px-3 pr-8 sm:pr-10 rounded-md border appearance-none cursor-pointer focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none text-sm leading-relaxed"
                                   >
                                     <option value="">Select domain specialty</option>
                                     {INDUSTRY_DOMAINS[pulseIndustry].map((dom) => (
@@ -770,8 +770,8 @@ export default function CreatePulsePage() {
                                       </option>
                                     ))}
                                   </select>
-                                  <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                                    <svg className="h-4 w-4 text-white/70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                  <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:pr-3 pointer-events-none">
+                                    <svg className="h-3 w-3 sm:h-4 sm:w-4 text-white/70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                                       <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
                                     </svg>
                                   </div>
@@ -780,9 +780,9 @@ export default function CreatePulsePage() {
                             )}
                             
                             {/* Project URL */}
-                            <div className="space-y-2">
-                              <Label htmlFor="project-url" className="text-white flex items-center gap-2">
-                                <ExternalLink className="h-4 w-4" />
+                            <div className="space-y-1 sm:space-y-2">
+                              <Label htmlFor="project-url" className="text-white flex items-center gap-2 text-sm sm:text-base">
+                                <ExternalLink className="h-3 w-3 sm:h-4 sm:w-4" />
                                 Project URL
                               </Label>
                               <Input
@@ -791,39 +791,39 @@ export default function CreatePulsePage() {
                                 type="url"
                                 value={projectUrl}
                                 onChange={(e) => setProjectUrl(e.target.value)}
-                                className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20"
+                                className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 h-9 sm:h-10 text-sm sm:text-base"
                               />
                               <p className="text-xs text-gray-400">Link to live project or repository</p>
                             </div>
                           </div>
                         </TabsContent>
                         
-                        <TabsContent value="media" className="space-y-6 pt-6">
-                          <div className="space-y-6">
-                            <div className="space-y-2">
-                              <Label className="text-white">Project Media</Label>
+                        <TabsContent value="media" className="space-y-4 sm:space-y-6 pt-4 sm:pt-6">
+                          <div className="space-y-4 sm:space-y-6">
+                            <div className="space-y-1 sm:space-y-2">
+                              <Label className="text-white text-sm sm:text-base">Project Media</Label>
                               <p className="text-xs text-gray-400">Upload images and videos to showcase your project</p>
                             </div>
                             
                             {/* Media Type Selection */}
-                            <div className="space-y-4">
-                              <div className="space-y-2">
-                                <Label className="text-white">Media Type</Label>
-                                <div className="flex gap-4">
+                            <div className="space-y-3 sm:space-y-4">
+                              <div className="space-y-1 sm:space-y-2">
+                                <Label className="text-white text-sm sm:text-base">Media Type</Label>
+                                <div className="flex gap-2 sm:gap-4">
                                   <button
                                     type="button"
                                     onClick={() => setMediaType('image')}
-                                    className={`neo-glass-button ${mediaType === 'image' ? 'primary' : 'secondary'}`}
+                                    className={`neo-glass-button ${mediaType === 'image' ? 'primary' : 'secondary'} text-xs sm:text-sm px-3 sm:px-4 py-2`}
                                   >
-                                    <Image className="mr-2 h-4 w-4" />
+                                    <Image className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                                     Images
                                   </button>
                                   <button
                                     type="button"
                                     onClick={() => setMediaType('video')}
-                                    className={`neo-glass-button ${mediaType === 'video' ? 'primary' : 'secondary'}`}
+                                    className={`neo-glass-button ${mediaType === 'video' ? 'primary' : 'secondary'} text-xs sm:text-sm px-3 sm:px-4 py-2`}
                                   >
-                                    <Video className="mr-2 h-4 w-4" />
+                                    <Video className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                                     Video
                                   </button>
                                 </div>
@@ -1002,16 +1002,16 @@ export default function CreatePulsePage() {
               )}
 
               <NeoGlassSection>
-                <div className="pt-4">
+                <div className="pt-3 sm:pt-4">
                   <button 
                     type="button"
                     onClick={handleCreatePulse}
                     disabled={createPulseMutation.isPending}
-                    className="neo-glass-button primary w-full md:w-auto flex items-center justify-center gap-2"
+                    className="neo-glass-button primary w-full sm:w-auto flex items-center justify-center gap-2 h-10 sm:h-12 text-sm sm:text-base px-4 sm:px-6"
                   >
                     {createPulseMutation.isPending ? (
                       <>
-                        <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></div>
+                        <div className="animate-spin h-3 w-3 sm:h-4 sm:w-4 border-2 border-white border-t-transparent rounded-full"></div>
                         <span>Publishing...</span>
                       </>
                     ) : (
