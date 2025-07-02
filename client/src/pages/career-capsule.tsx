@@ -295,12 +295,12 @@ export default function CareerCapsulePage() {
 
   return (
     <PageLayout title="Career Capsule">
-      <div className="max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-white">Career Capsule</h1>
+      <div className="max-w-5xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 gap-3 sm:gap-0">
+          <h1 className="text-2xl sm:text-3xl font-bold text-white">Career Capsule</h1>
           <button 
             onClick={() => setShowCreateDialog(true)}
-            className="neo-glass-button flex items-center gap-2 py-2 px-4"
+            className="neo-glass-button flex items-center gap-2 py-2 px-3 sm:px-4 text-sm sm:text-base w-full sm:w-auto justify-center"
           >
             <span>Create New Goal</span>
           </button>
@@ -312,21 +312,16 @@ export default function CareerCapsulePage() {
             <p className="text-gray-300">Loading career goals...</p>
           </NeoGlassSection>
         ) : goals ? (
-          <div className="career-capsule-grid" style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', 
-            gap: '24px',
-            width: '100%'
-          }}>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 w-full">
             {/* Display all goals as an array - our backend now always returns an array */}
             {Array.isArray(goals) && goals.length > 0 ? (
               goals.map((goal: CareerGoal) => (
-                <NeoGlassSection key={goal.id} className="hover:transform hover:translate-y-[-5px] transition-all duration-300">
-                  <div className="p-4">
-                    <div className="flex justify-between items-start mb-3">
-                      <h3 className="text-xl font-semibold text-white">{goal.title}</h3>
+                <NeoGlassSection key={goal.id} className="hover:transform hover:translate-y-[-2px] sm:hover:translate-y-[-5px] transition-all duration-300">
+                  <div className="p-3 sm:p-4">
+                    <div className="flex flex-col sm:flex-row justify-between items-start mb-3 gap-2 sm:gap-0">
+                      <h3 className="text-lg sm:text-xl font-semibold text-white leading-tight">{goal.title}</h3>
                       <Badge 
-                        className={`${getStatusColor(goal.status || "not_started")} neo-glass-badge`}
+                        className={`${getStatusColor(goal.status || "not_started")} neo-glass-badge text-xs shrink-0`}
                       >
                         {goal.status === "in_progress" ? "In Progress" : 
                          goal.status === "completed" ? "Completed" : 
@@ -335,27 +330,27 @@ export default function CareerCapsulePage() {
                     </div>
                     <div className="text-gray-300 mb-3">
                       <div className="flex flex-col gap-1 mt-1">
-                        <span className="text-sm">{getGoalTypeText(goal.goalType as GoalType)}</span>
-                        <span className="text-sm">Target: {formatDate(String(goal.targetDate || ""))}</span>
+                        <span className="text-xs sm:text-sm">{getGoalTypeText(goal.goalType as GoalType)}</span>
+                        <span className="text-xs sm:text-sm">Target: {formatDate(String(goal.targetDate || ""))}</span>
                       </div>
                     </div>
                     <div className="mb-3">
                       <div className="relative">
-                        <div className="w-full bg-white/10 rounded-full h-2 backdrop-blur-sm border border-white/20">
+                        <div className="w-full bg-white/10 rounded-full h-1.5 sm:h-2 backdrop-blur-sm border border-white/20">
                           <div 
-                            className="bg-gradient-to-r from-blue-400 to-purple-500 h-2 rounded-full transition-all duration-500 shadow-lg shadow-blue-500/20"
+                            className="bg-gradient-to-r from-blue-400 to-purple-500 h-1.5 sm:h-2 rounded-full transition-all duration-500 shadow-lg shadow-blue-500/20"
                             style={{ width: `${goal.overallProgress || 0}%` }}
                           ></div>
                         </div>
-                        <span className="text-xs text-gray-300 mt-2 block font-medium">
+                        <span className="text-xs text-gray-300 mt-1 sm:mt-2 block font-medium">
                           {goal.overallProgress || 0}% complete
                         </span>
                       </div>
                     </div>
-                    <p className="line-clamp-2 text-sm text-gray-300 mb-4">{goal.description || "No description provided"}</p>
-                    <div className="pt-3 border-t border-white/10">
+                    <p className="line-clamp-2 text-xs sm:text-sm text-gray-300 mb-3 sm:mb-4">{goal.description || "No description provided"}</p>
+                    <div className="pt-2 sm:pt-3 border-t border-white/10">
                       <button 
-                        className="neo-glass-button w-full py-2.5 px-4 text-sm font-medium text-white transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-blue-500/20"
+                        className="neo-glass-button w-full py-2 sm:py-2.5 px-3 sm:px-4 text-xs sm:text-sm font-medium text-white transition-all duration-300 hover:scale-[1.01] sm:hover:scale-[1.02] hover:shadow-lg hover:shadow-blue-500/20"
                         onClick={() => handleViewDetails(goal.id)}
                       >
                         <span>View Details</span>
@@ -365,20 +360,20 @@ export default function CareerCapsulePage() {
                 </NeoGlassSection>
               ))
             ) : (
-              <div className="col-span-full text-center py-8">
-                <p className="text-gray-300">No career goals found. Create your first career goal to get started.</p>
+              <div className="col-span-full text-center py-6 sm:py-8">
+                <p className="text-gray-300 text-sm sm:text-base">No career goals found. Create your first career goal to get started.</p>
               </div>
             )}
           </div>
         ) : (
-          <NeoGlassSection className="text-center space-y-4 py-16">
-            <h2 className="text-xl font-semibold text-white">No career goals yet</h2>
-            <p className="text-gray-300 max-w-md mx-auto">
+          <NeoGlassSection className="text-center space-y-3 sm:space-y-4 py-12 sm:py-16">
+            <h2 className="text-lg sm:text-xl font-semibold text-white">No career goals yet</h2>
+            <p className="text-gray-300 max-w-md mx-auto text-sm sm:text-base px-4 sm:px-0">
               Set 1-5 year career goals and get AI-generated milestones to help you achieve them.
               Track your progress and stay focused on your career development journey.
             </p>
             <button 
-              className="neo-glass-button flex items-center gap-2 py-2 px-4 mt-6"
+              className="neo-glass-button flex items-center gap-2 py-2 px-3 sm:px-4 mt-4 sm:mt-6 text-sm sm:text-base"
               onClick={() => setShowCreateDialog(true)}
             >
               <span>Get Started</span>
@@ -389,16 +384,16 @@ export default function CareerCapsulePage() {
 
       {/* Dialog for Create Goal */}
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-        <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto neo-glass-card">
+        <DialogContent className="sm:max-w-[500px] max-w-[95vw] max-h-[90vh] overflow-y-auto neo-glass-card mx-3 sm:mx-auto">
           <DialogHeader>
-            <DialogTitle className="text-white">Create New Career Goal</DialogTitle>
-            <DialogDescription className="text-gray-300">
+            <DialogTitle className="text-white text-lg sm:text-xl">Create New Career Goal</DialogTitle>
+            <DialogDescription className="text-gray-300 text-sm sm:text-base">
               Set your career goals with a 1-5 year timeframe and get AI-generated milestones.
             </DialogDescription>
           </DialogHeader>
-          <form className="flex flex-col py-4 space-y-4" onSubmit={handleSubmit}>
-            <div className="space-y-2">
-              <label htmlFor="goal-title" className="text-sm font-medium text-white">
+          <form className="flex flex-col py-3 sm:py-4 space-y-3 sm:space-y-4" onSubmit={handleSubmit}>
+            <div className="space-y-1 sm:space-y-2">
+              <label htmlFor="goal-title" className="text-xs sm:text-sm font-medium text-white">
                 Goal Title
               </label>
               <input
@@ -406,7 +401,7 @@ export default function CareerCapsulePage() {
                 value={goalTitle}
                 onChange={(e) => setGoalTitle(e.target.value)}
                 placeholder="e.g. Become a Product Manager"
-                className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-10 px-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
+                className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-9 sm:h-10 px-2 sm:px-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none text-sm sm:text-base"
               />
             </div>
             
