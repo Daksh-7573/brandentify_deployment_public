@@ -66,14 +66,14 @@ const ChatPage: React.FC = () => {
   }
 
   return (
-    <div className="neo-spotify-container min-h-screen">
+    <div className="neo-spotify-container">
       {/* Top Navigation Bar */}
       <Header />
       
-      {/* Main Content Area with proper height management */}
-      <div className="flex flex-col h-screen pt-20">
-        <div className="flex-1 overflow-hidden px-3 sm:px-4 md:px-6">
-          <NeoGlassLayout className="h-full mt-3 sm:mt-4">
+      {/* Main Content Area with proper viewport height */}
+      <div className="flex flex-col min-h-screen pt-20">
+        <div className="flex-1 px-3 sm:px-4 md:px-6 pb-4">
+          <NeoGlassLayout className="mt-3 sm:mt-4 h-[calc(100vh-6rem)]">
             <div className="flex flex-col h-full max-w-7xl mx-auto">
               {/* Page Heading - Fixed height */}
               <div className="flex-shrink-0 p-3 sm:p-4 md:p-6 border-b border-white/10">
@@ -82,7 +82,7 @@ const ChatPage: React.FC = () => {
               </div>
               
               {/* Chat Area - Flexible height */}
-              <div className="flex-1 overflow-hidden">
+              <div className="flex-1 overflow-hidden min-h-0">
                 <ChatProvider userId={userId}>
                   <Chat userId={userId} />
                 </ChatProvider>

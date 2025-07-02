@@ -91,9 +91,9 @@ const Chat: React.FC<{ userId: number }> = ({ userId }) => {
   const otherUser = currentConversation?.participants?.find(p => p.userId !== userId);
 
   return (
-    <div className="flex flex-col md:flex-row gap-2 sm:gap-4 h-full overflow-hidden">
+    <div className="flex flex-col md:flex-row gap-2 sm:gap-4 h-full min-h-0">
       {/* Left sidebar - Hidden on mobile when a conversation is selected */}
-      <div className={`${currentConversation ? 'hidden md:block' : 'block'} md:w-1/3 lg:w-1/4 xl:w-1/5 h-full flex-shrink-0`}>
+      <div className={`${currentConversation ? 'hidden md:block' : 'block'} md:w-1/3 lg:w-1/4 xl:w-1/5 h-full flex-shrink-0 min-h-0`}>
         <div className="neo-spotify-sidebar h-full overflow-hidden flex flex-col">
           <div className="sidebar-top flex-shrink-0">
             <div className="user-profile">
@@ -135,8 +135,8 @@ const Chat: React.FC<{ userId: number }> = ({ userId }) => {
       </div>
       
       {/* Main chat area - Full width on mobile when a conversation is selected */}
-      <div className={`${currentConversation ? 'block' : 'hidden md:block'} flex-1 h-full overflow-hidden`}>
-        <div className="neo-spotify-main h-full flex flex-col">
+      <div className={`${currentConversation ? 'block' : 'hidden md:block'} flex-1 h-full min-h-0`}>
+        <div className="neo-spotify-main h-full flex flex-col overflow-hidden">
           {currentConversation ? (
             <>
               {/* Message header - Fixed height */}
@@ -176,7 +176,7 @@ const Chat: React.FC<{ userId: number }> = ({ userId }) => {
               </div>
               
               {/* Message content - Flexible height */}
-              <div className="flex-1 overflow-hidden" ref={scrollRef}>
+              <div className="flex-1 min-h-0 overflow-hidden" ref={scrollRef}>
                 <div className="neo-spotify-content h-full overflow-y-auto">
                   <MessageList />
                 </div>
