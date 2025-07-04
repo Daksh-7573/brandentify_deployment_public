@@ -438,7 +438,7 @@ export default function CreatePulsePage() {
     <div className="min-h-screen bg-[url('/bg-dark-room.jpg')] bg-cover bg-center">
       <div className="min-h-screen bg-black/50 backdrop-blur-sm">
         <Header />
-        <div className="pt-16 sm:pt-20 pb-4 px-3 sm:px-4 overflow-y-auto neo-glass-scroll-container" style={{ height: 'calc(100vh - 4rem)' }}>
+        <div className="pt-16 sm:pt-20 pb-8 sm:pb-12 px-3 sm:px-4 min-h-screen overflow-y-auto neo-glass-scroll-container">
           <div className="container mx-auto max-w-4xl">
             <div className="flex items-center mb-4 sm:mb-6">
               <Link to="/industry-pulse" className="text-white hover:text-white/80 flex items-center text-sm sm:text-base">
@@ -1001,7 +1001,7 @@ export default function CreatePulsePage() {
                 </NeoGlassSection>
               )}
 
-              <NeoGlassSection>
+              <NeoGlassSection className="mb-8 sm:mb-12">
                 <div className="pt-3 sm:pt-4">
                   <button 
                     type="button"

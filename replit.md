@@ -128,6 +128,20 @@ Brandentifier is a comprehensive career development platform that combines AI-dr
 
 ## Recent Changes
 
+### Background Image & Page Layout Enhancement COMPLETED
+- **Date**: July 4, 2025
+- **Status**: Global Background Image Applied & Create Pulse Page Layout Fixed
+- **Problem Solved**: User reported white background instead of Brandentifier landing image, and Create Pulse page cutting off at bottom
+- **Technical Solution**: 
+  - Fixed image path resolution by copying `Brandentifier Landing_1751376023002.png` to public directory
+  - Updated global CSS body styling with correct image reference: `url('/Brandentifier Landing_1751376023002.png')`
+  - Applied background-size: cover, background-attachment: fixed, background-position: center for responsive display
+  - Fixed Create Pulse page layout by removing fixed height container (`height: calc(100vh - 4rem)`) and replacing with `min-h-screen`
+  - Enhanced bottom spacing with increased padding (`pb-8 sm:pb-12`) and added bottom margin to publish button section (`mb-8 sm:mb-12`)
+  - Maintained all glass UI overlay effects and responsive design across all platform pages
+- **Result**: Consistent Brandentifier landing background visible across all platform pages with proper page scrolling and no content cutoff
+- **User Experience**: Professional cohesive platform appearance with functional Create Pulse page layout and complete content accessibility
+
 ### Platform-Wide Background Image Consistency COMPLETED
 - **Date**: July 2, 2025
 - **Status**: Consistent Brandentifier Landing Background Applied Across All Platform Pages
