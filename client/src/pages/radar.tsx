@@ -553,15 +553,18 @@ const Radar = () => {
   
   return (
     <div 
-      className="w-full min-h-screen responsive-background"
+      className="fixed inset-0 w-full h-full responsive-background"
       style={{ 
-        backgroundImage: `url(${backgroundImage})`
+        backgroundImage: `url(${backgroundImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed'
       }}
     >
       {/* Glass UI overlay to maintain design consistency - Modal Screen Effect */}
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm"></div>
+      <div className="fixed inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm"></div>
       
-      <div className="relative z-10 w-full min-h-screen">
+      <div className="relative z-10 w-full h-full overflow-auto">
         <Header />
         <div className="container max-w-7xl mx-auto pt-24 pb-10 px-4 relative">
         <NeoGlassLayout>
