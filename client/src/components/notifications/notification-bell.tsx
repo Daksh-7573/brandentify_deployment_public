@@ -67,14 +67,14 @@ export function NotificationBell({ className = '' }: NotificationBellProps) {
         <Button
           variant="ghost"
           size="icon"
-          className={`relative rounded-full p-2 hover:bg-spotify-glass-highlight transition-colors ${className}`}
+          className={`relative rounded-full h-9 w-9 backdrop-blur-sm border transition-all duration-300 text-white/90 bg-white/10 border-white/20 hover:bg-white/15 hover:border-white/30 ${className}`}
           onClick={() => setIsOpen(true)}
           aria-label="Notifications"
         >
-          <Bell className="h-5 w-5 text-spotify-white" />
+          <Bell className="h-5 w-5" />
           {unreadCount > 0 && (
             <Badge 
-              className="absolute -top-1 -right-1 px-1.5 h-5 min-w-[20px] flex items-center justify-center bg-spotify-white text-black border-0 text-xs" 
+              className="absolute -top-1 -right-1 px-1.5 h-5 min-w-[20px] flex items-center justify-center bg-red-500 text-white border border-white/30 text-xs" 
               variant="default"
             >
               {unreadCount > 99 ? '99+' : unreadCount}

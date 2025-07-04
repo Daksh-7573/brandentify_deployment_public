@@ -222,14 +222,14 @@ export default function Header() {
             <Button
               variant="ghost"
               size="icon"
-              className="md:hidden rounded-md p-2 hover:bg-gray-100 transition-colors"
+              className="md:hidden rounded-md h-9 w-9 backdrop-blur-sm border text-white/90 bg-white/10 border-white/20 hover:bg-white/15 hover:border-white/30 transition-all duration-300"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               aria-label="Mobile menu"
             >
               {isMobileMenuOpen ? (
-                <X className="h-5 w-5 text-gray-600" />
+                <X className="h-5 w-5" />
               ) : (
-                <Menu className="h-5 w-5 text-gray-600" />
+                <Menu className="h-5 w-5" />
               )}
             </Button>
 
@@ -248,8 +248,10 @@ export default function Header() {
             <Button
               variant="ghost"
               size="icon"
-              className={`hidden sm:flex rounded-full h-9 w-9 items-center justify-center hover:bg-gray-100 transition-colors relative ${
-                isActive('/messages') ? 'text-primary bg-primary/5' : 'text-gray-600'
+              className={`hidden sm:flex rounded-full h-9 w-9 items-center justify-center backdrop-blur-sm border transition-all duration-300 relative ${
+                isActive('/messages') 
+                  ? 'text-white bg-white/20 border-white/40 shadow-md' 
+                  : 'text-white/90 bg-white/10 border-white/20 hover:bg-white/15 hover:border-white/30'
               }`}
               onClick={() => {
                 setLocation('/messages');
@@ -264,11 +266,11 @@ export default function Header() {
               <MessageSquare className="h-5 w-5" />
               {/* Show active indicator */}
               {isActive('/messages') && (
-                <span className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1.5 h-1.5 bg-primary rounded-full"></span>
+                <span className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1.5 h-1.5 bg-blue-400 rounded-full"></span>
               )}
               {/* Show unread messages indicator */}
               {hasUnreadMessages && !isActive('/messages') && (
-                <span className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 bg-red-500 rounded-full border border-white"></span>
+                <span className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 bg-red-500 rounded-full border border-white/30"></span>
               )}
             </Button>
             
@@ -277,25 +279,25 @@ export default function Header() {
             
             {/* User profile section - combined name and avatar */}
             <div 
-              className={`flex items-center gap-2 cursor-pointer px-3 py-1.5 rounded-lg border ${
+              className={`flex items-center gap-2 cursor-pointer px-3 py-1.5 rounded-lg backdrop-blur-sm border transition-all duration-300 group ${
                 isActive('/profile') 
-                  ? 'border-primary/30 bg-primary/5 shadow-sm' 
-                  : 'border-gray-100 hover:bg-gray-50 hover:border-gray-200'
-              } transition-all duration-200 group`}
+                  ? 'text-white bg-white/20 border-white/40 shadow-md' 
+                  : 'text-white/90 bg-white/10 border-white/20 hover:bg-white/15 hover:border-white/30'
+              }`}
               onClick={() => setLocation('/profile')}
             >
               {/* User name */}
-              <span className="text-sm font-medium text-gray-800 hidden md:block">
+              <span className="text-sm font-medium text-white hidden md:block">
                 {userData?.name || (user && 'displayName' in user ? user.displayName : null) || "Profile"}
               </span>
               
               {/* User avatar */}
               <div className="relative">
                 <div 
-                  className="flex items-center rounded-full focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-primary/70 transition-all"
+                  className="flex items-center rounded-full focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-white/30 transition-all"
                 >
                   <span className="sr-only">Open user menu</span>
-                  <div className="h-8 w-8 rounded-full overflow-hidden bg-primary/5 flex items-center justify-center border border-primary/10 shadow-sm group-hover:shadow-md transition-all">
+                  <div className="h-8 w-8 rounded-full overflow-hidden bg-white/10 flex items-center justify-center border border-white/20 shadow-sm group-hover:shadow-md transition-all">
                     <img 
                       className="h-full w-full object-cover" 
                       src={photoURL || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"} 
