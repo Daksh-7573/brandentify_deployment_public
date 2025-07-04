@@ -440,7 +440,7 @@ export default function CreatePulsePage() {
         <Header />
         <div className="pt-16 sm:pt-20 pb-8 sm:pb-12 px-3 sm:px-4 min-h-screen overflow-y-auto neo-glass-scroll-container">
           <div className="container mx-auto max-w-4xl">
-            <div className="flex items-center mb-4 sm:mb-6">
+            <div className="flex items-center mb-2 sm:mb-3">
               <Link to="/industry-pulse" className="text-white hover:text-white/80 flex items-center text-sm sm:text-base">
                 <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5 mr-1" />
                 <span>Back to Industry Pulse</span>
