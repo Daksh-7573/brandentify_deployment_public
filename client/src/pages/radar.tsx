@@ -7,6 +7,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
 import Header from "@/components/layout/header";
 import { User as UserIcon } from 'lucide-react';
+import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
 
 // Define industry and looking for categories constants
 // Get list of main industries
@@ -551,9 +552,18 @@ const Radar = () => {
   };
   
   return (
-    <div className="bg-gradient-to-b from-gray-900 to-black w-full min-h-screen">
-      <Header />
-      <div className="container max-w-7xl mx-auto pt-24 pb-10 px-4 relative">
+    <div 
+      className="w-full min-h-screen responsive-background"
+      style={{ 
+        backgroundImage: `url(${backgroundImage})`
+      }}
+    >
+      {/* Glass UI overlay to maintain design consistency - Modal Screen Effect */}
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm"></div>
+      
+      <div className="relative z-10 w-full min-h-screen">
+        <Header />
+        <div className="container max-w-7xl mx-auto pt-24 pb-10 px-4 relative">
         <NeoGlassLayout>
             <div className="p-4 md:p-6">
               <h1 className="text-2xl sm:text-3xl font-bold text-white mb-6">Smart Radar</h1>
@@ -851,6 +861,7 @@ const Radar = () => {
         </Dialog>
       </div>
     </NeoGlassLayout>
+  </div>
   </div>
   </div>
   );
