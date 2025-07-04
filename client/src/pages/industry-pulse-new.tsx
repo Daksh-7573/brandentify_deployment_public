@@ -47,6 +47,7 @@ import {
   DialogFooter,
   DialogTrigger
 } from "@/components/ui/dialog";
+import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
 import NowboardPanelSimple from "@/components/nowboard/nowboard-panel-simple";
 import PulseMenu from "@/components/industry-pulse/pulse-menu";
 import {
@@ -1067,9 +1068,18 @@ export default function IndustryPulsePage() {
   };
 
   return (
-    <div className="flex h-screen flex-col">
-      <Header />
-      <div className="flex flex-1 overflow-hidden pt-16"> {/* Added padding-top for fixed header */}
+    <div 
+      className="flex h-screen flex-col responsive-background"
+      style={{ 
+        backgroundImage: `url(${backgroundImage})`
+      }}
+    >
+      {/* Glass UI overlay to maintain design consistency - Modal Screen Effect */}
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm"></div>
+      
+      <div className="relative z-10 flex h-screen flex-col">
+        <Header />
+        <div className="flex flex-1 overflow-hidden pt-16"> {/* Added padding-top for fixed header */}
         {/* Main content area */}
         <div className="flex-1 overflow-auto">
           <NeoGlassLayout className="mt-3 mx-6"> {/* Further reduced top margin to 3 (0.75rem) */}
@@ -1323,6 +1333,7 @@ export default function IndustryPulsePage() {
             </div>
           </NeoGlassLayout>
         </div>
+      </div>
       </div>
     </div>
   );

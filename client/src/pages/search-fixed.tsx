@@ -20,6 +20,7 @@ import { JobTitleCombobox } from "@/components/ui/job-title-combobox";
 import Header from "@/components/layout/header";
 import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
 import { apiRequest, queryClient } from "@/lib/queryClient";
+import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
 
 // Constants for form options
 import { INDUSTRIES, INDUSTRY_DOMAINS as DOMAINS_BY_INDUSTRY, LOOKING_FOR_OPTIONS, EXPERIENCE_LEVELS } from "@shared/constants";
@@ -385,9 +386,18 @@ function SearchPage() {
   };
 
   return (
-    <div className="flex h-screen flex-col">
-      <Header />
-      <div className="flex flex-1 overflow-hidden pt-16"> {/* Added padding-top for fixed header */}
+    <div 
+      className="flex h-screen flex-col responsive-background"
+      style={{ 
+        backgroundImage: `url(${backgroundImage})`
+      }}
+    >
+      {/* Glass UI overlay to maintain design consistency - Modal Screen Effect */}
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm"></div>
+      
+      <div className="relative z-10 flex h-screen flex-col">
+        <Header />
+        <div className="flex flex-1 overflow-hidden pt-16"> {/* Added padding-top for fixed header */}
         {/* Main content area */}
         <div className="flex-1 overflow-auto">
           <NeoGlassLayout className="mt-3 mx-6"> {/* Matched Industry Pulse's margin */}
@@ -1026,6 +1036,7 @@ function SearchPage() {
             </div>
           </NeoGlassLayout>
         </div>
+      </div>
       </div>
     </div>
   );

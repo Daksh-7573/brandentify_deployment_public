@@ -24,6 +24,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { NeoGlassLayout } from '@/components/layout/neo-glass-layout';
 import { NeoGlassSection } from '@/components/ui/neo-glass/index';
+import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
 
 export default function BrandQuestsPage() {
   const { user } = useContext(AuthContext);
@@ -46,9 +47,18 @@ export default function BrandQuestsPage() {
   }
   
   return (
-    <>
-      <Header />
-      <NeoGlassLayout className="mt-3 mx-3 sm:mx-6">
+    <div 
+      className="min-h-screen w-full responsive-background"
+      style={{ 
+        backgroundImage: `url(${backgroundImage})`
+      }}
+    >
+      {/* Glass UI overlay to maintain design consistency - Modal Screen Effect */}
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm"></div>
+      
+      <div className="relative z-10">
+        <Header />
+        <NeoGlassLayout className="mt-3 mx-3 sm:mx-6">
         <div className="flex-1 max-w-4xl">
           <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0">
             <div>
@@ -97,6 +107,7 @@ export default function BrandQuestsPage() {
           </div>
         </div>
       </NeoGlassLayout>
-    </>
+      </div>
+    </div>
   );
 }
