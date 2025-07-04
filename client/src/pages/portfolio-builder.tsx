@@ -68,6 +68,7 @@ import {
   Code, Github, Terminal
 } from "lucide-react";
 import Header from "@/components/layout/header";
+import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
 
 // Define the schema for portfolio form
 const portfolioFormSchema = z.object({
@@ -1290,12 +1291,14 @@ export default function PortfolioBuilder() {
 
   // Main render
   return (
-    <div className="flex h-screen flex-col relative">
-      <div className="absolute inset-0 bg-black/75 bg-blend-overlay bg-cover bg-center bg-fixed z-0" 
-           style={{ 
-             backgroundImage: "url('/attached_assets/interior-background-of-a-cozy-dark-living-room-ai-generated-photo.jpg')"
-           }}>
-      </div>
+    <div 
+      className="flex h-screen flex-col responsive-background"
+      style={{ 
+        backgroundImage: `url(${backgroundImage})`
+      }}
+    >
+      {/* Glass UI overlay to maintain design consistency - Modal Screen Effect */}
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm"></div>
       <Header />
       <div className="pt-16 relative z-10">
         <NeoGlassLayout className="mx-3 sm:mx-4 md:mx-6 mt-3">

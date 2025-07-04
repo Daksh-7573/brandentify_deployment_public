@@ -21,6 +21,7 @@ import { Link, useLocation } from "wouter";
 import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
 import { cn } from "@/lib/utils";
 import "../styles/neo-glass-spotify.css";
+import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
 
 export default function CreatePulsePage() {
   const { user } = useAuth();
@@ -439,8 +440,14 @@ export default function CreatePulsePage() {
   };
 
   return (
-    <div className="min-h-screen bg-[url('/bg-dark-room.jpg')] bg-cover bg-center">
-      <div className="min-h-screen bg-black/50 backdrop-blur-sm">
+    <div 
+      className="min-h-screen responsive-background"
+      style={{ 
+        backgroundImage: `url(${backgroundImage})`
+      }}
+    >
+      {/* Glass UI overlay to maintain design consistency - Modal Screen Effect */}
+      <div className="min-h-screen bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm">
         <Header />
         <div className="pt-16 sm:pt-20 pb-8 sm:pb-12 px-3 sm:px-4 min-h-screen overflow-y-auto neo-glass-scroll-container">
           <div className="container mx-auto max-w-4xl">
