@@ -244,14 +244,12 @@ export default function Header() {
             
             {/* Settings Button removed as requested */}
             
-            {/* Messages Button */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className={`hidden sm:flex rounded-full h-9 w-9 items-center justify-center backdrop-blur-sm border transition-all duration-300 relative ${
+            {/* Messages Icon */}
+            <div
+              className={`hidden sm:flex cursor-pointer relative transition-all duration-300 ${
                 isActive('/messages') 
-                  ? 'text-white bg-white/20 border-white/40 shadow-md' 
-                  : 'text-white/90 bg-white/10 border-white/20 hover:bg-white/15 hover:border-white/30'
+                  ? 'text-white' 
+                  : 'text-white/90 hover:text-white'
               }`}
               onClick={() => {
                 setLocation('/messages');
@@ -272,7 +270,7 @@ export default function Header() {
               {hasUnreadMessages && !isActive('/messages') && (
                 <span className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 bg-red-500 rounded-full border border-white/30"></span>
               )}
-            </Button>
+            </div>
             
             {/* Notification Bell */}
             <NotificationBell className="hidden sm:flex" />

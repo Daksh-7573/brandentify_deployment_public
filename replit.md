@@ -145,6 +145,7 @@ Brandentifier is a comprehensive career development platform that combines AI-dr
 - **User Experience Enhancement**: Added automatic redirect to Industry Pulse page after successful pulse creation using `setLocation("/industry-pulse")` in mutation onSuccess callback
 - **Poll UI Glass Styling**: Updated poll options in Industry Pulse page to follow glass UI guidelines with semi-transparent backgrounds, backdrop blur, custom glass buttons, white text, and gradient progress bars
 - **Header Icons Glass Styling**: Updated notification bell, message button, mobile menu, and user profile section in header to follow glass UI with white transparency backgrounds, proper borders, and consistent styling
+- **Plain Icon Styling**: Removed button styling from notification bell and message icons, keeping them as simple icons with hover effects only
 
 ### Platform-Wide Background Image Consistency COMPLETED
 - **Date**: July 2, 2025
