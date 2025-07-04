@@ -17,7 +17,7 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { InsertPulse } from "@shared/schema";
 import { IndustryCombobox } from "@/components/ui/industry-combobox";
 import { INDUSTRIES, INDUSTRY_DOMAINS } from "@shared/constants";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
 import { cn } from "@/lib/utils";
 import "../styles/neo-glass-spotify.css";
@@ -25,6 +25,7 @@ import "../styles/neo-glass-spotify.css";
 export default function CreatePulsePage() {
   const { user } = useAuth();
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
   const [pulseTitle, setPulseTitle] = useState("");
   const [pulseContent, setPulseContent] = useState("");
   const [pulseType, setPulseType] = useState("poll"); // Options: 'poll' (Trends), 'media-pulse' (Insights), 'assignment' (Assignments)
@@ -72,6 +73,9 @@ export default function CreatePulsePage() {
       
       // Invalidate pulse cache so user sees their new post
       queryClient.invalidateQueries({ queryKey: ["/api/pulses"] });
+      
+      // Redirect to Industry Pulse page
+      setLocation("/industry-pulse");
     },
     onError: (error) => {
       console.error("Error creating pulse:", error);
