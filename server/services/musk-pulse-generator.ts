@@ -202,7 +202,7 @@ Requirements:
 ${timePrompts[options.timeOfDay]}
 
 CRITICAL: NEVER generate fake URLs or made-up article links. Only use these verified working URLs:
-- https://hbr.org/topic/career-development (Harvard Business Review Career Development)
+- https://hbr.org (Harvard Business Review)
 - https://www.mckinsey.com/featured-insights/future-of-work (McKinsey Future of Work)
 - https://www.forbes.com/sites/forbescoachescouncil/ (Forbes Coaches Council)
 - https://techcrunch.com/category/startups/ (TechCrunch Startups)
@@ -219,7 +219,7 @@ Respond with JSON format:
   "referenceLinks": [
     {
       "title": "Relevant resource title",
-      "url": "https://hbr.org/topic/career-development",
+      "url": "https://hbr.org",
       "source": "Harvard Business Review"
     },
     {
@@ -245,7 +245,7 @@ Respond with JSON format:
       const defaultLinks = [
         {
           title: "Career Development Resources",
-          url: "https://hbr.org/topic/career-development",
+          url: "https://hbr.org",
           source: "Harvard Business Review"
         },
         {
@@ -269,7 +269,7 @@ Respond with JSON format:
       const fallbackLinks = [
         {
           title: "Professional Development Resources",
-          url: "https://hbr.org/topic/career-development",
+          url: "https://hbr.org",
           source: "Harvard Business Review"
         },
         {

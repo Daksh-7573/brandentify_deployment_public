@@ -137,7 +137,7 @@ Brandentifier is a comprehensive career development platform that combines AI-dr
   - Updated Musk pulse generator to use only verified working URLs from trusted publications
   - Added explicit warnings in AI prompts to prevent generation of fake URLs
   - Replaced all existing fake URLs in 35+ pulses with real working links:
-    - Harvard Business Review: `https://hbr.org/topic/career-development`
+    - Harvard Business Review: `https://hbr.org` (corrected from broken topic URL)
     - McKinsey: `https://www.mckinsey.com/featured-insights/future-of-work`
     - LinkedIn: `https://www.linkedin.com/business/talent/blog`
     - TechCrunch: `https://techcrunch.com/category/startups/`
