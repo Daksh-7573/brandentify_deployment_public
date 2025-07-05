@@ -201,12 +201,14 @@ Requirements:
 
 ${timePrompts[options.timeOfDay]}
 
-IMPORTANT: Always include reference links. Use these example patterns:
-- https://hbr.org/topic/career-development
-- https://www.mckinsey.com/featured-insights/future-of-work
-- https://www.forbes.com/sites/forbescoachescouncil/
-- https://techcrunch.com/category/artificial-intelligence/
-- https://www.technologyreview.com/topic/artificial-intelligence/
+CRITICAL: NEVER generate fake URLs or made-up article links. Only use these verified working URLs:
+- https://hbr.org/topic/career-development (Harvard Business Review Career Development)
+- https://www.mckinsey.com/featured-insights/future-of-work (McKinsey Future of Work)
+- https://www.forbes.com/sites/forbescoachescouncil/ (Forbes Coaches Council)
+- https://techcrunch.com/category/startups/ (TechCrunch Startups)
+- https://www.linkedin.com/business/talent/blog (LinkedIn Talent Blog)
+
+DO NOT create URLs like "/article", "/articles/", "/story/" or any other fake paths. Use ONLY the URLs listed above.
 
 Respond with JSON format:
 {
@@ -216,14 +218,14 @@ Respond with JSON format:
   "hashtags": ["hashtag1", "hashtag2", "hashtag3"],
   "referenceLinks": [
     {
-      "title": "Specific article title about the topic",
-      "url": "https://credible-domain.com/relevant-article-path",
-      "source": "Publication Name"
+      "title": "Relevant resource title",
+      "url": "https://hbr.org/topic/career-development",
+      "source": "Harvard Business Review"
     },
     {
-      "title": "Second relevant article title",
-      "url": "https://another-credible-source.com/article",
-      "source": "Publication Name"
+      "title": "Another relevant resource",
+      "url": "https://www.mckinsey.com/featured-insights/future-of-work",
+      "source": "McKinsey & Company"
     }
   ]
 }
@@ -239,15 +241,15 @@ Respond with JSON format:
 
       const generated = JSON.parse(response.choices[0].message.content || '{}');
       
-      // Ensure reference links are always present
+      // Ensure reference links are always present - using real working URLs
       const defaultLinks = [
         {
-          title: "Career Development Strategies for Modern Professionals",
+          title: "Career Development Resources",
           url: "https://hbr.org/topic/career-development",
           source: "Harvard Business Review"
         },
         {
-          title: "Future of Work Insights and Trends",
+          title: "Future of Work Insights",
           url: "https://www.mckinsey.com/featured-insights/future-of-work",
           source: "McKinsey & Company"
         }
@@ -263,17 +265,17 @@ Respond with JSON format:
     } catch (error) {
       console.error('[MuskPulseGenerator] Error generating content:', error);
       
-      // Fallback content with default reference links
+      // Fallback content with verified working links
       const fallbackLinks = [
         {
-          title: "Professional Development Best Practices",
+          title: "Professional Development Resources",
           url: "https://hbr.org/topic/career-development",
           source: "Harvard Business Review"
         },
         {
-          title: "Building Your Career Network",
-          url: "https://www.forbes.com/sites/forbescoachescouncil/",
-          source: "Forbes"
+          title: "Career Growth Strategies",
+          url: "https://www.linkedin.com/business/talent/blog",
+          source: "LinkedIn"
         }
       ];
 
