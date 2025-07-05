@@ -10,6 +10,118 @@ import { pool } from "../db";
 import { InsertPulse } from "@shared/schema";
 import { storage } from "../storage";
 
+/**
+ * Generate contextually relevant publication URLs based on pulse content
+ */
+function generateContextualLinks(pulseContent: string, industry?: string): Array<{title: string, url: string, source: string}> {
+  const content = pulseContent.toLowerCase();
+  const industryLower = industry?.toLowerCase() || '';
+  
+  // Analyze content for key topics and generate appropriate URLs
+  const links: Array<{title: string, url: string, source: string}> = [];
+  
+  // Leadership and management topics
+  if (content.includes('leadership') || content.includes('management') || content.includes('team') || content.includes('strategy')) {
+    links.push({
+      title: "Leadership Strategies for Modern Workplaces",
+      url: "https://hbr.org/2024/03/the-future-of-leadership-development",
+      source: "Harvard Business Review"
+    });
+  }
+  
+  // Technology and innovation topics
+  if (content.includes('technology') || content.includes('ai') || content.includes('digital') || content.includes('innovation')) {
+    links.push({
+      title: "Digital Transformation in the Modern Era",
+      url: "https://www.mckinsey.com/capabilities/mckinsey-digital/our-insights/the-top-trends-in-tech",
+      source: "McKinsey & Company"
+    });
+  }
+  
+  // Career development topics
+  if (content.includes('career') || content.includes('skill') || content.includes('development') || content.includes('growth')) {
+    links.push({
+      title: "Career Development in the Digital Age",
+      url: "https://hbr.org/2022/12/whats-holding-back-your-career-development",
+      source: "Harvard Business Review"
+    });
+  }
+  
+  // Remote work and hybrid topics
+  if (content.includes('remote') || content.includes('hybrid') || content.includes('work from home') || content.includes('flexible')) {
+    links.push({
+      title: "The Future of Remote and Hybrid Work",
+      url: "https://www.mckinsey.com/featured-insights/future-of-work/the-future-of-work-in-america",
+      source: "McKinsey & Company"
+    });
+  }
+  
+  // Marketing and branding topics
+  if (content.includes('marketing') || content.includes('brand') || content.includes('social media') || content.includes('advertising')) {
+    links.push({
+      title: "Marketing Trends and Brand Strategy",
+      url: "https://www.linkedin.com/business/marketing/blog/marketing-strategy/marketing-trends",
+      source: "LinkedIn Marketing"
+    });
+  }
+  
+  // Healthcare industry specific
+  if (industryLower.includes('healthcare') || industryLower.includes('medical') || content.includes('health')) {
+    links.push({
+      title: "Healthcare Innovation and Digital Health",
+      url: "https://www.mckinsey.com/industries/healthcare/our-insights/healthcare-trends-to-watch-in-2024",
+      source: "McKinsey & Company"
+    });
+  }
+  
+  // Finance industry specific
+  if (industryLower.includes('finance') || industryLower.includes('banking') || content.includes('financial')) {
+    links.push({
+      title: "Financial Services Digital Transformation",
+      url: "https://www.mckinsey.com/industries/financial-services/our-insights/banking-matters",
+      source: "McKinsey & Company"
+    });
+  }
+  
+  // Technology industry specific
+  if (industryLower.includes('technology') || industryLower.includes('software') || industryLower.includes('tech')) {
+    links.push({
+      title: "Technology Industry Trends and Insights",
+      url: "https://techcrunch.com/category/startups/",
+      source: "TechCrunch"
+    });
+  }
+  
+  // Manufacturing industry specific
+  if (industryLower.includes('manufacturing') || industryLower.includes('industrial') || content.includes('production')) {
+    links.push({
+      title: "Manufacturing Innovation and Industry 4.0",
+      url: "https://www.mckinsey.com/industries/advanced-electronics/our-insights/manufacturing-trends",
+      source: "McKinsey & Company"
+    });
+  }
+  
+  // If no specific matches, use general business insights
+  if (links.length === 0) {
+    links.push({
+      title: "Business Strategy and Market Insights",
+      url: "https://hbr.org/2025/01/9-trends-that-will-shape-work-in-2025-and-beyond",
+      source: "Harvard Business Review"
+    });
+  }
+  
+  // Always add a secondary relevant link
+  if (links.length === 1) {
+    links.push({
+      title: "Professional Development Resources",
+      url: "https://www.linkedin.com/business/talent/blog",
+      source: "LinkedIn Talent Blog"
+    });
+  }
+  
+  return links.slice(0, 2); // Return maximum 2 links
+}
+
 // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -220,14 +332,9 @@ Respond with JSON format:
   "hashtags": ["hashtag1", "hashtag2", "hashtag3"],
   "referenceLinks": [
     {
-      "title": "Relevant resource title",
-      "url": "https://hbr.org/2025/01/9-trends-that-will-shape-work-in-2025-and-beyond",
-      "source": "Harvard Business Review"
-    },
-    {
-      "title": "Another relevant resource",
-      "url": "https://www.mckinsey.com/featured-insights/future-of-work",
-      "source": "McKinsey & Company"
+      "title": "Relevant resource title that matches the content topic",
+      "url": "https://example.com/relevant-article",
+      "source": "Publication Name"
     }
   ]
 }
@@ -243,49 +350,31 @@ Respond with JSON format:
 
       const generated = JSON.parse(response.choices[0].message.content || '{}');
       
-      // Ensure reference links are always present - using real working URLs
-      const defaultLinks = [
-        {
-          title: "Career Development Resources",
-          url: "https://hbr.org/2022/12/whats-holding-back-your-career-development",
-          source: "Harvard Business Review"
-        },
-        {
-          title: "Future of Work Insights",
-          url: "https://www.mckinsey.com/featured-insights/future-of-work",
-          source: "McKinsey & Company"
-        }
-      ];
+      // Generate contextual links based on the actual pulse content and industry
+      const pulseContent = generated.content || "Stay focused on your professional growth journey.";
+      const pulseIndustry = generated.industry || userContext.industries[0];
+      const contextualLinks = generateContextualLinks(pulseContent, pulseIndustry);
 
       return {
         title: generated.title || `${options.timeOfDay.charAt(0).toUpperCase() + options.timeOfDay.slice(1)} Career Insights`,
-        content: generated.content || "Stay focused on your professional growth journey.",
+        content: pulseContent,
         industry: generated.industry,
         hashtags: generated.hashtags || [],
-        referenceLinks: generated.referenceLinks && generated.referenceLinks.length > 0 ? generated.referenceLinks : defaultLinks
+        referenceLinks: contextualLinks
       };
     } catch (error) {
       console.error('[MuskPulseGenerator] Error generating content:', error);
       
-      // Fallback content with verified working links
-      const fallbackLinks = [
-        {
-          title: "Professional Development Resources",
-          url: "https://hbr.org/2025/01/9-trends-that-will-shape-work-in-2025-and-beyond",
-          source: "Harvard Business Review"
-        },
-        {
-          title: "Career Growth Strategies",
-          url: "https://www.linkedin.com/business/talent/blog",
-          source: "LinkedIn"
-        }
-      ];
+      // Fallback content with contextual links
+      const fallbackContent = `Today is a great day to focus on your career development. Consider updating your Brandentifier portfolio or connecting with professionals in your industry.`;
+      const fallbackIndustry = userContext.industries[0] || 'General';
+      const contextualFallbackLinks = generateContextualLinks(fallbackContent, fallbackIndustry);
 
       return {
         title: `${options.timeOfDay.charAt(0).toUpperCase() + options.timeOfDay.slice(1)} Professional Update`,
-        content: `Today is a great day to focus on your career development. Consider updating your Brandentifier portfolio or connecting with professionals in your industry.`,
+        content: fallbackContent,
         hashtags: ['#CareerGrowth', '#ProfessionalDevelopment'],
-        referenceLinks: fallbackLinks
+        referenceLinks: contextualFallbackLinks
       };
     }
   }
