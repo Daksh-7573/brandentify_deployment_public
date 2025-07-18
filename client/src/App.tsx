@@ -87,6 +87,7 @@ import NeoGlassSpotifyDemoPage from "@/pages/neo-glass-demo-spotify"; // Spotify
 import NeoGlassFormDemoPage from "@/pages/neo-glass-form-demo"; // Neo-Glass Form UI demo
 import NeoGlassDemoMainPage from "@/pages/neo-glass-demo-main"; // Main platform styled Neo-Glass UI demo
 import NeoGlassSimplePage from "@/pages/neo-glass-simple"; // Simple Neo-Glass demo without dependencies
+import PitchDeckDownload from "@/pages/pitch-deck-download"; // Pitch deck download page
 // Lazy load the SharedCardPage to improve performance and show loader immediately
 import { lazy, Suspense } from "react";
 const SharedCardPage = lazy(() => import("@/pages/shared-card"));
@@ -486,6 +487,9 @@ function Router() {
           return <AdminRoles />;
         }} />
       </Route>
+      
+      {/* Pitch Deck Download page */}
+      <Route path="/pitch-deck-download" component={PitchDeckDownload} />
       
       {/* Shared Quantum Card View route */}
       <Route path="/profile/card/:userId">
