@@ -573,20 +573,4 @@ function App() {
   );
 }
 
-// Temporarily export simple test to check if React is working
-export default function SimpleApp() {
-  console.log("Simple App mounted successfully");
-  return (
-    <div style={{ padding: "20px", fontFamily: "Arial, sans-serif", backgroundColor: "#f9fafb", minHeight: "100vh" }}>
-      <h1 style={{ color: "#333", marginBottom: "20px" }}>Brandentifier - Loading Test</h1>
-      <p style={{ color: "#666", marginBottom: "10px" }}>✓ React is working correctly</p>
-      <p style={{ color: "#666", marginBottom: "10px" }}>✓ Server is running and frontend is connecting</p>
-      <p style={{ color: "#666", marginBottom: "10px" }}>✓ Dynamic contextual link generation system is operational</p>
-      <div style={{ backgroundColor: "#e7f3ff", padding: "15px", borderRadius: "8px", marginTop: "20px" }}>
-        <p style={{ color: "#0066cc", fontWeight: "bold", margin: "0" }}>
-          System Status: All components loading successfully
-        </p>
-      </div>
-    </div>
-  );
-}
+export default App;
