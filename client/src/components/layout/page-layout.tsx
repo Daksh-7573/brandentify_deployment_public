@@ -34,7 +34,7 @@ export function PageLayout({
       
       <div className="relative z-10 flex w-full h-full flex-col overflow-auto">
         <Header />
-        <div className="mt-14"> {/* Reduced top margin to avoid gap */}
+        <div className="mt-3"> {/* Match Brand Quests perfect spacing */}
           <PageHeader 
             heading={title}
             description={description}
