@@ -7,7 +7,7 @@ import "./index.css";
 import "./lib/firebase";
 
 // Check if we should use the simple app or the full app
-const useSimpleApp = true; // Set to true for testing
+const useSimpleApp = false; // Set to true for testing
 
 console.log("main.tsx: Starting React app initialization");
 console.log("main.tsx: DOM ready state:", document.readyState);
