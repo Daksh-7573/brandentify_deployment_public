@@ -397,7 +397,7 @@ function SearchPage() {
       
       <div className="relative z-10 flex h-screen flex-col">
         <Header />
-        <div className="flex flex-1 overflow-hidden pt-16"> {/* Added padding-top for fixed header */}
+        <div className="flex flex-1 overflow-hidden"> {/* Removed pt-16 to match Brand Quests spacing */}
         {/* Main content area */}
         <div className="flex-1 overflow-auto">
           <NeoGlassLayout className="mt-3 mx-6"> {/* Matched Industry Pulse's margin */}
