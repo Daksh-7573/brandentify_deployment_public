@@ -294,12 +294,13 @@ export default function CareerCapsulePage() {
   };
 
   return (
-    <PageLayout title="Career Capsule">
+    <PageLayout title="">
       <div className="max-w-5xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
-        <div className="flex justify-end items-center mb-4 sm:mb-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 gap-3 sm:gap-0">
+          <h1 className="text-2xl sm:text-3xl font-bold text-white">Career Capsule</h1>
           <button 
             onClick={() => setShowCreateDialog(true)}
-            className="neo-glass-button flex items-center gap-2 py-2 px-3 sm:px-4 text-sm sm:text-base"
+            className="neo-glass-button flex items-center gap-2 py-2 px-3 sm:px-4 text-sm sm:text-base w-full sm:w-auto justify-center"
           >
             <span>Create New Goal</span>
           </button>
