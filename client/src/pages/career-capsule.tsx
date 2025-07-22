@@ -1,5 +1,5 @@
 import { useState, FormEvent, useEffect } from "react";
-import { PageLayout } from "@/components/layout/page-layout";
+import Header from "@/components/layout/header";
 import { useAuth } from "@/hooks/use-auth";
 import { useCareerCapsule, CareerGoal, GoalType } from "@/hooks/use-career-capsule";
 import { Button } from "@/components/ui/button";
@@ -294,16 +294,30 @@ export default function CareerCapsulePage() {
   };
 
   return (
-    <PageLayout title="Career Capsule">
-      <div className="max-w-5xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
-        <div className="flex justify-end mb-4 sm:mb-6">
-          <button 
-            onClick={() => setShowCreateDialog(true)}
-            className="neo-glass-button flex items-center gap-2 py-2 px-3 sm:px-4 text-sm sm:text-base"
-          >
-            <span>Create New Goal</span>
-          </button>
-        </div>
+    <div 
+      className="fixed inset-0 w-full h-full responsive-background"
+      style={{ 
+        backgroundImage: `url('/Brandentifier Landing_1751376023002.png')`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed'
+      }}
+    >
+      {/* Glass UI overlay to maintain design consistency - Modal Screen Effect */}
+      <div className="fixed inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm"></div>
+      
+      <div className="relative z-10 w-full h-full overflow-auto">
+        <Header />
+        <div className="max-w-5xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 gap-3 sm:gap-0">
+            <h1 className="text-2xl sm:text-3xl font-bold text-white">Career Capsule</h1>
+            <button 
+              onClick={() => setShowCreateDialog(true)}
+              className="neo-glass-button flex items-center gap-2 py-2 px-3 sm:px-4 text-sm sm:text-base w-full sm:w-auto justify-center"
+            >
+              <span>Create New Goal</span>
+            </button>
+          </div>
         
         {isLoading ? (
           <NeoGlassSection className="flex flex-col items-center justify-center h-64 space-y-4">
@@ -890,6 +904,8 @@ export default function CareerCapsulePage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </PageLayout>
+        </div>
+      </div>
+    </div>
   );
 }
