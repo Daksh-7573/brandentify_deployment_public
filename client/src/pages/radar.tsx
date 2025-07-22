@@ -566,8 +566,8 @@ const Radar = () => {
       
       <div className="relative z-10 w-full h-full overflow-auto">
         <Header />
-        <div className="container max-w-7xl mx-auto pt-24 pb-10 px-4 relative">
-        <NeoGlassLayout>
+        <div className="container max-w-7xl mx-auto pb-10 px-4 relative">
+        <NeoGlassLayout className="mt-3">
             <div className="p-4 md:p-6">
               <h1 className="text-2xl sm:text-3xl font-bold text-white mb-6">Smart Radar</h1>
               
