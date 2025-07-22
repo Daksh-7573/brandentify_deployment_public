@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Loader2, CheckCircle, CheckCircle2, AlertTriangle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { queryClient } from "@/lib/queryClient";
-import { NeoGlassSection, NeoGlassLayout } from "@/components/layout/neo-glass-layout";
+import { NeoGlassSection } from "@/components/layout/neo-glass-layout";
 
 // Utility function to format dates
 const formatDate = (dateString: string) => {
@@ -295,30 +295,24 @@ export default function CareerCapsulePage() {
 
   return (
     <PageLayout title="">
-      <NeoGlassLayout className="mt-3 mx-3 sm:mx-6">
-        <div className="flex-1 max-w-4xl">
-          <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0">
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">Career Capsule</h1>
-              <p className="text-white/80 mt-1 text-sm sm:text-base">
-                Set and track your professional development goals
-              </p>
-            </div>
-            <button 
-              onClick={() => setShowCreateDialog(true)}
-              className="neo-glass-button flex items-center gap-2 py-2 px-3 sm:px-4 text-sm sm:text-base w-full sm:w-auto justify-center"
-            >
-              <span>Create New Goal</span>
-            </button>
-          </div>
-          
-          {isLoading ? (
-            <NeoGlassSection className="flex flex-col items-center justify-center h-64 space-y-4">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div>
-              <p className="text-gray-300">Loading career goals...</p>
-            </NeoGlassSection>
-          ) : goals ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 w-full">
+      <div className="max-w-5xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 gap-3 sm:gap-0">
+          <h1 className="text-2xl sm:text-3xl font-bold text-white">Career Capsule</h1>
+          <button 
+            onClick={() => setShowCreateDialog(true)}
+            className="neo-glass-button flex items-center gap-2 py-2 px-3 sm:px-4 text-sm sm:text-base w-full sm:w-auto justify-center"
+          >
+            <span>Create New Goal</span>
+          </button>
+        </div>
+        
+        {isLoading ? (
+          <NeoGlassSection className="flex flex-col items-center justify-center h-64 space-y-4">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div>
+            <p className="text-gray-300">Loading career goals...</p>
+          </NeoGlassSection>
+        ) : goals ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 w-full">
             {/* Display all goals as an array - our backend now always returns an array */}
             {Array.isArray(goals) && goals.length > 0 ? (
               goals.map((goal: CareerGoal) => (
@@ -345,11 +339,11 @@ export default function CareerCapsulePage() {
                         <div className="w-full bg-white/10 rounded-full h-1.5 sm:h-2 backdrop-blur-sm border border-white/20">
                           <div 
                             className="bg-gradient-to-r from-blue-400 to-purple-500 h-1.5 sm:h-2 rounded-full transition-all duration-500 shadow-lg shadow-blue-500/20"
-                            style={{ width: `${(goal as any).overallProgress || 0}%` }}
+                            style={{ width: `${goal.overallProgress || 0}%` }}
                           ></div>
                         </div>
                         <span className="text-xs text-gray-300 mt-1 sm:mt-2 block font-medium">
-                          {(goal as any).overallProgress || 0}% complete
+                          {goal.overallProgress || 0}% complete
                         </span>
                       </div>
                     </div>
@@ -386,8 +380,7 @@ export default function CareerCapsulePage() {
             </button>
           </NeoGlassSection>
         )}
-        </div>
-      </NeoGlassLayout>
+      </div>
 
       {/* Dialog for Create Goal */}
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
