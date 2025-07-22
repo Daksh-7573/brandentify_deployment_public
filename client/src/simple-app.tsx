@@ -17,6 +17,9 @@ export default function SimpleApp() {
     }
   };
 
+  // Debug: Log that component is rendering
+  console.log('SimpleApp component rendering...', { message });
+
   return (
     <div style={{ 
       padding: "20px", 

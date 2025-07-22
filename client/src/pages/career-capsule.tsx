@@ -81,7 +81,7 @@ export default function CareerCapsulePage() {
   // Selected goal for details view
   const [selectedGoalId, setSelectedGoalId] = useState<number | null>(null);
   const [showDetailsDialog, setShowDetailsDialog] = useState(false);
-  const { data: goalDetails, isLoading: isLoadingDetails } = useGoalDetails(selectedGoalId || 0);
+  const { data: goalDetails = {}, isLoading: isLoadingDetails } = useGoalDetails(selectedGoalId || 0);
   const createGoalMutation = useCreateGoal();
   const deleteCapsuleMutation = useDeleteCapsule();
   
@@ -94,7 +94,7 @@ export default function CareerCapsulePage() {
       console.log("Goal Details API Response:", { 
         goalDetails, 
         isLoadingDetails,
-        hasMilestones: goalDetails && goalDetails.milestones && goalDetails.milestones.length > 0,
+        hasMilestones: goalDetails && typeof goalDetails === 'object' && 'milestones' in goalDetails && (goalDetails as any).milestones && (goalDetails as any).milestones.length > 0,
         selectedGoalId
       });
     }
@@ -191,8 +191,8 @@ export default function CareerCapsulePage() {
       });
       
       // Store the created goal ID to trigger milestone generation
-      if (response && response.id) {
-        setCreatedGoalId(response.id);
+      if (response && typeof response === 'object' && 'id' in response) {
+        setCreatedGoalId(response.id as number);
         
         toast({
           title: "Goal created",
@@ -574,13 +574,13 @@ export default function CareerCapsulePage() {
           <DialogHeader>
             <DialogTitle className="text-white">
               {goalDetails && typeof goalDetails === 'object' ? 
-                (goalDetails.goal?.title || goalDetails.title || "Goal Details") : 
+                ((goalDetails as any).goal?.title || (goalDetails as any).title || "Goal Details") : 
                 "Goal Details"
               }
             </DialogTitle>
             <DialogDescription className="text-gray-300">
               {goalDetails && typeof goalDetails === 'object' ? 
-                (goalDetails.goal?.description || goalDetails.description || "Loading goal details...") : 
+                ((goalDetails as any).goal?.description || (goalDetails as any).description || "Loading goal details...") : 
                 "Loading goal details..."
               }
             </DialogDescription>
@@ -598,7 +598,7 @@ export default function CareerCapsulePage() {
                   <p className="text-sm font-medium text-white">Goal Type</p>
                   <p className="text-sm text-gray-300">
                     {getGoalTypeText(
-                      (goalDetails.goal?.goalType || goalDetails.goalType) as GoalType
+                      ((goalDetails as any).goal?.goalType || (goalDetails as any).goalType) as GoalType
                     )}
                   </p>
                 </div>
@@ -606,7 +606,7 @@ export default function CareerCapsulePage() {
                   <p className="text-sm font-medium text-white">Target Date</p>
                   <p className="text-sm text-gray-300">
                     {formatDate(
-                      (goalDetails.goal?.targetDate || goalDetails.targetDate) as string
+                      ((goalDetails as any).goal?.targetDate || (goalDetails as any).targetDate) as string
                     )}
                   </p>
                 </div>
@@ -616,8 +616,8 @@ export default function CareerCapsulePage() {
               <div className="space-y-2">
                 <div className="flex justify-between items-center mb-3">
                   <h3 className="text-lg font-medium text-white">Milestones</h3>
-                  {(!goalDetails || !goalDetails.milestones || 
-                    (goalDetails.milestones && goalDetails.milestones.length === 0)) && (
+                  {(!goalDetails || !(goalDetails as any).milestones || 
+                    ((goalDetails as any).milestones && (goalDetails as any).milestones.length === 0)) && (
                     <Button 
                       size="sm" 
                       className="neo-glass-button"
@@ -626,9 +626,9 @@ export default function CareerCapsulePage() {
                           console.log("Generating milestones for goal:", selectedGoalId);
                           console.log("Goal details:", goalDetails);
                           generateMilestones.mutate({
-                            goalType: goalDetails.goal?.goalType || goalDetails.goalType,
-                            description: goalDetails.goal?.description || goalDetails.description,
-                            timeframe: goalDetails.goal?.timeframe || goalDetails.timeframe,
+                            goalType: (goalDetails as any).goal?.goalType || (goalDetails as any).goalType,
+                            description: (goalDetails as any).goal?.description || (goalDetails as any).description,
+                            timeframe: (goalDetails as any).goal?.timeframe || (goalDetails as any).timeframe,
                           });
                         }
                       }}
@@ -659,23 +659,26 @@ export default function CareerCapsulePage() {
                 )}
                 
                 {/* Debug info about milestones data */}
-                {console.log('Milestone debug info:', { 
-                  hasGoalDetails: !!goalDetails,
-                  hasMilestonesProperty: goalDetails && 'milestones' in goalDetails,
-                  milestonesType: goalDetails && goalDetails.milestones ? typeof goalDetails.milestones : 'undefined',
-                  milestonesIsArray: goalDetails && goalDetails.milestones && Array.isArray(goalDetails.milestones),
-                  milestonesLength: goalDetails && goalDetails.milestones && Array.isArray(goalDetails.milestones) ? goalDetails.milestones.length : 0,
-                  firstMilestone: goalDetails && goalDetails.milestones && Array.isArray(goalDetails.milestones) && goalDetails.milestones.length > 0 ? 
-                    { 
-                      ...goalDetails.milestones[0], 
-                      hasTasks: !!goalDetails.milestones[0].tasks, 
-                      tasksLength: goalDetails.milestones[0].tasks ? goalDetails.milestones[0].tasks.length : 0 
-                    } : 'none'
-                })}
+                {(() => {
+                  console.log('Milestone debug info:', { 
+                    hasGoalDetails: !!goalDetails,
+                    hasMilestonesProperty: goalDetails && typeof goalDetails === 'object' && 'milestones' in goalDetails,
+                    milestonesType: goalDetails && typeof goalDetails === 'object' && 'milestones' in goalDetails && (goalDetails as any).milestones ? typeof (goalDetails as any).milestones : 'undefined',
+                    milestonesIsArray: goalDetails && typeof goalDetails === 'object' && 'milestones' in goalDetails && (goalDetails as any).milestones && Array.isArray((goalDetails as any).milestones),
+                    milestonesLength: goalDetails && typeof goalDetails === 'object' && 'milestones' in goalDetails && (goalDetails as any).milestones && Array.isArray((goalDetails as any).milestones) ? (goalDetails as any).milestones.length : 0,
+                    firstMilestone: goalDetails && typeof goalDetails === 'object' && 'milestones' in goalDetails && (goalDetails as any).milestones && Array.isArray((goalDetails as any).milestones) && (goalDetails as any).milestones.length > 0 ? 
+                      { 
+                        ...(goalDetails as any).milestones[0], 
+                        hasTasks: !!((goalDetails as any).milestones[0] as any).tasks, 
+                        tasksLength: ((goalDetails as any).milestones[0] as any).tasks ? ((goalDetails as any).milestones[0] as any).tasks.length : 0 
+                      } : 'none'
+                  });
+                  return null;
+                })()}
                 
-                {goalDetails && goalDetails.milestones && goalDetails.milestones.length > 0 ? (
+                {goalDetails && typeof goalDetails === 'object' && 'milestones' in goalDetails && (goalDetails as any).milestones && (goalDetails as any).milestones.length > 0 ? (
                   <div className="space-y-4">
-                    {goalDetails.milestones.map((milestone, index) => {
+                    {(goalDetails as any).milestones.map((milestone: any, index: number) => {
                       console.log(`Rendering milestone ${index}: id=${milestone.id}, title=${milestone.title}`);
                       console.log(`Milestone ${index} has ${milestone.tasks ? milestone.tasks.length : 0} tasks`);
                       
@@ -712,7 +715,7 @@ export default function CareerCapsulePage() {
                                 {/* Calculate milestone progress */}
                                 {(() => {
                                   const totalTasks = milestone.tasks.length;
-                                  const completedTasks = milestone.tasks.filter(t => t.isCompleted).length;
+                                  const completedTasks = milestone.tasks.filter((t: any) => t.isCompleted).length;
                                   const progressPercentage = Math.round((completedTasks / totalTasks) * 100);
                                   
                                   return (
@@ -739,7 +742,7 @@ export default function CareerCapsulePage() {
                             <div className="mt-3">
                               <h5 className="text-sm font-medium mb-2 text-white">Tasks:</h5>
                               <div className="space-y-2">
-                                {milestone.tasks.map((task, taskIndex) => {
+                                {milestone.tasks.map((task: any, taskIndex: number) => {
                                   console.log(`Rendering task ${taskIndex} for milestone ${index}: id=${task.id}, title=${task.title}`);
                                   
                                   // Handler for toggling task completion
@@ -904,7 +907,6 @@ export default function CareerCapsulePage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-        </div>
       </div>
     </div>
   );

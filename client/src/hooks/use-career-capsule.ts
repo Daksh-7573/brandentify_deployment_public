@@ -13,13 +13,17 @@ export interface CareerGoal {
   userId: number;
   title: string;
   description: string;
-  targetDate: Date;
+  targetDate: Date | string;
   goalType: GoalType;
   status: GoalStatus;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: Date | string;
+  updatedAt?: Date | string;
   progress: number;
-  industryFocus: string;
+  industryFocus?: string;
+  overallProgress?: number; // Added for backward compatibility
+  milestones?: GoalMilestone[]; // Added for milestones data
+  skills?: GoalSkill[]; // Added for skills data
+  timeframe?: number; // Added timeframe property
 }
 
 export interface GoalMilestone {
@@ -27,12 +31,24 @@ export interface GoalMilestone {
   goalId: number;
   title: string;
   description: string;
-  targetDate: Date;
+  targetDate: Date | string;
   status: GoalStatus;
   order: number;
-  createdAt: Date;
-  updatedAt: Date;
-  completedAt: Date | null;
+  createdAt: Date | string;
+  updatedAt: Date | string;
+  completedAt: Date | string | null;
+  tasks?: TaskItem[]; // Added tasks property
+}
+
+export interface TaskItem {
+  id: number;
+  milestoneId: number;
+  title: string;
+  description?: string;
+  isCompleted: boolean;
+  order?: number;
+  createdAt: Date | string;
+  updatedAt: Date | string;
 }
 
 export interface GoalSkill {
