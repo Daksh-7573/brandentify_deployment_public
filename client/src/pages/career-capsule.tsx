@@ -1,5 +1,4 @@
 import { useState, FormEvent, useEffect } from "react";
-import { PageLayout } from "@/components/layout/page-layout";
 import { useAuth } from "@/hooks/use-auth";
 import { useCareerCapsule, CareerGoal, GoalType } from "@/hooks/use-career-capsule";
 import { Button } from "@/components/ui/button";
@@ -11,7 +10,9 @@ import { Badge } from "@/components/ui/badge";
 import { Loader2, CheckCircle, CheckCircle2, AlertTriangle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { queryClient } from "@/lib/queryClient";
-import { NeoGlassSection } from "@/components/layout/neo-glass-layout";
+import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
+import Header from "@/components/layout/header";
+import backgroundImage from '@assets/Brandentifier Landing_1751376023002.png';
 
 // Utility function to format dates
 const formatDate = (dateString: string) => {
@@ -294,8 +295,22 @@ export default function CareerCapsulePage() {
   };
 
   return (
-    <PageLayout title="">
-      <div className="max-w-5xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
+    <div 
+      className="fixed inset-0 w-full h-full responsive-background"
+      style={{ 
+        backgroundImage: `url(${backgroundImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed'
+      }}
+    >
+      {/* Glass UI overlay to maintain design consistency - Modal Screen Effect */}
+      <div className="fixed inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm"></div>
+      
+      <div className="relative z-10 w-full h-full overflow-auto">
+        <Header />
+        <NeoGlassLayout className="mt-3 mx-3 sm:mx-6">
+          <div className="flex-1 max-w-5xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 gap-3 sm:gap-0">
           <h1 className="text-2xl sm:text-3xl font-bold text-white">Career Capsule</h1>
           <button 
@@ -380,9 +395,8 @@ export default function CareerCapsulePage() {
             </button>
           </NeoGlassSection>
         )}
-      </div>
 
-      {/* Dialog for Create Goal */}
+        {/* Dialog for Create Goal */}
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
         <DialogContent className="sm:max-w-[500px] max-w-[95vw] max-h-[90vh] overflow-y-auto neo-glass-card mx-3 sm:mx-auto">
           <DialogHeader>
@@ -891,6 +905,9 @@ export default function CareerCapsulePage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </PageLayout>
+          </div>
+        </NeoGlassLayout>
+      </div>
+    </div>
   );
 }
