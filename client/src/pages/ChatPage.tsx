@@ -78,7 +78,8 @@ const ChatPage: React.FC = () => {
       
       <div className="relative z-10 w-full h-full overflow-auto">
         <Header />
-        <div className="neo-glass-panel rounded-lg p-3 sm:p-4 md:p-6 mb-4 sm:mb-6 md:mb-10 mt-3 mx-3 sm:mx-6">
+        <div className="mt-3 mx-3 sm:mx-6">
+          <div className="neo-glass-panel rounded-lg p-3 sm:p-4 md:p-6 mb-4 sm:mb-6 md:mb-10">
           <div className="flex-1 max-w-4xl">
             <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0">
               <div>
@@ -92,6 +93,7 @@ const ChatPage: React.FC = () => {
             <ChatProvider userId={Number(userId)}>
               <Chat userId={Number(userId)} />
             </ChatProvider>
+          </div>
           </div>
         </div>
       </div>
