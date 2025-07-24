@@ -216,9 +216,7 @@ export default function ResumeBuilder() {
       {/* Glass UI overlay to maintain design consistency */}
       <div className="absolute inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm"></div>
       <Header />
-      <div className="flex flex-1 overflow-hidden pt-16 relative z-10">
-        <div className="flex-1 overflow-auto">
-          <NeoGlassLayout className="mt-3 mx-3 sm:mx-4 md:mx-6">
+        <NeoGlassLayout className="mx-3 sm:mx-4 md:mx-6 mt-3 relative z-10">
             {/* Page Header */}
             <div className="mb-6 sm:mb-8">
               <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
@@ -487,9 +485,7 @@ export default function ResumeBuilder() {
                 </TabsContent>
               </Tabs>
             </NeoGlassSection>
-          </NeoGlassLayout>
-        </div>
-      </div>
+        </NeoGlassLayout>
     </div>
   );
 }
