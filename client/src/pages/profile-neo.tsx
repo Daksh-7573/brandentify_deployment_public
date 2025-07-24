@@ -250,11 +250,9 @@ export default function ProfileNeo() {
       {/* Glass UI overlay to maintain design consistency */}
       <div className="absolute inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm"></div>
       
-      <Header />
-      <div className="flex flex-1 overflow-hidden pt-16 relative z-10"> {/* Added padding-top for fixed header */}
-        {/* Main content area */}
-        <div className="flex-1 overflow-auto">
-          <NeoGlassLayout className="mt-3 mx-3 sm:mx-4 md:mx-6"> {/* Matching Industry Pulse layout with responsive margins */}
+      <div className="relative z-10 w-full h-full overflow-auto">
+        <Header />
+        <NeoGlassLayout className="mt-3 mx-3 sm:mx-6">
             {/* Profile Header */}
             <div className="mb-6 sm:mb-8">
               <div className="flex flex-col md:flex-row items-start md:items-center justify-between">
@@ -454,7 +452,7 @@ export default function ProfileNeo() {
             
             {/* 3. What I'm Good At (Skills) */}
             <NeoGlassSection className="mb-6">
-              <Skills userFirebaseId={user.uid} userNumericId={userData?.id} />
+              <Skills />
             </NeoGlassSection>
             
             {/* 4. Specific Services are included in the Services component */}
@@ -466,12 +464,12 @@ export default function ProfileNeo() {
             
             {/* 6. Career Path (Work Experience) */}
             <NeoGlassSection className="mb-6">
-              <WorkExperience userFirebaseId={user.uid} userNumericId={userData?.id} />
+              <WorkExperience />
             </NeoGlassSection>
             
             {/* 7. Academic Background (Education) */}
             <NeoGlassSection className="mb-6">
-              <Education userFirebaseId={user.uid} userNumericId={userData?.id} />
+              <Education />
             </NeoGlassSection>
             
 
@@ -491,8 +489,7 @@ export default function ProfileNeo() {
                 </div>
               </div>
             </NeoGlassSection>
-          </NeoGlassLayout>
-        </div>
+        </NeoGlassLayout>
       </div>
       
       {/* Edit Professional Overview Dialog */}
