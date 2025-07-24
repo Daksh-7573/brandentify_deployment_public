@@ -440,31 +440,31 @@ export default function CreatePulsePage() {
   };
 
   return (
-    <>
-      <div 
-        className="fixed inset-0 w-full h-full responsive-background"
-        style={{ 
-          backgroundImage: `url(${backgroundImage})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundAttachment: 'fixed'
-        }}
-      >
-        {/* Glass UI overlay to maintain design consistency - Modal Screen Effect */}
-        <div className="fixed inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm"></div>
-        
-        <div className="relative z-10 w-full h-full overflow-auto">
-          <Header />
-          <div className="mx-3 sm:mx-6 mt-3 relative z-20">
-            <div className="flex items-center mb-3 p-2 rounded-lg bg-white/10 backdrop-blur-sm border border-white/20">
-              <Link to="/industry-pulse" className="text-white hover:text-white/80 flex items-center text-sm sm:text-base font-medium">
+    <div 
+      className="fixed inset-0 w-full h-full responsive-background"
+      style={{ 
+        backgroundImage: `url(${backgroundImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed'
+      }}
+    >
+      {/* Glass UI overlay to maintain design consistency - Modal Screen Effect */}
+      <div className="fixed inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm"></div>
+      
+      <div className="relative z-10 w-full h-full overflow-auto">
+        <Header />
+        <div className="px-3 sm:px-4 pb-8 sm:pb-12 min-h-screen overflow-y-auto neo-glass-scroll-container">
+          <div className="container mx-auto max-w-4xl">
+            <div className="flex items-center mb-2 sm:mb-3">
+              <Link to="/industry-pulse" className="text-white hover:text-white/80 flex items-center text-sm sm:text-base">
                 <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5 mr-1" />
                 <span>Back to Industry Pulse</span>
               </Link>
             </div>
-          </div>
-          <NeoGlassLayout className="mx-3 sm:mx-6">
-            <div className="w-full">
+            
+            <NeoGlassLayout className="mt-3 mx-3 sm:mx-6">
+              <div className="w-full">
               <div className="mb-4 sm:mb-6">
                 <h1 className="text-xl sm:text-2xl font-bold text-white">Create Pulse</h1>
                 <p className="text-white/70 text-sm sm:text-base">Share your thoughts, projects, or expertise with the professional community</p>
@@ -1036,11 +1036,12 @@ export default function CreatePulsePage() {
                   </button>
                 </div>
               </NeoGlassSection>
-            </div>
-          </NeoGlassLayout>
+              </div>
+            </NeoGlassLayout>
+          </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 
