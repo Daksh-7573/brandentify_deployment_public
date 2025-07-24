@@ -454,16 +454,7 @@ export default function CreatePulsePage() {
       
       <div className="relative z-10 w-full h-full overflow-auto">
         <Header />
-        <div className="px-3 sm:px-4 pb-8 sm:pb-12 min-h-screen overflow-y-auto neo-glass-scroll-container">
-          <div className="container mx-auto max-w-4xl">
-            <div className="flex items-center mb-2 sm:mb-3">
-              <Link to="/industry-pulse" className="text-white hover:text-white/80 flex items-center text-sm sm:text-base">
-                <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5 mr-1" />
-                <span>Back to Industry Pulse</span>
-              </Link>
-            </div>
-            
-            <NeoGlassLayout className="mt-3 mx-3 sm:mx-6">
+        <NeoGlassLayout className="mt-3 mx-3 sm:mx-6">
               <div className="w-full">
               <div className="mb-4 sm:mb-6">
                 <h1 className="text-xl sm:text-2xl font-bold text-white">Create Pulse</h1>
@@ -1038,8 +1029,6 @@ export default function CreatePulsePage() {
               </NeoGlassSection>
               </div>
             </NeoGlassLayout>
-          </div>
-        </div>
       </div>
     </div>
   );
