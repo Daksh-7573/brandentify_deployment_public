@@ -441,20 +441,15 @@ export default function CreatePulsePage() {
 
   return (
     <div 
-      className="fixed inset-0 w-full h-full responsive-background"
+      className="min-h-screen responsive-background"
       style={{ 
-        backgroundImage: `url(${backgroundImage})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundAttachment: 'fixed'
+        backgroundImage: `url(${backgroundImage})`
       }}
     >
       {/* Glass UI overlay to maintain design consistency - Modal Screen Effect */}
-      <div className="fixed inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm"></div>
-      
-      <div className="relative z-10 w-full h-full overflow-auto">
+      <div className="min-h-screen bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm">
         <Header />
-        <div className="px-3 sm:px-4 pb-8 sm:pb-12 min-h-screen overflow-y-auto neo-glass-scroll-container">
+        <div className="pt-16 sm:pt-20 pb-8 sm:pb-12 px-3 sm:px-4 min-h-screen overflow-y-auto neo-glass-scroll-container">
           <div className="container mx-auto max-w-4xl">
             <div className="flex items-center mb-2 sm:mb-3">
               <Link to="/industry-pulse" className="text-white hover:text-white/80 flex items-center text-sm sm:text-base">
@@ -463,7 +458,7 @@ export default function CreatePulsePage() {
               </Link>
             </div>
             
-            <NeoGlassLayout className="mt-3 mx-3 sm:mx-6">
+            <NeoGlassLayout>
               <div className="w-full">
               <div className="mb-4 sm:mb-6">
                 <h1 className="text-xl sm:text-2xl font-bold text-white">Create Pulse</h1>
