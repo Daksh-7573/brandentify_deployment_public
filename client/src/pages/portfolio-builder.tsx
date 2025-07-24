@@ -1305,7 +1305,7 @@ export default function PortfolioBuilder() {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => setLocation('/profile-neo')}
+              onClick={() => setLocation('/profile')}
               className="text-white hover:text-white hover:bg-white/20 bg-white/10 px-3 py-2 border border-white/20 flex items-center gap-2 self-start"
             >
               <ArrowLeft className="h-4 w-4" />
