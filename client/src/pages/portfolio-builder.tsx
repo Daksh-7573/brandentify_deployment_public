@@ -1300,8 +1300,7 @@ export default function PortfolioBuilder() {
       {/* Glass UI overlay to maintain design consistency - Modal Screen Effect */}
       <div className="absolute inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm"></div>
       <Header />
-      <div className="pt-16 relative z-10">
-        <NeoGlassLayout className="mx-3 sm:mx-4 md:mx-6 mt-3">
+      <NeoGlassLayout className="mx-3 sm:mx-4 md:mx-6 mt-3 relative z-10">
           <div className="flex flex-col items-center justify-center mb-6 sm:mb-8 gap-4 text-center">
             <Button
               variant="ghost"
@@ -1353,7 +1352,6 @@ export default function PortfolioBuilder() {
             renderStepContent()
           )}
         </NeoGlassLayout>
-      </div>
     </div>
   );
 }
