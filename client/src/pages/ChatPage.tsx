@@ -80,15 +80,18 @@ const ChatPage: React.FC = () => {
         <Header />
         <NeoGlassLayout className="mt-3 mx-3 sm:mx-6">
           <div className="flex-1 max-w-4xl">
-              {/* Page Heading (Now inside the card, without border) */}
-              <div className="p-3 sm:p-4 md:p-6">
-                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-spotify-white mb-1 md:mb-2">Messages</h1>
-                <p className="text-xs sm:text-sm md:text-base text-spotify-light-gray">Connect with professionals in your network</p>
+            <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0">
+              <div>
+                <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">Messages</h1>
+                <p className="text-white/80 mt-1 text-sm sm:text-base">
+                  Connect with professionals in your network
+                </p>
               </div>
-              
-              <ChatProvider userId={Number(userId)}>
-                <Chat userId={Number(userId)} />
-              </ChatProvider>
+            </div>
+            
+            <ChatProvider userId={Number(userId)}>
+              <Chat userId={Number(userId)} />
+            </ChatProvider>
           </div>
         </NeoGlassLayout>
       </div>
