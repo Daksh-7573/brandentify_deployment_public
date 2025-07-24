@@ -78,7 +78,7 @@ const ChatPage: React.FC = () => {
       
       <div className="relative z-10 w-full h-full overflow-auto">
         <Header />
-        <NeoGlassLayout className="mt-2 mx-3 sm:mx-6">
+        <NeoGlassLayout className="mt-1 mx-3 sm:mx-6">
             <div className="flex-1 max-w-7xl mx-auto">
               {/* Page Heading (Now inside the card, without border) */}
               <div className="p-3 sm:p-4 md:p-6">
