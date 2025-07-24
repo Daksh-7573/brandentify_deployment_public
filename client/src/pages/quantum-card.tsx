@@ -52,9 +52,7 @@ export default function QuantumCardPage() {
   return (
     <div className="flex h-screen flex-col">
       <Header />
-      <div className="flex flex-1 overflow-hidden pt-16">
-        <div className="flex-1 overflow-auto">
-          <NeoGlassLayout className="mt-3 mx-6">
+        <NeoGlassLayout className="mx-6 mt-3 relative z-10">
             {/* Page Header */}
             <div className="mb-8">
               <div className="flex flex-col md:flex-row items-start md:items-center justify-between">
@@ -100,14 +98,12 @@ export default function QuantumCardPage() {
                 />
               </div>
             </NeoGlassSection>
-          </NeoGlassLayout>
-        </div>
-      </div>
+        </NeoGlassLayout>
 
       {/* Edit Contact Information Dialog */}
       {userData && showEditContactInfo && (
         <EditContactInfo
-          userData={userData}
+          userData={userData as UserData}
           onCancel={() => setShowEditContactInfo(false)}
           onSave={() => {
             setShowEditContactInfo(false);
