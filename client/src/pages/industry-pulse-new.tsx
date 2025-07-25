@@ -58,6 +58,7 @@ import {
 } from "@/components/ui/tooltip";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { StandardLoadingScreen } from "@/components/ui/standard-loading-screen";
 
 // Extended Pulse type with user info for display purposes
 interface PulseWithUser {
@@ -1122,41 +1123,7 @@ export default function IndustryPulsePage() {
                   />
                   
                   {isLoading ? (
-                    <div className="space-y-4 py-4">
-                      {/* Skeleton loaders for pulse cards */}
-                      {[1, 2, 3, 4].map((i) => (
-                        <div key={i} className="border rounded-lg overflow-hidden shadow-sm animate-pulse">
-                          <div className="p-4">
-                            {/* Header skeleton */}
-                            <div className="flex items-center justify-between mb-3">
-                              <div className="flex items-center gap-2">
-                                <div className="h-8 w-8 rounded-full bg-muted"></div>
-                                <div>
-                                  <div className="h-4 w-24 bg-muted rounded"></div>
-                                  <div className="h-3 w-16 bg-muted rounded mt-1"></div>
-                                </div>
-                              </div>
-                              <div className="h-5 w-16 bg-muted rounded"></div>
-                            </div>
-                            
-                            {/* Title and content skeleton */}
-                            <div className="h-6 w-3/4 bg-muted rounded mb-2"></div>
-                            <div className="h-4 w-full bg-muted rounded mb-2"></div>
-                            <div className="h-4 w-2/3 bg-muted rounded mb-4"></div>
-                            
-                            {/* Media placeholder skeleton */}
-                            <div className="bg-muted h-40 rounded mb-3"></div>
-                            
-                            {/* Engagement buttons skeleton */}
-                            <div className="flex flex-wrap gap-2 mt-4">
-                              <div className="h-8 w-20 bg-muted rounded"></div>
-                              <div className="h-8 w-20 bg-muted rounded"></div>
-                              <div className="h-8 w-20 bg-muted rounded"></div>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+                    <StandardLoadingScreen message="Loading pulse feed..." />
                   ) : filteredPulses.length === 0 ? (
                     <NeoGlassSection>
                       <div className="flex flex-col items-center justify-center py-10">
