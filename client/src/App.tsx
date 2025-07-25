@@ -8,6 +8,7 @@ import { useEffect } from "react";
 import GlobalMuskButton from "@/components/musk/global-musk-button";
 import { DomainHelper } from "./lib/domain-helper";
 import { DomainAuthHelper } from "@/components/firebase/DomainAuthHelper";
+import { StandardLoadingScreen } from "@/components/ui/standard-loading-screen";
 import AuthCallback from "@/pages/auth-callback";
 import CatchAllAuthHandler from "@/routes/CatchAllAuthHandler";
 
@@ -116,11 +117,7 @@ function ProtectedRoute({ component: Component, ...rest }: { component: React.Co
   }, [isAuthenticated, isLoading, navigate]);
   
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
-      </div>
-    );
+    return <StandardLoadingScreen message="Checking authentication..." />;
   }
   
   return isAuthenticated ? <Component /> : null;
