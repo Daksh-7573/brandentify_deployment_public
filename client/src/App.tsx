@@ -4,7 +4,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "./context/auth-context";
 import { useAuth } from "./hooks/use-auth";
-import { useEffect } from "react";
+import { useEffect, Suspense, lazy } from "react";
 import GlobalMuskButton from "@/components/musk/global-musk-button";
 import { DomainHelper } from "./lib/domain-helper";
 import { DomainAuthHelper } from "@/components/firebase/DomainAuthHelper";
@@ -90,7 +90,6 @@ import NeoGlassDemoMainPage from "@/pages/neo-glass-demo-main"; // Main platform
 import NeoGlassSimplePage from "@/pages/neo-glass-simple"; // Simple Neo-Glass demo without dependencies
 import PitchDeckDownload from "@/pages/pitch-deck-download"; // Pitch deck download page
 // Lazy load the SharedCardPage to improve performance and show loader immediately
-import { lazy, Suspense } from "react";
 const SharedCardPage = lazy(() => import("@/pages/shared-card"));
 // Brand of the Day is now integrated into Nowboard
 
@@ -145,7 +144,7 @@ function Router() {
       <Route path="/fixed-login" component={() => {
         const FixedLoginPage = lazy(() => import("@/pages/fixed-login"));
         return (
-          <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div></div>}>
+          <Suspense fallback={<StandardLoadingScreen message="Loading page..." />}>
             <FixedLoginPage />
           </Suspense>
         );
@@ -153,7 +152,7 @@ function Router() {
       <Route path="/dev-auth" component={() => {
         const DevAuthUtilityPage = lazy(() => import("@/pages/dev-auth-utility"));
         return (
-          <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div></div>}>
+          <Suspense fallback={<StandardLoadingScreen message="Loading dev tools..." />}>
             <DevAuthUtilityPage />
           </Suspense>
         );
@@ -171,7 +170,7 @@ function Router() {
       <Route path="/auth-debug" component={() => {
         const AuthDebugPage = lazy(() => import("@/pages/auth-debug"));
         return (
-          <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div></div>}>
+          <Suspense fallback={<StandardLoadingScreen message="Loading debug tools..." />}>
             <AuthDebugPage />
           </Suspense>
         );
@@ -179,7 +178,7 @@ function Router() {
       <Route path="/auth-popup-debug" component={() => {
         const AuthPopupDebugPage = lazy(() => import("@/pages/auth-popup-debug"));
         return (
-          <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div></div>}>
+          <Suspense fallback={<StandardLoadingScreen message="Loading debug tools..." />}>
             <AuthPopupDebugPage />
           </Suspense>
         );
@@ -199,7 +198,7 @@ function Router() {
         <ProtectedRoute path="/ai-career" component={() => {
           const AICareerPage = lazy(() => import("@/pages/ai-career"));
           return (
-            <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div></div>}>
+            <Suspense fallback={<StandardLoadingScreen message="Loading AI career assistant..." />}>
               <AICareerPage />
             </Suspense>
           );
@@ -256,7 +255,7 @@ function Router() {
         <ProtectedRoute path="/resume-builder" component={() => {
           const ResumeBuilder = lazy(() => import('@/pages/resume-builder'));
           return (
-            <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div></div>}>
+            <Suspense fallback={<StandardLoadingScreen message="Loading resume builder..." />}>
               <ResumeBuilder />
             </Suspense>
           );
@@ -352,7 +351,7 @@ function Router() {
           const AdminCheck = lazy(() => import("@/middleware/admin-check").then(mod => ({ default: mod.AdminCheck })));
           
           const AdminDashboardWithLayout = () => (
-            <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div></div>}>
+            <Suspense fallback={<StandardLoadingScreen message="Loading admin dashboard..." />}>
               <AdminCheck>
                 <AdminLayout>
                   <AdminDashboard />
@@ -371,7 +370,7 @@ function Router() {
           const AdminCheck = lazy(() => import("@/middleware/admin-check").then(mod => ({ default: mod.AdminCheck })));
           
           const AdminUsersWithLayout = () => (
-            <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div></div>}>
+            <Suspense fallback={<StandardLoadingScreen message="Loading admin users..." />}>
               <AdminCheck>
                 <AdminLayout>
                   <AdminUsers />
@@ -391,7 +390,7 @@ function Router() {
           const AdminCheck = lazy(() => import("@/middleware/admin-check").then(mod => ({ default: mod.AdminCheck })));
           
           const AdminContentWithLayout = () => (
-            <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div></div>}>
+            <Suspense fallback={<StandardLoadingScreen message="Loading admin content..." />}>
               <AdminCheck>
                 <AdminLayout>
                   <AdminContentNew />
@@ -409,7 +408,7 @@ function Router() {
           const AdminCheck = lazy(() => import("@/middleware/admin-check").then(mod => ({ default: mod.AdminCheck })));
           
           const AdminAnalytics = () => (
-            <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div></div>}>
+            <Suspense fallback={<StandardLoadingScreen message="Loading admin analytics..." />}>
               <AdminCheck>
                 <AdminLayout>
                   <AnalyticsDashboard />
@@ -430,7 +429,7 @@ function Router() {
           const AdminCheck = lazy(() => import("@/middleware/admin-check").then(mod => ({ default: mod.AdminCheck })));
           
           const AdminAnalytics = () => (
-            <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div></div>}>
+            <Suspense fallback={<StandardLoadingScreen message="Loading admin analytics..." />}>
               <AdminCheck>
                 <AdminLayout>
                   <AnalyticsDashboard />
@@ -450,7 +449,7 @@ function Router() {
           const AdminCheck = lazy(() => import("@/middleware/admin-check").then(mod => ({ default: mod.AdminCheck })));
           
           const AdminSettings = () => (
-            <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div></div>}>
+            <Suspense fallback={<StandardLoadingScreen message="Loading admin settings..." />}>
               <AdminCheck>
                 <AdminLayout>
                   <SettingsPage />
@@ -470,7 +469,7 @@ function Router() {
           const AdminCheck = lazy(() => import("@/middleware/admin-check").then(mod => ({ default: mod.AdminCheck })));
           
           const AdminRoles = () => (
-            <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div></div>}>
+            <Suspense fallback={<StandardLoadingScreen message="Loading admin roles..." />}>
               <AdminCheck>
                 <AdminLayout>
                   <RolesManagement />
@@ -491,20 +490,7 @@ function Router() {
       {/* Shared Quantum Card View route */}
       <Route path="/profile/card/:userId">
         {(params) => (
-          <Suspense fallback={
-            <div className="min-h-screen flex items-center justify-center">
-              <div className="w-[280px] aspect-[2/3.5] rounded-lg overflow-hidden shadow-lg">
-                <div className="h-[24%] bg-gray-300 dark:bg-gray-700 relative animate-pulse"></div>
-                <div className="bg-white dark:bg-gray-800 h-[76%] p-5 flex flex-col gap-4">
-                  <div className="h-5 w-[70%] bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
-                  <div className="h-4 w-[50%] bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
-                  <div className="h-24 w-full bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
-                  <div className="h-4 w-[80%] bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
-                  <div className="h-4 w-[60%] bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
-                </div>
-              </div>
-            </div>
-          }>
+          <Suspense fallback={<StandardLoadingScreen message="Loading profile card..." />}>
             <SharedCardPage userId={params.userId} />
           </Suspense>
         )}
@@ -547,20 +533,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <Suspense fallback={
-          <div className="min-h-screen flex items-center justify-center bg-background">
-            <div className="w-[280px] aspect-[2/3.5] rounded-lg overflow-hidden shadow-lg">
-              <div className="h-[24%] bg-gray-300 dark:bg-gray-700 relative animate-pulse"></div>
-              <div className="bg-white dark:bg-gray-800 h-[76%] p-5 flex flex-col gap-4">
-                <div className="h-5 w-[70%] bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
-                <div className="h-4 w-[50%] bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
-                <div className="h-24 w-full bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
-                <div className="h-4 w-[80%] bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
-                <div className="h-4 w-[60%] bg-gray-300 dark:bg-gray-700 rounded animate-pulse"></div>
-              </div>
-            </div>
-          </div>
-        }>
+        <Suspense fallback={<StandardLoadingScreen message="Starting application..." />}>
           <Router />
           <GlobalMuskButton />
           <DomainHelper />
