@@ -43,7 +43,7 @@ import {
   SelectSeparator
 } from "@/components/ui/select";
 import { JobTitleCombobox } from "@/components/ui/job-title-combobox";
-import { ProfilePageSkeleton } from "@/components/ui/skeleton-loaders";
+
 import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
 import { StandardLoadingScreen } from "@/components/ui/standard-loading-screen";
 

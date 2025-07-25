@@ -41,7 +41,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ExperienceItemSkeleton } from "@/components/ui/skeleton-loaders";
+import { StandardLoadingScreen } from "@/components/ui/standard-loading-screen";
 import { popularLocations } from "@/lib/location-data";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
@@ -463,11 +463,7 @@ export default function Education() {
       
       <div className="p-1">
         {isLoading ? (
-          // Loading skeleton with improved components
-          <div className="space-y-4">
-            <ExperienceItemSkeleton />
-            <ExperienceItemSkeleton />
-          </div>
+          <StandardLoadingScreen message="Loading education..." />
         ) : educations.length === 0 ? (
           // Empty state
           <div className="py-6 text-center">

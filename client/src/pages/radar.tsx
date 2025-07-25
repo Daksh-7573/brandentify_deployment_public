@@ -6,6 +6,7 @@ import { apiRequest } from '@/lib/queryClient';
 import { useAuth } from '@/hooks/use-auth';
 import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
 import Header from "@/components/layout/header";
+import { StandardLoadingScreen } from "@/components/ui/standard-loading-screen";
 import { User as UserIcon } from 'lucide-react';
 import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
 
@@ -235,19 +236,7 @@ const UserCard = ({ user, onClick }: { user: NearbyUser, onClick: () => void }) 
   </div>
 );
 
-// Loading skeleton for user cards
-const UserCardSkeleton = () => (
-  <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-lg overflow-hidden p-4 mb-3 shadow-md">
-    <div className="flex items-center space-x-4">
-      <Skeleton className="h-12 w-12 rounded-full bg-white/20 shadow-sm" />
-      <div className="flex-1 space-y-2">
-        <Skeleton className="h-4 w-3/4 bg-white/20 shadow-sm" />
-        <Skeleton className="h-3 w-1/2 bg-white/20 shadow-sm" />
-      </div>
-      <Skeleton className="h-6 w-12 bg-white/20 shadow-sm" />
-    </div>
-  </div>
-);
+
 
 // Demo data for nearby users
 const DEMO_NEARBY_USERS: NearbyUser[] = [
@@ -766,11 +755,7 @@ const Radar = () => {
           {locationStatus === 'granted' && (
             <>
               {isLoadingNearby ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                  {[...Array(4)].map((_, i) => (
-                    <UserCardSkeleton key={i} />
-                  ))}
-                </div>
+                <StandardLoadingScreen message="Finding nearby professionals..." />
               ) : filteredNearbyUsers && filteredNearbyUsers.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <div className="col-span-1 sm:col-span-2 mb-2">

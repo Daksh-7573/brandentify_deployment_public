@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
-import { CardSkeleton } from "@/components/ui/skeleton-loaders";
+import { StandardLoadingScreen } from "@/components/ui/standard-loading-screen";
 import { CustomSelect } from "@/components/ui/custom-select";
 
 type SkillItem = {
@@ -231,11 +231,7 @@ export default function Skills() {
         </div>
         <div className="p-1">
           {isLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              <CardSkeleton />
-              <CardSkeleton />
-              <CardSkeleton />
-            </div>
+            <StandardLoadingScreen message="Loading skills..." />
           ) : skills.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               {skills.map((skill) => (

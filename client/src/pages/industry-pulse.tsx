@@ -35,7 +35,6 @@ import {
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
-import { CardSkeleton } from "@/components/ui/skeleton-loaders";
 import { StandardLoadingScreen } from "@/components/ui/standard-loading-screen";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { formatDistanceToNow } from "date-fns";
@@ -1073,12 +1072,7 @@ function SmartRefreshBanner({ hasNewContent, onRefresh, isPremiumContent = false
   );
 }
 
-// Pulse Reactions Component
-interface PulseReactionsProps {
-  pulse: PulseWithUser;
-}
-
-function PulseReactions({ pulse }: PulseReactionsProps) {
+export default function IndustryPulsePage() {
   const { toast } = useToast();
   const { user } = useAuth();
   const userId = user?.id || 1; // Default to 1 (demo user) if not authenticated
