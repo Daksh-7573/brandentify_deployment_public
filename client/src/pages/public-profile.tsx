@@ -12,6 +12,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { ExternalLink, Github, Globe, Linkedin, Mail, MapPin, Phone, Twitter } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
+import { StandardLoadingScreen } from "@/components/ui/standard-loading-screen";
 
 // Import portfolio templates
 import MinimalistPro from "@/components/portfolio/templates/minimalist-pro";
@@ -251,29 +252,7 @@ const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
   
   // Loading state
   if (isUserLoading || isPortfolioLoading) {
-    return (
-      <div className="min-h-screen bg-background">
-        <Header />
-        <div className="container mx-auto py-6 max-w-6xl">
-          <div className="space-y-6">
-            <div className="flex items-center space-x-4">
-              <Skeleton className="h-24 w-24 rounded-full" />
-              <div className="space-y-2">
-                <Skeleton className="h-6 w-40" />
-                <Skeleton className="h-4 w-60" />
-                <Skeleton className="h-4 w-28" />
-              </div>
-            </div>
-            <Separator />
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <Skeleton className="h-40 w-full" />
-              <Skeleton className="h-40 w-full" />
-              <Skeleton className="h-40 w-full" />
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+    return <StandardLoadingScreen message="Loading public profile..." />;
   }
   
   // Render the appropriate portfolio template based on user's selected layout
