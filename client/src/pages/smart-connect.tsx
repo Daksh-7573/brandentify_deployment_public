@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Send, Filter, Users, Sparkles } from "lucide-react";
+import { StandardLoadingScreen } from "@/components/ui/standard-loading-screen";
 
 export function SmartConnectPage() {
   const [activeStep, setActiveStep] = useState<"form" | "results">("form");

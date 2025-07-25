@@ -15,6 +15,7 @@ import { useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 // Removed Sidebar import, using top navigation only
 import Header from "@/components/layout/header";
+import { StandardLoadingScreen } from "@/components/ui/standard-loading-screen";
 
 export default function AICareerPage() {
   // Hooks
@@ -234,11 +235,7 @@ export default function AICareerPage() {
 
   // Loading state
   if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
+    return <StandardLoadingScreen message="Loading AI Career Assistant..." />;
   }
 
   return (
