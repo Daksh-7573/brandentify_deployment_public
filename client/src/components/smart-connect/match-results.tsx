@@ -13,7 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Skeleton } from "@/components/ui/skeleton";
+import { StandardLoadingScreen } from "@/components/ui/standard-loading-screen";
 import { 
   MessageSquare, 
   UserPlus, 
@@ -285,47 +285,5 @@ export function MatchResults({ userId }: { userId: number }) {
 }
 
 function MatchResultsLoading() {
-  return (
-    <Card className="w-full mx-auto max-w-4xl">
-      <CardHeader>
-        <Skeleton className="h-8 w-64 mb-2" />
-        <Skeleton className="h-4 w-40" />
-      </CardHeader>
-      
-      <CardContent className="space-y-6">
-        {[1, 2, 3].map((i) => (
-          <div key={i} className="border rounded-lg overflow-hidden p-4 md:p-6">
-            <div className="flex flex-col md:flex-row gap-4 md:gap-6 items-start">
-              <Skeleton className="h-16 w-16 rounded-full" />
-              
-              <div className="flex-1 space-y-4 w-full">
-                <div>
-                  <Skeleton className="h-6 w-40 mb-2" />
-                  <Skeleton className="h-4 w-28" />
-                </div>
-                
-                <Skeleton className="h-2 w-full" />
-                
-                <div className="flex gap-2">
-                  <Skeleton className="h-6 w-24" />
-                  <Skeleton className="h-6 w-24" />
-                </div>
-                
-                <div className="flex gap-2">
-                  <Skeleton className="h-6 w-16" />
-                  <Skeleton className="h-6 w-16" />
-                  <Skeleton className="h-6 w-16" />
-                </div>
-              </div>
-              
-              <div className="flex md:flex-col gap-2 w-full md:w-auto">
-                <Skeleton className="h-10 w-full md:w-28" />
-                <Skeleton className="h-10 w-full md:w-28" />
-              </div>
-            </div>
-          </div>
-        ))}
-      </CardContent>
-    </Card>
-  );
+  return <StandardLoadingScreen message="Finding compatible professionals..." />;
 }

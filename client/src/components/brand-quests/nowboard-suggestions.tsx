@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useLocation } from 'wouter';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
+import { StandardLoadingScreen } from '@/components/ui/standard-loading-screen';
 import { Progress } from '@/components/ui/progress';
 import { ArrowRight, Zap, MessageSquare, ThumbsUp, Bot, RefreshCw, Lightbulb } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
@@ -189,35 +189,7 @@ export function NowboardSuggestions({ userId, className, questType }: NowboardSu
   };
   
   if (isLoading || loadingAction) {
-    return (
-      <Card className={cn(className)}>
-        <CardHeader className="pb-2">
-          <CardTitle className="flex items-center gap-2">
-            <Avatar className="h-8 w-8">
-              <AvatarFallback className="bg-primary/10">
-                <Bot className="h-4 w-4 text-primary" />
-              </AvatarFallback>
-            </Avatar>
-            <Skeleton className="h-7 w-48" />
-          </CardTitle>
-          <CardDescription><Skeleton className="h-4 w-full" /></CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            {[1, 2, 3].map(i => (
-              <div key={i} className="flex items-center gap-3">
-                <Skeleton className="h-8 w-8 rounded-full" />
-                <div className="space-y-1 flex-1">
-                  <Skeleton className="h-5 w-3/4" />
-                  <Skeleton className="h-4 w-full" />
-                </div>
-                <Skeleton className="h-8 w-24" />
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-    );
+    return <StandardLoadingScreen message="Loading nowboard suggestions..." />;
   }
   
   if (isError) {
