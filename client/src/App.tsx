@@ -116,7 +116,7 @@ function ProtectedRoute({ component: Component, ...rest }: { component: React.Co
   }, [isAuthenticated, isLoading, navigate]);
   
   if (isLoading) {
-    return <StandardLoadingScreen message="Checking authentication..." />;
+    return <StandardLoadingScreen message="Authenticating..." />;
   }
   
   return isAuthenticated ? <Component /> : null;
