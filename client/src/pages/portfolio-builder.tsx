@@ -69,6 +69,7 @@ import {
 } from "lucide-react";
 import Header from "@/components/layout/header";
 import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
+import { StandardLoadingScreen } from "@/components/ui/standard-loading-screen";
 
 // Define the schema for portfolio form
 const portfolioFormSchema = z.object({
@@ -1234,56 +1235,15 @@ export default function PortfolioBuilder() {
   // Render loading states
   const renderLoadingState = () => {
     if (isAnalyzingProfile) {
-      return (
-        <div className="container mx-auto p-4">
-          <div className="flex flex-col space-y-6">
-            <SectionSkeleton title="Analyzing Your Profile" isLoading={true} />
-            <div className="space-y-4">
-              <ProfileSkeleton />
-              <div className="flex flex-col items-center justify-center py-4 space-y-2">
-                <div className="relative">
-                  <Loader2 className="h-10 w-10 animate-spin text-primary" />
-                  <Bot className="h-5 w-5 text-white absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
-                </div>
-                <h3 className="text-lg font-medium text-white">Musk AI is analyzing your profile</h3>
-                <p className="text-white/60">Gathering information from your experiences, skills, and projects...</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      );
+      return <StandardLoadingScreen message="Musk AI is analyzing your profile..." />;
     }
     
     if (isGenerating) {
-      return (
-        <div className="container mx-auto p-3 sm:p-4">
-          <div className="flex flex-col space-y-4 sm:space-y-6">
-            <SectionSkeleton title="Creating Your Portfolio" isLoading={true} />
-            <div className="space-y-4">
-              <ProfileSkeleton />
-              <div className="flex flex-col items-center justify-center py-4 space-y-2">
-                <div className="relative">
-                  <Loader2 className="h-8 w-8 sm:h-10 sm:w-10 animate-spin text-primary" />
-                  <Bot className="h-4 w-4 sm:h-5 sm:w-5 text-white absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
-                </div>
-                <h3 className="text-base sm:text-lg font-medium text-white text-center">Creating your personalized portfolio</h3>
-                <p className="text-white/60 text-sm sm:text-base text-center px-4">Musk AI is designing your portfolio with the {layoutOptions.find(l => l.id === form.watch("layout"))?.name.toLowerCase()} layout...</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      );
+      return <StandardLoadingScreen message="Creating your personalized portfolio..." />;
     }
     
     if (isLoadingPortfolio) {
-      return (
-        <div className="container mx-auto p-3 sm:p-4">
-          <div className="flex flex-col space-y-4 sm:space-y-6">
-            <SectionSkeleton title="Portfolio Preview" isLoading={true} />
-            <ProfileSkeleton />
-          </div>
-        </div>
-      );
+      return <StandardLoadingScreen message="Loading portfolio preview..." />;
     }
     
     return null;

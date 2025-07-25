@@ -10,6 +10,7 @@ import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-l
 import Header from "@/components/layout/header";
 import { UserData } from "@/types/user";
 import { useState } from "react";
+import { StandardLoadingScreen } from "@/components/ui/standard-loading-screen";
 
 export default function QuantumCardPage() {
   const { user } = useAuth();
@@ -24,11 +25,7 @@ export default function QuantumCardPage() {
   });
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
-      </div>
-    );
+    return <StandardLoadingScreen message="Loading your Quantum Card..." />;
   }
 
   if (!userData) {

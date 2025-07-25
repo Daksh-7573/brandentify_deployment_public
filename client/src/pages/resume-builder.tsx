@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { FileText, Upload, Database, ArrowRight, Eye, Edit2, Loader2, AlertCircle } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { StandardLoadingScreen } from '@/components/ui/standard-loading-screen';
 
 export default function ResumeBuilder() {
   const { user } = useAuth();

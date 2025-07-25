@@ -9,6 +9,7 @@ import { useLocation } from 'wouter';
 import Header from '@/components/layout/header';
 import { NeoGlassLayout } from '@/components/layout/neo-glass-layout';
 import '../styles/neo-glass-spotify.css';
+import { StandardLoadingScreen } from '@/components/ui/standard-loading-screen';
 
 const ChatPage: React.FC = () => {
   // Get current user data from the auth context
@@ -27,18 +28,7 @@ const ChatPage: React.FC = () => {
   const isLoading = authLoading || dataLoading;
 
   if (isLoading) {
-    return (
-      <div className="neo-spotify-container">
-        <div className="flex items-center justify-center h-screen">
-          <div className="text-center">
-            <div className="w-16 h-16 mx-auto flex items-center justify-center bg-spotify-glass-bg backdrop-filter backdrop-blur-[15px] rounded-full border border-spotify-glass-border">
-              <Loader2 className="w-10 h-10 animate-spin text-spotify-white" />
-            </div>
-            <span className="text-lg font-medium text-spotify-white mt-4 block">Loading messages...</span>
-          </div>
-        </div>
-      </div>
-    );
+    return <StandardLoadingScreen message="Loading messages..." />;
   }
 
   // If we're not loading and either there's no user or there was an error fetching

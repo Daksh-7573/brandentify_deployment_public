@@ -45,6 +45,7 @@ import {
 import { JobTitleCombobox } from "@/components/ui/job-title-combobox";
 import { ProfilePageSkeleton } from "@/components/ui/skeleton-loaders";
 import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
+import { StandardLoadingScreen } from "@/components/ui/standard-loading-screen";
 
 // Define "I am looking for" categories - matching the form constants with icons
 const LOOKING_FOR_CATEGORIES = [
@@ -201,20 +202,9 @@ export default function ProfileNeo() {
     }
   }, [userData]);
   
-  // If loading, show skeleton
+  // If loading, show standard loading screen
   if (isUserDataLoading) {
-    return (
-      <div className="flex h-screen flex-col">
-        <Header />
-        <div className="flex flex-1 overflow-hidden pt-16">
-          <div className="flex-1 overflow-auto">
-            <NeoGlassLayout className="mt-3 mx-3 sm:mx-4 md:mx-6">
-              <ProfilePageSkeleton />
-            </NeoGlassLayout>
-          </div>
-        </div>
-      </div>
-    );
+    return <StandardLoadingScreen message="Loading your profile..." />;
   }
   
   const profileCompletion = calculateOverallProfileCompletion(userData);
