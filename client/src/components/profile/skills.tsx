@@ -10,8 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { useToast } from "@/hooks/use-toast";
-import { Skeleton } from "@/components/ui/skeleton";
-import { StandardLoadingScreen } from "@/components/ui/standard-loading-screen";
+import { SkillsListSkeleton } from "@/components/ui/skeleton-components";
 import { CustomSelect } from "@/components/ui/custom-select";
 
 type SkillItem = {
@@ -231,7 +230,7 @@ export default function Skills() {
         </div>
         <div className="p-1">
           {isLoading ? (
-            <StandardLoadingScreen message="Loading skills..." />
+            <SkillsListSkeleton />
           ) : skills.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               {skills.map((skill) => (

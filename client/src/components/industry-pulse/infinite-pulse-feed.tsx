@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { useAuth } from "@/context/auth-context";
-import { StandardLoadingScreen } from "@/components/ui/standard-loading-screen";
+import { FeedSkeleton, PulseCardSkeleton } from "@/components/ui/skeleton-components";
 import { cn } from "@/lib/utils";
 
 // Extended Pulse type with user info for display purposes
@@ -349,7 +349,7 @@ export default function InfinitePulseFeed({ filters, className }: InfinitePulseF
   if (isLoading) {
     return (
       <div className={className}>
-        <StandardLoadingScreen message="Loading your Industry Pulse feed..." />
+        <FeedSkeleton count={5} />
       </div>
     );
   }

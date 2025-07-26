@@ -21,7 +21,7 @@ import {
   CardTitle 
 } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Skeleton } from '@/components/ui/skeleton';
+import { QuestCardSkeleton } from '@/components/ui/skeleton-components';
 import { NeoGlassLayout } from '@/components/layout/neo-glass-layout';
 import { NeoGlassSection } from '@/components/ui/neo-glass/index';
 import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";

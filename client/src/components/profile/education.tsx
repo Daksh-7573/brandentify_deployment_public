@@ -40,8 +40,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
-import { StandardLoadingScreen } from "@/components/ui/standard-loading-screen";
+import { EducationItemSkeleton } from "@/components/ui/skeleton-components";
 import { popularLocations } from "@/lib/location-data";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
@@ -463,7 +462,10 @@ export default function Education() {
       
       <div className="p-1">
         {isLoading ? (
-          <StandardLoadingScreen message="Loading education..." />
+          <div className="space-y-4">
+            <EducationItemSkeleton />
+            <EducationItemSkeleton />
+          </div>
         ) : educations.length === 0 ? (
           // Empty state
           <div className="py-6 text-center">

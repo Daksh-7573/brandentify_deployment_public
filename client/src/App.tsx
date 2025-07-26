@@ -8,7 +8,7 @@ import { useEffect, Suspense, lazy } from "react";
 import GlobalMuskButton from "@/components/musk/global-musk-button";
 import { DomainHelper } from "./lib/domain-helper";
 import { DomainAuthHelper } from "@/components/firebase/DomainAuthHelper";
-import { StandardLoadingScreen } from "@/components/ui/standard-loading-screen";
+import { FeedSkeleton } from "@/components/ui/skeleton-components";
 import AuthCallback from "@/pages/auth-callback";
 import CatchAllAuthHandler from "@/routes/CatchAllAuthHandler";
 
@@ -24,57 +24,58 @@ function SimpleTestApp() {
   );
 }
 
-import NotFound from "@/pages/not-found";
-import Landing from "@/pages/landing";
+// Lazy load major pages for code splitting
+const NotFound = lazy(() => import("@/pages/not-found"));
+const Landing = lazy(() => import("@/pages/landing"));
 
-import Profile from "@/pages/profile";
-import ProfileNeo from "@/pages/profile-neo";
-import PublicProfile from "@/pages/public-profile";
-import BrandProfile from "@/pages/brand-profile";
+const Profile = lazy(() => import("@/pages/profile"));
+const ProfileNeo = lazy(() => import("@/pages/profile-neo"));
+const PublicProfile = lazy(() => import("@/pages/public-profile"));
+const BrandProfile = lazy(() => import("@/pages/brand-profile"));
 
-import PortfolioBuilder from "@/pages/portfolio-builder";
-import CreatePulsePage from "@/pages/create-pulse-new";
-import IndustryPulsePage from "@/pages/industry-pulse-new";
-import IndustryPulseOptimizedPage from "@/pages/industry-pulse-optimized";
-import SearchPage from "@/pages/search-fixed";
-import AuthPage from "@/pages/auth-page";
-import EmailVerification from "@/pages/email-verification";
-import NewsSourcesPage from "@/pages/news-sources";
-import LoginPage from "@/pages/login";
-import AuthStatusPage from "@/pages/auth-status";
-import DevLoginPage from "@/pages/dev-login";
-import SimpleLoginPage from "@/pages/simple-login";
-import ReliableLoginPage from "@/pages/reliable-login";
-import UniversalLoginPage from "@/pages/universal-login";
-import SimpleUniversalLoginPage from "@/pages/simple-universal-login";
-import EasyLoginPage from "@/pages/easy-login";
-import GoogleAuthFixPage from "@/pages/google-auth-fix";
-import ReplitDomainLogin from "@/pages/replit-domain-login";
-import UniversalGoogleAuthPage from "@/pages/universal-google-auth";
-import CrossDomainGoogleAuth from "@/pages/cross-domain-google-auth";
-import ReplitRedirectAuth from "@/pages/replit-redirect-auth";
-import GoogleRedirectOnly from "@/pages/google-redirect-only";
-import DomainDebug from "@/pages/domain-debug";
-import FinalReplitAuth from "@/pages/final-replit-auth";
-import Radar from "@/pages/radar";
-import FirebaseAuthTest from "@/pages/auth-test";
-import GoogleAuthTest from "@/pages/google-auth-test";
-import SmartConnectPage from "@/pages/smart-connect";
-import MuskMatchPage from "@/pages/musk-match";
-import ResumePage from "@/pages/resume";
-import ResumeCV from "@/pages/resume-cv";
-import ResumeEditor from "@/pages/resume-editor";
+const PortfolioBuilder = lazy(() => import("@/pages/portfolio-builder"));
+const CreatePulsePage = lazy(() => import("@/pages/create-pulse-new"));
+const IndustryPulsePage = lazy(() => import("@/pages/industry-pulse-new"));
+const IndustryPulseOptimizedPage = lazy(() => import("@/pages/industry-pulse-optimized"));
+const SearchPage = lazy(() => import("@/pages/search-fixed"));
+const AuthPage = lazy(() => import("@/pages/auth-page"));
+const EmailVerification = lazy(() => import("@/pages/email-verification"));
+const NewsSourcesPage = lazy(() => import("@/pages/news-sources"));
+const LoginPage = lazy(() => import("@/pages/login"));
+const AuthStatusPage = lazy(() => import("@/pages/auth-status"));
+const DevLoginPage = lazy(() => import("@/pages/dev-login"));
+const SimpleLoginPage = lazy(() => import("@/pages/simple-login"));
+const ReliableLoginPage = lazy(() => import("@/pages/reliable-login"));
+const UniversalLoginPage = lazy(() => import("@/pages/universal-login"));
+const SimpleUniversalLoginPage = lazy(() => import("@/pages/simple-universal-login"));
+const EasyLoginPage = lazy(() => import("@/pages/easy-login"));
+const GoogleAuthFixPage = lazy(() => import("@/pages/google-auth-fix"));
+const ReplitDomainLogin = lazy(() => import("@/pages/replit-domain-login"));
+const UniversalGoogleAuthPage = lazy(() => import("@/pages/universal-google-auth"));
+const CrossDomainGoogleAuth = lazy(() => import("@/pages/cross-domain-google-auth"));
+const ReplitRedirectAuth = lazy(() => import("@/pages/replit-redirect-auth"));
+const GoogleRedirectOnly = lazy(() => import("@/pages/google-redirect-only"));
+const DomainDebug = lazy(() => import("@/pages/domain-debug"));
+const FinalReplitAuth = lazy(() => import("@/pages/final-replit-auth"));
+const Radar = lazy(() => import("@/pages/radar"));
+const FirebaseAuthTest = lazy(() => import("@/pages/auth-test"));
+const GoogleAuthTest = lazy(() => import("@/pages/google-auth-test"));
+const SmartConnectPage = lazy(() => import("@/pages/smart-connect"));
+const MuskMatchPage = lazy(() => import("@/pages/musk-match"));
+const ResumePage = lazy(() => import("@/pages/resume"));
+const ResumeCV = lazy(() => import("@/pages/resume-cv"));
+const ResumeEditor = lazy(() => import("@/pages/resume-editor"));
 // Resume Parser page removed per request
-import UnifiedProfilePage from "@/pages/unified-profile";
+const UnifiedProfilePage = lazy(() => import("@/pages/unified-profile"));
 
-import CareerQuestsPage from "@/pages/career-quests";
-import BrandQuestsPage from "@/pages/brand-quests";
-import CareerCapsulePage from "@/pages/career-capsule"; // Career Capsule feature (renamed from Roadmap)
-import QuantumCardPage from "@/pages/quantum-card"; // Quantum Card digital visiting card feature
-import OnboardingPage from "@/pages/onboarding";
-import EditProfilePage from "@/pages/edit-profile";
-import MuskTestingPage from "@/pages/musk-testing";
-import ManageServicesPage from "@/pages/manage-services";
+const CareerQuestsPage = lazy(() => import("@/pages/career-quests"));
+const BrandQuestsPage = lazy(() => import("@/pages/brand-quests"));
+const CareerCapsulePage = lazy(() => import("@/pages/career-capsule")); // Career Capsule feature (renamed from Roadmap)
+const QuantumCardPage = lazy(() => import("@/pages/quantum-card")); // Quantum Card digital visiting card feature
+const OnboardingPage = lazy(() => import("@/pages/onboarding"));
+const EditProfilePage = lazy(() => import("@/pages/edit-profile"));
+const MuskTestingPage = lazy(() => import("@/pages/musk-testing"));
+const ManageServicesPage = lazy(() => import("@/pages/manage-services"));
 import AddServicePage from "@/pages/add-service";
 // TestNowboardPage import removed as it's no longer needed
 import ChatPage from "@/pages/ChatPage"; // Chat messaging feature
@@ -117,7 +118,11 @@ function ProtectedRoute({ component: Component, ...rest }: { component: React.Co
   }, [isAuthenticated, isLoading, navigate]);
   
   if (isLoading) {
-    return <StandardLoadingScreen message="Authenticating..." />;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80">
+        <FeedSkeleton count={1} />
+      </div>
+    );
   }
   
   return isAuthenticated ? <Component /> : null;
@@ -145,7 +150,7 @@ function Router() {
       <Route path="/fixed-login" component={() => {
         const FixedLoginPage = lazy(() => import("@/pages/fixed-login"));
         return (
-          <Suspense fallback={<StandardLoadingScreen message="Loading page..." />}>
+          <Suspense fallback={<FeedSkeleton count={3} />}>
             <FixedLoginPage />
           </Suspense>
         );
@@ -153,7 +158,7 @@ function Router() {
       <Route path="/dev-auth" component={() => {
         const DevAuthUtilityPage = lazy(() => import("@/pages/dev-auth-utility"));
         return (
-          <Suspense fallback={<StandardLoadingScreen message="Loading dev tools..." />}>
+          <Suspense fallback={<FeedSkeleton count={2} />}>
             <DevAuthUtilityPage />
           </Suspense>
         );
@@ -171,7 +176,7 @@ function Router() {
       <Route path="/auth-debug" component={() => {
         const AuthDebugPage = lazy(() => import("@/pages/auth-debug"));
         return (
-          <Suspense fallback={<StandardLoadingScreen message="Loading debug tools..." />}>
+          <Suspense fallback={<FeedSkeleton count={2} />}>
             <AuthDebugPage />
           </Suspense>
         );
@@ -179,7 +184,7 @@ function Router() {
       <Route path="/auth-popup-debug" component={() => {
         const AuthPopupDebugPage = lazy(() => import("@/pages/auth-popup-debug"));
         return (
-          <Suspense fallback={<StandardLoadingScreen message="Loading debug tools..." />}>
+          <Suspense fallback={<FeedSkeleton count={2} />}>
             <AuthPopupDebugPage />
           </Suspense>
         );
@@ -199,7 +204,7 @@ function Router() {
         <ProtectedRoute path="/ai-career" component={() => {
           const AICareerPage = lazy(() => import("@/pages/ai-career"));
           return (
-            <Suspense fallback={<StandardLoadingScreen message="Loading AI career assistant..." />}>
+            <Suspense fallback={<FeedSkeleton count={3} />}>
               <AICareerPage />
             </Suspense>
           );
@@ -259,7 +264,7 @@ function Router() {
         <ProtectedRoute path="/resume-builder" component={() => {
           const ResumeBuilder = lazy(() => import('@/pages/resume-builder'));
           return (
-            <Suspense fallback={<StandardLoadingScreen message="Loading resume builder..." />}>
+            <Suspense fallback={<FeedSkeleton count={3} />}>
               <ResumeBuilder />
             </Suspense>
           );
@@ -355,7 +360,7 @@ function Router() {
           const AdminCheck = lazy(() => import("@/middleware/admin-check").then(mod => ({ default: mod.AdminCheck })));
           
           const AdminDashboardWithLayout = () => (
-            <Suspense fallback={<StandardLoadingScreen message="Loading admin dashboard..." />}>
+            <Suspense fallback={<FeedSkeleton count={2} />}>
               <AdminCheck>
                 <AdminLayout>
                   <AdminDashboard />
@@ -374,7 +379,7 @@ function Router() {
           const AdminCheck = lazy(() => import("@/middleware/admin-check").then(mod => ({ default: mod.AdminCheck })));
           
           const AdminUsersWithLayout = () => (
-            <Suspense fallback={<StandardLoadingScreen message="Loading admin users..." />}>
+            <Suspense fallback={<FeedSkeleton count={2} />}>
               <AdminCheck>
                 <AdminLayout>
                   <AdminUsers />
@@ -394,7 +399,7 @@ function Router() {
           const AdminCheck = lazy(() => import("@/middleware/admin-check").then(mod => ({ default: mod.AdminCheck })));
           
           const AdminContentWithLayout = () => (
-            <Suspense fallback={<StandardLoadingScreen message="Loading admin content..." />}>
+            <Suspense fallback={<FeedSkeleton count={2} />}>
               <AdminCheck>
                 <AdminLayout>
                   <AdminContentNew />
@@ -412,7 +417,7 @@ function Router() {
           const AdminCheck = lazy(() => import("@/middleware/admin-check").then(mod => ({ default: mod.AdminCheck })));
           
           const AdminAnalytics = () => (
-            <Suspense fallback={<StandardLoadingScreen message="Loading admin analytics..." />}>
+            <Suspense fallback={<FeedSkeleton count={2} />}>
               <AdminCheck>
                 <AdminLayout>
                   <AnalyticsDashboard />
@@ -433,7 +438,7 @@ function Router() {
           const AdminCheck = lazy(() => import("@/middleware/admin-check").then(mod => ({ default: mod.AdminCheck })));
           
           const AdminAnalytics = () => (
-            <Suspense fallback={<StandardLoadingScreen message="Loading admin analytics..." />}>
+            <Suspense fallback={<FeedSkeleton count={2} />}>
               <AdminCheck>
                 <AdminLayout>
                   <AnalyticsDashboard />
@@ -453,7 +458,7 @@ function Router() {
           const AdminCheck = lazy(() => import("@/middleware/admin-check").then(mod => ({ default: mod.AdminCheck })));
           
           const AdminSettings = () => (
-            <Suspense fallback={<StandardLoadingScreen message="Loading admin settings..." />}>
+            <Suspense fallback={<FeedSkeleton count={2} />}>
               <AdminCheck>
                 <AdminLayout>
                   <SettingsPage />
@@ -473,7 +478,7 @@ function Router() {
           const AdminCheck = lazy(() => import("@/middleware/admin-check").then(mod => ({ default: mod.AdminCheck })));
           
           const AdminRoles = () => (
-            <Suspense fallback={<StandardLoadingScreen message="Loading admin roles..." />}>
+            <Suspense fallback={<FeedSkeleton count={2} />}>
               <AdminCheck>
                 <AdminLayout>
                   <RolesManagement />
@@ -494,7 +499,7 @@ function Router() {
       {/* Shared Quantum Card View route */}
       <Route path="/profile/card/:userId">
         {(params) => (
-          <Suspense fallback={<StandardLoadingScreen message="Loading profile card..." />}>
+          <Suspense fallback={<FeedSkeleton count={1} />}>
             <SharedCardPage userId={params.userId} />
           </Suspense>
         )}
@@ -537,7 +542,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <Suspense fallback={<StandardLoadingScreen message="Starting application..." />}>
+        <Suspense fallback={<FeedSkeleton count={3} />}>
           <Router />
           <GlobalMuskButton />
           <DomainHelper />
