@@ -78,6 +78,7 @@ const EmailVerification = lazy(() => import("@/pages/email-verification"));
 
 // Admin and debug components (lowest priority)
 const NavigationTest = lazy(() => import("@/pages/navigation-test"));
+const URLInputDemo = lazy(() => import("@/pages/url-input-demo"));
 const NewsSourcesPage = lazy(() => import("@/pages/news-sources"));
 const LoginPage = lazy(() => import("@/pages/login"));
 const AuthStatusPage = lazy(() => import("@/pages/auth-status"));
@@ -172,6 +173,7 @@ function Router() {
       {/* Tier 1: Critical Routes (Always Available) */}
       <Route path="/" component={Landing} />
       <Route path="/nav-test" component={NavigationTest} />
+      <Route path="/url-demo" component={URLInputDemo} />
       <Route path="/industry-pulse" component={IndustryPulsePage} />
       <Route path="/create-pulse" component={CreatePulsePage} />
       <Route path="/auth" component={AuthPage} />
