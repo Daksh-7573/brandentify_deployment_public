@@ -128,8 +128,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     
     const initAuth = async () => {
       try {
-        // Dynamic import to avoid initialization issues
-        const { auth, googleProvider } = await import('@/lib/firebase');
+        // Import Firebase objects with proper typing
+        const firebaseModule = await import('@/lib/firebase');
+        const auth = firebaseModule.auth as Auth;
+        const googleProvider = firebaseModule.googleProvider as GoogleAuthProvider;
         
         // First check for redirect result
         const redirectAttempt = localStorage.getItem('google_auth_redirect_attempt');
@@ -231,7 +233,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsLoading(true);
       console.log("🔐 Starting Google sign-in...");
       
-      const { auth, googleProvider } = await import('@/lib/firebase');
+      const firebaseModule = await import('@/lib/firebase');
+      const auth = firebaseModule.auth as Auth;
+      const googleProvider = firebaseModule.googleProvider as GoogleAuthProvider;
       console.log("Firebase objects loaded:", { auth: !!auth, googleProvider: !!googleProvider });
       
       const isReplitDomain = window.location.hostname.includes('replit');
@@ -318,7 +322,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signOut = async () => {
     try {
       setIsLoading(true);
-      const { auth } = await import('@/lib/firebase');
+      const firebaseModule = await import('@/lib/firebase');
+      const auth = firebaseModule.auth as Auth;
       await firebaseSignOut(auth);
       setUser(null);
       setIsDemoMode(false);

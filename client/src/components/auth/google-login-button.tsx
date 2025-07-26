@@ -24,8 +24,17 @@ export function GoogleLoginButton({
   const { signInWithGoogle } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   
-  const handleGoogleLogin = async () => {
+  const handleGoogleLogin = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     console.log("🚀 Google Login Button clicked!");
+    
+    // Check if signInWithGoogle function exists
+    if (typeof signInWithGoogle !== 'function') {
+      console.error("❌ signInWithGoogle is not a function:", typeof signInWithGoogle);
+      return;
+    }
+    
     try {
       setIsLoading(true);
       console.log("🔄 Calling signInWithGoogle...");
