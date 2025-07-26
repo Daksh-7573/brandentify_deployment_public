@@ -161,6 +161,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                   title: "Signed in successfully",
                   description: `Welcome ${userData.name || userData.email}!`,
                 });
+                
+                // Redirect to Industry Pulse after successful authentication
+                setTimeout(() => {
+                  window.location.href = '/industry-pulse';
+                }, 500);
               }
               
               setIsLoading(false);
@@ -193,6 +198,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                     title: "Signed in successfully",
                     description: `Welcome ${userData.name || userData.email}!`,
                   });
+                  
+                  // Redirect to Industry Pulse after successful authentication
+                  setTimeout(() => {
+                    window.location.href = '/industry-pulse';
+                  }, 500);
                 }
               } else {
                 // Fallback user
@@ -267,6 +277,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               title: "Signed in successfully",
               description: `Welcome ${userData.name || userData.email}!`,
             });
+            
+            // Redirect to Industry Pulse after successful authentication
+            setTimeout(() => {
+              window.location.href = '/industry-pulse';
+            }, 500);
           }
         }
       }
