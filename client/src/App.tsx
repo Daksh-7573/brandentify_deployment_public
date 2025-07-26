@@ -3,6 +3,7 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { SimpleAuthProvider } from "./context/simple-auth-context";
+import { AuthRedirectGuard } from "./context/auth-redirect-guard";
 import { useAuth } from "./hooks/use-auth";
 import { useEffect, Suspense, lazy } from "react";
 import GlobalMuskButton from "@/components/musk/global-musk-button";
@@ -580,15 +581,17 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <SimpleAuthProvider>
-        <Suspense fallback={<FeedSkeleton count={3} />}>
-          <Router />
-          <GlobalMuskButton />
-          <DomainHelper />
-          <DomainAuthHelper />
-          <Toaster />
-          {/* Cookie Consent Banner - shown based on user's consent status */}
-          <CookieConsentBanner />
-        </Suspense>
+        <AuthRedirectGuard>
+          <Suspense fallback={<FeedSkeleton count={3} />}>
+            <Router />
+            <GlobalMuskButton />
+            <DomainHelper />
+            <DomainAuthHelper />
+            <Toaster />
+            {/* Cookie Consent Banner - shown based on user's consent status */}
+            <CookieConsentBanner />
+          </Suspense>
+        </AuthRedirectGuard>
       </SimpleAuthProvider>
     </QueryClientProvider>
   );

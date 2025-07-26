@@ -36,10 +36,11 @@ export default function AuthPage() {
   useEffect(() => {
     console.log("AuthPage - checking authentication:", { isAuthenticated, isLoading });
     if (isAuthenticated && !isLoading) {
-      console.log("AuthPage - redirecting to industry pulse");
-      setLocation("/industry-pulse");
+      console.log("AuthPage - force redirecting to industry pulse");
+      // Use window.location.replace to prevent back button issues
+      window.location.replace("/industry-pulse");
     }
-  }, [isAuthenticated, isLoading, setLocation]);
+  }, [isAuthenticated, isLoading]);
 
   return (
     <div 

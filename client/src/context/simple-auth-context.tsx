@@ -95,24 +95,15 @@ export const SimpleAuthProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           console.log("🔄 Auth state changed:", firebaseUser ? `User: ${firebaseUser.email}` : "User signed out");
           
           if (firebaseUser) {
-            if (!user || user.uid !== firebaseUser.uid) {
-              console.log("👤 Creating user from Firebase auth");
-              const userData = createUserFromFirebase(firebaseUser);
-              setUser(userData);
-              
-              // Only show toast and redirect if this is a new login
-              if (!user) {
-                toast({
-                  title: "Signed in successfully",
-                  description: `Welcome ${userData.name}!`,
-                });
-                
-                // Immediate redirect
-                setTimeout(() => {
-                  window.location.href = '/industry-pulse';
-                }, 500);
-              }
-            }
+            console.log("👤 Firebase user detected, processing...");
+            const userData = createUserFromFirebase(firebaseUser);
+            console.log("📊 Created user data:", userData);
+            
+            // Always set user data and redirect for authenticated users
+            setUser(userData);
+            
+            // Set user but don't force redirect here - let AuthRedirectGuard handle it
+            console.log("✅ User data set, AuthRedirectGuard will handle redirect");
           } else {
             console.log("👋 User signed out");
             setUser(null);
@@ -169,18 +160,19 @@ export const SimpleAuthProvider: React.FC<{ children: React.ReactNode }> = ({ ch
             description: `Welcome ${userData.name}!`,
           });
           
-          // Direct redirect
-          console.log("🚀 Redirecting to Industry Pulse...");
-          window.location.href = '/industry-pulse';
+          // Force redirect using replace to prevent back button issues
+          console.log("🚀 Force redirecting to Industry Pulse...");
+          window.location.replace('/industry-pulse');
         } else {
           console.log("⚠️ No user returned from popup result");
         }
       }
     } catch (error) {
       console.error("❌ Google sign-in error:", error);
+      const errorMessage = error instanceof Error ? error.message : 'Please try again.';
       toast({
         title: "Sign-in failed",  
-        description: `Failed to sign in with Google: ${error.message || 'Please try again.'}`,
+        description: `Failed to sign in with Google: ${errorMessage}`,
         variant: "destructive",
       });
     } finally {
