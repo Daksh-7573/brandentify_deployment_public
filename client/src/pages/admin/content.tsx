@@ -12,7 +12,7 @@ import { Switch } from "@/components/ui/switch";
 import { BellRing, FileText, MessageSquare, Trash2, User, Edit, Plus, Eye, MoreHorizontal, Filter, AlertCircle, Loader2, Image as ImageIcon, Tag } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { StandardLoadingScreen } from "@/components/ui/standard-loading-screen";
+import { FeedSkeleton } from "@/components/ui/skeleton-components";
 
 // Types for content items and author
 interface Author {
@@ -460,7 +460,7 @@ export default function ContentManagementPage() {
                     // Loading state
                     <tr>
                       <td colSpan={6} className="py-8 text-center">
-                        <StandardLoadingScreen message="Loading content..." />
+                        <FeedSkeleton count={2} />
                       </td>
                     </tr>
                   ) : contentError ? (

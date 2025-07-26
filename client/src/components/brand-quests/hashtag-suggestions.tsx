@@ -3,7 +3,7 @@ import { useHashtagSuggestions } from '@/hooks/use-hashtag-suggestions';
 import { useCurrentUser } from '@/hooks/use-current-user';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { StandardLoadingScreen } from '@/components/ui/standard-loading-screen';
+import { FeedSkeleton } from '@/components/ui/skeleton-components';
 import { RefreshCcw } from 'lucide-react';
 
 interface HashtagSuggestionsProps {
@@ -97,8 +97,8 @@ export function HashtagSuggestions({
       
       <div className="flex flex-wrap gap-2">
         {isLoading ? (
-          // Show StandardLoadingScreen while loading
-          <StandardLoadingScreen message="Loading hashtag suggestions..." />
+          // Show FeedSkeleton while loading
+          <FeedSkeleton count={2} />
         ) : (
           // Show hashtags when loaded
           <>

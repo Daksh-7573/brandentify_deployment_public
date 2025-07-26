@@ -25,7 +25,7 @@ import { Service } from "@shared/schema";
 import { ReactNode } from "react";
 // Removed Sidebar import, using top navigation only
 import Header from "@/components/layout/header";
-import { StandardLoadingScreen } from "@/components/ui/standard-loading-screen";
+import { FeedSkeleton } from "@/components/ui/skeleton-components";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -159,7 +159,7 @@ export default function ServicesPage() {
             </div>
             
             {isLoading ? (
-              <StandardLoadingScreen message="Loading your services..." />
+              <FeedSkeleton count={2} />
             ) : services.length === 0 ? (
               <div className="text-center p-12 border rounded-lg border-dashed">
                 <h3 className="text-xl font-medium mb-2">No services added yet</h3>

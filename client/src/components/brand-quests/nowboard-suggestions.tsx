@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useLocation } from 'wouter';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { StandardLoadingScreen } from '@/components/ui/standard-loading-screen';
+import { FeedSkeleton } from '@/components/ui/skeleton-components';
 import { Progress } from '@/components/ui/progress';
 import { ArrowRight, Zap, MessageSquare, ThumbsUp, Bot, RefreshCw, Lightbulb } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
@@ -189,7 +189,7 @@ export function NowboardSuggestions({ userId, className, questType }: NowboardSu
   };
   
   if (isLoading || loadingAction) {
-    return <StandardLoadingScreen message="Loading nowboard suggestions..." />;
+    return <FeedSkeleton count={2} />;
   }
   
   if (isError) {

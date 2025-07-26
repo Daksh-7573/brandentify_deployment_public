@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Link } from 'wouter';
 import VisitingCardPreview from '@/components/profile/visiting-card-preview';
 import { useToast } from '@/hooks/use-toast';
-import { StandardLoadingScreen } from '@/components/ui/standard-loading-screen';
+import { FeedSkeleton } from '@/components/ui/skeleton-components';
 import type { UserData as UserDataType } from '@/types/user';
 
 interface SharedCardPageProps {
@@ -174,8 +174,8 @@ const SharedCardPage: React.FC<SharedCardPageProps> = ({ userId }) => {
   
   // Loading state (includes initial loading with no userData)
   if (loading || !userData) {
-    console.log('Showing StandardLoadingScreen state');  // For debugging
-    return <StandardLoadingScreen message="Loading shared card..." />;
+    console.log('Showing FeedSkeleton state');  // For debugging
+    return <FeedSkeleton count={2} />;
   }
                       <div className="h-4 w-4 rounded-full bg-gray-300 dark:bg-gray-700"></div>
                       <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-3/4"></div>

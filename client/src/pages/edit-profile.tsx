@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Progress } from "@/components/ui/progress";
-import { StandardLoadingScreen } from "@/components/ui/standard-loading-screen";
+import { FeedSkeleton } from "@/components/ui/skeleton-components";
 
 export default function EditProfilePage() {
   const { user, isAuthenticated } = useAuth();
@@ -519,7 +519,7 @@ export default function EditProfilePage() {
               <CardContent className="p-0">
                 {/* Loading state */}
                 {isLoadingUserData ? (
-                  <StandardLoadingScreen message="Loading your profile..." />
+                  <FeedSkeleton count={2} />
                 ) : (
                   /* Edit profile steps - we configure it to show only the active tab */
                   <ProfileSteps

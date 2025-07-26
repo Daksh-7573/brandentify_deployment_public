@@ -13,7 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { StandardLoadingScreen } from "@/components/ui/standard-loading-screen";
+import { UserCardSkeleton } from "@/components/ui/skeleton-components";
 import { 
   MessageSquare, 
   UserPlus, 
@@ -285,5 +285,11 @@ export function MatchResults({ userId }: { userId: number }) {
 }
 
 function MatchResultsLoading() {
-  return <StandardLoadingScreen message="Finding compatible professionals..." />;
+  return (
+    <div className="space-y-4">
+      <UserCardSkeleton />
+      <UserCardSkeleton />
+      <UserCardSkeleton />
+    </div>
+  );
 }

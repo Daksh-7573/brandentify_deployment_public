@@ -58,7 +58,7 @@ import {
 } from "@/components/ui/tooltip";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { StandardLoadingScreen } from "@/components/ui/standard-loading-screen";
+import { FeedSkeleton } from "@/components/ui/skeleton-components";
 
 // Extended Pulse type with user info for display purposes
 interface PulseWithUser {
@@ -1123,7 +1123,7 @@ export default function IndustryPulsePage() {
                   />
                   
                   {isLoading ? (
-                    <StandardLoadingScreen message="Loading pulse feed..." />
+                    <FeedSkeleton count={2} />
                   ) : filteredPulses.length === 0 ? (
                     <NeoGlassSection>
                       <div className="flex flex-col items-center justify-center py-10">

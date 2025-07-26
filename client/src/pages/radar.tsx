@@ -6,7 +6,7 @@ import { apiRequest } from '@/lib/queryClient';
 import { useAuth } from '@/hooks/use-auth';
 import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
 import Header from "@/components/layout/header";
-import { StandardLoadingScreen } from "@/components/ui/standard-loading-screen";
+import { FeedSkeleton } from "@/components/ui/skeleton-components";
 import { User as UserIcon } from 'lucide-react';
 import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
 
@@ -755,7 +755,7 @@ const Radar = () => {
           {locationStatus === 'granted' && (
             <>
               {isLoadingNearby ? (
-                <StandardLoadingScreen message="Finding nearby professionals..." />
+                <FeedSkeleton count={2} />
               ) : filteredNearbyUsers && filteredNearbyUsers.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <div className="col-span-1 sm:col-span-2 mb-2">

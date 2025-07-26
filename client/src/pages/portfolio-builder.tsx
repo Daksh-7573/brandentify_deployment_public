@@ -69,7 +69,7 @@ import {
 } from "lucide-react";
 import Header from "@/components/layout/header";
 import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
-import { StandardLoadingScreen } from "@/components/ui/standard-loading-screen";
+import { FeedSkeleton } from "@/components/ui/skeleton-components";
 
 // Define the schema for portfolio form
 const portfolioFormSchema = z.object({
@@ -1235,15 +1235,15 @@ export default function PortfolioBuilder() {
   // Render loading states
   const renderLoadingState = () => {
     if (isAnalyzingProfile) {
-      return <StandardLoadingScreen message="Musk AI is analyzing your profile..." />;
+      return <FeedSkeleton count={2} />;
     }
     
     if (isGenerating) {
-      return <StandardLoadingScreen message="Creating your personalized portfolio..." />;
+      return <FeedSkeleton count={2} />;
     }
     
     if (isLoadingPortfolio) {
-      return <StandardLoadingScreen message="Loading portfolio preview..." />;
+      return <FeedSkeleton count={2} />;
     }
     
     return null;

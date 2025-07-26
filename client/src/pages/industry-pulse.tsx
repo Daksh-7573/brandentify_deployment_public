@@ -1553,7 +1553,7 @@ export default function IndustryPulsePage() {
                 />
 
                 {isLoading ? (
-                  <StandardLoadingScreen message="Loading industry pulses..." />
+                  <FeedSkeleton count={2} />
                 ) : filteredPulses.length === 0 ? (
                   <Card>
                     <CardContent className="flex flex-col items-center justify-center py-10">

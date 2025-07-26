@@ -12,7 +12,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { ExternalLink, Github, Globe, Linkedin, Mail, MapPin, Phone, Twitter } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
-import { StandardLoadingScreen } from "@/components/ui/standard-loading-screen";
+import { FeedSkeleton } from "@/components/ui/skeleton-components";
 
 // Import portfolio templates
 import MinimalistPro from "@/components/portfolio/templates/minimalist-pro";
@@ -252,7 +252,7 @@ const PublicProfile = ({ username: propUsername }: PublicProfileProps) => {
   
   // Loading state
   if (isUserLoading || isPortfolioLoading) {
-    return <StandardLoadingScreen message="Loading public profile..." />;
+    return <FeedSkeleton count={2} />;
   }
   
   // Render the appropriate portfolio template based on user's selected layout

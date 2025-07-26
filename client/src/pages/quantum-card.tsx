@@ -10,7 +10,7 @@ import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-l
 import Header from "@/components/layout/header";
 import { UserData } from "@/types/user";
 import { useState } from "react";
-import { StandardLoadingScreen } from "@/components/ui/standard-loading-screen";
+import { FeedSkeleton } from "@/components/ui/skeleton-components";
 
 export default function QuantumCardPage() {
   const { user } = useAuth();
@@ -25,7 +25,7 @@ export default function QuantumCardPage() {
   });
 
   if (isLoading) {
-    return <StandardLoadingScreen message="Loading your Quantum Card..." />;
+    return <FeedSkeleton count={2} />;
   }
 
   if (!userData) {

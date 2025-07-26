@@ -7,7 +7,7 @@ import {
 import { useAuth } from "@/context/auth-context";
 import { useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
-import { StandardLoadingScreen } from "@/components/ui/standard-loading-screen";
+import { FeedSkeleton } from "@/components/ui/skeleton-components";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 
@@ -131,8 +131,8 @@ export default function AdminDashboard() {
         <CardContent>
           <div className="space-y-4">
             {activityLoading ? (
-              // Show StandardLoadingScreen while loading
-              <StandardLoadingScreen message="Loading admin activity..." />
+              // Show FeedSkeleton while loading
+              <FeedSkeleton count={2} />
             ) : activityError ? (
               // Show error state
               <div className="flex items-center justify-center py-6 text-red-500">

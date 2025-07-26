@@ -9,7 +9,7 @@ import { useLocation } from 'wouter';
 import Header from '@/components/layout/header';
 import { NeoGlassLayout } from '@/components/layout/neo-glass-layout';
 import '../styles/neo-glass-spotify.css';
-import { StandardLoadingScreen } from '@/components/ui/standard-loading-screen';
+import { FeedSkeleton } from '@/components/ui/skeleton-components';
 
 const ChatPage: React.FC = () => {
   // Get current user data from the auth context
@@ -28,7 +28,7 @@ const ChatPage: React.FC = () => {
   const isLoading = authLoading || dataLoading;
 
   if (isLoading) {
-    return <StandardLoadingScreen message="Loading messages..." />;
+    return <FeedSkeleton count={2} />;
   }
 
   // If we're not loading and either there's no user or there was an error fetching
