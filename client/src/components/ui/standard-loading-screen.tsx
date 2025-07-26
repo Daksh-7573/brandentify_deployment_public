@@ -1,4 +1,4 @@
-import { Loader2 } from "lucide-react";
+import robotGif from "@assets/Contact Candour_1753488336182.gif";
 
 interface StandardLoadingScreenProps {
   message?: string;
@@ -6,16 +6,20 @@ interface StandardLoadingScreenProps {
 }
 
 export function StandardLoadingScreen({ 
-  message = "Loading...", 
+  message = "Welcome to Brandentifier", 
   className = "" 
 }: StandardLoadingScreenProps) {
   return (
     <div className={`min-h-screen flex items-center justify-center ${className}`}>
-      <div className="text-center">
-        <div className="w-16 h-16 mx-auto flex items-center justify-center bg-white/10 backdrop-blur-sm rounded-full border border-white/20">
-          <Loader2 className="w-10 h-10 animate-spin text-white" />
-        </div>
-        <span className="text-lg font-medium text-white mt-4 block">{message}</span>
+      <div className="flex flex-col items-center gap-6 p-12 bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20 shadow-2xl">
+        {/* Cute robot animation */}
+        <img 
+          src={robotGif} 
+          alt="Loading robot" 
+          className="w-30 h-30 object-contain"
+        />
+        {/* Loading message */}
+        <span className="text-xl font-semibold text-white text-center">{message}</span>
       </div>
     </div>
   );
