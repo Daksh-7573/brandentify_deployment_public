@@ -368,5 +368,10 @@ console.log("Musk Pulse automation system started - scheduling pulses for 9 AM, 
     reusePort: true,
   }, () => {
     log(`serving on port ${port}`);
+    console.log(`🚀 Server accessible at:`);
+    console.log(`   - Local: http://localhost:${port}`);
+    console.log(`   - Network: http://0.0.0.0:${port}`);
+    console.log(`   - External: https://${process.env.REPLIT_DOMAINS}`);
+    console.log(`🔧 Troubleshooting: If external domain fails, try hard refresh (Ctrl+F5)`);
   });
 })();
