@@ -409,8 +409,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     checkRedirectResult().then((redirectHandled) => {
       console.log("Redirect check completed, handled:", redirectHandled);
       
-      // If redirect was handled, we don't need to process the auth state again
-      if (redirectHandled) return;
+      // Always set up auth state listener, even if redirect was handled
+      // This ensures the user state is properly maintained
       
       // Set up auth state listener
       console.log("Setting up auth state listener");

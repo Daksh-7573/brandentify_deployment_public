@@ -2,7 +2,7 @@ import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
-import { AuthProvider } from "./context/auth-context";
+import { AuthProvider } from "./context/auth-context-fixed";
 import { useAuth } from "./hooks/use-auth";
 import { useEffect, Suspense, lazy } from "react";
 import GlobalMuskButton from "@/components/musk/global-musk-button";
@@ -187,6 +187,14 @@ function Router() {
           <AuthTestPage />
         </Suspense>
       )} />
+      <Route path="/auth-debug-simple" component={() => {
+        const AuthDebugSimplePage = lazy(() => import("@/pages/auth-debug-simple"));
+        return (
+          <Suspense fallback={<FeedSkeleton count={2} />}>
+            <AuthDebugSimplePage />
+          </Suspense>
+        );
+      }} />
       <Route path="/auth-popup-debug" component={() => {
         const AuthPopupDebugPage = lazy(() => import("@/pages/auth-popup-debug"));
         return (
