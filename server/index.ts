@@ -271,7 +271,7 @@ app.use((req, res, next) => {
 app.use(express.json({ 
   limit: '50mb',
   verify: (req, res, buf, encoding) => {
-    if (req.url.includes('/career-capsule')) {
+    if (req.url?.includes('/career-capsule')) {
       console.log('[JSON Parser Debug] Raw buffer length:', buf.length);
       console.log('[JSON Parser Debug] Raw buffer content:', buf.toString('utf8'));
     }
