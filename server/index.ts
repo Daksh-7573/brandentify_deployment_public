@@ -368,5 +368,9 @@ console.log("Musk Pulse automation system started - scheduling pulses for 9 AM, 
     reusePort: true,
   }, () => {
     log(`serving on port ${port}`);
+    console.log(`\n🚀 Brandentifier Platform is running!`);
+    console.log(`📍 Local URL: http://localhost:${port}`);
+    console.log(`🌐 Network URL: http://0.0.0.0:${port}`);
+    console.log(`✅ Server is ready for preview\n`);
   });
 })();
