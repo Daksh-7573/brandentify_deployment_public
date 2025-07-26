@@ -17,6 +17,18 @@ import { muskPulseScheduler } from "./services/musk-pulse-scheduler";
 
 const app = express();
 
+// Configure for external domain access
+app.set('trust proxy', true);
+app.use((req, res, next) => {
+  // Allow access from Replit domains
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  res.header('X-Frame-Options', 'SAMEORIGIN');
+  res.header('X-Content-Type-Options', 'nosniff');
+  next();
+});
+
 // Very first handler - career capsule POST bypass (before any middleware that touches the body)
 app.use('/api/users/:userId/career-capsule', (req, res, next) => {
   if (req.method === 'POST') {
