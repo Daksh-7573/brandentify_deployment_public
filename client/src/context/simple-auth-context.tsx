@@ -1,0 +1,207 @@
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { 
+  signInWithPopup, 
+  signInWithRedirect, 
+  getRedirectResult, 
+  onAuthStateChanged,
+  signOut as firebaseSignOut,
+  type User as FirebaseUser,
+  type Auth,
+  type GoogleAuthProvider
+} from 'firebase/auth';
+import { useToast } from "@/hooks/use-toast";
+
+interface AuthUser {
+  uid: string;
+  id: number;
+  username: string;
+  email: string | null;
+  name: string | null;
+  photoURL: string | null;
+  title?: string | null;
+  location?: string | null;
+}
+
+interface AuthContextType {
+  user: AuthUser | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  signInWithGoogle: () => Promise<void>;
+  signOut: () => Promise<void>;
+}
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+};
+
+export const SimpleAuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const { toast } = useToast();
+
+  const isAuthenticated = !!user;
+
+  const createUserFromFirebase = (firebaseUser: FirebaseUser): AuthUser => {
+    return {
+      uid: firebaseUser.uid,
+      id: parseInt(firebaseUser.uid.substring(0, 8), 36) || Math.floor(Math.random() * 10000),
+      username: firebaseUser.email?.split('@')[0] || firebaseUser.uid.substring(0, 15),
+      email: firebaseUser.email,
+      name: firebaseUser.displayName || firebaseUser.email?.split('@')[0] || "Google User",
+      photoURL: firebaseUser.photoURL,
+      title: null,
+      location: null
+    };
+  };
+
+  useEffect(() => {
+    const initAuth = async () => {
+      try {
+        console.log("🔥 Initializing Simple Auth...");
+        
+        const firebaseModule = await import('@/lib/firebase');
+        const auth = firebaseModule.auth as Auth;
+        const googleProvider = firebaseModule.googleProvider as GoogleAuthProvider;
+
+        // Check for redirect result first
+        try {
+          const result = await getRedirectResult(auth);
+          if (result?.user) {
+            console.log("✅ Google redirect authentication successful");
+            const userData = createUserFromFirebase(result.user);
+            setUser(userData);
+            
+            toast({
+              title: "Signed in successfully",
+              description: `Welcome ${userData.name}!`,
+            });
+            
+            // Direct redirect without timeout
+            window.location.href = '/industry-pulse';
+            return;
+          }
+        } catch (error) {
+          console.log("No redirect result or error:", error);
+        }
+
+        // Set up auth state listener
+        const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+          console.log("🔄 Auth state changed:", firebaseUser ? `User: ${firebaseUser.email}` : "User signed out");
+          
+          if (firebaseUser) {
+            if (!user || user.uid !== firebaseUser.uid) {
+              console.log("👤 Creating user from Firebase auth");
+              const userData = createUserFromFirebase(firebaseUser);
+              setUser(userData);
+              
+              // Only show toast and redirect if this is a new login
+              if (!user) {
+                toast({
+                  title: "Signed in successfully",
+                  description: `Welcome ${userData.name}!`,
+                });
+                
+                // Immediate redirect
+                setTimeout(() => {
+                  window.location.href = '/industry-pulse';
+                }, 500);
+              }
+            }
+          } else {
+            console.log("👋 User signed out");
+            setUser(null);
+          }
+          
+          setIsLoading(false);
+        });
+
+        return unsubscribe;
+      } catch (error) {
+        console.error("❌ Auth initialization error:", error);
+        setIsLoading(false);
+      }
+    };
+
+    initAuth();
+  }, [user, toast]);
+
+  const signInWithGoogle = async () => {
+    try {
+      setIsLoading(true);
+      console.log("🚀 Starting Google sign-in...");
+      
+      const firebaseModule = await import('@/lib/firebase');
+      const auth = firebaseModule.auth as Auth;
+      const googleProvider = firebaseModule.googleProvider as GoogleAuthProvider;
+
+      // Determine if we should use popup or redirect
+      const isReplit = window.location.hostname.includes('replit.dev') || 
+                       window.location.hostname.includes('replit.app') ||
+                       window.location.hostname.includes('replit.co');
+
+      if (isReplit) {
+        console.log("🔄 Using redirect method for Replit domain");
+        await signInWithRedirect(auth, googleProvider);
+      } else {
+        console.log("🪟 Using popup method for non-Replit domain");
+        const result = await signInWithPopup(auth, googleProvider);
+        
+        if (result?.user) {
+          console.log("✅ Google popup authentication successful");
+          const userData = createUserFromFirebase(result.user);
+          setUser(userData);
+          
+          toast({
+            title: "Signed in successfully",
+            description: `Welcome ${userData.name}!`,
+          });
+          
+          // Direct redirect
+          window.location.href = '/industry-pulse';
+        }
+      }
+    } catch (error) {
+      console.error("❌ Google sign-in error:", error);
+      toast({
+        title: "Sign-in failed",
+        description: "Failed to sign in with Google. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const signOut = async () => {
+    try {
+      const firebaseModule = await import('@/lib/firebase');
+      const auth = firebaseModule.auth as Auth;
+      await firebaseSignOut(auth);
+      setUser(null);
+      toast({
+        title: "Signed out",
+        description: "You have been signed out successfully.",
+      });
+    } catch (error) {
+      console.error("Sign out error:", error);
+    }
+  };
+
+  return (
+    <AuthContext.Provider value={{
+      user,
+      isAuthenticated,
+      isLoading,
+      signInWithGoogle,
+      signOut
+    }}>
+      {children}
+    </AuthContext.Provider>
+  );
+};

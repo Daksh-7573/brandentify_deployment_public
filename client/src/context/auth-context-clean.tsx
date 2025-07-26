@@ -249,12 +249,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             // User is signed in
             if (!user || user.uid !== firebaseUser.uid) {
               console.log("👤 Processing new user sign-in...");
+              setIsLoading(true); // Set loading while processing
               
               await createOrUpdateUserInBackend(firebaseUser);
               const userData = await fetchUserData(firebaseUser.uid, firebaseUser.email || undefined);
               console.log("📊 Auth state change - User data:", userData ? "Retrieved" : "Failed");
               
               if (userData) {
+                console.log("✅ Setting user data from backend:", userData);
                 setUser(userData);
                 if (!user) {
                   toast({
@@ -270,19 +272,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 }
               } else {
                 // Fallback user
+                console.log("⚠️ Using fallback user for auth state change");
                 const fallbackUser = {
                   uid: firebaseUser.uid,
-                  id: parseInt(firebaseUser.uid.substring(0, 8), 36) || 999,
-                  username: firebaseUser.email?.split('@')[0] || firebaseUser.uid,
+                  id: parseInt(firebaseUser.uid.substring(0, 8), 36) || Math.floor(Math.random() * 10000),
+                  username: firebaseUser.email?.split('@')[0] || firebaseUser.uid.substring(0, 15),
                   email: firebaseUser.email,
-                  name: firebaseUser.displayName || firebaseUser.email,
+                  name: firebaseUser.displayName || firebaseUser.email?.split('@')[0] || "Google User",
                   photoURL: firebaseUser.photoURL
                 };
                 setUser(fallbackUser);
+                if (!user) {
+                  toast({
+                    title: "Signed in successfully",
+                    description: `Welcome ${fallbackUser.name}!`,
+                  });
+                  
+                  console.log("🚀 Redirecting to Industry Pulse with fallback user");
+                  setTimeout(() => {
+                    window.location.href = '/industry-pulse';
+                  }, 1000);
+                }
               }
             }
+            setIsLoading(false); // Clear loading after processing
           } else {
             // User is signed out
+            console.log("👋 User signed out, clearing state");
             if (user) {
               setUser(null);
               toast({
@@ -290,9 +306,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 description: "You have been signed out successfully.",
               });
             }
+            setIsLoading(false);
           }
-          
-          setIsLoading(false);
         });
 
         return unsubscribe;

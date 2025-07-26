@@ -2,7 +2,7 @@ import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
-import { AuthProvider } from "./context/auth-context-clean";
+import { SimpleAuthProvider } from "./context/simple-auth-context";
 import { useAuth } from "./hooks/use-auth";
 import { useEffect, Suspense, lazy } from "react";
 import GlobalMuskButton from "@/components/musk/global-musk-button";
@@ -579,7 +579,7 @@ function App() {
   // Add a root-level Suspense boundary to ensure we never show a white screen
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
+      <SimpleAuthProvider>
         <Suspense fallback={<FeedSkeleton count={3} />}>
           <Router />
           <GlobalMuskButton />
@@ -589,7 +589,7 @@ function App() {
           {/* Cookie Consent Banner - shown based on user's consent status */}
           <CookieConsentBanner />
         </Suspense>
-      </AuthProvider>
+      </SimpleAuthProvider>
     </QueryClientProvider>
   );
 }
