@@ -76,14 +76,18 @@ export const SimpleAuthProvider: React.FC<{ children: React.ReactNode }> = ({ ch
             console.log("✅ Google redirect authentication successful");
             const userData = createUserFromFirebase(result.user);
             setUser(userData);
+            setIsLoading(false);
             
             toast({
               title: "Signed in successfully",
               description: `Welcome ${userData.name}!`,
             });
             
-            // Direct redirect without timeout
-            window.location.href = '/industry-pulse';
+            // Force immediate redirect
+            console.log("🚀 Redirect result - forcing navigation to Industry Pulse");
+            setTimeout(() => {
+              window.location.replace('/industry-pulse');
+            }, 100);
             return;
           }
         } catch (error) {
@@ -99,11 +103,15 @@ export const SimpleAuthProvider: React.FC<{ children: React.ReactNode }> = ({ ch
             const userData = createUserFromFirebase(firebaseUser);
             console.log("📊 Created user data:", userData);
             
-            // Always set user data and redirect for authenticated users
             setUser(userData);
             
-            // Set user but don't force redirect here - let AuthRedirectGuard handle it
-            console.log("✅ User data set, AuthRedirectGuard will handle redirect");
+            // Check if we're on auth page and force redirect
+            if (window.location.pathname === '/' || window.location.pathname === '/auth') {
+              console.log("🚀 Auth state change - on auth page, forcing redirect");
+              setTimeout(() => {
+                window.location.replace('/industry-pulse');
+              }, 100);
+            }
           } else {
             console.log("👋 User signed out");
             setUser(null);
@@ -120,12 +128,13 @@ export const SimpleAuthProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     };
 
     initAuth();
-  }, [user, toast]);
+  }, [toast]);
 
   const signInWithGoogle = async () => {
     try {
       setIsLoading(true);
       console.log("🚀 Starting Google sign-in...");
+      console.log("Current page URL:", window.location.href);
       
       const firebaseModule = await import('@/lib/firebase');
       const auth = firebaseModule.auth as Auth;
@@ -137,35 +146,51 @@ export const SimpleAuthProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         hostname: window.location.hostname 
       });
 
-      // Determine if we should use popup or redirect
-      const isReplit = window.location.hostname.includes('replit.dev') || 
-                       window.location.hostname.includes('replit.app') ||
-                       window.location.hostname.includes('replit.co');
-
-      if (isReplit) {
-        console.log("🔄 Using redirect method for Replit domain");
-        await signInWithRedirect(auth, googleProvider);
-      } else {
-        console.log("🪟 Using popup method for non-Replit domain");
-        const result = await signInWithPopup(auth, googleProvider);
+      // Always use popup for testing to avoid redirect issues
+      console.log("🪟 Using popup method for authentication");
+      const result = await signInWithPopup(auth, googleProvider);
+      
+      if (result?.user) {
+        console.log("✅ Google popup authentication successful:", result.user.email);
+        const userData = createUserFromFirebase(result.user);
+        console.log("👤 Created user data:", userData);
         
-        if (result?.user) {
-          console.log("✅ Google popup authentication successful:", result.user.email);
-          const userData = createUserFromFirebase(result.user);
-          console.log("👤 Created user data:", userData);
-          setUser(userData);
-          
-          toast({
-            title: "Signed in successfully",
-            description: `Welcome ${userData.name}!`,
-          });
-          
-          // Force redirect using replace to prevent back button issues
-          console.log("🚀 Force redirecting to Industry Pulse...");
-          window.location.replace('/industry-pulse');
-        } else {
-          console.log("⚠️ No user returned from popup result");
-        }
+        // Set user data immediately
+        setUser(userData);
+        setIsLoading(false);
+        
+        toast({
+          title: "Signed in successfully",
+          description: `Welcome ${userData.name}!`,
+        });
+        
+        // Multiple redirect strategies
+        console.log("🚀 Attempting multiple redirect strategies...");
+        
+        // Strategy 1: Direct navigation
+        console.log("Strategy 1: Direct window.location.replace");
+        window.location.replace('/industry-pulse');
+        
+        // Strategy 2: Fallback setTimeout
+        setTimeout(() => {
+          console.log("Strategy 2: setTimeout fallback");
+          if (window.location.pathname === '/') {
+            window.location.href = '/industry-pulse';
+          }
+        }, 500);
+        
+        // Strategy 3: Manual navigation after 1 second
+        setTimeout(() => {
+          console.log("Strategy 3: Manual navigation check");
+          if (window.location.pathname === '/' || window.location.pathname === '/auth') {
+            console.log("Still on auth page, forcing navigation");
+            window.location.assign('/industry-pulse');
+          }
+        }, 1000);
+        
+      } else {
+        console.log("⚠️ No user returned from popup result");
+        setIsLoading(false);
       }
     } catch (error) {
       console.error("❌ Google sign-in error:", error);
@@ -175,7 +200,6 @@ export const SimpleAuthProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         description: `Failed to sign in with Google: ${errorMessage}`,
         variant: "destructive",
       });
-    } finally {
       setIsLoading(false);
     }
   };

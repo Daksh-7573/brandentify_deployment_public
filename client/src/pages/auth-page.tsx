@@ -20,7 +20,7 @@ import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-l
 import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
 
 export default function AuthPage() {
-  const { isAuthenticated, isLoading, signInWithPhone } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
   const [_, setLocation] = useLocation();
   const [authMethod, setAuthMethod] = useState<"email" | "phone">("email");
   const [useDemoBypass, setUseDemoBypass] = useState(false);
@@ -40,7 +40,7 @@ export default function AuthPage() {
       // Use window.location.replace to prevent back button issues
       window.location.replace("/industry-pulse");
     }
-  }, [isAuthenticated, isLoading]);
+  }, [isAuthenticated, isLoading, setLocation]);
 
   return (
     <div 

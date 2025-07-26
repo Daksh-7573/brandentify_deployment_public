@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Auth Flow Test</title>
+</head>
+<body>
+    <h1>Testing Authentication Flow</h1>
+    <button onclick="testAuth()">Test Google Login</button>
+    <div id="logs"></div>
+    
+    <script>
+        function log(message) {
+            console.log(message);
+            document.getElementById('logs').innerHTML += '<p>' + message + '</p>';
+        }
+        
+        function testAuth() {
+            log('Testing authentication flow...');
+            
+            // Open the auth page and monitor console
+            window.open('http://localhost:5000/', '_blank');
+        }
+        
+        // Listen for messages from the auth page
+        window.addEventListener('message', (event) => {
+            log('Received message: ' + JSON.stringify(event.data));
+        });
+    </script>
+</body>
+</html>
