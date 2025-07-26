@@ -7,7 +7,8 @@ import {
   onAuthStateChanged, 
   GoogleAuthProvider, 
   User as FirebaseUser,
-  AuthErrorCodes
+  AuthErrorCodes,
+  Auth
 } from "firebase/auth";
 import { auth, googleProvider } from "@/lib/firebase";
 import { useToast } from "@/hooks/use-toast";
@@ -136,7 +137,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (redirectAttempt) {
         console.log("🔄 Checking for redirect result...");
         try {
-          const result = await getRedirectResult(auth);
+          const result = await getRedirectResult(auth as Auth);
           if (result?.user) {
             console.log("✅ Redirect successful:", result.user.email);
             
@@ -146,7 +147,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             
             // Process the authenticated user
             await createOrUpdateUserInBackend(result.user);
-            const userData = await fetchUserData(result.user.uid, result.user.email);
+            const userData = await fetchUserData(result.user.uid, result.user.email || undefined);
             
             if (userData) {
               setUser(userData);
@@ -171,7 +172,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Set up auth state listener
     const setupAuthListener = () => {
       console.log("👂 Setting up auth state listener...");
-      return onAuthStateChanged(auth, async (firebaseUser) => {
+      return onAuthStateChanged(auth as Auth, async (firebaseUser) => {
         console.log("🔄 Auth state changed:", firebaseUser ? `User: ${firebaseUser.email}` : "User signed out");
         
         if (firebaseUser) {
@@ -180,7 +181,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             console.log("👤 Processing new user sign-in...");
             
             await createOrUpdateUserInBackend(firebaseUser);
-            const userData = await fetchUserData(firebaseUser.uid, firebaseUser.email);
+            const userData = await fetchUserData(firebaseUser.uid, firebaseUser.email || undefined);
             
             if (userData) {
               setUser(userData);
@@ -231,24 +232,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       setIsLoading(true);
       console.log("🔐 Starting Google sign-in...");
+      console.log("Current auth state:", { user, isAuthenticated: !!user, isLoading });
       
       const { googleProvider } = await import('@/lib/firebase');
+      console.log("Google provider loaded:", !!googleProvider);
+      
       const isReplitDomain = window.location.hostname.includes('replit');
+      console.log("Domain check:", { hostname: window.location.hostname, isReplitDomain });
       
       if (isReplitDomain) {
         console.log("🔄 Using redirect method for Replit domain");
         localStorage.setItem('google_auth_redirect_attempt', 'true');
         localStorage.setItem('google_auth_redirect_time', Date.now().toString());
         
-        await signInWithRedirect(auth, googleProvider);
+        await signInWithRedirect(auth as Auth, googleProvider as GoogleAuthProvider);
         return;
       } else {
         console.log("🪟 Using popup method");
-        const result = await signInWithPopup(auth, googleProvider);
+        const result = await signInWithPopup(auth as Auth, googleProvider as GoogleAuthProvider);
         
         if (result?.user) {
           await createOrUpdateUserInBackend(result.user);
-          const userData = await fetchUserData(result.user.uid, result.user.email);
+          const userData = await fetchUserData(result.user.uid, result.user.email || undefined);
           
           if (userData) {
             setUser(userData);
@@ -316,7 +321,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signOut = async () => {
     try {
       setIsLoading(true);
-      await firebaseSignOut(auth);
+      await firebaseSignOut(auth as Auth);
       setUser(null);
       setIsDemoMode(false);
       localStorage.removeItem('demoMode');

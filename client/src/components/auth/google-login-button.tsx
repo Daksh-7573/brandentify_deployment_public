@@ -25,14 +25,18 @@ export function GoogleLoginButton({
   const [isLoading, setIsLoading] = useState(false);
   
   const handleGoogleLogin = async () => {
+    console.log("🚀 Google Login Button clicked!");
     try {
       setIsLoading(true);
+      console.log("🔄 Calling signInWithGoogle...");
       await signInWithGoogle();
+      console.log("✅ signInWithGoogle completed");
     } catch (error) {
-      console.error("Failed to authenticate with Google:", error);
+      console.error("❌ Failed to authenticate with Google:", error);
       // No need to show toast here as it's already handled in auth-context
     } finally {
       setIsLoading(false);
+      console.log("🏁 Google login process finished");
     }
   };
   

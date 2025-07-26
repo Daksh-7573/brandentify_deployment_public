@@ -195,6 +195,14 @@ function Router() {
           </Suspense>
         );
       }} />
+      <Route path="/debug-auth-click" component={() => {
+        const DebugAuthClickPage = lazy(() => import("@/pages/debug-auth-click"));
+        return (
+          <Suspense fallback={<FeedSkeleton count={2} />}>
+            <DebugAuthClickPage />
+          </Suspense>
+        );
+      }} />
       <Route path="/auth-popup-debug" component={() => {
         const AuthPopupDebugPage = lazy(() => import("@/pages/auth-popup-debug"));
         return (
