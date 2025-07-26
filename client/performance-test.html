@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Performance Test - Brandentifier</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #1a1a1a;
+            color: white;
+        }
+        .metric {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+        }
+        .good { background: rgba(0,255,0,0.2); }
+        .warning { background: rgba(255,255,0,0.2); }
+        .bad { background: rgba(255,0,0,0.2); }
+    </style>
+</head>
+<body>
+    <h1>Brandentifier Performance Test</h1>
+    <div id="results"></div>
+
+    <script>
+        // Performance measurement script
+        function measurePerformance() {
+            const results = document.getElementById('results');
+            
+            // Check if performance API is available
+            if (!window.performance || !window.performance.timing) {
+                results.innerHTML = '<div class="bad">Performance API not available</div>';
+                return;
+            }
+
+            const timing = window.performance.timing;
+            const navigation = window.performance.navigation;
+
+            // Calculate metrics
+            const domainLookup = timing.domainLookupEnd - timing.domainLookupStart;
+            const connectionTime = timing.connectEnd - timing.connectStart;
+            const responseTime = timing.responseEnd - timing.requestStart;
+            const domContentLoaded = timing.domContentLoadedEventEnd - timing.navigationStart;
+            const windowLoaded = timing.loadEventEnd - timing.navigationStart;
+            
+            // Time to first byte
+            const ttfb = timing.responseStart - timing.navigationStart;
+            
+            // DOM parsing time
+            const domParsing = timing.domContentLoadedEventStart - timing.responseEnd;
+            
+            let html = '<h2>Network Performance</h2>';
+            
+            html += `<div class="metric ${domainLookup < 50 ? 'good' : domainLookup < 200 ? 'warning' : 'bad'}">
+                        <strong>DNS Lookup:</strong> ${domainLookup}ms
+                     </div>`;
+            
+            html += `<div class="metric ${connectionTime < 100 ? 'good' : connectionTime < 300 ? 'warning' : 'bad'}">
+                        <strong>Connection Time:</strong> ${connectionTime}ms
+                     </div>`;
+            
+            html += `<div class="metric ${ttfb < 500 ? 'good' : ttfb < 1000 ? 'warning' : 'bad'}">
+                        <strong>Time to First Byte:</strong> ${ttfb}ms
+                     </div>`;
+            
+            html += `<div class="metric ${responseTime < 300 ? 'good' : responseTime < 800 ? 'warning' : 'bad'}">
+                        <strong>Response Time:</strong> ${responseTime}ms
+                     </div>`;
+            
+            html += '<h2>Loading Performance</h2>';
+            
+            html += `<div class="metric ${domContentLoaded < 1200 ? 'good' : domContentLoaded < 2500 ? 'warning' : 'bad'}">
+                        <strong>DOM Content Loaded:</strong> ${domContentLoaded}ms
+                     </div>`;
+            
+            html += `<div class="metric ${windowLoaded < 2000 ? 'good' : windowLoaded < 4000 ? 'warning' : 'bad'}">
+                        <strong>Window Load Complete:</strong> ${windowLoaded}ms
+                     </div>`;
+            
+            html += `<div class="metric ${domParsing < 100 ? 'good' : domParsing < 300 ? 'warning' : 'bad'}">
+                        <strong>DOM Parsing:</strong> ${domParsing}ms
+                     </div>`;
+            
+            // Check for our optimizations
+            html += '<h2>Optimization Status</h2>';
+            
+            // Check service worker
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistration().then(registration => {
+                    const swStatus = registration ? 'Registered ✓' : 'Not Registered ✗';
+                    document.getElementById('sw-status').innerHTML = 
+                        `<div class="metric ${registration ? 'good' : 'bad'}">
+                            <strong>Service Worker:</strong> ${swStatus}
+                         </div>`;
+                });
+            } else {
+                html += '<div class="metric bad"><strong>Service Worker:</strong> Not Supported</div>';
+            }
+            
+            // Add service worker placeholder
+            html += '<div id="sw-status"></div>';
+            
+            // Check preload/preconnect
+            const preconnects = document.querySelectorAll('link[rel="preconnect"]');
+            const preloads = document.querySelectorAll('link[rel="preload"]');
+            
+            html += `<div class="metric ${preconnects.length > 0 ? 'good' : 'bad'}">
+                        <strong>Preconnect Links:</strong> ${preconnects.length} found
+                     </div>`;
+            
+            html += `<div class="metric ${preloads.length > 0 ? 'good' : 'bad'}">
+                        <strong>Preload Links:</strong> ${preloads.length} found
+                     </div>`;
+            
+            // Check Firebase optimization
+            const firebaseOptimized = window.__brandentifier_cached_auth ? 'Enabled ✓' : 'Not Found ✗';
+            html += `<div class="metric ${window.__brandentifier_cached_auth ? 'good' : 'bad'}">
+                        <strong>Firebase Auth Cache:</strong> ${firebaseOptimized}
+                     </div>`;
+            
+            results.innerHTML = html;
+        }
+
+        // Run the test when page loads
+        window.addEventListener('load', () => {
+            setTimeout(measurePerformance, 100);
+        });
+    </script>
+</body>
+</html>

@@ -108,17 +108,46 @@
   
   <!-- Register Service Worker for App Shell Caching -->
   <script>
+    // Performance measurement
+    window.__performance_start = performance.now();
+    
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {
         navigator.serviceWorker.register('/sw.js')
           .then(function(registration) {
             console.log('[SW] Registration successful:', registration.scope);
+            console.log('[PERF] Service Worker registered in', (performance.now() - window.__performance_start).toFixed(2), 'ms');
           })
           .catch(function(error) {
             console.log('[SW] Registration failed:', error);
+            // Try to register from client directory
+            navigator.serviceWorker.register('./sw.js')
+              .then(function(registration) {
+                console.log('[SW] Registration successful (fallback):', registration.scope);
+              })
+              .catch(function(fallbackError) {
+                console.log('[SW] Fallback registration also failed:', fallbackError);
+              });
           });
       });
     }
+    
+    // Measure and report total loading time
+    window.addEventListener('load', function() {
+      const totalTime = performance.now() - window.__performance_start;
+      console.log(`[PERF] Total page load time: ${totalTime.toFixed(2)}ms`);
+      
+      // Report optimization benefits
+      if (window.__brandentifier_cached_auth) {
+        console.log('[PERF] ✅ Firebase auth caching active');
+      }
+      if (document.querySelectorAll('link[rel="preconnect"]').length > 0) {
+        console.log('[PERF] ✅ Preconnect optimization active');
+      }
+      if (document.querySelectorAll('link[rel="preload"]').length > 0) {
+        console.log('[PERF] ✅ Preload optimization active');
+      }
+    });
   </script>
   
   <!-- Remove the loader when the app loads -->
