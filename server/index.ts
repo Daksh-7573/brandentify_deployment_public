@@ -373,6 +373,6 @@ console.log("Musk Pulse automation system started - scheduling pulses for 9 AM, 
     console.log(`   - Network: http://0.0.0.0:${port}`);
     console.log(`   - External: https://${process.env.REPLIT_DOMAINS}`);
     console.log(`🔧 Domain troubleshooting: Emergency access page created`);
-    console.log(`📄 Try: https://${process.env.REPLIT_DOMAINS}/emergency-access.html`);
+    console.log(`📄 Try: https://${process.env.REPLIT_DOMAINS}/direct-access.html`);
   });
 })();
