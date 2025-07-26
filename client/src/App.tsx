@@ -306,10 +306,6 @@ function Router() {
         <ProtectedRoute path="/brand-quests" component={BrandQuestsPage} />
       )} />
       
-    </Switch>
-  );
-}
-      
       {/* Legacy route - keeping for backward compatibility */}
       <Route path="/career-quests">
         <ProtectedRoute path="/career-quests" component={BrandQuestsPage} />
