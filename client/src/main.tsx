@@ -22,7 +22,7 @@ if (loader) {
 }
 
 // Check if we should use the simple app or the full app
-const useSimpleApp = false; // Set to true for testing
+const useSimpleApp = true; // Set to true for testing
 
 // Progressive rendering - start with critical components
 const renderApp = () => {

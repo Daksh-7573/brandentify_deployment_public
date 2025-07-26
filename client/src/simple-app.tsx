@@ -1,21 +1,31 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function SimpleApp() {
   const [message, setMessage] = useState('Loading Brandentifier...');
+  const [isConnected, setIsConnected] = useState(false);
 
   // Test if we can connect to the backend
   const testConnection = async () => {
     try {
-      const response = await fetch('/api/test');
+      const response = await fetch('/api/health');
       if (response.ok) {
-        setMessage('✓ Backend connected successfully!');
-      } else {
+        const data = await response.json();
+        setMessage(`✓ Backend connected successfully! Server healthy, uptime: ${Math.round(data.uptime)}s`);
+        setIsConnected(true);
+      } else {  
         setMessage('Backend connection failed');
+        setIsConnected(false);
       }
     } catch (error) {
       setMessage('Connection error: ' + error);
+      setIsConnected(false);
     }
   };
+
+  // Test connection on load
+  useEffect(() => {
+    testConnection();
+  }, []);
 
   return (
     <div style={{ 
