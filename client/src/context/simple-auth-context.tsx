@@ -140,6 +140,12 @@ export const SimpleAuthProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       const auth = firebaseModule.auth as Auth;
       const googleProvider = firebaseModule.googleProvider as GoogleAuthProvider;
 
+      console.log("🔥 Firebase modules loaded:", { 
+        hasAuth: !!auth, 
+        hasProvider: !!googleProvider,
+        hostname: window.location.hostname 
+      });
+
       // Determine if we should use popup or redirect
       const isReplit = window.location.hostname.includes('replit.dev') || 
                        window.location.hostname.includes('replit.app') ||
@@ -153,8 +159,9 @@ export const SimpleAuthProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         const result = await signInWithPopup(auth, googleProvider);
         
         if (result?.user) {
-          console.log("✅ Google popup authentication successful");
+          console.log("✅ Google popup authentication successful:", result.user.email);
           const userData = createUserFromFirebase(result.user);
+          console.log("👤 Created user data:", userData);
           setUser(userData);
           
           toast({
@@ -163,14 +170,17 @@ export const SimpleAuthProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           });
           
           // Direct redirect
+          console.log("🚀 Redirecting to Industry Pulse...");
           window.location.href = '/industry-pulse';
+        } else {
+          console.log("⚠️ No user returned from popup result");
         }
       }
     } catch (error) {
       console.error("❌ Google sign-in error:", error);
       toast({
-        title: "Sign-in failed",
-        description: "Failed to sign in with Google. Please try again.",
+        title: "Sign-in failed",  
+        description: `Failed to sign in with Google: ${error.message || 'Please try again.'}`,
         variant: "destructive",
       });
     } finally {
