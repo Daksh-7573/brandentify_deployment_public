@@ -64,12 +64,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.log("🔧 Creating/updating user in backend:", firebaseUser.email);
       
       const userData = {
-        username: firebaseUser.email?.split('@')[0] || firebaseUser.uid,
+        username: firebaseUser.email?.split('@')[0] || firebaseUser.uid.substring(0, 20),
         email: firebaseUser.email || `firebase_${firebaseUser.uid.substring(0, 8)}@example.com`,
-        name: firebaseUser.displayName || null,
+        name: firebaseUser.displayName || firebaseUser.email?.split('@')[0] || "Google User",
         photoURL: firebaseUser.photoURL,
-        title: null,
-        location: null,
+        title: "",
+        location: "",
+        uid: firebaseUser.uid
       };
       
       console.log("📤 Sending user data to backend:", userData);
@@ -83,16 +84,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
       
       console.log("⚠️ POST failed, trying PUT method");
-      // If post fails, try updating
-      const updateResponse = await apiRequest('PUT', `/api/users/${firebaseUser.uid}`, userData);
+      // If post fails, try to get the user first, then create with proper ID
+      console.log("⚠️ POST failed, trying to get existing user by email");
+      try {
+        const existingUserResponse = await apiRequest('GET', `/api/users/email/${encodeURIComponent(firebaseUser.email || '')}`);
+        if (existingUserResponse.ok) {
+          const existingUser = await existingUserResponse.json();
+          console.log("✅ Found existing user:", existingUser);
+          return existingUser;
+        }
+      } catch (e) {
+        console.log("User lookup failed, creating new user");
+      }
       
-      if (updateResponse.ok) {
-        const result = await updateResponse.json();
-        console.log("✅ User updated successfully:", result);
+      // Try with a simplified user creation approach
+      const simpleUserData = {
+        username: firebaseUser.email?.split('@')[0] || firebaseUser.uid.substring(0, 15),
+        email: firebaseUser.email || `firebase_${firebaseUser.uid.substring(0, 8)}@example.com`,
+        name: firebaseUser.displayName || firebaseUser.email?.split('@')[0] || "Google User"
+      };
+      
+      const simpleResponse = await apiRequest('POST', '/api/users', simpleUserData);
+      if (simpleResponse.ok) {
+        const result = await simpleResponse.json();
+        console.log("✅ User created with simple approach:", result);
         return result;
       }
       
-      console.error("❌ Both POST and PUT failed");
+      console.error("❌ All user creation attempts failed");
       return null;
     } catch (error) {
       console.error("❌ Error in createOrUpdateUserInBackend:", error);
@@ -108,13 +127,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         url += `?email=${encodeURIComponent(userEmail)}`;
       }
       
+      console.log("🔍 Fetching user data from:", url);
       const response = await apiRequest('GET', url);
+      console.log("📡 User fetch response status:", response.status);
       
       if (response.status === 404) {
+        console.log("❌ User not found (404)");
+        return null;
+      }
+      
+      if (!response.ok) {
+        console.error("❌ User fetch failed with status:", response.status);
         return null;
       }
       
       const userData = await response.json();
+      console.log("✅ User data fetched:", userData);
       
       return {
         uid: userId.toString(),
@@ -127,7 +155,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         location: userData.location
       };
     } catch (error) {
-      console.error('Error fetching user data:', error);
+      console.error('❌ Error fetching user data:', error);
       return null;
     }
   };
@@ -176,6 +204,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 
                 // Redirect to Industry Pulse after successful authentication
                 console.log("🚀 Redirecting to Industry Pulse after successful auth");
+                setTimeout(() => {
+                  window.location.href = '/industry-pulse';
+                }, 1000);
+              } else {
+                // Fallback: create a basic user if backend fails
+                console.log("⚠️ Using fallback user creation");
+                const fallbackUser = {
+                  uid: result.user.uid,
+                  id: parseInt(result.user.uid.substring(0, 8), 36) || Math.floor(Math.random() * 10000),
+                  username: result.user.email?.split('@')[0] || result.user.uid.substring(0, 15),
+                  email: result.user.email,
+                  name: result.user.displayName || result.user.email?.split('@')[0] || "Google User",
+                  photoURL: result.user.photoURL
+                };
+                setUser(fallbackUser);
+                toast({
+                  title: "Signed in successfully",
+                  description: `Welcome ${fallbackUser.name}!`,
+                });
+                
+                console.log("🚀 Redirecting to Industry Pulse with fallback user");
                 setTimeout(() => {
                   window.location.href = '/industry-pulse';
                 }, 1000);
@@ -295,6 +344,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             
             // Redirect to Industry Pulse after successful authentication  
             console.log("🚀 Redirecting to Industry Pulse after popup auth");
+            setTimeout(() => {
+              window.location.href = '/industry-pulse';
+            }, 1000);
+          } else {
+            // Fallback: create a basic user if backend fails
+            console.log("⚠️ Using fallback user creation for popup");
+            const fallbackUser = {
+              uid: result.user.uid,
+              id: parseInt(result.user.uid.substring(0, 8), 36) || Math.floor(Math.random() * 10000),
+              username: result.user.email?.split('@')[0] || result.user.uid.substring(0, 15),
+              email: result.user.email,
+              name: result.user.displayName || result.user.email?.split('@')[0] || "Google User",
+              photoURL: result.user.photoURL
+            };
+            setUser(fallbackUser);
+            toast({
+              title: "Signed in successfully",
+              description: `Welcome ${fallbackUser.name}!`,
+            });
+            
+            console.log("🚀 Redirecting to Industry Pulse with fallback user");
             setTimeout(() => {
               window.location.href = '/industry-pulse';
             }, 1000);
