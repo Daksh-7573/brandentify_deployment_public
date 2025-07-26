@@ -17,26 +17,6 @@ import { muskPulseScheduler } from "./services/musk-pulse-scheduler";
 
 const app = express();
 
-// Configure for external domain access
-app.set('trust proxy', true);
-app.use((req, res, next) => {
-  // Allow access from Replit domains and external sources
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, HEAD');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, X-Frame-Options');
-  res.header('X-Frame-Options', 'ALLOWALL');
-  res.header('X-Content-Type-Options', 'nosniff');
-  res.header('Cache-Control', 'no-cache, no-store, must-revalidate');
-  
-  // Handle preflight requests
-  if (req.method === 'OPTIONS') {
-    res.sendStatus(200);
-    return;
-  }
-  
-  next();
-});
-
 // Very first handler - career capsule POST bypass (before any middleware that touches the body)
 app.use('/api/users/:userId/career-capsule', (req, res, next) => {
   if (req.method === 'POST') {
@@ -291,7 +271,7 @@ app.use((req, res, next) => {
 app.use(express.json({ 
   limit: '50mb',
   verify: (req, res, buf, encoding) => {
-    if (req.url && req.url.includes('/career-capsule')) {
+    if (req.url.includes('/career-capsule')) {
       console.log('[JSON Parser Debug] Raw buffer length:', buf.length);
       console.log('[JSON Parser Debug] Raw buffer content:', buf.toString('utf8'));
     }
@@ -382,19 +362,11 @@ console.log("Musk Pulse automation system started - scheduling pulses for 9 AM, 
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
   const port = 5000;
-  server.listen(port, "0.0.0.0", () => {
+  server.listen({
+    port,
+    host: "0.0.0.0",
+    reusePort: true,
+  }, () => {
     log(`serving on port ${port}`);
-    console.log(`🚀 Server accessible at:`);
-    console.log(`   - Local: http://localhost:${port}`);
-    console.log(`   - Network: http://0.0.0.0:${port}`);
-    console.log(`   - External: https://${process.env.REPLIT_DOMAINS}`);
-    console.log(`🔧 Domain connectivity: Server bound to 0.0.0.0 for external access`);
-    console.log(`📄 Direct access: https://${process.env.REPLIT_DOMAINS}/direct-access.html`);
-    console.log(`🔍 Debugging: REPLIT_DOMAINS=${process.env.REPLIT_DOMAINS}`);
-    console.log(`🔍 Server listening on all interfaces (0.0.0.0:${port})`);
-  });
-  
-  server.on('error', (err) => {
-    console.error('Server error:', err);
   });
 })();

@@ -4,48 +4,13 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "./context/auth-context";
 import { useAuth } from "./hooks/use-auth";
-import { useEffect, Suspense, lazy, useState } from "react";
+import { useEffect, Suspense, lazy } from "react";
 import GlobalMuskButton from "@/components/musk/global-musk-button";
 import { DomainHelper } from "./lib/domain-helper";
 import { DomainAuthHelper } from "@/components/firebase/DomainAuthHelper";
 import { FeedSkeleton } from "@/components/ui/skeleton-components";
 import AuthCallback from "@/pages/auth-callback";
 import CatchAllAuthHandler from "@/routes/CatchAllAuthHandler";
-
-// Enhanced progressive loading state management
-const useProgressiveLoading = () => {
-  const [coreLoaded, setCoreLoaded] = useState(false);
-  const [secondaryLoaded, setSecondaryLoaded] = useState(false);
-  const [adminLoaded, setAdminLoaded] = useState(false);
-
-  useEffect(() => {
-    const perfStart = performance.now();
-    console.log('[Progressive Loading] Starting tiered component loading');
-    
-    // Tier 1: Critical components load immediately
-    setCoreLoaded(true);
-    console.log('[Progressive Loading] ⚡ Core components ready');
-    
-    // Tier 2: Secondary components after first paint
-    const secondaryTimer = setTimeout(() => {
-      setSecondaryLoaded(true);
-      console.log('[Progressive Loading] 🚀 Secondary components loaded');
-    }, 50); // Reduced from 100ms for faster perceived performance
-    
-    // Tier 3: Admin/debug components load last
-    const adminTimer = setTimeout(() => {
-      setAdminLoaded(true);
-      console.log(`[Progressive Loading] 🔧 All components loaded in ${(performance.now() - perfStart).toFixed(2)}ms`);
-    }, 200);
-
-    return () => {
-      clearTimeout(secondaryTimer);
-      clearTimeout(adminTimer);
-    };
-  }, []);
-
-  return { coreLoaded, secondaryLoaded, adminLoaded };
-};
 
 // Simple test component to verify React is working
 function SimpleTestApp() {
@@ -59,26 +24,22 @@ function SimpleTestApp() {
   );
 }
 
-// Critical components (loaded first for fast perceived performance)
-const Landing = lazy(() => import("@/pages/landing"));
-const IndustryPulsePage = lazy(() => import("@/pages/industry-pulse-new"));
-const Profile = lazy(() => import("@/pages/profile"));
-const AuthPage = lazy(() => import("@/pages/auth-page"));
-
-// Secondary components (loaded after first paint)
+// Lazy load major pages for code splitting
 const NotFound = lazy(() => import("@/pages/not-found"));
+const Landing = lazy(() => import("@/pages/landing"));
+
+const Profile = lazy(() => import("@/pages/profile"));
 const ProfileNeo = lazy(() => import("@/pages/profile-neo"));
 const PublicProfile = lazy(() => import("@/pages/public-profile"));
 const BrandProfile = lazy(() => import("@/pages/brand-profile"));
+
 const PortfolioBuilder = lazy(() => import("@/pages/portfolio-builder"));
 const CreatePulsePage = lazy(() => import("@/pages/create-pulse-new"));
+const IndustryPulsePage = lazy(() => import("@/pages/industry-pulse-new"));
 const IndustryPulseOptimizedPage = lazy(() => import("@/pages/industry-pulse-optimized"));
 const SearchPage = lazy(() => import("@/pages/search-fixed"));
+const AuthPage = lazy(() => import("@/pages/auth-page"));
 const EmailVerification = lazy(() => import("@/pages/email-verification"));
-
-// Admin and debug components (lowest priority)
-const NavigationTest = lazy(() => import("@/pages/navigation-test"));
-const URLInputDemo = lazy(() => import("@/pages/url-input-demo"));
 const NewsSourcesPage = lazy(() => import("@/pages/news-sources"));
 const LoginPage = lazy(() => import("@/pages/login"));
 const AuthStatusPage = lazy(() => import("@/pages/auth-status"));
@@ -104,11 +65,13 @@ const MuskMatchPage = lazy(() => import("@/pages/musk-match"));
 const ResumePage = lazy(() => import("@/pages/resume"));
 const ResumeCV = lazy(() => import("@/pages/resume-cv"));
 const ResumeEditor = lazy(() => import("@/pages/resume-editor"));
+// Resume Parser page removed per request
 const UnifiedProfilePage = lazy(() => import("@/pages/unified-profile"));
+
 const CareerQuestsPage = lazy(() => import("@/pages/career-quests"));
 const BrandQuestsPage = lazy(() => import("@/pages/brand-quests"));
-const CareerCapsulePage = lazy(() => import("@/pages/career-capsule"));
-const QuantumCardPage = lazy(() => import("@/pages/quantum-card"));
+const CareerCapsulePage = lazy(() => import("@/pages/career-capsule")); // Career Capsule feature (renamed from Roadmap)
+const QuantumCardPage = lazy(() => import("@/pages/quantum-card")); // Quantum Card digital visiting card feature
 const OnboardingPage = lazy(() => import("@/pages/onboarding"));
 const EditProfilePage = lazy(() => import("@/pages/edit-profile"));
 const MuskTestingPage = lazy(() => import("@/pages/musk-testing"));
@@ -166,48 +129,25 @@ function ProtectedRoute({ component: Component, ...rest }: { component: React.Co
 }
 
 function Router() {
-  const { coreLoaded, secondaryLoaded, adminLoaded } = useProgressiveLoading();
-  
   return (
     <Switch>
-      {/* Tier 1: Critical Routes (Always Available) */}
       <Route path="/" component={Landing} />
-      <Route path="/nav-test" component={NavigationTest} />
-      <Route path="/url-demo" component={URLInputDemo} />
-      <Route path="/industry-pulse" component={IndustryPulsePage} />
-      <Route path="/create-pulse" component={CreatePulsePage} />
-      <Route path="/auth" component={AuthPage} />
+      {/* Dedicated login page for Google auth */}
+      <Route path="/login" component={LoginPage} />
+      {/* Add multiple routes to catch all possible auth callback paths */}
       <Route path="/auth-callback" component={AuthCallback} />
       <Route path="/__/auth/handler" component={AuthCallback} />
       <Route path="/_/auth/callback" component={AuthCallback} />
       <Route path="/auth/callback" component={AuthCallback} />
-      
-      {/* Tier 2: Secondary Routes (Load after 50ms) */}
-      {secondaryLoaded && (
-        <>
-          <Route path="/profile" component={() => (
-            <ProtectedRoute path="/profile" component={ProfileNeo} />
-          )} />
-          <Route path="/search" component={SearchPage} />
-          <Route path="/portfolio-builder" component={PortfolioBuilder} />
-          <Route path="/@:username">
-            {(params) => <PublicProfile username={params.username} />}
-          </Route>
-        </>
-      )}
-      
-      {/* Tier 3: Admin & Debug Routes (Load after 200ms) */}
-      {adminLoaded && (
-        <>
-          <Route path="/login" component={LoginPage} />
-          <Route path="/auth-status" component={AuthStatusPage} />
-          <Route path="/dev-login" component={DevLoginPage} />
-          <Route path="/simple-login" component={SimpleLoginPage} />
-          <Route path="/reliable-login" component={ReliableLoginPage} />
-          <Route path="/universal-login" component={UniversalLoginPage} />
-          <Route path="/simple-universal-login" component={SimpleUniversalLoginPage} />
-          <Route path="/easy-login" component={EasyLoginPage} />
-          <Route path="/fixed-login" component={() => {
+      <Route path="/auth" component={AuthPage} />
+      <Route path="/auth-status" component={AuthStatusPage} />
+      <Route path="/dev-login" component={DevLoginPage} />
+      <Route path="/simple-login" component={SimpleLoginPage} />
+      <Route path="/reliable-login" component={ReliableLoginPage} />
+      <Route path="/universal-login" component={UniversalLoginPage} />
+      <Route path="/simple-universal-login" component={SimpleUniversalLoginPage} />
+      <Route path="/easy-login" component={EasyLoginPage} />
+      <Route path="/fixed-login" component={() => {
         const FixedLoginPage = lazy(() => import("@/pages/fixed-login"));
         return (
           <Suspense fallback={<FeedSkeleton count={3} />}>
@@ -249,17 +189,18 @@ function Router() {
           </Suspense>
         );
       }} />
-          <Route path="/verify-email" component={EmailVerification} />
-        </>
-      )}
-      
-      {/* Routes that should always be available */}
+      <Route path="/verify-email" component={EmailVerification} />
+      {/* Quest demo route removed per request */}
+
+      <Route path="/profile">
+        <ProtectedRoute path="/profile" component={ProfileNeo} />
+      </Route>
+
+      {/* Public profile using username route (/@username) - dynamic path parameter */}
       <Route path="/@:username">
         {(params) => <PublicProfile username={params.username} />}
       </Route>
-      
-      {/* Additional protected routes */}
-      <Route path="/ai-career" component={() => (
+      <Route path="/ai-career">
         <ProtectedRoute path="/ai-career" component={() => {
           const AICareerPage = lazy(() => import("@/pages/ai-career"));
           return (
@@ -268,47 +209,99 @@ function Router() {
             </Suspense>
           );
         }} />
-      )} />
-      
-      <Route path="/smart-connect" component={() => (
+      </Route>
+      <Route path="/smart-connect">
         <ProtectedRoute path="/smart-connect" component={SmartConnectPage} />
-      )} />
-      
-      <Route path="/services" component={() => (
+      </Route>
+      <Route path="/portfolio-builder">
+        <ProtectedRoute path="/portfolio-builder" component={PortfolioBuilder} />
+      </Route>
+      <Route path="/portfolio/edit">
+        <ProtectedRoute path="/portfolio/edit" component={PortfolioBuilder} />
+      </Route>
+      <Route path="/services">
         <ProtectedRoute path="/services" component={ManageServicesPage} />
-      )} />
-      
-      <Route path="/add-service" component={() => (
+      </Route>
+      <Route path="/add-service">
         <ProtectedRoute path="/add-service" component={AddServicePage} />
-      )} />
-      
-      <Route path="/industry-pulse-optimized" component={() => (
+      </Route>
+      <Route path="/create-pulse">
+        <ProtectedRoute path="/create-pulse" component={CreatePulsePage} />
+      </Route>
+      <Route path="/create-pulse-new">
+        <ProtectedRoute path="/create-pulse-new" component={CreatePulsePage} />
+      </Route>
+      <Route path="/industry-pulse">
+        <ProtectedRoute path="/industry-pulse" component={IndustryPulsePage} />
+      </Route>
+      <Route path="/industry-pulse-optimized">
         <ProtectedRoute path="/industry-pulse-optimized" component={IndustryPulseOptimizedPage} />
-      )} />
+      </Route>
       
       {/* Redirect dashboard to Industry Pulse */}
-      <Route path="/dashboard" component={() => <PageRedirect to="/industry-pulse" />} />
-      
-      <Route path="/news-sources" component={() => (
+      <Route path="/dashboard">
+        <PageRedirect to="/industry-pulse" />
+      </Route>
+      <Route path="/search">
+        <ProtectedRoute path="/search" component={SearchPage} />
+      </Route>
+      <Route path="/news-sources">
         <ProtectedRoute path="/news-sources" component={NewsSourcesPage} />
-      )} />
-      
-      {/* Additional system routes */}
-      <Route path="/radar" component={() => (
+      </Route>
+      <Route path="/radar">
         <ProtectedRoute path="/radar" component={Radar} />
-      )} />
-      
-      <Route path="/musk-match" component={() => (
+      </Route>
+      <Route path="/musk-match">
         <ProtectedRoute path="/musk-match" component={MuskMatchPage} />
-      )} />
-      
-      <Route path="/resume" component={() => (
+      </Route>
+      <Route path="/resume">
         <ProtectedRoute path="/resume" component={ResumePage} />
-      )} />
-      
-      <Route path="/brand-quests" component={() => (
+      </Route>
+      <Route path="/resume-cv">
+        <ProtectedRoute path="/resume-cv" component={ResumeCV} />
+      </Route>
+      <Route path="/resume-builder">
+        <ProtectedRoute path="/resume-builder" component={() => {
+          const ResumeBuilder = lazy(() => import('@/pages/resume-builder'));
+          return (
+            <Suspense fallback={<FeedSkeleton count={3} />}>
+              <ResumeBuilder />
+            </Suspense>
+          );
+        }} />
+      </Route>
+      <Route path="/resume-editor">
+        {/* Explicitly using the fixed version to avoid hook ordering issues */}
+        <ProtectedRoute path="/resume-editor" component={ResumeEditor} />
+      </Route>
+      <Route path="/resume/edit/:userId">
+        {/* Explicitly using the fixed version with direct import to ensure consistent usage */}
+        {(params) => <ProtectedRoute path="/resume/edit/:userId" component={() => {
+          const FixedResumeEditor = require('@/pages/resume-editor-fixed').default;
+          return <FixedResumeEditor />;
+        }} />}
+      </Route>
+      {/* Resume parser route removed per request */}
+
+      <Route path="/neo-glass-demo">
+        <ProtectedRoute path="/neo-glass-demo" component={NeoGlassDemoPage} />
+      </Route>
+      <Route path="/neo-glass-demo-spotify">
+        <ProtectedRoute path="/neo-glass-demo-spotify" component={NeoGlassSpotifyDemoPage} />
+      </Route>
+      <Route path="/neo-glass-form-demo">
+        <ProtectedRoute path="/neo-glass-form-demo" component={NeoGlassFormDemoPage} />
+      </Route>
+      <Route path="/neo-glass-demo-main">
+        <ProtectedRoute path="/neo-glass-demo-main" component={NeoGlassDemoMainPage} />
+      </Route>
+      <Route path="/neo-glass-simple">
+        <ProtectedRoute path="/neo-glass-simple" component={NeoGlassSimplePage} />
+      </Route>
+      {/* Brand Quests - All demo mode functionality removed */}
+      <Route path="/brand-quests">
         <ProtectedRoute path="/brand-quests" component={BrandQuestsPage} />
-      )} />
+      </Route>
       
       {/* Legacy route - keeping for backward compatibility */}
       <Route path="/career-quests">

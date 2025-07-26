@@ -1,22 +1,23 @@
 import { cn } from "@/lib/utils";
 
-// Base Skeleton Component
+// Base Skeleton Component - matching the HTML loading screen style
 export function Skeleton({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn("animate-pulse rounded-md bg-white/10 backdrop-blur-sm", className)}
+      className={cn("bg-white/10 border border-white/5 rounded-md", className)}
+      style={{ animation: 'pulse 2s ease-in-out infinite' }}
       {...props}
     />
   );
 }
 
-// Pulse Card Skeleton
+// Pulse Card Skeleton - matching HTML loading screen style
 export function PulseCardSkeleton() {
   return (
-    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6 space-y-4">
+    <div className="bg-white/5 border border-white/10 rounded-xl p-6 space-y-4">
       {/* User Info */}
       <div className="flex items-center space-x-3">
         <Skeleton className="h-10 w-10 rounded-full" />
@@ -190,13 +191,33 @@ export function ExperienceItemSkeleton() {
   );
 }
 
-// Feed Skeleton (multiple pulse cards)
+// Feed Skeleton (multiple pulse cards) - Full screen layout matching HTML loader
 export function FeedSkeleton({ count = 3 }: { count?: number }) {
   return (
-    <div className="space-y-6">
-      {Array.from({ length: count }).map((_, i) => (
-        <PulseCardSkeleton key={i} />
-      ))}
+    <div 
+      className="fixed inset-0 z-50 overflow-hidden"
+      style={{ 
+        background: 'linear-gradient(135deg, rgba(17, 24, 39, 0.9) 0%, rgba(0, 0, 0, 0.8) 50%, rgba(31, 41, 55, 0.9) 100%)'
+      }}
+    >
+      {/* Header skeleton */}
+      <div className="h-16 bg-white/5 border-b border-white/10 flex items-center justify-between px-6">
+        <Skeleton className="w-32 h-8" />
+        <div className="flex gap-3">
+          <Skeleton className="w-8 h-8 rounded-full" />
+          <Skeleton className="w-8 h-8 rounded-full" />
+          <Skeleton className="w-8 h-8 rounded-full" />
+        </div>
+      </div>
+      
+      {/* Main content skeleton */}
+      <div className="p-6 max-w-4xl mx-auto">
+        <div className="space-y-6">
+          {Array.from({ length: count }).map((_, i) => (
+            <PulseCardSkeleton key={i} />
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
@@ -228,32 +249,53 @@ export function HeaderSkeleton() {
   );
 }
 
-// Page Layout Skeleton
+// Page Layout Skeleton - Full screen matching HTML loader
 export function PageLayoutSkeleton() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm">
-      <HeaderSkeleton />
+    <div 
+      className="fixed inset-0 z-50 overflow-hidden"
+      style={{ 
+        background: 'linear-gradient(135deg, rgba(17, 24, 39, 0.9) 0%, rgba(0, 0, 0, 0.8) 50%, rgba(31, 41, 55, 0.9) 100%)'
+      }}
+    >
+      {/* Header skeleton */}
+      <div className="h-16 bg-white/5 border-b border-white/10 flex items-center justify-between px-6">
+        <Skeleton className="w-32 h-8" />
+        <div className="flex gap-3">
+          <Skeleton className="w-8 h-8 rounded-full" />
+          <Skeleton className="w-8 h-8 rounded-full" />
+          <Skeleton className="w-8 h-8 rounded-full" />
+        </div>
+      </div>
       
-      <div className="container mx-auto px-4 py-6">
-        <div className="grid grid-cols-12 gap-6">
-          {/* Main Content */}
-          <div className="col-span-12 lg:col-span-8 space-y-6">
-            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6">
-              <Skeleton className="h-8 w-48 mb-6" />
-              <FeedSkeleton />
-            </div>
-          </div>
-          
-          {/* Sidebar */}
-          <div className="col-span-12 lg:col-span-4 space-y-6">
-            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6">
-              <Skeleton className="h-6 w-32 mb-4" />
-              <div className="space-y-3">
-                {Array.from({ length: 3 }).map((_, i) => (
-                  <NowboardItemSkeleton key={i} />
-                ))}
+      {/* Main content skeleton */}
+      <div className="p-6 max-w-4xl mx-auto">
+        <div className="space-y-6">
+          {/* Card 1 */}
+          <div className="bg-white/5 border border-white/10 rounded-xl p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <Skeleton className="w-10 h-10 rounded-full" />
+              <div className="flex-1">
+                <Skeleton className="w-24 h-4 mb-1" />
+                <Skeleton className="w-16 h-3" />
               </div>
             </div>
+            <Skeleton className="w-full h-4 mb-2" />
+            <Skeleton className="w-3/4 h-4 mb-2" />
+            <Skeleton className="w-1/2 h-4" />
+          </div>
+          
+          {/* Card 2 */}
+          <div className="bg-white/5 border border-white/10 rounded-xl p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <Skeleton className="w-10 h-10 rounded-full" />
+              <div className="flex-1">
+                <Skeleton className="w-24 h-4 mb-1" />
+                <Skeleton className="w-16 h-3" />
+              </div>
+            </div>
+            <Skeleton className="w-full h-4 mb-2" />
+            <Skeleton className="w-4/5 h-4" />
           </div>
         </div>
       </div>

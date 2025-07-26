@@ -40,7 +40,6 @@ export default function CreatePulsePage() {
   const [projectUrl, setProjectUrl] = useState("");
   const [mediaUrls, setMediaUrls] = useState<string[]>([]);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
-  const [mediaUrlInput, setMediaUrlInput] = useState("");
   const [teamMembers, setTeamMembers] = useState<string[]>([""]);
   const [clientProfile, setClientProfile] = useState("");
   const videoInputRef = useRef<HTMLInputElement>(null);
@@ -68,7 +67,6 @@ export default function CreatePulsePage() {
       setPollOptions(["", ""]);
       setMediaUrls([]);
       setUploadedFiles([]);
-      setMediaUrlInput("");
       setSelectedProject(null);
       setActiveProjectTab('details');
       setTeamMembers([""]);
@@ -439,58 +437,6 @@ export default function CreatePulsePage() {
     
     setMediaUrls(newUrls);
     setUploadedFiles(newFiles);
-  };
-
-  // Function to add media URL
-  const addMediaUrl = () => {
-    if (!mediaUrlInput.trim()) {
-      toast({
-        title: "Invalid URL",
-        description: "Please enter a valid URL.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    // Validate URL format
-    try {
-      new URL(mediaUrlInput);
-    } catch {
-      toast({
-        title: "Invalid URL",
-        description: "Please enter a valid URL format.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    // Check media type limit
-    if (mediaType === 'image' && mediaUrls.length >= 10) {
-      toast({
-        title: "Limit Reached",
-        description: "You can only add up to 10 images.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (mediaType === 'video' && mediaUrls.length >= 1) {
-      toast({
-        title: "Limit Reached", 
-        description: "You can only add one video.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    // Add URL to mediaUrls
-    setMediaUrls([...mediaUrls, mediaUrlInput]);
-    setMediaUrlInput("");
-    
-    toast({
-      title: "URL Added",
-      description: `${mediaType === 'image' ? 'Image' : 'Video'} URL added successfully.`,
-    });
   };
 
   return (
@@ -891,60 +837,24 @@ export default function CreatePulsePage() {
                               </div>
 
                               {mediaType === 'image' ? (
-                                <div className="space-y-3 sm:space-y-4">
-                                  <div className="space-y-1 sm:space-y-2">
-                                    <Label htmlFor="project-images" className="text-white text-sm sm:text-base">Upload Images</Label>
-                                    <div className="flex flex-col space-y-1 sm:space-y-2">
-                                      <Input
-                                        ref={imageInputRef}
-                                        id="project-images"
-                                        type="file"
-                                        accept="image/*"
-                                        multiple
-                                        onChange={handleMediaUpload}
-                                        className="w-full min-h-[48px] sm:min-h-[56px] px-3 sm:px-4 py-2 sm:py-3 bg-[rgba(18,18,18,0.95)] text-white border border-white/20 rounded-lg text-sm sm:text-base"
-                                        style={{
-                                          lineHeight: '1.5',
-                                          display: 'flex',
-                                          alignItems: 'center'
-                                        }}
-                                      />
-                                      <p className="text-xs text-gray-400">Select up to 10 images (max 25MB each)</p>
-                                    </div>
-                                  </div>
-
-                                  <div className="text-center text-white/50 text-sm">or</div>
-
-                                  <div className="space-y-1 sm:space-y-2">
-                                    <Label htmlFor="image-url" className="text-white text-sm sm:text-base flex items-center gap-2">
-                                      <ExternalLink className="h-3 w-3 sm:h-4 sm:w-4" />
-                                      Add Image URL
-                                    </Label>
-                                    <div className="flex space-x-2">
-                                      <Input
-                                        id="image-url"
-                                        placeholder="https://example.com/image.jpg"
-                                        type="url"
-                                        value={mediaUrlInput}
-                                        onChange={(e) => setMediaUrlInput(e.target.value)}
-                                        className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 h-9 sm:h-10 text-sm sm:text-base flex-1"
-                                        onKeyPress={(e) => {
-                                          if (e.key === 'Enter') {
-                                            e.preventDefault();
-                                            addMediaUrl();
-                                          }
-                                        }}
-                                      />
-                                      <Button 
-                                        type="button" 
-                                        onClick={addMediaUrl}
-                                        disabled={mediaUrls.length >= 10}
-                                        className="neo-glass-button secondary px-3 sm:px-4 h-9 sm:h-10 text-sm"
-                                      >
-                                        Add
-                                      </Button>
-                                    </div>
-                                    <p className="text-xs text-gray-400">Add image URLs directly for preview</p>
+                                <div className="space-y-1 sm:space-y-2">
+                                  <Label htmlFor="project-images" className="text-white text-sm sm:text-base">Upload Images</Label>
+                                  <div className="flex flex-col space-y-1 sm:space-y-2">
+                                    <Input
+                                      ref={imageInputRef}
+                                      id="project-images"
+                                      type="file"
+                                      accept="image/*"
+                                      multiple
+                                      onChange={handleMediaUpload}
+                                      className="w-full min-h-[48px] sm:min-h-[56px] px-3 sm:px-4 py-2 sm:py-3 bg-[rgba(18,18,18,0.95)] text-white border border-white/20 rounded-lg text-sm sm:text-base"
+                                      style={{
+                                        lineHeight: '1.5',
+                                        display: 'flex',
+                                        alignItems: 'center'
+                                      }}
+                                    />
+                                    <p className="text-xs text-gray-400">Select up to 10 images (max 25MB each)</p>
                                   </div>
                                   
                                   {mediaUrls.length > 0 && (
@@ -969,59 +879,23 @@ export default function CreatePulsePage() {
                                   )}
                                 </div>
                               ) : (
-                                <div className="space-y-3 sm:space-y-4">
-                                  <div className="space-y-1 sm:space-y-2">
-                                    <Label htmlFor="project-video" className="text-white text-sm sm:text-base">Upload Video</Label>
-                                    <div className="flex flex-col space-y-1 sm:space-y-2">
-                                      <Input
-                                        ref={videoInputRef}
-                                        id="project-video"
-                                        type="file"
-                                        accept="video/*"
-                                        onChange={handleMediaUpload}
-                                        className="w-full min-h-[48px] sm:min-h-[56px] px-3 sm:px-4 py-2 sm:py-3 bg-[rgba(18,18,18,0.95)] text-white border border-white/20 rounded-lg text-sm sm:text-base"
-                                        style={{
-                                          lineHeight: '1.5',
-                                          display: 'flex',
-                                          alignItems: 'center'
-                                        }}
-                                      />
-                                      <p className="text-xs text-gray-400">Select video file (max 120 seconds)</p>
-                                    </div>
-                                  </div>
-
-                                  <div className="text-center text-white/50 text-sm">or</div>
-
-                                  <div className="space-y-1 sm:space-y-2">
-                                    <Label htmlFor="video-url" className="text-white text-sm sm:text-base flex items-center gap-2">
-                                      <ExternalLink className="h-3 w-3 sm:h-4 sm:w-4" />
-                                      Add Video URL
-                                    </Label>
-                                    <div className="flex space-x-2">
-                                      <Input
-                                        id="video-url"
-                                        placeholder="https://example.com/video.mp4"
-                                        type="url"
-                                        value={mediaUrlInput}
-                                        onChange={(e) => setMediaUrlInput(e.target.value)}
-                                        className="neo-glass-input bg-[rgba(18,18,18,0.95)] text-white border-white/20 h-9 sm:h-10 text-sm sm:text-base flex-1"
-                                        onKeyPress={(e) => {
-                                          if (e.key === 'Enter') {
-                                            e.preventDefault();
-                                            addMediaUrl();
-                                          }
-                                        }}
-                                      />
-                                      <Button 
-                                        type="button" 
-                                        onClick={addMediaUrl}
-                                        disabled={mediaUrls.length >= 1}
-                                        className="neo-glass-button secondary px-3 sm:px-4 h-9 sm:h-10 text-sm"
-                                      >
-                                        Add
-                                      </Button>
-                                    </div>
-                                    <p className="text-xs text-gray-400">Add video URL directly for preview</p>
+                                <div className="space-y-1 sm:space-y-2">
+                                  <Label htmlFor="project-video" className="text-white text-sm sm:text-base">Upload Video</Label>
+                                  <div className="flex flex-col space-y-1 sm:space-y-2">
+                                    <Input
+                                      ref={videoInputRef}
+                                      id="project-video"
+                                      type="file"
+                                      accept="video/*"
+                                      onChange={handleMediaUpload}
+                                      className="w-full min-h-[48px] sm:min-h-[56px] px-3 sm:px-4 py-2 sm:py-3 bg-[rgba(18,18,18,0.95)] text-white border border-white/20 rounded-lg text-sm sm:text-base"
+                                      style={{
+                                        lineHeight: '1.5',
+                                        display: 'flex',
+                                        alignItems: 'center'
+                                      }}
+                                    />
+                                    <p className="text-xs text-gray-400">Select video file (max 120 seconds)</p>
                                   </div>
                                   
                                   {mediaUrls.length > 0 && (
