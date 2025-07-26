@@ -83,11 +83,9 @@ export const SimpleAuthProvider: React.FC<{ children: React.ReactNode }> = ({ ch
               description: `Welcome ${userData.name}!`,
             });
             
-            // Force immediate redirect
-            console.log("🚀 Redirect result - forcing navigation to Industry Pulse");
-            setTimeout(() => {
-              window.location.replace('/industry-pulse');
-            }, 100);
+            // Force immediate redirect for redirect result
+            console.log("🚀 Redirect result - immediate navigation to Industry Pulse");
+            window.location.replace('/industry-pulse');
             return;
           }
         } catch (error) {
@@ -105,13 +103,11 @@ export const SimpleAuthProvider: React.FC<{ children: React.ReactNode }> = ({ ch
             
             setUser(userData);
             
-            // Check if we're on auth page and force redirect
-            if (window.location.pathname === '/' || window.location.pathname === '/auth') {
-              console.log("🚀 Auth state change - on auth page, forcing redirect");
-              setTimeout(() => {
-                window.location.replace('/industry-pulse');
-              }, 100);
-            }
+            // Always redirect authenticated users away from auth page
+            console.log("🚀 User authenticated, redirecting to Industry Pulse");
+            setTimeout(() => {
+              window.location.replace('/industry-pulse');
+            }, 200);
           } else {
             console.log("👋 User signed out");
             setUser(null);
@@ -146,75 +142,19 @@ export const SimpleAuthProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         hostname: window.location.hostname 
       });
 
-      // Check if we're on localhost and use redirect method instead
-      const isLocalhost = window.location.hostname === 'localhost' || 
-                          window.location.hostname === '127.0.0.1';
-      
-      if (isLocalhost) {
-        console.log("🔄 Using redirect method for localhost to avoid popup blocking");
-        await signInWithRedirect(auth, googleProvider);
-        return; // Exit here as redirect will handle the rest
-      } else {
-        console.log("🪟 Using popup method for non-localhost");
-        const result = await signInWithPopup(auth, googleProvider);
-      
-        if (result?.user) {
-          console.log("✅ Google popup authentication successful:", result.user.email);
-          const userData = createUserFromFirebase(result.user);
-          console.log("👤 Created user data:", userData);
-          
-          // Set user data immediately
-          setUser(userData);
-          setIsLoading(false);
-          
-          toast({
-            title: "Signed in successfully",
-            description: `Welcome ${userData.name}!`,
-          });
-          
-          // Direct redirect
-          console.log("🚀 Redirecting to Industry Pulse");
-          window.location.replace('/industry-pulse');
-          
-        } else {
-          console.log("⚠️ No user returned from popup result");
-          setIsLoading(false);
-        }
-      }
+      // Always use redirect method to avoid popup interference issues
+      console.log("🔄 Using redirect method for clean authentication flow");
+      await signInWithRedirect(auth, googleProvider);
+      // Exit here - redirect will handle the authentication and onAuthStateChanged will process the result
     } catch (error) {
       console.error("❌ Google sign-in error:", error);
       const errorMessage = error instanceof Error ? error.message : 'Please try again.';
       
-      // Check if it's a popup blocked error and offer redirect alternative
-      if (errorMessage.includes('popup') || errorMessage.includes('closed by user')) {
-        console.log("🔄 Popup blocked, switching to redirect method");
-        toast({
-          title: "Popup blocked", 
-          description: "Switching to redirect method. Please wait...",
-        });
-        
-        try {
-          // Try redirect method as fallback
-          const firebaseModule = await import('@/lib/firebase');
-          const authInstance = firebaseModule.auth as Auth;
-          const providerInstance = firebaseModule.googleProvider as GoogleAuthProvider;
-          await signInWithRedirect(authInstance, providerInstance);
-          return; // Don't set loading to false as redirect will handle it
-        } catch (redirectError) {
-          console.error("❌ Redirect also failed:", redirectError);
-          toast({
-            title: "Sign-in failed",  
-            description: "Authentication failed. Please try again or check your popup blocker settings.",
-            variant: "destructive",
-          });
-        }
-      } else {
-        toast({
-          title: "Sign-in failed",  
-          description: `Failed to sign in with Google: ${errorMessage}`,
-          variant: "destructive",
-        });
-      }
+      toast({
+        title: "Sign-in failed",  
+        description: `Failed to sign in with Google: ${errorMessage}`,
+        variant: "destructive",
+      });
       setIsLoading(false);
     }
   };
