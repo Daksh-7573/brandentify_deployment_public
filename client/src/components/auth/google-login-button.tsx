@@ -65,7 +65,7 @@ export function GoogleLoginButton({
       disabled={isLoading}
       variant={variant}
       size={size}
-      className={`flex items-center gap-2 ${fullWidth ? 'w-full' : ''} neo-glass-button`}
+      className={`flex items-center gap-2 ${fullWidth ? 'w-full' : ''} neo-glass-button hover:scale-105 transition-transform`}
     >
       {/* Google Icon */}
       <svg 

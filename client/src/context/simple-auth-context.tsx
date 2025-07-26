@@ -146,60 +146,75 @@ export const SimpleAuthProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         hostname: window.location.hostname 
       });
 
-      // Always use popup for testing to avoid redirect issues
-      console.log("🪟 Using popup method for authentication");
-      const result = await signInWithPopup(auth, googleProvider);
+      // Check if we're on localhost and use redirect method instead
+      const isLocalhost = window.location.hostname === 'localhost' || 
+                          window.location.hostname === '127.0.0.1';
       
-      if (result?.user) {
-        console.log("✅ Google popup authentication successful:", result.user.email);
-        const userData = createUserFromFirebase(result.user);
-        console.log("👤 Created user data:", userData);
-        
-        // Set user data immediately
-        setUser(userData);
-        setIsLoading(false);
-        
-        toast({
-          title: "Signed in successfully",
-          description: `Welcome ${userData.name}!`,
-        });
-        
-        // Multiple redirect strategies
-        console.log("🚀 Attempting multiple redirect strategies...");
-        
-        // Strategy 1: Direct navigation
-        console.log("Strategy 1: Direct window.location.replace");
-        window.location.replace('/industry-pulse');
-        
-        // Strategy 2: Fallback setTimeout
-        setTimeout(() => {
-          console.log("Strategy 2: setTimeout fallback");
-          if (window.location.pathname === '/') {
-            window.location.href = '/industry-pulse';
-          }
-        }, 500);
-        
-        // Strategy 3: Manual navigation after 1 second
-        setTimeout(() => {
-          console.log("Strategy 3: Manual navigation check");
-          if (window.location.pathname === '/' || window.location.pathname === '/auth') {
-            console.log("Still on auth page, forcing navigation");
-            window.location.assign('/industry-pulse');
-          }
-        }, 1000);
-        
+      if (isLocalhost) {
+        console.log("🔄 Using redirect method for localhost to avoid popup blocking");
+        await signInWithRedirect(auth, googleProvider);
+        return; // Exit here as redirect will handle the rest
       } else {
-        console.log("⚠️ No user returned from popup result");
-        setIsLoading(false);
+        console.log("🪟 Using popup method for non-localhost");
+        const result = await signInWithPopup(auth, googleProvider);
+      
+        if (result?.user) {
+          console.log("✅ Google popup authentication successful:", result.user.email);
+          const userData = createUserFromFirebase(result.user);
+          console.log("👤 Created user data:", userData);
+          
+          // Set user data immediately
+          setUser(userData);
+          setIsLoading(false);
+          
+          toast({
+            title: "Signed in successfully",
+            description: `Welcome ${userData.name}!`,
+          });
+          
+          // Direct redirect
+          console.log("🚀 Redirecting to Industry Pulse");
+          window.location.replace('/industry-pulse');
+          
+        } else {
+          console.log("⚠️ No user returned from popup result");
+          setIsLoading(false);
+        }
       }
     } catch (error) {
       console.error("❌ Google sign-in error:", error);
       const errorMessage = error instanceof Error ? error.message : 'Please try again.';
-      toast({
-        title: "Sign-in failed",  
-        description: `Failed to sign in with Google: ${errorMessage}`,
-        variant: "destructive",
-      });
+      
+      // Check if it's a popup blocked error and offer redirect alternative
+      if (errorMessage.includes('popup') || errorMessage.includes('closed by user')) {
+        console.log("🔄 Popup blocked, switching to redirect method");
+        toast({
+          title: "Popup blocked", 
+          description: "Switching to redirect method. Please wait...",
+        });
+        
+        try {
+          // Try redirect method as fallback
+          const firebaseModule = await import('@/lib/firebase');
+          const authInstance = firebaseModule.auth as Auth;
+          const providerInstance = firebaseModule.googleProvider as GoogleAuthProvider;
+          await signInWithRedirect(authInstance, providerInstance);
+          return; // Don't set loading to false as redirect will handle it
+        } catch (redirectError) {
+          console.error("❌ Redirect also failed:", redirectError);
+          toast({
+            title: "Sign-in failed",  
+            description: "Authentication failed. Please try again or check your popup blocker settings.",
+            variant: "destructive",
+          });
+        }
+      } else {
+        toast({
+          title: "Sign-in failed",  
+          description: `Failed to sign in with Google: ${errorMessage}`,
+          variant: "destructive",
+        });
+      }
       setIsLoading(false);
     }
   };
