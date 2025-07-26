@@ -12,7 +12,7 @@ import { Switch } from "@/components/ui/switch";
 import { BellRing, FileText, MessageSquare, Trash2, User, Edit, Plus, Eye, MoreHorizontal, Filter, AlertCircle, Loader2, Image as ImageIcon, Tag } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Skeleton } from "@/components/ui/skeleton";
+import { StandardLoadingScreen } from "@/components/ui/standard-loading-screen";
 
 // Types for content items and author
 interface Author {
@@ -434,7 +434,7 @@ export default function ContentManagementPage() {
             <CardTitle>Content Items</CardTitle>
             <CardDescription>
               {contentLoading ? (
-                <Skeleton className="h-4 w-24" />
+                "Loading content..."
               ) : contentError ? (
                 "Error loading items"
               ) : (
@@ -457,33 +457,12 @@ export default function ContentManagementPage() {
                 </thead>
                 <tbody>
                   {contentLoading ? (
-                    // Loading skeleton
-                    Array.from({length: 5}).map((_, index) => (
-                      <tr key={index} className="border-b">
-                        <td className="py-3 px-4">
-                          <Skeleton className="h-6 w-36" />
-                        </td>
-                        <td className="py-3 px-4">
-                          <Skeleton className="h-6 w-20" />
-                        </td>
-                        <td className="py-3 px-4">
-                          <Skeleton className="h-6 w-24" />
-                        </td>
-                        <td className="py-3 px-4">
-                          <Skeleton className="h-6 w-20" />
-                        </td>
-                        <td className="py-3 px-4">
-                          <Skeleton className="h-6 w-32" />
-                        </td>
-                        <td className="py-3 px-4 text-right">
-                          <div className="flex justify-end gap-2">
-                            <Skeleton className="h-8 w-8 rounded-md" />
-                            <Skeleton className="h-8 w-8 rounded-md" />
-                            <Skeleton className="h-8 w-8 rounded-md" />
-                          </div>
-                        </td>
-                      </tr>
-                    ))
+                    // Loading state
+                    <tr>
+                      <td colSpan={6} className="py-8 text-center">
+                        <StandardLoadingScreen message="Loading content..." />
+                      </td>
+                    </tr>
                   ) : contentError ? (
                     // Error state
                     <tr>

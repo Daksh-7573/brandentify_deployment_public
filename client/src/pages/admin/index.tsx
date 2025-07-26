@@ -7,7 +7,7 @@ import {
 import { useAuth } from "@/context/auth-context";
 import { useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
-import { Skeleton } from "@/components/ui/skeleton";
+import { StandardLoadingScreen } from "@/components/ui/standard-loading-screen";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 
@@ -131,19 +131,8 @@ export default function AdminDashboard() {
         <CardContent>
           <div className="space-y-4">
             {activityLoading ? (
-              // Show skeleton loaders while loading
-              Array.from({ length: 3 }).map((_, index) => (
-                <div key={index} className="flex items-start space-x-4 p-2">
-                  <div className="p-2 rounded-full">
-                    <Skeleton className="h-5 w-5 rounded-full" />
-                  </div>
-                  <div className="w-full">
-                    <Skeleton className="h-5 w-32 mb-2" />
-                    <Skeleton className="h-4 w-full mb-1" />
-                    <Skeleton className="h-3 w-24" />
-                  </div>
-                </div>
-              ))
+              // Show StandardLoadingScreen while loading
+              <StandardLoadingScreen message="Loading admin activity..." />
             ) : activityError ? (
               // Show error state
               <div className="flex items-center justify-center py-6 text-red-500">
