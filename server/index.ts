@@ -390,5 +390,11 @@ console.log("Musk Pulse automation system started - scheduling pulses for 9 AM, 
     console.log(`   - External: https://${process.env.REPLIT_DOMAINS}`);
     console.log(`🔧 Domain connectivity: Server bound to 0.0.0.0 for external access`);
     console.log(`📄 Direct access: https://${process.env.REPLIT_DOMAINS}/direct-access.html`);
+    console.log(`🔍 Debugging: REPLIT_DOMAINS=${process.env.REPLIT_DOMAINS}`);
+    console.log(`🔍 Server listening on all interfaces (0.0.0.0:${port})`);
+  });
+  
+  server.on('error', (err) => {
+    console.error('Server error:', err);
   });
 })();
