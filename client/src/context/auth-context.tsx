@@ -606,12 +606,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           return;
         }
       } catch (popupError: any) {
-        console.log("Popup failed, trying redirect:", popupError.code);
+        console.log("Popup failed:", popupError.code);
         
+        // DISABLED REDIRECT TO PREVENT EXTERNAL PAGE NAVIGATION
+        // Instead of redirecting to external Google page, show error message
         if (popupError.code === 'auth/popup-blocked' || 
             popupError.code === 'auth/popup-closed-by-user') {
-          console.log("Using redirect method as fallback");
-          await signInWithRedirect(auth, googleProvider);
+          console.log("Popup blocked or closed - staying on current page");
+          toast({
+            title: "Authentication popup blocked",
+            description: "Please allow popups for this site and try again.",
+            variant: "destructive"
+          });
+          setIsLoading(false);
           return;
         } else {
           // For other errors, throw to be handled by outer catch
