@@ -7967,7 +7967,7 @@ export class DatabaseStorage implements IStorage {
       // Add limit + 1 to check if there are more results
       params.push(limit + 1);
       
-      const result = await pool.query(`
+      const query = `
         SELECT 
           p.id, p.user_id as "userId", p.type, p.category, p.title, p.content, 
           p.industry, p.domain, p.media_type as "mediaType", 
@@ -7983,7 +7983,12 @@ export class DatabaseStorage implements IStorage {
         WHERE ${whereConditions.join(' AND ')}
         ORDER BY p.created_at DESC
         LIMIT $${paramIndex}
-      `, params);
+      `;
+      
+      console.log('[db.getPulsesPaginated] Executing query:', query);
+      console.log('[db.getPulsesPaginated] Query params:', params);
+      
+      const result = await pool.query(query, params);
       
       const pulses = result.rows;
       const hasMore = pulses.length > limit;
