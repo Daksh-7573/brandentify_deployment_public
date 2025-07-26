@@ -372,6 +372,7 @@ console.log("Musk Pulse automation system started - scheduling pulses for 9 AM, 
     console.log(`   - Local: http://localhost:${port}`);
     console.log(`   - Network: http://0.0.0.0:${port}`);
     console.log(`   - External: https://${process.env.REPLIT_DOMAINS}`);
-    console.log(`🔧 Troubleshooting: If external domain fails, try hard refresh (Ctrl+F5)`);
+    console.log(`🔧 Domain troubleshooting: Emergency access page created`);
+    console.log(`📄 Try: https://${process.env.REPLIT_DOMAINS}/emergency-access.html`);
   });
 })();
