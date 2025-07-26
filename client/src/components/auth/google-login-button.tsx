@@ -21,8 +21,18 @@ export function GoogleLoginButton({
   size = "default",
   text = "Sign in with Google"
 }: GoogleLoginButtonProps) {
-  const { signInWithGoogle } = useAuth();
+  const authContext = useAuth();
   const [isLoading, setIsLoading] = useState(false);
+  
+  // Debug auth context
+  console.log("GoogleLoginButton render - Auth context:", {
+    hasContext: !!authContext,
+    signInWithGoogle: typeof authContext?.signInWithGoogle,
+    isAuthenticated: authContext?.isAuthenticated,
+    isLoading: authContext?.isLoading
+  });
+  
+  const { signInWithGoogle } = authContext || {};
   
   const handleGoogleLogin = async (e: React.MouseEvent) => {
     e.preventDefault();

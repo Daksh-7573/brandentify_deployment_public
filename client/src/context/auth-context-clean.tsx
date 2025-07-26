@@ -125,6 +125,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Initialize authentication on mount
   useEffect(() => {
     console.log("🔥 AuthProvider initializing...");
+    console.log("Environment check:", {
+      firebaseApiKey: import.meta.env.VITE_FIREBASE_API_KEY ? "Present" : "Missing",
+      firebaseProjectId: import.meta.env.VITE_FIREBASE_PROJECT_ID ? "Present" : "Missing",
+      hostname: window.location.hostname
+    });
     
     const initAuth = async () => {
       try {

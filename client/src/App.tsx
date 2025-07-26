@@ -211,6 +211,14 @@ function Router() {
           </Suspense>
         );
       }} />
+      <Route path="/console-inspector" component={() => {
+        const ConsoleInspectorPage = lazy(() => import("@/pages/console-inspector"));
+        return (
+          <Suspense fallback={<FeedSkeleton count={2} />}>
+            <ConsoleInspectorPage />
+          </Suspense>
+        );
+      }} />
       <Route path="/auth-popup-debug" component={() => {
         const AuthPopupDebugPage = lazy(() => import("@/pages/auth-popup-debug"));
         return (
