@@ -79,18 +79,6 @@ export async function runSecurityAudit(): Promise<AuditResults> {
   try {
     console.log('Running security audit on dependencies...');
     
-    // Skip security audit in development for better performance
-    if (process.env.NODE_ENV !== 'production') {
-      console.log('Skipping security audit in development mode for better performance');
-      const results: AuditResults = {
-        timestamp: new Date(),
-        vulnerabilities: { critical: 0, high: 0, moderate: 0, low: 0 },
-        packages: { outdated: [], suggested: {} }
-      };
-      securityAuditCache = results;
-      return results;
-    }
-    
     // Note: In production, replace this with your preferred security scanning tool
     // This is a simplified version for demonstration purposes
     const { stdout } = await execPromise('npm audit --json || echo "{}"');

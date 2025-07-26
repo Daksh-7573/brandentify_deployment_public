@@ -3237,28 +3237,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // GET /api/pulses - Get paginated pulses for the industry pulse feed
+  // GET /api/pulses - Get all pulses for the industry pulse feed
   apiRouter.get("/pulses", async (req: Request, res: Response) => {
     try {
-      const page = parseInt(req.query.page as string) || 1;
-      const limit = parseInt(req.query.limit as string) || 10; // Load only 10 pulses initially
-      const offset = (page - 1) * limit;
-      
-      console.log(`[GET /pulses] Fetching pulses page ${page}, limit ${limit}, offset ${offset}`);
-      
       const pulses = await storage.getPulses();
       
-      // Sort by creation date (newest first)
-      const sortedPulses = pulses.sort((a, b) => 
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      );
-      
-      // Apply pagination first, then get user data only for visible pulses
-      const paginatedPulses = sortedPulses.slice(offset, offset + limit);
-      
-      // Get user data only for paginated pulses to improve performance
+      // Get user data for each pulse to display in the UI
       const pulsesWithUserData = await Promise.all(
-        paginatedPulses.map(async (pulse) => {
+        pulses.map(async (pulse) => {
           const user = await storage.getUser(pulse.userId);
           return {
             ...pulse,
@@ -3270,20 +3256,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         })
       );
       
-      const totalCount = pulses.length;
-      const hasMore = offset + limit < totalCount;
-      
-      console.log(`[GET /pulses] Found ${pulses.length} total pulses, returning ${pulsesWithUserData.length} for page ${page}`);
-      
-      res.json({
-        pulses: pulsesWithUserData,
-        pagination: {
-          page,
-          limit,
-          total: totalCount,
-          hasMore
-        }
-      });
+      console.log(`[GET /pulses] Found ${pulses.length} pulses`);
+      res.json(pulsesWithUserData);
     } catch (error) {
       console.error('[GET /pulses] Error fetching pulses:', error);
       res.status(500).json({ message: 'Error fetching pulses' });
