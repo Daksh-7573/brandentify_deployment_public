@@ -12,24 +12,39 @@ import { FeedSkeleton } from "@/components/ui/skeleton-components";
 import AuthCallback from "@/pages/auth-callback";
 import CatchAllAuthHandler from "@/routes/CatchAllAuthHandler";
 
-// Progressive loading state management
+// Enhanced progressive loading state management
 const useProgressiveLoading = () => {
   const [coreLoaded, setCoreLoaded] = useState(false);
   const [secondaryLoaded, setSecondaryLoaded] = useState(false);
+  const [adminLoaded, setAdminLoaded] = useState(false);
 
   useEffect(() => {
-    // Load core components immediately
-    setCoreLoaded(true);
+    const perfStart = performance.now();
+    console.log('[Progressive Loading] Starting tiered component loading');
     
-    // Load secondary components after a short delay
-    const timer = setTimeout(() => {
+    // Tier 1: Critical components load immediately
+    setCoreLoaded(true);
+    console.log('[Progressive Loading] ⚡ Core components ready');
+    
+    // Tier 2: Secondary components after first paint
+    const secondaryTimer = setTimeout(() => {
       setSecondaryLoaded(true);
-    }, 100);
+      console.log('[Progressive Loading] 🚀 Secondary components loaded');
+    }, 50); // Reduced from 100ms for faster perceived performance
+    
+    // Tier 3: Admin/debug components load last
+    const adminTimer = setTimeout(() => {
+      setAdminLoaded(true);
+      console.log(`[Progressive Loading] 🔧 All components loaded in ${(performance.now() - perfStart).toFixed(2)}ms`);
+    }, 200);
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(secondaryTimer);
+      clearTimeout(adminTimer);
+    };
   }, []);
 
-  return { coreLoaded, secondaryLoaded };
+  return { coreLoaded, secondaryLoaded, adminLoaded };
 };
 
 // Simple test component to verify React is working
@@ -149,25 +164,46 @@ function ProtectedRoute({ component: Component, ...rest }: { component: React.Co
 }
 
 function Router() {
+  const { coreLoaded, secondaryLoaded, adminLoaded } = useProgressiveLoading();
+  
   return (
     <Switch>
+      {/* Tier 1: Critical Routes (Always Available) */}
       <Route path="/" component={Landing} />
-      {/* Dedicated login page for Google auth */}
-      <Route path="/login" component={LoginPage} />
-      {/* Add multiple routes to catch all possible auth callback paths */}
+      <Route path="/industry-pulse" component={IndustryPulsePage} />
+      <Route path="/auth" component={AuthPage} />
       <Route path="/auth-callback" component={AuthCallback} />
       <Route path="/__/auth/handler" component={AuthCallback} />
       <Route path="/_/auth/callback" component={AuthCallback} />
       <Route path="/auth/callback" component={AuthCallback} />
-      <Route path="/auth" component={AuthPage} />
-      <Route path="/auth-status" component={AuthStatusPage} />
-      <Route path="/dev-login" component={DevLoginPage} />
-      <Route path="/simple-login" component={SimpleLoginPage} />
-      <Route path="/reliable-login" component={ReliableLoginPage} />
-      <Route path="/universal-login" component={UniversalLoginPage} />
-      <Route path="/simple-universal-login" component={SimpleUniversalLoginPage} />
-      <Route path="/easy-login" component={EasyLoginPage} />
-      <Route path="/fixed-login" component={() => {
+      
+      {/* Tier 2: Secondary Routes (Load after 50ms) */}
+      {secondaryLoaded && (
+        <>
+          <Route path="/profile" component={() => (
+            <ProtectedRoute path="/profile" component={ProfileNeo} />
+          )} />
+          <Route path="/create-pulse" component={CreatePulsePage} />
+          <Route path="/search" component={SearchPage} />
+          <Route path="/portfolio-builder" component={PortfolioBuilder} />
+          <Route path="/@:username">
+            {(params) => <PublicProfile username={params.username} />}
+          </Route>
+        </>
+      )}
+      
+      {/* Tier 3: Admin & Debug Routes (Load after 200ms) */}
+      {adminLoaded && (
+        <>
+          <Route path="/login" component={LoginPage} />
+          <Route path="/auth-status" component={AuthStatusPage} />
+          <Route path="/dev-login" component={DevLoginPage} />
+          <Route path="/simple-login" component={SimpleLoginPage} />
+          <Route path="/reliable-login" component={ReliableLoginPage} />
+          <Route path="/universal-login" component={UniversalLoginPage} />
+          <Route path="/simple-universal-login" component={SimpleUniversalLoginPage} />
+          <Route path="/easy-login" component={EasyLoginPage} />
+          <Route path="/fixed-login" component={() => {
         const FixedLoginPage = lazy(() => import("@/pages/fixed-login"));
         return (
           <Suspense fallback={<FeedSkeleton count={3} />}>
@@ -209,18 +245,17 @@ function Router() {
           </Suspense>
         );
       }} />
-      <Route path="/verify-email" component={EmailVerification} />
-      {/* Quest demo route removed per request */}
-
-      <Route path="/profile">
-        <ProtectedRoute path="/profile" component={ProfileNeo} />
-      </Route>
-
-      {/* Public profile using username route (/@username) - dynamic path parameter */}
+          <Route path="/verify-email" component={EmailVerification} />
+        </>
+      )}
+      
+      {/* Routes that should always be available */}
       <Route path="/@:username">
         {(params) => <PublicProfile username={params.username} />}
       </Route>
-      <Route path="/ai-career">
+      
+      {/* Additional protected routes */}
+      <Route path="/ai-career" component={() => (
         <ProtectedRoute path="/ai-career" component={() => {
           const AICareerPage = lazy(() => import("@/pages/ai-career"));
           return (
@@ -229,99 +264,51 @@ function Router() {
             </Suspense>
           );
         }} />
-      </Route>
-      <Route path="/smart-connect">
+      )} />
+      
+      <Route path="/smart-connect" component={() => (
         <ProtectedRoute path="/smart-connect" component={SmartConnectPage} />
-      </Route>
-      <Route path="/portfolio-builder">
-        <ProtectedRoute path="/portfolio-builder" component={PortfolioBuilder} />
-      </Route>
-      <Route path="/portfolio/edit">
-        <ProtectedRoute path="/portfolio/edit" component={PortfolioBuilder} />
-      </Route>
-      <Route path="/services">
+      )} />
+      
+      <Route path="/services" component={() => (
         <ProtectedRoute path="/services" component={ManageServicesPage} />
-      </Route>
-      <Route path="/add-service">
+      )} />
+      
+      <Route path="/add-service" component={() => (
         <ProtectedRoute path="/add-service" component={AddServicePage} />
-      </Route>
-      <Route path="/create-pulse">
-        <ProtectedRoute path="/create-pulse" component={CreatePulsePage} />
-      </Route>
-      <Route path="/create-pulse-new">
-        <ProtectedRoute path="/create-pulse-new" component={CreatePulsePage} />
-      </Route>
-      <Route path="/industry-pulse">
-        <ProtectedRoute path="/industry-pulse" component={IndustryPulsePage} />
-      </Route>
-      <Route path="/industry-pulse-optimized">
+      )} />
+      
+      <Route path="/industry-pulse-optimized" component={() => (
         <ProtectedRoute path="/industry-pulse-optimized" component={IndustryPulseOptimizedPage} />
-      </Route>
+      )} />
       
       {/* Redirect dashboard to Industry Pulse */}
-      <Route path="/dashboard">
-        <PageRedirect to="/industry-pulse" />
-      </Route>
-      <Route path="/search">
-        <ProtectedRoute path="/search" component={SearchPage} />
-      </Route>
-      <Route path="/news-sources">
+      <Route path="/dashboard" component={() => <PageRedirect to="/industry-pulse" />} />
+      
+      <Route path="/news-sources" component={() => (
         <ProtectedRoute path="/news-sources" component={NewsSourcesPage} />
-      </Route>
-      <Route path="/radar">
+      )} />
+      
+      {/* Additional system routes */}
+      <Route path="/radar" component={() => (
         <ProtectedRoute path="/radar" component={Radar} />
-      </Route>
-      <Route path="/musk-match">
+      )} />
+      
+      <Route path="/musk-match" component={() => (
         <ProtectedRoute path="/musk-match" component={MuskMatchPage} />
-      </Route>
-      <Route path="/resume">
+      )} />
+      
+      <Route path="/resume" component={() => (
         <ProtectedRoute path="/resume" component={ResumePage} />
-      </Route>
-      <Route path="/resume-cv">
-        <ProtectedRoute path="/resume-cv" component={ResumeCV} />
-      </Route>
-      <Route path="/resume-builder">
-        <ProtectedRoute path="/resume-builder" component={() => {
-          const ResumeBuilder = lazy(() => import('@/pages/resume-builder'));
-          return (
-            <Suspense fallback={<FeedSkeleton count={3} />}>
-              <ResumeBuilder />
-            </Suspense>
-          );
-        }} />
-      </Route>
-      <Route path="/resume-editor">
-        {/* Explicitly using the fixed version to avoid hook ordering issues */}
-        <ProtectedRoute path="/resume-editor" component={ResumeEditor} />
-      </Route>
-      <Route path="/resume/edit/:userId">
-        {/* Explicitly using the fixed version with direct import to ensure consistent usage */}
-        {(params) => <ProtectedRoute path="/resume/edit/:userId" component={() => {
-          const FixedResumeEditor = require('@/pages/resume-editor-fixed').default;
-          return <FixedResumeEditor />;
-        }} />}
-      </Route>
-      {/* Resume parser route removed per request */}
-
-      <Route path="/neo-glass-demo">
-        <ProtectedRoute path="/neo-glass-demo" component={NeoGlassDemoPage} />
-      </Route>
-      <Route path="/neo-glass-demo-spotify">
-        <ProtectedRoute path="/neo-glass-demo-spotify" component={NeoGlassSpotifyDemoPage} />
-      </Route>
-      <Route path="/neo-glass-form-demo">
-        <ProtectedRoute path="/neo-glass-form-demo" component={NeoGlassFormDemoPage} />
-      </Route>
-      <Route path="/neo-glass-demo-main">
-        <ProtectedRoute path="/neo-glass-demo-main" component={NeoGlassDemoMainPage} />
-      </Route>
-      <Route path="/neo-glass-simple">
-        <ProtectedRoute path="/neo-glass-simple" component={NeoGlassSimplePage} />
-      </Route>
-      {/* Brand Quests - All demo mode functionality removed */}
-      <Route path="/brand-quests">
+      )} />
+      
+      <Route path="/brand-quests" component={() => (
         <ProtectedRoute path="/brand-quests" component={BrandQuestsPage} />
-      </Route>
+      )} />
+      
+    </Switch>
+  );
+}
       
       {/* Legacy route - keeping for backward compatibility */}
       <Route path="/career-quests">

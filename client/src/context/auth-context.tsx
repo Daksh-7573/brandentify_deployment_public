@@ -67,21 +67,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isDemoMode, setIsDemoMode] = useState(false);
   const { toast } = useToast();
 
-  // Use cached auth state for faster initial load
+  // Enhanced Firebase auth optimization with caching
   useEffect(() => {
+    console.log('[Firebase Auth] Initializing with cached state optimization');
+    const startTime = performance.now();
+    
+    // Check for cached auth state for immediate load
     const cachedAuth = (window as any).__brandentifier_cached_auth?.();
-    if (cachedAuth !== undefined) {
-      console.log('Using cached auth state for faster load');
-      // Set initial state from cache to prevent loading flicker
-      if (cachedAuth) {
-        fetchUserData(cachedAuth.uid, cachedAuth.email).then(userData => {
-          if (userData) {
-            setUser(userData);
+    if (cachedAuth) {
+      console.log('[PERF] Using cached auth state for instant load');
+      setUser(cachedAuth);
+      setIsLoading(false);
+      
+      // Background refresh to ensure data is current
+      fetchUserData(cachedAuth.uid || cachedAuth.id, cachedAuth.email).then(userData => {
+        if (userData) {
+          setUser(userData);
+          // Update cache with fresh data
+          try {
+            localStorage.setItem('brandentifier_auth_cache', JSON.stringify(userData));
+          } catch (e) {
+            console.warn('[Cache] Failed to update auth cache:', e);
           }
-        });
-      }
+        }
+      }).catch(err => {
+        console.warn('[Auth] Background refresh failed:', err);
+      });
+    } else {
+      console.log('[Firebase Auth] No cached state, initializing fresh');
       setIsLoading(false);
     }
+    
+    console.log(`[PERF] Auth context initialization: ${(performance.now() - startTime).toFixed(2)}ms`);
   }, []);
 
   // Fetch user data from our backend
