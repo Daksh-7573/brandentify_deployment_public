@@ -78,7 +78,7 @@ export default function BrandQuestsPage() {
               <p className="text-white/70 text-xs sm:text-sm">Track your professional development progress</p>
             </div>
             {isLoadingXp ? (
-              <Skeleton className="w-full h-[40px] sm:h-[50px] bg-gray-800/60" />
+              <QuestCardSkeleton />
             ) : userXp ? (
               <XpProgressBar 
                 balance={userXp.balance || 0}
