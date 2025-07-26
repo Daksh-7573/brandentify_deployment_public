@@ -20,12 +20,20 @@ const app = express();
 // Configure for external domain access
 app.set('trust proxy', true);
 app.use((req, res, next) => {
-  // Allow access from Replit domains
+  // Allow access from Replit domains and external sources
   res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-  res.header('X-Frame-Options', 'SAMEORIGIN');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, HEAD');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, X-Frame-Options');
+  res.header('X-Frame-Options', 'ALLOWALL');
   res.header('X-Content-Type-Options', 'nosniff');
+  res.header('Cache-Control', 'no-cache, no-store, must-revalidate');
+  
+  // Handle preflight requests
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(200);
+    return;
+  }
+  
   next();
 });
 
@@ -374,17 +382,13 @@ console.log("Musk Pulse automation system started - scheduling pulses for 9 AM, 
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
   const port = 5000;
-  server.listen({
-    port,
-    host: "0.0.0.0",
-    reusePort: true,
-  }, () => {
+  server.listen(port, "0.0.0.0", () => {
     log(`serving on port ${port}`);
     console.log(`🚀 Server accessible at:`);
     console.log(`   - Local: http://localhost:${port}`);
     console.log(`   - Network: http://0.0.0.0:${port}`);
     console.log(`   - External: https://${process.env.REPLIT_DOMAINS}`);
-    console.log(`🔧 Domain troubleshooting: Emergency access page created`);
-    console.log(`📄 Try: https://${process.env.REPLIT_DOMAINS}/direct-access.html`);
+    console.log(`🔧 Domain connectivity: Server bound to 0.0.0.0 for external access`);
+    console.log(`📄 Direct access: https://${process.env.REPLIT_DOMAINS}/direct-access.html`);
   });
 })();
