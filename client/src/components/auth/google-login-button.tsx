@@ -41,10 +41,12 @@ export function GoogleLoginButton({
   };
   
   return (
-    <button
+    <Button
       onClick={handleGoogleLogin}
       disabled={isLoading}
-      className={`neo-glass-button flex items-center gap-2 ${fullWidth ? 'w-full' : ''}`}
+      variant={variant}
+      size={size}
+      className={`flex items-center gap-2 ${fullWidth ? 'w-full' : ''} neo-glass-button`}
     >
       {/* Google Icon */}
       <svg 
@@ -60,7 +62,7 @@ export function GoogleLoginButton({
       </svg>
       
       {isLoading ? "Signing in..." : text}
-    </button>
+    </Button>
   );
 }
 
