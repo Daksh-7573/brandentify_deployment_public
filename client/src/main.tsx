@@ -9,12 +9,26 @@ import "./lib/firebase";
 // Remove HTML loader immediately when React app starts
 const loader = document.getElementById('app-loader');
 if (loader) {
-  loader.style.display = 'none';
+  loader.style.opacity = '0';
+  loader.style.transition = 'opacity 0.15s ease-out';
+  setTimeout(() => {
+    loader.style.display = 'none';
+  }, 150);
 }
 
 // Check if we should use the simple app or the full app
 const useSimpleApp = false; // Set to true for testing
 
-createRoot(document.getElementById("root")!).render(
-  useSimpleApp ? <SimpleApp /> : <App />
-);
+// Progressive rendering - start with critical components
+const renderApp = () => {
+  createRoot(document.getElementById("root")!).render(
+    useSimpleApp ? <SimpleApp /> : <App />
+  );
+};
+
+// Optimize rendering timing
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', renderApp);
+} else {
+  renderApp();
+}

@@ -67,6 +67,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isDemoMode, setIsDemoMode] = useState(false);
   const { toast } = useToast();
 
+  // Use cached auth state for faster initial load
+  useEffect(() => {
+    const cachedAuth = (window as any).__brandentifier_cached_auth?.();
+    if (cachedAuth !== undefined) {
+      console.log('Using cached auth state for faster load');
+      // Set initial state from cache to prevent loading flicker
+      if (cachedAuth) {
+        fetchUserData(cachedAuth.uid, cachedAuth.email).then(userData => {
+          if (userData) {
+            setUser(userData);
+          }
+        });
+      }
+      setIsLoading(false);
+    }
+  }, []);
+
   // Fetch user data from our backend
   const fetchUserData = async (userId: string | number, userEmail?: string): Promise<AuthUser | null> => {
     try {
