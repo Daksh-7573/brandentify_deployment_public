@@ -1369,11 +1369,17 @@ export default function IndustryPulsePage() {
   const [hasPremiumContent, setHasPremiumContent] = useState(false);
   const refreshTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
-  // Fetch all pulses
-  const { data: pulses = [], isLoading, refetch } = useQuery<PulseWithUser[]>({
-    queryKey: ["/api/pulses"],
+  // Fetch all pulses with pagination for better performance
+  const { data: pulsesResponse, isLoading, refetch } = useQuery({
+    queryKey: ["/api/pulses", { page: 1, limit: 10 }],
+    queryFn: async () => {
+      const response = await fetch("/api/pulses?page=1&limit=10");
+      if (!response.ok) throw new Error('Failed to fetch pulses');
+      return response.json();
+    },
     // @ts-ignore - onSuccess is valid but TS is complaining
-    onSuccess: (data: PulseWithUser[]) => {
+    onSuccess: (responseData: { pulses: PulseWithUser[]; pagination: any }) => {
+      const data = responseData.pulses;
       // Initialize project cache for faster loading
       const projectPulses = data.filter((pulse: PulseWithUser) => pulse.type === 'project' && pulse.projectId);
       
@@ -1403,6 +1409,9 @@ export default function IndustryPulsePage() {
       }
     }
   });
+
+  // Extract pulses array from paginated response
+  const pulses = pulsesResponse?.pulses || [];
   
   // Simulate a new content notification (for demo purposes)
   // In a real implementation, this would be triggered by a websocket or polling
