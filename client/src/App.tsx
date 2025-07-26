@@ -4,33 +4,13 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "./context/auth-context";
 import { useAuth } from "./hooks/use-auth";
-import { useEffect, Suspense, lazy, useState } from "react";
+import { useEffect, Suspense, lazy } from "react";
 import GlobalMuskButton from "@/components/musk/global-musk-button";
 import { DomainHelper } from "./lib/domain-helper";
 import { DomainAuthHelper } from "@/components/firebase/DomainAuthHelper";
 import { FeedSkeleton } from "@/components/ui/skeleton-components";
 import AuthCallback from "@/pages/auth-callback";
 import CatchAllAuthHandler from "@/routes/CatchAllAuthHandler";
-
-// Progressive loading state management
-const useProgressiveLoading = () => {
-  const [coreLoaded, setCoreLoaded] = useState(false);
-  const [secondaryLoaded, setSecondaryLoaded] = useState(false);
-
-  useEffect(() => {
-    // Load core components immediately
-    setCoreLoaded(true);
-    
-    // Load secondary components after a short delay
-    const timer = setTimeout(() => {
-      setSecondaryLoaded(true);
-    }, 100);
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  return { coreLoaded, secondaryLoaded };
-};
 
 // Simple test component to verify React is working
 function SimpleTestApp() {
@@ -44,24 +24,22 @@ function SimpleTestApp() {
   );
 }
 
-// Critical components (loaded first for fast perceived performance)
-const Landing = lazy(() => import("@/pages/landing"));
-const IndustryPulsePage = lazy(() => import("@/pages/industry-pulse-new"));
-const Profile = lazy(() => import("@/pages/profile"));
-const AuthPage = lazy(() => import("@/pages/auth-page"));
-
-// Secondary components (loaded after first paint)
+// Lazy load major pages for code splitting
 const NotFound = lazy(() => import("@/pages/not-found"));
+const Landing = lazy(() => import("@/pages/landing"));
+
+const Profile = lazy(() => import("@/pages/profile"));
 const ProfileNeo = lazy(() => import("@/pages/profile-neo"));
 const PublicProfile = lazy(() => import("@/pages/public-profile"));
 const BrandProfile = lazy(() => import("@/pages/brand-profile"));
+
 const PortfolioBuilder = lazy(() => import("@/pages/portfolio-builder"));
 const CreatePulsePage = lazy(() => import("@/pages/create-pulse-new"));
+const IndustryPulsePage = lazy(() => import("@/pages/industry-pulse-new"));
 const IndustryPulseOptimizedPage = lazy(() => import("@/pages/industry-pulse-optimized"));
 const SearchPage = lazy(() => import("@/pages/search-fixed"));
+const AuthPage = lazy(() => import("@/pages/auth-page"));
 const EmailVerification = lazy(() => import("@/pages/email-verification"));
-
-// Admin and debug components (lowest priority)
 const NewsSourcesPage = lazy(() => import("@/pages/news-sources"));
 const LoginPage = lazy(() => import("@/pages/login"));
 const AuthStatusPage = lazy(() => import("@/pages/auth-status"));
@@ -87,11 +65,13 @@ const MuskMatchPage = lazy(() => import("@/pages/musk-match"));
 const ResumePage = lazy(() => import("@/pages/resume"));
 const ResumeCV = lazy(() => import("@/pages/resume-cv"));
 const ResumeEditor = lazy(() => import("@/pages/resume-editor"));
+// Resume Parser page removed per request
 const UnifiedProfilePage = lazy(() => import("@/pages/unified-profile"));
+
 const CareerQuestsPage = lazy(() => import("@/pages/career-quests"));
 const BrandQuestsPage = lazy(() => import("@/pages/brand-quests"));
-const CareerCapsulePage = lazy(() => import("@/pages/career-capsule"));
-const QuantumCardPage = lazy(() => import("@/pages/quantum-card"));
+const CareerCapsulePage = lazy(() => import("@/pages/career-capsule")); // Career Capsule feature (renamed from Roadmap)
+const QuantumCardPage = lazy(() => import("@/pages/quantum-card")); // Quantum Card digital visiting card feature
 const OnboardingPage = lazy(() => import("@/pages/onboarding"));
 const EditProfilePage = lazy(() => import("@/pages/edit-profile"));
 const MuskTestingPage = lazy(() => import("@/pages/musk-testing"));
