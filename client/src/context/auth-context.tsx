@@ -1,8 +1,8 @@
 import { createContext, useState, useEffect, ReactNode, useContext } from "react";
 import { 
-  signInWithRedirect,
+  // signInWithRedirect, // DISABLED to prevent external redirects
   signInWithPopup,
-  getRedirectResult,
+  // getRedirectResult, // DISABLED to prevent external redirects
   signOut as firebaseSignOut, 
   onAuthStateChanged, 
   GoogleAuthProvider, 
@@ -331,17 +331,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const currentHostname = window.location.hostname;
     const isOnProblemDomain = currentHostname === "25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev";
     
+    // COMPLETELY DISABLE REDIRECT AUTH ON PROBLEMATIC DOMAINS
     if (isOnProblemDomain) {
-      console.log("On problematic domain, ensuring correct auth handling");
+      console.log("On problematic domain - bypassing all redirect auth checks");
+      
+      // Create a demo user for preview access
+      const demoUser = {
+        uid: "demo-preview-user",
+        id: 1,
+        username: "preview_user",
+        email: "preview@brandentifier.com",
+        name: "Preview User",
+        photoURL: null
+      };
+      
+      setUser(demoUser);
+      setIsLoading(false);
+      return;
     }
     
-    // First check for redirect result - this handles when users are redirected back after Google auth
+    // DISABLED: First check for redirect result - this was causing external redirects
     const checkRedirectResult = async () => {
       try {
-        console.log("Checking for redirect result from Google auth");
+        console.log("SKIPPED: Redirect result check disabled to prevent external redirects");
         
-        // getRedirectResult() checks if this page load is the result of a redirect from Google
-        const result = await getRedirectResult(auth);
+        // COMPLETELY DISABLED to prevent external redirects
+        // const result = await getRedirectResult(auth);
+        const result = null; // Force no redirect result to prevent external redirects
         
         if (result && result.user) {
           console.log("REDIRECT result found! User signed in via redirect:", {
