@@ -61,6 +61,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Create or update a user in our backend
   const createOrUpdateUserInBackend = async (firebaseUser: FirebaseUser) => {
     try {
+      console.log("🔧 Creating/updating user in backend:", firebaseUser.email);
+      
       const userData = {
         username: firebaseUser.email?.split('@')[0] || firebaseUser.uid,
         email: firebaseUser.email || `firebase_${firebaseUser.uid.substring(0, 8)}@example.com`,
@@ -70,22 +72,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         location: null,
       };
       
+      console.log("📤 Sending user data to backend:", userData);
+      
       const response = await apiRequest('POST', '/api/users', userData);
       
       if (response.ok) {
-        return await response.json();
+        const result = await response.json();
+        console.log("✅ User created successfully:", result);
+        return result;
       }
       
+      console.log("⚠️ POST failed, trying PUT method");
       // If post fails, try updating
       const updateResponse = await apiRequest('PUT', `/api/users/${firebaseUser.uid}`, userData);
       
       if (updateResponse.ok) {
-        return await updateResponse.json();
+        const result = await updateResponse.json();
+        console.log("✅ User updated successfully:", result);
+        return result;
       }
       
+      console.error("❌ Both POST and PUT failed");
       return null;
     } catch (error) {
-      console.error("Error in createOrUpdateUserInBackend:", error);
+      console.error("❌ Error in createOrUpdateUserInBackend:", error);
       return null;
     }
   };
@@ -152,8 +162,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               localStorage.removeItem('google_auth_redirect_time');
               
               // Process the authenticated user
+              console.log("🔄 Processing redirect authentication result...");
               await createOrUpdateUserInBackend(result.user);
               const userData = await fetchUserData(result.user.uid, result.user.email || undefined);
+              console.log("📊 User data retrieved:", userData ? "Success" : "Failed");
               
               if (userData) {
                 setUser(userData);
@@ -163,9 +175,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 });
                 
                 // Redirect to Industry Pulse after successful authentication
+                console.log("🚀 Redirecting to Industry Pulse after successful auth");
                 setTimeout(() => {
                   window.location.href = '/industry-pulse';
-                }, 500);
+                }, 1000);
               }
               
               setIsLoading(false);
@@ -190,6 +203,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               
               await createOrUpdateUserInBackend(firebaseUser);
               const userData = await fetchUserData(firebaseUser.uid, firebaseUser.email || undefined);
+              console.log("📊 Auth state change - User data:", userData ? "Retrieved" : "Failed");
               
               if (userData) {
                 setUser(userData);
@@ -200,9 +214,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                   });
                   
                   // Redirect to Industry Pulse after successful authentication
+                  console.log("🚀 Redirecting to Industry Pulse after auth state change");
                   setTimeout(() => {
                     window.location.href = '/industry-pulse';
-                  }, 500);
+                  }, 1000);
                 }
               } else {
                 // Fallback user
@@ -278,10 +293,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               description: `Welcome ${userData.name || userData.email}!`,
             });
             
-            // Redirect to Industry Pulse after successful authentication
+            // Redirect to Industry Pulse after successful authentication  
+            console.log("🚀 Redirecting to Industry Pulse after popup auth");
             setTimeout(() => {
               window.location.href = '/industry-pulse';
-            }, 500);
+            }, 1000);
           }
         }
       }

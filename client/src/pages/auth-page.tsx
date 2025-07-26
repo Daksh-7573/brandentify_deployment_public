@@ -34,10 +34,12 @@ export default function AuthPage() {
 
   // Redirect to industry pulse if already authenticated
   useEffect(() => {
-    if (isAuthenticated) {
+    console.log("AuthPage - checking authentication:", { isAuthenticated, isLoading });
+    if (isAuthenticated && !isLoading) {
+      console.log("AuthPage - redirecting to industry pulse");
       setLocation("/industry-pulse");
     }
-  }, [isAuthenticated, setLocation]);
+  }, [isAuthenticated, isLoading, setLocation]);
 
   return (
     <div 
