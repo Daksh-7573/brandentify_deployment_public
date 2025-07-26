@@ -128,6 +128,21 @@ Brandentifier is a comprehensive career development platform that combines AI-dr
 
 ## Recent Changes
 
+### URL Input Functionality Restoration COMPLETED
+- **Date**: July 26, 2025
+- **Status**: Missing Preview Screen URL Option Successfully Restored
+- **Problem Solved**: User reported missing URL input functionality for adding media URLs directly instead of just file uploads
+- **Technical Solution**: 
+  - Added comprehensive URL input fields to Create Pulse page (create-pulse-new.tsx)
+  - Implemented both image and video URL input with validation and preview
+  - Created direct access emergency demo page for immediate testing
+  - Fixed routing issues by moving Create Pulse to critical tier for immediate loading
+  - Added navigation test page and standalone React demo for accessibility
+- **Result**: Users can now add image and video URLs directly in Create Pulse page with live preview
+- **Direct Access**: Emergency demo available at `/emergency-url-demo.html` for immediate testing
+- **User Experience**: Complete URL input functionality with validation, limits, and preview capabilities
+- **Navigation Fix**: Resolved progressive loading issues preventing access to secondary routes
+
 ### Complete Performance Optimization Implementation COMPLETED
 - **Date**: July 26, 2025  
 - **Status**: Comprehensive Loading Speed & Performance Optimization - All 4 Strategies Fully Operational
