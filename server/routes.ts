@@ -3237,6 +3237,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Get paginated pulses with infinite scrolling support
+  apiRouter.get("/pulses/paginated", async (req: Request, res: Response) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 20;
+      const cursor = req.query.cursor as string;
+      const industry = req.query.industry as string;
+      const domain = req.query.domain as string;
+      const type = req.query.type as string;
+
+      console.log('[GET /pulses/paginated] Fetching paginated pulses:', { limit, cursor, industry, domain, type });
+
+      const filters = { industry, domain, type };
+      const result = await storage.getPulsesPaginated(limit, cursor, filters);
+
+      console.log(`[GET /pulses/paginated] Returning ${result.pulses.length} pulses, hasMore: ${result.hasMore}`);
+      res.json(result);
+    } catch (error) {
+      console.error('[GET /pulses/paginated] Error:', error);
+      res.status(500).json({ error: 'Failed to fetch paginated pulses' });
+    }
+  });
+
   // GET /api/pulses - Get all pulses for the industry pulse feed
   apiRouter.get("/pulses", async (req: Request, res: Response) => {
     try {

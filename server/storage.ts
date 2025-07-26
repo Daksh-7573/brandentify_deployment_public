@@ -370,6 +370,15 @@ export interface IStorage {
   
   // Pulse operations
   getPulses(): Promise<Pulse[]>;
+  getPulsesPaginated(limit: number, cursor?: string, filters?: {
+    industry?: string;
+    domain?: string;
+    type?: string;
+  }): Promise<{
+    pulses: any[];
+    nextCursor: string | null;
+    hasMore: boolean;
+  }>;
   getPulsesByUserId(userId: number): Promise<Pulse[]>;
   getPulseById(id: number): Promise<Pulse | undefined>;
   createPulse(pulse: InsertPulse): Promise<Pulse>;
@@ -2769,6 +2778,61 @@ export class MemStorage implements IStorage {
         const timeB = b.createdAt ? b.createdAt.getTime() : 0;
         return timeB - timeA; // Sort newest first
       });
+  }
+
+  async getPulsesPaginated(limit: number = 20, cursor?: string, filters?: {
+    industry?: string;
+    domain?: string;
+    type?: string;
+  }): Promise<{
+    pulses: any[];
+    nextCursor: string | null;
+    hasMore: boolean;
+  }> {
+    let allPulses = Array.from(this.pulses.values())
+      .sort((a, b) => {
+        const timeA = a.createdAt ? a.createdAt.getTime() : 0;
+        const timeB = b.createdAt ? b.createdAt.getTime() : 0;
+        return timeB - timeA; // Sort newest first
+      });
+
+    // Apply filters
+    if (filters?.industry) {
+      allPulses = allPulses.filter(p => p.industry === filters.industry);
+    }
+    if (filters?.domain) {
+      allPulses = allPulses.filter(p => p.domain === filters.domain);
+    }
+    if (filters?.type && filters.type !== 'all') {
+      allPulses = allPulses.filter(p => p.type === filters.type);
+    }
+
+    // Apply cursor pagination
+    if (cursor) {
+      const cursorDate = new Date(cursor);
+      allPulses = allPulses.filter(p => {
+        const pulseDate = p.createdAt ? new Date(p.createdAt) : new Date(0);
+        return pulseDate < cursorDate;
+      });
+    }
+
+    // Get results with limit + 1 to check if there are more
+    const results = allPulses.slice(0, limit + 1);
+    const hasMore = results.length > limit;
+    
+    if (hasMore) {
+      results.pop(); // Remove the extra item
+    }
+
+    const nextCursor = hasMore && results.length > 0 
+      ? (results[results.length - 1].createdAt?.toISOString() || null)
+      : null;
+
+    return {
+      pulses: results,
+      nextCursor,
+      hasMore
+    };
   }
   
   async getPulsesByUserId(userId: number): Promise<Pulse[]> {
@@ -7857,6 +7921,101 @@ export class DatabaseStorage implements IStorage {
       return result.rows;
     } catch (error) {
       console.error('[db.getPulses] Error fetching pulses:', error);
+      throw error;
+    }
+  }
+
+  // New optimized cursor-based pagination method
+  async getPulsesPaginated(limit: number = 20, cursor?: string, filters?: {
+    industry?: string;
+    domain?: string;
+    type?: string;
+  }): Promise<{
+    pulses: any[];
+    nextCursor: string | null;
+    hasMore: boolean;
+  }> {
+    try {
+      console.log('[db.getPulsesPaginated] Fetching paginated pulses', { limit, cursor, filters });
+      
+      let whereConditions = ['p.is_published = true'];
+      let params: any[] = [];
+      let paramIndex = 1;
+      
+      // Add filters
+      if (filters?.industry) {
+        whereConditions.push(`p.industry = $${paramIndex++}`);
+        params.push(filters.industry);
+      }
+      
+      if (filters?.domain) {
+        whereConditions.push(`p.domain = $${paramIndex++}`);
+        params.push(filters.domain);
+      }
+      
+      if (filters?.type && filters.type !== 'all') {
+        whereConditions.push(`p.type = $${paramIndex++}`);
+        params.push(filters.type);
+      }
+      
+      // Add cursor condition for pagination
+      if (cursor) {
+        whereConditions.push(`p.created_at < $${paramIndex++}`);
+        params.push(new Date(cursor));
+      }
+      
+      // Add limit + 1 to check if there are more results
+      params.push(limit + 1);
+      
+      const result = await pool.query(`
+        SELECT 
+          p.id, p.user_id as "userId", p.type, p.category, p.title, p.content, 
+          p.industry, p.domain, p.media_type as "mediaType", 
+          p.media_urls as "mediaUrls", p.media_local_storage_keys as "mediaLocalStorageKeys",
+          p.poll_options as "pollOptions", p.project_id as "projectId",
+          p.likes, p.insightful_count as "insightfulCount", 
+          p.misinformed_count as "misinformedCount", p.share_count as "shareCount",
+          p.comments, p.is_published as "isPublished", p.expires_at as "expiresAt",
+          p.created_at as "createdAt", p.updated_at as "updatedAt",
+          u.name, u.photo_url as "photoURL", u.title as "userTitle"
+        FROM pulses p
+        LEFT JOIN users u ON p.user_id = u.id
+        WHERE ${whereConditions.join(' AND ')}
+        ORDER BY p.created_at DESC
+        LIMIT $${paramIndex}
+      `, params);
+      
+      const pulses = result.rows;
+      const hasMore = pulses.length > limit;
+      
+      // Remove the extra item if we have more than the limit
+      if (hasMore) {
+        pulses.pop();
+      }
+      
+      // Get the next cursor from the last item
+      const nextCursor = hasMore && pulses.length > 0 
+        ? pulses[pulses.length - 1].createdAt.toISOString()
+        : null;
+      
+      // Format pulses with user data
+      const formattedPulses = pulses.map(pulse => ({
+        ...pulse,
+        user: {
+          name: pulse.name,
+          photoURL: pulse.photoURL
+        }
+      }));
+      
+      console.log(`[db.getPulsesPaginated] Found ${formattedPulses.length} pulses, hasMore: ${hasMore}`);
+      
+      return {
+        pulses: formattedPulses,
+        nextCursor,
+        hasMore
+      };
+    } catch (error) {
+      console.error('[db.getPulsesPaginated] Error fetching paginated pulses:', error);
       throw error;
     }
   }

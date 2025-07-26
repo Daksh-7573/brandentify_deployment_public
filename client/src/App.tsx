@@ -35,6 +35,7 @@ import BrandProfile from "@/pages/brand-profile";
 import PortfolioBuilder from "@/pages/portfolio-builder";
 import CreatePulsePage from "@/pages/create-pulse-new";
 import IndustryPulsePage from "@/pages/industry-pulse-new";
+import IndustryPulseOptimizedPage from "@/pages/industry-pulse-optimized";
 import SearchPage from "@/pages/search-fixed";
 import AuthPage from "@/pages/auth-page";
 import EmailVerification from "@/pages/email-verification";
@@ -227,6 +228,9 @@ function Router() {
       </Route>
       <Route path="/industry-pulse">
         <ProtectedRoute path="/industry-pulse" component={IndustryPulsePage} />
+      </Route>
+      <Route path="/industry-pulse-optimized">
+        <ProtectedRoute path="/industry-pulse-optimized" component={IndustryPulseOptimizedPage} />
       </Route>
       
       {/* Redirect dashboard to Industry Pulse */}
