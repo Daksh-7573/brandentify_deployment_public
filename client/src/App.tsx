@@ -77,6 +77,7 @@ const SearchPage = lazy(() => import("@/pages/search-fixed"));
 const EmailVerification = lazy(() => import("@/pages/email-verification"));
 
 // Admin and debug components (lowest priority)
+const NavigationTest = lazy(() => import("@/pages/navigation-test"));
 const NewsSourcesPage = lazy(() => import("@/pages/news-sources"));
 const LoginPage = lazy(() => import("@/pages/login"));
 const AuthStatusPage = lazy(() => import("@/pages/auth-status"));
@@ -170,7 +171,9 @@ function Router() {
     <Switch>
       {/* Tier 1: Critical Routes (Always Available) */}
       <Route path="/" component={Landing} />
+      <Route path="/nav-test" component={NavigationTest} />
       <Route path="/industry-pulse" component={IndustryPulsePage} />
+      <Route path="/create-pulse" component={CreatePulsePage} />
       <Route path="/auth" component={AuthPage} />
       <Route path="/auth-callback" component={AuthCallback} />
       <Route path="/__/auth/handler" component={AuthCallback} />
@@ -183,7 +186,6 @@ function Router() {
           <Route path="/profile" component={() => (
             <ProtectedRoute path="/profile" component={ProfileNeo} />
           )} />
-          <Route path="/create-pulse" component={CreatePulsePage} />
           <Route path="/search" component={SearchPage} />
           <Route path="/portfolio-builder" component={PortfolioBuilder} />
           <Route path="/@:username">
