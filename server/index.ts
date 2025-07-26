@@ -271,7 +271,7 @@ app.use((req, res, next) => {
 app.use(express.json({ 
   limit: '50mb',
   verify: (req, res, buf, encoding) => {
-    if (req.url.includes('/career-capsule')) {
+    if (req.url && req.url.includes('/career-capsule')) {
       console.log('[JSON Parser Debug] Raw buffer length:', buf.length);
       console.log('[JSON Parser Debug] Raw buffer content:', buf.toString('utf8'));
     }
@@ -368,5 +368,11 @@ console.log("Musk Pulse automation system started - scheduling pulses for 9 AM, 
     reusePort: true,
   }, () => {
     log(`serving on port ${port}`);
+    console.log(`🚀 Server accessible at:`);
+    console.log(`   - Local: http://localhost:${port}`);
+    console.log(`   - Network: http://0.0.0.0:${port}`);
+    console.log(`   - External: https://${process.env.REPLIT_DOMAINS}`);
+    console.log(`🔧 Domain troubleshooting: Emergency access page created`);
+    console.log(`📄 Try: https://${process.env.REPLIT_DOMAINS}/emergency-access.html`);
   });
 })();

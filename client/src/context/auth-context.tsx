@@ -1,8 +1,8 @@
 import { createContext, useState, useEffect, ReactNode, useContext } from "react";
 import { 
-  // signInWithRedirect, // DISABLED to prevent external redirects
+  signInWithRedirect,
   signInWithPopup,
-  // getRedirectResult, // DISABLED to prevent external redirects
+  getRedirectResult,
   signOut as firebaseSignOut, 
   onAuthStateChanged, 
   GoogleAuthProvider, 
@@ -66,6 +66,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [isDemoMode, setIsDemoMode] = useState(false);
   const { toast } = useToast();
+
+  // Use cached auth state for faster initial load
+  useEffect(() => {
+    const cachedAuth = (window as any).__brandentifier_cached_auth?.();
+    if (cachedAuth !== undefined) {
+      console.log('Using cached auth state for faster load');
+      // Set initial state from cache to prevent loading flicker
+      if (cachedAuth) {
+        fetchUserData(cachedAuth.uid, cachedAuth.email).then(userData => {
+          if (userData) {
+            setUser(userData);
+          }
+        });
+      }
+      setIsLoading(false);
+    }
+  }, []);
 
   // Fetch user data from our backend
   const fetchUserData = async (userId: string | number, userEmail?: string): Promise<AuthUser | null> => {
@@ -331,33 +348,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const currentHostname = window.location.hostname;
     const isOnProblemDomain = currentHostname === "25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev";
     
-    // COMPLETELY DISABLE REDIRECT AUTH ON PROBLEMATIC DOMAINS
     if (isOnProblemDomain) {
-      console.log("On problematic domain - bypassing all redirect auth checks");
-      
-      // Create a demo user for preview access
-      const demoUser = {
-        uid: "demo-preview-user",
-        id: 1,
-        username: "preview_user",
-        email: "preview@brandentifier.com",
-        name: "Preview User",
-        photoURL: null
-      };
-      
-      setUser(demoUser);
-      setIsLoading(false);
-      return;
+      console.log("On problematic domain, ensuring correct auth handling");
     }
     
-    // DISABLED: First check for redirect result - this was causing external redirects
+    // First check for redirect result - this handles when users are redirected back after Google auth
     const checkRedirectResult = async () => {
       try {
-        console.log("SKIPPED: Redirect result check disabled to prevent external redirects");
+        console.log("Checking for redirect result from Google auth");
         
-        // COMPLETELY DISABLED to prevent external redirects
-        // const result = await getRedirectResult(auth);
-        const result = null; // Force no redirect result to prevent external redirects
+        // getRedirectResult() checks if this page load is the result of a redirect from Google
+        const result = await getRedirectResult(auth);
         
         if (result && result.user) {
           console.log("REDIRECT result found! User signed in via redirect:", {
@@ -622,19 +623,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           return;
         }
       } catch (popupError: any) {
-        console.log("Popup failed:", popupError.code);
+        console.log("Popup failed, trying redirect:", popupError.code);
         
-        // DISABLED REDIRECT TO PREVENT EXTERNAL PAGE NAVIGATION
-        // Instead of redirecting to external Google page, show error message
         if (popupError.code === 'auth/popup-blocked' || 
             popupError.code === 'auth/popup-closed-by-user') {
-          console.log("Popup blocked or closed - staying on current page");
-          toast({
-            title: "Authentication popup blocked",
-            description: "Please allow popups for this site and try again.",
-            variant: "destructive"
-          });
-          setIsLoading(false);
+          console.log("Using redirect method as fallback");
+          await signInWithRedirect(auth, googleProvider);
           return;
         } else {
           // For other errors, throw to be handled by outer catch
