@@ -59,6 +59,7 @@ const DomainDebug = lazy(() => import("@/pages/domain-debug"));
 const FinalReplitAuth = lazy(() => import("@/pages/final-replit-auth"));
 const Radar = lazy(() => import("@/pages/radar"));
 const FirebaseAuthTest = lazy(() => import("@/pages/auth-test"));
+const AuthTestPage = lazy(() => import("@/pages/auth-test"));
 const GoogleAuthTest = lazy(() => import("@/pages/google-auth-test"));
 const SmartConnectPage = lazy(() => import("@/pages/smart-connect"));
 const MuskMatchPage = lazy(() => import("@/pages/musk-match"));
@@ -181,6 +182,11 @@ function Router() {
           </Suspense>
         );
       }} />
+      <Route path="/auth-test" component={() => (
+        <Suspense fallback={<FeedSkeleton count={2} />}>
+          <AuthTestPage />
+        </Suspense>
+      )} />
       <Route path="/auth-popup-debug" component={() => {
         const AuthPopupDebugPage = lazy(() => import("@/pages/auth-popup-debug"));
         return (
