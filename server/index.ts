@@ -17,6 +17,21 @@ import { muskPulseScheduler } from "./services/musk-pulse-scheduler";
 
 const app = express();
 
+// Add explicit static file serving early
+app.use(express.static(path.join(process.cwd(), 'public')));
+
+// Add a simple test route that Replit preview can detect
+app.get('/replit-test', (req, res) => {
+  res.send(`
+    <!DOCTYPE html>
+    <html><head><title>Replit Test</title></head>
+    <body>
+      <h1>Server is running on port 5000</h1>
+      <p>Timestamp: ${new Date().toISOString()}</p>
+    </body></html>
+  `);
+});
+
 // Very first handler - career capsule POST bypass (before any middleware that touches the body)
 app.use('/api/users/:userId/career-capsule', (req, res, next) => {
   if (req.method === 'POST') {
