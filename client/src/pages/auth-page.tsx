@@ -17,6 +17,7 @@ import { PhoneAuth } from "@/components/auth/phone-auth";
 import { EmailAuth } from "@/components/auth/email-auth";
 import { DemoLogin } from "@/components/auth/demo-login";
 import { AuthInstructions } from "@/components/auth/auth-instructions";
+import { AuthDebugPanel } from "@/components/debug/auth-debug-panel";
 import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
 import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
 
@@ -111,6 +112,9 @@ export default function AuthPage() {
                         
                         {/* Authentication Instructions */}
                         <AuthInstructions />
+                        
+                        {/* Debug Panel */}
+                        <AuthDebugPanel />
                       </>
                     )}
                   </div>

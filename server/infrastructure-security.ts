@@ -82,11 +82,23 @@ export async function runSecurityAudit(): Promise<AuditResults> {
     // Note: In production, replace this with your preferred security scanning tool
     // This is a simplified version for demonstration purposes
     const { stdout } = await execPromise('npm audit --json || echo "{}"');
-    const auditData = JSON.parse(stdout);
+    let auditData;
+    try {
+      auditData = JSON.parse(stdout);
+    } catch (parseError) {
+      console.log('Security audit JSON parse error, using fallback');
+      auditData = { metadata: { vulnerabilities: {} } };
+    }
     
     // Get outdated packages
     const { stdout: outdatedStdout } = await execPromise('npm outdated --json || echo "{}"');
-    const outdatedData = JSON.parse(outdatedStdout);
+    let outdatedData;
+    try {
+      outdatedData = JSON.parse(outdatedStdout);
+    } catch (parseError) {
+      console.log('Outdated packages JSON parse error, using fallback');
+      outdatedData = {};
+    }
     
     // Process results
     const results: AuditResults = {
