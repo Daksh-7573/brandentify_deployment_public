@@ -12,7 +12,12 @@ export default function AuthConsoleLogger() {
   const addLog = (message: string, type: 'info' | 'success' | 'error' | 'warning' = 'info') => {
     const timestamp = new Date().toLocaleTimeString();
     const logEntry = { message, type, timestamp };
-    setLogs(prev => [logEntry, ...prev.slice(0, 19)]);
+    console.log('🟢 Adding log:', logEntry);
+    setLogs(prev => {
+      const newLogs = [logEntry, ...prev.slice(0, 19)];
+      console.log('🟢 Updated logs array:', newLogs.length, 'entries');
+      return newLogs;
+    });
     
     // Also log to browser console with appropriate method
     const consoleMethod = type === 'error' ? 'error' : type === 'warning' ? 'warn' : 'log';
@@ -65,15 +70,26 @@ export default function AuthConsoleLogger() {
   }, [user, isAuthenticated, isLoading]);
 
   const testGoogleSignIn = async () => {
+    console.log('🔵 BUTTON CLICKED - testGoogleSignIn function called');
     setTesting(true);
     addLog('🔑 Starting Google Sign-In test...', 'info');
     addLog('📍 Button clicked - initiating authentication flow', 'info');
     
+    console.log('🔵 signInWithGoogle function:', signInWithGoogle);
+    console.log('🔵 Type of signInWithGoogle:', typeof signInWithGoogle);
+    
     try {
       addLog('🚀 Calling signInWithGoogle function...', 'info');
-      await signInWithGoogle();
+      
+      if (typeof signInWithGoogle !== 'function') {
+        throw new Error('signInWithGoogle is not a function');
+      }
+      
+      const result = await signInWithGoogle();
+      console.log('🔵 signInWithGoogle result:', result);
       addLog('✅ Google Sign-In initiated successfully', 'success');
     } catch (error: any) {
+      console.error('🔴 Google Sign-In error:', error);
       addLog(`❌ Google Sign-In failed: ${error.message}`, 'error');
       addLog(`Error details: ${JSON.stringify(error)}`, 'error');
     } finally {
@@ -157,7 +173,11 @@ export default function AuthConsoleLogger() {
             <div className="mb-6 bg-blue-900/20 p-6 rounded-lg border border-blue-600">
               <h3 className="font-semibold text-lg mb-4 text-blue-400">Authentication Test</h3>
               <Button 
-                onClick={testGoogleSignIn} 
+                onClick={() => {
+                  console.log('🔵 BUTTON CLICK DETECTED');
+                  addLog('🔘 Button click detected!', 'info');
+                  testGoogleSignIn();
+                }} 
                 disabled={testing || isAuthenticated}
                 className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-lg font-semibold"
                 size="lg"
