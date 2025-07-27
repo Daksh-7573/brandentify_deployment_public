@@ -142,6 +142,14 @@ function Router() {
       <Route path="/_/auth/callback" component={AuthCallback} />
       <Route path="/auth/callback" component={AuthCallback} />
       <Route path="/auth" component={AuthPage} />
+      <Route path="/auth-debug" component={() => {
+        const AuthDebugPage = lazy(() => import("@/pages/auth-debug"));
+        return (
+          <Suspense fallback={<FeedSkeleton count={1} />}>
+            <AuthDebugPage />
+          </Suspense>
+        );
+      }} />
       <Route path="/auth-status" component={AuthStatusPage} />
       <Route path="/dev-login" component={DevLoginPage} />
       <Route path="/simple-login" component={SimpleLoginPage} />

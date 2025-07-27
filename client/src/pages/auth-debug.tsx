@@ -1,366 +1,279 @@
 import { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { getAuth, onAuthStateChanged, signInWithRedirect, GoogleAuthProvider } from 'firebase/auth';
-import { initializeApp, FirebaseApp } from 'firebase/app';
-import { AlertCircle, Check, Info, X } from 'lucide-react';
-import { logOAuthFlowDetails, logDetailedAuthError } from '@/utils/auth-error-logger';
+import { signInWithRedirect, getRedirectResult, onAuthStateChanged, Auth, GoogleAuthProvider } from 'firebase/auth';
 import { useAuth } from '@/hooks/use-auth';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { AlertCircle, CheckCircle, Loader2 } from 'lucide-react';
 
-// Define types for our state
-interface FirebaseState {
-  appInitialized: boolean;
-  authInitialized: boolean;
-  providerConfigured: boolean;
-  signInAttempted: boolean;
-  signInSuccessful: boolean | null;
-  error: string | null;
-  user: any | null;
-  redirectUrl: string | null;
-}
-
-/**
- * Authentication Debug Page
- * 
- * This page provides comprehensive debugging for Firebase authentication issues.
- * It displays detailed information about the current authentication state,
- * configuration, and provides tools to diagnose authentication problems.
- */
 export default function AuthDebugPage() {
-  // State for Firebase components
-  const [state, setState] = useState<FirebaseState>({
-    appInitialized: false,
-    authInitialized: false,
-    providerConfigured: false,
-    signInAttempted: false,
-    signInSuccessful: null,
-    error: null,
-    user: null,
-    redirectUrl: null
-  });
+  const { user, isAuthenticated, isLoading } = useAuth();
+  const [logs, setLogs] = useState<string[]>([]);
+  const [debugInfo, setDebugInfo] = useState<any>({});
+  const [testing, setTesting] = useState(false);
 
-  // State for environment variables
-  const [envVars, setEnvVars] = useState({
-    apiKey: import.meta.env.VITE_FIREBASE_API_KEY?.substring(0, 5) + '...',
-    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-    appId: import.meta.env.VITE_FIREBASE_APP_ID?.substring(0, 5) + '...',
-  });
+  const addLog = (message: string) => {
+    const timestamp = new Date().toLocaleTimeString();
+    const logMessage = `[${timestamp}] ${message}`;
+    setLogs(prev => [logMessage, ...prev.slice(0, 19)]);
+    console.log(logMessage);
+  };
 
-  // State for domain information
-  const [domainInfo, setDomainInfo] = useState({
-    hostname: window.location.hostname,
-    origin: window.location.origin,
-    href: window.location.href,
-    isDevelopment: false,
-    isProblemDomain: false
-  });
-
-  // Initialize Firebase debug info on mount
   useEffect(() => {
-    // Log OAuth flow details
-    logOAuthFlowDetails();
-    
-    // Update domain info
+    // Collect debug information
     const hostname = window.location.hostname;
-    const isDevelopment = hostname === 'localhost' || hostname.includes('replit');
-    const isProblemDomain = hostname === '25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev';
+    const origin = window.location.origin;
+    const currentPath = window.location.pathname;
+    const urlParams = new URLSearchParams(window.location.search);
     
-    setDomainInfo({
+    setDebugInfo({
       hostname,
-      origin: window.location.origin,
-      href: window.location.href,
-      isDevelopment,
-      isProblemDomain
-    });
-    
-    // Try to initialize Firebase manually for testing
-    try {
-      // Get Firebase config from environment variables
-      const firebaseConfig = {
-        apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-        authDomain: import.meta.env.VITE_FIREBASE_PROJECT_ID ? 
-          `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.firebaseapp.com` : 
-          hostname,
-        projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-        storageBucket: import.meta.env.VITE_FIREBASE_PROJECT_ID ? 
-          `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.appspot.com` : 
-          undefined,
-        messagingSenderId: "330211556822",
-        appId: import.meta.env.VITE_FIREBASE_APP_ID,
-      };
-      
-      // Initialize Firebase app
-      const app = initializeApp(firebaseConfig, 'debug-instance');
-      setState(prev => ({ ...prev, appInitialized: true }));
-      
-      // Initialize Firebase Auth
-      const auth = getAuth(app);
-      setState(prev => ({ ...prev, authInitialized: true }));
-      
-      // Set up auth state change listener
-      const unsubscribe = onAuthStateChanged(auth, (user) => {
-        console.log("Auth state changed:", user ? "User signed in" : "User signed out");
-        setState(prev => ({ ...prev, user }));
-      });
-      
-      // Configure Google Auth Provider
-      const googleProvider = new GoogleAuthProvider();
-      
-      // Set custom parameters based on domain
-      if (isProblemDomain) {
-        const redirectUrl = `${window.location.origin}/auth-callback`;
-        googleProvider.setCustomParameters({
-          prompt: 'select_account',
-          redirect_uri: redirectUrl
-        });
-        setState(prev => ({ ...prev, redirectUrl }));
-      } else {
-        googleProvider.setCustomParameters({
-          prompt: 'select_account'
-        });
+      origin,
+      currentPath,
+      urlParams: Object.fromEntries(urlParams.entries()),
+      firebaseConfig: {
+        apiKey: import.meta.env.VITE_FIREBASE_API_KEY ? 'Present' : 'Missing',
+        projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || 'Missing',
+        appId: import.meta.env.VITE_FIREBASE_APP_ID ? 'Present' : 'Missing',
+      },
+      authState: {
+        isAuthenticated,
+        isLoading,
+        hasUser: !!user,
+        userEmail: user?.email || 'None'
       }
-      
-      setState(prev => ({ ...prev, providerConfigured: true }));
-      
-      // Return cleanup function
-      return () => unsubscribe();
-    } catch (error: any) {
-      console.error("Error during debug initialization:", error);
-      setState(prev => ({ 
-        ...prev, 
-        error: `Initialization error: ${error.message}` 
-      }));
-      logDetailedAuthError(error, 'auth-debug-initialization');
+    });
+
+    addLog(`Debug page loaded - Auth: ${isAuthenticated}, Loading: ${isLoading}`);
+    addLog(`Domain: ${hostname}`);
+    addLog(`Firebase Project: ${import.meta.env.VITE_FIREBASE_PROJECT_ID || 'Not set'}`);
+    
+    if (user) {
+      addLog(`Current user: ${user.email}`);
     }
+
+    // Check for redirect result
+    const checkRedirect = async () => {
+      try {
+        addLog('Checking for redirect result...');
+        // Import Firebase objects dynamically to avoid type issues
+        const firebaseModule = await import('@/lib/firebase');
+        const auth = firebaseModule.auth as Auth;
+        
+        const result = await getRedirectResult(auth);
+        if (result) {
+          addLog(`Redirect result found: ${result.user.email}`);
+        } else {
+          addLog('No redirect result found');
+        }
+      } catch (error: any) {
+        addLog(`Redirect check error: ${error.message}`);
+      }
+    };
+
+    checkRedirect();
+
+    // Set up auth state listener for real-time updates
+    const setupAuthListener = async () => {
+      try {
+        const firebaseModule = await import('@/lib/firebase');
+        const auth = firebaseModule.auth as Auth;
+        
+        const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+          if (firebaseUser) {
+            addLog(`Firebase user detected: ${firebaseUser.email}`);
+          } else {
+            addLog('No Firebase user detected');
+          }
+        });
+        
+        return unsubscribe;
+      } catch (error: any) {
+        addLog(`Auth listener setup error: ${error.message}`);
+        return () => {};
+      }
+    };
+
+    setupAuthListener();
+
+    return () => unsubscribe();
   }, []);
 
-  // Get the authentication context
-  const auth = useAuth();
-  
-  // Handle sign in with Google
-  const handleSignInWithGoogle = async () => {
+  const testGoogleSignIn = async () => {
+    setTesting(true);
+    addLog('Starting Google sign-in test...');
+    
     try {
-      setState(prev => ({ ...prev, signInAttempted: true, error: null }));
+      // Import Firebase objects dynamically
+      const firebaseModule = await import('@/lib/firebase');
+      const auth = firebaseModule.auth as Auth;
+      const googleProvider = firebaseModule.googleProvider as GoogleAuthProvider;
       
-      // Store debug information
-      localStorage.setItem('auth_debug_attempt_time', new Date().toISOString());
-      localStorage.setItem('auth_debug_source', 'auth-debug-page');
+      // Store redirect attempt marker
+      localStorage.setItem('google_auth_redirect_attempt', 'true');
+      localStorage.setItem('google_auth_redirect_time', Date.now().toString());
       
-      console.log("Initiating debug sign-in with Google redirect...");
+      addLog('Initiating Google redirect...');
+      await signInWithRedirect(auth, googleProvider);
       
-      // Use the main authentication method from auth context
-      await auth.signInWithGoogle();
-      
-      setState(prev => ({ ...prev, signInSuccessful: true }));
+      // This won't execute until after redirect
+      addLog('Redirect initiated successfully');
     } catch (error: any) {
-      console.error("Error during debug sign in:", error);
-      setState(prev => ({ 
-        ...prev, 
-        signInSuccessful: false,
-        error: `Sign-in error: ${error.message}` 
-      }));
-      logDetailedAuthError(error, 'auth-debug-signin');
+      addLog(`Sign-in error: ${error.code} - ${error.message}`);
+      setTesting(false);
     }
   };
 
+  const testBackendConnection = async () => {
+    addLog('Testing backend connection...');
+    try {
+      const response = await fetch('/api/health');
+      if (response.ok) {
+        addLog('Backend connection successful');
+      } else {
+        addLog(`Backend returned status: ${response.status}`);
+      }
+    } catch (error: any) {
+      addLog(`Backend connection failed: ${error.message}`);
+    }
+  };
+
+  const clearAuthData = () => {
+    addLog('Clearing auth data...');
+    localStorage.removeItem('google_auth_redirect_attempt');
+    localStorage.removeItem('google_auth_redirect_time');
+    localStorage.removeItem('authAttemptInProgress');
+    localStorage.removeItem('authAttemptTime');
+    sessionStorage.removeItem('firebase_auth_error');
+    addLog('Auth data cleared');
+  };
+
   return (
-    <div className="container mx-auto p-4 max-w-4xl">
-      <h1 className="text-3xl font-bold mb-6">Firebase Authentication Debug</h1>
-      
-      {/* Show any errors */}
-      {state.error && (
-        <Alert variant="destructive" className="mb-4">
-          <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Authentication Error</AlertTitle>
-          <AlertDescription>{state.error}</AlertDescription>
-        </Alert>
-      )}
-      
-      {/* Domain Information */}
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle>Domain Information</CardTitle>
-          <CardDescription>Current domain and environment details</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <p className="text-sm font-medium">Hostname:</p>
-              <p className="text-sm">{domainInfo.hostname}</p>
-            </div>
-            <div>
-              <p className="text-sm font-medium">Origin:</p>
-              <p className="text-sm">{domainInfo.origin}</p>
-            </div>
-            <div>
-              <p className="text-sm font-medium">Full URL:</p>
-              <p className="text-sm break-all">{domainInfo.href}</p>
-            </div>
-            <div>
-              <p className="text-sm font-medium">Environment:</p>
-              <p className="text-sm">{domainInfo.isDevelopment ? 'Development' : 'Production'}</p>
-            </div>
-          </div>
-          
-          {domainInfo.isProblemDomain && (
-            <Alert className="mt-4">
-              <Info className="h-4 w-4" />
-              <AlertTitle>Problematic Domain Detected</AlertTitle>
-              <AlertDescription>
-                <p>This is the known problematic domain that requires special configuration.</p>
-                <p className="mt-2"><strong>Recommended Solution:</strong> Visit the 
-                <a href="/auth-popup-debug" className="text-blue-500 hover:underline font-medium"> Google Authentication Fix </a> 
-                page to use our advanced authentication method that resolves the "accounts.google.com refused to connect" error.</p>
-              </AlertDescription>
-            </Alert>
-          )}
-        </CardContent>
-      </Card>
-      
-      {/* Firebase Configuration */}
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle>Firebase Configuration</CardTitle>
-          <CardDescription>Environment variables and setup status</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <p className="text-sm font-medium">API Key:</p>
-              <p className="text-sm">{envVars.apiKey ? envVars.apiKey : 'Missing'}</p>
-            </div>
-            <div>
-              <p className="text-sm font-medium">Project ID:</p>
-              <p className="text-sm">{envVars.projectId || 'Missing'}</p>
-            </div>
-            <div>
-              <p className="text-sm font-medium">App ID:</p>
-              <p className="text-sm">{envVars.appId ? envVars.appId : 'Missing'}</p>
-            </div>
-            <div>
-              <p className="text-sm font-medium">Auth Domain:</p>
-              <p className="text-sm">
-                {envVars.projectId ? `${envVars.projectId}.firebaseapp.com` : domainInfo.hostname}
-              </p>
-            </div>
-          </div>
-          
-          <div className="mt-4 space-y-2">
-            <div className="flex items-center">
-              {state.appInitialized ? 
-                <Check className="h-4 w-4 text-green-500 mr-2" /> : 
-                <X className="h-4 w-4 text-red-500 mr-2" />}
-              <p className="text-sm">Firebase App Initialized</p>
-            </div>
-            <div className="flex items-center">
-              {state.authInitialized ? 
-                <Check className="h-4 w-4 text-green-500 mr-2" /> : 
-                <X className="h-4 w-4 text-red-500 mr-2" />}
-              <p className="text-sm">Firebase Auth Initialized</p>
-            </div>
-            <div className="flex items-center">
-              {state.providerConfigured ? 
-                <Check className="h-4 w-4 text-green-500 mr-2" /> : 
-                <X className="h-4 w-4 text-red-500 mr-2" />}
-              <p className="text-sm">Google Provider Configured</p>
-            </div>
-          </div>
-          
-          {domainInfo.isProblemDomain && state.redirectUrl && (
-            <Alert className="mt-4">
-              <Info className="h-4 w-4" />
-              <AlertTitle>Custom Redirect URL</AlertTitle>
-              <AlertDescription>
-                Using custom redirect URL for problematic domain: <code className="bg-gray-100 dark:bg-gray-800 px-1 rounded">{state.redirectUrl}</code>
-              </AlertDescription>
-            </Alert>
-          )}
-        </CardContent>
-      </Card>
-      
-      {/* Authentication Status */}
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle>Authentication Status</CardTitle>
-          <CardDescription>Current user and sign-in state</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="mb-4">
-            <p className="text-sm font-medium">User Signed In:</p>
-            <p className="text-sm">{state.user ? 'Yes' : 'No'}</p>
-            
-            {state.user && (
-              <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-md">
-                <p className="text-sm font-medium">User Details:</p>
-                <pre className="text-xs mt-2 overflow-auto p-2 bg-gray-100 dark:bg-gray-900 rounded">
-                  {JSON.stringify({
-                    uid: state.user.uid,
-                    email: state.user.email,
-                    displayName: state.user.displayName,
-                    photoURL: state.user.photoURL,
-                    emailVerified: state.user.emailVerified
-                  }, null, 2)}
-                </pre>
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 p-4">
+      <div className="max-w-4xl mx-auto space-y-6">
+        <Card className="bg-gray-800 border-gray-700 text-white">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <AlertCircle className="h-5 w-5 text-orange-400" />
+              Firebase Authentication Debug Panel
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Current Status */}
+              <div className="space-y-4">
+                <h3 className="font-semibold text-lg">Current Status</h3>
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-center gap-2">
+                    {isAuthenticated ? (
+                      <CheckCircle className="h-4 w-4 text-green-400" />
+                    ) : (
+                      <AlertCircle className="h-4 w-4 text-red-400" />
+                    )}
+                    <span>Authentication: {isAuthenticated ? 'Authenticated' : 'Not Authenticated'}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {isLoading ? (
+                      <Loader2 className="h-4 w-4 text-yellow-400 animate-spin" />
+                    ) : (
+                      <CheckCircle className="h-4 w-4 text-green-400" />
+                    )}
+                    <span>Loading: {isLoading ? 'Yes' : 'No'}</span>
+                  </div>
+                  {user && (
+                    <div className="text-green-400">
+                      User: {user.name} ({user.email})
+                    </div>
+                  )}
+                </div>
               </div>
-            )}
-          </div>
-          
-          <div className="space-y-2">
-            <div className="flex items-center">
-              {state.signInAttempted ? 
-                <Check className="h-4 w-4 text-green-500 mr-2" /> : 
-                <Info className="h-4 w-4 text-blue-500 mr-2" />}
-              <p className="text-sm">Sign-in Attempted</p>
-            </div>
-            {state.signInAttempted && (
-              <div className="flex items-center">
-                {state.signInSuccessful === true ? 
-                  <Check className="h-4 w-4 text-green-500 mr-2" /> : 
-                  state.signInSuccessful === false ?
-                    <X className="h-4 w-4 text-red-500 mr-2" /> :
-                    <Info className="h-4 w-4 text-blue-500 mr-2" />}
-                <p className="text-sm">Sign-in Successful</p>
+
+              {/* Environment Info */}
+              <div className="space-y-4">
+                <h3 className="font-semibold text-lg">Environment</h3>
+                <div className="space-y-1 text-sm font-mono bg-gray-900 p-3 rounded">
+                  <div>Hostname: {debugInfo.hostname}</div>
+                  <div>Origin: {debugInfo.origin}</div>
+                  <div>Path: {debugInfo.currentPath}</div>
+                  <div>Project ID: {debugInfo.firebaseConfig?.projectId}</div>
+                  <div>API Key: {debugInfo.firebaseConfig?.apiKey}</div>
+                </div>
               </div>
-            )}
-          </div>
-        </CardContent>
-        <CardFooter>
-          <Button 
-            onClick={handleSignInWithGoogle}
-            disabled={state.signInAttempted && state.signInSuccessful === null}
-          >
-            {state.signInAttempted && state.signInSuccessful === null
-              ? "Sign-in in progress..."
-              : "Test Sign In with Google"}
-          </Button>
-        </CardFooter>
-      </Card>
-      
-      {/* Debugging Tools */}
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle>Debugging Instructions</CardTitle>
-          <CardDescription>Steps to fix common Firebase authentication issues</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ol className="list-decimal list-inside space-y-2">
-            <li className="text-sm">Make sure all domains are added in Firebase Console &gt; Authentication &gt; Settings &gt; Authorized Domains</li>
-            <li className="text-sm">Verify that the Firebase environment variables are set correctly</li>
-            <li className="text-sm">Check the browser console for detailed error messages</li>
-            <li className="text-sm">Try clearing browser cache and cookies</li>
-            <li className="text-sm">If on a problematic domain, try using a different domain or localhost</li>
-          </ol>
-          
-          <Alert className="mt-4">
-            <Info className="h-4 w-4" />
-            <AlertTitle>Console Log Instructions</AlertTitle>
-            <AlertDescription>
-              Open your browser console (F12 or Command+Option+I) to see detailed debugging information about the authentication process.
-            </AlertDescription>
-          </Alert>
-        </CardContent>
-      </Card>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="mt-6 flex flex-wrap gap-3">
+              <Button 
+                onClick={testGoogleSignIn} 
+                disabled={testing || isAuthenticated}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                {testing ? 'Testing...' : 'Test Google Sign-In'}
+              </Button>
+              <Button 
+                onClick={testBackendConnection}
+                variant="outline"
+                className="border-gray-600 text-white hover:bg-gray-700"
+              >
+                Test Backend
+              </Button>
+              <Button 
+                onClick={clearAuthData}
+                variant="outline"
+                className="border-orange-600 text-orange-400 hover:bg-orange-900"
+              >
+                Clear Auth Data
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Log Output */}
+        <Card className="bg-gray-800 border-gray-700 text-white">
+          <CardHeader>
+            <CardTitle>Debug Logs</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="bg-black p-4 rounded font-mono text-sm max-h-96 overflow-y-auto">
+              {logs.length === 0 ? (
+                <div className="text-gray-500">No logs yet...</div>
+              ) : (
+                logs.map((log, index) => (
+                  <div key={index} className="text-green-400 mb-1">
+                    {log}
+                  </div>
+                ))
+              )}
+            </div>
+            <Button 
+              onClick={() => setLogs([])}
+              variant="outline"
+              size="sm"
+              className="mt-3 border-gray-600 text-white hover:bg-gray-700"
+            >
+              Clear Logs
+            </Button>
+          </CardContent>
+        </Card>
+
+        {/* Instructions */}
+        <Card className="bg-blue-900/20 border-blue-600 text-white">
+          <CardHeader>
+            <CardTitle className="text-blue-400">Firebase Setup Instructions</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3 text-sm">
+            <p>If authentication is failing, ensure these domains are added to Firebase Console:</p>
+            <div className="bg-blue-900/30 p-3 rounded font-mono text-xs space-y-1">
+              <div>1. {debugInfo.hostname}</div>
+              <div>2. *.replit.dev</div>
+              <div>3. *.replit.app</div>
+              <div>4. localhost (for local development)</div>
+            </div>
+            <p className="text-blue-300">
+              Go to: <span className="font-mono">Firebase Console → Authentication → Settings → Authorized domains</span>
+            </p>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

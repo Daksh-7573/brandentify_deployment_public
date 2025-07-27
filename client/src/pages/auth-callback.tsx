@@ -59,9 +59,9 @@ export default function AuthCallback() {
             description: "You've been successfully signed in.",
           });
           
-          // Redirect to home after successful login
+          // Redirect to Industry Pulse after successful login (main home page)
           setTimeout(() => {
-            window.location.href = '/';
+            window.location.href = '/industry-pulse';
           }, 1000);
         } else {
           console.log("Auth Callback: No redirect result found");
@@ -79,9 +79,9 @@ export default function AuthCallback() {
             setError("No authentication data found. This page should only be accessed after signing in.");
           }
           
-          // Redirect to home after a short delay
+          // Redirect to Industry Pulse after a short delay (main home page)
           setTimeout(() => {
-            window.location.href = '/';
+            window.location.href = '/industry-pulse';
           }, 3000);
         }
       } catch (err: any) {
@@ -98,9 +98,9 @@ export default function AuthCallback() {
           variant: "destructive"
         });
         
-        // Redirect to home after error
+        // Redirect to Industry Pulse after error (main home page)
         setTimeout(() => {
-          window.location.href = '/';
+          window.location.href = '/industry-pulse';
         }, 3000);
       } finally {
         setProcessingRedirect(false);
@@ -154,9 +154,9 @@ export default function AuthCallback() {
                 
                 <button 
                   className="mt-4 px-4 py-2 bg-primary text-primary-foreground rounded-md text-sm font-medium"
-                  onClick={() => window.location.href = '/'}
+                  onClick={() => window.location.href = '/industry-pulse'}
                 >
-                  Return to Home
+                  Go to Industry Pulse
                 </button>
               </div>
             </div>
@@ -170,9 +170,9 @@ export default function AuthCallback() {
             
             <button 
               className="mt-4 px-4 py-2 bg-primary text-primary-foreground rounded-md text-sm font-medium"
-              onClick={() => window.location.href = '/'}
+              onClick={() => window.location.href = '/industry-pulse'}
             >
-              Go to Home
+              Go to Industry Pulse
             </button>
           </div>
         )}

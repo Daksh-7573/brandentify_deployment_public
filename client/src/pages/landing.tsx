@@ -17,11 +17,11 @@ export default function Landing() {
   const urlParams = new URLSearchParams(window.location.search);
   const stayOnLanding = urlParams.get('stay') === 'true';
 
-  // Redirect to dashboard if already authenticated
+  // Redirect to Industry Pulse if already authenticated (main home page)
   useEffect(() => {
     if (isAuthenticated && !stayOnLanding) {
       const timer = setTimeout(() => {
-        setLocation('/dashboard');
+        setLocation('/industry-pulse');
       }, 100);
       return () => clearTimeout(timer);
     }
@@ -61,11 +61,11 @@ export default function Landing() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-8">
               {isAuthenticated ? (
                 <Button 
-                  onClick={() => setLocation('/dashboard')}
+                  onClick={() => setLocation('/industry-pulse')}
                   size="lg"
                   className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-8 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105"
                 >
-                  Go to Dashboard
+                  Go to Industry Pulse
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               ) : (
