@@ -205,8 +205,46 @@ export const SimpleAuthProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       const { signInWithRedirect } = await import('firebase/auth');
       console.log("📤 Imported signInWithRedirect, calling now...");
       
-      await signInWithRedirect(auth, googleProvider);
-      console.log("📤 signInWithRedirect call completed - should redirect now");
+      try {
+        await signInWithRedirect(auth, googleProvider);
+        console.log("📤 signInWithRedirect call completed - should redirect now");
+      } catch (redirectError) {
+        console.error("🚨 REDIRECT FAILED:", redirectError);
+        console.error("🚨 Redirect error details:", {
+          name: redirectError instanceof Error ? redirectError.name : 'Unknown',
+          message: redirectError instanceof Error ? redirectError.message : String(redirectError),
+          code: (redirectError as any)?.code,
+          stack: redirectError instanceof Error ? redirectError.stack : 'No stack'
+        });
+        
+        // Try popup as fallback if redirect fails
+        console.log("🔄 Redirect failed, trying popup as fallback...");
+        const { signInWithPopup } = await import('firebase/auth');
+        
+        try {
+          const result = await signInWithPopup(auth, googleProvider);
+          console.log("✅ Popup authentication successful:", result.user.email);
+          
+          const userData = createUserFromFirebase(result.user);
+          setUser(userData);
+          setIsLoading(false);
+          
+          toast({
+            title: "Signed in successfully",
+            description: `Welcome ${userData.name}!`,
+          });
+          
+          // Redirect to Industry Pulse
+          setTimeout(() => {
+            window.location.replace('/industry-pulse');
+          }, 1000);
+          
+          return; // Exit successfully
+        } catch (popupError) {
+          console.error("🚨 POPUP ALSO FAILED:", popupError);
+          throw popupError;
+        }
+      }
       
       // Exit here - redirect will handle the authentication and onAuthStateChanged will process the result
     } catch (error) {
