@@ -83,9 +83,12 @@ export const SimpleAuthProvider: React.FC<{ children: React.ReactNode }> = ({ ch
               description: `Welcome ${userData.name}!`,
             });
             
-            // Force immediate redirect for redirect result
-            console.log("🚀 Redirect result - immediate navigation to Industry Pulse");
-            window.location.replace('/industry-pulse');
+            // Force redirect for redirect result with delay to ensure state persistence
+            console.log("🚀 Redirect result - scheduling navigation to Industry Pulse");
+            setTimeout(() => {
+              console.log("🚀 Executing redirect result navigation");
+              window.location.replace('/industry-pulse');
+            }, 1000);
             return;
           }
         } catch (error) {
@@ -103,11 +106,15 @@ export const SimpleAuthProvider: React.FC<{ children: React.ReactNode }> = ({ ch
             
             setUser(userData);
             
-            // Always redirect authenticated users away from auth page
-            console.log("🚀 User authenticated, redirecting to Industry Pulse");
-            setTimeout(() => {
-              window.location.replace('/industry-pulse');
-            }, 200);
+            // Only redirect if we're on the auth page to avoid infinite loops
+            if (window.location.pathname === '/' || window.location.pathname === '/auth') {
+              console.log("🚀 User authenticated on auth page, redirecting to Industry Pulse");
+              setTimeout(() => {
+                window.location.replace('/industry-pulse');
+              }, 500);
+            } else {
+              console.log("✅ User authenticated, staying on current page:", window.location.pathname);
+            }
           } else {
             console.log("👋 User signed out");
             setUser(null);

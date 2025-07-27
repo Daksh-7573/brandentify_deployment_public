@@ -19,16 +19,13 @@ export function AuthRedirectGuard({ children }: { children: React.ReactNode }) {
       hasUser: !!user 
     });
     
-    // If user is authenticated and on auth page, redirect immediately
-    if (isAuthenticated && !isLoading && location === '/') {
-      console.log("🚀 AuthRedirectGuard: Redirecting authenticated user to Industry Pulse");
-      window.location.replace('/industry-pulse');
-    }
-    
-    // Also handle auth-specific routes
-    if (isAuthenticated && !isLoading && (location === '/auth' || location === '/login')) {
-      console.log("🚀 AuthRedirectGuard: Redirecting from auth routes to Industry Pulse");
-      window.location.replace('/industry-pulse');
+    // Only redirect if truly authenticated and on auth pages
+    if (isAuthenticated && !isLoading && user && (location === '/' || location === '/auth' || location === '/login')) {
+      console.log("🚀 AuthRedirectGuard: Redirecting authenticated user from", location, "to Industry Pulse");
+      // Use a longer delay to ensure auth state is fully settled
+      setTimeout(() => {
+        window.location.replace('/industry-pulse');
+      }, 1000);
     }
   }, [isAuthenticated, isLoading, location, user]);
   
