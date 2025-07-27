@@ -183,15 +183,42 @@ export const SimpleAuthProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       console.log("🔥 Firebase modules loaded:", { 
         hasAuth: !!auth, 
         hasProvider: !!googleProvider,
-        hostname: window.location.hostname 
+        hostname: window.location.hostname,
+        authCurrentUser: auth?.currentUser,
+        providerProviderId: googleProvider?.providerId
+      });
+
+      // Check Firebase configuration
+      const config = auth?.app?.options;
+      console.log("📋 Firebase config check:", {
+        projectId: config?.projectId,
+        authDomain: config?.authDomain,
+        apiKey: config?.apiKey ? 'Present' : 'Missing'
       });
 
       // Always use redirect method to avoid popup interference issues
       console.log("🔄 Using redirect method for clean authentication flow");
+      
+      // Add more detailed logging before redirect
+      console.log("📤 About to call signInWithRedirect...");
+      
+      const { signInWithRedirect } = await import('firebase/auth');
+      console.log("📤 Imported signInWithRedirect, calling now...");
+      
       await signInWithRedirect(auth, googleProvider);
+      console.log("📤 signInWithRedirect call completed - should redirect now");
+      
       // Exit here - redirect will handle the authentication and onAuthStateChanged will process the result
     } catch (error) {
       console.error("❌ Google sign-in error:", error);
+      console.error("❌ Error stack:", error instanceof Error ? error.stack : 'No stack trace');
+      console.error("❌ Error details:", {
+        name: error instanceof Error ? error.name : 'Unknown',
+        message: error instanceof Error ? error.message : String(error),
+        code: (error as any)?.code,
+        customData: (error as any)?.customData
+      });
+      
       const errorMessage = error instanceof Error ? error.message : 'Please try again.';
       
       toast({
