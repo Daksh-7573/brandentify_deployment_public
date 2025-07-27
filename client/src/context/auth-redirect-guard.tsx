@@ -19,8 +19,12 @@ export function AuthRedirectGuard({ children }: { children: React.ReactNode }) {
       hasUser: !!user 
     });
     
-    // Only redirect if truly authenticated and on auth pages
-    if (isAuthenticated && !isLoading && user && (location === '/' || location === '/auth' || location === '/login')) {
+    // Only redirect if truly authenticated and on auth pages (but NOT on debug pages)
+    const shouldRedirect = isAuthenticated && !isLoading && user && 
+      (location === '/' || location === '/auth' || location === '/login') &&
+      !location.includes('/auth-debug'); // Don't redirect from debug pages
+      
+    if (shouldRedirect) {
       console.log("🚀 AuthRedirectGuard: Redirecting authenticated user from", location, "to Industry Pulse");
       // Use a longer delay to ensure auth state is fully settled
       setTimeout(() => {
