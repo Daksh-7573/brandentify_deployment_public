@@ -66,15 +66,19 @@ export default function AuthConsoleLogger() {
 
   const testGoogleSignIn = async () => {
     setTesting(true);
-    addLog('Starting Google Sign-In test...', 'info');
+    addLog('🔑 Starting Google Sign-In test...', 'info');
+    addLog('📍 Button clicked - initiating authentication flow', 'info');
     
     try {
+      addLog('🚀 Calling signInWithGoogle function...', 'info');
       await signInWithGoogle();
-      addLog('Google Sign-In initiated successfully', 'success');
+      addLog('✅ Google Sign-In initiated successfully', 'success');
     } catch (error: any) {
-      addLog(`Google Sign-In failed: ${error.message}`, 'error');
+      addLog(`❌ Google Sign-In failed: ${error.message}`, 'error');
+      addLog(`Error details: ${JSON.stringify(error)}`, 'error');
     } finally {
       setTesting(false);
+      addLog('🔄 Google Sign-In test completed', 'info');
     }
   };
 
@@ -150,14 +154,22 @@ export default function AuthConsoleLogger() {
             </div>
 
             {/* Test Button */}
-            <div className="mb-6">
+            <div className="mb-6 bg-blue-900/20 p-6 rounded-lg border border-blue-600">
+              <h3 className="font-semibold text-lg mb-4 text-blue-400">Authentication Test</h3>
               <Button 
                 onClick={testGoogleSignIn} 
                 disabled={testing || isAuthenticated}
-                className="bg-blue-600 hover:bg-blue-700"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-lg font-semibold"
+                size="lg"
               >
-                {testing ? 'Testing Google Sign-In...' : 'Test Google Sign-In'}
+                {testing ? 'Testing Google Sign-In...' : '🔑 Test Google Sign-In'}
               </Button>
+              {isAuthenticated && (
+                <p className="text-green-400 mt-2">✅ Already authenticated! No need to test again.</p>
+              )}
+              {testing && (
+                <p className="text-yellow-400 mt-2">⏳ Processing Google authentication...</p>
+              )}
             </div>
           </CardContent>
         </Card>
