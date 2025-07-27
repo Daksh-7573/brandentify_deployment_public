@@ -70,11 +70,23 @@ export const SimpleAuthProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         const googleProvider = firebaseModule.googleProvider as GoogleAuthProvider;
 
         // Check for redirect result first
+        console.log("🔍 Checking for redirect result...");
         try {
           const result = await getRedirectResult(auth);
+          console.log("📋 Redirect result:", result ? "Found" : "None");
+          
           if (result?.user) {
             console.log("✅ Google redirect authentication successful");
+            console.log("👤 Firebase user details:", {
+              uid: result.user.uid,
+              email: result.user.email,
+              displayName: result.user.displayName,
+              photoURL: result.user.photoURL
+            });
+            
             const userData = createUserFromFirebase(result.user);
+            console.log("📊 Created user data:", userData);
+            
             setUser(userData);
             setIsLoading(false);
             
@@ -90,26 +102,50 @@ export const SimpleAuthProvider: React.FC<{ children: React.ReactNode }> = ({ ch
               window.location.replace('/industry-pulse');
             }, 1000);
             return;
+          } else {
+            console.log("🔍 No redirect result found");
           }
-        } catch (error) {
-          console.log("No redirect result or error:", error);
+        } catch (error: any) {
+          console.error("❌ Redirect result error:", error);
+          console.error("Error details:", {
+            code: error.code,
+            message: error.message,
+            customData: error.customData
+          });
         }
 
         // Set up auth state listener
+        console.log("👂 Setting up auth state listener...");
         const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
           console.log("🔄 Auth state changed:", firebaseUser ? `User: ${firebaseUser.email}` : "User signed out");
+          console.log("📍 Current location:", window.location.pathname);
+          console.log("🔍 Auth state details:", {
+            hasFirebaseUser: !!firebaseUser,
+            currentPath: window.location.pathname,
+            timestamp: new Date().toLocaleTimeString()
+          });
           
           if (firebaseUser) {
             console.log("👤 Firebase user detected, processing...");
+            console.log("👤 Firebase user full details:", {
+              uid: firebaseUser.uid,
+              email: firebaseUser.email,
+              displayName: firebaseUser.displayName,
+              photoURL: firebaseUser.photoURL,
+              emailVerified: firebaseUser.emailVerified
+            });
+            
             const userData = createUserFromFirebase(firebaseUser);
             console.log("📊 Created user data:", userData);
             
             setUser(userData);
+            console.log("✅ User state set successfully");
             
             // Only redirect if we're on the auth page to avoid infinite loops
             if (window.location.pathname === '/' || window.location.pathname === '/auth') {
               console.log("🚀 User authenticated on auth page, redirecting to Industry Pulse");
               setTimeout(() => {
+                console.log("🚀 Executing auth page redirect");
                 window.location.replace('/industry-pulse');
               }, 500);
             } else {
@@ -121,6 +157,7 @@ export const SimpleAuthProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           }
           
           setIsLoading(false);
+          console.log("⏳ Loading state set to false");
         });
 
         return unsubscribe;
