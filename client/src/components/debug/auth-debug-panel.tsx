@@ -36,7 +36,7 @@ export function AuthDebugPanel() {
       await signInWithGoogle();
       addLog('✅ Sign-in function completed');
     } catch (error) {
-      addLog(`❌ Sign-in error: ${error.message}`);
+      addLog(`❌ Sign-in error: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   };
   

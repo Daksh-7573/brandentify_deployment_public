@@ -173,7 +173,7 @@ export async function createBackup(): Promise<{ success: boolean; filename?: str
     console.error('Error creating backup:', error);
     return {
       success: false,
-      error: error.message
+      error: error instanceof Error ? error.message : 'Unknown error occurred'
     };
   }
 }
@@ -398,7 +398,7 @@ export function setupInfrastructureSecurity(app: any) {
         const results = await runSecurityAudit();
         res.json(results);
       } catch (error) {
-        res.status(500).json({ message: 'Failed to run security audit', error: error.message });
+        res.status(500).json({ message: 'Failed to run security audit', error: error instanceof Error ? error.message : 'Unknown error' });
       }
     });
     
@@ -408,7 +408,7 @@ export function setupInfrastructureSecurity(app: any) {
         const result = await createBackup();
         res.json(result);
       } catch (error) {
-        res.status(500).json({ message: 'Failed to create backup', error: error.message });
+        res.status(500).json({ message: 'Failed to create backup', error: error instanceof Error ? error.message : 'Unknown error' });
       }
     });
     
@@ -417,7 +417,7 @@ export function setupInfrastructureSecurity(app: any) {
         const backups = listBackups();
         res.json(backups);
       } catch (error) {
-        res.status(500).json({ message: 'Failed to list backups', error: error.message });
+        res.status(500).json({ message: 'Failed to list backups', error: error instanceof Error ? error.message : 'Unknown error' });
       }
     });
     
