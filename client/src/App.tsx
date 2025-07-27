@@ -150,6 +150,14 @@ function Router() {
           </Suspense>
         );
       }} />
+      <Route path="/auth-console" component={() => {
+        const AuthConsoleLogger = lazy(() => import("@/pages/auth-console-logger"));
+        return (
+          <Suspense fallback={<FeedSkeleton count={1} />}>
+            <AuthConsoleLogger />
+          </Suspense>
+        );
+      }} />
       <Route path="/auth-status" component={AuthStatusPage} />
       <Route path="/dev-login" component={DevLoginPage} />
       <Route path="/simple-login" component={SimpleLoginPage} />
