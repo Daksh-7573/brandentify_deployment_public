@@ -40,7 +40,7 @@ export default function AuthConsoleLogger() {
 
     console.log = (...args) => {
       const message = args.join(' ');
-      if (message.includes('🔥') || message.includes('🔍') || message.includes('🔄') || message.includes('👤') || message.includes('✅') || message.includes('❌')) {
+      if (message.includes('🚀') || message.includes('🔥') || message.includes('🔍') || message.includes('🔄') || message.includes('👤') || message.includes('✅') || message.includes('❌') || message.includes('Starting Google') || message.includes('Firebase modules') || message.includes('Current page URL')) {
         addLog(message, 'info');
       }
       originalLog.apply(console, args);
@@ -48,7 +48,7 @@ export default function AuthConsoleLogger() {
 
     console.error = (...args) => {
       const message = args.join(' ');
-      if (message.includes('Firebase') || message.includes('Auth') || message.includes('Google')) {
+      if (message.includes('Firebase') || message.includes('Auth') || message.includes('Google') || message.includes('sign-in')) {
         addLog(message, 'error');
       }
       originalError.apply(console, args);
