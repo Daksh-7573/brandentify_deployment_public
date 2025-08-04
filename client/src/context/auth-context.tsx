@@ -508,17 +508,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, []); // Remove dependencies to prevent listener recreation
 
-  // Sign in with Google - simplified approach to avoid connection issues
+  // Sign in with Google - clean implementation
   const signInWithGoogle = async () => {
+    if (isLoading) return;
+    
+    setIsLoading(true);
+    
     try {
-      setIsLoading(true);
+      console.log("Starting Google sign-in");
       
-      console.log("Starting Google sign-in with direct Google Authentication");
-      
-      // Use the globally configured provider from firebase.ts to avoid issues
+      // Use the globally configured provider from firebase.ts
       const { auth, googleProvider } = await import('@/lib/firebase');
-      
-      console.log("Using pre-configured Google provider with compatible settings");
+      const { signInWithRedirect } = await import('firebase/auth');
       
       console.log("Auth environment:", {
         domain: window.location.hostname,
@@ -526,119 +527,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         usingRedirect: true
       });
       
-      console.log("Attempting redirect authentication (better for Replit domains)");
+      // Set redirect attempt flags for debugging
+      sessionStorage.setItem('redirect_auth_attempt', 'true');
+      sessionStorage.setItem('redirect_auth_time', new Date().toISOString());
       
-      try {
-        // Use redirect method for Replit domains as it's more reliable
-        console.log("Using redirect authentication for better compatibility...");
-        
-        // Set redirect attempt flags for debugging
-        sessionStorage.setItem('redirect_auth_attempt', 'true');
-        sessionStorage.setItem('redirect_auth_time', new Date().toISOString());
-        
-        const { signInWithRedirect } = await import('firebase/auth');
-        await signInWithRedirect(auth, googleProvider);
-        
-        console.log("Redirect authentication initiated - user will be redirected to Google");
-        
-        // Show loading message while redirecting
-        toast({
-          title: "Redirecting to Google",
-          description: "You'll be redirected to Google for authentication...",
-        });
-        
-        return; // Exit here as redirect will handle the rest
-        
-        if (result?.user) {
-          console.log("Popup authentication successful:", result.user.email);
-          console.log("Authentication result details:", {
-            uid: result.user.uid,
-            email: result.user.email,
-            displayName: result.user.displayName,
-            emailVerified: result.user.emailVerified
-          });
-          
-          // Set success flag and clear any previous auth attempt flags
-          sessionStorage.setItem('authSuccess', 'true');
-          sessionStorage.removeItem('popup_auth_attempt');
-          sessionStorage.removeItem('popup_auth_time');
-          
-          console.log("Popup authentication completed successfully!");
-          
-          // Show immediate success feedback
-          toast({
-            title: "Authentication Successful",
-            description: `Welcome, ${result.user.displayName || result.user.email}!`,
-          });
-          
-          // The auth state listener will automatically handle updating the user context
-          // No need for timeouts or manual checking - Firebase handles this automatically
-          
-          return;
-        }
-      } catch (popupError: any) {
-        console.error("Popup authentication failed:", popupError);
-        console.error("Detailed error information:", {
-          code: popupError.code,
-          message: popupError.message,
-          stack: popupError.stack,
-          customData: popupError.customData,
-          credential: popupError.credential,
-          operationType: popupError.operationType,
-          authDomain: (auth as any)?.config?.authDomain,
-          projectId: (auth as any)?.config?.projectId,
-          timestamp: new Date().toISOString(),
-          userAgent: navigator.userAgent,
-          currentUrl: window.location.href
-        });
-        
-        // Log to session storage for debugging
-        sessionStorage.setItem('lastAuthError', JSON.stringify({
-          code: popupError.code,
-          message: popupError.message,
-          timestamp: new Date().toISOString()
-        }));
-        
-        if (popupError.code === 'auth/popup-blocked') {
-          console.log("Popup was blocked, asking user to allow popups");
-          throw new Error("Popup blocked. Please allow popups for this site and try again.");
-        } else if (popupError.code === 'auth/popup-closed-by-user') {
-          console.log("Popup closed by user - implementing enhanced retry logic");
-          
-          // Check if popup closed after successful authentication
-          const authSuccess = sessionStorage.getItem('authSuccess');
-          if (authSuccess) {
-            console.log("Popup closed after successful authentication - this is normal");
-            return; // Success case
-          } else {
-            console.log("Popup closed without authentication - attempting redirect fallback");
-            
-            // Instead of giving up, try redirect method as fallback
-            try {
-              console.log("Attempting redirect authentication as fallback...");
-              const { signInWithRedirect } = await import('firebase/auth');
-              await signInWithRedirect(auth, googleProvider);
-              console.log("Redirect authentication initiated");
-              return;
-            } catch (redirectError) {
-              console.error("Redirect fallback also failed:", redirectError);
-              // Fall through to show error
-            }
-          }
-        } else if (popupError.code === 'auth/cancelled-popup-request') {
-          console.log("Popup request was cancelled");
-          return; // User cancelled, don't show error
-        } else {
-          // For other errors, throw to be handled by outer catch
-          console.error("Unexpected popup error, will throw:", popupError);
-          throw popupError;
-        }
-      }
+      // Use redirect method for Replit domains
+      await signInWithRedirect(auth, googleProvider);
+      
+      console.log("Redirect authentication initiated");
+      
+      // Show loading message while redirecting
+      toast({
+        title: "Redirecting to Google",
+        description: "You'll be redirected to Google for authentication...",
+      });
+      
     } catch (error: any) {
       console.error("Google sign-in error:", error);
-      
-      // Log detailed error information for debugging
-      logAuthError(error, "signInWithGoogle");
       
       // Check for specific errors and show helpful messages
       let errorMessage = "There was a problem with Google sign-in. Please try again.";
@@ -658,14 +563,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         variant: "destructive"
       });
       
-      // Log detailed error for debugging
-      addLog(`Authentication error details: ${JSON.stringify({
-        code: error.code,
-        message: error.message,
-        timestamp: new Date().toISOString(),
-        authDomain: (auth as any)?.config?.authDomain,
-        projectId: (auth as any)?.config?.projectId
-      })}`);
     } finally {
       setIsLoading(false);
     }

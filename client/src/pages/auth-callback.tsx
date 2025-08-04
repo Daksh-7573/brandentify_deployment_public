@@ -45,34 +45,73 @@ export default function AuthCallback() {
           return;
         }
         
-        // Get the redirect result from Firebase
+        // Get the redirect result from Firebase with enhanced error handling
+        console.log("Attempting to get redirect result from Firebase...");
         const result = await getRedirectResult(auth);
         
-        if (result) {
-          console.log("Auth Callback: Redirect result found", result.user.uid);
+        if (result && result.user) {
+          console.log("Auth Callback: Redirect result found", {
+            uid: result.user.uid,
+            email: result.user.email,
+            displayName: result.user.displayName
+          });
+          
+          // Set success flags
+          sessionStorage.setItem('authSuccess', 'true');
+          sessionStorage.setItem('redirect_auth_success', JSON.stringify({
+            email: result.user.email,
+            uid: result.user.uid,
+            timestamp: new Date().toISOString()
+          }));
+          
+          // Clear any previous auth attempt flags
+          sessionStorage.removeItem('redirect_auth_attempt');
+          sessionStorage.removeItem('redirect_auth_time');
           
           // Refresh user data in context
           await refreshUserData();
           
           toast({
-            title: "Authentication successful",
-            description: "You've been successfully signed in.",
+            title: "Authentication Successful",
+            description: `Welcome back, ${result.user.displayName || result.user.email}!`,
           });
           
           // Redirect to home after successful login
           setTimeout(() => {
             window.location.href = '/';
-          }, 1000);
+          }, 1500);
         } else {
-          console.log("Auth Callback: No redirect result found");
+          console.log("Auth Callback: No redirect result found - checking for previous attempts");
           
-          // Check if we have other auth indicators in localStorage
-          const authAttempt = localStorage.getItem('authAttemptInProgress');
-          const authAttemptTime = localStorage.getItem('authAttemptTime');
+          // Check if we have other auth indicators in sessionStorage
+          const redirectAttempt = sessionStorage.getItem('redirect_auth_attempt');
+          const redirectAttemptTime = sessionStorage.getItem('redirect_auth_time');
+          const popupAttempt = sessionStorage.getItem('popup_auth_attempt');
           
-          if (authAttempt) {
-            console.log("Previous auth attempt found from:", authAttemptTime);
-            setError("Authentication process didn't complete. You may need to sign in again.");
+          if (redirectAttempt || popupAttempt) {
+            console.log("Previous auth attempt detected:", {
+              redirectAttempt,
+              redirectAttemptTime,
+              popupAttempt
+            });
+            
+            // Check if user cancelled or if there was an actual error
+            const urlParams = new URLSearchParams(window.location.search);
+            const error = urlParams.get('error');
+            const errorDescription = urlParams.get('error_description');
+            
+            if (error) {
+              console.log("OAuth error detected:", error, errorDescription);
+              setError(`Authentication failed: ${error} - ${errorDescription}`);
+            } else {
+              console.log("No redirect result and no OAuth error - user may have cancelled");
+              setError("Authentication was cancelled or didn't complete. Please try again.");
+            }
+            
+            // Clear previous attempt flags
+            sessionStorage.removeItem('redirect_auth_attempt');
+            sessionStorage.removeItem('redirect_auth_time');
+            sessionStorage.removeItem('popup_auth_attempt');
             localStorage.removeItem('authAttemptInProgress');
             localStorage.removeItem('authAttemptTime');
           } else {
