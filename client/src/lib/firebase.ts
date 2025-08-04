@@ -49,12 +49,13 @@ console.log("Firebase initialization:", {
 const isReplitDomain = currentHostname.includes('replit.dev') || currentHostname.includes('replit.app');
 const isExactProblemDomain = currentHostname === "25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev";
 
-// For Firebase auth with Google on Replit, we need a special configuration
+// For Firebase auth with Google on Replit, we need to use the official Firebase domain
+// even though the current domain is authorized, to ensure proper popup functionality
 const firebaseConfig: FirebaseOptions = {
   apiKey,
-  // Use the current domain as authDomain for Replit compatibility
-  // This allows Google OAuth to work with the current Replit domain
-  authDomain: isReplitDomain ? currentHostname : `${projectId}.firebaseapp.com`,
+  // Always use the official Firebase authDomain for better popup compatibility
+  // The authorized domains list in Console allows our domain to redirect back
+  authDomain: `${projectId}.firebaseapp.com`,
   projectId,  
   storageBucket: projectId ? `${projectId}.appspot.com` : undefined,
   // Common defaults for Firebase initialization

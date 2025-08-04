@@ -210,6 +210,14 @@ function Router() {
           </Suspense>
         );
       }} />
+      <Route path="/advanced-auth-test" component={() => {
+        const AdvancedAuthTest = lazy(() => import("@/pages/advanced-auth-test"));
+        return (
+          <Suspense fallback={<FeedSkeleton count={1} />}>
+            <AdvancedAuthTest />
+          </Suspense>
+        );
+      }} />
       <Route path="/auth-callback" component={AuthCallback} />
       <Route path="/__/auth/handler" component={AuthCallback} />
       <Route path="/_/auth/callback" component={AuthCallback} />
