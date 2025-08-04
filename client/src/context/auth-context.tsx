@@ -365,9 +365,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const setupAuth = async () => {
       const { auth } = await import('@/lib/firebase');
       const unsubscribe = onAuthStateChanged(auth as any, async (firebaseUser) => {
-      console.log("Auth state changed:", firebaseUser ? "User signed in" : "User signed out");
-      
-      if (firebaseUser) {
+        console.log("Auth state changed:", firebaseUser ? "User signed in" : "User signed out");
+        
+        if (firebaseUser) {
         // User is signed in 
         try {
           // Only update if we don't already have this user
@@ -410,6 +410,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 
                 // Clear the auth success flag
                 sessionStorage.removeItem('authSuccess');
+                
+                // Navigate to industry pulse after successful authentication
+                console.log("Redirecting to industry pulse after successful authentication");
+                setTimeout(() => {
+                  window.location.href = '/industry-pulse';
+                }, 1000);
               }
             } else {
               console.log("Creating fallback user");
@@ -434,6 +440,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 
                 // Clear the auth success flag
                 sessionStorage.removeItem('authSuccess');
+                
+                // Navigate to industry pulse after successful authentication
+                console.log("Redirecting to industry pulse after successful authentication (fallback user)");
+                setTimeout(() => {
+                  window.location.href = '/industry-pulse';
+                }, 1000);
               }
             }
           }
@@ -491,15 +503,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         
         if (result?.user) {
           console.log("Popup authentication successful:", result.user.email);
-          // Let the auth state listener handle the user setup
-          // This prevents double handling and redirect loops
+          console.log("Authentication result details:", {
+            uid: result.user.uid,
+            email: result.user.email,
+            displayName: result.user.displayName,
+            emailVerified: result.user.emailVerified
+          });
           
           // Set a flag to indicate successful authentication
           sessionStorage.setItem('authSuccess', 'true');
+          
+          // The auth state listener will handle user setup and navigation
           return;
         }
       } catch (popupError: any) {
-        console.log("Popup failed, trying redirect:", popupError.code);
+        console.error("Popup authentication failed:", popupError);
+        console.error("Error details:", {
+          code: popupError.code,
+          message: popupError.message,
+          stack: popupError.stack
+        });
         
         if (popupError.code === 'auth/popup-blocked') {
           console.log("Popup was blocked, asking user to allow popups");
@@ -507,8 +530,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         } else if (popupError.code === 'auth/popup-closed-by-user') {
           console.log("User closed popup, not an error");
           return; // User cancelled, don't show error
+        } else if (popupError.code === 'auth/cancelled-popup-request') {
+          console.log("Popup request was cancelled");
+          return; // User cancelled, don't show error
         } else {
           // For other errors, throw to be handled by outer catch
+          console.error("Unexpected popup error, will throw:", popupError);
           throw popupError;
         }
       }
