@@ -369,105 +369,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.log("On problematic domain, ensuring correct auth handling");
     }
     
-    // First check for redirect result - this handles when users are redirected back after Google auth
+    // Simplified redirect result check - only for actual redirects
     const checkRedirectResult = async () => {
       try {
-        console.log("Checking for redirect result from Google auth");
+        // Only check redirect result if there's evidence this was a redirect
+        const urlParams = new URLSearchParams(window.location.search);
+        const hasAuthParams = urlParams.has('code') || urlParams.has('state') || urlParams.has('authuser');
         
-        // getRedirectResult() checks if this page load is the result of a redirect from Google
+        if (!hasAuthParams) {
+          console.log("No auth params detected - skipping redirect check");
+          return false;
+        }
+        
+        console.log("Auth params detected, checking for redirect result");
         const result = await getRedirectResult(auth);
         
         if (result && result.user) {
-          console.log("REDIRECT result found! User signed in via redirect:", {
-            uid: result.user.uid,
-            email: result.user.email,
-            displayName: result.user.displayName
-          });
-          
-          // First create or update the user in our backend
-          console.log("Creating/updating user in backend after redirect");
-          const backendUser = await createOrUpdateUserInBackend(result.user);
-          
-          if (backendUser) {
-            console.log("User created/updated in backend successfully after redirect");
-            
-            // Fetch complete user data from backend
-            console.log("Fetching user data after redirect");
-            // Check for Google provider data to get email
-            const googleProvider = result.user.providerData?.find(provider => 
-              provider.providerId === "google.com"
-            );
-            const userEmail = googleProvider?.email || result.user.email;
-            
-            console.log("Using Google email for data lookup if available:", userEmail);
-            const userData = await fetchUserData(result.user.uid, userEmail);
-            
-            if (userData) {
-              console.log("Setting user state with backend data after redirect");
-              setUser(userData);
-              toast({
-                title: "Signed in successfully",
-                description: `Welcome${userData.name ? ` ${userData.name}` : ''}!`,
-              });
-              
-              // Clear any auth attempt markers
-              localStorage.removeItem('authAttemptInProgress');
-              localStorage.removeItem('authAttemptTime');
-              
-              // Important: Return early to avoid the auth state listener processing the same user
-              setIsLoading(false);
-              return true;
-            }
-          }
-          
-          // If backend operations failed, use Google data as last resort
-          console.log("Using Google/Firebase data as fallback after redirect");
-          
-          // Check for Google provider data
-          const isGoogleProvider = result.user.providerData && 
-            result.user.providerData.some(provider => provider.providerId === "google.com");
-          
-          const googleProvider = isGoogleProvider ? 
-            result.user.providerData.find(provider => provider.providerId === "google.com") : null;
-          
-          console.log("Google provider data available:", !!googleProvider);
-          
-          const fallbackUser = {
-            uid: result.user.uid,
-            id: parseInt(result.user.uid.substring(0, 5), 36) || 999,
-            username: googleProvider?.email?.split('@')[0] || result.user.uid.substring(0, 8),
-            email: googleProvider?.email || result.user.email,
-            name: googleProvider?.displayName || result.user.displayName,
-            photoURL: googleProvider?.photoURL || result.user.photoURL
-          };
-          
-          setUser(fallbackUser);
-          toast({
-            title: "Signed in with limited data",
-            description: `Welcome${fallbackUser.name ? ` ${fallbackUser.name}` : ''}!`,
-          });
-          
-          // Clear any auth attempt markers
-          localStorage.removeItem('authAttemptInProgress');
-          localStorage.removeItem('authAttemptTime');
-          
-          setIsLoading(false);
+          console.log("Redirect result found:", result.user.email);
+          // Let the auth state listener handle the rest
           return true;
-        } else {
-          console.log("No redirect result found - this is a normal page load, not a redirect callback");
-          return false;
         }
+        
+        return false;
       } catch (error) {
         console.error("Error checking redirect result:", error);
-        
-        // Log detailed error information for debugging
-        logAuthError(error, "checkRedirectResult");
-        
-        toast({
-          title: "Authentication error",
-          description: "Error processing Google redirect. Please try again.",
-          variant: "destructive"
-        });
         return false;
       }
     };
