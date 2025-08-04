@@ -202,6 +202,14 @@ function Router() {
           </Suspense>
         );
       }} />
+      <Route path="/auth-flow-test" component={() => {
+        const AuthFlowTest = lazy(() => import("@/pages/auth-flow-test"));
+        return (
+          <Suspense fallback={<FeedSkeleton count={1} />}>
+            <AuthFlowTest />
+          </Suspense>
+        );
+      }} />
       <Route path="/auth-callback" component={AuthCallback} />
       <Route path="/__/auth/handler" component={AuthCallback} />
       <Route path="/_/auth/callback" component={AuthCallback} />

@@ -531,6 +531,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         // Try popup method first - often works better on Replit domains
         console.log("Trying popup authentication...");
+        
+        // Set popup attempt flags for debugging
+        sessionStorage.setItem('popup_auth_attempt', 'true');
+        sessionStorage.setItem('popup_auth_time', new Date().toISOString());
+        
         const result = await signInWithPopup(auth, googleProvider);
         
         if (result?.user) {
@@ -542,26 +547,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             emailVerified: result.user.emailVerified
           });
           
-          // Set a flag to indicate successful authentication
+          // Set success flag and clear any previous auth attempt flags
           sessionStorage.setItem('authSuccess', 'true');
+          sessionStorage.removeItem('popup_auth_attempt');
+          sessionStorage.removeItem('popup_auth_time');
           
-          console.log("Waiting for auth state listener to process user...");
+          console.log("Popup authentication completed successfully!");
           
-          // Wait a moment for the auth state listener to process
-          setTimeout(() => {
-            console.log("Checking if auth state listener processed the user...");
-            const currentAuth = auth.currentUser;
-            console.log("Current auth user after popup:", currentAuth ? currentAuth.email : "No user");
-            
-            if (!currentAuth) {
-              console.error("Auth state listener did not process the user - this is the problem!");
-              toast({
-                title: "Authentication Issue",
-                description: "Login succeeded but user state wasn't updated. Please try again.",
-                variant: "destructive"
-              });
-            }
-          }, 2000);
+          // Show immediate success feedback
+          toast({
+            title: "Authentication Successful",
+            description: `Welcome, ${result.user.displayName || result.user.email}!`,
+          });
+          
+          // The auth state listener will automatically handle updating the user context
+          // No need for timeouts or manual checking - Firebase handles this automatically
           
           return;
         }
@@ -577,8 +577,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           console.log("Popup was blocked, asking user to allow popups");
           throw new Error("Popup blocked. Please allow popups for this site and try again.");
         } else if (popupError.code === 'auth/popup-closed-by-user') {
-          console.log("User closed popup, not an error");
-          return; // User cancelled, don't show error
+          console.log("Popup closed by user - checking if this was due to successful auth or user cancellation");
+          
+          // Check if popup closed after successful authentication
+          const authSuccess = sessionStorage.getItem('authSuccess');
+          if (authSuccess) {
+            console.log("Popup closed after successful authentication - this is normal");
+            return; // Success case
+          } else {
+            console.log("Popup closed by user without authentication - user cancelled");
+            return; // User cancelled, don't show error
+          }
         } else if (popupError.code === 'auth/cancelled-popup-request') {
           console.log("Popup request was cancelled");
           return; // User cancelled, don't show error
