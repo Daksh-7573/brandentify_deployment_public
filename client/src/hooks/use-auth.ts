@@ -1,8 +1,8 @@
 import { useContext } from 'react';
-import { AuthContext } from '@/context/auth-context';
+import { AuthContext } from '@/context/auth-context-simplified';
 
 /**
- * Hook to access authentication context throughout the application
+ * Hook to access simplified authentication context
  * Provides user data, authentication state, and auth functions
  */
 export function useAuth() {
