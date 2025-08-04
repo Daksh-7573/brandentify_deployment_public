@@ -11,6 +11,9 @@ export default function Landing() {
   const { toast } = useToast();
   
   const [_, setLocation] = useLocation();
+  
+  // Force cache refresh - comprehensive version
+  console.log('🚀 COMPREHENSIVE LANDING PAGE LOADED - v2.0 with all 12 features');
 
   // Check if user wants to stay on landing page (via query parameter)
   const urlParams = new URLSearchParams(window.location.search);
@@ -56,6 +59,8 @@ export default function Landing() {
             <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
               AI-Powered Career Development Platform that transforms your professional journey with intelligent insights and personalized guidance
             </p>
+            
+            {/* Cache busting comment: Updated comprehensive landing page */}
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-8">
               {isAuthenticated ? (
