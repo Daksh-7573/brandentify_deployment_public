@@ -218,6 +218,14 @@ function Router() {
           </Suspense>
         );
       }} />
+      <Route path="/auth-enhanced-popup" component={() => {
+        const AuthEnhancedPopup = lazy(() => import("@/pages/auth-enhanced-popup"));
+        return (
+          <Suspense fallback={<FeedSkeleton count={1} />}>
+            <AuthEnhancedPopup />
+          </Suspense>
+        );
+      }} />
       <Route path="/auth-callback" component={AuthCallback} />
       <Route path="/__/auth/handler" component={AuthCallback} />
       <Route path="/_/auth/callback" component={AuthCallback} />

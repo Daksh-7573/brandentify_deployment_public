@@ -592,7 +592,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           console.log("Popup was blocked, asking user to allow popups");
           throw new Error("Popup blocked. Please allow popups for this site and try again.");
         } else if (popupError.code === 'auth/popup-closed-by-user') {
-          console.log("Popup closed by user - checking if this was due to successful auth or user cancellation");
+          console.log("Popup closed by user - implementing enhanced retry logic");
           
           // Check if popup closed after successful authentication
           const authSuccess = sessionStorage.getItem('authSuccess');
@@ -600,8 +600,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             console.log("Popup closed after successful authentication - this is normal");
             return; // Success case
           } else {
-            console.log("Popup closed by user without authentication - user cancelled");
-            return; // User cancelled, don't show error
+            console.log("Popup closed without authentication - attempting redirect fallback");
+            
+            // Instead of giving up, try redirect method as fallback
+            try {
+              console.log("Attempting redirect authentication as fallback...");
+              const { signInWithRedirect } = await import('firebase/auth');
+              await signInWithRedirect(auth, googleProvider);
+              console.log("Redirect authentication initiated");
+              return;
+            } catch (redirectError) {
+              console.error("Redirect fallback also failed:", redirectError);
+              // Fall through to show error
+            }
           }
         } else if (popupError.code === 'auth/cancelled-popup-request') {
           console.log("Popup request was cancelled");

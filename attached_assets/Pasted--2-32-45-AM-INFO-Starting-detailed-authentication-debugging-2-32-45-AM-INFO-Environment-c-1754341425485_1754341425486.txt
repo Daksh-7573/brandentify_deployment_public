@@ -1,0 +1,27 @@
+[2:32:45 AM] [INFO] Starting detailed authentication debugging...
+[2:32:45 AM] [INFO] Environment check - API Key: Present (AIzaSyDZWd...)
+[2:32:45 AM] [INFO] Environment check - Project ID: brandentifier-app
+[2:32:45 AM] [INFO] Environment check - App ID: Present (1:52529723...)
+[2:32:45 AM] [INFO] Importing Firebase configuration...
+[2:32:45 AM] [INFO] Firebase module imported successfully
+[2:32:45 AM] [INFO] Auth object: Available
+[2:32:45 AM] [INFO] Google Provider: Available
+[2:32:45 AM] [INFO] Firebase config - Auth Domain: brandentifier-app.firebaseapp.com
+[2:32:45 AM] [INFO] Firebase config - Project ID: undefined
+[2:32:45 AM] [INFO] Firebase config - API Key: AIzaSyDZWd...
+[2:32:45 AM] [INFO] Auth state listener established
+[2:32:45 AM] [INFO] Auth state changed: No user signed in
+[2:32:52 AM] [INFO] Starting detailed popup authentication test...
+[2:32:52 AM] [INFO] Firebase imports successful
+[2:32:52 AM] [INFO] Pre-auth check - Current user: None
+[2:32:52 AM] [INFO] Google provider configured: Yes
+[2:32:52 AM] [INFO] Testing popup window creation...
+[2:32:52 AM] [INFO] Popup creation: SUCCESS
+[2:32:52 AM] [INFO] Attempting signInWithPopup...
+[2:32:52 AM] [INFO] Timestamp: 2025-08-04T21:02:52.212Z
+[2:33:02 AM] [ERROR] Authentication FAILED: auth/popup-closed-by-user - Firebase: Error (auth/popup-closed-by-user).
+[2:33:02 AM] [INFO] Error code: auth/popup-closed-by-user
+[2:33:02 AM] [INFO] Error message: Firebase: Error (auth/popup-closed-by-user).
+[2:33:02 AM] [INFO] Error stack: FirebaseError: Firebase: Error (auth/popup-closed-by-user). at createErrorInternal (https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/firebase_auth.js?v=204557f4:694:37) at _createError (https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/firebase_auth.js?v=204557f4:662:10) at https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/firebase_auth.js?v=204557f4:7065:25
+[2:33:02 AM] [INFO] Custom data: {}
+[2:33:02 AM] [ERROR] Analysis: User closed popup before completing authentication

@@ -51,17 +51,25 @@ const isExactProblemDomain = currentHostname === "25d68c5d-166d-4f92-b5c1-cdfc68
 
 // For Firebase auth with Google on Replit, we need to use the official Firebase domain
 // Using the current domain as authDomain causes white screen popup issues
+// Validate required environment variables
+if (!apiKey || !projectId || !appId) {
+  const missingVars = [];
+  if (!apiKey) missingVars.push('VITE_FIREBASE_API_KEY');
+  if (!projectId) missingVars.push('VITE_FIREBASE_PROJECT_ID');
+  if (!appId) missingVars.push('VITE_FIREBASE_APP_ID');
+  
+  console.error("Missing required Firebase environment variables:", missingVars);
+  throw new Error(`Missing Firebase configuration: ${missingVars.join(', ')}`);
+}
+
 const firebaseConfig: FirebaseOptions = {
   apiKey,
   // CRITICAL: Always use the official Firebase authDomain to avoid popup white screen
   // Google OAuth servers need to recognize the authDomain as authorized
   authDomain: `${projectId}.firebaseapp.com`,
   projectId,  
-  storageBucket: projectId ? `${projectId}.appspot.com` : undefined,
-  // Common defaults for Firebase initialization
-  messagingSenderId: "330211556822",
+  storageBucket: `${projectId}.appspot.com`,
   appId,
-  measurementId: "G-JG24PTL5MS",
 };
 
 // Initialize Firebase with error handling and duplicate prevention
