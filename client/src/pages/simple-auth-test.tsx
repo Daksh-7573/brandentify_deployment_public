@@ -41,13 +41,7 @@ export default function SimpleAuthTest() {
         if (firebaseModule.auth) {
           const unsubscribe = (firebaseModule.auth as any).onAuthStateChanged((user: any) => {
             setAuthUser(user);
-            if (user) {
-              addLog(`✅ Auth state changed: User signed in as ${user.email}`);
-              addLog(`✅ User UID: ${user.uid}`);
-              addLog(`✅ Display name: ${user.displayName || 'Not set'}`);
-            } else {
-              addLog(`❌ Auth state changed: No user signed in`);
-            }
+            addLog(`Auth state changed: ${user ? user.email : 'No user'}`);
           });
           
           addLog("Auth state listener active");
@@ -72,52 +66,11 @@ export default function SimpleAuthTest() {
       const { auth, googleProvider } = await import('@/lib/firebase');
       
       addLog("About to call signInWithPopup...");
-      addLog("🔄 Popup should open now - even if it looks empty, wait for it to close...");
-      
-      // Monitor auth state changes during the process
-      let authStateChanged = false;
-      const unsubscribe = (auth as any).onAuthStateChanged((user: any) => {
-        if (user && !authStateChanged) {
-          authStateChanged = true;
-          addLog(`🎉 Auth state changed during sign-in! User: ${user.email}`);
-        }
-      });
-      
-      // Add a longer timeout to see if auth is just slow
-      const result = await Promise.race([
-        signInWithPopup(auth as any, googleProvider as any),
-        new Promise((_, reject) => 
-          setTimeout(() => {
-            unsubscribe();
-            reject(new Error('Authentication timeout after 45 seconds'));
-          }, 45000)
-        )
-      ]);
-      
-      unsubscribe();
-      addLog(`✅ Sign in successful! User: ${(result as any).user.email}`);
-      addLog(`✅ User details: ${JSON.stringify({
-        uid: (result as any).user.uid,
-        email: (result as any).user.email,
-        displayName: (result as any).user.displayName,
-        photoURL: (result as any).user.photoURL
-      })}`);
+      const result = await signInWithPopup(auth as any, googleProvider as any);
+      addLog(`Sign in successful: ${result.user.email}`);
       
     } catch (error) {
-      addLog(`❌ Sign in failed: ${error}`);
-      
-      // Check if user is actually signed in despite the error
-      setTimeout(() => {
-        addLog("🔍 Checking auth state after error...");
-        const { auth } = import('@/lib/firebase').then(firebase => {
-          const currentUser = (firebase.auth as any)?.currentUser;
-          if (currentUser) {
-            addLog(`✅ User is actually signed in! Email: ${currentUser.email}`);
-          } else {
-            addLog(`❌ No user found after authentication attempt`);
-          }
-        });
-      }, 2000);
+      addLog(`Sign in failed: ${error}`);
     }
   };
 
@@ -140,31 +93,12 @@ export default function SimpleAuthTest() {
           </p>
         </div>
         
-        <div className="mb-6 space-x-4">
+        <div className="mb-6">
           <button
             onClick={testGoogleSignIn}
             className="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg text-white font-medium"
           >
             Test Google Sign In
-          </button>
-          <button
-            onClick={() => {
-              addLog("Checking current auth state...");
-              const currentUser = (authUser);
-              if (currentUser) {
-                addLog(`✅ Current user found: ${currentUser.email}`);
-                addLog(`✅ User authenticated: ${JSON.stringify({
-                  uid: currentUser.uid,
-                  email: currentUser.email,
-                  displayName: currentUser.displayName
-                })}`);
-              } else {
-                addLog(`❌ No current user found`);
-              }
-            }}
-            className="bg-green-600 hover:bg-green-700 px-6 py-3 rounded-lg text-white font-medium"
-          >
-            Check Auth State
           </button>
         </div>
         
