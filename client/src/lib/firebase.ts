@@ -130,13 +130,19 @@ try {
   
   console.log("Firebase initialized successfully");
 } catch (error) {
-  console.error("Firebase initialization error:", error);
+  console.error("CRITICAL: Firebase initialization failed:", error);
+  console.error("Firebase config used:", firebaseConfig);
+  console.error("Environment variables:", {
+    apiKey: !!apiKey,
+    projectId,
+    appId: !!appId
+  });
   
   // Create fallbacks for failed initialization to prevent app crashes
   if (!app) app = {} as any; 
   if (!auth) auth = { 
     currentUser: null,
-    onAuthStateChanged: () => {},
+    onAuthStateChanged: () => () => {},
     signOut: async () => {}
   } as any;
   if (!googleProvider) googleProvider = {} as any;

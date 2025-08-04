@@ -363,9 +363,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     
     // Set up auth state listener with async import
     const setupAuth = async () => {
-      const { auth } = await import('@/lib/firebase');
-      const unsubscribe = onAuthStateChanged(auth as any, async (firebaseUser) => {
-        console.log("Auth state changed:", firebaseUser ? "User signed in" : "User signed out");
+      try {
+        console.log("Setting up auth state listener...");
+        const { auth } = await import('@/lib/firebase');
+        
+        if (!auth) {
+          console.error("Auth object is null - Firebase initialization failed");
+          setIsLoading(false);
+          return () => {};
+        }
+        
+        console.log("Auth object available, setting up listener");
+        const unsubscribe = onAuthStateChanged(auth as any, async (firebaseUser) => {
+          console.log("Auth state changed:", firebaseUser ? "User signed in" : "User signed out");
         
         if (firebaseUser) {
         // User is signed in 
@@ -469,9 +479,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
       
       setIsLoading(false);
-      });
-      
-      return unsubscribe;
+        });
+        
+        console.log("Auth state listener set up successfully");
+        return unsubscribe;
+      } catch (error) {
+        console.error("Failed to setup auth listener:", error);
+        setIsLoading(false);
+        return () => {};
+      }
     };
     
     // Setup auth and cleanup
