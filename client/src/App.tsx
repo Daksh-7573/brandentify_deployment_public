@@ -82,7 +82,7 @@ const URLInputDemo = lazy(() => import("@/pages/url-input-demo"));
 const NewsSourcesPage = lazy(() => import("@/pages/news-sources"));
 const LoginPage = lazy(() => import("@/pages/login"));
 const AuthStatusPage = lazy(() => import("@/pages/auth-status"));
-const AuthRobust = lazy(() => import("@/pages/auth-robust"));
+
 
 const DevLoginPage = lazy(() => import("@/pages/dev-login"));
 const SimpleLoginPage = lazy(() => import("@/pages/simple-login"));
@@ -252,7 +252,7 @@ function Router() {
           </Suspense>
         );
       }} />
-      <Route path="/auth-robust" component={AuthRobust} />
+
       <Route path="/auth-callback" component={AuthCallback} />
       <Route path="/__/auth/handler" component={AuthCallback} />
       <Route path="/_/auth/callback" component={AuthCallback} />
