@@ -158,6 +158,14 @@ function Router() {
           </Suspense>
         );
       }} />
+      <Route path="/domain-helper" component={() => {
+        const DomainHelper = lazy(() => import("@/pages/domain-helper"));
+        return (
+          <Suspense fallback={<FeedSkeleton count={1} />}>
+            <DomainHelper />
+          </Suspense>
+        );
+      }} />
       <Route path="/auth-status" component={AuthStatusPage} />
       <Route path="/dev-login" component={DevLoginPage} />
       <Route path="/simple-login" component={SimpleLoginPage} />
