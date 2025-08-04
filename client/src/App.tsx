@@ -210,6 +210,14 @@ function Router() {
           </Suspense>
         );
       }} />
+      <Route path="/auth-debug-detailed" component={() => {
+        const AuthDebugDetailed = lazy(() => import("@/pages/auth-debug-detailed"));
+        return (
+          <Suspense fallback={<FeedSkeleton count={1} />}>
+            <AuthDebugDetailed />
+          </Suspense>
+        );
+      }} />
       <Route path="/auth-callback" component={AuthCallback} />
       <Route path="/__/auth/handler" component={AuthCallback} />
       <Route path="/_/auth/callback" component={AuthCallback} />

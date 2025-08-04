@@ -567,11 +567,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       } catch (popupError: any) {
         console.error("Popup authentication failed:", popupError);
-        console.error("Error details:", {
+        console.error("Detailed error information:", {
           code: popupError.code,
           message: popupError.message,
-          stack: popupError.stack
+          stack: popupError.stack,
+          customData: popupError.customData,
+          credential: popupError.credential,
+          operationType: popupError.operationType,
+          authDomain: (auth as any)?.config?.authDomain,
+          projectId: (auth as any)?.config?.projectId,
+          timestamp: new Date().toISOString(),
+          userAgent: navigator.userAgent,
+          currentUrl: window.location.href
         });
+        
+        // Log to session storage for debugging
+        sessionStorage.setItem('lastAuthError', JSON.stringify({
+          code: popupError.code,
+          message: popupError.message,
+          timestamp: new Date().toISOString()
+        }));
         
         if (popupError.code === 'auth/popup-blocked') {
           console.log("Popup was blocked, asking user to allow popups");
@@ -614,11 +629,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         errorMessage = "Authentication isn't configured for this domain. Please contact support.";
       }
       
+      // Show detailed error message to user
       toast({
-        title: "Authentication error",
-        description: errorMessage,
+        title: "Authentication Error",
+        description: `${errorMessage} (Code: ${error.code || 'unknown'})`,
         variant: "destructive"
       });
+      
+      // Log detailed error for debugging
+      addLog(`Authentication error details: ${JSON.stringify({
+        code: error.code,
+        message: error.message,
+        timestamp: new Date().toISOString(),
+        authDomain: (auth as any)?.config?.authDomain,
+        projectId: (auth as any)?.config?.projectId
+      })}`);
     } finally {
       setIsLoading(false);
     }

@@ -50,3 +50,11 @@ The Google authentication popup shows a white screen instead of the account sele
 ### Testing Pages:
 - `/simple-auth-test` - Basic Firebase testing
 - `/auth-popup-fix` - Popup issue diagnosis and redirect alternative
+- `/auth-flow-test` - Complete authentication flow monitoring
+- `/auth-debug-detailed` - Comprehensive error analysis and debugging
+
+### Debugging Steps:
+1. Use `/auth-debug-detailed` to get comprehensive error details
+2. Check browser console for detailed error logs
+3. Verify Firebase configuration and network connectivity
+4. Test popup creation and Google OAuth accessibility
