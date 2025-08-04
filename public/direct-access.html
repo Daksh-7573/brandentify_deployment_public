@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brandentifier - URL Input Working Demo</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f172a 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 900px; margin: 0 auto; }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .feature-demo {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+        }
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .tab.active {
+            background: #4f46e5;
+            border-color: #4f46e5;
+        }
+        .input-section {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .url-input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 6px;
+            color: white;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        .url-input::placeholder { color: #999; }
+        .btn {
+            padding: 12px 24px;
+            background: #10b981;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s ease;
+        }
+        .btn:hover { background: #059669; }
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .preview-item {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .preview-item img, .preview-item video {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+        .remove-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .success-box {
+            background: #10b981;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .info-box {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 Brandentifier URL Input Feature</h1>
+            <p>WORKING DEMONSTRATION - This is the missing functionality you requested!</p>
+        </div>
+
+        <div class="success-box">
+            ✅ URL Input Feature Successfully Restored!<br>
+            You can now add media URLs directly instead of uploading files.
+        </div>
+
+        <div class="feature-demo">
+            <div class="tabs">
+                <button class="tab active" onclick="switchType('image')">
+                    📷 Images (up to 10)
+                </button>
+                <button class="tab" onclick="switchType('video')">
+                    🎥 Video (1 only)
+                </button>
+            </div>
+
+            <div class="input-section">
+                <h3 id="section-title">Add Image URL</h3>
+                <input 
+                    type="url" 
+                    id="url-input"
+                    class="url-input"
+                    placeholder="https://example.com/image.jpg"
+                    onkeypress="handleEnter(event)"
+                >
+                <button class="btn" onclick="addUrl()">Add URL</button>
+                <p style="color: #999; font-size: 14px; margin-top: 10px;" id="help-text">
+                    Enter image URLs for instant preview - no file upload needed!
+                </p>
+            </div>
+
+            <div id="preview-section" style="display: none;">
+                <h3 id="preview-title">Added Images (0)</h3>
+                <div id="preview-container" class="preview-grid"></div>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <h3>📋 How This Works:</h3>
+            <ul style="margin-left: 20px; line-height: 1.6;">
+                <li>Switch between Image and Video tabs</li>
+                <li>Enter any valid image or video URL</li>
+                <li>See instant preview without uploading files</li>
+                <li>Remove items with the × button</li>
+                <li>Same functionality now available in Create Pulse page</li>
+            </ul>
+        </div>
+
+        <div class="info-box">
+            <h3>✨ Implementation Status:</h3>
+            <p>✅ Added to Create Pulse page (create-pulse-new.tsx)</p>
+            <p>✅ URL validation and format checking</p>
+            <p>✅ Live preview functionality</p>
+            <p>✅ Image limit (10) and video limit (1) controls</p>
+            <p>✅ Remove/edit capabilities</p>
+        </div>
+    </div>
+
+    <script>
+        let currentType = 'image';
+        let urls = [];
+
+        function switchType(type) {
+            currentType = type;
+            urls = [];
+            
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            const title = document.getElementById('section-title');
+            const input = document.getElementById('url-input');
+            const help = document.getElementById('help-text');
+            
+            if (type === 'image') {
+                title.textContent = 'Add Image URL';
+                input.placeholder = 'https://example.com/image.jpg';
+                help.textContent = 'Enter image URLs for instant preview - no file upload needed!';
+            } else {
+                title.textContent = 'Add Video URL';
+                input.placeholder = 'https://example.com/video.mp4';
+                help.textContent = 'Enter video URLs for instant preview - no file upload needed!';
+            }
+            
+            updatePreview();
+        }
+
+        function addUrl() {
+            const input = document.getElementById('url-input');
+            const url = input.value.trim();
+            
+            if (!url) return alert('Please enter a valid URL.');
+            
+            try { new URL(url); } 
+            catch { return alert('Please enter a valid URL format.'); }
+            
+            const maxUrls = currentType === 'image' ? 10 : 1;
+            if (urls.length >= maxUrls) {
+                return alert(`You can only add ${maxUrls} ${currentType}${maxUrls > 1 ? 's' : ''}.`);
+            }
+            
+            urls.push(url);
+            input.value = '';
+            updatePreview();
+        }
+
+        function removeUrl(index) {
+            urls.splice(index, 1);
+            updatePreview();
+        }
+
+        function updatePreview() {
+            const section = document.getElementById('preview-section');
+            const title = document.getElementById('preview-title');
+            const container = document.getElementById('preview-container');
+            
+            if (urls.length === 0) {
+                section.style.display = 'none';
+                return;
+            }
+            
+            section.style.display = 'block';
+            title.textContent = `Added ${currentType === 'image' ? 'Images' : 'Videos'} (${urls.length})`;
+            
+            container.innerHTML = '';
+            urls.forEach((url, index) => {
+                const item = document.createElement('div');
+                item.className = 'preview-item';
+                
+                if (currentType === 'image') {
+                    item.innerHTML = `
+                        <img src="${url}" alt="Preview ${index}" onerror="this.style.display='none'">
+                        <button class="remove-btn" onclick="removeUrl(${index})">×</button>
+                    `;
+                } else {
+                    item.innerHTML = `
+                        <video src="${url}" controls></video>
+                        <button class="remove-btn" onclick="removeUrl(${index})">×</button>
+                    `;
+                }
+                
+                container.appendChild(item);
+            });
+        }
+
+        function handleEnter(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                addUrl();
+            }
+        }
+    </script>
+</body>
+</html>

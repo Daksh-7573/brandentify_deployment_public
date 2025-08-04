@@ -67,6 +67,40 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isDemoMode, setIsDemoMode] = useState(false);
   const { toast } = useToast();
 
+  // Enhanced Firebase auth optimization with caching
+  useEffect(() => {
+    console.log('[Firebase Auth] Initializing with cached state optimization');
+    const startTime = performance.now();
+    
+    // Check for cached auth state for immediate load
+    const cachedAuth = (window as any).__brandentifier_cached_auth?.();
+    if (cachedAuth) {
+      console.log('[PERF] Using cached auth state for instant load');
+      setUser(cachedAuth);
+      setIsLoading(false);
+      
+      // Background refresh to ensure data is current
+      fetchUserData(cachedAuth.uid || cachedAuth.id, cachedAuth.email).then(userData => {
+        if (userData) {
+          setUser(userData);
+          // Update cache with fresh data
+          try {
+            localStorage.setItem('brandentifier_auth_cache', JSON.stringify(userData));
+          } catch (e) {
+            console.warn('[Cache] Failed to update auth cache:', e);
+          }
+        }
+      }).catch(err => {
+        console.warn('[Auth] Background refresh failed:', err);
+      });
+    } else {
+      console.log('[Firebase Auth] No cached state, initializing fresh');
+      setIsLoading(false);
+    }
+    
+    console.log(`[PERF] Auth context initialization: ${(performance.now() - startTime).toFixed(2)}ms`);
+  }, []);
+
   // Fetch user data from our backend
   const fetchUserData = async (userId: string | number, userEmail?: string): Promise<AuthUser | null> => {
     try {

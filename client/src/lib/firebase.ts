@@ -63,17 +63,50 @@ const firebaseConfig: FirebaseOptions = {
   measurementId: "G-JG24PTL5MS",
 };
 
-// Initialize Firebase with error handling
+// Initialize Firebase with error handling and duplicate prevention
 let app;
 let auth;
 let googleProvider;
 
+// Cache auth state for faster access
+let cachedAuthState: any = null;
+
 try {
-  // Initialize Firebase app
-  app = initializeApp(firebaseConfig);
+  // Check if Firebase is already initialized to prevent duplicate app error
+  try {
+    app = initializeApp(firebaseConfig);
+  } catch (error: any) {
+    if (error.code === 'app/duplicate-app') {
+      console.log('Firebase already initialized, using existing instance');
+      // Use existing app instance
+      app = null; // Will be handled by getApps check below
+    } else {
+      throw error;
+    }
+  }
+  
+  // Fallback to existing app if available
+  if (!app) {
+    const { getApps } = require('firebase/app');
+    const existingApps = getApps();
+    if (existingApps.length > 0) {
+      app = existingApps[0];
+      console.log('Using existing Firebase app instance');
+    } else {
+      throw new Error('Failed to initialize or find existing Firebase app');
+    }
+  }
   
   // Initialize Firebase Auth
   auth = getAuth(app);
+  
+  // Cache auth state for faster access
+  auth.onAuthStateChanged((user) => {
+    cachedAuthState = user;
+  });
+  
+  // Export cached auth for components to use
+  (window as any).__brandentifier_cached_auth = () => cachedAuthState;
   
   // Configure Google Auth Provider with compatible parameters for Replit domains
   googleProvider = new GoogleAuthProvider();
