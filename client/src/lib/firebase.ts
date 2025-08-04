@@ -49,16 +49,13 @@ console.log("Firebase initialization:", {
 const isReplitDomain = currentHostname.includes('replit.dev') || currentHostname.includes('replit.app');
 const isExactProblemDomain = currentHostname === "25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev";
 
-// For Firebase auth with Google on Replit, we need to use the official Firebase domain
-// even though the current domain is authorized, to ensure proper popup functionality
+// Firebase configuration optimized for Google OAuth on Replit
 const firebaseConfig: FirebaseOptions = {
   apiKey,
-  // Always use the official Firebase authDomain for better popup compatibility
-  // The authorized domains list in Console allows our domain to redirect back
-  authDomain: `${projectId}.firebaseapp.com`,
-  projectId,  
-  storageBucket: projectId ? `${projectId}.appspot.com` : undefined,
-  // Common defaults for Firebase initialization
+  // Use official Firebase authDomain for proper OAuth popup functionality
+  authDomain: "brandentifier-app.firebaseapp.com",
+  projectId: "brandentifier-app",  
+  storageBucket: "brandentifier-app.appspot.com",
   messagingSenderId: "330211556822",
   appId,
   measurementId: "G-JG24PTL5MS",
@@ -109,18 +106,16 @@ try {
   // Export cached auth for components to use
   (window as any).__brandentifier_cached_auth = () => cachedAuthState;
   
-  // Configure Google Auth Provider with compatible parameters for Replit domains
+  // Configure Google Auth Provider with optimal settings for Replit
   googleProvider = new GoogleAuthProvider();
-  
-  // Use redirect instead of popup for better compatibility on Replit
-  // This avoids popup blocking and domain authorization issues
-  googleProvider.setCustomParameters({
-    prompt: 'select_account'
-  });
-  
-  // Add essential OAuth scopes only
   googleProvider.addScope('email');
   googleProvider.addScope('profile');
+  
+  // Optimized parameters for popup compatibility
+  googleProvider.setCustomParameters({
+    prompt: 'select_account',
+    include_granted_scopes: 'true'
+  });
   
   // Ensure the auth provider trusts our domain
   auth.useDeviceLanguage();
