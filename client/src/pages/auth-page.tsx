@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Mail, Phone, Check, Sparkles, Target, Users } from "lucide-react";
 import { GoogleAuth } from "@/components/auth/google-auth";
+import { SimpleGoogleButton } from "@/components/auth/simple-google-button";
 import { PhoneAuth } from "@/components/auth/phone-auth";
 import { EmailAuth } from "@/components/auth/email-auth";
 import { DemoLogin } from "@/components/auth/demo-login";
@@ -118,6 +119,12 @@ export default function AuthPage() {
                         </div>
                         
                         <GoogleAuth />
+                        
+                        {/* Test button for debugging */}
+                        <div className="border-t border-white/20 pt-4 mt-4">
+                          <p className="text-xs text-gray-400 mb-2">Debug test button:</p>
+                          <SimpleGoogleButton />
+                        </div>
                       </>
                     )}
                   </div>
