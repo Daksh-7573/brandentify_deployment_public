@@ -144,7 +144,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             console.log("Found Firebase User for Google account - will attempt to update with Google profile data");
             
             try {
-              // Get the current Firebase user
+              // Get the current Firebase user  
+              const { auth } = await import('@/lib/firebase');
               const currentUser = auth.currentUser;
               if (currentUser) {
                 // Try to get Google provider data

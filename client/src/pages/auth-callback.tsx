@@ -48,6 +48,9 @@ export default function AuthCallback() {
         // Get the redirect result from Firebase with enhanced error handling
         console.log("Attempting to get redirect result from Firebase...");
         
+        // Get auth from firebase
+        const { auth } = await import('@/lib/firebase');
+        
         // First, check current auth state
         console.log("Current auth state:", auth.currentUser ? auth.currentUser.email : "No user");
         

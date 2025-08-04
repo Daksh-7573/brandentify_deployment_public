@@ -82,6 +82,7 @@ const URLInputDemo = lazy(() => import("@/pages/url-input-demo"));
 const NewsSourcesPage = lazy(() => import("@/pages/news-sources"));
 const LoginPage = lazy(() => import("@/pages/login"));
 const AuthStatusPage = lazy(() => import("@/pages/auth-status"));
+
 const DevLoginPage = lazy(() => import("@/pages/dev-login"));
 const SimpleLoginPage = lazy(() => import("@/pages/simple-login"));
 const ReliableLoginPage = lazy(() => import("@/pages/reliable-login"));
