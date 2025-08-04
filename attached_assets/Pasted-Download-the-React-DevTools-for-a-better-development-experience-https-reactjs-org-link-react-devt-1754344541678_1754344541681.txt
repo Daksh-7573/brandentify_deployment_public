@@ -1,0 +1,73 @@
+Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+firebase.ts:37 Firebase initialization: {environment: 'development', hostname: '25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev', projectId: 'brandentifier-app', apiKeyPresent: true, apiKeyLength: 39, …}
+firebase.ts:143 Using simplified Google auth configuration for maximum compatibility
+firebase.ts:147 Firebase initialized successfully
+firebase.ts:148 Firebase config used: {authDomain: 'brandentifier-app.firebaseapp.com', projectId: 'brandentifier-app', currentDomain: '25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev', isReplitDomain: true, googleProviderScopes: Array(2), …}
+firebase.ts:37 Firebase initialization: {environment: 'development', hostname: '25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev', projectId: 'brandentifier-app', apiKeyPresent: true, apiKeyLength: 39, …}
+firebase.ts:143 Using simplified Google auth configuration for maximum compatibility
+firebase.ts:147 Firebase initialized successfully
+firebase.ts:148 Firebase config used: {authDomain: 'brandentifier-app.firebaseapp.com', projectId: 'brandentifier-app', currentDomain: '25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev', isReplitDomain: true, googleProviderScopes: Array(2), …}
+main.tsx:11 [PERF] React app initialization started
+main.tsx:30 [PERF] React rendering started
+auth:403 [Skeleton] DOM loaded, preparing smooth transition
+main.tsx:38 [PERF] React app rendered in 55.00 ms
+main.tsx:39 [PERF] Total initialization time: 55.20 ms
+auth-context.tsx:72 [Firebase Auth] Initializing with cached state optimization
+auth-context.tsx:97 [Firebase Auth] No cached state, initializing fresh
+auth-context.tsx:101 [PERF] Auth context initialization: 0.40ms
+auth-context.tsx:360 Setting up simplified auth state listener
+auth-context.tsx:368 Setting up auth state listener...
+auth:409 [Skeleton] Starting fade-out transition
+main.tsx:20 [PERF] Skeleton loader removed in 219.30 ms
+auth:337 🚀 [PERF] COMPLETE PERFORMANCE OPTIMIZATION REPORT:
+auth:338 📊 Total page load time: 4994.90ms
+auth:339 🔥 Firebase init time: 4994.90ms
+auth:347 ✅ [Strategy 1] Preconnect/Preload: 9 preconnect + 4 preload + 2 modulepreload links active
+auth:348 ⚡ Expected improvement: 100-300ms faster cold starts
+auth:353 ✅ [Strategy 2] Firebase Auth Caching: Active - cached state available
+auth:354 ⚡ Expected improvement: 150-250ms faster auth loads
+auth:369 ✅ [Strategy 4] Service Worker v2: Active with enhanced caching
+auth:370 ⚡ Return visits: Near-instant loading (0-50ms)
+auth:392 🎯 PERFORMANCE STATUS: OPTIMIZING - Further improvements in progress
+auth:395 📈 Performance Optimization Complete - All 4 strategies active!
+auth-context.tsx:381 No user authenticated on page load
+auth-context.tsx:384 Auth object available, setting up listener
+auth-context.tsx:492 Auth state listener set up successfully
+auth:415 [Skeleton] Skeleton loading complete - app ready
+auth:419 ⚡ [PERF] Skeleton-to-app transition: 5030.00ms
+sw.js:64 [SW] Fetching from network: https://apis.google.com/js/api.js?onload=__iframefcb926763
+auth:363 ✅ [Strategy 3] Progressive Rendering: Core(0) + Secondary(0) components loaded
+auth:364 ⚡ Expected improvement: 50-100ms perceived performance boost
+auth-diagnostics.ts:138 === FIREBASE CONFIG CHECK ===
+auth-diagnostics.ts:139 API Key exists: true
+auth-diagnostics.ts:140 Project ID exists: true
+auth-diagnostics.ts:141 App ID exists: true
+auth-diagnostics.ts:149 Domain analysis:
+auth-diagnostics.ts:150 - Current hostname: 25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev
+auth-diagnostics.ts:151 - Is problematic domain: true
+auth-diagnostics.ts:152 - Is localhost: false
+auth-diagnostics.ts:153 - Is Replit domain: true
+auth-diagnostics.ts:166 Browser feature support:
+auth-diagnostics.ts:167 - LocalStorage: true
+auth-diagnostics.ts:168 - SessionStorage: true
+auth-diagnostics.ts:169 - IndexedDB: true
+auth-diagnostics.ts:198 Overall assessment:
+auth-diagnostics.ts:199 - Required environment variables: PRESENT
+auth-diagnostics.ts:200 - Required browser features: SUPPORTED
+auth-diagnostics.ts:201 - Is properly configured: YES
+auth-diagnostics.ts:202 - Issues found: None
+App.tsx:23 [Progressive Loading] Starting tiered component loading
+App.tsx:27 [Progressive Loading] ⚡ Core components ready
+domain-helper.tsx:11  ⚠️ FIREBASE DOMAIN SETUP INFORMATION ⚠️ 
+domain-helper.tsx:12  Add these domains to Firebase Auth > Settings > Authorized domains: 
+domain-helper.tsx:13  1. 25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev 
+domain-helper.tsx:14  2. 25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev.replit.app 
+domain-helper.tsx:15  3. *.replit.dev 
+domain-helper.tsx:16  4. *.replit.app 
+App.tsx:32 [Progressive Loading] 🚀 Secondary components loaded
+App.tsx:38 [Progressive Loading] 🔧 All components loaded in 202.80ms
+auth-context.tsx:386 Auth state changed: User signed out
+auth:1  The resource https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/main.tsx was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.
+auth:1  The resource https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/App.tsx was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.
+auth:1  The resource https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/main.tsx was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.
+auth:1  The resource https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/App.tsx was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.
