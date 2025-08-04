@@ -9,11 +9,13 @@ export function AuthDebugOverlay() {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    // Only show in development and when there's a redirect attempt
+    // Show in development or when there's a redirect attempt
     const isDev = window.location.hostname.includes('replit.dev') || window.location.hostname === 'localhost';
     const hasRedirectAttempt = sessionStorage.getItem('redirect_auth_attempt') === 'true';
+    const isAuthPage = window.location.pathname === '/auth';
     
-    if (isDev && hasRedirectAttempt) {
+    // Show if we're in dev, have redirect attempt, or on auth page
+    if (isDev || hasRedirectAttempt || isAuthPage) {
       setIsVisible(true);
     }
 

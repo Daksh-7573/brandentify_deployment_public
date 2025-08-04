@@ -592,15 +592,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         usingRedirect: true
       });
       
-      // Set redirect attempt flags for debugging
+      // Set redirect attempt flags for debugging - ENHANCED
+      console.log("🔧 Setting redirect attempt flags...");
       sessionStorage.setItem('redirect_auth_attempt', 'true');
       sessionStorage.setItem('redirect_auth_time', new Date().toISOString());
-      
-      // Store current page so we can return to it after auth
       sessionStorage.setItem('auth_return_url', window.location.pathname);
       
+      // Verify flags were set
+      console.log("🔧 Redirect flags set:", {
+        attempt: sessionStorage.getItem('redirect_auth_attempt'),
+        time: sessionStorage.getItem('redirect_auth_time'),
+        returnUrl: sessionStorage.getItem('auth_return_url')
+      });
+      
       // Use redirect method for Replit domains
+      console.log("🚀 Initiating signInWithRedirect...");
       await signInWithRedirect(auth as any, googleProvider);
+      
+      console.log("⚠️ signInWithRedirect completed without redirect - this should not happen");
       
       console.log("Redirect authentication initiated");
       

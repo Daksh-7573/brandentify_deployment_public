@@ -75,6 +75,8 @@ export function initializeRedirectHandler() {
   // Check if we have a redirect attempt flag
   const hasRedirectAttempt = sessionStorage.getItem('redirect_auth_attempt') === 'true';
   
+  console.log("🔧 initializeRedirectHandler: hasRedirectAttempt =", hasRedirectAttempt);
+  
   if (hasRedirectAttempt) {
     console.log("📍 Found redirect attempt flag - initializing handler");
     
@@ -87,6 +89,7 @@ export function initializeRedirectHandler() {
     
     const interval = setInterval(async () => {
       attempts++;
+      console.log(`🔄 Redirect check attempt ${attempts}/${maxAttempts}`);
       
       const success = await checkAndHandleAuthRedirect().catch(() => false);
       
@@ -100,5 +103,7 @@ export function initializeRedirectHandler() {
         }
       }
     }, 1000);
+  } else {
+    console.log("❌ No redirect attempt flag found - not initializing handler");
   }
 }

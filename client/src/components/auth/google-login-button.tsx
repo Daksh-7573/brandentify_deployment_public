@@ -27,10 +27,21 @@ export function GoogleLoginButton({
   const handleGoogleLogin = async () => {
     try {
       setIsLoading(true);
+      console.log("🔴 GoogleLoginButton: Starting Google authentication...");
+      
+      // Set initial tracking flags here as backup
+      sessionStorage.setItem('redirect_auth_attempt', 'true');
+      sessionStorage.setItem('redirect_auth_time', new Date().toISOString());
+      console.log("🔴 GoogleLoginButton: Redirect flags set");
+      
       await signInWithGoogle();
+      console.log("🔴 GoogleLoginButton: signInWithGoogle completed");
+      
     } catch (error) {
-      console.error("Failed to authenticate with Google:", error);
-      // No need to show toast here as it's already handled in auth-context
+      console.error("🔴 GoogleLoginButton: Failed to authenticate with Google:", error);
+      // Clear flags on error
+      sessionStorage.removeItem('redirect_auth_attempt');
+      sessionStorage.removeItem('redirect_auth_time');
     } finally {
       setIsLoading(false);
     }
