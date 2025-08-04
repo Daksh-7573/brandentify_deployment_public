@@ -62,15 +62,34 @@ export default function SimpleAuthTest() {
     addLog("Testing Google sign in...");
     
     try {
+      const { signInWithRedirect } = await import('firebase/auth');
+      const { auth, googleProvider } = await import('@/lib/firebase');
+      
+      addLog("Using redirect method for better Replit compatibility...");
+      addLog("About to call signInWithRedirect...");
+      
+      // Use redirect instead of popup for better compatibility
+      await signInWithRedirect(auth as any, googleProvider as any);
+      addLog("Redirect initiated - user will be redirected to Google...");
+      
+    } catch (error) {
+      addLog(`Sign in failed: ${error}`);
+    }
+  };
+
+  const testGoogleSignInPopup = async () => {
+    addLog("Testing Google sign in with popup...");
+    
+    try {
       const { signInWithPopup } = await import('firebase/auth');
       const { auth, googleProvider } = await import('@/lib/firebase');
       
       addLog("About to call signInWithPopup...");
       const result = await signInWithPopup(auth as any, googleProvider as any);
-      addLog(`Sign in successful: ${result.user.email}`);
+      addLog(`Popup sign in successful: ${result.user.email}`);
       
     } catch (error) {
-      addLog(`Sign in failed: ${error}`);
+      addLog(`Popup sign in failed: ${error}`);
     }
   };
 
@@ -93,12 +112,18 @@ export default function SimpleAuthTest() {
           </p>
         </div>
         
-        <div className="mb-6">
+        <div className="mb-6 space-x-4">
           <button
             onClick={testGoogleSignIn}
             className="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg text-white font-medium"
           >
-            Test Google Sign In
+            Test Google Sign In (Redirect)
+          </button>
+          <button
+            onClick={testGoogleSignInPopup}
+            className="bg-green-600 hover:bg-green-700 px-6 py-3 rounded-lg text-white font-medium"
+          >
+            Test Google Sign In (Popup)
           </button>
         </div>
         

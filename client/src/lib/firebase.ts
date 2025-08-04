@@ -111,9 +111,9 @@ try {
   // Configure Google Auth Provider with compatible parameters for Replit domains
   googleProvider = new GoogleAuthProvider();
   
-  // Use minimal, compatible configuration to avoid connection issues
+  // Use redirect instead of popup for better compatibility on Replit
+  // This avoids popup blocking and domain authorization issues
   googleProvider.setCustomParameters({
-    // Force account selection to ensure fresh authentication
     prompt: 'select_account'
   });
   
