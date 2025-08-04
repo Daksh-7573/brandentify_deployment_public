@@ -32,6 +32,16 @@ export default function AuthPage() {
     setUseDemoBypass(false);
   }, []);
 
+  // Check for redirect results on auth page load
+  useEffect(() => {
+    const checkRedirect = async () => {
+      const { checkAndHandleAuthRedirect } = await import('@/utils/auth-redirect-handler');
+      await checkAndHandleAuthRedirect();
+    };
+    
+    checkRedirect();
+  }, []);
+
   // Redirect to dashboard if already authenticated
   useEffect(() => {
     if (isAuthenticated) {

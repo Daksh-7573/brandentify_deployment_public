@@ -406,8 +406,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             // CRITICAL FIX: Force navigate to dashboard after successful auth
             setTimeout(() => {
               console.log("🚀 Forcing navigation to dashboard after redirect success");
-              window.location.href = '/dashboard';
-            }, 500);
+              if (typeof window !== 'undefined') {
+                window.location.href = '/dashboard';
+              }
+            }, 1000);
             
             // Don't return here, let the auth state listener handle the user
           } else {
