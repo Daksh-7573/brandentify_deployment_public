@@ -38,15 +38,36 @@ export default function AuthWorkingTest() {
     
     try {
       addLog("Calling signInWithGoogle from auth context...");
-      await signInWithGoogle();
-      addLog("signInWithGoogle call completed");
+      addLog(`Current loading state: ${isLoading}`);
+      addLog(`Current auth state: ${isAuthenticated}`);
       
-      // The redirect should happen automatically
-      addLog("If redirect auth is used, page should redirect to Google");
+      // Call the authentication function
+      await signInWithGoogle();
+      
+      addLog("signInWithGoogle call completed - checking for redirect...");
+      
+      // Check if redirect was initiated
+      const redirectAttempt = sessionStorage.getItem('redirect_auth_attempt');
+      const redirectTime = sessionStorage.getItem('redirect_auth_time');
+      
+      if (redirectAttempt) {
+        addLog(`Redirect attempt initiated at: ${redirectTime}`, 'success');
+        addLog("If redirect is working, you should be redirected to Google now", 'success');
+        setStatus("✅ Redirect authentication initiated - you should be redirected to Google");
+      } else {
+        addLog("No redirect attempt flag found - authentication may have failed", 'error');
+        setStatus("❌ Redirect authentication was not initiated");
+      }
       
     } catch (error) {
       addLog(`Main auth flow failed: ${error}`, 'error');
       setStatus(`❌ Main auth flow failed: ${error}`);
+      
+      // Log additional error details
+      if (error instanceof Error) {
+        addLog(`Error details: ${error.message}`, 'error');
+        addLog(`Error stack: ${error.stack?.substring(0, 200)}...`, 'error');
+      }
     }
   };
 
@@ -54,32 +75,57 @@ export default function AuthWorkingTest() {
     addLog("Testing direct Firebase redirect authentication...");
     
     try {
-      const { signInWithRedirect, getAuth, GoogleAuthProvider } = await import('firebase/auth');
+      const { signInWithRedirect, GoogleAuthProvider } = await import('firebase/auth');
       const { auth } = await import('@/lib/firebase');
       
-      // Create a fresh Google provider
+      // Get Firebase configuration details
+      const config = (auth as any).config;
+      addLog(`Firebase Auth Domain: ${config.authDomain}`);
+      addLog(`Firebase Project ID: ${config.projectId}`);
+      addLog(`Firebase API Key: ${config.apiKey?.substring(0, 20)}...`);
+      addLog(`Current Domain: ${window.location.hostname}`);
+      
+      // Check if current domain matches expected patterns
+      if (window.location.hostname.includes('replit.dev')) {
+        addLog("Detected Replit development domain", 'info');
+      } else if (window.location.hostname.includes('replit.app')) {
+        addLog("Detected Replit app domain", 'info');
+      }
+      
+      // Create a fresh Google provider with enhanced settings
       const provider = new GoogleAuthProvider();
       provider.setCustomParameters({
         prompt: 'select_account',
-        access_type: 'online'
+        access_type: 'online',
+        include_granted_scopes: 'true'
       });
       provider.addScope('email');
       provider.addScope('profile');
       
+      addLog("Google provider configured with enhanced settings");
       addLog("Initiating direct signInWithRedirect...");
-      addLog(`Auth domain: ${(auth as any).config.authDomain}`);
-      addLog(`Project ID: ${(auth as any).config.projectId}`);
       
-      // Store redirect attempt
+      // Store redirect attempt for tracking
       sessionStorage.setItem('direct_redirect_attempt', 'true');
       sessionStorage.setItem('direct_redirect_time', new Date().toISOString());
       
+      // Initiate the redirect
       await signInWithRedirect(auth, provider);
       
-      addLog("Direct redirect initiated - should redirect to Google now");
+      addLog("Direct redirect initiated successfully", 'success');
+      addLog("You should be redirected to Google authentication now", 'success');
       
-    } catch (error) {
-      addLog(`Direct redirect failed: ${error}`, 'error');
+    } catch (error: any) {
+      addLog(`Direct redirect failed: ${error.message}`, 'error');
+      addLog(`Error code: ${error.code}`, 'error');
+      
+      // Check for specific error types
+      if (error.code === 'auth/unauthorized-domain') {
+        addLog("Domain authorization error - check Firebase Console", 'error');
+        addLog(`Add domain ${window.location.hostname} to authorized domains`, 'error');
+      } else if (error.code === 'auth/invalid-api-key') {
+        addLog("Invalid API key - check environment variables", 'error');
+      }
     }
   };
 
