@@ -218,6 +218,14 @@ function Router() {
           </Suspense>
         );
       }} />
+      <Route path="/final-auth-test" component={() => {
+        const FinalAuthTest = lazy(() => import("@/pages/final-auth-test"));
+        return (
+          <Suspense fallback={<FeedSkeleton count={1} />}>
+            <FinalAuthTest />
+          </Suspense>
+        );
+      }} />
       <Route path="/auth-callback" component={AuthCallback} />
       <Route path="/__/auth/handler" component={AuthCallback} />
       <Route path="/_/auth/callback" component={AuthCallback} />

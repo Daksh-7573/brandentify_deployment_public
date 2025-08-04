@@ -78,7 +78,7 @@ export default function AdvancedAuthTest() {
   }, []);
 
   const testDirectGoogleAuth = async () => {
-    addLog("Testing direct Google authentication...");
+    addLog("Testing direct Google authentication with enhanced configuration...");
     
     try {
       // Import Firebase Auth functions directly
@@ -94,21 +94,44 @@ export default function AdvancedAuthTest() {
       const app = apps[0];
       const auth = getAuth(app);
       
-      // Create a fresh Google provider
+      // Create a fresh Google provider with enhanced settings
       const provider = new GoogleAuthProvider();
-      provider.addScope('email');
-      provider.addScope('profile');
+      provider.addScope('https://www.googleapis.com/auth/userinfo.email');
+      provider.addScope('https://www.googleapis.com/auth/userinfo.profile');
       provider.setCustomParameters({
-        prompt: 'select_account'
+        prompt: 'consent',
+        access_type: 'online',
+        include_granted_scopes: 'true'
       });
       
-      addLog("Attempting signInWithPopup with fresh provider...");
+      addLog("Attempting signInWithPopup with enhanced provider configuration...");
+      addLog("Popup timeout: 120 seconds");
       
-      const result = await signInWithPopup(auth, provider);
+      // Add a timeout to prevent indefinite waiting
+      const authPromise = signInWithPopup(auth, provider);
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Authentication timeout after 120 seconds')), 120000);
+      });
+      
+      const result = await Promise.race([authPromise, timeoutPromise]) as any;
       addLog(`Authentication successful: ${result.user.email}`);
+      addLog(`User details: ${result.user.displayName}, verified: ${result.user.emailVerified}`);
       
     } catch (error: any) {
       addLog(`Direct authentication failed: ${error.code} - ${error.message}`);
+      
+      if (error.code === 'auth/popup-closed-by-user') {
+        addLog("Popup was closed before authentication completed. This might be due to:");
+        addLog("1. User closed the popup manually");
+        addLog("2. Popup blocked by browser settings");
+        addLog("3. Authentication redirect issue");
+        addLog("Trying redirect method as fallback...");
+        
+        // Automatically try redirect as fallback
+        setTimeout(() => testRedirectAuth(), 2000);
+      } else if (error.code === 'auth/popup-blocked') {
+        addLog("Popup was blocked by browser. Please enable popups and try again.");
+      }
     }
   };
 
