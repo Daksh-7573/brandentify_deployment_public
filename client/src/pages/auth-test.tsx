@@ -1,5 +1,6 @@
 import { useAuth } from "@/hooks/use-auth";
 import { useEffect, useState } from "react";
+import TestFirebase from "@/components/test-firebase";
 
 export default function AuthTest() {
   const { user, isAuthenticated, isLoading, signInWithGoogle, signOut } = useAuth();
@@ -74,7 +75,7 @@ export default function AuthTest() {
           </div>
         </div>
 
-        <div className="bg-gray-800 p-6 rounded-lg">
+        <div className="bg-gray-800 p-6 rounded-lg mb-6">
           <h2 className="text-lg font-semibold mb-4">Firebase User Details</h2>
           <pre className="whitespace-pre-wrap text-sm text-gray-300">
             {firebaseUser ? JSON.stringify({
@@ -90,6 +91,8 @@ export default function AuthTest() {
             }, null, 2) : 'No Firebase user'}
           </pre>
         </div>
+        
+        <TestFirebase />
       </div>
     </div>
   );

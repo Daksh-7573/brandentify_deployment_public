@@ -9,7 +9,7 @@ import {
   User as FirebaseUser,
   AuthErrorCodes
 } from "firebase/auth";
-import { auth, googleProvider } from "@/lib/firebase";
+// Firebase imports will be done dynamically to avoid type issues
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { User } from "@shared/schema";
@@ -148,17 +148,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               const currentUser = auth.currentUser;
               if (currentUser) {
                 // Try to get Google provider data
-                const googleProvider = currentUser.providerData?.find((provider: any) => 
+                const googleProviderData = currentUser.providerData?.find((provider: any) => 
                   provider.providerId === "google.com"
                 );
                 
-                if (googleProvider && googleProvider.displayName) {
-                  console.log("Updating user with Google display name:", googleProvider.displayName);
+                if (googleProviderData && googleProviderData.displayName) {
+                  console.log("Updating user with Google display name:", googleProviderData.displayName);
                   
                   // Update the user with Google profile data
                   const updateResponse = await apiRequest('PUT', `/api/users/${userData.id}`, {
-                    name: googleProvider.displayName,
-                    photoURL: googleProvider.photoURL || currentUser.photoURL
+                    name: googleProviderData.displayName,
+                    photoURL: googleProviderData.photoURL || currentUser.photoURL
                   });
                   
                   if (updateResponse.ok) {
