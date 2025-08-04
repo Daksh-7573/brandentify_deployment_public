@@ -41,7 +41,13 @@ export default function SimpleAuthTest() {
         if (firebaseModule.auth) {
           const unsubscribe = (firebaseModule.auth as any).onAuthStateChanged((user: any) => {
             setAuthUser(user);
-            addLog(`Auth state changed: ${user ? user.email : 'No user'}`);
+            if (user) {
+              addLog(`✅ Auth state changed: User signed in as ${user.email}`);
+              addLog(`✅ User UID: ${user.uid}`);
+              addLog(`✅ Display name: ${user.displayName || 'Not set'}`);
+            } else {
+              addLog(`❌ Auth state changed: No user signed in`);
+            }
           });
           
           addLog("Auth state listener active");
@@ -66,11 +72,26 @@ export default function SimpleAuthTest() {
       const { auth, googleProvider } = await import('@/lib/firebase');
       
       addLog("About to call signInWithPopup...");
-      const result = await signInWithPopup(auth as any, googleProvider as any);
-      addLog(`Sign in successful: ${result.user.email}`);
+      
+      // Add a longer timeout to see if auth is just slow
+      const result = await Promise.race([
+        signInWithPopup(auth as any, googleProvider as any),
+        new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Authentication timeout after 30 seconds')), 30000)
+        )
+      ]);
+      
+      addLog(`Sign in successful! User: ${(result as any).user.email}`);
+      addLog(`User details: ${JSON.stringify({
+        uid: (result as any).user.uid,
+        email: (result as any).user.email,
+        displayName: (result as any).user.displayName,
+        photoURL: (result as any).user.photoURL
+      })}`);
       
     } catch (error) {
       addLog(`Sign in failed: ${error}`);
+      addLog(`Error details: ${JSON.stringify(error)}`);
     }
   };
 
