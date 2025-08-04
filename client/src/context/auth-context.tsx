@@ -608,35 +608,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         
         if (result?.user) {
           console.log("Popup authentication successful:", result.user.email);
-          
-          // Create or update user in backend
-          await createOrUpdateUserInBackend(result.user);
-          
-          // Fetch complete user data
-          const userData = await fetchUserData(result.user.uid, result.user.email);
-          
-          if (userData) {
-            setUser(userData);
-            toast({
-              title: "Signed in successfully",
-              description: `Welcome ${userData.name || userData.email}!`,
-            });
-          } else {
-            // Create fallback user
-            const fallbackUser = {
-              uid: result.user.uid,
-              id: parseInt(result.user.uid.substring(0, 8), 36) || 999,
-              username: result.user.email?.split('@')[0] || result.user.uid,
-              email: result.user.email,
-              name: result.user.displayName || result.user.email,
-              photoURL: result.user.photoURL
-            };
-            setUser(fallbackUser);
-            toast({
-              title: "Signed in successfully",
-              description: `Welcome ${result.user.displayName || result.user.email}!`,
-            });
-          }
+          // Let the auth state listener handle the user setup
+          // This prevents double handling and redirect loops
           return;
         }
       } catch (popupError: any) {

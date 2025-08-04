@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { onAuthStateChanged, signInWithPopup, signInWithRedirect, signOut } from "firebase/auth";
-import { auth, googleProvider } from "@/lib/firebase";
+import { onAuthStateChanged, signInWithPopup, signInWithRedirect, signOut, User as FirebaseUser, Auth, GoogleAuthProvider } from "firebase/auth";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from '@/lib/queryClient';
 
@@ -39,10 +38,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { toast } = useToast();
 
   // Create or update user in backend
-  const createOrUpdateUserInBackend = async (firebaseUser: any) => {
+  const createOrUpdateUserInBackend = async (firebaseUser: FirebaseUser) => {
     try {
       const googleProvider = firebaseUser.providerData?.find(
-        (provider: any) => provider.providerId === "google.com"
+        (provider) => provider.providerId === "google.com"
       );
 
       const userData = {
@@ -104,7 +103,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     console.log("Setting up simplified auth state listener");
     
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+    // Import auth and googleProvider dynamically to avoid import issues
+    const setupAuth = async () => {
+      const { auth, googleProvider } = await import('@/lib/firebase');
+      
+      const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       console.log("Auth state changed:", firebaseUser ? "User signed in" : "User signed out");
       
       if (firebaseUser) {
