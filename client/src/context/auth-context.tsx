@@ -401,8 +401,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               console.log("Setting user state with backend data");
               setUser(userData);
               
-              // Only show toast if this is a new login (not a page refresh)
-              if (!user) {
+              // Always show toast for new authentication (check by comparing UIDs)
+              const isNewLogin = !user || user.uid !== userData.uid;
+              if (isNewLogin) {
+                console.log("New login detected, showing welcome message and redirecting");
                 toast({
                   title: "Signed in successfully",
                   description: `Welcome ${userData.name || userData.email}!`,
@@ -473,8 +475,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
     
     // Setup auth and cleanup
-    setupAuth();
-  }, [user, toast]);
+    let unsubscribe: (() => void) | null = null;
+    
+    setupAuth().then((unsub) => {
+      unsubscribe = unsub;
+    }).catch((error) => {
+      console.error("Failed to setup auth:", error);
+      setIsLoading(false);
+    });
+    
+    return () => {
+      if (unsubscribe) {
+        console.log("Cleaning up auth state listener");
+        unsubscribe();
+      }
+    };
+  }, []); // Remove dependencies to prevent listener recreation
 
   // Sign in with Google - simplified approach to avoid connection issues
   const signInWithGoogle = async () => {
@@ -513,7 +529,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           // Set a flag to indicate successful authentication
           sessionStorage.setItem('authSuccess', 'true');
           
-          // The auth state listener will handle user setup and navigation
+          console.log("Waiting for auth state listener to process user...");
+          
+          // Wait a moment for the auth state listener to process
+          setTimeout(() => {
+            console.log("Checking if auth state listener processed the user...");
+            const currentAuth = auth.currentUser;
+            console.log("Current auth user after popup:", currentAuth ? currentAuth.email : "No user");
+            
+            if (!currentAuth) {
+              console.error("Auth state listener did not process the user - this is the problem!");
+              toast({
+                title: "Authentication Issue",
+                description: "Login succeeded but user state wasn't updated. Please try again.",
+                variant: "destructive"
+              });
+            }
+          }, 2000);
+          
           return;
         }
       } catch (popupError: any) {

@@ -178,6 +178,14 @@ function Router() {
       <Route path="/industry-pulse" component={IndustryPulsePage} />
       <Route path="/create-pulse" component={CreatePulsePage} />
       <Route path="/auth" component={AuthPage} />
+      <Route path="/auth-test" component={() => {
+        const AuthTest = lazy(() => import("@/pages/auth-test"));
+        return (
+          <Suspense fallback={<FeedSkeleton count={1} />}>
+            <AuthTest />
+          </Suspense>
+        );
+      }} />
       <Route path="/auth-callback" component={AuthCallback} />
       <Route path="/__/auth/handler" component={AuthCallback} />
       <Route path="/_/auth/callback" component={AuthCallback} />
