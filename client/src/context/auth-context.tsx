@@ -353,232 +353,104 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Check for authentication on mount and when redirect result is available
+  // Simplified authentication setup - single source of truth
   useEffect(() => {
     setIsLoading(true);
-    console.log("AuthProvider useEffect running - checking auth state");
+    console.log("Setting up simplified auth state listener");
     
     // Clear demo mode from localStorage to ensure Firebase auth is used
     localStorage.removeItem('demoMode');
     
-    // Check if we're on the problematic domain
-    const currentHostname = window.location.hostname;
-    const isOnProblemDomain = currentHostname === "25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev";
-    
-    if (isOnProblemDomain) {
-      console.log("On problematic domain, ensuring correct auth handling");
-    }
-    
-    // First check for redirect result - this handles when users are redirected back after Google auth
-    const checkRedirectResult = async () => {
-      try {
-        console.log("Checking for redirect result from Google auth");
-        
-        // getRedirectResult() checks if this page load is the result of a redirect from Google
-        const result = await getRedirectResult(auth);
-        
-        if (result && result.user) {
-          console.log("REDIRECT result found! User signed in via redirect:", {
-            uid: result.user.uid,
-            email: result.user.email,
-            displayName: result.user.displayName
-          });
-          
-          // First create or update the user in our backend
-          console.log("Creating/updating user in backend after redirect");
-          const backendUser = await createOrUpdateUserInBackend(result.user);
-          
-          if (backendUser) {
-            console.log("User created/updated in backend successfully after redirect");
+    // Set up single auth state listener - handles both popup and redirect
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      console.log("Auth state changed:", firebaseUser ? "User signed in" : "User signed out");
+      
+      if (firebaseUser) {
+        // User is signed in 
+        try {
+          // Only update if we don't already have this user
+          if (!user || user.uid !== firebaseUser.uid) {
+            console.log("Processing user authentication:", firebaseUser.uid, {
+              email: firebaseUser.email,
+              displayName: firebaseUser.displayName
+            });
             
-            // Fetch complete user data from backend
-            console.log("Fetching user data after redirect");
+            // Clear any auth attempt markers since we have a successful sign-in
+            localStorage.removeItem('authAttemptInProgress');
+            localStorage.removeItem('authAttemptTime');
+            
+            // Create or update the user in our backend
+            console.log("Creating/updating user in backend");
+            await createOrUpdateUserInBackend(firebaseUser);
+            
+            // Get user data from backend 
+            console.log("Fetching user data from backend");
+            
             // Check for Google provider data to get email
-            const googleProvider = result.user.providerData?.find(provider => 
+            const googleProvider = firebaseUser.providerData?.find(provider => 
               provider.providerId === "google.com"
             );
-            const userEmail = googleProvider?.email || result.user.email;
-            
-            console.log("Using Google email for data lookup if available:", userEmail);
-            const userData = await fetchUserData(result.user.uid, userEmail);
+            const userEmail = googleProvider?.email || firebaseUser.email;
+              
+            console.log(`Fetching user data for user ID: ${firebaseUser.uid}${userEmail ? ` with email: ${userEmail}` : ''}`);
+            const userData = await fetchUserData(firebaseUser.uid, userEmail);
             
             if (userData) {
-              console.log("Setting user state with backend data after redirect");
+              console.log("Setting user state with backend data");
               setUser(userData);
-              toast({
-                title: "Signed in successfully",
-                description: `Welcome${userData.name ? ` ${userData.name}` : ''}!`,
-              });
               
-              // Clear any auth attempt markers
-              localStorage.removeItem('authAttemptInProgress');
-              localStorage.removeItem('authAttemptTime');
+              // Only show toast if this is a new login (not a page refresh)
+              if (!user) {
+                toast({
+                  title: "Signed in successfully",
+                  description: `Welcome ${userData.name || userData.email}!`,
+                });
+              }
+            } else {
+              console.log("Creating fallback user");
               
-              // Important: Return early to avoid the auth state listener processing the same user
-              setIsLoading(false);
-              return true;
-            }
-          }
-          
-          // If backend operations failed, use Google data as last resort
-          console.log("Using Google/Firebase data as fallback after redirect");
-          
-          // Check for Google provider data
-          const isGoogleProvider = result.user.providerData && 
-            result.user.providerData.some(provider => provider.providerId === "google.com");
-          
-          const googleProvider = isGoogleProvider ? 
-            result.user.providerData.find(provider => provider.providerId === "google.com") : null;
-          
-          console.log("Google provider data available:", !!googleProvider);
-          
-          const fallbackUser = {
-            uid: result.user.uid,
-            id: parseInt(result.user.uid.substring(0, 5), 36) || 999,
-            username: googleProvider?.email?.split('@')[0] || result.user.uid.substring(0, 8),
-            email: googleProvider?.email || result.user.email,
-            name: googleProvider?.displayName || result.user.displayName,
-            photoURL: googleProvider?.photoURL || result.user.photoURL
-          };
-          
-          setUser(fallbackUser);
-          toast({
-            title: "Signed in with limited data",
-            description: `Welcome${fallbackUser.name ? ` ${fallbackUser.name}` : ''}!`,
-          });
-          
-          // Clear any auth attempt markers
-          localStorage.removeItem('authAttemptInProgress');
-          localStorage.removeItem('authAttemptTime');
-          
-          setIsLoading(false);
-          return true;
-        } else {
-          console.log("No redirect result found - this is a normal page load, not a redirect callback");
-          return false;
-        }
-      } catch (error) {
-        console.error("Error checking redirect result:", error);
-        
-        // Log detailed error information for debugging
-        logAuthError(error, "checkRedirectResult");
-        
-        toast({
-          title: "Authentication error",
-          description: "Error processing Google redirect. Please try again.",
-          variant: "destructive"
-        });
-        return false;
-      }
-    };
-    
-    // Check for redirect result and then set up auth state listener
-    checkRedirectResult().then((redirectHandled) => {
-      console.log("Redirect check completed, handled:", redirectHandled);
-      
-      // If redirect was handled, we don't need to process the auth state again
-      if (redirectHandled) return;
-      
-      // Set up auth state listener
-      console.log("Setting up auth state listener");
-      const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-        console.log("Auth state changed:", firebaseUser ? "User signed in" : "User signed out");
-        
-        if (firebaseUser) {
-          // User is signed in 
-          try {
-            // Only update if we don't already have this user
-            if (!user || user.uid !== firebaseUser.uid) {
-              console.log("New user detected in auth state, handling login for:", firebaseUser.uid, {
-                email: firebaseUser.email,
-                displayName: firebaseUser.displayName
-              });
+              const fallbackUser = {
+                uid: firebaseUser.uid,
+                id: parseInt(firebaseUser.uid.substring(0, 5), 36) || 999,
+                username: googleProvider?.email?.split('@')[0] || firebaseUser.uid.substring(0, 8),
+                email: googleProvider?.email || firebaseUser.email,
+                name: googleProvider?.displayName || firebaseUser.displayName,
+                photoURL: googleProvider?.photoURL || firebaseUser.photoURL
+              };
               
-              // Clear any auth attempt markers since we have a successful sign-in
-              localStorage.removeItem('authAttemptInProgress');
-              localStorage.removeItem('authAttemptTime');
+              setUser(fallbackUser);
               
-              // First, try to create or update the user in our backend
-              console.log("Creating/updating user in backend from auth state change");
-              await createOrUpdateUserInBackend(firebaseUser);
-              
-              // Then get user data from backend 
-              console.log("Fetching user data from backend");
-              
-              // Check for Google provider data to get email
-              const googleProvider = firebaseUser.providerData?.find(provider => 
-                provider.providerId === "google.com"
-              );
-              const userEmail = googleProvider?.email || firebaseUser.email;
-                
-              console.log(`Fetching user data for user ID: ${firebaseUser.uid}${userEmail ? ` with email: ${userEmail}` : ''}`);
-              const userData = await fetchUserData(firebaseUser.uid, userEmail);
-              
-              if (userData) {
-                console.log("Setting user state with backend data");
-                setUser(userData);
-                
-                // Only show toast if this is a new login (not a page refresh)
-                if (!user) {
-                  toast({
-                    title: "Signed in successfully",
-                    description: `Welcome${userData.name ? ` ${userData.name}` : ''}!`,
-                  });
-                }
-              } else {
-                // Last resort - use Firebase data
-                console.warn("Could not get user data from backend, using Firebase data as last resort");
-                
-                // Check for Google provider data
-                const isGoogleProvider = firebaseUser.providerData && 
-                  firebaseUser.providerData.some(provider => provider.providerId === "google.com");
-                
-                const googleProvider = isGoogleProvider ? 
-                  firebaseUser.providerData.find(provider => provider.providerId === "google.com") : null;
-                
-                const fallbackUser = {
-                  uid: firebaseUser.uid,
-                  id: parseInt(firebaseUser.uid.substring(0, 5), 36) || 999,
-                  username: googleProvider?.email?.split('@')[0] || firebaseUser.uid.substring(0, 8),
-                  email: googleProvider?.email || firebaseUser.email,
-                  name: googleProvider?.displayName || firebaseUser.displayName,
-                  photoURL: googleProvider?.photoURL || firebaseUser.photoURL
-                };
-                
-                setUser(fallbackUser);
-                
-                // Only show toast if this is a new login (not a page refresh)
-                if (!user) {
-                  toast({
-                    title: "Signed in with limited data",
-                    description: `Welcome${fallbackUser.name ? ` ${fallbackUser.name}` : ''}!`,
-                  });
-                }
+              // Only show toast if this is a new login (not a page refresh)
+              if (!user) {
+                toast({
+                  title: "Signed in successfully",
+                  description: `Welcome ${fallbackUser.name || fallbackUser.email}!`,
+                });
               }
             }
-          } catch (error) {
-            console.error("Error in auth state change handler:", error);
-            logAuthError(error, "onAuthStateChanged");
           }
-        } else {
-          // User is signed out
-          if (user) {
-            console.log("User signed out, clearing state");
-            setUser(null);
-            
-            toast({
-              title: "Signed out",
-              description: "You have been signed out successfully.",
-            });
-          }
+        } catch (error) {
+          console.error("Error in auth state change handler:", error);
+          logAuthError(error, "onAuthStateChanged");
         }
-        
-        setIsLoading(false);
-      });
+      } else {
+        // User is signed out
+        if (user) {
+          console.log("User signed out, clearing state");
+          setUser(null);
+          
+          toast({
+            title: "Signed out",
+            description: "You have been signed out successfully.",
+          });
+        }
+      }
       
-      // Ensure we clean up the auth state listener
-      return () => unsubscribe();
+      setIsLoading(false);
     });
+    
+    // Clean up auth state listener
+    return () => unsubscribe();
   }, [user, toast]);
 
   // Sign in with Google - simplified approach to avoid connection issues
