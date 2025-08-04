@@ -21,10 +21,12 @@ You need to add the current Replit domain to Firebase Console authorized domains
 - **Auth Domain**: Using current domain for Replit compatibility
 
 ### Current Issue - White Screen Popup:
-The Google authentication popup shows a white screen instead of the account selection dialog. This happens because:
+The Google authentication popup shows a white screen instead of the account selection dialog. Since the domain is already authorized in Firebase Console, this could be due to:
 
-1. **Domain Authorization**: The current Replit domain is not authorized in Firebase Console
-2. **Popup Blocking**: Google OAuth servers reject unauthorized domains with blank popups
+1. **Firebase Configuration**: Incorrect authDomain or API configuration
+2. **Browser Issues**: Popup blockers or third-party cookie restrictions
+3. **OAuth Flow**: Redirect URI mismatches or invalid OAuth parameters
+4. **Cached Configuration**: Old Firebase config cached in browser
 
 ### Immediate Solutions:
 

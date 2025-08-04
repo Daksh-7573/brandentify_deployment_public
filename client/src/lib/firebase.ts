@@ -136,7 +136,10 @@ try {
     authDomain: firebaseConfig.authDomain,
     projectId: firebaseConfig.projectId,
     currentDomain: currentHostname,
-    isReplitDomain
+    isReplitDomain,
+    // Add OAuth configuration details for debugging
+    googleProviderScopes: ['email', 'profile'],
+    customParameters: { prompt: 'select_account', hd: '*' }
   });
 } catch (error) {
   console.error("CRITICAL: Firebase initialization failed:", error);

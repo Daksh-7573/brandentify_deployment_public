@@ -75,6 +75,47 @@ export default function AuthPopupFix() {
     window.open(googleAuthUrl, '_blank', 'width=500,height=600');
   };
 
+  const testPopupWithDebugging = async () => {
+    try {
+      setStatus("Testing popup with detailed debugging...");
+      addLog("Starting popup debug test");
+      
+      const { signInWithPopup } = await import('firebase/auth');
+      const { auth, googleProvider } = await import('@/lib/firebase');
+      
+      addLog("Firebase imports successful");
+      addLog(`Auth domain: ${(auth as any)?.config?.authDomain || 'unknown'}`);
+      addLog(`Project ID: ${(auth as any)?.config?.projectId || 'unknown'}`);
+      
+      // Check if popup blockers are interfering
+      const testPopup = window.open('', '_blank', 'width=1,height=1');
+      if (testPopup) {
+        testPopup.close();
+        addLog("Popup blocker: Not detected");
+      } else {
+        addLog("Popup blocker: DETECTED - this may cause issues");
+      }
+      
+      addLog("Attempting signInWithPopup...");
+      const result = await signInWithPopup(auth as any, googleProvider as any);
+      
+      addLog(`Popup auth successful: ${result.user.email}`);
+      setStatus(`Popup auth successful: ${result.user.email}`);
+      
+    } catch (error: any) {
+      addLog(`Popup auth failed: ${error.code} - ${error.message}`);
+      setStatus(`Popup auth failed: ${error.code}`);
+      
+      if (error.code === 'auth/popup-closed-by-user') {
+        addLog("User closed popup or popup was automatically closed");
+      } else if (error.code === 'auth/popup-blocked') {
+        addLog("Popup was blocked by browser");
+      } else if (error.code === 'auth/unauthorized-domain') {
+        addLog("Domain not authorized in Firebase Console");
+      }
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-900 text-white p-8">
       <div className="max-w-4xl mx-auto">
@@ -106,6 +147,13 @@ export default function AuthPopupFix() {
             className="bg-green-600 hover:bg-green-700 px-6 py-3 rounded-lg text-white"
           >
             Check Redirect Result
+          </Button>
+          
+          <Button
+            onClick={testPopupWithDebugging}
+            className="bg-orange-600 hover:bg-orange-700 px-6 py-3 rounded-lg text-white"
+          >
+            Test Popup with Detailed Debugging
           </Button>
           
           <Button
