@@ -114,12 +114,31 @@ export default function SimpleAuthTest() {
           </p>
         </div>
         
-        <div className="mb-6">
+        <div className="mb-6 space-x-4">
           <button
             onClick={testGoogleSignIn}
             className="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg text-white font-medium"
           >
             Test Google Sign In
+          </button>
+          <button
+            onClick={() => {
+              addLog("Checking current auth state...");
+              const currentUser = (authUser);
+              if (currentUser) {
+                addLog(`✅ Current user found: ${currentUser.email}`);
+                addLog(`✅ User authenticated: ${JSON.stringify({
+                  uid: currentUser.uid,
+                  email: currentUser.email,
+                  displayName: currentUser.displayName
+                })}`);
+              } else {
+                addLog(`❌ No current user found`);
+              }
+            }}
+            className="bg-green-600 hover:bg-green-700 px-6 py-3 rounded-lg text-white font-medium"
+          >
+            Check Auth State
           </button>
         </div>
         
