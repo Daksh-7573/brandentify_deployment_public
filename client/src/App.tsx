@@ -194,6 +194,14 @@ function Router() {
           </Suspense>
         );
       }} />
+      <Route path="/auth-popup-fix" component={() => {
+        const AuthPopupFix = lazy(() => import("@/pages/auth-popup-fix"));
+        return (
+          <Suspense fallback={<FeedSkeleton count={1} />}>
+            <AuthPopupFix />
+          </Suspense>
+        );
+      }} />
       <Route path="/auth-callback" component={AuthCallback} />
       <Route path="/__/auth/handler" component={AuthCallback} />
       <Route path="/_/auth/callback" component={AuthCallback} />

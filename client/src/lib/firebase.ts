@@ -49,12 +49,13 @@ console.log("Firebase initialization:", {
 const isReplitDomain = currentHostname.includes('replit.dev') || currentHostname.includes('replit.app');
 const isExactProblemDomain = currentHostname === "25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev";
 
-// For Firebase auth with Google on Replit, we need a special configuration
+// For Firebase auth with Google on Replit, we need to use the official Firebase domain
+// Using the current domain as authDomain causes white screen popup issues
 const firebaseConfig: FirebaseOptions = {
   apiKey,
-  // Use the current domain as authDomain for Replit compatibility
-  // This allows Google OAuth to work with the current Replit domain
-  authDomain: isReplitDomain ? currentHostname : `${projectId}.firebaseapp.com`,
+  // CRITICAL: Always use the official Firebase authDomain to avoid popup white screen
+  // Google OAuth servers need to recognize the authDomain as authorized
+  authDomain: `${projectId}.firebaseapp.com`,
   projectId,  
   storageBucket: projectId ? `${projectId}.appspot.com` : undefined,
   // Common defaults for Firebase initialization
@@ -108,13 +109,15 @@ try {
   // Export cached auth for components to use
   (window as any).__brandentifier_cached_auth = () => cachedAuthState;
   
-  // Configure Google Auth Provider with compatible parameters for Replit domains
+  // Configure Google Auth Provider for maximum compatibility
   googleProvider = new GoogleAuthProvider();
   
-  // Use minimal, compatible configuration to avoid connection issues
+  // Use minimal configuration to avoid white screen popup issues
   googleProvider.setCustomParameters({
-    // Force account selection to ensure fresh authentication
-    prompt: 'select_account'
+    // Ensure account selection dialog shows properly
+    prompt: 'select_account',
+    // Add hosted domain parameter for better popup handling
+    hd: '*'
   });
   
   // Add essential OAuth scopes only
