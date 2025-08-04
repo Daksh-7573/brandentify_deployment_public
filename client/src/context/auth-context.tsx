@@ -374,11 +374,40 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           return () => {};
         }
         
-        // Check if user is already authenticated (simplified approach)
-        if (auth.currentUser) {
-          console.log("User already authenticated on page load:", auth.currentUser.email);
-        } else {
-          console.log("No user authenticated on page load");
+        // Enhanced redirect result checking
+        try {
+          const { getRedirectResult } = await import('firebase/auth');
+          console.log("Checking for redirect result on auth context initialization...");
+          
+          const redirectResult = await getRedirectResult(auth);
+          if (redirectResult?.user) {
+            console.log("🎉 REDIRECT RESULT FOUND in auth context:", redirectResult.user.email);
+            
+            // Set success flags immediately
+            sessionStorage.setItem('authSuccess', 'true');
+            sessionStorage.setItem('redirect_auth_success', JSON.stringify({
+              email: redirectResult.user.email,
+              uid: redirectResult.user.uid,
+              timestamp: new Date().toISOString()
+            }));
+            
+            // Clear attempt flags
+            sessionStorage.removeItem('redirect_auth_attempt');
+            sessionStorage.removeItem('redirect_auth_time');
+            
+            console.log("Redirect result processed successfully");
+          } else {
+            console.log("No redirect result found in auth context");
+            
+            // Check if user is already authenticated
+            if (auth.currentUser) {
+              console.log("User already authenticated on page load:", auth.currentUser.email);
+            } else {
+              console.log("No user authenticated on page load");
+            }
+          }
+        } catch (redirectError) {
+          console.error("Error checking redirect result in auth context:", redirectError);
         }
         
         console.log("Auth object available, setting up listener");
