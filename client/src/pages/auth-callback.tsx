@@ -47,6 +47,43 @@ export default function AuthCallback() {
         
         // Get the redirect result from Firebase with enhanced error handling
         console.log("Attempting to get redirect result from Firebase...");
+        
+        // First, check current auth state
+        console.log("Current auth state:", auth.currentUser ? auth.currentUser.email : "No user");
+        
+        // If user is already authenticated, don't check redirect result
+        if (auth.currentUser) {
+          console.log("User already authenticated:", auth.currentUser.email);
+          
+          // Set success flags
+          sessionStorage.setItem('authSuccess', 'true');
+          sessionStorage.setItem('redirect_auth_success', JSON.stringify({
+            email: auth.currentUser.email,
+            uid: auth.currentUser.uid,
+            timestamp: new Date().toISOString()
+          }));
+          
+          // Clear redirect attempt flags
+          sessionStorage.removeItem('redirect_auth_attempt');
+          sessionStorage.removeItem('redirect_auth_time');
+          
+          // Refresh user data in context
+          await refreshUserData();
+          
+          toast({
+            title: "Authentication Successful",
+            description: `Welcome back, ${auth.currentUser.displayName || auth.currentUser.email}!`,
+          });
+          
+          // Redirect to industry pulse after successful login
+          setTimeout(() => {
+            window.location.href = '/industry-pulse';
+          }, 1500);
+          
+          return;
+        }
+        
+        // Now check for redirect result
         const result = await getRedirectResult(auth);
         
         if (result && result.user) {
@@ -76,9 +113,9 @@ export default function AuthCallback() {
             description: `Welcome back, ${result.user.displayName || result.user.email}!`,
           });
           
-          // Redirect to home after successful login
+          // Redirect to industry pulse after successful login
           setTimeout(() => {
-            window.location.href = '/';
+            window.location.href = '/industry-pulse';
           }, 1500);
         } else {
           console.log("Auth Callback: No redirect result found - checking for previous attempts");

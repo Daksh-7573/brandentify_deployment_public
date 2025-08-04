@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Authentication Redirect</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: white;
+        }
+        .log {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .error { color: #ff6b6b; }
+        .success { color: #51cf66; }
+        .info { color: #74c0fc; }
+        button {
+            background: #228be6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #1971c2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Authentication Redirect Debug Tool</h1>
+    
+    <div>
+        <button onclick="checkRedirectResult()">Check Redirect Result</button>
+        <button onclick="clearLogs()">Clear Logs</button>
+        <button onclick="checkAuthState()">Check Current Auth State</button>
+    </div>
+    
+    <div id="logs" class="log"></div>
+
+    <script type="module">
+        let logs = [];
+        
+        function addLog(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${message}`;
+            logs.push(logEntry);
+            
+            const logsDiv = document.getElementById('logs');
+            logsDiv.innerHTML = logs.join('\n');
+            logsDiv.scrollTop = logsDiv.scrollHeight;
+            
+            console.log(logEntry);
+        }
+        
+        window.clearLogs = function() {
+            logs = [];
+            document.getElementById('logs').innerHTML = '';
+        }
+        
+        window.checkAuthState = async function() {
+            addLog("=== CHECKING CURRENT AUTH STATE ===");
+            
+            try {
+                const { auth } = await import('/src/lib/firebase.js');
+                
+                addLog(`Auth object exists: ${!!auth}`);
+                addLog(`Current user: ${auth.currentUser ? auth.currentUser.email : 'No user'}`);
+                
+                if (auth.currentUser) {
+                    addLog(`User UID: ${auth.currentUser.uid}`);
+                    addLog(`User email verified: ${auth.currentUser.emailVerified}`);
+                    addLog(`User display name: ${auth.currentUser.displayName}`);
+                }
+                
+                // Check session storage
+                const authSuccess = sessionStorage.getItem('authSuccess');
+                const redirectSuccess = sessionStorage.getItem('redirect_auth_success');
+                const redirectAttempt = sessionStorage.getItem('redirect_auth_attempt');
+                
+                addLog(`Session authSuccess: ${authSuccess}`);
+                addLog(`Session redirect_auth_success: ${redirectSuccess}`);
+                addLog(`Session redirect_auth_attempt: ${redirectAttempt}`);
+                
+            } catch (error) {
+                addLog(`Error checking auth state: ${error.message}`, 'error');
+            }
+        }
+        
+        window.checkRedirectResult = async function() {
+            addLog("=== CHECKING FOR REDIRECT RESULT ===");
+            
+            try {
+                const { getRedirectResult } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js');
+                const { auth } = await import('/src/lib/firebase.js');
+                
+                addLog("Calling getRedirectResult...");
+                
+                const result = await getRedirectResult(auth);
+                
+                if (result && result.user) {
+                    addLog("🎉 REDIRECT RESULT FOUND!", 'success');
+                    addLog(`User: ${result.user.email}`, 'success');
+                    addLog(`UID: ${result.user.uid}`, 'success');
+                    addLog(`Display Name: ${result.user.displayName}`, 'success');
+                    addLog(`Email Verified: ${result.user.emailVerified}`, 'success');
+                    
+                    // Set success flags
+                    sessionStorage.setItem('authSuccess', 'true');
+                    sessionStorage.setItem('redirect_auth_success', JSON.stringify({
+                        email: result.user.email,
+                        uid: result.user.uid,
+                        timestamp: new Date().toISOString()
+                    }));
+                    
+                    addLog("Success flags set in session storage", 'success');
+                    
+                    // Try to trigger auth context refresh
+                    window.location.reload();
+                    
+                } else {
+                    addLog("❌ No redirect result found", 'error');
+                    
+                    // Check URL for error parameters
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const error = urlParams.get('error');
+                    const errorDescription = urlParams.get('error_description');
+                    
+                    if (error) {
+                        addLog(`URL Error: ${error}`, 'error');
+                        addLog(`Error Description: ${errorDescription}`, 'error');
+                    } else {
+                        addLog("No error parameters in URL");
+                    }
+                    
+                    // Check if there were previous auth attempts
+                    const redirectAttempt = sessionStorage.getItem('redirect_auth_attempt');
+                    const redirectTime = sessionStorage.getItem('redirect_auth_time');
+                    
+                    if (redirectAttempt) {
+                        addLog(`Previous redirect attempt found at: ${redirectTime}`);
+                        addLog("This suggests redirect was initiated but result not captured");
+                    }
+                }
+                
+            } catch (error) {
+                addLog(`Error checking redirect result: ${error.message}`, 'error');
+                addLog(`Error code: ${error.code}`, 'error');
+                
+                if (error.code === 'auth/unauthorized-domain') {
+                    addLog("Domain not authorized in Firebase Console", 'error');
+                } else if (error.code === 'auth/invalid-api-key') {
+                    addLog("Invalid Firebase API key", 'error');
+                }
+            }
+        }
+        
+        // Auto-check on page load
+        window.addEventListener('load', () => {
+            addLog("=== DEBUG TOOL LOADED ===");
+            checkAuthState();
+            
+            // If there are URL parameters suggesting auth callback, check redirect result
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('code') || urlParams.get('state') || urlParams.get('error')) {
+                addLog("URL parameters suggest OAuth callback - checking redirect result");
+                setTimeout(checkRedirectResult, 1000);
+            }
+        });
+    </script>
+</body>
+</html>

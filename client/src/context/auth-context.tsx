@@ -373,36 +373,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           return () => {};
         }
         
-        // CRITICAL: Check for redirect result first before setting up listener
-        const { getRedirectResult } = await import('firebase/auth');
-        try {
-          console.log("Checking for redirect result on page load...");
-          const redirectResult = await getRedirectResult(auth);
-          if (redirectResult?.user) {
-            console.log("REDIRECT RESULT FOUND:", {
-              email: redirectResult.user.email,
-              uid: redirectResult.user.uid,
-              displayName: redirectResult.user.displayName
-            });
-            
-            // Set success flags
-            sessionStorage.setItem('authSuccess', 'true');
-            sessionStorage.setItem('redirect_auth_success', JSON.stringify({
-              email: redirectResult.user.email,
-              uid: redirectResult.user.uid,
-              timestamp: new Date().toISOString()
-            }));
-            
-            // Clear redirect attempt flags
-            sessionStorage.removeItem('redirect_auth_attempt');
-            sessionStorage.removeItem('redirect_auth_time');
-            
-            console.log("Redirect authentication successful, user will be processed by auth listener");
-          } else {
-            console.log("No redirect result found on page load");
-          }
-        } catch (redirectError) {
-          console.error("Error checking redirect result:", redirectError);
+        // Check if user is already authenticated (simplified approach)
+        if (auth.currentUser) {
+          console.log("User already authenticated on page load:", auth.currentUser.email);
+        } else {
+          console.log("No user authenticated on page load");
         }
         
         console.log("Auth object available, setting up listener");
