@@ -202,6 +202,14 @@ function Router() {
           </Suspense>
         );
       }} />
+      <Route path="/domain-help" component={() => {
+        const DomainAuthorizationHelp = lazy(() => import("@/pages/domain-authorization-help"));
+        return (
+          <Suspense fallback={<FeedSkeleton count={1} />}>
+            <DomainAuthorizationHelp />
+          </Suspense>
+        );
+      }} />
       <Route path="/auth-callback" component={AuthCallback} />
       <Route path="/__/auth/handler" component={AuthCallback} />
       <Route path="/_/auth/callback" component={AuthCallback} />
