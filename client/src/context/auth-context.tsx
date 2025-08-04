@@ -148,7 +148,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               const currentUser = auth.currentUser;
               if (currentUser) {
                 // Try to get Google provider data
-                const googleProvider = currentUser.providerData?.find(provider => 
+                const googleProvider = currentUser.providerData?.find((provider: any) => 
                   provider.providerId === "google.com"
                 );
                 
@@ -361,8 +361,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Clear demo mode from localStorage to ensure Firebase auth is used
     localStorage.removeItem('demoMode');
     
-    // Set up single auth state listener - handles both popup and redirect
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+    // Set up auth state listener with async import
+    const setupAuth = async () => {
+      const { auth } = await import('@/lib/firebase');
+      const unsubscribe = onAuthStateChanged(auth as any, async (firebaseUser) => {
       console.log("Auth state changed:", firebaseUser ? "User signed in" : "User signed out");
       
       if (firebaseUser) {
@@ -387,10 +389,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             console.log("Fetching user data from backend");
             
             // Check for Google provider data to get email
-            const googleProvider = firebaseUser.providerData?.find(provider => 
+            const googleProvider = firebaseUser.providerData?.find((provider: any) => 
               provider.providerId === "google.com"
             );
-            const userEmail = googleProvider?.email || firebaseUser.email;
+            const userEmail = googleProvider?.email || firebaseUser.email || undefined;
               
             console.log(`Fetching user data for user ID: ${firebaseUser.uid}${userEmail ? ` with email: ${userEmail}` : ''}`);
             const userData = await fetchUserData(firebaseUser.uid, userEmail);
@@ -405,6 +407,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                   title: "Signed in successfully",
                   description: `Welcome ${userData.name || userData.email}!`,
                 });
+                
+                // Clear the auth success flag
+                sessionStorage.removeItem('authSuccess');
               }
             } else {
               console.log("Creating fallback user");
@@ -426,6 +431,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                   title: "Signed in successfully",
                   description: `Welcome ${fallbackUser.name || fallbackUser.email}!`,
                 });
+                
+                // Clear the auth success flag
+                sessionStorage.removeItem('authSuccess');
               }
             }
           }
@@ -447,10 +455,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
       
       setIsLoading(false);
-    });
+      });
+      
+      return unsubscribe;
+    };
     
-    // Clean up auth state listener
-    return () => unsubscribe();
+    // Setup auth and cleanup
+    setupAuth();
   }, [user, toast]);
 
   // Sign in with Google - simplified approach to avoid connection issues
@@ -461,7 +472,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.log("Starting Google sign-in with direct Google Authentication");
       
       // Use the globally configured provider from firebase.ts to avoid issues
-      const { googleProvider } = await import('@/lib/firebase');
+      const { auth, googleProvider } = await import('@/lib/firebase');
       
       console.log("Using pre-configured Google provider with compatible settings");
       
@@ -482,16 +493,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           console.log("Popup authentication successful:", result.user.email);
           // Let the auth state listener handle the user setup
           // This prevents double handling and redirect loops
+          
+          // Set a flag to indicate successful authentication
+          sessionStorage.setItem('authSuccess', 'true');
           return;
         }
       } catch (popupError: any) {
         console.log("Popup failed, trying redirect:", popupError.code);
         
-        if (popupError.code === 'auth/popup-blocked' || 
-            popupError.code === 'auth/popup-closed-by-user') {
-          console.log("Using redirect method as fallback");
-          await signInWithRedirect(auth, googleProvider);
-          return;
+        if (popupError.code === 'auth/popup-blocked') {
+          console.log("Popup was blocked, asking user to allow popups");
+          throw new Error("Popup blocked. Please allow popups for this site and try again.");
+        } else if (popupError.code === 'auth/popup-closed-by-user') {
+          console.log("User closed popup, not an error");
+          return; // User cancelled, don't show error
         } else {
           // For other errors, throw to be handled by outer catch
           throw popupError;
@@ -599,7 +614,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       // Always sign out from Firebase completely
       try {
-        await firebaseSignOut(auth);
+        const { auth } = await import('@/lib/firebase');
+        await firebaseSignOut(auth as any);
         console.log("Firebase sign-out successful");
       } catch (firebaseError) {
         console.error("Firebase sign-out error:", firebaseError);
