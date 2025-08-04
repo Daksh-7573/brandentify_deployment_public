@@ -77,35 +77,6 @@ export function ProfileCardSkeleton() {
   );
 }
 
-// User Card Skeleton
-export function UserCardSkeleton() {
-  return (
-    <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6 space-y-4">
-      <div className="flex items-center space-x-4">
-        <Skeleton className="h-12 w-12 rounded-full" />
-        <div className="space-y-2 flex-1">
-          <Skeleton className="h-5 w-28" />
-          <Skeleton className="h-4 w-20" />
-        </div>
-        <Skeleton className="h-8 w-20 rounded-md" />
-      </div>
-      
-      <div className="space-y-2">
-        <Skeleton className="h-4 w-full" />
-        <Skeleton className="h-4 w-4/5" />
-      </div>
-      
-      <div className="flex items-center justify-between">
-        <div className="flex space-x-2">
-          <Skeleton className="h-5 w-12 rounded-full" />
-          <Skeleton className="h-5 w-16 rounded-full" />
-        </div>
-        <Skeleton className="h-6 w-16" />
-      </div>
-    </div>
-  );
-}
-
 // Quest Card Skeleton
 export function QuestCardSkeleton() {
   return (
