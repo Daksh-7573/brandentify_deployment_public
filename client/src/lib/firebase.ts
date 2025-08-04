@@ -49,13 +49,15 @@ console.log("Firebase initialization:", {
 const isReplitDomain = currentHostname.includes('replit.dev') || currentHostname.includes('replit.app');
 const isExactProblemDomain = currentHostname === "25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev";
 
-// Firebase configuration optimized for Google OAuth on Replit
+// For Firebase auth with Google on Replit, we need a special configuration
 const firebaseConfig: FirebaseOptions = {
   apiKey,
-  // Use official Firebase authDomain for proper OAuth popup functionality
-  authDomain: "brandentifier-app.firebaseapp.com",
-  projectId: "brandentifier-app",  
-  storageBucket: "brandentifier-app.appspot.com",
+  // Use the current domain as authDomain for Replit compatibility
+  // This allows Google OAuth to work with the current Replit domain
+  authDomain: isReplitDomain ? currentHostname : `${projectId}.firebaseapp.com`,
+  projectId,  
+  storageBucket: projectId ? `${projectId}.appspot.com` : undefined,
+  // Common defaults for Firebase initialization
   messagingSenderId: "330211556822",
   appId,
   measurementId: "G-JG24PTL5MS",
@@ -106,16 +108,18 @@ try {
   // Export cached auth for components to use
   (window as any).__brandentifier_cached_auth = () => cachedAuthState;
   
-  // Configure Google Auth Provider with optimal settings for Replit
+  // Configure Google Auth Provider with compatible parameters for Replit domains
   googleProvider = new GoogleAuthProvider();
+  
+  // Use minimal, compatible configuration to avoid connection issues
+  googleProvider.setCustomParameters({
+    // Force account selection to ensure fresh authentication
+    prompt: 'select_account'
+  });
+  
+  // Add essential OAuth scopes only
   googleProvider.addScope('email');
   googleProvider.addScope('profile');
-  
-  // Optimized parameters for popup compatibility
-  googleProvider.setCustomParameters({
-    prompt: 'select_account',
-    include_granted_scopes: 'true'
-  });
   
   // Ensure the auth provider trusts our domain
   auth.useDeviceLanguage();

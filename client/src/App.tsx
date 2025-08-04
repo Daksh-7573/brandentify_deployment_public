@@ -194,43 +194,11 @@ function Router() {
           </Suspense>
         );
       }} />
-      <Route path="/auth-status-debug" component={() => {
-        const AuthStatusDebug = lazy(() => import("@/pages/auth-status-debug"));
+      <Route path="/auth-callback" component={() => {
+        const AuthCallback = lazy(() => import("@/pages/auth-callback"));
         return (
           <Suspense fallback={<FeedSkeleton count={1} />}>
-            <AuthStatusDebug />
-          </Suspense>
-        );
-      }} />
-      <Route path="/domain-help" component={() => {
-        const DomainAuthorizationHelp = lazy(() => import("@/pages/domain-authorization-help"));
-        return (
-          <Suspense fallback={<FeedSkeleton count={1} />}>
-            <DomainAuthorizationHelp />
-          </Suspense>
-        );
-      }} />
-      <Route path="/advanced-auth-test" component={() => {
-        const AdvancedAuthTest = lazy(() => import("@/pages/advanced-auth-test"));
-        return (
-          <Suspense fallback={<FeedSkeleton count={1} />}>
-            <AdvancedAuthTest />
-          </Suspense>
-        );
-      }} />
-      <Route path="/final-auth-test" component={() => {
-        const FinalAuthTest = lazy(() => import("@/pages/final-auth-test"));
-        return (
-          <Suspense fallback={<FeedSkeleton count={1} />}>
-            <FinalAuthTest />
-          </Suspense>
-        );
-      }} />
-      <Route path="/debug-google-auth" component={() => {
-        const DebugGoogleAuth = lazy(() => import("@/pages/debug-google-auth"));
-        return (
-          <Suspense fallback={<FeedSkeleton count={1} />}>
-            <DebugGoogleAuth />
+            <AuthCallback />
           </Suspense>
         );
       }} />

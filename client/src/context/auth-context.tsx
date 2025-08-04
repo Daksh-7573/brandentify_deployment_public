@@ -717,47 +717,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Refresh user data with enhanced redirect result checking
+  // Refresh user data
   const refreshUserData = async () => {
+    if (!user) return;
+    
     try {
       setIsLoading(true);
-      console.log("Refreshing user data...");
       
-      // Check for redirect result first (crucial for redirect auth)
-      if (auth) {
-        try {
-          console.log("Checking for redirect result...");
-          const { getRedirectResult } = await import('firebase/auth');
-          const redirectResult = await getRedirectResult(auth as any);
-          
-          if (redirectResult) {
-            console.log("Redirect result found:", redirectResult.user.email);
-            console.log("Processing redirect authentication result...");
-            // Let the auth state listener handle this
-            return;
-          }
-        } catch (redirectError) {
-          console.log("No redirect result or error checking:", redirectError);
-        }
-      }
+      // Include email in the refresh request to help with Google auth
+      const refreshedData = await fetchUserData(user.uid, user.email || undefined);
       
-      // If we have a current user, refresh their data
-      if (user) {
-        console.log("Refreshing existing user data...");
-        const refreshedData = await fetchUserData(user.uid, user.email || undefined);
-        
-        if (refreshedData) {
-          setUser(refreshedData);
-        }
-      } else if (auth?.currentUser) {
-        console.log("Found Firebase user but no context user, processing...");
-        const currentUser = auth.currentUser;
-        const userData = await fetchUserData(currentUser.uid, currentUser.email || undefined);
-        
-        if (userData) {
-          setUser(userData);
-          setIsAuthenticated(true);
-        }
+      if (refreshedData) {
+        setUser(refreshedData);
       }
     } catch (error) {
       console.error("Error refreshing user data:", error);

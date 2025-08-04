@@ -41,7 +41,13 @@ export default function SimpleAuthTest() {
         if (firebaseModule.auth) {
           const unsubscribe = (firebaseModule.auth as any).onAuthStateChanged((user: any) => {
             setAuthUser(user);
-            addLog(`Auth state changed: ${user ? user.email : 'No user'}`);
+            if (user) {
+              addLog(`✅ Auth state changed: User signed in as ${user.email}`);
+              addLog(`✅ User UID: ${user.uid}`);
+              addLog(`✅ Display name: ${user.displayName || 'Not set'}`);
+            } else {
+              addLog(`❌ Auth state changed: No user signed in`);
+            }
           });
           
           addLog("Auth state listener active");
@@ -62,49 +68,58 @@ export default function SimpleAuthTest() {
     addLog("Testing Google sign in...");
     
     try {
-      const { signInWithRedirect } = await import('firebase/auth');
-      const firebaseModule = await import('@/lib/firebase');
-      
-      addLog("Using redirect method for better Replit compatibility...");
-      addLog("About to call signInWithRedirect...");
-      
-      // Use redirect instead of popup for better compatibility
-      await signInWithRedirect(firebaseModule.auth as any, firebaseModule.googleProvider as any);
-      addLog("Redirect initiated - user will be redirected to Google...");
-      
-    } catch (error) {
-      addLog(`Sign in failed: ${error}`);
-    }
-  };
-
-  const testGoogleSignInPopup = async () => {
-    addLog("Testing Google sign in with popup...");
-    
-    try {
       const { signInWithPopup } = await import('firebase/auth');
-      const firebaseModule = await import('@/lib/firebase');
+      const { auth, googleProvider } = await import('@/lib/firebase');
       
       addLog("About to call signInWithPopup...");
-      const result = await signInWithPopup(firebaseModule.auth as any, firebaseModule.googleProvider as any);
-      addLog(`Popup sign in successful: ${result.user.email}`);
+      addLog("🔄 Popup should open now - even if it looks empty, wait for it to close...");
+      
+      // Monitor auth state changes during the process
+      let authStateChanged = false;
+      const unsubscribe = (auth as any).onAuthStateChanged((user: any) => {
+        if (user && !authStateChanged) {
+          authStateChanged = true;
+          addLog(`🎉 Auth state changed during sign-in! User: ${user.email}`);
+        }
+      });
+      
+      // Add a longer timeout to see if auth is just slow
+      const result = await Promise.race([
+        signInWithPopup(auth as any, googleProvider as any),
+        new Promise((_, reject) => 
+          setTimeout(() => {
+            unsubscribe();
+            reject(new Error('Authentication timeout after 45 seconds'));
+          }, 45000)
+        )
+      ]);
+      
+      unsubscribe();
+      addLog(`✅ Sign in successful! User: ${(result as any).user.email}`);
+      addLog(`✅ User details: ${JSON.stringify({
+        uid: (result as any).user.uid,
+        email: (result as any).user.email,
+        displayName: (result as any).user.displayName,
+        photoURL: (result as any).user.photoURL
+      })}`);
       
     } catch (error) {
-      addLog(`Popup sign in failed: ${error}`);
+      addLog(`❌ Sign in failed: ${error}`);
+      
+      // Check if user is actually signed in despite the error
+      setTimeout(() => {
+        addLog("🔍 Checking auth state after error...");
+        const { auth } = import('@/lib/firebase').then(firebase => {
+          const currentUser = (firebase.auth as any)?.currentUser;
+          if (currentUser) {
+            addLog(`✅ User is actually signed in! Email: ${currentUser.email}`);
+          } else {
+            addLog(`❌ No user found after authentication attempt`);
+          }
+        });
+      }, 2000);
     }
   };
-
-  // Fallback if page shows white screen
-  if (!logs.length && !authUser) {
-    return (
-      <div className="min-h-screen bg-gray-900 text-white p-8 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-white mx-auto mb-4"></div>
-          <h2 className="text-xl">Loading Firebase Authentication Test...</h2>
-          <p className="text-gray-400 mt-2">If this persists, check the browser console for errors</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gray-900 text-white p-8">
@@ -130,13 +145,26 @@ export default function SimpleAuthTest() {
             onClick={testGoogleSignIn}
             className="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg text-white font-medium"
           >
-            Test Google Sign In (Redirect)
+            Test Google Sign In
           </button>
           <button
-            onClick={testGoogleSignInPopup}
+            onClick={() => {
+              addLog("Checking current auth state...");
+              const currentUser = (authUser);
+              if (currentUser) {
+                addLog(`✅ Current user found: ${currentUser.email}`);
+                addLog(`✅ User authenticated: ${JSON.stringify({
+                  uid: currentUser.uid,
+                  email: currentUser.email,
+                  displayName: currentUser.displayName
+                })}`);
+              } else {
+                addLog(`❌ No current user found`);
+              }
+            }}
             className="bg-green-600 hover:bg-green-700 px-6 py-3 rounded-lg text-white font-medium"
           >
-            Test Google Sign In (Popup)
+            Check Auth State
           </button>
         </div>
         
