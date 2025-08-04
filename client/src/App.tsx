@@ -194,6 +194,14 @@ function Router() {
           </Suspense>
         );
       }} />
+      <Route path="/auth-status-debug" component={() => {
+        const AuthStatusDebug = lazy(() => import("@/pages/auth-status-debug"));
+        return (
+          <Suspense fallback={<FeedSkeleton count={1} />}>
+            <AuthStatusDebug />
+          </Suspense>
+        );
+      }} />
       <Route path="/auth-callback" component={AuthCallback} />
       <Route path="/__/auth/handler" component={AuthCallback} />
       <Route path="/_/auth/callback" component={AuthCallback} />

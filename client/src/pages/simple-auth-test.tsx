@@ -63,13 +63,13 @@ export default function SimpleAuthTest() {
     
     try {
       const { signInWithRedirect } = await import('firebase/auth');
-      const { auth, googleProvider } = await import('@/lib/firebase');
+      const firebaseModule = await import('@/lib/firebase');
       
       addLog("Using redirect method for better Replit compatibility...");
       addLog("About to call signInWithRedirect...");
       
       // Use redirect instead of popup for better compatibility
-      await signInWithRedirect(auth as any, googleProvider as any);
+      await signInWithRedirect(firebaseModule.auth as any, firebaseModule.googleProvider as any);
       addLog("Redirect initiated - user will be redirected to Google...");
       
     } catch (error) {
@@ -82,16 +82,29 @@ export default function SimpleAuthTest() {
     
     try {
       const { signInWithPopup } = await import('firebase/auth');
-      const { auth, googleProvider } = await import('@/lib/firebase');
+      const firebaseModule = await import('@/lib/firebase');
       
       addLog("About to call signInWithPopup...");
-      const result = await signInWithPopup(auth as any, googleProvider as any);
+      const result = await signInWithPopup(firebaseModule.auth as any, firebaseModule.googleProvider as any);
       addLog(`Popup sign in successful: ${result.user.email}`);
       
     } catch (error) {
       addLog(`Popup sign in failed: ${error}`);
     }
   };
+
+  // Fallback if page shows white screen
+  if (!logs.length && !authUser) {
+    return (
+      <div className="min-h-screen bg-gray-900 text-white p-8 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-white mx-auto mb-4"></div>
+          <h2 className="text-xl">Loading Firebase Authentication Test...</h2>
+          <p className="text-gray-400 mt-2">If this persists, check the browser console for errors</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-900 text-white p-8">

@@ -46,7 +46,9 @@ export default function AuthCallback() {
         }
         
         // Get the redirect result from Firebase
-        const result = await getRedirectResult(auth);
+        const { getRedirectResult } = await import('firebase/auth');
+        const { auth } = await import('@/lib/firebase');
+        const result = await getRedirectResult(auth as any);
         
         if (result) {
           console.log("Auth Callback: Redirect result found", result.user.uid);
@@ -59,9 +61,18 @@ export default function AuthCallback() {
             description: "You've been successfully signed in.",
           });
           
-          // Redirect to home after successful login
+          // Get the original redirect URL if it was from test page
+          const urlParams = new URLSearchParams(window.location.search);
+          const redirectUrl = urlParams.get('redirectUrl');
+          const isFromTestPage = redirectUrl && redirectUrl.includes('simple-auth-test');
+          
+          // Redirect back to test page if that's where they came from
           setTimeout(() => {
-            window.location.href = '/';
+            if (isFromTestPage) {
+              window.location.href = '/simple-auth-test';
+            } else {
+              window.location.href = '/';
+            }
           }, 1000);
         } else {
           console.log("Auth Callback: No redirect result found");
@@ -79,9 +90,17 @@ export default function AuthCallback() {
             setError("No authentication data found. This page should only be accessed after signing in.");
           }
           
-          // Redirect to home after a short delay
+          // Redirect to home after a short delay, or back to test page
           setTimeout(() => {
-            window.location.href = '/';
+            const urlParams = new URLSearchParams(window.location.search);
+            const redirectUrl = urlParams.get('redirectUrl');
+            const isFromTestPage = redirectUrl && redirectUrl.includes('simple-auth-test');
+            
+            if (isFromTestPage) {
+              window.location.href = '/simple-auth-test';
+            } else {
+              window.location.href = '/';
+            }
           }, 3000);
         }
       } catch (err: any) {
@@ -98,9 +117,17 @@ export default function AuthCallback() {
           variant: "destructive"
         });
         
-        // Redirect to home after error
+        // Redirect to home after error, or back to test page
         setTimeout(() => {
-          window.location.href = '/';
+          const urlParams = new URLSearchParams(window.location.search);
+          const redirectUrl = urlParams.get('redirectUrl');
+          const isFromTestPage = redirectUrl && redirectUrl.includes('simple-auth-test');
+          
+          if (isFromTestPage) {
+            window.location.href = '/simple-auth-test';
+          } else {
+            window.location.href = '/';
+          }
         }, 3000);
       } finally {
         setProcessingRedirect(false);
