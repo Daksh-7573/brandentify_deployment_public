@@ -181,6 +181,7 @@ function Router() {
       <Route path="/create-pulse" component={CreatePulsePage} />
       <Route path="/auth" component={AuthPage} />
 
+
       <Route path="/auth-test" component={() => {
         const AuthTest = lazy(() => import("@/pages/auth-test"));
         return (
@@ -311,14 +312,7 @@ function Router() {
       <Route path="/google-login" component={GoogleRedirectOnly} />
       <Route path="/domain-debug" component={DomainDebug} />
       <Route path="/replit-auth" component={FinalReplitAuth} />
-      <Route path="/auth-debug" component={() => {
-        const AuthDebugPage = lazy(() => import("@/pages/auth-debug"));
-        return (
-          <Suspense fallback={<FeedSkeleton count={2} />}>
-            <AuthDebugPage />
-          </Suspense>
-        );
-      }} />
+
       <Route path="/auth-popup-debug" component={() => {
         const AuthPopupDebugPage = lazy(() => import("@/pages/auth-popup-debug"));
         return (
