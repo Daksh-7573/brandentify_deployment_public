@@ -84,6 +84,7 @@ const LoginPage = lazy(() => import("@/pages/login"));
 const AuthStatusPage = lazy(() => import("@/pages/auth-status"));
 
 
+
 const DevLoginPage = lazy(() => import("@/pages/dev-login"));
 const SimpleLoginPage = lazy(() => import("@/pages/simple-login"));
 const ReliableLoginPage = lazy(() => import("@/pages/reliable-login"));
@@ -180,6 +181,7 @@ function Router() {
       <Route path="/industry-pulse" component={IndustryPulsePage} />
       <Route path="/create-pulse" component={CreatePulsePage} />
       <Route path="/auth" component={AuthPage} />
+
 
 
       <Route path="/auth-test" component={() => {

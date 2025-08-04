@@ -374,16 +374,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           return () => {};
         }
         
-        // Enhanced redirect result checking
+        // Enhanced redirect result checking - FIXED VERSION
         try {
           const { getRedirectResult } = await import('firebase/auth');
-          console.log("Checking for redirect result on auth context initialization...");
+          console.log("🔍 Checking for redirect result on auth context initialization...");
           
-          const redirectResult = await getRedirectResult(auth);
+          // Check for redirect attempt flags first
+          const hasRedirectAttempt = sessionStorage.getItem('redirect_auth_attempt') === 'true';
+          if (hasRedirectAttempt) {
+            console.log("📍 Found redirect attempt flag - checking for auth result");
+          }
+          
+          const redirectResult = await getRedirectResult(auth as any);
           if (redirectResult?.user) {
             console.log("🎉 REDIRECT RESULT FOUND in auth context:", redirectResult.user.email);
             
-            // Set success flags immediately
+            // Clear attempt flags FIRST
+            sessionStorage.removeItem('redirect_auth_attempt');
+            sessionStorage.removeItem('redirect_auth_time');
+            
+            // Set success flags
             sessionStorage.setItem('authSuccess', 'true');
             sessionStorage.setItem('redirect_auth_success', JSON.stringify({
               email: redirectResult.user.email,
@@ -391,26 +401,42 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               timestamp: new Date().toISOString()
             }));
             
-            // Clear attempt flags
-            sessionStorage.removeItem('redirect_auth_attempt');
-            sessionStorage.removeItem('redirect_auth_time');
+            console.log("✅ Redirect result processed successfully - auth should proceed");
             
-            console.log("Redirect result processed successfully");
+            // CRITICAL FIX: Force navigate to dashboard after successful auth
+            setTimeout(() => {
+              console.log("🚀 Forcing navigation to dashboard after redirect success");
+              window.location.href = '/dashboard';
+            }, 500);
+            
+            // Don't return here, let the auth state listener handle the user
           } else {
-            console.log("No redirect result found in auth context");
+            console.log("❌ No redirect result found in auth context");
             
             // Check if user is already authenticated
             if (auth.currentUser) {
-              console.log("User already authenticated on page load:", auth.currentUser.email);
+              console.log("✅ User already authenticated on page load:", auth.currentUser.email);
             } else {
-              console.log("No user authenticated on page load");
+              console.log("❌ No user authenticated on page load");
+              
+              // If we had a redirect attempt but no result, something went wrong
+              if (hasRedirectAttempt) {
+                console.log("⚠️ WARNING: Had redirect attempt but no result - auth may have failed");
+                // Clear the stale attempt flag
+                sessionStorage.removeItem('redirect_auth_attempt');
+                sessionStorage.removeItem('redirect_auth_time');
+              }
             }
           }
-        } catch (redirectError) {
-          console.error("Error checking redirect result in auth context:", redirectError);
+        } catch (redirectError: any) {
+          console.error("❌ Error checking redirect result in auth context:", redirectError);
+          // Clear attempt flags on error
+          sessionStorage.removeItem('redirect_auth_attempt');
+          sessionStorage.removeItem('redirect_auth_time');
         }
         
         console.log("Auth object available, setting up listener");
+        const { onAuthStateChanged } = await import('firebase/auth');
         const unsubscribe = onAuthStateChanged(auth as any, async (firebaseUser) => {
           console.log("Auth state changed:", firebaseUser ? "User signed in" : "User signed out");
         
@@ -568,8 +594,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       sessionStorage.setItem('redirect_auth_attempt', 'true');
       sessionStorage.setItem('redirect_auth_time', new Date().toISOString());
       
+      // Store current page so we can return to it after auth
+      sessionStorage.setItem('auth_return_url', window.location.pathname);
+      
       // Use redirect method for Replit domains
-      await signInWithRedirect(auth, googleProvider);
+      await signInWithRedirect(auth as any, googleProvider);
       
       console.log("Redirect authentication initiated");
       
