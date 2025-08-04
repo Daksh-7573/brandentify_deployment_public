@@ -120,12 +120,17 @@ try {
   // Configure Google Auth Provider for maximum compatibility
   googleProvider = new GoogleAuthProvider();
   
-  // Use minimal configuration to avoid white screen popup issues
+  // Enhanced configuration for Replit domain compatibility
   googleProvider.setCustomParameters({
-    // Ensure account selection dialog shows properly
+    // Force account selection to prevent auto-login issues
     prompt: 'select_account',
-    // Add hosted domain parameter for better popup handling
-    hd: '*'
+    // Disable hosted domain restriction that might cause timeout
+    // hd: '*', // Removed as this can cause timeout issues
+    // Add parameters for better popup handling on Replit
+    access_type: 'online',
+    include_granted_scopes: 'true',
+    // Ensure proper response handling
+    response_type: 'code'
   });
   
   // Add essential OAuth scopes only

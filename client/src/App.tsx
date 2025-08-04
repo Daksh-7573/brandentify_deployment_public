@@ -234,6 +234,14 @@ function Router() {
           </Suspense>
         );
       }} />
+      <Route path="/auth-direct-oauth" component={() => {
+        const AuthDirectOAuth = lazy(() => import("@/pages/auth-direct-oauth"));
+        return (
+          <Suspense fallback={<FeedSkeleton count={1} />}>
+            <AuthDirectOAuth />
+          </Suspense>
+        );
+      }} />
       <Route path="/auth-callback" component={AuthCallback} />
       <Route path="/__/auth/handler" component={AuthCallback} />
       <Route path="/_/auth/callback" component={AuthCallback} />
