@@ -32,10 +32,15 @@ export default function AuthPage() {
     setUseDemoBypass(false);
   }, []);
 
-  // Redirect to industry pulse if already authenticated
+  // Redirect to dashboard if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
-      setLocation("/industry-pulse");
+      // Use a small delay to ensure the auth state has fully settled
+      const timer = setTimeout(() => {
+        console.log("User is authenticated, redirecting to dashboard");
+        setLocation("/dashboard");
+      }, 100);
+      return () => clearTimeout(timer);
     }
   }, [isAuthenticated, setLocation]);
 

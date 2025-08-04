@@ -99,6 +99,7 @@ const FinalReplitAuth = lazy(() => import("@/pages/final-replit-auth"));
 const Radar = lazy(() => import("@/pages/radar"));
 const FirebaseAuthTest = lazy(() => import("@/pages/auth-test"));
 const GoogleAuthTest = lazy(() => import("@/pages/google-auth-test"));
+const GoogleAuthDebug = lazy(() => import("@/pages/google-auth-debug"));
 const SmartConnectPage = lazy(() => import("@/pages/smart-connect"));
 const MuskMatchPage = lazy(() => import("@/pages/musk-match"));
 const ResumePage = lazy(() => import("@/pages/resume"));
@@ -225,6 +226,7 @@ function Router() {
       }} />
       <Route path="/auth-test" component={FirebaseAuthTest} />
       <Route path="/google-auth-test" component={GoogleAuthTest} />
+      <Route path="/google-auth-debug" component={GoogleAuthDebug} />
       <Route path="/google-auth-fix" component={GoogleAuthFixPage} />
       <Route path="/universal-google-auth" component={UniversalGoogleAuthPage} />
       <Route path="/cross-domain-google-auth" component={CrossDomainGoogleAuth} />
@@ -286,8 +288,10 @@ function Router() {
         <ProtectedRoute path="/industry-pulse-optimized" component={IndustryPulseOptimizedPage} />
       )} />
       
-      {/* Redirect dashboard to Industry Pulse */}
-      <Route path="/dashboard" component={() => <PageRedirect to="/industry-pulse" />} />
+      {/* Dashboard route - direct to Industry Pulse */}
+      <Route path="/dashboard" component={() => (
+        <ProtectedRoute path="/dashboard" component={IndustryPulsePage} />
+      )} />
       
       <Route path="/news-sources" component={() => (
         <ProtectedRoute path="/news-sources" component={NewsSourcesPage} />
