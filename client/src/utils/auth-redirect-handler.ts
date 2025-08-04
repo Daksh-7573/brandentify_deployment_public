@@ -17,7 +17,7 @@ export async function checkAndHandleAuthRedirect(): Promise<boolean> {
     }
     
     // Check for redirect result  
-    const result = await getRedirectResult(auth);
+    const result = await getRedirectResult(auth as any);
     
     if (result && result.user) {
       console.log("🎉 REDIRECT SUCCESS: Found authenticated user:", result.user.email);
@@ -38,12 +38,12 @@ export async function checkAndHandleAuthRedirect(): Promise<boolean> {
         photoURL: result.user.photoURL
       }));
       
-      console.log("✅ User authentication successful, redirecting to dashboard...");
+      console.log("✅ User authentication successful, redirecting to industry pulse...");
       
-      // Redirect to dashboard
+      // Redirect to industry pulse page
       setTimeout(() => {
         if (typeof window !== 'undefined') {
-          window.location.href = '/dashboard';
+          window.location.href = '/industry-pulse';
         }
       }, 500);
       

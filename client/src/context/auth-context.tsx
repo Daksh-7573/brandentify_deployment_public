@@ -403,11 +403,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             
             console.log("✅ Redirect result processed successfully - auth should proceed");
             
-            // CRITICAL FIX: Force navigate to dashboard after successful auth
+            // CRITICAL FIX: Force navigate to industry pulse after successful auth
             setTimeout(() => {
-              console.log("🚀 Forcing navigation to dashboard after redirect success");
+              console.log("🚀 Forcing navigation to industry pulse after redirect success");
               if (typeof window !== 'undefined') {
-                window.location.href = '/dashboard';
+                window.location.href = '/industry-pulse';
               }
             }, 1000);
             

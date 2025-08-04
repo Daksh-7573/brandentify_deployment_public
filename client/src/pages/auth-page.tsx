@@ -17,6 +17,7 @@ import { PhoneAuth } from "@/components/auth/phone-auth";
 import { EmailAuth } from "@/components/auth/email-auth";
 import { DemoLogin } from "@/components/auth/demo-login";
 import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
+import { AuthDebugOverlay } from "@/components/auth/auth-debug-overlay";
 import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
 
 export default function AuthPage() {
@@ -42,13 +43,13 @@ export default function AuthPage() {
     checkRedirect();
   }, []);
 
-  // Redirect to dashboard if already authenticated
+  // Redirect to industry pulse if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
       // Use a small delay to ensure the auth state has fully settled
       const timer = setTimeout(() => {
-        console.log("User is authenticated, redirecting to dashboard");
-        setLocation("/dashboard");
+        console.log("User is authenticated, redirecting to industry pulse");
+        setLocation("/industry-pulse");
       }, 100);
       return () => clearTimeout(timer);
     }
@@ -66,6 +67,7 @@ export default function AuthPage() {
       
       {/* Content layer */}
       <div className="relative z-10">
+        <AuthDebugOverlay />
         <NeoGlassLayout className="mt-0 pt-2 px-2 md:px-4 min-h-screen flex flex-col justify-start py-2 md:py-4">
           <div className="text-center mb-6 md:mb-8">
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-white via-blue-200 to-purple-200 bg-clip-text text-transparent mb-3 md:mb-4">
