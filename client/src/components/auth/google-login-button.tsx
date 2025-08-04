@@ -24,7 +24,13 @@ export function GoogleLoginButton({
   const { signInWithGoogle } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   
-  const handleGoogleLogin = async () => {
+  const handleGoogleLogin = async (event: React.MouseEvent) => {
+    // Prevent any event bubbling
+    event.preventDefault();
+    event.stopPropagation();
+    
+    console.log("🔴 GoogleLoginButton: Button clicked!");
+    
     try {
       setIsLoading(true);
       console.log("🔴 GoogleLoginButton: Starting Google authentication...");
@@ -32,8 +38,12 @@ export function GoogleLoginButton({
       // Set initial tracking flags here as backup
       sessionStorage.setItem('redirect_auth_attempt', 'true');
       sessionStorage.setItem('redirect_auth_time', new Date().toISOString());
-      console.log("🔴 GoogleLoginButton: Redirect flags set");
+      console.log("🔴 GoogleLoginButton: Redirect flags set:", {
+        attempt: sessionStorage.getItem('redirect_auth_attempt'),
+        time: sessionStorage.getItem('redirect_auth_time')
+      });
       
+      console.log("🔴 GoogleLoginButton: About to call signInWithGoogle...");
       await signInWithGoogle();
       console.log("🔴 GoogleLoginButton: signInWithGoogle completed");
       
@@ -48,10 +58,12 @@ export function GoogleLoginButton({
   };
   
   return (
-    <button
+    <Button
       onClick={handleGoogleLogin}
       disabled={isLoading}
-      className={`neo-glass-button flex items-center gap-2 ${fullWidth ? 'w-full' : ''}`}
+      variant={variant}
+      size={size}
+      className={`flex items-center justify-center gap-2 ${fullWidth ? 'w-full' : ''} neo-glass-button`}
     >
       {/* Google Icon */}
       <svg 
@@ -67,7 +79,7 @@ export function GoogleLoginButton({
       </svg>
       
       {isLoading ? "Signing in..." : text}
-    </button>
+    </Button>
   );
 }
 
