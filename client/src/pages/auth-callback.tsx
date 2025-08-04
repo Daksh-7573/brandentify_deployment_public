@@ -48,7 +48,10 @@ export default function AuthCallback() {
         // Get the redirect result from Firebase
         const { getRedirectResult } = await import('firebase/auth');
         const { auth } = await import('@/lib/firebase');
+        
+        console.log("Processing redirect result...");
         const result = await getRedirectResult(auth as any);
+        console.log("Redirect result:", result);
         
         if (result) {
           console.log("Auth Callback: Redirect result found", result.user.uid);
@@ -61,16 +64,27 @@ export default function AuthCallback() {
             description: "You've been successfully signed in.",
           });
           
-          // Get the original redirect URL if it was from test page
-          const urlParams = new URLSearchParams(window.location.search);
-          const redirectUrl = urlParams.get('redirectUrl');
-          const isFromTestPage = redirectUrl && redirectUrl.includes('simple-auth-test');
+          // Check where the user came from and redirect appropriately
+          const authTestSource = sessionStorage.getItem('authTestSource');
+          const isFromFinalTest = authTestSource === 'final-auth-test';
+          const isFromSimpleTest = window.location.search.includes('simple-auth-test');
           
-          // Redirect back to test page if that's where they came from
+          console.log("Determining redirect destination:", { authTestSource, isFromFinalTest, isFromSimpleTest });
+          
+          // Clear test tracking
+          sessionStorage.removeItem('authTestSource');
+          sessionStorage.removeItem('authTestTime');
+          
+          // Redirect back to appropriate test page
           setTimeout(() => {
-            if (isFromTestPage) {
+            if (isFromFinalTest) {
+              console.log("Redirecting back to final-auth-test");
+              window.location.href = '/final-auth-test';
+            } else if (isFromSimpleTest) {
+              console.log("Redirecting back to simple-auth-test");
               window.location.href = '/simple-auth-test';
             } else {
+              console.log("Redirecting to home");
               window.location.href = '/';
             }
           }, 1000);

@@ -1,14 +1,47 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useAuth } from "@/context/auth-context";
 
 export default function FinalAuthTest() {
   const [logs, setLogs] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const { user, isAuthenticated, refreshUserData } = useAuth();
 
   const addLog = (message: string) => {
     const timestamp = new Date().toLocaleTimeString();
     setLogs(prev => [...prev, `[${timestamp}] ${message}`]);
     console.log(`[FinalAuthTest] ${message}`);
   };
+
+  // Check for successful authentication on page load
+  useEffect(() => {
+    const checkAuthOnReturn = async () => {
+      // Check if we just returned from authentication
+      const authTestTime = sessionStorage.getItem('authTestTime');
+      if (authTestTime) {
+        const authTime = new Date(authTestTime);
+        const now = new Date();
+        const timeDiff = now.getTime() - authTime.getTime();
+        
+        // If less than 2 minutes ago, check for authentication
+        if (timeDiff < 120000) {
+          addLog("Detected recent authentication attempt, checking status...");
+          
+          // Wait a moment for auth state to settle
+          setTimeout(async () => {
+            await refreshUserData();
+            await testAuthStatus();
+          }, 1000);
+        }
+      }
+      
+      // Also check immediately if user is already authenticated
+      if (isAuthenticated && user) {
+        addLog(`Welcome back! You're signed in as: ${user.email}`);
+      }
+    };
+    
+    checkAuthOnReturn();
+  }, [isAuthenticated, user]);
 
   const testUltimateGoogleAuth = async () => {
     if (isLoading) return;
@@ -56,24 +89,63 @@ export default function FinalAuthTest() {
     addLog("Checking current authentication status...");
     
     try {
-      const { getAuth } = await import('firebase/auth');
+      const { getAuth, getRedirectResult } = await import('firebase/auth');
       const { getApps } = await import('firebase/app');
       
       const apps = getApps();
       const auth = getAuth(apps[0]);
       
-      if (auth.currentUser) {
-        addLog(`User is signed in: ${auth.currentUser.email}`);
-        addLog(`Display name: ${auth.currentUser.displayName}`);
-        addLog(`Email verified: ${auth.currentUser.emailVerified}`);
-        addLog(`Photo URL: ${auth.currentUser.photoURL}`);
+      // Check for any pending redirect result first
+      addLog("Checking for pending redirect result...");
+      const redirectResult = await getRedirectResult(auth);
+      if (redirectResult) {
+        addLog(`Found redirect result: ${redirectResult.user.email}`);
+        addLog("Processing redirect authentication...");
       } else {
-        addLog("No user is currently signed in");
+        addLog("No pending redirect result found");
       }
       
-      // Also check auth context
-      const authModule = await import('@/context/auth-context');
-      addLog("Auth context check would require component context");
+      // Check current auth state
+      if (auth.currentUser) {
+        addLog(`✅ User IS signed in: ${auth.currentUser.email}`);
+        addLog(`Display name: ${auth.currentUser.displayName || 'Not provided'}`);
+        addLog(`Email verified: ${auth.currentUser.emailVerified}`);
+        addLog(`UID: ${auth.currentUser.uid}`);
+        addLog(`Photo URL: ${auth.currentUser.photoURL || 'Not provided'}`);
+        
+        // Get ID token to verify authentication
+        const token = await auth.currentUser.getIdToken();
+        addLog(`✅ ID Token obtained (length: ${token.length})`);
+        
+      } else {
+        addLog("❌ No user is currently signed in");
+        
+        // Check if there's cached auth state
+        const cachedAuth = (window as any).__brandentifier_cached_auth?.();
+        if (cachedAuth) {
+          addLog(`Found cached auth state: ${cachedAuth.email}`);
+        } else {
+          addLog("No cached auth state found");
+        }
+      }
+      
+      // Check auth state listener
+      addLog("Setting up auth state listener for 10 seconds...");
+      let listenerCount = 0;
+      const unsubscribe = auth.onAuthStateChanged((user) => {
+        listenerCount++;
+        if (user) {
+          addLog(`Auth listener ${listenerCount}: User detected - ${user.email}`);
+        } else {
+          addLog(`Auth listener ${listenerCount}: No user detected`);
+        }
+      });
+      
+      // Stop listening after 10 seconds
+      setTimeout(() => {
+        unsubscribe();
+        addLog(`Auth listener stopped after ${listenerCount} state changes`);
+      }, 10000);
       
     } catch (error) {
       addLog(`Status check failed: ${error}`);
