@@ -79,6 +79,20 @@ export default function SimpleAuthTest() {
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold mb-6">Simple Firebase Authentication Test</h1>
         
+        <div className="bg-yellow-900/20 border border-yellow-600 rounded-lg p-4 mb-6">
+          <h3 className="text-yellow-400 font-semibold mb-2">Domain Authorization Required</h3>
+          <p className="text-yellow-200 text-sm">
+            If Google sign-in fails with "popup-closed-by-user", you need to add this domain to Firebase Console:
+            <br />
+            <code className="bg-yellow-800/30 px-2 py-1 rounded mt-1 inline-block">
+              {window.location.hostname}
+            </code>
+          </p>
+          <p className="text-yellow-200 text-sm mt-2">
+            Go to Firebase Console → Authentication → Settings → Authorized domains
+          </p>
+        </div>
+        
         <div className="mb-6">
           <button
             onClick={testGoogleSignIn}

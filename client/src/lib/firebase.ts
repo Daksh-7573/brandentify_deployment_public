@@ -52,10 +52,10 @@ const isExactProblemDomain = currentHostname === "25d68c5d-166d-4f92-b5c1-cdfc68
 // For Firebase auth with Google on Replit, we need a special configuration
 const firebaseConfig: FirebaseOptions = {
   apiKey,
-  // CRITICAL: Always use Firebase's official domain to avoid "refused to connect" errors
-  // This ensures Google's authentication servers can establish a secure connection
-  authDomain: `${projectId}.firebaseapp.com`,
-  projectId,
+  // Use the current domain as authDomain for Replit compatibility
+  // This allows Google OAuth to work with the current Replit domain
+  authDomain: isReplitDomain ? currentHostname : `${projectId}.firebaseapp.com`,
+  projectId,  
   storageBucket: projectId ? `${projectId}.appspot.com` : undefined,
   // Common defaults for Firebase initialization
   messagingSenderId: "330211556822",
@@ -129,6 +129,12 @@ try {
   // Enable login persistence is set at the time of signin, not here
   
   console.log("Firebase initialized successfully");
+  console.log("Firebase config used:", {
+    authDomain: firebaseConfig.authDomain,
+    projectId: firebaseConfig.projectId,
+    currentDomain: currentHostname,
+    isReplitDomain
+  });
 } catch (error) {
   console.error("CRITICAL: Firebase initialization failed:", error);
   console.error("Firebase config used:", firebaseConfig);
