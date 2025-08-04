@@ -526,17 +526,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         usingRedirect: true
       });
       
-      console.log("Attempting popup authentication first, then redirect fallback");
+      console.log("Attempting redirect authentication (better for Replit domains)");
       
       try {
-        // Try popup method first - often works better on Replit domains
-        console.log("Trying popup authentication...");
+        // Use redirect method for Replit domains as it's more reliable
+        console.log("Using redirect authentication for better compatibility...");
         
-        // Set popup attempt flags for debugging
-        sessionStorage.setItem('popup_auth_attempt', 'true');
-        sessionStorage.setItem('popup_auth_time', new Date().toISOString());
+        // Set redirect attempt flags for debugging
+        sessionStorage.setItem('redirect_auth_attempt', 'true');
+        sessionStorage.setItem('redirect_auth_time', new Date().toISOString());
         
-        const result = await signInWithPopup(auth, googleProvider);
+        const { signInWithRedirect } = await import('firebase/auth');
+        await signInWithRedirect(auth, googleProvider);
+        
+        console.log("Redirect authentication initiated - user will be redirected to Google");
+        
+        // Show loading message while redirecting
+        toast({
+          title: "Redirecting to Google",
+          description: "You'll be redirected to Google for authentication...",
+        });
+        
+        return; // Exit here as redirect will handle the rest
         
         if (result?.user) {
           console.log("Popup authentication successful:", result.user.email);
