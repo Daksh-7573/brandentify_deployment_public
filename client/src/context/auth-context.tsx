@@ -335,72 +335,105 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.log("On problematic domain, ensuring correct auth handling");
     }
     
-    // Simple redirect result check - only process if we have a redirect marker
+    // First check for redirect result - this handles when users are redirected back after Google auth
     const checkRedirectResult = async () => {
       try {
-        // Only check for redirect results if we have a redirect attempt marker
-        const redirectAttempt = localStorage.getItem('google_auth_redirect_attempt');
-        if (!redirectAttempt) {
-          console.log("No redirect attempt marker, skipping redirect result check");
-          return false;
-        }
-        
         console.log("Checking for redirect result from Google auth");
+        
+        // getRedirectResult() checks if this page load is the result of a redirect from Google
         const result = await getRedirectResult(auth);
         
         if (result && result.user) {
-          console.log("Redirect result found! Processing user:", result.user.email);
+          console.log("REDIRECT result found! User signed in via redirect:", {
+            uid: result.user.uid,
+            email: result.user.email,
+            displayName: result.user.displayName
+          });
           
-          // Clear redirect attempt markers
-          localStorage.removeItem('google_auth_redirect_attempt');
-          localStorage.removeItem('google_auth_redirect_time');
+          // First create or update the user in our backend
+          console.log("Creating/updating user in backend after redirect");
+          const backendUser = await createOrUpdateUserInBackend(result.user);
           
-          // Create or update user in backend
-          await createOrUpdateUserInBackend(result.user);
-          
-          // Fetch complete user data
-          const userData = await fetchUserData(result.user.uid, result.user.email);
-          
-          if (userData) {
-            setUser(userData);
-            toast({
-              title: "Signed in successfully",
-              description: `Welcome ${userData.name || userData.email}!`,
-            });
-          } else {
-            // Create fallback user
-            const fallbackUser = {
-              uid: result.user.uid,
-              id: parseInt(result.user.uid.substring(0, 8), 36) || 999,
-              username: result.user.email?.split('@')[0] || result.user.uid,
-              email: result.user.email,
-              name: result.user.displayName || result.user.email,
-              photoURL: result.user.photoURL
-            };
-            setUser(fallbackUser);
-            toast({
-              title: "Signed in successfully",
-              description: `Welcome ${result.user.displayName || result.user.email}!`,
-            });
+          if (backendUser) {
+            console.log("User created/updated in backend successfully after redirect");
+            
+            // Fetch complete user data from backend
+            console.log("Fetching user data after redirect");
+            // Check for Google provider data to get email
+            const googleProvider = result.user.providerData?.find(provider => 
+              provider.providerId === "google.com"
+            );
+            const userEmail = googleProvider?.email || result.user.email;
+            
+            console.log("Using Google email for data lookup if available:", userEmail);
+            const userData = await fetchUserData(result.user.uid, userEmail);
+            
+            if (userData) {
+              console.log("Setting user state with backend data after redirect");
+              setUser(userData);
+              toast({
+                title: "Signed in successfully",
+                description: `Welcome${userData.name ? ` ${userData.name}` : ''}!`,
+              });
+              
+              // Clear any auth attempt markers
+              localStorage.removeItem('authAttemptInProgress');
+              localStorage.removeItem('authAttemptTime');
+              
+              // Important: Return early to avoid the auth state listener processing the same user
+              setIsLoading(false);
+              return true;
+            }
           }
+          
+          // If backend operations failed, use Google data as last resort
+          console.log("Using Google/Firebase data as fallback after redirect");
+          
+          // Check for Google provider data
+          const isGoogleProvider = result.user.providerData && 
+            result.user.providerData.some(provider => provider.providerId === "google.com");
+          
+          const googleProvider = isGoogleProvider ? 
+            result.user.providerData.find(provider => provider.providerId === "google.com") : null;
+          
+          console.log("Google provider data available:", !!googleProvider);
+          
+          const fallbackUser = {
+            uid: result.user.uid,
+            id: parseInt(result.user.uid.substring(0, 5), 36) || 999,
+            username: googleProvider?.email?.split('@')[0] || result.user.uid.substring(0, 8),
+            email: googleProvider?.email || result.user.email,
+            name: googleProvider?.displayName || result.user.displayName,
+            photoURL: googleProvider?.photoURL || result.user.photoURL
+          };
+          
+          setUser(fallbackUser);
+          toast({
+            title: "Signed in with limited data",
+            description: `Welcome${fallbackUser.name ? ` ${fallbackUser.name}` : ''}!`,
+          });
+          
+          // Clear any auth attempt markers
+          localStorage.removeItem('authAttemptInProgress');
+          localStorage.removeItem('authAttemptTime');
           
           setIsLoading(false);
           return true;
         } else {
-          console.log("No redirect result found");
-          // Clear redirect markers if no result
-          localStorage.removeItem('google_auth_redirect_attempt');
-          localStorage.removeItem('google_auth_redirect_time');
+          console.log("No redirect result found - this is a normal page load, not a redirect callback");
           return false;
         }
       } catch (error) {
         console.error("Error checking redirect result:", error);
         
-        // Clear redirect markers on error
-        localStorage.removeItem('google_auth_redirect_attempt');
-        localStorage.removeItem('google_auth_redirect_time');
-        
+        // Log detailed error information for debugging
         logAuthError(error, "checkRedirectResult");
+        
+        toast({
+          title: "Authentication error",
+          description: "Error processing Google redirect. Please try again.",
+          variant: "destructive"
+        });
         return false;
       }
     };
@@ -409,8 +442,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     checkRedirectResult().then((redirectHandled) => {
       console.log("Redirect check completed, handled:", redirectHandled);
       
-      // Always set up auth state listener, even if redirect was handled
-      // This ensures the user state is properly maintained
+      // If redirect was handled, we don't need to process the auth state again
+      if (redirectHandled) return;
       
       // Set up auth state listener
       console.log("Setting up auth state listener");
@@ -428,8 +461,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               });
               
               // Clear any auth attempt markers since we have a successful sign-in
-              localStorage.removeItem('google_auth_redirect_attempt');
-              localStorage.removeItem('google_auth_redirect_time');
+              localStorage.removeItem('authAttemptInProgress');
+              localStorage.removeItem('authAttemptTime');
               
               // First, try to create or update the user in our backend
               console.log("Creating/updating user in backend from auth state change");
@@ -514,37 +547,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
   }, [user, toast]);
 
-  // Sign in with Google - simplified single-method approach
+  // Sign in with Google - simplified approach to avoid connection issues
   const signInWithGoogle = async () => {
     try {
       setIsLoading(true);
       
-      console.log("Starting Google sign-in with simplified approach");
+      console.log("Starting Google sign-in with direct Google Authentication");
       
-      // Use the globally configured provider from firebase.ts
+      // Use the globally configured provider from firebase.ts to avoid issues
       const { googleProvider } = await import('@/lib/firebase');
       
-      // Check if we're on a Replit domain
-      const isReplitDomain = window.location.hostname.includes('replit');
+      console.log("Using pre-configured Google provider with compatible settings");
       
       console.log("Auth environment:", {
         domain: window.location.hostname,
-        isReplitDomain,
-        method: isReplitDomain ? 'redirect' : 'popup'
+        isReplitDomain: window.location.hostname.includes('replit'),
+        usingRedirect: true
       });
       
-      // For Replit domains, use redirect. For other domains, use popup
-      if (isReplitDomain) {
-        console.log("Using redirect method for Replit domain");
-        // Mark that we're attempting redirect auth
-        localStorage.setItem('google_auth_redirect_attempt', 'true');
-        localStorage.setItem('google_auth_redirect_time', Date.now().toString());
-        
-        await signInWithRedirect(auth, googleProvider);
-        // The redirect will happen, so this function will not continue
-        return;
-      } else {
-        console.log("Using popup method for non-Replit domain");
+      console.log("Attempting popup authentication first, then redirect fallback");
+      
+      try {
+        // Try popup method first - often works better on Replit domains
+        console.log("Trying popup authentication...");
         const result = await signInWithPopup(auth, googleProvider);
         
         if (result?.user) {
@@ -579,6 +604,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             });
           }
           return;
+        }
+      } catch (popupError: any) {
+        console.log("Popup failed, trying redirect:", popupError.code);
+        
+        if (popupError.code === 'auth/popup-blocked' || 
+            popupError.code === 'auth/popup-closed-by-user') {
+          console.log("Using redirect method as fallback");
+          await signInWithRedirect(auth, googleProvider);
+          return;
+        } else {
+          // For other errors, throw to be handled by outer catch
+          throw popupError;
         }
       }
     } catch (error: any) {

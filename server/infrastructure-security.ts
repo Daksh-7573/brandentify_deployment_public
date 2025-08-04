@@ -82,23 +82,11 @@ export async function runSecurityAudit(): Promise<AuditResults> {
     // Note: In production, replace this with your preferred security scanning tool
     // This is a simplified version for demonstration purposes
     const { stdout } = await execPromise('npm audit --json || echo "{}"');
-    let auditData;
-    try {
-      auditData = JSON.parse(stdout);
-    } catch (parseError) {
-      console.log('Security audit JSON parse error, using fallback');
-      auditData = { metadata: { vulnerabilities: {} } };
-    }
+    const auditData = JSON.parse(stdout);
     
     // Get outdated packages
     const { stdout: outdatedStdout } = await execPromise('npm outdated --json || echo "{}"');
-    let outdatedData;
-    try {
-      outdatedData = JSON.parse(outdatedStdout);
-    } catch (parseError) {
-      console.log('Outdated packages JSON parse error, using fallback');
-      outdatedData = {};
-    }
+    const outdatedData = JSON.parse(outdatedStdout);
     
     // Process results
     const results: AuditResults = {
@@ -173,7 +161,7 @@ export async function createBackup(): Promise<{ success: boolean; filename?: str
     console.error('Error creating backup:', error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Unknown error occurred'
+      error: error.message
     };
   }
 }
@@ -398,7 +386,7 @@ export function setupInfrastructureSecurity(app: any) {
         const results = await runSecurityAudit();
         res.json(results);
       } catch (error) {
-        res.status(500).json({ message: 'Failed to run security audit', error: error instanceof Error ? error.message : 'Unknown error' });
+        res.status(500).json({ message: 'Failed to run security audit', error: error.message });
       }
     });
     
@@ -408,7 +396,7 @@ export function setupInfrastructureSecurity(app: any) {
         const result = await createBackup();
         res.json(result);
       } catch (error) {
-        res.status(500).json({ message: 'Failed to create backup', error: error instanceof Error ? error.message : 'Unknown error' });
+        res.status(500).json({ message: 'Failed to create backup', error: error.message });
       }
     });
     
@@ -417,7 +405,7 @@ export function setupInfrastructureSecurity(app: any) {
         const backups = listBackups();
         res.json(backups);
       } catch (error) {
-        res.status(500).json({ message: 'Failed to list backups', error: error instanceof Error ? error.message : 'Unknown error' });
+        res.status(500).json({ message: 'Failed to list backups', error: error.message });
       }
     });
     

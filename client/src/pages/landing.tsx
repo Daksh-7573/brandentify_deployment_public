@@ -5,25 +5,23 @@ import { useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
 import { ArrowRight, Sparkles, Target, Users, Brain, Zap, FileText, TrendingUp, Building, Calendar, Trophy, Search, Heart, Newspaper, MessageCircle } from "lucide-react";
+// Background image now handled by global CSS for consistency
 
 export default function Landing() {
   const { isLoading, isAuthenticated } = useAuth();
   const { toast } = useToast();
   
   const [_, setLocation] = useLocation();
-  
-  // Force cache refresh - comprehensive version
-  console.log('🚀 COMPREHENSIVE LANDING PAGE LOADED - v2.0 with all 12 features');
 
   // Check if user wants to stay on landing page (via query parameter)
   const urlParams = new URLSearchParams(window.location.search);
   const stayOnLanding = urlParams.get('stay') === 'true';
 
-  // Redirect to Industry Pulse if already authenticated (main home page)
+  // Redirect to dashboard if already authenticated
   useEffect(() => {
     if (isAuthenticated && !stayOnLanding) {
       const timer = setTimeout(() => {
-        setLocation('/industry-pulse');
+        setLocation('/dashboard');
       }, 100);
       return () => clearTimeout(timer);
     }
@@ -60,16 +58,14 @@ export default function Landing() {
               AI-Powered Career Development Platform that transforms your professional journey with intelligent insights and personalized guidance
             </p>
             
-            {/* Cache busting comment: Updated comprehensive landing page */}
-            
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-8">
               {isAuthenticated ? (
                 <Button 
-                  onClick={() => setLocation('/industry-pulse')}
+                  onClick={() => setLocation('/dashboard')}
                   size="lg"
                   className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-8 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105"
                 >
-                  Go to Industry Pulse
+                  Go to Dashboard
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               ) : (
@@ -180,47 +176,47 @@ export default function Landing() {
               </p>
             </div>
 
-            {/* Industry Pulse */}
+            {/* XP Quests */}
             <div className="neo-glass-card p-6 rounded-lg transition-all duration-300 hover:scale-105">
               <div className="flex items-center mb-4">
-                <Newspaper className="h-8 w-8 text-indigo-400 mr-3" />
-                <h3 className="text-xl font-semibold text-white">Industry Pulse</h3>
+                <Trophy className="h-8 w-8 text-gold-400 mr-3" />
+                <h3 className="text-xl font-semibold text-white">XP Quests</h3>
               </div>
               <p className="text-gray-300 leading-relaxed">
-                Stay updated with personalized industry trends, news, and insights.
+                Level up your career with gamified challenges and win badges as you grow.
               </p>
             </div>
 
-            {/* Brand Quests */}
+            {/* Job Radar */}
             <div className="neo-glass-card p-6 rounded-lg transition-all duration-300 hover:scale-105">
               <div className="flex items-center mb-4">
-                <Trophy className="h-8 w-8 text-yellow-500 mr-3" />
-                <h3 className="text-xl font-semibold text-white">Brand Quests</h3>
+                <Search className="h-8 w-8 text-indigo-400 mr-3" />
+                <h3 className="text-xl font-semibold text-white">Job Radar</h3>
               </div>
               <p className="text-gray-300 leading-relaxed">
-                Complete gamified challenges to boost your professional skills and earn rewards.
+                Get alerts for jobs, collaborations, and career opportunities in your domain.
               </p>
             </div>
 
-            {/* Networking Hub */}
-            <div className="neo-glass-card p-6 rounded-lg transition-all duration-300 hover:scale-105">
-              <div className="flex items-center mb-4">
-                <Search className="h-8 w-8 text-teal-400 mr-3" />
-                <h3 className="text-xl font-semibold text-white">Networking Hub</h3>
-              </div>
-              <p className="text-gray-300 leading-relaxed">
-                Discover and connect with professionals in your field or dream industry.
-              </p>
-            </div>
-
-            {/* Content Creation */}
+            {/* Real Feedback */}
             <div className="neo-glass-card p-6 rounded-lg transition-all duration-300 hover:scale-105">
               <div className="flex items-center mb-4">
                 <Heart className="h-8 w-8 text-rose-400 mr-3" />
-                <h3 className="text-xl font-semibold text-white">Content Hub</h3>
+                <h3 className="text-xl font-semibold text-white">Real Feedback</h3>
               </div>
               <p className="text-gray-300 leading-relaxed">
-                Create, share, and discover professional content that builds your brand.
+                Get reactions and endorsements that boost your credibility — not just likes.
+              </p>
+            </div>
+
+            {/* Insight Feed */}
+            <div className="neo-glass-card p-6 rounded-lg transition-all duration-300 hover:scale-105">
+              <div className="flex items-center mb-4">
+                <Newspaper className="h-8 w-8 text-emerald-400 mr-3" />
+                <h3 className="text-xl font-semibold text-white">Insight Feed</h3>
+              </div>
+              <p className="text-gray-300 leading-relaxed">
+                Stay ahead with personalized industry news, tips, and AI-powered posts.
               </p>
             </div>
           </div>

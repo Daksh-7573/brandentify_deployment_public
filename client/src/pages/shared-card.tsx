@@ -177,6 +177,34 @@ const SharedCardPage: React.FC<SharedCardPageProps> = ({ userId }) => {
     console.log('Showing FeedSkeleton state');  // For debugging
     return <FeedSkeleton count={2} />;
   }
+                      <div className="h-4 w-4 rounded-full bg-gray-300 dark:bg-gray-700"></div>
+                      <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-3/4"></div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Card footer skeleton */}
+                <div className="h-6 bg-gray-300 dark:bg-gray-700 flex items-center justify-center">
+                  <div className="h-3 bg-gray-400 dark:bg-gray-600 rounded w-1/3"></div>
+                </div>
+              </div>
+              
+              {/* Share box skeleton */}
+              <div className="mt-8 w-full max-w-md mx-auto">
+                <div className="bg-gray-300 dark:bg-gray-700 rounded-md h-12"></div>
+              </div>
+              
+              {/* Bottom CTA skeleton */}
+              <div className="mt-8 text-center">
+                <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-3/4 mx-auto mb-4"></div>
+                <div className="h-10 bg-gray-400 dark:bg-gray-600 rounded-md w-48 mx-auto"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // Render the card directly here, don't use the component that might add additional complexity
   return (

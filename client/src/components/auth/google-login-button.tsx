@@ -21,51 +21,26 @@ export function GoogleLoginButton({
   size = "default",
   text = "Sign in with Google"
 }: GoogleLoginButtonProps) {
-  const authContext = useAuth();
+  const { signInWithGoogle } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   
-  // Debug auth context
-  console.log("GoogleLoginButton render - Auth context:", {
-    hasContext: !!authContext,
-    signInWithGoogle: typeof authContext?.signInWithGoogle,
-    isAuthenticated: authContext?.isAuthenticated,
-    isLoading: authContext?.isLoading
-  });
-  
-  const { signInWithGoogle } = authContext || {};
-  
-  const handleGoogleLogin = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    console.log("🚀 Google Login Button clicked!");
-    
-    // Check if signInWithGoogle function exists
-    if (typeof signInWithGoogle !== 'function') {
-      console.error("❌ signInWithGoogle is not a function:", typeof signInWithGoogle);
-      return;
-    }
-    
+  const handleGoogleLogin = async () => {
     try {
       setIsLoading(true);
-      console.log("🔄 Calling signInWithGoogle...");
       await signInWithGoogle();
-      console.log("✅ signInWithGoogle completed");
     } catch (error) {
-      console.error("❌ Failed to authenticate with Google:", error);
+      console.error("Failed to authenticate with Google:", error);
       // No need to show toast here as it's already handled in auth-context
     } finally {
       setIsLoading(false);
-      console.log("🏁 Google login process finished");
     }
   };
   
   return (
-    <Button
+    <button
       onClick={handleGoogleLogin}
       disabled={isLoading}
-      variant={variant}
-      size={size}
-      className={`flex items-center gap-2 ${fullWidth ? 'w-full' : ''} neo-glass-button hover:scale-105 transition-transform`}
+      className={`neo-glass-button flex items-center gap-2 ${fullWidth ? 'w-full' : ''}`}
     >
       {/* Google Icon */}
       <svg 
@@ -81,7 +56,7 @@ export function GoogleLoginButton({
       </svg>
       
       {isLoading ? "Signing in..." : text}
-    </Button>
+    </button>
   );
 }
 

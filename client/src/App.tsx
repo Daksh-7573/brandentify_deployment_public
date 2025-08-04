@@ -2,8 +2,7 @@ import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
-import { SimpleAuthProvider } from "./context/simple-auth-context";
-import { AuthRedirectGuard } from "./context/auth-redirect-guard";
+import { AuthProvider } from "./context/auth-context";
 import { useAuth } from "./hooks/use-auth";
 import { useEffect, Suspense, lazy } from "react";
 import GlobalMuskButton from "@/components/musk/global-musk-button";
@@ -60,7 +59,6 @@ const DomainDebug = lazy(() => import("@/pages/domain-debug"));
 const FinalReplitAuth = lazy(() => import("@/pages/final-replit-auth"));
 const Radar = lazy(() => import("@/pages/radar"));
 const FirebaseAuthTest = lazy(() => import("@/pages/auth-test"));
-const AuthTestPage = lazy(() => import("@/pages/auth-test"));
 const GoogleAuthTest = lazy(() => import("@/pages/google-auth-test"));
 const SmartConnectPage = lazy(() => import("@/pages/smart-connect"));
 const MuskMatchPage = lazy(() => import("@/pages/musk-match"));
@@ -142,30 +140,6 @@ function Router() {
       <Route path="/_/auth/callback" component={AuthCallback} />
       <Route path="/auth/callback" component={AuthCallback} />
       <Route path="/auth" component={AuthPage} />
-      <Route path="/auth-debug" component={() => {
-        const AuthDebugPage = lazy(() => import("@/pages/auth-debug"));
-        return (
-          <Suspense fallback={<FeedSkeleton count={1} />}>
-            <AuthDebugPage />
-          </Suspense>
-        );
-      }} />
-      <Route path="/auth-console" component={() => {
-        const AuthConsoleLogger = lazy(() => import("@/pages/auth-console-logger"));
-        return (
-          <Suspense fallback={<FeedSkeleton count={1} />}>
-            <AuthConsoleLogger />
-          </Suspense>
-        );
-      }} />
-      <Route path="/domain-helper" component={() => {
-        const DomainHelper = lazy(() => import("@/pages/domain-helper"));
-        return (
-          <Suspense fallback={<FeedSkeleton count={1} />}>
-            <DomainHelper />
-          </Suspense>
-        );
-      }} />
       <Route path="/auth-status" component={AuthStatusPage} />
       <Route path="/dev-login" component={DevLoginPage} />
       <Route path="/simple-login" component={SimpleLoginPage} />
@@ -204,43 +178,6 @@ function Router() {
         return (
           <Suspense fallback={<FeedSkeleton count={2} />}>
             <AuthDebugPage />
-          </Suspense>
-        );
-      }} />
-      <Route path="/auth-test" component={() => (
-        <Suspense fallback={<FeedSkeleton count={2} />}>
-          <AuthTestPage />
-        </Suspense>
-      )} />
-      <Route path="/auth-debug-simple" component={() => {
-        const AuthDebugSimplePage = lazy(() => import("@/pages/auth-debug-simple"));
-        return (
-          <Suspense fallback={<FeedSkeleton count={2} />}>
-            <AuthDebugSimplePage />
-          </Suspense>
-        );
-      }} />
-      <Route path="/debug-auth-click" component={() => {
-        const DebugAuthClickPage = lazy(() => import("@/pages/debug-auth-click"));
-        return (
-          <Suspense fallback={<FeedSkeleton count={2} />}>
-            <DebugAuthClickPage />
-          </Suspense>
-        );
-      }} />
-      <Route path="/test-auth-direct" component={() => {
-        const TestAuthDirectPage = lazy(() => import("@/pages/test-auth-direct"));
-        return (
-          <Suspense fallback={<FeedSkeleton count={2} />}>
-            <TestAuthDirectPage />
-          </Suspense>
-        );
-      }} />
-      <Route path="/console-inspector" component={() => {
-        const ConsoleInspectorPage = lazy(() => import("@/pages/console-inspector"));
-        return (
-          <Suspense fallback={<FeedSkeleton count={2} />}>
-            <ConsoleInspectorPage />
           </Suspense>
         );
       }} />
@@ -604,19 +541,17 @@ function App() {
   // Add a root-level Suspense boundary to ensure we never show a white screen
   return (
     <QueryClientProvider client={queryClient}>
-      <SimpleAuthProvider>
-        <AuthRedirectGuard>
-          <Suspense fallback={<FeedSkeleton count={3} />}>
-            <Router />
-            <GlobalMuskButton />
-            <DomainHelper />
-            <DomainAuthHelper />
-            <Toaster />
-            {/* Cookie Consent Banner - shown based on user's consent status */}
-            <CookieConsentBanner />
-          </Suspense>
-        </AuthRedirectGuard>
-      </SimpleAuthProvider>
+      <AuthProvider>
+        <Suspense fallback={<FeedSkeleton count={3} />}>
+          <Router />
+          <GlobalMuskButton />
+          <DomainHelper />
+          <DomainAuthHelper />
+          <Toaster />
+          {/* Cookie Consent Banner - shown based on user's consent status */}
+          <CookieConsentBanner />
+        </Suspense>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }

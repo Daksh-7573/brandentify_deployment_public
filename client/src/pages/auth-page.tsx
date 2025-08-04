@@ -16,13 +16,11 @@ import { GoogleAuth } from "@/components/auth/google-auth";
 import { PhoneAuth } from "@/components/auth/phone-auth";
 import { EmailAuth } from "@/components/auth/email-auth";
 import { DemoLogin } from "@/components/auth/demo-login";
-import { AuthInstructions } from "@/components/auth/auth-instructions";
-import { AuthDebugPanel } from "@/components/debug/auth-debug-panel";
 import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
 import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
 
 export default function AuthPage() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, signInWithPhone } = useAuth();
   const [_, setLocation] = useLocation();
   const [authMethod, setAuthMethod] = useState<"email" | "phone">("email");
   const [useDemoBypass, setUseDemoBypass] = useState(false);
@@ -36,16 +34,10 @@ export default function AuthPage() {
 
   // Redirect to industry pulse if already authenticated
   useEffect(() => {
-    console.log("AuthPage - checking authentication:", { isAuthenticated, isLoading });
-    if (isAuthenticated && !isLoading) {
-      console.log("AuthPage - authenticated user detected, scheduling redirect");
-      // Use a delay to ensure authentication state is stable
-      setTimeout(() => {
-        console.log("AuthPage - executing redirect to industry pulse");
-        window.location.replace("/industry-pulse");
-      }, 1500);
+    if (isAuthenticated) {
+      setLocation("/industry-pulse");
     }
-  }, [isAuthenticated, isLoading]);
+  }, [isAuthenticated, setLocation]);
 
   return (
     <div 
@@ -109,12 +101,6 @@ export default function AuthPage() {
                         </div>
                         
                         <GoogleAuth />
-                        
-                        {/* Authentication Instructions */}
-                        <AuthInstructions />
-                        
-                        {/* Debug Panel */}
-                        <AuthDebugPanel />
                       </>
                     )}
                   </div>
