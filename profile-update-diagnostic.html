@@ -1,309 +1,287 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profile Update Diagnostic</title>
     <style>
-        body {
-            font-family: system-ui, -apple-system, sans-serif;
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 20px;
-            line-height: 1.5;
-        }
-        pre {
-            background-color: #f5f5f5;
-            padding: 15px;
-            border-radius: 5px;
-            overflow-x: auto;
-            white-space: pre-wrap;
-        }
-        .success { color: #22863a; font-weight: bold; }
-        .error { color: #cb2431; font-weight: bold; }
-        .warning { color: #b08800; font-weight: bold; }
-        .info { color: #0366d6; font-weight: bold; }
-        button {
-            padding: 10px 15px;
-            background-color: #0366d6;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            margin: 5px;
-            min-width: 200px;
-        }
-        button:hover { background-color: #035cc1; }
-        .button-group { margin: 20px 0; }
-        .log-container {
-            margin-top: 20px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 10px;
-            height: 500px;
-            overflow-y: auto;
-        }
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f8f9fa; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .status { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .success { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
+        .error { background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
+        .warning { background: #fff3cd; border: 1px solid #ffeaa7; color: #856404; }
+        .info { background: #d1ecf1; border: 1px solid #bee5eb; color: #0c5460; }
+        button { padding: 12px 24px; margin: 10px 5px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        button:disabled { background: #6c757d; cursor: not-allowed; }
+        .section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 3px; overflow-x: auto; }
+        .logs { height: 300px; overflow-y: auto; background: #000; color: #00ff00; padding: 10px; font-family: monospace; }
     </style>
 </head>
 <body>
-    <h1>Profile Update Diagnostic Tool</h1>
-    <p>This tool helps diagnose issues with profile updates by testing different update paths.</p>
-    
-    <div class="button-group">
-        <button id="demoModeBtn">Check Demo Mode Status</button>
-        <button id="fetchUserBtn">Fetch Current User Data</button>
-        <button id="runUpdateTestBtn">Run Full Update Test</button>
-        <button id="testDemoModeBtn">Test Demo Mode Behavior</button>
-        <button id="updateSingleFieldBtn">Update Single Field</button>
+    <div class="container">
+        <h1>🔍 Profile Update Diagnostic Tool</h1>
+        <p>This tool helps diagnose and resolve authentication and profile update issues.</p>
+        
+        <div class="section">
+            <h3>Current Authentication Status</h3>
+            <div id="authStatus">Checking...</div>
+            <button onclick="checkAuthStatus()">Refresh Auth Status</button>
+        </div>
+        
+        <div class="section">
+            <h3>Storage Analysis</h3>
+            <div id="storageAnalysis">Analyzing...</div>
+            <button onclick="analyzeStorage()">Analyze Storage</button>
+            <button onclick="clearAllStorage()">Clear All Storage</button>
+        </div>
+        
+        <div class="section">
+            <h3>Firebase Configuration Test</h3>
+            <div id="firebaseTest">Not tested</div>
+            <button onclick="testFirebaseConfig()">Test Firebase Config</button>
+        </div>
+        
+        <div class="section">
+            <h3>Authentication Flow Simulation</h3>
+            <div id="authFlow">Ready</div>
+            <button onclick="simulateAuthFlow()">Simulate Auth Flow</button>
+        </div>
+        
+        <div class="section">
+            <h3>Console Logs</h3>
+            <div id="logs" class="logs">Waiting for logs...</div>
+            <button onclick="clearLogs()">Clear Logs</button>
+        </div>
+        
+        <div class="section">
+            <h3>Quick Actions</h3>
+            <button onclick="directToIndustryPulse()">Go to Industry Pulse (Bypass Auth)</button>
+            <button onclick="resetEverything()">Complete Reset</button>
+        </div>
     </div>
-    
-    <div class="log-container" id="logContainer"></div>
-    
+
     <script>
-        // Test data
-        const userId = 1;
-        const timestamp = Date.now();
+        let logContainer = document.getElementById('logs');
         
-        // Full update test data
-        const fullUpdateData = {
-            name: `Updated Test User ${timestamp}`,
-            title: `Senior Software Developer ${timestamp}`,
-            aboutMe: `Updated profile with test script at ${new Date().toISOString()}`,
-            location: "San Francisco, CA",
-            industry: "Software",
-            whatIOffer: `Test offer content updated via direct API test ${timestamp}`,
-            _timestamp: timestamp
-        };
-        
-        function log(message, type = 'info') {
-            const logContainer = document.getElementById('logContainer');
-            const logEntry = document.createElement('div');
-            
-            if (typeof message === 'object') {
-                try {
-                    message = JSON.stringify(message, null, 2);
-                } catch (e) {
-                    message = "Object couldn't be stringified: " + e.message;
-                }
-                logEntry.innerHTML = `<pre>${message}</pre>`;
-            } else {
-                if (type === 'success') {
-                    logEntry.innerHTML = `<span class="success">${message}</span>`;
-                } else if (type === 'error') {
-                    logEntry.innerHTML = `<span class="error">${message}</span>`;
-                } else if (type === 'warning') {
-                    logEntry.innerHTML = `<span class="warning">${message}</span>`;
-                } else if (type === 'info') {
-                    logEntry.innerHTML = `<span class="info">${message}</span>`;
-                } else {
-                    logEntry.textContent = message;
-                }
-            }
-            
-            logContainer.appendChild(logEntry);
+        function addLog(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${message}\n`;
+            logContainer.textContent += logEntry;
             logContainer.scrollTop = logContainer.scrollHeight;
-            console.log(message);
+            console.log(`[Profile Diagnostic] ${message}`);
         }
         
-        async function checkDemoMode() {
-            log("Checking demo mode status...", 'info');
+        function updateStatus(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            element.className = `status ${type}`;
+            element.textContent = message;
+            addLog(`${elementId}: ${message}`, type);
+        }
+        
+        function checkAuthStatus() {
+            addLog('Checking authentication status...', 'info');
             
-            // Check localStorage for demo mode status
-            const isDemo = localStorage.getItem('demoMode') === 'true';
-            log(`localStorage demoMode value: ${isDemo}`, isDemo ? 'warning' : 'info');
+            // Check various storage locations for auth data
+            const checks = {
+                'localStorage - firebase_user': localStorage.getItem('firebase_user'),
+                'localStorage - authSuccess': localStorage.getItem('authSuccess'),
+                'sessionStorage - redirect_auth_attempt': sessionStorage.getItem('redirect_auth_attempt'),
+                'sessionStorage - redirect_auth_success': sessionStorage.getItem('redirect_auth_success'),
+                'sessionStorage - authSuccess': sessionStorage.getItem('authSuccess'),
+                'document.cookie': document.cookie
+            };
             
-            // Look for other demo mode indicators
-            const keys = [];
-            for (let i = 0; i < localStorage.length; i++) {
-                keys.push(localStorage.key(i));
+            let authFound = false;
+            let statusHTML = '';
+            
+            for (const [key, value] of Object.entries(checks)) {
+                const hasValue = value && value !== 'null';
+                statusHTML += `<div class="status ${hasValue ? 'success' : 'warning'}">${key}: ${hasValue ? '✓ Present' : '✗ Missing'}</div>`;
+                if (hasValue) authFound = true;
+                addLog(`${key}: ${hasValue ? 'Present' : 'Missing'}`, hasValue ? 'success' : 'warning');
             }
             
-            log(`All localStorage keys: ${keys.join(', ')}`);
+            // Check current URL
+            const currentPath = window.location.pathname;
+            statusHTML += `<div class="status info">Current Path: ${currentPath}</div>`;
+            addLog(`Current path: ${currentPath}`, 'info');
             
-            // Extract relevant user data from localStorage
-            const userDataInStorage = localStorage.getItem('cachedUserData');
-            if (userDataInStorage) {
-                try {
-                    const data = JSON.parse(userDataInStorage);
-                    log("User data in localStorage:", 'info');
-                    log(data);
-                } catch (e) {
-                    log(`Error parsing cachedUserData: ${e.message}`, 'error');
-                }
+            document.getElementById('authStatus').innerHTML = statusHTML;
+            
+            if (authFound) {
+                addLog('Authentication data found - user may be logged in', 'success');
             } else {
-                log("No cachedUserData found in localStorage", 'warning');
+                addLog('No authentication data found - user appears logged out', 'warning');
             }
-            
-            return isDemo;
         }
         
-        async function fetchCurrentUser() {
-            log(`Fetching current data for user ID: ${userId}`, 'info');
+        function analyzeStorage() {
+            addLog('Analyzing all storage...', 'info');
+            
+            let analysis = '<h4>localStorage Analysis:</h4>';
+            const localKeys = Object.keys(localStorage);
+            localKeys.forEach(key => {
+                const value = localStorage.getItem(key);
+                analysis += `<div class="status info"><strong>${key}:</strong> ${value ? value.substring(0, 100) + (value.length > 100 ? '...' : '') : 'null'}</div>`;
+            });
+            
+            analysis += '<h4>sessionStorage Analysis:</h4>';
+            const sessionKeys = Object.keys(sessionStorage);
+            sessionKeys.forEach(key => {
+                const value = sessionStorage.getItem(key);
+                analysis += `<div class="status info"><strong>${key}:</strong> ${value ? value.substring(0, 100) + (value.length > 100 ? '...' : '') : 'null'}</div>`;
+            });
+            
+            analysis += '<h4>Cookie Analysis:</h4>';
+            const cookies = document.cookie.split(';');
+            cookies.forEach(cookie => {
+                const [key, value] = cookie.split('=');
+                if (key && key.trim()) {
+                    analysis += `<div class="status info"><strong>${key.trim()}:</strong> ${value ? 'Present' : 'Empty'}</div>`;
+                }
+            });
+            
+            document.getElementById('storageAnalysis').innerHTML = analysis;
+            addLog(`Found ${localKeys.length} localStorage items, ${sessionKeys.length} sessionStorage items, ${cookies.length} cookies`, 'info');
+        }
+        
+        async function testFirebaseConfig() {
+            addLog('Testing Firebase configuration...', 'info');
+            updateStatus('firebaseTest', 'Testing...', 'info');
             
             try {
-                const timestamp = Date.now();
-                const response = await fetch(`/api/users/${userId}?_=${timestamp}`);
+                // Try to import Firebase modules
+                const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js');
+                const { getAuth } = await import('https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js');
                 
-                if (!response.ok) {
-                    throw new Error(`Failed to get user: ${response.status} ${response.statusText}`);
-                }
+                addLog('Firebase modules loaded successfully', 'success');
                 
-                const userData = await response.json();
-                log("Current user data:", 'info');
-                log(userData);
-                
-                return userData;
-            } catch (error) {
-                log(`Error fetching user data: ${error.message}`, 'error');
-                return null;
-            }
-        }
-        
-        async function testFullUpdate() {
-            log("Starting full profile update test...", 'info');
-            
-            const isDemo = await checkDemoMode();
-            log(`Running in demo mode: ${isDemo}`, isDemo ? 'warning' : 'info');
-            
-            const beforeUser = await fetchCurrentUser();
-            if (!beforeUser) return;
-            
-            // Perform the update
-            log("Updating user with data:", 'info');
-            log(fullUpdateData);
-            
-            try {
-                const updateResponse = await fetch(`/api/users/${userId}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(fullUpdateData)
-                });
-                
-                if (!updateResponse.ok) {
-                    throw new Error(`Update failed: ${updateResponse.status} ${updateResponse.statusText}`);
-                }
-                
-                const updateResult = await updateResponse.json();
-                log("Server update response:", 'info');
-                log(updateResult);
-                
-                // Verify if changes persisted
-                log("Verifying changes with fresh fetch...", 'info');
-                const afterUser = await fetchCurrentUser();
-                
-                // Check which fields were actually updated
-                const changedFields = [];
-                const unchangedFields = [];
-                
-                Object.entries(fullUpdateData).forEach(([key, value]) => {
-                    if (key === '_timestamp') return;
-                    
-                    if (afterUser[key] === value) {
-                        changedFields.push(`${key}: "${value}"`);
-                    } else {
-                        unchangedFields.push(`${key}: expected "${value}", got "${afterUser[key]}"`);
-                    }
-                });
-                
-                if (changedFields.length > 0) {
-                    log("✅ Fields that were updated:", 'success');
-                    changedFields.forEach(field => log(`  - ${field}`, 'success'));
-                } else {
-                    log("❌ No fields were updated!", 'error');
-                }
-                
-                if (unchangedFields.length > 0) {
-                    log("❌ Fields that were NOT updated:", 'error');
-                    unchangedFields.forEach(field => log(`  - ${field}`, 'error'));
-                }
-                
-                // Final verdict
-                if (unchangedFields.length === 0) {
-                    log("✅ SUCCESS: All fields were updated correctly!", 'success');
-                } else if (changedFields.length > 0) {
-                    log("⚠️ PARTIAL SUCCESS: Some fields were updated, but others were not.", 'warning');
-                } else {
-                    log("❌ FAILURE: No fields were updated despite server reporting success.", 'error');
-                }
-                
-            } catch (error) {
-                log(`Error during update test: ${error.message}`, 'error');
-            }
-        }
-        
-        async function testDemoMode() {
-            log("Testing demo mode behavior...", 'info');
-            
-            const isDemo = await checkDemoMode();
-            log(`Current demo mode status: ${isDemo}`, isDemo ? 'warning' : 'info');
-            
-            if (!isDemo) {
-                log("Setting demoMode to true in localStorage", 'info');
-                localStorage.setItem('demoMode', 'true');
-            } else {
-                log("Setting demoMode to false in localStorage", 'info');
-                localStorage.setItem('demoMode', 'false');
-            }
-            
-            log("Demo mode toggled. Please refresh the page to see the effect.", 'warning');
-        }
-        
-        async function updateSingleField() {
-            const field = prompt("Enter field to update (e.g., name, title, whatIOffer):", "whatIOffer");
-            const value = prompt(`Enter new value for ${field}:`, `Test value for ${field} - ${Date.now()}`);
-            
-            if (!field || !value) {
-                log("Update cancelled - field or value was empty", 'warning');
-                return;
-            }
-            
-            log(`Testing update of single field: ${field} = "${value}"`, 'info');
-            
-            try {
-                const updateData = { 
-                    [field]: value,
-                    _timestamp: Date.now()
+                // Test with dummy config first
+                const testConfig = {
+                    apiKey: "test-key",
+                    authDomain: "brandentifier-app.firebaseapp.com",
+                    projectId: "brandentifier-app"
                 };
                 
-                log("Sending update with data:", 'info');
-                log(updateData);
-                
-                const updateResponse = await fetch(`/api/users/${userId}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(updateData)
-                });
-                
-                if (!updateResponse.ok) {
-                    throw new Error(`Update failed: ${updateResponse.status} ${updateResponse.statusText}`);
-                }
-                
-                const updateResult = await updateResponse.json();
-                log("Server update response:", 'info');
-                log(updateResult);
-                
-                // Verify if change persisted
-                log("Verifying change with fresh fetch...", 'info');
-                const afterUser = await fetchCurrentUser();
-                
-                if (afterUser[field] === value) {
-                    log(`✅ SUCCESS: Field "${field}" was updated to "${value}"`, 'success');
-                } else {
-                    log(`❌ FAILURE: Field "${field}" was NOT updated. Current value: "${afterUser[field]}"`, 'error');
+                try {
+                    const app = initializeApp(testConfig, 'test-app');
+                    const auth = getAuth(app);
+                    addLog('Firebase test initialization successful', 'success');
+                    updateStatus('firebaseTest', 'Firebase SDK working correctly', 'success');
+                } catch (error) {
+                    addLog(`Firebase test init error: ${error.message}`, 'error');
+                    updateStatus('firebaseTest', `Firebase test failed: ${error.message}`, 'error');
                 }
                 
             } catch (error) {
-                log(`Error updating single field: ${error.message}`, 'error');
+                addLog(`Firebase module load error: ${error.message}`, 'error');
+                updateStatus('firebaseTest', `Failed to load Firebase: ${error.message}`, 'error');
             }
         }
         
-        // Add event listeners
-        document.getElementById('demoModeBtn').addEventListener('click', checkDemoMode);
-        document.getElementById('fetchUserBtn').addEventListener('click', fetchCurrentUser);
-        document.getElementById('runUpdateTestBtn').addEventListener('click', testFullUpdate);
-        document.getElementById('testDemoModeBtn').addEventListener('click', testDemoMode);
-        document.getElementById('updateSingleFieldBtn').addEventListener('click', updateSingleField);
+        function simulateAuthFlow() {
+            addLog('Simulating authentication flow...', 'info');
+            updateStatus('authFlow', 'Simulating...', 'info');
+            
+            // Simulate the auth flow steps
+            const steps = [
+                'User clicks "Continue with Google"',
+                'Setting redirect attempt flags',
+                'Calling signInWithRedirect',
+                'Redirecting to Google OAuth',
+                'User completes Google authentication',
+                'Google redirects back to app',
+                'App checks for redirect result',
+                'Processing redirect result',
+                'Creating/updating user in backend',
+                'Redirecting to Industry Pulse'
+            ];
+            
+            let currentStep = 0;
+            const interval = setInterval(() => {
+                if (currentStep < steps.length) {
+                    addLog(`Step ${currentStep + 1}: ${steps[currentStep]}`, 'info');
+                    currentStep++;
+                } else {
+                    clearInterval(interval);
+                    addLog('Authentication flow simulation complete', 'success');
+                    updateStatus('authFlow', 'Simulation complete - check logs for flow details', 'success');
+                }
+            }, 1000);
+        }
+        
+        function clearAllStorage() {
+            addLog('Clearing all storage data...', 'warning');
+            
+            // Clear localStorage
+            const localKeysToRemove = Object.keys(localStorage);
+            localKeysToRemove.forEach(key => {
+                localStorage.removeItem(key);
+                addLog(`Removed localStorage: ${key}`, 'info');
+            });
+            
+            // Clear sessionStorage
+            const sessionKeysToRemove = Object.keys(sessionStorage);
+            sessionKeysToRemove.forEach(key => {
+                sessionStorage.removeItem(key);
+                addLog(`Removed sessionStorage: ${key}`, 'info');
+            });
+            
+            // Clear cookies
+            document.cookie.split(";").forEach(function(c) { 
+                document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+            });
+            
+            addLog('All storage cleared', 'success');
+            updateStatus('storageAnalysis', 'All storage cleared', 'success');
+        }
+        
+        function directToIndustryPulse() {
+            addLog('Bypassing authentication and going to Industry Pulse...', 'info');
+            localStorage.setItem('emergency_access', 'true');
+            sessionStorage.setItem('bypass_auth', 'true');
+            window.location.href = '/industry-pulse';
+        }
+        
+        function resetEverything() {
+            addLog('Performing complete reset...', 'warning');
+            clearAllStorage();
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        }
+        
+        function clearLogs() {
+            logContainer.textContent = 'Logs cleared...\n';
+        }
+        
+        // Auto-run initial checks
+        window.addEventListener('load', () => {
+            addLog('Profile Update Diagnostic Tool loaded', 'success');
+            checkAuthStatus();
+            analyzeStorage();
+        });
+        
+        // Capture console logs
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+        
+        console.log = function(...args) {
+            addLog(`[LOG] ${args.join(' ')}`, 'info');
+            originalLog.apply(console, args);
+        };
+        
+        console.error = function(...args) {
+            addLog(`[ERROR] ${args.join(' ')}`, 'error');
+            originalError.apply(console, args);
+        };
+        
+        console.warn = function(...args) {
+            addLog(`[WARN] ${args.join(' ')}`, 'warning');
+            originalWarn.apply(console, args);
+        };
     </script>
 </body>
 </html>
