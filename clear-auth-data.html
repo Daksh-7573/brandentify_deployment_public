@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Clear Authentication Data</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .container { max-width: 500px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .status { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .success { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
+        .error { background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
+        .warning { background: #fff3cd; border: 1px solid #ffeaa7; color: #856404; }
+        .info { background: #d1ecf1; border: 1px solid #bee5eb; color: #0c5460; }
+        button { padding: 12px 24px; margin: 10px 5px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .danger { background: #dc3545; }
+        .danger:hover { background: #c82333; }
+        .results { margin-top: 20px; max-height: 300px; overflow-y: auto; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧹 Clear Authentication Data</h1>
+        <p>This tool will clear all old authentication attempt data that's causing issues.</p>
+        
+        <div class="status info">
+            <strong>What this will clear:</strong><br>
+            • Old redirect attempt flags<br>
+            • Stale Firebase auth data<br>
+            • Session storage authentication data<br>
+            • Local storage authentication data<br>
+            • Authentication cookies
+        </div>
+        
+        <button onclick="clearAuthData()">Clear All Auth Data</button>
+        <button onclick="goToApp()" class="danger">Go to App (Fresh Start)</button>
+        
+        <div id="results" class="results"></div>
+    </div>
+
+    <script>
+        function addResult(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `status ${type}`;
+            div.innerHTML = `[${new Date().toLocaleTimeString()}] ${message}`;
+            document.getElementById('results').appendChild(div);
+            console.log(message);
+        }
+
+        function clearAuthData() {
+            addResult("Starting authentication data cleanup...", "info");
+            
+            let clearedCount = 0;
+            
+            // Clear specific localStorage items
+            const localStorageKeys = [
+                'firebase_user',
+                'authSuccess', 
+                'redirect_auth_attempt',
+                'redirect_auth_success',
+                'redirect_auth_time',
+                'emergency_access',
+                'bypass_auth'
+            ];
+            
+            localStorageKeys.forEach(key => {
+                if (localStorage.getItem(key)) {
+                    localStorage.removeItem(key);
+                    addResult(`Cleared localStorage: ${key}`, "success");
+                    clearedCount++;
+                }
+            });
+            
+            // Clear specific sessionStorage items
+            const sessionStorageKeys = [
+                'redirect_auth_attempt',
+                'redirect_auth_success', 
+                'redirect_auth_time',
+                'authSuccess',
+                'bypass_auth',
+                'emergency_auth_attempt'
+            ];
+            
+            sessionStorageKeys.forEach(key => {
+                if (sessionStorage.getItem(key)) {
+                    sessionStorage.removeItem(key);
+                    addResult(`Cleared sessionStorage: ${key}`, "success");
+                    clearedCount++;
+                }
+            });
+            
+            // Clear all Firebase-related items
+            const allLocalKeys = Object.keys(localStorage);
+            allLocalKeys.forEach(key => {
+                if (key.includes('firebase') || key.includes('auth') || key.includes('google') || key.includes('redirect')) {
+                    localStorage.removeItem(key);
+                    addResult(`Cleared additional localStorage: ${key}`, "success");
+                    clearedCount++;
+                }
+            });
+            
+            const allSessionKeys = Object.keys(sessionStorage);
+            allSessionKeys.forEach(key => {
+                if (key.includes('firebase') || key.includes('auth') || key.includes('google') || key.includes('redirect')) {
+                    sessionStorage.removeItem(key);
+                    addResult(`Cleared additional sessionStorage: ${key}`, "success");
+                    clearedCount++;
+                }
+            });
+            
+            // Clear cookies
+            const cookies = document.cookie.split(";");
+            cookies.forEach(function(c) { 
+                const cookieName = c.split("=")[0].trim();
+                if (cookieName) {
+                    document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+                    addResult(`Cleared cookie: ${cookieName}`, "success");
+                    clearedCount++;
+                }
+            });
+            
+            if (clearedCount === 0) {
+                addResult("No authentication data found to clear", "warning");
+            } else {
+                addResult(`✅ Successfully cleared ${clearedCount} authentication items`, "success");
+            }
+            
+            addResult("Authentication data cleanup complete!", "success");
+            addResult("You can now try logging in with Google again", "info");
+        }
+        
+        function goToApp() {
+            addResult("Clearing data and redirecting to app...", "info");
+            clearAuthData();
+            setTimeout(() => {
+                window.location.href = '/';
+            }, 1000);
+        }
+        
+        // Auto-clear on load
+        window.addEventListener('load', () => {
+            addResult("Authentication data cleaner loaded", "info");
+            addResult("Click 'Clear All Auth Data' to remove old authentication attempts", "info");
+        });
+    </script>
+</body>
+</html>

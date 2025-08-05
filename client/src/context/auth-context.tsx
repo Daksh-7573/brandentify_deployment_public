@@ -418,9 +418,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 return false; // Will retry
               } else if (hasRedirectAttempt) {
                 console.log("⚠️ WARNING: Had redirect attempt but no result after all retries - auth failed");
-                // Clear the stale attempt flag
+                // Clear the stale attempt flags thoroughly
                 sessionStorage.removeItem('redirect_auth_attempt');
                 sessionStorage.removeItem('redirect_auth_time');
+                localStorage.removeItem('redirect_auth_attempt');
+                localStorage.removeItem('redirect_auth_time');
+                sessionStorage.removeItem('redirect_auth_success');
+                localStorage.removeItem('redirect_auth_success');
+                sessionStorage.removeItem('authSuccess');
+                localStorage.removeItem('authSuccess');
               }
               
               // Check if user is already authenticated
