@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Emergency Auth Access</title>
+    <title>Authentication Reset</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
@@ -20,7 +20,7 @@
             backdrop-filter: blur(10px);
             border-radius: 20px;
             padding: 40px;
-            max-width: 600px;
+            max-width: 500px;
             width: 90%;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -44,14 +44,6 @@
             border-radius: 12px;
             padding: 20px;
             margin: 15px 0;
-        }
-        .critical {
-            border-left: 4px solid #f56565;
-        }
-        .warning {
-            border-left: 4px solid #ed8936;
-        }
-        .info {
             border-left: 4px solid #4299e1;
         }
         .action-title {
@@ -88,12 +80,6 @@
         .emergency:hover {
             box-shadow: 0 4px 12px rgba(245, 87, 108, 0.4);
         }
-        .clear { 
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-        }
-        .clear:hover {
-            box-shadow: 0 4px 12px rgba(79, 172, 254, 0.4);
-        }
         .status { 
             padding: 12px; 
             margin: 10px 0; 
@@ -101,39 +87,33 @@
             font-size: 14px;
         }
         .success { background: #f0fff4; border: 1px solid #9ae6b4; color: #276749; }
-        .info-status { background: #ebf8ff; border: 1px solid #90cdf4; color: #2c5282; }
-        .warning-status { background: #fffbeb; border: 1px solid #f6e05e; color: #744210; }
+        .info { background: #ebf8ff; border: 1px solid #90cdf4; color: #2c5282; }
+        .warning { background: #fffbeb; border: 1px solid #f6e05e; color: #744210; }
         #results { margin-top: 20px; max-height: 200px; overflow-y: auto; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🚨 Emergency Auth Access</h1>
-        <div class="subtitle">Clear old authentication data and access the platform directly</div>
+        <h1>🔧 Authentication Reset</h1>
+        <div class="subtitle">Clear old authentication data and get a fresh start</div>
         
-        <div class="action-card critical">
-            <div class="action-title">Option 1: Clear Auth Data</div>
-            <div class="action-desc">Remove all old authentication flags that are causing confusion</div>
-            <button onclick="clearAuthData()" class="clear">Clear All Auth Data</button>
+        <div class="action-card">
+            <div class="action-title">Step 1: Clear Authentication Data</div>
+            <div class="action-desc">Remove all old redirect attempts and cached auth data</div>
+            <button onclick="clearAuthData()">Clear All Auth Data</button>
         </div>
         
-        <div class="action-card warning">
-            <div class="action-title">Option 2: Direct Access (Bypass Auth)</div>
-            <div class="action-desc">Access Industry Pulse page directly without authentication</div>
+        <div class="action-card">
+            <div class="action-title">Step 2: Direct App Access</div>
+            <div class="action-desc">Go directly to the app without authentication requirements</div>
             <button onclick="directAccess()" class="emergency">Access Industry Pulse</button>
-        </div>
-        
-        <div class="action-card info">
-            <div class="action-title">Option 3: Return to Login</div>
-            <div class="action-desc">Go back to the main page with fresh auth data</div>
-            <button onclick="returnToLogin()">Go to Login Page</button>
         </div>
         
         <div id="results"></div>
     </div>
 
     <script>
-        function addResult(message, type = 'info-status') {
+        function addResult(message, type = 'info') {
             const div = document.createElement('div');
             div.className = `status ${type}`;
             div.innerHTML = `${message}`;
@@ -141,12 +121,12 @@
         }
 
         function clearAuthData() {
-            addResult("Clearing authentication data...", "info-status");
+            addResult("Clearing authentication data...", "info");
             
             let cleared = 0;
             
             // Clear localStorage
-            const localKeys = ['firebase_user', 'authSuccess', 'redirect_auth_attempt', 'redirect_auth_success', 'redirect_auth_time', 'emergency_access'];
+            const localKeys = ['firebase_user', 'authSuccess', 'redirect_auth_attempt', 'redirect_auth_success', 'redirect_auth_time'];
             localKeys.forEach(key => {
                 if (localStorage.getItem(key)) {
                     localStorage.removeItem(key);
@@ -155,7 +135,7 @@
             });
             
             // Clear sessionStorage  
-            const sessionKeys = ['redirect_auth_attempt', 'redirect_auth_success', 'redirect_auth_time', 'authSuccess', 'bypass_auth'];
+            const sessionKeys = ['redirect_auth_attempt', 'redirect_auth_success', 'redirect_auth_time', 'authSuccess'];
             sessionKeys.forEach(key => {
                 if (sessionStorage.getItem(key)) {
                     sessionStorage.removeItem(key);
@@ -163,7 +143,7 @@
                 }
             });
             
-            // Clear Firebase-related items
+            // Clear any Firebase-related items
             Object.keys(localStorage).forEach(key => {
                 if (key.includes('firebase') || key.includes('auth') || key.includes('redirect')) {
                     localStorage.removeItem(key);
@@ -184,37 +164,22 @@
             });
             
             addResult(`Authentication data cleared (${cleared} items removed)`, "success");
-            addResult("You can now try the Google login button again", "info-status");
+            addResult("You can now try logging in with Google again", "info");
         }
         
         function directAccess() {
-            addResult("Setting up direct access bypass...", "info-status");
-            
-            // Clear any old auth data first
-            clearAuthData();
-            
-            // Set bypass flags
+            addResult("Setting up direct access...", "info");
             localStorage.setItem('emergency_access', 'true');
             sessionStorage.setItem('bypass_auth', 'true');
-            
-            addResult("Redirecting to Industry Pulse page...", "success");
+            addResult("Redirecting to Industry Pulse...", "success");
             setTimeout(() => {
                 window.location.href = '/industry-pulse';
             }, 500);
         }
         
-        function returnToLogin() {
-            addResult("Clearing data and returning to login...", "info-status");
-            clearAuthData();
-            setTimeout(() => {
-                window.location.href = '/';
-            }, 1000);
-        }
-        
-        // Auto-setup on load
+        // Auto-clear on load
         window.addEventListener('load', () => {
-            addResult("Emergency access tool loaded", "info-status");
-            addResult("Choose an option above to resolve authentication issues", "info-status");
+            addResult("Authentication reset tool loaded", "info");
         });
     </script>
 </body>

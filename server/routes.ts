@@ -105,6 +105,31 @@ import * as xaiService from "./services/xai-service";
 export async function registerRoutes(app: Express): Promise<Server> {
   const apiRouter = express.Router();
   
+  // Diagnostic pages - serve HTML files directly (must be early in routes)
+  app.get('/emergency-access.html', (req: Request, res: Response) => {
+    res.sendFile(path.join(__dirname, '../emergency-access.html'));
+  });
+  
+  app.get('/clear-auth-data.html', (req: Request, res: Response) => {
+    res.sendFile(path.join(__dirname, '../clear-auth-data.html'));
+  });
+  
+  app.get('/auth-reset.html', (req: Request, res: Response) => {
+    res.sendFile(path.join(__dirname, '../auth-reset.html'));
+  });
+  
+  app.get('/profile-update-diagnostic.html', (req: Request, res: Response) => {
+    res.sendFile(path.join(__dirname, '../profile-update-diagnostic.html'));
+  });
+  
+  app.get('/debug-auth-simple.html', (req: Request, res: Response) => {
+    res.sendFile(path.join(__dirname, '../debug-auth-simple.html'));
+  });
+  
+  app.get('/connectivity-test.html', (req: Request, res: Response) => {
+    res.sendFile(path.join(__dirname, '../connectivity-test.html'));
+  });
+  
   // Health check endpoint for enterprise scaling
   apiRouter.get("/health", (req: Request, res: Response) => {
     res.status(200).json({

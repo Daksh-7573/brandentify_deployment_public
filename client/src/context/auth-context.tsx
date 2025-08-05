@@ -638,7 +638,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       // Use redirect method for Replit domains
       console.log("🚀 Initiating signInWithRedirect...");
-      await signInWithRedirect(auth as any, googleProvider);
+      await signInWithRedirect(auth as any, googleProvider as any);
       
       console.log("⚠️ signInWithRedirect completed without redirect - this should not happen");
       
