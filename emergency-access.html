@@ -1,155 +1,202 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Brandentifier Emergency Access</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Emergency Authentication Access</title>
     <style>
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
-            margin: 0; padding: 40px; 
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
-            color: white; min-height: 100vh;
-        }
-        .container { max-width: 800px; margin: 0 auto; }
-        .status { padding: 20px; margin: 20px 0; border-radius: 12px; }
-        .success { background: rgba(46, 125, 50, 0.2); border: 2px solid #2e7d32; }
-        .error { background: rgba(211, 47, 47, 0.2); border: 2px solid #d32f2f; }
-        .info { background: rgba(25, 118, 210, 0.2); border: 2px solid #1976d2; }
-        .btn { 
-            display: inline-block; padding: 12px 24px; margin: 10px 5px;
-            background: #1976d2; color: white; text-decoration: none;
-            border-radius: 8px; transition: all 0.3s;
-        }
-        .btn:hover { background: #1565c0; transform: translateY(-2px); }
-        code { background: rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 4px; }
-        .loading { animation: pulse 2s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .status { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .success { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
+        .error { background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
+        .warning { background: #fff3cd; border: 1px solid #ffeaa7; color: #856404; }
+        .info { background: #d1ecf1; border: 1px solid #bee5eb; color: #0c5460; }
+        button { padding: 12px 24px; margin: 10px 5px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        button:disabled { background: #6c757d; cursor: not-allowed; }
+        input { padding: 8px; margin: 5px; width: 300px; border: 1px solid #ccc; border-radius: 3px; }
+        .step { margin: 15px 0; padding: 15px; border-left: 4px solid #007bff; background: #f8f9fa; }
+        .code { background: #f8f9fa; padding: 10px; border-radius: 3px; font-family: monospace; margin: 10px 0; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🚀 Brandentifier Emergency Access Portal</h1>
+        <h1>🚨 Emergency Authentication Access</h1>
+        <p>This page bypasses normal authentication for debugging purposes.</p>
         
-        <div class="status info">
-            <h2>Domain Connection Issue Detected</h2>
-            <p>The Replit external domain is experiencing connectivity issues. This is a temporary infrastructure problem, not an application issue.</p>
+        <div class="step">
+            <h3>Step 1: Direct Industry Pulse Access</h3>
+            <p>Click below to go directly to the Industry Pulse page without authentication:</p>
+            <button onclick="directAccess()">Go to Industry Pulse (No Auth)</button>
         </div>
-
-        <div id="status" class="status info loading">
-            <h3>Testing Alternative Access Methods...</h3>
-            <p>Checking multiple connection paths to restore access...</p>
-        </div>
-
-        <div class="status success">
-            <h3>✅ Server Status: Operational</h3>
-            <ul>
-                <li>Application server running on port 5000</li>
-                <li>API endpoints responding correctly</li>
-                <li>All performance optimizations active</li>
-                <li>Security headers properly configured</li>
-            </ul>
-        </div>
-
-        <h2>Emergency Access Options</h2>
         
-        <div class="status info">
-            <h3>Option 1: Direct Domain Access</h3>
-            <p>Try these URLs in order:</p>
-            <a href="https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/" class="btn">Main Application</a>
-            <a href="https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/domain-debug.html" class="btn">Debug Tests</a>
-            <a href="https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/health" class="btn">API Health</a>
+        <div class="step">
+            <h3>Step 2: Test Firebase Configuration</h3>
+            <div>
+                <label>API Key:</label><br>
+                <input type="text" id="apiKey" placeholder="Paste your Firebase API key here" />
+            </div>
+            <div>
+                <label>App ID:</label><br>
+                <input type="text" id="appId" placeholder="Paste your Firebase App ID here" />
+            </div>
+            <button onclick="testFirebaseConfig()">Test Configuration</button>
         </div>
-
-        <div class="status info">
-            <h3>Option 2: Browser Troubleshooting</h3>
-            <ol>
-                <li><strong>Hard Refresh:</strong> Press <code>Ctrl+F5</code> (Windows) or <code>Cmd+Shift+R</code> (Mac)</li>
-                <li><strong>Incognito Mode:</strong> Open a new private/incognito window</li>
-                <li><strong>Clear Cache:</strong> Clear all browsing data for this site</li>
-                <li><strong>Wait & Retry:</strong> Wait 2-3 minutes, then try again</li>
-                <li><strong>Different Browser:</strong> Try Chrome, Firefox, Safari, or Edge</li>
-            </ol>
+        
+        <div class="step">
+            <h3>Step 3: Manual Authentication Test</h3>
+            <p>Test authentication with your actual Firebase keys:</p>
+            <button onclick="testAuth()" id="authBtn" disabled>Test Authentication</button>
         </div>
-
-        <div class="status info">
-            <h3>What's Working Behind the Scenes</h3>
-            <p><strong>Performance Optimizations Active:</strong></p>
-            <ul>
-                <li>Preconnect/Preload optimization (100-300ms faster DNS)</li>
-                <li>Firebase auth caching (150-250ms improvement)</li>
-                <li>Progressive rendering (critical components first)</li>
-                <li>Service Worker v2 (near-instant return visits)</li>
-                <li>Real-time performance monitoring</li>
-            </ul>
+        
+        <div class="step">
+            <h3>Step 4: Clear All Auth Data</h3>
+            <p>Reset all authentication data and caches:</p>
+            <button onclick="clearAllAuthData()">Clear All Auth Data</button>
         </div>
-
-        <div id="auto-test" class="status info">
-            <h3>🔄 Automatic Connection Test</h3>
-            <p>Running background connectivity tests...</p>
-            <div id="test-results">Initializing...</div>
-        </div>
+        
+        <div id="results"></div>
     </div>
 
-    <script>
-        let testAttempts = 0;
-        const maxAttempts = 10;
-
-        async function testConnectivity() {
-            testAttempts++;
-            const resultsDiv = document.getElementById('test-results');
-            
-            try {
-                const response = await fetch('/api/health', { 
-                    method: 'GET',
-                    cache: 'no-cache'
-                });
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    document.getElementById('status').innerHTML = `
-                        <h3>✅ Connection Restored!</h3>
-                        <p>Server responded successfully. API is healthy.</p>
-                        <p>Uptime: ${Math.round(data.uptime)} seconds</p>
-                        <a href="/" class="btn">Access Brandentifier Now</a>
-                    `;
-                    document.getElementById('status').className = 'status success';
-                    
-                    resultsDiv.innerHTML = `
-                        <p>✅ Test ${testAttempts}: SUCCESS</p>
-                        <p>Response time: Fast</p>
-                        <p>Status: ${response.status} OK</p>
-                    `;
-                    return true;
-                }
-            } catch (error) {
-                resultsDiv.innerHTML = `
-                    <p>❌ Test ${testAttempts}/${maxAttempts}: ${error.message}</p>
-                    <p>Retrying in 3 seconds...</p>
-                `;
-            }
-            
-            if (testAttempts < maxAttempts) {
-                setTimeout(testConnectivity, 3000);
-            } else {
-                resultsDiv.innerHTML = `
-                    <p>⚠️ Domain forwarding issue confirmed</p>
-                    <p>Try the manual troubleshooting steps above</p>
-                `;
-            }
-            
-            return false;
+    <script type="module">
+        function addResult(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `status ${type}`;
+            div.innerHTML = `[${new Date().toLocaleTimeString()}] ${message}`;
+            document.getElementById('results').appendChild(div);
+            console.log(message);
         }
 
-        // Start automatic testing
-        testConnectivity();
+        window.directAccess = function() {
+            addResult("Navigating directly to Industry Pulse...", "info");
+            // Clear any auth requirements
+            localStorage.setItem('emergency_access', 'true');
+            sessionStorage.setItem('bypass_auth', 'true');
+            window.location.href = '/industry-pulse';
+        };
 
-        // Update page title if connection fails
-        setTimeout(() => {
-            if (testAttempts >= 3 && document.getElementById('status').className.includes('info')) {
-                document.title = 'Brandentifier - Connection Issue';
+        window.testFirebaseConfig = function() {
+            const apiKey = document.getElementById('apiKey').value;
+            const appId = document.getElementById('appId').value;
+            
+            if (!apiKey || !appId) {
+                addResult("Please enter both API Key and App ID", "error");
+                return;
             }
-        }, 10000);
+            
+            // Validate format
+            if (!apiKey.startsWith('AIza')) {
+                addResult("API Key should start with 'AIza'", "error");
+                return;
+            }
+            
+            if (!appId.includes(':')) {
+                addResult("App ID should contain colons (format: 1:xxx:web:xxx)", "error");
+                return;
+            }
+            
+            addResult("✅ Configuration format looks correct", "success");
+            addResult(`API Key: ${apiKey.substring(0, 10)}...`, "info");
+            addResult(`App ID: ${appId}`, "info");
+            
+            // Enable auth test
+            document.getElementById('authBtn').disabled = false;
+            addResult("Authentication test enabled", "success");
+        };
+
+        window.testAuth = async function() {
+            const apiKey = document.getElementById('apiKey').value;
+            const appId = document.getElementById('appId').value;
+            
+            addResult("Testing authentication with provided credentials...", "info");
+            
+            try {
+                // Dynamic import of Firebase
+                const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js');
+                const { getAuth, signInWithRedirect, GoogleAuthProvider } = await import('https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js');
+                
+                const firebaseConfig = {
+                    apiKey: apiKey,
+                    authDomain: "brandentifier-app.firebaseapp.com",
+                    projectId: "brandentifier-app",
+                    storageBucket: "brandentifier-app.appspot.com",
+                    appId: appId
+                };
+                
+                addResult("Initializing Firebase...", "info");
+                const app = initializeApp(firebaseConfig);
+                const auth = getAuth(app);
+                const provider = new GoogleAuthProvider();
+                
+                provider.addScope('email');
+                provider.addScope('profile');
+                
+                addResult("✅ Firebase initialized successfully", "success");
+                addResult("Starting Google authentication...", "info");
+                
+                // Set flags for tracking
+                sessionStorage.setItem('emergency_auth_attempt', 'true');
+                
+                await signInWithRedirect(auth, provider);
+                addResult("Redirect initiated - you should be taken to Google", "success");
+                
+            } catch (error) {
+                addResult(`❌ Authentication test failed: ${error.message}`, "error");
+                console.error('Auth test error:', error);
+            }
+        };
+
+        window.clearAllAuthData = function() {
+            addResult("Clearing all authentication data...", "info");
+            
+            // Clear localStorage
+            const localStorageKeys = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                localStorageKeys.push(localStorage.key(i));
+            }
+            localStorageKeys.forEach(key => {
+                if (key.includes('firebase') || key.includes('auth') || key.includes('redirect') || key.includes('google')) {
+                    localStorage.removeItem(key);
+                    addResult(`Cleared localStorage: ${key}`, "info");
+                }
+            });
+            
+            // Clear sessionStorage
+            const sessionStorageKeys = [];
+            for (let i = 0; i < sessionStorage.length; i++) {
+                sessionStorageKeys.push(sessionStorage.key(i));
+            }
+            sessionStorageKeys.forEach(key => {
+                if (key.includes('firebase') || key.includes('auth') || key.includes('redirect') || key.includes('google')) {
+                    sessionStorage.removeItem(key);
+                    addResult(`Cleared sessionStorage: ${key}`, "info");
+                }
+            });
+            
+            // Clear cookies
+            document.cookie.split(";").forEach(function(c) { 
+                document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+            });
+            
+            addResult("✅ All authentication data cleared", "success");
+            addResult("You can now try authentication again", "info");
+        };
+
+        // Check if we're returning from Google auth
+        window.addEventListener('load', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const hasAuthResult = urlParams.get('code') || urlParams.get('state');
+            const hadEmergencyAttempt = sessionStorage.getItem('emergency_auth_attempt');
+            
+            if (hasAuthResult && hadEmergencyAttempt) {
+                addResult("🎉 Returned from Google authentication!", "success");
+                addResult("This means the OAuth flow is working correctly", "success");
+                addResult("The issue is likely in the app's redirect result handling", "warning");
+                sessionStorage.removeItem('emergency_auth_attempt');
+            }
+        });
+        
+        addResult("Emergency access page loaded", "info");
+        addResult("This page helps diagnose and bypass authentication issues", "info");
     </script>
 </body>
 </html>

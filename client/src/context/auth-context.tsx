@@ -374,64 +374,75 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           return () => {};
         }
         
-        // Enhanced redirect result checking - FIXED VERSION
-        try {
-          const { getRedirectResult } = await import('firebase/auth');
-          console.log("🔍 Checking for redirect result on auth context initialization...");
-          
-          // Check for redirect attempt flags first
-          const hasRedirectAttempt = sessionStorage.getItem('redirect_auth_attempt') === 'true';
-          if (hasRedirectAttempt) {
-            console.log("📍 Found redirect attempt flag - checking for auth result");
-          }
-          
-          const redirectResult = await getRedirectResult(auth as any);
-          if (redirectResult?.user) {
-            console.log("🎉 REDIRECT RESULT FOUND in auth context:", redirectResult.user.email);
+        // Enhanced redirect result checking with multiple attempts
+        let redirectCheckAttempts = 0;
+        const maxRedirectChecks = 5;
+        
+        const checkRedirectResultWithRetry = async () => {
+          try {
+            const { getRedirectResult } = await import('firebase/auth');
+            console.log(`🔍 Checking for redirect result (attempt ${redirectCheckAttempts + 1}/${maxRedirectChecks})...`);
             
-            // Clear attempt flags FIRST
-            sessionStorage.removeItem('redirect_auth_attempt');
-            sessionStorage.removeItem('redirect_auth_time');
+            // Check for redirect attempt flags first
+            const hasRedirectAttempt = sessionStorage.getItem('redirect_auth_attempt') === 'true';
+            if (hasRedirectAttempt) {
+              console.log("📍 Found redirect attempt flag - checking for auth result");
+            }
             
-            // Set success flags
-            sessionStorage.setItem('authSuccess', 'true');
-            sessionStorage.setItem('redirect_auth_success', JSON.stringify({
-              email: redirectResult.user.email,
-              uid: redirectResult.user.uid,
-              timestamp: new Date().toISOString()
-            }));
-            
-            console.log("✅ Redirect result processed successfully - auth should proceed");
-            
-            // Mark auth as successful but don't navigate here
-            // Navigation will be handled by the auth state listener
-            console.log("✅ Redirect result processed - will navigate via auth state listener");
-            
-            // Don't return here, let the auth state listener handle the user
-          } else {
-            console.log("❌ No redirect result found in auth context");
-            
-            // Check if user is already authenticated
-            if (auth.currentUser) {
-              console.log("✅ User already authenticated on page load:", auth.currentUser.email);
-            } else {
-              console.log("❌ No user authenticated on page load");
+            const redirectResult = await getRedirectResult(auth as any);
+            if (redirectResult?.user) {
+              console.log("🎉 REDIRECT RESULT FOUND in auth context:", redirectResult.user.email);
               
-              // If we had a redirect attempt but no result, something went wrong
-              if (hasRedirectAttempt) {
-                console.log("⚠️ WARNING: Had redirect attempt but no result - auth may have failed");
+              // Clear attempt flags FIRST
+              sessionStorage.removeItem('redirect_auth_attempt');
+              sessionStorage.removeItem('redirect_auth_time');
+              
+              // Set success flags
+              sessionStorage.setItem('authSuccess', 'true');
+              sessionStorage.setItem('redirect_auth_success', JSON.stringify({
+                email: redirectResult.user.email,
+                uid: redirectResult.user.uid,
+                timestamp: new Date().toISOString()
+              }));
+              
+              console.log("✅ Redirect result processed successfully - auth should proceed");
+              return true; // Success
+            } else {
+              console.log("❌ No redirect result found");
+              
+              // If we had a redirect attempt but no result, retry a few times
+              if (hasRedirectAttempt && redirectCheckAttempts < maxRedirectChecks - 1) {
+                redirectCheckAttempts++;
+                console.log(`⏳ Retrying redirect check in 1 second (${redirectCheckAttempts}/${maxRedirectChecks})...`);
+                setTimeout(checkRedirectResultWithRetry, 1000);
+                return false; // Will retry
+              } else if (hasRedirectAttempt) {
+                console.log("⚠️ WARNING: Had redirect attempt but no result after all retries - auth failed");
                 // Clear the stale attempt flag
                 sessionStorage.removeItem('redirect_auth_attempt');
                 sessionStorage.removeItem('redirect_auth_time');
               }
+              
+              // Check if user is already authenticated
+              if (auth.currentUser) {
+                console.log("✅ User already authenticated on page load:", auth.currentUser.email);
+                return true;
+              } else {
+                console.log("❌ No user authenticated on page load");
+                return false;
+              }
             }
+          } catch (redirectError: any) {
+            console.error("❌ Error checking redirect result:", redirectError.message);
+            // Clear attempt flags on error
+            sessionStorage.removeItem('redirect_auth_attempt');
+            sessionStorage.removeItem('redirect_auth_time');
+            return false;
           }
-        } catch (redirectError: any) {
-          console.error("❌ Error checking redirect result in auth context:", redirectError);
-          // Clear attempt flags on error
-          sessionStorage.removeItem('redirect_auth_attempt');
-          sessionStorage.removeItem('redirect_auth_time');
-        }
+        };
+        
+        // Start the redirect checking process
+        await checkRedirectResultWithRetry();
         
         console.log("Auth object available, setting up listener");
         const { onAuthStateChanged } = await import('firebase/auth');

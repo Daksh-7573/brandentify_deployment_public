@@ -1,110 +1,213 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Simple Auth Debug</title>
+    <title>Simple Firebase Auth Test</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 20px; }
-        .debug-box { background: #f5f5f5; border: 1px solid #ddd; padding: 15px; margin: 10px 0; }
-        .success { color: green; }
-        .error { color: red; }
-        .warning { color: orange; }
+        .log { padding: 5px; margin: 5px 0; background: #f5f5f5; border-left: 3px solid #ccc; }
+        .success { border-left-color: #28a745; background: #d4edda; }
+        .error { border-left-color: #dc3545; background: #f8d7da; }
+        .warning { border-left-color: #ffc107; background: #fff3cd; }
+        button { padding: 10px 20px; margin: 10px 5px; }
     </style>
 </head>
 <body>
-    <h1>Firebase Auth Debug - Simple Test</h1>
-    <div id="status">Loading...</div>
+    <h1>Simple Firebase Auth Test</h1>
+    <div id="status">Initializing...</div>
+    <button id="loginBtn" onclick="startAuth()" disabled>Login with Google</button>
+    <button onclick="checkAuthState()">Check Auth State</button>
+    <button onclick="clearAuthData()">Clear Auth Data</button>
     
+    <div id="logs"></div>
+
     <script type="module">
-        console.log("🔧 Starting simple Firebase auth debug...");
-        
-        // Import Firebase modules
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js';
-        import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js';
-        
-        const statusDiv = document.getElementById('status');
-        
-        function addStatus(message, type = 'info') {
+        import { 
+            getAuth, 
+            signInWithRedirect, 
+            getRedirectResult, 
+            GoogleAuthProvider,
+            onAuthStateChanged 
+        } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js';
+
+        let auth;
+        let provider;
+
+        function log(message, type = 'log') {
+            const timestamp = new Date().toLocaleTimeString();
             const div = document.createElement('div');
-            div.className = `debug-box ${type}`;
-            div.innerHTML = `<strong>${new Date().toLocaleTimeString()}</strong>: ${message}`;
-            statusDiv.appendChild(div);
-            console.log(`[${type.toUpperCase()}] ${message}`);
+            div.className = `log ${type}`;
+            div.innerHTML = `[${timestamp}] ${message}`;
+            document.getElementById('logs').appendChild(div);
+            console.log(`[${timestamp}] ${message}`);
         }
-        
+
+        function updateStatus(message) {
+            document.getElementById('status').textContent = message;
+            log(message, 'log');
+        }
+
+        // Initialize Firebase with actual config
         try {
-            // Initialize Firebase with your config
+            // Get actual Firebase config from environment or ask user to input
+            const urlParams = new URLSearchParams(window.location.search);
             const firebaseConfig = {
-                apiKey: "AIzaSyDK_JkoQ6wVUNhQjYTtJF0xXVXOQFOHs9Q",
+                apiKey: urlParams.get('apiKey') || prompt('Enter your Firebase API Key (starts with AIza...):') || "test-key",
                 authDomain: "brandentifier-app.firebaseapp.com",
                 projectId: "brandentifier-app",
-                storageBucket: "brandentifier-app.firebasestorage.app",
-                messagingSenderId: "364932947264",
-                appId: "1:364932947264:web:8b5d7c1d3f0e4a8c8f9b3e"
+                storageBucket: "brandentifier-app.appspot.com",
+                appId: urlParams.get('appId') || prompt('Enter your Firebase App ID (format: 1:xxx:web:xxx):') || "test-app-id"
             };
-            
+
+            log('Initializing Firebase...', 'log');
             const app = initializeApp(firebaseConfig);
-            const auth = getAuth(app);
-            const provider = new GoogleAuthProvider();
+            auth = getAuth(app);
+            provider = new GoogleAuthProvider();
             
-            addStatus("Firebase initialized successfully", "success");
-            addStatus(`Current domain: ${window.location.hostname}`, "info");
-            
-            // Check for redirect result first
-            addStatus("Checking for redirect result...", "info");
+            // Configure provider
+            provider.addScope('email');
+            provider.addScope('profile');
+            provider.setCustomParameters({
+                'prompt': 'select_account'
+            });
+
+            log('Firebase initialized successfully', 'success');
+            updateStatus('Ready to authenticate');
+            document.getElementById('loginBtn').disabled = false;
+
+            // Check for redirect result immediately
+            checkRedirectResult();
+
+            // Set up auth state listener
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    log(`User authenticated: ${user.email}`, 'success');
+                    log(`User ID: ${user.uid}`, 'success');
+                    updateStatus(`Logged in as ${user.email}`);
+                } else {
+                    log('User signed out', 'warning');
+                    updateStatus('Not authenticated');
+                }
+            });
+
+        } catch (error) {
+            log(`Firebase initialization error: ${error.message}`, 'error');
+            updateStatus('Firebase initialization failed');
+        }
+
+        async function checkRedirectResult() {
+            log('Checking for redirect result...', 'log');
             
             try {
                 const result = await getRedirectResult(auth);
                 if (result) {
-                    addStatus(`✅ REDIRECT SUCCESS: User ${result.user.email} authenticated`, "success");
-                    addStatus(`User ID: ${result.user.uid}`, "success");
-                    addStatus(`Display Name: ${result.user.displayName}`, "success");
+                    // This gives you a Google Access Token. You can use it to access the Google API.
+                    const credential = GoogleAuthProvider.credentialFromResult(result);
+                    const token = credential?.accessToken;
+                    const user = result.user;
                     
-                    // This should redirect to industry pulse
-                    addStatus("🚀 Authentication successful! Should redirect to industry pulse...", "success");
-                    setTimeout(() => {
-                        window.location.href = '/industry-pulse';
-                    }, 2000);
+                    log(`Redirect result found! User: ${user.email}`, 'success');
+                    log(`Access token: ${token ? 'Present' : 'Missing'}`, token ? 'success' : 'warning');
+                    
+                    // Clear the redirect attempt flag
+                    localStorage.removeItem('firebase_redirect_attempt');
+                    localStorage.removeItem('firebase_redirect_time');
+                    
+                    return result;
                 } else {
-                    addStatus("No redirect result found", "warning");
+                    log('No redirect result found', 'warning');
+                    
+                    // Check if we had a redirect attempt
+                    const redirectAttempt = localStorage.getItem('firebase_redirect_attempt');
+                    if (redirectAttempt) {
+                        log('Had redirect attempt but no result - possible domain issue', 'error');
+                    }
+                    
+                    return null;
                 }
             } catch (error) {
-                addStatus(`❌ Redirect error: ${error.message}`, "error");
+                log(`Error checking redirect result: ${error.message}`, 'error');
+                log(`Error code: ${error.code}`, 'error');
+                return null;
+            }
+        }
+
+        window.startAuth = async function() {
+            log('Starting Google authentication...', 'log');
+            updateStatus('Redirecting to Google...');
+            
+            try {
+                // Set redirect attempt flag
+                localStorage.setItem('firebase_redirect_attempt', 'true');
+                localStorage.setItem('firebase_redirect_time', new Date().toISOString());
+                
+                log('Redirect attempt flags set', 'log');
+                log(`Current URL: ${window.location.href}`, 'log');
+                log(`Auth domain: brandentifier-app.firebaseapp.com`, 'log');
+                
+                await signInWithRedirect(auth, provider);
+                log('signInWithRedirect called successfully', 'success');
+                
+            } catch (error) {
+                log(`Authentication error: ${error.message}`, 'error');
+                log(`Error code: ${error.code}`, 'error');
+                updateStatus('Authentication failed');
+                
+                // Clear redirect flags on error
+                localStorage.removeItem('firebase_redirect_attempt');
+                localStorage.removeItem('firebase_redirect_time');
+            }
+        };
+
+        window.checkAuthState = function() {
+            log('Checking current auth state...', 'log');
+            
+            if (auth && auth.currentUser) {
+                log(`Current user: ${auth.currentUser.email}`, 'success');
+                log(`User verified: ${auth.currentUser.emailVerified}`, 'log');
+                updateStatus(`Authenticated: ${auth.currentUser.email}`);
+            } else {
+                log('No current user', 'warning');
+                updateStatus('Not authenticated');
             }
             
-            // Set up auth state listener
-            onAuthStateChanged(auth, (user) => {
-                if (user) {
-                    addStatus(`✅ User is signed in: ${user.email}`, "success");
-                } else {
-                    addStatus("❌ No user signed in", "warning");
-                }
-            });
+            // Check for pending redirect
+            const redirectAttempt = localStorage.getItem('firebase_redirect_attempt');
+            const redirectTime = localStorage.getItem('firebase_redirect_time');
             
-            // Add test button
-            const button = document.createElement('button');
-            button.textContent = 'Test Google Sign In';
-            button.style.cssText = 'padding: 10px 20px; font-size: 16px; margin: 20px 0; background: #4285f4; color: white; border: none; border-radius: 5px; cursor: pointer;';
-            button.onclick = async () => {
-                try {
-                    addStatus("🚀 Starting Google sign in with redirect...", "info");
-                    
-                    // Set provider parameters
-                    provider.setCustomParameters({
-                        prompt: 'select_account'
-                    });
-                    
-                    await signInWithRedirect(auth, provider);
-                    addStatus("Redirect initiated...", "info");
-                } catch (error) {
-                    addStatus(`❌ Sign in error: ${error.message}`, "error");
-                }
-            };
+            if (redirectAttempt) {
+                log(`Pending redirect attempt from: ${redirectTime}`, 'warning');
+            } else {
+                log('No pending redirect attempts', 'log');
+            }
+        };
+
+        window.clearAuthData = function() {
+            log('Clearing all auth data...', 'log');
             
-            statusDiv.appendChild(button);
+            // Clear localStorage flags
+            localStorage.removeItem('firebase_redirect_attempt');
+            localStorage.removeItem('firebase_redirect_time');
             
-        } catch (error) {
-            addStatus(`❌ Firebase initialization error: ${error.message}`, "error");
-        }
+            // Clear any cached auth data
+            if (auth && auth.currentUser) {
+                auth.signOut().then(() => {
+                    log('User signed out successfully', 'success');
+                    updateStatus('Signed out');
+                }).catch(error => {
+                    log(`Sign out error: ${error.message}`, 'error');
+                });
+            } else {
+                log('No user to sign out', 'log');
+                updateStatus('Ready to authenticate');
+            }
+        };
+
+        // Check on page load
+        window.addEventListener('load', () => {
+            log('Page loaded, checking auth state...', 'log');
+            setTimeout(checkRedirectResult, 1000);
+        });
     </script>
 </body>
 </html>
