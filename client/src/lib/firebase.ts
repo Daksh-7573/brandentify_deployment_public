@@ -17,6 +17,18 @@ const apiKey = import.meta.env.VITE_FIREBASE_API_KEY;
 const projectId = import.meta.env.VITE_FIREBASE_PROJECT_ID;
 const appId = import.meta.env.VITE_FIREBASE_APP_ID;
 
+// Debug environment variables
+console.log("Firebase Environment Check:", {
+  apiKey: apiKey ? `Present (${apiKey.length} chars)` : 'Missing',
+  projectId: projectId || 'Missing',
+  appId: appId ? `Present (${appId.length} chars)` : 'Missing',
+  envVarsDetected: {
+    VITE_FIREBASE_API_KEY: !!import.meta.env.VITE_FIREBASE_API_KEY,
+    VITE_FIREBASE_PROJECT_ID: !!import.meta.env.VITE_FIREBASE_PROJECT_ID,
+    VITE_FIREBASE_APP_ID: !!import.meta.env.VITE_FIREBASE_APP_ID
+  }
+});
+
 // Create an array of all authorized domains for this project
 const authDomains = [
   `${projectId}.firebaseapp.com`, // Default Firebase domain
