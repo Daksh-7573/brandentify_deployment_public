@@ -120,17 +120,10 @@ try {
   // Configure Google Auth Provider for maximum compatibility
   googleProvider = new GoogleAuthProvider();
   
-  // Enhanced configuration for Replit domain compatibility
+  // Simplified configuration for maximum compatibility with Replit
   googleProvider.setCustomParameters({
-    // Force account selection to prevent auto-login issues
     prompt: 'select_account',
-    // Disable hosted domain restriction that might cause timeout
-    // hd: '*', // Removed as this can cause timeout issues
-    // Add parameters for better popup handling on Replit
-    access_type: 'online',
-    include_granted_scopes: 'true',
-    // Ensure proper response handling
-    response_type: 'code'
+    access_type: 'online'
   });
   
   // Add essential OAuth scopes only
@@ -150,9 +143,8 @@ try {
     projectId: firebaseConfig.projectId,
     currentDomain: currentHostname,
     isReplitDomain,
-    // Add OAuth configuration details for debugging
     googleProviderScopes: ['email', 'profile'],
-    customParameters: { prompt: 'select_account', hd: '*' }
+    customParameters: { prompt: 'select_account', access_type: 'online' }
   });
 } catch (error) {
   console.error("CRITICAL: Firebase initialization failed:", error);

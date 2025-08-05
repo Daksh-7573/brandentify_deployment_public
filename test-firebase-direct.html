@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Firebase OAuth Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f0f0f0; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; }
+        .status { background: #f5f5f5; border-left: 4px solid #007cba; padding: 15px; margin: 10px 0; }
+        .success { border-left-color: #28a745; }
+        .error { border-left-color: #dc3545; }
+        .warning { border-left-color: #ffc107; }
+        button { background: #4285f4; color: white; border: none; padding: 12px 24px; border-radius: 4px; cursor: pointer; margin: 10px 0; }
+        button:hover { background: #3367d6; }
+        .code { background: #f8f9fa; border: 1px solid #e9ecef; padding: 10px; font-family: monospace; margin: 10px 0; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Firebase OAuth Configuration Test</h1>
+        <p>Testing Firebase authentication with your exact configuration to identify OAuth flow issues.</p>
+        
+        <div id="status">Starting Firebase test...</div>
+        
+        <div class="grid">
+            <div>
+                <h3>Test Actions</h3>
+                <button id="testRedirect">Test Google Redirect Auth</button>
+                <button id="checkConfig">Verify Firebase Config</button>
+                <button id="checkAuth">Check Auth State</button>
+                <button id="clearStorage">Clear Auth Data</button>
+            </div>
+            <div>
+                <h3>Current Status</h3>
+                <div id="authStatus">Not checked</div>
+            </div>
+        </div>
+        
+        <h3>Domain Information</h3>
+        <div class="code" id="domainInfo">Loading...</div>
+        
+        <h3>Firebase Configuration</h3>
+        <div class="code" id="configInfo">Loading...</div>
+        
+        <h3>OAuth URLs</h3>
+        <div class="code" id="oauthInfo">Loading...</div>
+    </div>
+
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js';
+        import { 
+            getAuth, 
+            GoogleAuthProvider, 
+            signInWithRedirect, 
+            getRedirectResult, 
+            onAuthStateChanged,
+            signOut
+        } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js';
+        
+        const statusDiv = document.getElementById('status');
+        
+        function addStatus(message, type = 'status') {
+            const div = document.createElement('div');
+            div.className = `status ${type}`;
+            div.innerHTML = `<strong>${new Date().toLocaleTimeString()}</strong>: ${message}`;
+            statusDiv.appendChild(div);
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+        
+        // Firebase configuration (your exact config)
+        const firebaseConfig = {
+            apiKey: "AIzaSyDK_JkoQ6wVUNhQjYTtJF0xXVXOQFOHs9Q",
+            authDomain: "brandentifier-app.firebaseapp.com",
+            projectId: "brandentifier-app",
+            storageBucket: "brandentifier-app.firebasestorage.app",
+            messagingSenderId: "364932947264",
+            appId: "1:364932947264:web:8b5d7c1d3f0e4a8c8f9b3e"
+        };
+        
+        let app, auth, provider;
+        
+        try {
+            // Initialize Firebase
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            provider = new GoogleAuthProvider();
+            
+            // Set provider parameters
+            provider.setCustomParameters({
+                prompt: 'select_account',
+                access_type: 'online'
+            });
+            provider.addScope('email');
+            provider.addScope('profile');
+            
+            addStatus("Firebase initialized successfully", "success");
+            
+        } catch (error) {
+            addStatus(`Firebase initialization failed: ${error.message}`, "error");
+        }
+        
+        // Display domain information
+        document.getElementById('domainInfo').innerHTML = `
+Current URL: ${window.location.href}
+Current Domain: ${window.location.hostname}
+Protocol: ${window.location.protocol}
+Port: ${window.location.port}
+Pathname: ${window.location.pathname}
+        `;
+        
+        // Display Firebase config
+        document.getElementById('configInfo').innerHTML = `
+API Key: ${firebaseConfig.apiKey ? 'Present (' + firebaseConfig.apiKey.length + ' chars)' : 'Missing'}
+Auth Domain: ${firebaseConfig.authDomain}
+Project ID: ${firebaseConfig.projectId}
+App ID: ${firebaseConfig.appId ? 'Present' : 'Missing'}
+        `;
+        
+        // Display OAuth information
+        document.getElementById('oauthInfo').innerHTML = `
+Expected Redirect URI: ${window.location.origin}/__/auth/handler
+OAuth Client ID: Will be determined by Firebase
+Authorized Domains: Should include ${window.location.hostname}
+        `;
+        
+        // Set up event listeners
+        document.getElementById('testRedirect').onclick = async () => {
+            try {
+                addStatus("Starting Google Sign-In with Redirect...", "warning");
+                
+                // Clear any existing auth state
+                sessionStorage.setItem('auth_test_start', new Date().toISOString());
+                
+                await signInWithRedirect(auth, provider);
+                addStatus("Redirect request sent - you should be redirected to Google", "success");
+                
+            } catch (error) {
+                addStatus(`Sign-in failed: ${error.code} - ${error.message}`, "error");
+                
+                // Detailed error analysis
+                if (error.code === 'auth/unauthorized-domain') {
+                    addStatus("Domain not authorized in Firebase Console. Add this domain to authorized domains.", "error");
+                } else if (error.code === 'auth/operation-not-allowed') {
+                    addStatus("Google sign-in not enabled in Firebase Console.", "error");
+                } else if (error.code === 'auth/invalid-api-key') {
+                    addStatus("Invalid Firebase API key.", "error");
+                }
+            }
+        };
+        
+        document.getElementById('checkConfig').onclick = () => {
+            addStatus("Checking Firebase configuration...", "warning");
+            
+            // Test API key
+            if (!firebaseConfig.apiKey || firebaseConfig.apiKey.length < 30) {
+                addStatus("API Key appears invalid", "error");
+            } else {
+                addStatus("API Key format looks correct", "success");
+            }
+            
+            // Test auth domain
+            if (firebaseConfig.authDomain.includes(firebaseConfig.projectId)) {
+                addStatus("Auth domain format is correct", "success");
+            } else {
+                addStatus("Auth domain format may be incorrect", "warning");
+            }
+            
+            addStatus("Configuration check complete", "success");
+        };
+        
+        document.getElementById('checkAuth').onclick = () => {
+            if (auth.currentUser) {
+                addStatus(`User is signed in: ${auth.currentUser.email}`, "success");
+                document.getElementById('authStatus').innerHTML = `
+                    <strong>Signed In</strong><br>
+                    Email: ${auth.currentUser.email}<br>
+                    UID: ${auth.currentUser.uid}<br>
+                    Name: ${auth.currentUser.displayName || 'Not provided'}
+                `;
+            } else {
+                addStatus("No user currently signed in", "warning");
+                document.getElementById('authStatus').innerHTML = "<strong>Not Signed In</strong>";
+            }
+        };
+        
+        document.getElementById('clearStorage').onclick = async () => {
+            try {
+                if (auth.currentUser) {
+                    await signOut(auth);
+                }
+                sessionStorage.clear();
+                localStorage.clear();
+                addStatus("Auth data cleared", "success");
+                document.getElementById('authStatus').innerHTML = "<strong>Cleared</strong>";
+            } catch (error) {
+                addStatus(`Error clearing auth: ${error.message}`, "error");
+            }
+        };
+        
+        // Check for redirect result on page load
+        window.addEventListener('load', async () => {
+            try {
+                addStatus("Checking for redirect result...", "warning");
+                const result = await getRedirectResult(auth);
+                
+                if (result) {
+                    addStatus(`🎉 REDIRECT SUCCESS! User: ${result.user.email}`, "success");
+                    addStatus(`User UID: ${result.user.uid}`, "success");
+                    addStatus(`Display Name: ${result.user.displayName || 'Not provided'}`, "success");
+                    
+                    // Show success and redirect
+                    setTimeout(() => {
+                        addStatus("Redirecting to industry pulse...", "success");
+                        window.location.href = '/industry-pulse';
+                    }, 3000);
+                    
+                } else {
+                    addStatus("No redirect result found", "warning");
+                    
+                    // Check if this was a failed redirect attempt
+                    const testStart = sessionStorage.getItem('auth_test_start');
+                    if (testStart) {
+                        const timeDiff = Date.now() - new Date(testStart).getTime();
+                        if (timeDiff < 30000) { // Less than 30 seconds
+                            addStatus("Recent redirect attempt detected but no result - OAuth may have failed", "error");
+                        }
+                        sessionStorage.removeItem('auth_test_start');
+                    }
+                }
+            } catch (error) {
+                addStatus(`Error checking redirect result: ${error.code} - ${error.message}`, "error");
+            }
+        });
+        
+        // Set up auth state listener
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                addStatus(`Auth state: User signed in (${user.email})`, "success");
+            } else {
+                addStatus("Auth state: No user signed in", "warning");
+            }
+        });
+        
+    </script>
+</body>
+</html>
