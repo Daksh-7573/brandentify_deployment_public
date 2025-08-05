@@ -1,63 +1,56 @@
-# Firebase Domain Setup Guide
+# 🔥 Firebase Domain Authorization Fix
 
-## Issue
-Google authentication redirects back to auth page instead of completing login because the Replit domain is not authorized in Firebase.
+## Problem Identified
+Your console logs show:
+- ✅ Firebase API keys are working correctly
+- ✅ OAuth redirect happens successfully  
+- ❌ **"No redirect result found"** - Domain authorization issue
+- ⚠️ Domain warning: "Add these domains to Firebase Auth > Settings > Authorized domains"
 
-## Current Domain
-Your current Replit domain is: `25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev`
+## Required Action
 
-## Step-by-Step Solution
+**You need to add your Replit domain to Firebase authorized domains:**
 
-### 1. Access Firebase Console
-1. Go to [Firebase Console](https://console.firebase.google.com/)
-2. Select your project: **brandentifier-app**
+### Step 1: Go to Firebase Console
+1. Visit: https://console.firebase.google.com/
+2. Select your **"brandentifier-app"** project
 
-### 2. Navigate to Authentication Settings
+### Step 2: Navigate to Authentication Settings
 1. Click **"Authentication"** in the left sidebar
 2. Click **"Settings"** tab
-3. Click **"Authorized domains"** section
+3. Scroll down to **"Authorized domains"** section
 
-### 3. Add Required Domains
-Add these exact domains to the authorized domains list:
+### Step 3: Add These Exact Domains
+Add these domains one by one:
 
-**Required Domains:**
 ```
 25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev
 *.replit.dev
 *.replit.app
+localhost
 ```
 
-**Optional (for future deployments):**
-```
-25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev.replit.app
-```
+### Step 4: Verify Setup
+- Make sure **Google sign-in is enabled** in Authentication > Sign-in method
+- Ensure the domains are properly saved
 
-### 4. Save Changes
-1. Click **"Save"** or **"Add domain"** for each entry
-2. Wait 1-2 minutes for changes to propagate
+## Why This Fixes It
 
-### 5. Test Authentication
-1. Return to your app
-2. Click "Continue with Google"
-3. Complete the Google login process
-4. Should redirect to Industry Pulse page
+Firebase blocks OAuth redirects from unauthorized domains for security. Your Replit domain isn't in the authorized list, so:
 
-## Troubleshooting
+1. ✅ You click "Continue with Google" → Works
+2. ✅ Google login page opens → Works  
+3. ✅ You complete Google authentication → Works
+4. ❌ Firebase rejects the redirect back to your app → **FAILS HERE**
+5. ❌ You get redirected back to auth page → Current behavior
 
-### If login still fails:
-1. Check Firebase console shows all domains are added
-2. Wait 5 minutes for DNS propagation
-3. Try in incognito/private browser window
-4. Clear browser cache and cookies
+## After Adding Domains
 
-### Common Mistakes:
-- Missing the exact domain format
-- Not adding wildcard domains (*.replit.dev)
-- Not waiting for propagation time
+Once you add the domains, the authentication will work:
+1. ✅ Click "Continue with Google"
+2. ✅ Complete Google login
+3. ✅ **Firebase accepts the redirect**
+4. ✅ **Automatic redirect to Industry Pulse page**
 
-## Success Indicators
-After completing setup, you should see:
-- Successful redirect to Google login
-- Google authentication completes
-- Redirect to `/industry-pulse` page
-- Debug overlay shows "Auth Success: true"
+## Quick Test
+After adding domains, clear your browser cache and try logging in again.
