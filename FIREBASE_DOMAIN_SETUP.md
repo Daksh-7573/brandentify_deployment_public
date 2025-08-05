@@ -1,60 +1,63 @@
-# Firebase Domain Authorization Setup
+# Firebase Domain Setup Guide
 
-## Current Issue
-Google authentication is failing with "popup-closed-by-user" error because the current Replit domain is not authorized in Firebase Console.
+## Issue
+Google authentication redirects back to auth page instead of completing login because the Replit domain is not authorized in Firebase.
 
-## Required Action
-You need to add the current Replit domain to Firebase Console authorized domains:
+## Current Domain
+Your current Replit domain is: `25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev`
 
-### Steps:
+## Step-by-Step Solution
+
+### 1. Access Firebase Console
 1. Go to [Firebase Console](https://console.firebase.google.com/)
-2. Select project: `brandentifier-app`
-3. Go to **Authentication** → **Settings** → **Authorized domains**
-4. Add these domains:
-   - `25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev`
-   - `*.replit.dev`
-   - `*.replit.app`
+2. Select your project: **brandentifier-app**
 
-### Current Configuration:
-- **Project ID**: brandentifier-app
-- **Current Domain**: 25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev
-- **Auth Domain**: Using current domain for Replit compatibility
+### 2. Navigate to Authentication Settings
+1. Click **"Authentication"** in the left sidebar
+2. Click **"Settings"** tab
+3. Click **"Authorized domains"** section
 
-### Current Issue - White Screen Popup:
-The Google authentication popup shows a white screen instead of the account selection dialog. Since the domain is already authorized in Firebase Console, this could be due to:
+### 3. Add Required Domains
+Add these exact domains to the authorized domains list:
 
-1. **Firebase Configuration**: Incorrect authDomain or API configuration
-2. **Browser Issues**: Popup blockers or third-party cookie restrictions
-3. **OAuth Flow**: Redirect URI mismatches or invalid OAuth parameters
-4. **Cached Configuration**: Old Firebase config cached in browser
+**Required Domains:**
+```
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev
+*.replit.dev
+*.replit.app
+```
 
-### Immediate Solutions:
+**Optional (for future deployments):**
+```
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev.replit.app
+```
 
-**Option 1: Domain Authorization (Recommended)**
-1. Go to [Firebase Console](https://console.firebase.google.com/)
-2. Select project: `brandentifier-app`
-3. Go to **Authentication** → **Settings** → **Authorized domains**
-4. Add: `25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev`
-5. Add: `*.replit.dev` and `*.replit.app`
+### 4. Save Changes
+1. Click **"Save"** or **"Add domain"** for each entry
+2. Wait 1-2 minutes for changes to propagate
 
-**Option 2: Redirect Authentication (Alternative)**
-- Use `/auth-popup-fix` page to test redirect-based authentication
-- This bypasses popup issues entirely
+### 5. Test Authentication
+1. Return to your app
+2. Click "Continue with Google"
+3. Complete the Google login process
+4. Should redirect to Industry Pulse page
 
-### Test Status:
-- ✅ Firebase initialization: Working
-- ✅ Environment variables: Loaded  
-- ✅ Auth state listener: Active
-- ❌ Google OAuth popup: Shows white screen (domain authorization needed)
+## Troubleshooting
 
-### Testing Pages:
-- `/simple-auth-test` - Basic Firebase testing
-- `/auth-popup-fix` - Popup issue diagnosis and redirect alternative
-- `/auth-flow-test` - Complete authentication flow monitoring
-- `/auth-debug-detailed` - Comprehensive error analysis and debugging
+### If login still fails:
+1. Check Firebase console shows all domains are added
+2. Wait 5 minutes for DNS propagation
+3. Try in incognito/private browser window
+4. Clear browser cache and cookies
 
-### Debugging Steps:
-1. Use `/auth-debug-detailed` to get comprehensive error details
-2. Check browser console for detailed error logs
-3. Verify Firebase configuration and network connectivity
-4. Test popup creation and Google OAuth accessibility
+### Common Mistakes:
+- Missing the exact domain format
+- Not adding wildcard domains (*.replit.dev)
+- Not waiting for propagation time
+
+## Success Indicators
+After completing setup, you should see:
+- Successful redirect to Google login
+- Google authentication completes
+- Redirect to `/industry-pulse` page
+- Debug overlay shows "Auth Success: true"
