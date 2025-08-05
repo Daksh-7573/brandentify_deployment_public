@@ -486,15 +486,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 
                 // Navigate to industry pulse after successful authentication
                 console.log("🚀 Navigating to industry pulse after successful authentication");
-                setTimeout(() => {
-                  const currentPath = window.location.pathname;
-                  if (currentPath === '/auth' || currentPath === '/') {
-                    console.log("✅ Redirecting from auth page to industry pulse");
-                    window.location.href = '/industry-pulse';
-                  } else {
-                    console.log(`Already on ${currentPath}, skipping redirect`);
-                  }
-                }, 500);
+                console.log("Current path:", window.location.pathname);
+                console.log("Current URL:", window.location.href);
+                
+                // Force redirect immediately - no delay
+                const currentPath = window.location.pathname;
+                if (currentPath === '/auth' || currentPath === '/' || currentPath.includes('auth')) {
+                  console.log("✅ Forcing immediate redirect from auth page to industry pulse");
+                  // Use replace instead of href to prevent back button issues
+                  window.location.replace('/industry-pulse');
+                } else {
+                  console.log(`Already on ${currentPath}, skipping redirect`);
+                }
               }
             } else {
               console.log("Creating fallback user");
@@ -522,15 +525,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 
                 // Navigate to industry pulse after successful authentication
                 console.log("🚀 Navigating to industry pulse after successful authentication (fallback user)");
-                setTimeout(() => {
-                  const currentPath = window.location.pathname;
-                  if (currentPath === '/auth' || currentPath === '/') {
-                    console.log("✅ Redirecting from auth page to industry pulse (fallback)");
-                    window.location.href = '/industry-pulse';
-                  } else {
-                    console.log(`Already on ${currentPath}, skipping redirect (fallback)`);
-                  }
-                }, 500);
+                console.log("Current path:", window.location.pathname);
+                console.log("Current URL:", window.location.href);
+                
+                // Force redirect immediately - no delay
+                const currentPath = window.location.pathname;
+                if (currentPath === '/auth' || currentPath === '/' || currentPath.includes('auth')) {
+                  console.log("✅ Forcing immediate redirect from auth page to industry pulse (fallback)");
+                  // Use replace instead of href to prevent back button issues
+                  window.location.replace('/industry-pulse');
+                } else {
+                  console.log(`Already on ${currentPath}, skipping redirect (fallback)`);
+                }
               }
             }
           }
