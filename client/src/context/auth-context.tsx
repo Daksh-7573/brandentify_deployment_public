@@ -403,13 +403,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             
             console.log("✅ Redirect result processed successfully - auth should proceed");
             
-            // CRITICAL FIX: Force navigate to industry pulse after successful auth
-            setTimeout(() => {
-              console.log("🚀 Forcing navigation to industry pulse after redirect success");
-              if (typeof window !== 'undefined') {
-                window.location.href = '/industry-pulse';
-              }
-            }, 1000);
+            // Mark auth as successful but don't navigate here
+            // Navigation will be handled by the auth state listener
+            console.log("✅ Redirect result processed - will navigate via auth state listener");
             
             // Don't return here, let the auth state listener handle the user
           } else {
@@ -489,10 +485,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 sessionStorage.removeItem('authSuccess');
                 
                 // Navigate to industry pulse after successful authentication
-                console.log("Redirecting to industry pulse after successful authentication");
+                console.log("🚀 Navigating to industry pulse after successful authentication");
                 setTimeout(() => {
-                  window.location.href = '/industry-pulse';
-                }, 1000);
+                  const currentPath = window.location.pathname;
+                  if (currentPath === '/auth' || currentPath === '/') {
+                    console.log("✅ Redirecting from auth page to industry pulse");
+                    window.location.href = '/industry-pulse';
+                  } else {
+                    console.log(`Already on ${currentPath}, skipping redirect`);
+                  }
+                }, 500);
               }
             } else {
               console.log("Creating fallback user");
@@ -519,10 +521,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 sessionStorage.removeItem('authSuccess');
                 
                 // Navigate to industry pulse after successful authentication
-                console.log("Redirecting to industry pulse after successful authentication (fallback user)");
+                console.log("🚀 Navigating to industry pulse after successful authentication (fallback user)");
                 setTimeout(() => {
-                  window.location.href = '/industry-pulse';
-                }, 1000);
+                  const currentPath = window.location.pathname;
+                  if (currentPath === '/auth' || currentPath === '/') {
+                    console.log("✅ Redirecting from auth page to industry pulse (fallback)");
+                    window.location.href = '/industry-pulse';
+                  } else {
+                    console.log(`Already on ${currentPath}, skipping redirect (fallback)`);
+                  }
+                }, 500);
               }
             }
           }
