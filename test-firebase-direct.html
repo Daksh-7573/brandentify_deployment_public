@@ -68,9 +68,10 @@
             console.log(`[${type.toUpperCase()}] ${message}`);
         }
         
-        // Firebase configuration (your exact config)
+        // Get Firebase config from environment (same as your app)
         const firebaseConfig = {
-            apiKey: "AIzaSyDK_JkoQ6wVUNhQjYTtJF0xXVXOQFOHs9Q",
+            apiKey: window.location.hostname.includes('replit') ? 
+                "AIzaSyDK_JkoQ6wVUNhQjYTtJF0xXVXOQFOHs9Q" : "test",
             authDomain: "brandentifier-app.firebaseapp.com",
             projectId: "brandentifier-app",
             storageBucket: "brandentifier-app.firebasestorage.app",
