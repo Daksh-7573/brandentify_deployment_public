@@ -74,8 +74,15 @@ export default function FirebaseTestPage() {
         const redirectUser = await handleRedirectResult();
         if (redirectUser) {
           addLog(`Redirect result found: ${redirectUser.email}`);
-          addLog('User will be redirected to Industry Pulse in a moment...');
-          // handleRedirectResult will handle the redirect automatically
+          addLog('Redirecting to Industry Pulse in 2 seconds...');
+          
+          // Manually redirect after auth success
+          setTimeout(() => {
+            const finalDestination = sessionStorage.getItem('auth_final_destination') || '/industry-pulse';
+            sessionStorage.removeItem('auth_final_destination'); // Clean up
+            addLog(`Redirecting to: ${finalDestination}`);
+            window.location.href = `${finalDestination}?from=auth`;
+          }, 2000);
         } else {
           addLog('No redirect result found');
         }
@@ -99,9 +106,11 @@ export default function FirebaseTestPage() {
       localStorage.removeItem('brandentifier_auth');
       
       const { signInWithGoogle } = await import('@/lib/firebase-auth');
-      await signInWithGoogle();
+      
+      // Use dedicated auth success page for testing
+      await signInWithGoogle('/firebase-test');
       addLog('Google sign-in initiated - you should be redirected to Google OAuth');
-      addLog('After completing Google login, you will be redirected back here');
+      addLog('After completing Google login, you will be redirected back here with auth result');
     } catch (error: any) {
       addLog(`Google sign-in error: ${error.message}`);
     }

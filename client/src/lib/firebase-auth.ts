@@ -39,10 +39,10 @@ export interface User {
 }
 
 // Authentication functions
-export const signInWithGoogle = async (redirectTo: string = '/industry-pulse'): Promise<void> => {
+export const signInWithGoogle = async (redirectTo: string = '/auth-success'): Promise<void> => {
   console.log('Starting Google sign-in...');
-  // Store intended redirect destination
-  sessionStorage.setItem('auth_redirect_target', redirectTo);
+  // Store intended redirect destination for after auth processing
+  sessionStorage.setItem('auth_final_destination', redirectTo === '/auth-success' ? '/industry-pulse' : redirectTo);
   await signInWithRedirect(auth, googleProvider);
 };
 
@@ -102,16 +102,12 @@ export const handleRedirectResult = async (): Promise<User | null> => {
       localStorage.setItem('brandentifier_auth', 'true');
       console.log('User data stored immediately after OAuth redirect');
       
-      // Check for intended redirect destination
-      const redirectTarget = sessionStorage.getItem('auth_redirect_target') || '/industry-pulse';
-      sessionStorage.removeItem('auth_redirect_target'); // Clean up
+      // Check for intended final destination
+      const finalDestination = sessionStorage.getItem('auth_final_destination') || '/industry-pulse';
+      sessionStorage.removeItem('auth_final_destination'); // Clean up
       
-      console.log(`Redirecting to: ${redirectTarget}`);
-      // Use a small delay to ensure auth state is fully updated
-      setTimeout(() => {
-        window.location.href = redirectTarget + '?from=auth';
-      }, 100);
-      
+      console.log(`Authentication successful, final destination: ${finalDestination}`);
+      // Return user data, let the calling page handle redirect
       return user;
     }
     
