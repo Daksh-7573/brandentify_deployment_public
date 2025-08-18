@@ -629,18 +629,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         usingRedirect: true
       });
       
-      // Set redirect attempt flags for debugging - ENHANCED
-      console.log("🔧 Setting redirect attempt flags...");
-      sessionStorage.setItem('redirect_auth_attempt', 'true');
-      sessionStorage.setItem('redirect_auth_time', new Date().toISOString());
+      // Clear any old auth flags before starting clean authentication
+      console.log("🔧 Clearing old auth flags for clean start...");
+      sessionStorage.removeItem('redirect_auth_attempt');
+      sessionStorage.removeItem('redirect_auth_time');
+      sessionStorage.removeItem('redirect_auth_success');
+      localStorage.removeItem('redirect_auth_attempt');
+      localStorage.removeItem('redirect_auth_time');
+      localStorage.removeItem('redirect_auth_success');
+      
+      // Set return URL for after auth
       sessionStorage.setItem('auth_return_url', window.location.pathname);
       
-      // Verify flags were set
-      console.log("🔧 Redirect flags set:", {
-        attempt: sessionStorage.getItem('redirect_auth_attempt'),
-        time: sessionStorage.getItem('redirect_auth_time'),
-        returnUrl: sessionStorage.getItem('auth_return_url')
-      });
+      console.log("🔧 Old auth flags cleared, ready for clean authentication");
       
       // Use redirect method for Replit domains
       console.log("🚀 Initiating signInWithRedirect...");

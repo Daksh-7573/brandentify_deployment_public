@@ -35,13 +35,11 @@ export function GoogleLoginButton({
       setIsLoading(true);
       console.log("🔴 GoogleLoginButton: Starting Google authentication...");
       
-      // Set initial tracking flags here as backup
-      sessionStorage.setItem('redirect_auth_attempt', 'true');
-      sessionStorage.setItem('redirect_auth_time', new Date().toISOString());
-      console.log("🔴 GoogleLoginButton: Redirect flags set:", {
-        attempt: sessionStorage.getItem('redirect_auth_attempt'),
-        time: sessionStorage.getItem('redirect_auth_time')
-      });
+      // Clear any old auth flags before starting fresh
+      sessionStorage.removeItem('redirect_auth_attempt');
+      sessionStorage.removeItem('redirect_auth_time');
+      sessionStorage.removeItem('redirect_auth_success');
+      console.log("🔴 GoogleLoginButton: Cleared old auth flags for fresh start");
       
       console.log("🔴 GoogleLoginButton: About to call signInWithGoogle...");
       await signInWithGoogle();
@@ -49,9 +47,10 @@ export function GoogleLoginButton({
       
     } catch (error) {
       console.error("🔴 GoogleLoginButton: Failed to authenticate with Google:", error);
-      // Clear flags on error
+      // Clear any auth flags on error
       sessionStorage.removeItem('redirect_auth_attempt');
       sessionStorage.removeItem('redirect_auth_time');
+      sessionStorage.removeItem('redirect_auth_success');
     } finally {
       setIsLoading(false);
     }
