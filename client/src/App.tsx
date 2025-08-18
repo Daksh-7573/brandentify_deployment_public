@@ -9,7 +9,7 @@ import GlobalMuskButton from "@/components/musk/global-musk-button";
 import { DomainHelper } from "./lib/domain-helper";
 import { DomainAuthHelper } from "@/components/firebase/DomainAuthHelper";
 import { FeedSkeleton } from "@/components/ui/skeleton-components";
-import AuthCallback from "@/pages/auth-callback";
+const AuthCallback = lazy(() => import("@/pages/auth-callback"));
 import CatchAllAuthHandler from "@/routes/CatchAllAuthHandler";
 // IndustryPulsePage imported as lazy component below
 
@@ -183,6 +183,7 @@ function Router() {
       <Route path="/industry-pulse" component={IndustryPulsePage} />
       <Route path="/create-pulse" component={CreatePulsePage} />
       <Route path="/auth" component={AuthPage} />
+      <Route path="/auth-callback" component={AuthCallback} />
 
 
 

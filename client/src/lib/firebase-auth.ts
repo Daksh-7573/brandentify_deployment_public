@@ -42,6 +42,12 @@ export interface User {
 export const signInWithGoogle = async (): Promise<void> => {
   // Set redirect URL before sign-in
   sessionStorage.setItem('auth_redirect_url', '/industry-pulse');
+  
+  // Set custom redirect URL for Firebase
+  const currentOrigin = window.location.origin;
+  const redirectUrl = `${currentOrigin}/auth-callback`;
+  console.log('Setting redirect URL to:', redirectUrl);
+  
   await signInWithRedirect(auth, googleProvider);
 };
 

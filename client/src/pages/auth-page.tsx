@@ -28,26 +28,32 @@ export default function AuthPage() {
   const [useDemoBypass, setUseDemoBypass] = useState(false);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   
-  // Check if user returned from Google OAuth and handle redirect
+  // Check if user returned from Google OAuth and handle redirect immediately
   useEffect(() => {
     const checkAuthRedirect = async () => {
       try {
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('code') || window.location.hash.includes('access_token')) {
-          console.log('Detected OAuth redirect, checking authentication...');
-          // Give Firebase time to process the redirect
-          setTimeout(async () => {
-            const { handleRedirectResult } = await import('@/lib/firebase-auth');
-            const user = await handleRedirectResult();
-            if (user) {
-              console.log('OAuth success, redirecting to Industry Pulse');
-              // Firebase auth will handle the redirect
-            }
-            setIsCheckingAuth(false);
-          }, 1000);
-        } else {
-          setIsCheckingAuth(false);
+        console.log('Auth page loaded, checking for authentication...');
+        
+        // Check if user is already authenticated
+        const { isAuthenticated, getCurrentUser } = await import('@/lib/firebase-auth');
+        if (isAuthenticated()) {
+          const user = getCurrentUser();
+          console.log('User already authenticated, redirecting:', user?.email);
+          window.location.href = '/industry-pulse';
+          return;
         }
+        
+        // Check for Firebase redirect result immediately
+        const { handleRedirectResult } = await import('@/lib/firebase-auth');
+        const user = await handleRedirectResult();
+        if (user) {
+          console.log('OAuth success, user authenticated:', user.email);
+          // The redirect should happen in handleRedirectResult
+          return;
+        }
+        
+        console.log('No authentication detected, showing login form');
+        setIsCheckingAuth(false);
       } catch (error) {
         console.error('Error checking auth redirect:', error);
         setIsCheckingAuth(false);
@@ -79,6 +85,18 @@ export default function AuthPage() {
   //     return () => clearTimeout(timer);
   //   }
   // }, [isAuthenticated, setLocation]);
+
+  // Show loading state while checking authentication
+  if (isCheckingAuth) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-300">Checking authentication...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div 
