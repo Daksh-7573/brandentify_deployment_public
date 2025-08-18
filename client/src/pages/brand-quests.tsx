@@ -1,5 +1,5 @@
 import { useContext, useState, useEffect } from 'react';
-import { AuthContext } from '@/context/auth-context';
+import { AuthContext } from '@/context/simple-auth-context';
 import Header from '@/components/layout/header';
 import { QuestPanel } from '@/components/brand-quests/quest-panel';
 import { BadgeDisplay } from '@/components/brand-quests/badge-display';
