@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
+import { Auth, User, UserCredential } from 'firebase/auth';
 
 interface FirebaseUser {
   uid: string;
@@ -114,7 +115,7 @@ export function SimpleFirebaseAuth() {
       // Initialize Firebase with unique app name to avoid conflicts
       const appName = `simple-auth-${Date.now()}`;
       let app;
-      let auth;
+      let auth: Auth;
       
       try {
         app = initializeApp(firebaseConfig, appName);
@@ -149,7 +150,7 @@ export function SimpleFirebaseAuth() {
         }, 60000);
       });
       
-      const result = await Promise.race([popupPromise, timeoutPromise]);
+      const result = await Promise.race([popupPromise, timeoutPromise]) as UserCredential;
       
       if (result && result.user) {
         console.log('Authentication successful:', result.user.email);
@@ -197,16 +198,24 @@ export function SimpleFirebaseAuth() {
         });
         
         try {
-          // Ensure we have a valid auth instance for redirect
-          if (!auth) {
-            console.error('Auth instance not available for redirect');
-            errorMessage = 'Authentication service not properly initialized';
-            return;
-          }
+          // Use the Firebase auth instance that should be available
+          const { signInWithRedirect, GoogleAuthProvider, getAuth } = await import('firebase/auth');
+          const { initializeApp } = await import('firebase/app');
           
-          const { signInWithRedirect } = await import('firebase/auth');
+          const firebaseConfig = {
+            apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+            authDomain: `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.firebaseapp.com`,
+            projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+            storageBucket: `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.appspot.com`,
+            appId: import.meta.env.VITE_FIREBASE_APP_ID
+          };
+          
+          const redirectApp = initializeApp(firebaseConfig, `redirect-${Date.now()}`);
+          const redirectAuth = getAuth(redirectApp);
+          const redirectProvider = new GoogleAuthProvider();
+          
           console.log('Attempting redirect authentication...');
-          await signInWithRedirect(auth, provider);
+          await signInWithRedirect(redirectAuth, redirectProvider);
           return; // Exit function as redirect will handle the rest
         } catch (redirectError: any) {
           console.error('Redirect authentication also failed:', redirectError);
