@@ -45,7 +45,13 @@ export function GoogleAuth() {
         variant="outline"
         fullWidth={true}
         text="Continue with Google"
+        data-testid="google-auth-button"
       />
+      
+      <div className="text-xs text-gray-400 text-center space-y-1">
+        <p>Uses popup authentication for faster login</p>
+        <p>If popup is blocked, we'll offer redirect backup</p>
+      </div>
       
       {/* Diagnostic info to help with debugging */}
       <div className="text-xs text-gray-500 mt-1 text-center">

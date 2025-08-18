@@ -553,9 +553,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       console.log("🔧 Old auth flags cleared, ready for clean popup authentication");
       
-      // Use popup method - much cleaner than redirect
-      console.log("🚀 Initiating signInWithPopup...");
-      const result = await signInWithPopup(auth as any, googleProvider as any);
+      // Configure popup with better parameters
+      const enhancedProvider = new (await import('firebase/auth')).GoogleAuthProvider();
+      enhancedProvider.addScope('email');
+      enhancedProvider.addScope('profile');
+      enhancedProvider.setCustomParameters({
+        prompt: 'select_account',
+        auth_type: 'reauthenticate'
+      });
+
+      // Use popup method with enhanced error handling
+      console.log("🚀 Initiating signInWithPopup with enhanced settings...");
+      const result = await signInWithPopup(auth as any, enhancedProvider);
       
       if (result && result.user) {
         console.log("🎉 Popup authentication successful:", result.user.email);
@@ -581,7 +590,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (error.code === 'auth/popup-blocked') {
         errorMessage = "The login popup was blocked by your browser. Please allow popups and try again.";
       } else if (error.code === 'auth/popup-closed-by-user') {
-        errorMessage = "Sign-in was cancelled. Please try again when you're ready.";
+        console.log("User closed popup - this might be due to popup issues. Offering redirect fallback.");
+        
+        // Offer redirect as fallback when popup fails
+        const useRedirect = confirm("The popup was closed. Would you like to try redirect authentication instead? Click OK for redirect or Cancel to try popup again.");
+        
+        if (useRedirect) {
+          try {
+            console.log("Trying redirect authentication as fallback...");
+            const { signInWithRedirect } = await import('firebase/auth');
+            await signInWithRedirect(auth as any, enhancedProvider || googleProvider as any);
+            return; // Exit here as redirect will handle the rest
+          } catch (redirectError) {
+            console.error("Redirect fallback also failed:", redirectError);
+            errorMessage = "Both popup and redirect authentication failed. Please check your browser settings.";
+          }
+        } else {
+          errorMessage = "Sign-in was cancelled. Please try again and allow the popup to complete.";
+        }
       } else if (error.code === 'auth/unauthorized-domain') {
         errorMessage = "Authentication isn't configured for this domain. Please contact support.";
       } else if (error.code === 'auth/cancelled-popup-request') {
