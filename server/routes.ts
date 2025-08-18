@@ -103,9 +103,7 @@ import { initEmailService, sendVerificationEmail, sendWelcomeEmail } from "./ser
 import * as xaiService from "./services/xai-service";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  const apiRouter = express.Router();
-  
-  // Auth cleaner endpoint - direct response
+  // Auth cleaner endpoint - MUST be before any other routes
   app.get('/fix-auth', (req: Request, res: Response) => {
     console.log("[AUTH-FIX] Serving auth cleaner HTML inline");
     const html = `<!DOCTYPE html>
@@ -207,6 +205,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.setHeader('Content-Type', 'text/html');
     res.send(html);
   });
+
+  const apiRouter = express.Router();
   
   // Health check endpoint for enterprise scaling
   apiRouter.get("/health", (req: Request, res: Response) => {
