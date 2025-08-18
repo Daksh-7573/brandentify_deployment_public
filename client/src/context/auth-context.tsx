@@ -492,15 +492,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 console.log("Current path:", window.location.pathname);
                 console.log("Current URL:", window.location.href);
                 
-                // Force redirect immediately - no delay
-                const currentPath = window.location.pathname;
-                if (currentPath === '/auth' || currentPath === '/' || currentPath.includes('auth')) {
-                  console.log("✅ Forcing immediate redirect from auth page to industry pulse");
-                  // Use replace instead of href to prevent back button issues
-                  window.location.replace('/industry-pulse');
-                } else {
-                  console.log(`Already on ${currentPath}, skipping redirect`);
-                }
+                // Always redirect to industry pulse after successful auth, regardless of current path
+                setTimeout(() => {
+                  console.log("✅ Executing redirect to industry pulse");
+                  window.location.href = '/industry-pulse';
+                }, 100); // Small delay to ensure state is set
               }
             } else {
               console.log("Creating fallback user");
@@ -531,15 +527,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 console.log("Current path:", window.location.pathname);
                 console.log("Current URL:", window.location.href);
                 
-                // Force redirect immediately - no delay
-                const currentPath = window.location.pathname;
-                if (currentPath === '/auth' || currentPath === '/' || currentPath.includes('auth')) {
-                  console.log("✅ Forcing immediate redirect from auth page to industry pulse (fallback)");
-                  // Use replace instead of href to prevent back button issues
-                  window.location.replace('/industry-pulse');
-                } else {
-                  console.log(`Already on ${currentPath}, skipping redirect (fallback)`);
-                }
+                // Always redirect to industry pulse after successful auth (fallback user)
+                setTimeout(() => {
+                  console.log("✅ Executing redirect to industry pulse (fallback)");
+                  window.location.href = '/industry-pulse';
+                }, 100); // Small delay to ensure state is set
               }
             }
           }
