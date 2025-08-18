@@ -6,6 +6,7 @@ import { GoogleLoginButton } from "@/components/auth/google-login-button";
 import { DomainAuthAlert } from "@/components/auth/domain-auth-alert";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { checkFirebaseConfig } from "@/utils/auth-diagnostics";
+import { SimpleFirebaseAuth } from "@/components/auth/simple-firebase-auth";
 
 /**
  * Google Authentication component with enhanced error handling
@@ -40,13 +41,21 @@ export function GoogleAuth() {
         </Alert>
       )}
       
-      {/* Use our new GoogleLoginButton component */}
-      <GoogleLoginButton 
-        variant="outline"
-        fullWidth={true}
-        text="Continue with Google"
-        data-testid="google-auth-button"
-      />
+      {/* Use simplified Firebase auth component to bypass AuthContext issues */}
+      <SimpleFirebaseAuth />
+      
+      {/* Fallback to original component */}
+      <div className="mt-4 pt-4 border-t border-gray-600">
+        <p className="text-xs text-gray-400 text-center mb-3">
+          Alternative: Use complex auth system
+        </p>
+        <GoogleLoginButton 
+          variant="outline"
+          fullWidth={true}
+          text="Try Complex Auth"
+          data-testid="google-auth-button"
+        />
+      </div>
       
       <div className="text-xs text-gray-400 text-center space-y-1">
         <p>Uses popup authentication for faster login</p>
