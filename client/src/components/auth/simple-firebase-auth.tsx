@@ -111,9 +111,23 @@ export function SimpleFirebaseAuth() {
         hasApiKey: !!firebaseConfig.apiKey
       });
       
-      // Initialize Firebase
-      const app = initializeApp(firebaseConfig, 'simple-auth');
-      const auth = getAuth(app);
+      // Initialize Firebase with unique app name to avoid conflicts
+      const appName = `simple-auth-${Date.now()}`;
+      let app;
+      let auth;
+      
+      try {
+        app = initializeApp(firebaseConfig, appName);
+        auth = getAuth(app);
+        console.log('Firebase initialized successfully with app:', appName);
+      } catch (initError: any) {
+        console.error('Firebase initialization failed:', initError);
+        throw new Error(`Firebase initialization failed: ${initError.message}`);
+      }
+      
+      if (!auth) {
+        throw new Error('Firebase Auth not properly initialized');
+      }
       
       // Create Google provider
       const provider = new GoogleAuthProvider();
@@ -183,7 +197,15 @@ export function SimpleFirebaseAuth() {
         });
         
         try {
+          // Ensure we have a valid auth instance for redirect
+          if (!auth) {
+            console.error('Auth instance not available for redirect');
+            errorMessage = 'Authentication service not properly initialized';
+            return;
+          }
+          
           const { signInWithRedirect } = await import('firebase/auth');
+          console.log('Attempting redirect authentication...');
           await signInWithRedirect(auth, provider);
           return; // Exit function as redirect will handle the rest
         } catch (redirectError: any) {

@@ -7,6 +7,7 @@ import { DomainAuthAlert } from "@/components/auth/domain-auth-alert";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { checkFirebaseConfig } from "@/utils/auth-diagnostics";
 import { SimpleFirebaseAuth } from "@/components/auth/simple-firebase-auth";
+import { UltraSimpleAuth } from "@/components/auth/ultra-simple-auth";
 
 /**
  * Google Authentication component with enhanced error handling
@@ -41,21 +42,36 @@ export function GoogleAuth() {
         </Alert>
       )}
       
-      {/* Use simplified Firebase auth component to bypass AuthContext issues */}
-      <SimpleFirebaseAuth />
+      {/* Ultra-Simple Authentication - Most Reliable */}
+      <UltraSimpleAuth />
       
-      {/* Fallback to original component */}
-      <div className="mt-4 pt-4 border-t border-gray-600">
-        <p className="text-xs text-gray-400 text-center mb-3">
-          Alternative: Use complex auth system
-        </p>
-        <GoogleLoginButton 
-          variant="outline"
-          fullWidth={true}
-          text="Try Complex Auth"
-          data-testid="google-auth-button"
-        />
-      </div>
+      {/* Advanced Options */}
+      <details className="mt-6 bg-gray-800/30 rounded-lg p-4">
+        <summary className="text-sm text-gray-400 cursor-pointer hover:text-white">
+          Advanced Authentication Options
+        </summary>
+        
+        <div className="mt-4 space-y-4">
+          <div className="border-t border-gray-700 pt-4">
+            <p className="text-xs text-gray-400 text-center mb-3">
+              Complex Firebase Auth (may have popup issues)
+            </p>
+            <SimpleFirebaseAuth />
+          </div>
+          
+          <div className="border-t border-gray-700 pt-4">
+            <p className="text-xs text-gray-400 text-center mb-3">
+              Original Auth System (debugging)
+            </p>
+            <GoogleLoginButton 
+              variant="outline"
+              fullWidth={true}
+              text="Try Original Auth"
+              data-testid="google-auth-button"
+            />
+          </div>
+        </div>
+      </details>
       
       <div className="text-xs text-gray-400 text-center space-y-1">
         <p>Uses popup authentication for faster login</p>
