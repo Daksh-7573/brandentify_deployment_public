@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Auth Fix</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f0f2f5; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { color: #1877f2; margin-bottom: 20px; }
+        .status { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .success { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
+        .info { background: #d1ecf1; border: 1px solid #bee5eb; color: #0c5460; }
+        .warning { background: #fff3cd; border: 1px solid #ffeaa7; color: #856404; }
+        button { padding: 12px 24px; margin: 10px 5px; background: #1877f2; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; }
+        button:hover { background: #166fe5; }
+        .emergency { background: #dc3545; }
+        .emergency:hover { background: #c82333; }
+        #console { background: #f8f9fa; padding: 15px; border-radius: 5px; font-family: monospace; font-size: 12px; max-height: 300px; overflow-y: auto; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Authentication Fix Tool</h1>
+        
+        <div class="status info">
+            <strong>Issue:</strong> Old redirect attempt flags are preventing Google authentication from working properly.
+        </div>
+        
+        <button onclick="fixAuthNow()">Fix Auth Data Now</button>
+        <button onclick="directAccess()" class="emergency">Direct Access to App</button>
+        <button onclick="goHome()">Return to Home</button>
+        
+        <div id="console"></div>
+    </div>
+
+    <script>
+        function log(message, type = 'info') {
+            const console_div = document.getElementById('console');
+            const time = new Date().toLocaleTimeString();
+            console_div.innerHTML += `[${time}] ${message}\n`;
+            console_div.scrollTop = console_div.scrollHeight;
+            console.log(message);
+        }
+
+        function fixAuthNow() {
+            log("🧹 Starting authentication data cleanup...");
+            
+            let cleared = 0;
+            
+            // Clear specific problematic keys
+            const specificKeys = [
+                'redirect_auth_attempt', 
+                'redirect_auth_time', 
+                'redirect_auth_success',
+                'authSuccess', 
+                'firebase_user', 
+                'emergency_access', 
+                'bypass_auth',
+                'auth_return_url'
+            ];
+            
+            log("Clearing specific auth keys...");
+            specificKeys.forEach(key => {
+                if (localStorage.getItem(key)) {
+                    localStorage.removeItem(key);
+                    cleared++;
+                    log(`✅ Cleared localStorage: ${key}`);
+                }
+                if (sessionStorage.getItem(key)) {
+                    sessionStorage.removeItem(key);
+                    cleared++;
+                    log(`✅ Cleared sessionStorage: ${key}`);
+                }
+            });
+            
+            // Clear all Firebase-related items
+            log("Clearing Firebase-related items...");
+            const allLocalKeys = Object.keys(localStorage);
+            const allSessionKeys = Object.keys(sessionStorage);
+            
+            [...allLocalKeys, ...allSessionKeys].forEach(key => {
+                if (key.includes('firebase') || key.includes('auth') || key.includes('redirect') || key.includes('google')) {
+                    try {
+                        localStorage.removeItem(key);
+                        sessionStorage.removeItem(key);
+                        cleared++;
+                        log(`✅ Cleared auth-related: ${key}`);
+                    } catch (e) {
+                        // Ignore errors for keys that don't exist in both storages
+                    }
+                }
+            });
+            
+            // Clear cookies
+            log("Clearing cookies...");
+            document.cookie.split(";").forEach(function(c) { 
+                const cookieName = c.split("=")[0].trim();
+                document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+                if (cookieName && cookieName.length > 0) {
+                    log(`✅ Cleared cookie: ${cookieName}`);
+                    cleared++;
+                }
+            });
+            
+            log(`🎉 Auth cleanup complete! ${cleared} items removed`);
+            log("✅ All redirect attempt flags cleared");
+            log("✅ All Firebase auth data cleared");
+            log("You can now try the Google login button again");
+        }
+
+        function directAccess() {
+            log("Setting up direct access...");
+            fixAuthNow();
+            localStorage.setItem('emergency_access', 'true');
+            sessionStorage.setItem('bypass_auth', 'true');
+            log("Redirecting to Industry Pulse...");
+            setTimeout(() => {
+                window.location.href = '/industry-pulse';
+            }, 1000);
+        }
+
+        function goHome() {
+            log("Clearing auth data and returning to home...");
+            fixAuthNow();
+            setTimeout(() => {
+                window.location.href = '/';
+            }, 1000);
+        }
+
+        // Auto-run cleanup on page load
+        window.addEventListener('load', () => {
+            log("Auth Fix Tool loaded");
+            log("Click 'Fix Auth Data Now' to clear problematic authentication flags");
+        });
+    </script>
+</body>
+</html>

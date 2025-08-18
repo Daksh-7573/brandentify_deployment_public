@@ -105,33 +105,107 @@ import * as xaiService from "./services/xai-service";
 export async function registerRoutes(app: Express): Promise<Server> {
   const apiRouter = express.Router();
   
-  // Diagnostic pages - serve HTML files directly (must be early in routes)
-  app.get('/emergency-access.html', (req: Request, res: Response) => {
-    res.sendFile(path.join(__dirname, '../emergency-access.html'));
-  });
-  
-  app.get('/clear-auth-data.html', (req: Request, res: Response) => {
-    res.sendFile(path.join(__dirname, '../clear-auth-data.html'));
-  });
-  
-  app.get('/auth-reset.html', (req: Request, res: Response) => {
-    res.sendFile(path.join(__dirname, '../auth-reset.html'));
-  });
-  
-  app.get('/profile-update-diagnostic.html', (req: Request, res: Response) => {
-    res.sendFile(path.join(__dirname, '../profile-update-diagnostic.html'));
-  });
-  
-  app.get('/debug-auth-simple.html', (req: Request, res: Response) => {
-    res.sendFile(path.join(__dirname, '../debug-auth-simple.html'));
-  });
-  
-  app.get('/connectivity-test.html', (req: Request, res: Response) => {
-    res.sendFile(path.join(__dirname, '../connectivity-test.html'));
-  });
-  
-  app.get('/instant-auth-cleaner.html', (req: Request, res: Response) => {
-    res.sendFile(path.join(__dirname, '../instant-auth-cleaner.html'));
+  // Auth cleaner endpoint - direct response
+  app.get('/fix-auth', (req: Request, res: Response) => {
+    console.log("[AUTH-FIX] Serving auth cleaner HTML inline");
+    const html = `<!DOCTYPE html>
+<html>
+<head>
+    <title>Fix Authentication</title>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
+        .container { max-width: 500px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { color: #1877f2; margin-bottom: 20px; text-align: center; }
+        .status { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        button { padding: 15px 25px; margin: 10px 5px; background: #1877f2; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; width: 100%; }
+        button:hover { background: #166fe5; }
+        .emergency { background: #dc3545; }
+        .emergency:hover { background: #c82333; }
+        #log { background: #f8f9fa; padding: 15px; border-radius: 5px; font-family: monospace; font-size: 12px; max-height: 200px; overflow-y: auto; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Fix Authentication</h1>
+        
+        <div class="status info">
+            <strong>Issue:</strong> Old authentication flags are preventing Google login from working.
+        </div>
+        
+        <button onclick="fixAuth()">Clear Auth Data Now</button>
+        <button onclick="directAccess()" class="emergency">Direct Access to App</button>
+        <button onclick="goHome()">Back to Login</button>
+        
+        <div id="log"></div>
+    </div>
+
+    <script>
+        function log(msg) {
+            const logDiv = document.getElementById('log');
+            logDiv.innerHTML += new Date().toLocaleTimeString() + ': ' + msg + '\\n';
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function fixAuth() {
+            log('Starting authentication cleanup...');
+            let cleared = 0;
+            
+            // Clear problematic keys
+            const keys = ['redirect_auth_attempt', 'redirect_auth_time', 'redirect_auth_success', 'authSuccess', 'firebase_user', 'bypass_auth'];
+            
+            keys.forEach(key => {
+                if (localStorage.getItem(key)) { localStorage.removeItem(key); cleared++; log('Cleared localStorage: ' + key); }
+                if (sessionStorage.getItem(key)) { sessionStorage.removeItem(key); cleared++; log('Cleared sessionStorage: ' + key); }
+            });
+            
+            // Clear Firebase items
+            Object.keys(localStorage).forEach(key => {
+                if (key.includes('firebase') || key.includes('auth') || key.includes('redirect')) {
+                    localStorage.removeItem(key); cleared++; log('Cleared: ' + key);
+                }
+            });
+            
+            Object.keys(sessionStorage).forEach(key => {
+                if (key.includes('firebase') || key.includes('auth') || key.includes('redirect')) {
+                    sessionStorage.removeItem(key); cleared++; log('Cleared: ' + key);
+                }
+            });
+            
+            // Clear cookies
+            document.cookie.split(";").forEach(c => {
+                document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+            });
+            
+            log('Cleanup complete! ' + cleared + ' items removed');
+            log('Authentication data cleared - you can try Google login again');
+        }
+
+        function directAccess() {
+            log('Setting up direct access...');
+            fixAuth();
+            localStorage.setItem('emergency_access', 'true');
+            sessionStorage.setItem('bypass_auth', 'true');
+            setTimeout(() => window.location.href = '/industry-pulse', 1000);
+        }
+
+        function goHome() {
+            log('Returning to login...');
+            fixAuth();
+            setTimeout(() => window.location.href = '/', 1000);
+        }
+        
+        // Auto-run on load
+        window.onload = () => {
+            log('Auth Fix Tool loaded - click buttons above to resolve authentication issues');
+        };
+    </script>
+</body>
+</html>`;
+    res.setHeader('Content-Type', 'text/html');
+    res.send(html);
   });
   
   // Health check endpoint for enterprise scaling
