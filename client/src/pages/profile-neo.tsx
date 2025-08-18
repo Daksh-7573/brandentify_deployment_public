@@ -94,9 +94,9 @@ export default function ProfileNeo() {
   
   // Get user profile data
   const { data: userData, isLoading: isUserDataLoading } = useQuery({
-    queryKey: ['/api/users', user.uid],
+    queryKey: ['/api/users', user.id],
     queryFn: async () => {
-      const response = await fetch(`/api/users/${user.uid}`);
+      const response = await fetch(`/api/users/${user.id}`);
       if (!response.ok) {
         throw new Error('Failed to fetch user data');
       }
@@ -106,17 +106,17 @@ export default function ProfileNeo() {
   
   // Query for user's industries and domain preferences
   const { data: userPreferences, isLoading: isPreferencesLoading } = useQuery({
-    queryKey: ['/api/user-preferences', user.uid],
+    queryKey: ['/api/user-preferences', user.id],
   });
   
   // Profile picture functionality
   const [showProfileDialog, setShowProfileDialog] = useState(false);
-  const { profilePictureUrl, isUploading, uploadProgress, updateProfilePicture } = useProfilePicture(user.uid);
+  const { profilePictureUrl, isUploading, uploadProgress, updateProfilePicture } = useProfilePicture(user.id);
   
   // Update about me mutation
   const updateAboutMeMutation = useMutation({
     mutationFn: async (newAbout: string) => {
-      const res = await apiRequest("PATCH", `/api/users/${user.uid}`, {
+      const res = await apiRequest("PATCH", `/api/users/${user.id}`, {
         about: newAbout
       });
       return res.json();
@@ -127,7 +127,7 @@ export default function ProfileNeo() {
         description: "Your professional summary has been updated successfully."
       });
       setShowEditAboutDialog(false);
-      queryClient.invalidateQueries({ queryKey: ['/api/users', user.uid] });
+      queryClient.invalidateQueries({ queryKey: ['/api/users', user.id] });
     },
     onError: (error) => {
       toast({
@@ -142,7 +142,7 @@ export default function ProfileNeo() {
   // Update looking for
   const updateLookingForMutation = useMutation({
     mutationFn: async (lookingFor: string | null) => {
-      const res = await apiRequest("PATCH", `/api/users/${user.uid}`, {
+      const res = await apiRequest("PATCH", `/api/users/${user.id}`, {
         lookingFor
       });
       return res.json();
@@ -153,7 +153,7 @@ export default function ProfileNeo() {
         description: "Your 'I am looking for' preference has been updated."
       });
       setShowLookingForDialog(false);
-      queryClient.invalidateQueries({ queryKey: ['/api/users', user.uid] });
+      queryClient.invalidateQueries({ queryKey: ['/api/users', user.id] });
     },
     onError: (error) => {
       toast({
@@ -168,7 +168,7 @@ export default function ProfileNeo() {
   // Update industry and domain preferences
   const updateIndustryMutation = useMutation({
     mutationFn: async () => {
-      const res = await apiRequest("PATCH", `/api/users/${user.uid}`, {
+      const res = await apiRequest("PATCH", `/api/users/${user.id}`, {
         industry: industryValue,
         domain: domainValue
       });
@@ -180,7 +180,7 @@ export default function ProfileNeo() {
         description: "Your industry and domain preferences have been updated."
       });
       setShowIndustryDialog(false);
-      queryClient.invalidateQueries({ queryKey: ['/api/users', user.uid] });
+      queryClient.invalidateQueries({ queryKey: ['/api/users', user.id] });
     },
     onError: (error) => {
       toast({
@@ -740,7 +740,7 @@ export default function ProfileNeo() {
       </Dialog>
       {/* Add Profile Picture Dialog component */}
       <ProfilePictureDialog 
-        userId={user.uid}
+        userId={user.id}
         open={showProfileDialog}
         onOpenChange={setShowProfileDialog}
         currentPhotoURL={profilePictureUrl}
