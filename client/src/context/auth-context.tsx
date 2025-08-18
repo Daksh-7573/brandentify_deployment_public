@@ -374,67 +374,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           return () => {};
         }
         
-        // Enhanced redirect result checking with multiple attempts
-        let redirectCheckAttempts = 0;
-        const maxRedirectChecks = 5;
-        
-        const checkRedirectResultWithRetry = async () => {
-          try {
-            const { getRedirectResult } = await import('firebase/auth');
-            console.log(`🔍 Checking for redirect result (attempt ${redirectCheckAttempts + 1}/${maxRedirectChecks})...`);
-            
-            // Clean approach - don't rely on redirect attempt flags
-            console.log("📍 Checking for auth result without relying on redirect flags");
-            
-            const redirectResult = await getRedirectResult(auth as any);
-            if (redirectResult?.user) {
-              console.log("🎉 REDIRECT RESULT FOUND in auth context:", redirectResult.user.email);
-              
-              // Clear attempt flags FIRST
-              sessionStorage.removeItem('redirect_auth_attempt');
-              sessionStorage.removeItem('redirect_auth_time');
-              
-              // Set success flags
-              sessionStorage.setItem('authSuccess', 'true');
-              sessionStorage.setItem('redirect_auth_success', JSON.stringify({
-                email: redirectResult.user.email,
-                uid: redirectResult.user.uid,
-                timestamp: new Date().toISOString()
-              }));
-              
-              console.log("✅ Redirect result processed successfully - auth should proceed");
-              return true; // Success
-            } else {
-              console.log("❌ No redirect result found");
-              
-              // Simply check if we should retry without flag dependency
-              if (redirectCheckAttempts < maxRedirectChecks - 1) {
-                redirectCheckAttempts++;
-                console.log(`⏳ Retrying redirect check in 1 second (${redirectCheckAttempts}/${maxRedirectChecks})...`);
-                setTimeout(checkRedirectResultWithRetry, 1000);
-                return false; // Will retry
-              }
-              
-              // Check if user is already authenticated
-              if (auth.currentUser) {
-                console.log("✅ User already authenticated on page load:", auth.currentUser.email);
-                return true;
-              } else {
-                console.log("❌ No user authenticated on page load");
-                return false;
-              }
-            }
-          } catch (redirectError: any) {
-            console.error("❌ Error checking redirect result:", redirectError.message);
-            // Clear attempt flags on error
-            sessionStorage.removeItem('redirect_auth_attempt');
-            sessionStorage.removeItem('redirect_auth_time');
-            return false;
-          }
-        };
-        
-        // Start the redirect checking process
-        await checkRedirectResultWithRetry();
+        // Since we're using popup auth, we don't need redirect result checking
+        console.log("📍 Using popup authentication - no redirect result checking needed");
         
         console.log("Auth object available, setting up listener");
         const { onAuthStateChanged } = await import('firebase/auth');
@@ -593,12 +534,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       // Use the globally configured provider from firebase.ts
       const { auth, googleProvider } = await import('@/lib/firebase');
-      const { signInWithRedirect } = await import('firebase/auth');
+      const { signInWithPopup } = await import('firebase/auth');
       
       console.log("Auth environment:", {
         domain: window.location.hostname,
         isReplitDomain: window.location.hostname.includes('replit'),
-        usingRedirect: true
+        usingPopup: true
       });
       
       // Clear any old auth flags before starting clean authentication
@@ -610,37 +551,41 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.removeItem('redirect_auth_time');
       localStorage.removeItem('redirect_auth_success');
       
-      // Set return URL for after auth
-      sessionStorage.setItem('auth_return_url', window.location.pathname);
+      console.log("🔧 Old auth flags cleared, ready for clean popup authentication");
       
-      console.log("🔧 Old auth flags cleared, ready for clean authentication");
+      // Use popup method - much cleaner than redirect
+      console.log("🚀 Initiating signInWithPopup...");
+      const result = await signInWithPopup(auth as any, googleProvider as any);
       
-      // Use redirect method for Replit domains
-      console.log("🚀 Initiating signInWithRedirect...");
-      await signInWithRedirect(auth as any, googleProvider as any);
+      if (result && result.user) {
+        console.log("🎉 Popup authentication successful:", result.user.email);
+        
+        // Show success toast immediately
+        toast({
+          title: "Authentication successful",
+          description: `Welcome ${result.user.displayName || result.user.email}!`,
+        });
+        
+        // The onAuthStateChanged listener will handle the rest
+        return;
+      }
       
-      console.log("⚠️ signInWithRedirect completed without redirect - this should not happen");
-      
-      console.log("Redirect authentication initiated");
-      
-      // Show loading message while redirecting
-      toast({
-        title: "Redirecting to Google",
-        description: "You'll be redirected to Google for authentication...",
-      });
+      console.log("Popup authentication completed successfully");
       
     } catch (error: any) {
       console.error("Google sign-in error:", error);
       
-      // Check for specific errors and show helpful messages
+      // Check for specific popup errors and show helpful messages
       let errorMessage = "There was a problem with Google sign-in. Please try again.";
       
       if (error.code === 'auth/popup-blocked') {
-        errorMessage = "The login popup was blocked by your browser. Please allow popups for this site.";
+        errorMessage = "The login popup was blocked by your browser. Please allow popups and try again.";
       } else if (error.code === 'auth/popup-closed-by-user') {
         errorMessage = "Sign-in was cancelled. Please try again when you're ready.";
       } else if (error.code === 'auth/unauthorized-domain') {
         errorMessage = "Authentication isn't configured for this domain. Please contact support.";
+      } else if (error.code === 'auth/cancelled-popup-request') {
+        errorMessage = "Another sign-in popup is already open. Please complete or close it first.";
       }
       
       // Show detailed error message to user
