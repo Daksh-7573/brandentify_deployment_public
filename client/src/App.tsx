@@ -11,6 +11,7 @@ import { DomainAuthHelper } from "@/components/firebase/DomainAuthHelper";
 import { FeedSkeleton } from "@/components/ui/skeleton-components";
 const AuthCallback = lazy(() => import("@/pages/auth-callback"));
 const AuthRedirectPage = lazy(() => import("@/pages/auth-redirect"));
+const FirebaseTestPage = lazy(() => import("@/pages/firebase-test"));
 import CatchAllAuthHandler from "@/routes/CatchAllAuthHandler";
 // IndustryPulsePage imported as lazy component below
 
@@ -186,6 +187,7 @@ function Router() {
       <Route path="/auth" component={AuthPage} />
       <Route path="/auth-callback" component={AuthCallback} />
       <Route path="/auth-redirect" component={AuthRedirectPage} />
+      <Route path="/firebase-test" component={FirebaseTestPage} />
 
 
 
