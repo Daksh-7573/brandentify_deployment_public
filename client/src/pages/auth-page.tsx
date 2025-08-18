@@ -26,7 +26,7 @@ import { RedirectAuthHandler } from "@/components/auth/redirect-auth-handler";
 import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
 
 export default function AuthPage() {
-  const { isAuthenticated, isLoading, signInWithPhone } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
   const [_, setLocation] = useLocation();
   const [authMethod, setAuthMethod] = useState<"email" | "phone">("email");
   const [useDemoBypass, setUseDemoBypass] = useState(false);

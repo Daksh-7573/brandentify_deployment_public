@@ -56,7 +56,7 @@ export function AuthCallbackHandler() {
         if (result?.user) {
           console.log('✅ Google authentication successful:', result.user.email);
           
-          // Create Brandentifier account
+          // Prepare user data for backend
           const userData = {
             firebaseUid: result.user.uid,
             email: result.user.email || '',
@@ -67,7 +67,9 @@ export function AuthCallbackHandler() {
             emailVerified: result.user.emailVerified
           };
 
-          // Call backend to create/get user
+          console.log('Sending user data to backend:', userData.email);
+
+          // Call backend to create/get user (backend handles existing accounts)
           const response = await fetch('/api/auth/google-signin', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -80,17 +82,21 @@ export function AuthCallbackHandler() {
             // Sign in to our auth context
             signIn(data.user);
             
+            const isExistingUser = data.user.profileCompleted > 20;
+            
             toast({
-              title: 'Welcome to Brandentifier!',
+              title: isExistingUser ? 'Welcome back!' : 'Welcome to Brandentifier!',
               description: `Signed in as ${data.user.name}`
             });
+
+            console.log(`User ${isExistingUser ? 'signed in' : 'account created'} successfully`);
 
             // Navigate to intended page
             const returnUrl = sessionStorage.getItem('auth_return_url') || '/industry-pulse';
             sessionStorage.removeItem('auth_return_url');
             navigate(returnUrl);
           } else {
-            throw new Error(data.message || 'Account creation failed');
+            throw new Error(data.message || 'Authentication failed');
           }
         } else {
           console.log('No redirect result found');
