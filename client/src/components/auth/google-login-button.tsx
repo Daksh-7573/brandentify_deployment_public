@@ -51,12 +51,12 @@ export function GoogleLoginButton({
       const result = await signInWithGoogle();
       console.log("🔴 GoogleLoginButton: signInWithGoogle completed with result:", result);
       
-    } catch (error) {
+    } catch (error: any) {
       console.error("🔴 GoogleLoginButton: Failed to authenticate with Google:", error);
       console.error("🔴 GoogleLoginButton: Error details:", {
-        message: error.message,
-        code: error.code,
-        stack: error.stack
+        message: error?.message || 'Unknown error',
+        code: error?.code || 'no-code',
+        stack: error?.stack || 'No stack trace'
       });
       
       // Clear any auth flags on error
