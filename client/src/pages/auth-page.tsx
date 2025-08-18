@@ -15,6 +15,7 @@ import { Mail, Phone, Check, Sparkles, Target, Users } from "lucide-react";
 import { GoogleAuthButton } from "@/components/auth/GoogleAuthButton";
 import { AuthCallback } from "@/components/auth/AuthCallback";
 import { AuthDebug } from "@/components/auth/AuthDebug";
+import { QuickAuthTest } from "@/components/auth/QuickAuthTest";
 import { PhoneAuth } from "@/components/auth/phone-auth";
 import { EmailAuth } from "@/components/auth/email-auth";
 import { DemoLogin } from "@/components/auth/demo-login";
@@ -71,7 +72,6 @@ export default function AuthPage() {
       {/* Content layer */}
       <div className="relative z-10">
         <RedirectAuthHandler />
-        <AuthCallback />
         <AuthDebugOverlay />
         <NeoGlassLayout className="mt-0 pt-2 px-2 md:px-4 min-h-screen flex flex-col justify-start py-2 md:py-4">
           {/* Debug Panel */}
@@ -112,6 +112,17 @@ export default function AuthPage() {
                       </div>
                       
                       <GoogleAuthButton />
+                      
+                      <div className="relative">
+                        <div className="absolute inset-0 flex items-center">
+                          <span className="w-full border-t border-white/20" />
+                        </div>
+                        <div className="relative flex justify-center text-xs uppercase">
+                          <span className="bg-black/50 px-2 text-gray-300">or</span>
+                        </div>
+                      </div>
+                      
+                      <QuickAuthTest />
                       
                       <div className="text-center">
                         <p className="text-sm text-gray-400">

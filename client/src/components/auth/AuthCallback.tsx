@@ -24,6 +24,14 @@ export function AuthCallback() {
         const hasAuthParams = urlParams.has('code') || urlParams.has('state') || urlParams.has('authuser');
         console.log('🔄 Has OAuth params:', hasAuthParams);
         
+        // Only proceed if we're actually in a callback scenario
+        if (!hasAuthParams && !window.location.pathname.includes('callback')) {
+          console.log('🔄 Not an OAuth callback, skipping...');
+          setStatus('error');
+          setMessage('Not an authentication callback');
+          return;
+        }
+        
         // Dynamic Firebase imports
         const [
           { initializeApp },
