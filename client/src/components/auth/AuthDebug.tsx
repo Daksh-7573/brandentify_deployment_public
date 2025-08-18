@@ -144,19 +144,65 @@ export function AuthDebug() {
     }
   };
 
+  const createTestUser = async () => {
+    try {
+      addLog('Creating test Brandentifier user...');
+      const testUserData = {
+        firebaseUid: 'test-firebase-uid-' + Date.now(),
+        email: 'test@example.com',
+        name: 'Test User',
+        photoURL: '',
+        googleId: 'test-google-id-' + Date.now(),
+        authProvider: 'google',
+        emailVerified: true
+      };
+      
+      const response = await fetch('/api/auth/google-signin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(testUserData)
+      });
+      
+      const data = await response.json();
+      addLog(`Test user creation: ${JSON.stringify(data)}`);
+      
+      if (data.success) {
+        addLog('✅ Test user created successfully!');
+        addLog('🔄 This confirms the Brandentifier API is working');
+      } else {
+        addLog(`❌ Test user creation failed: ${data.message}`);
+      }
+    } catch (error: any) {
+      addLog(`Test user creation error: ${error.message}`);
+    }
+  };
+
   return (
     <Card className="w-full max-w-2xl mx-auto mb-6">
       <CardHeader>
         <CardTitle>🔧 Authentication Debug Panel</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-3 gap-2">
           <Button onClick={testGoogleAuth} size="sm">
             Test Google Auth
           </Button>
           <Button onClick={testAPI} variant="outline" size="sm">
             Test API
           </Button>
+          <Button onClick={createTestUser} variant="secondary" size="sm">
+            Create Test User
+          </Button>
+        </div>
+        
+        <div className="bg-yellow-900/30 p-3 rounded border border-yellow-600/30">
+          <div className="text-sm font-semibold text-yellow-200 mb-2">🔧 Firebase Setup Required</div>
+          <div className="text-xs text-yellow-300 space-y-1">
+            <div>1. Go to: <a href="https://console.firebase.google.com/" target="_blank" className="underline">Firebase Console</a></div>
+            <div>2. Select project: <strong>brandentifier-app</strong></div>
+            <div>3. Go to: Authentication → Settings → Authorized domains</div>
+            <div>4. Add: <code className="bg-black/30 px-1 rounded">25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev</code></div>
+          </div>
         </div>
         
         {Object.keys(debugInfo).length > 0 && (
