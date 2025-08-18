@@ -384,9 +384,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             console.log(`🔍 Checking for redirect result (attempt ${redirectCheckAttempts + 1}/${maxRedirectChecks})...`);
             
             // Check for redirect attempt flags first
-            const hasRedirectAttempt = sessionStorage.getItem('redirect_auth_attempt') === 'true';
+            const hasRedirectAttempt = sessionStorage.getItem('redirect_auth_attempt') === 'true' || 
+                                     localStorage.getItem('redirect_auth_attempt') === 'true';
             if (hasRedirectAttempt) {
               console.log("📍 Found redirect attempt flag - checking for auth result");
+              console.log("📍 Redirect flags found in:", {
+                session: sessionStorage.getItem('redirect_auth_attempt'),
+                local: localStorage.getItem('redirect_auth_attempt'),
+                time: sessionStorage.getItem('redirect_auth_time') || localStorage.getItem('redirect_auth_time')
+              });
             }
             
             const redirectResult = await getRedirectResult(auth as any);

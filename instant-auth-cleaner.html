@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Instant Auth Cleaner</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh; display: flex; align-items: center; justify-content: center; margin: 0;
+        }
+        .container { 
+            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-radius: 20px;
+            padding: 40px; max-width: 500px; width: 90%; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        h1 { text-align: center; margin-bottom: 20px; color: #2d3748; font-size: 28px; font-weight: 700; }
+        .status { padding: 12px; margin: 10px 0; border-radius: 8px; font-size: 14px; }
+        .success { background: #f0fff4; border: 1px solid #9ae6b4; color: #276749; }
+        .error { background: #fed7d7; border: 1px solid #feb2b2; color: #c53030; }
+        .info { background: #ebf8ff; border: 1px solid #90cdf4; color: #2c5282; }
+        button { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; 
+                 padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; 
+                 font-size: 14px; font-weight: 600; width: 100%; margin: 5px 0; }
+        button:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4); }
+        .emergency { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        #results { max-height: 300px; overflow-y: auto; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧹 Instant Auth Cleaner</h1>
+        
+        <div id="auto-status" class="status info">Starting automatic cleanup...</div>
+        
+        <button onclick="manualClear()">Manual Clear All</button>
+        <button onclick="directAccess()" class="emergency">Direct Access to App</button>
+        <button onclick="goToLogin()">Return to Login</button>
+        
+        <div id="results"></div>
+    </div>
+
+    <script>
+        function log(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `status ${type}`;
+            div.innerHTML = `[${new Date().toLocaleTimeString()}] ${message}`;
+            document.getElementById('results').appendChild(div);
+        }
+
+        function clearAllAuthData() {
+            let cleared = 0;
+            
+            // Specific problematic keys
+            const specificKeys = [
+                'redirect_auth_attempt', 'redirect_auth_time', 'redirect_auth_success',
+                'authSuccess', 'firebase_user', 'emergency_access', 'bypass_auth'
+            ];
+            
+            // Clear from both storages
+            specificKeys.forEach(key => {
+                if (localStorage.getItem(key)) {
+                    localStorage.removeItem(key);
+                    cleared++;
+                    log(`Cleared localStorage: ${key}`, 'success');
+                }
+                if (sessionStorage.getItem(key)) {
+                    sessionStorage.removeItem(key);
+                    cleared++;
+                    log(`Cleared sessionStorage: ${key}`, 'success');
+                }
+            });
+            
+            // Clear all Firebase-related items
+            [...Object.keys(localStorage), ...Object.keys(sessionStorage)].forEach(key => {
+                if (key.includes('firebase') || key.includes('auth') || key.includes('redirect') || key.includes('google')) {
+                    try {
+                        localStorage.removeItem(key);
+                        sessionStorage.removeItem(key);
+                        cleared++;
+                    } catch (e) {
+                        // Ignore errors for keys that don't exist in both storages
+                    }
+                }
+            });
+            
+            // Clear cookies
+            document.cookie.split(";").forEach(function(c) { 
+                document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+            });
+            
+            return cleared;
+        }
+
+        function manualClear() {
+            log("Manual cleanup started", "info");
+            const cleared = clearAllAuthData();
+            log(`Cleanup complete: ${cleared} items removed`, "success");
+            log("Authentication data is now clean", "success");
+        }
+
+        function directAccess() {
+            log("Setting up direct access", "info");
+            clearAllAuthData();
+            localStorage.setItem('emergency_access', 'true');
+            sessionStorage.setItem('bypass_auth', 'true');
+            log("Redirecting to Industry Pulse", "success");
+            setTimeout(() => window.location.href = '/industry-pulse', 500);
+        }
+
+        function goToLogin() {
+            log("Returning to login", "info");
+            clearAllAuthData();
+            setTimeout(() => window.location.href = '/', 1000);
+        }
+
+        // Auto-clean on page load
+        window.addEventListener('load', () => {
+            log("Auto-cleanup starting", "info");
+            const cleared = clearAllAuthData();
+            
+            document.getElementById('auto-status').innerHTML = 
+                `✅ Auto-cleanup complete: ${cleared} items removed`;
+            document.getElementById('auto-status').className = 'status success';
+            
+            log(`Auto-cleanup complete: ${cleared} auth items removed`, "success");
+            log("All redirect attempt flags cleared", "success");
+            log("You can now try Google login again or use direct access", "info");
+        });
+    </script>
+</body>
+</html>

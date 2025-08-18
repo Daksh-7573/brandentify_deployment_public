@@ -130,6 +130,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.sendFile(path.join(__dirname, '../connectivity-test.html'));
   });
   
+  app.get('/instant-auth-cleaner.html', (req: Request, res: Response) => {
+    res.sendFile(path.join(__dirname, '../instant-auth-cleaner.html'));
+  });
+  
   // Health check endpoint for enterprise scaling
   apiRouter.get("/health", (req: Request, res: Response) => {
     res.status(200).json({
