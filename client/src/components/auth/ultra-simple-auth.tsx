@@ -26,30 +26,43 @@ export function UltraSimpleAuth() {
 
       console.log('Firebase config check passed');
 
-      // Use redirect authentication directly (more reliable than popup)
-      const redirectUrl = `https://accounts.google.com/o/oauth2/auth?${new URLSearchParams({
-        client_id: '486486123456-abcdefghijklmnop.apps.googleusercontent.com', // Your actual client ID
-        redirect_uri: window.location.origin + '/auth',
-        response_type: 'code',
-        scope: 'email profile',
-        access_type: 'offline',
+      // For direct OAuth, we need to use Firebase's Web Client ID
+      // Let's extract it from Firebase config or use Firebase redirect instead
+      console.log('Using Firebase redirect for more reliable authentication');
+      
+      // Import Firebase modules
+      const { initializeApp } = await import('firebase/app');
+      const { getAuth, signInWithRedirect, GoogleAuthProvider } = await import('firebase/auth');
+      
+      const firebaseConfig = {
+        apiKey: apiKey,
+        authDomain: `${projectId}.firebaseapp.com`,
+        projectId: projectId,
+        storageBucket: `${projectId}.appspot.com`,
+        appId: appId
+      };
+      
+      const app = initializeApp(firebaseConfig, `ultra-simple-${Date.now()}`);
+      const auth = getAuth(app);
+      const provider = new GoogleAuthProvider();
+      
+      provider.addScope('email');
+      provider.addScope('profile');
+      provider.setCustomParameters({
         prompt: 'select_account'
-      }).toString()}`;
+      });
+      
+      console.log('Starting Firebase redirect authentication...');
+      await signInWithRedirect(auth, provider);
+      return; // Function will exit here as redirect takes over
 
       toast({
         title: 'Redirecting to Google',
-        description: 'Please complete authentication with Google...',
+        description: 'You will be redirected to complete authentication...',
       });
 
       // Store current location for return
       sessionStorage.setItem('auth_return_url', '/industry-pulse');
-      
-      console.log('Redirecting to Google OAuth:', redirectUrl);
-      
-      // Use direct redirect (most reliable method)
-      setTimeout(() => {
-        window.location.href = redirectUrl;
-      }, 1000);
 
     } catch (error: any) {
       console.error('Authentication error:', error);
