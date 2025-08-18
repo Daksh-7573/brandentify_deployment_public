@@ -11,6 +11,7 @@ import { DomainAuthHelper } from "@/components/firebase/DomainAuthHelper";
 import { FeedSkeleton } from "@/components/ui/skeleton-components";
 import AuthCallback from "@/pages/auth-callback";
 import CatchAllAuthHandler from "@/routes/CatchAllAuthHandler";
+// IndustryPulsePage imported as lazy component below
 
 // Enhanced progressive loading state management
 const useProgressiveLoading = () => {
@@ -61,7 +62,7 @@ function SimpleTestApp() {
 
 // Critical components (loaded first for fast perceived performance)
 const Landing = lazy(() => import("@/pages/landing"));
-const IndustryPulsePage = lazy(() => import("@/pages/industry-pulse-new"));
+const IndustryPulsePage = lazy(() => import("@/pages/industry-pulse"));
 const Profile = lazy(() => import("@/pages/profile"));
 const AuthPage = lazy(() => import("@/pages/auth-page"));
 
