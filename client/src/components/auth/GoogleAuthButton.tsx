@@ -43,8 +43,8 @@ export function GoogleAuthButton() {
         appId
       };
 
-      // Initialize Firebase
-      const app = initializeApp(firebaseConfig, `brandentifier-auth-${Date.now()}`);
+      // Initialize Firebase - use consistent app name
+      const app = initializeApp(firebaseConfig, 'brandentifier-auth-main');
       const auth = getAuth(app);
       
       // Configure Google Provider

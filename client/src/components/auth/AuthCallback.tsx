@@ -15,7 +15,14 @@ export function AuthCallback() {
   useEffect(() => {
     const handleAuthCallback = async () => {
       try {
-        console.log('Processing auth callback...');
+        console.log('🔄 AuthCallback: Processing authentication callback...');
+        console.log('🔄 Current URL:', window.location.href);
+        console.log('🔄 URL params:', window.location.search);
+        
+        // Check if this looks like an OAuth callback
+        const urlParams = new URLSearchParams(window.location.search);
+        const hasAuthParams = urlParams.has('code') || urlParams.has('state') || urlParams.has('authuser');
+        console.log('🔄 Has OAuth params:', hasAuthParams);
         
         // Dynamic Firebase imports
         const [
@@ -35,12 +42,18 @@ export function AuthCallback() {
           appId: import.meta.env.VITE_FIREBASE_APP_ID
         };
 
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig, `callback-${Date.now()}`);
+        console.log('🔄 Firebase config:', {
+          projectId: firebaseConfig.projectId,
+          authDomain: firebaseConfig.authDomain
+        });
+
+        // Initialize Firebase - use consistent app name
+        const app = initializeApp(firebaseConfig, 'brandentifier-auth-main');
         const auth = getAuth(app);
 
-        console.log('Getting redirect result...');
+        console.log('🔄 Getting redirect result...');
         const result = await getRedirectResult(auth);
+        console.log('🔄 Redirect result:', result ? 'Found user data' : 'No result');
 
         if (result && result.user) {
           console.log('Firebase authentication successful:', result.user.email);
