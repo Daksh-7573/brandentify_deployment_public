@@ -191,6 +191,10 @@ function Router() {
         <ProtectedRoute path="/create-pulse-new" component={CreatePulsePage} />
       )} />
       <Route path="/auth" component={AuthPage} />
+      <Route path="/auth-success" component={() => {
+        const AuthSuccessPage = lazy(() => import('./pages/auth-success'));
+        return <Suspense fallback={<div>Loading...</div>}><AuthSuccessPage /></Suspense>;
+      }} />
 
 
 

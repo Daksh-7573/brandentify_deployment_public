@@ -123,8 +123,45 @@ export function GoogleAuthTest() {
       provider.addScope('email');
       provider.addScope('profile');
 
-      addLog('Redirecting to Google...');
-      await signInWithRedirect(auth, provider);
+      addLog('Opening Google popup...');
+      const { signInWithPopup } = await import('firebase/auth');
+      
+      const result = await signInWithPopup(auth, provider);
+      addLog(`✅ Popup authentication successful: ${result.user.email}`);
+      
+      // Create account via backend
+      const userData = {
+        firebaseUid: result.user.uid,
+        email: result.user.email || '',
+        name: result.user.displayName || 'Google User',
+        photoURL: result.user.photoURL || '',
+        googleId: result.user.uid,
+        authProvider: 'google',
+        emailVerified: result.user.emailVerified
+      };
+
+      addLog('Sending data to backend...');
+      const response = await fetch('/api/auth/google-signin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userData)
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        addLog('✅ Backend authentication successful');
+        signIn(data.user);
+        
+        toast({
+          title: 'Google Authentication Successful!',
+          description: `Welcome ${data.user.name}`
+        });
+
+        setTimeout(() => navigate('/industry-pulse'), 1000);
+      } else {
+        addLog(`❌ Backend error: ${data.message}`);
+      }
       
     } catch (error: any) {
       addLog(`❌ Authentication error: ${error.message}`);

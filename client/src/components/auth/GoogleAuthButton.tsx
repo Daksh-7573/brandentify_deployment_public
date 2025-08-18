@@ -67,8 +67,42 @@ export function GoogleAuthButton() {
 
       console.log('Initiating Google redirect...');
       
-      // Use redirect flow (most reliable)
-      await signInWithRedirect(auth, provider);
+      // Use popup flow to avoid X-Frame-Options issues
+      const { signInWithPopup } = await import('firebase/auth');
+      
+      console.log('Opening Google popup...');
+      const result = await signInWithPopup(auth, provider);
+      
+      console.log('✅ Google authentication successful:', result.user.email);
+      
+      // Create Brandentifier account
+      const userData = {
+        firebaseUid: result.user.uid,
+        email: result.user.email || '',
+        name: result.user.displayName || 'Google User',
+        photoURL: result.user.photoURL || '',
+        googleId: result.user.uid,
+        authProvider: 'google',
+        emailVerified: result.user.emailVerified
+      };
+
+      console.log('Sending user data to backend:', userData.email);
+
+      // Call backend to create/get user (backend handles existing accounts)
+      const response = await fetch('/api/auth/google-signin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userData)
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        // Navigate to auth success page with user data
+        window.location.href = '/auth-success?user=' + encodeURIComponent(JSON.stringify(data.user));
+      } else {
+        throw new Error(data.message || 'Authentication failed');
+      }
       
     } catch (error: any) {
       console.error('Google authentication error:', error);
