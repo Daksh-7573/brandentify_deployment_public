@@ -18,10 +18,57 @@ export function SimpleFirebaseAuth() {
   const [user, setUser] = useState<FirebaseUser | null>(null);
   const { toast } = useToast();
 
-  // Check for existing user on mount
+  // Check for existing user and redirect results on mount
   useEffect(() => {
     checkAuthState();
+    checkRedirectResult();
   }, []);
+
+  const checkRedirectResult = async () => {
+    try {
+      const { getAuth, getRedirectResult } = await import('firebase/auth');
+      const { initializeApp } = await import('firebase/app');
+      
+      const firebaseConfig = {
+        apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+        authDomain: `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.firebaseapp.com`,
+        projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+        storageBucket: `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.appspot.com`,
+        appId: import.meta.env.VITE_FIREBASE_APP_ID
+      };
+      
+      const app = initializeApp(firebaseConfig, 'redirect-check');
+      const auth = getAuth(app);
+      
+      const result = await getRedirectResult(auth);
+      
+      if (result && result.user) {
+        console.log('Found redirect result:', result.user.email);
+        
+        const userData = {
+          uid: result.user.uid,
+          email: result.user.email,
+          displayName: result.user.displayName,
+          photoURL: result.user.photoURL
+        };
+        
+        setUser(userData);
+        sessionStorage.setItem('firebase_user', JSON.stringify(userData));
+        sessionStorage.setItem('user_authenticated', 'true');
+        
+        toast({
+          title: 'Authentication Successful',
+          description: `Welcome ${result.user.displayName || result.user.email}!`
+        });
+        
+        setTimeout(() => {
+          window.location.href = '/industry-pulse';
+        }, 1500);
+      }
+    } catch (error) {
+      console.error('Error checking redirect result:', error);
+    }
+  };
 
   const checkAuthState = async () => {
     try {
@@ -78,8 +125,17 @@ export function SimpleFirebaseAuth() {
       
       console.log('Opening Google authentication popup...');
       
-      // Attempt popup authentication
-      const result = await signInWithPopup(auth, provider);
+      // Attempt popup authentication with timeout and better error handling
+      const popupPromise = signInWithPopup(auth, provider);
+      
+      // Add timeout to prevent hanging
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => {
+          reject(new Error('Authentication timeout after 60 seconds'));
+        }, 60000);
+      });
+      
+      const result = await Promise.race([popupPromise, timeoutPromise]);
       
       if (result && result.user) {
         console.log('Authentication successful:', result.user.email);
@@ -117,9 +173,27 @@ export function SimpleFirebaseAuth() {
       if (error.code === 'auth/popup-blocked') {
         errorMessage = 'Popup was blocked by your browser. Please allow popups and try again.';
       } else if (error.code === 'auth/popup-closed-by-user') {
-        errorMessage = 'Authentication was cancelled. Please try again and complete the sign-in.';
+        // Try redirect authentication as automatic fallback
+        console.log('Popup closed, attempting redirect authentication...');
+        
+        toast({
+          title: 'Switching to redirect authentication',
+          description: 'The popup was closed, redirecting to Google...',
+          variant: 'default'
+        });
+        
+        try {
+          const { signInWithRedirect } = await import('firebase/auth');
+          await signInWithRedirect(auth, provider);
+          return; // Exit function as redirect will handle the rest
+        } catch (redirectError: any) {
+          console.error('Redirect authentication also failed:', redirectError);
+          errorMessage = `Both popup and redirect failed. Error: ${redirectError.message || 'Unknown error'}`;
+        }
       } else if (error.code === 'auth/unauthorized-domain') {
         errorMessage = 'This domain is not authorized for Google authentication.';
+      } else if (error.message === 'Authentication timeout after 60 seconds') {
+        errorMessage = 'Authentication took too long. Please try again.';
       }
       
       toast({
