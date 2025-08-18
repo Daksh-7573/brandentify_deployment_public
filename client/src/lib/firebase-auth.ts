@@ -39,10 +39,10 @@ export interface User {
 }
 
 // Authentication functions
-export const signInWithGoogle = async (): Promise<void> => {
+export const signInWithGoogle = async (redirectTo: string = '/industry-pulse'): Promise<void> => {
   console.log('Starting Google sign-in...');
   // Store intended redirect destination
-  sessionStorage.setItem('auth_redirect_target', '/industry-pulse');
+  sessionStorage.setItem('auth_redirect_target', redirectTo);
   await signInWithRedirect(auth, googleProvider);
 };
 
@@ -101,6 +101,16 @@ export const handleRedirectResult = async (): Promise<User | null> => {
       sessionStorage.setItem('brandentifier_user', JSON.stringify(user));
       localStorage.setItem('brandentifier_auth', 'true');
       console.log('User data stored immediately after OAuth redirect');
+      
+      // Check for intended redirect destination
+      const redirectTarget = sessionStorage.getItem('auth_redirect_target') || '/industry-pulse';
+      sessionStorage.removeItem('auth_redirect_target'); // Clean up
+      
+      console.log(`Redirecting to: ${redirectTarget}`);
+      // Use a small delay to ensure auth state is fully updated
+      setTimeout(() => {
+        window.location.href = redirectTarget + '?from=auth';
+      }, 100);
       
       return user;
     }

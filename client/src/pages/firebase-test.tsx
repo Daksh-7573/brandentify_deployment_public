@@ -68,16 +68,18 @@ export default function FirebaseTestPage() {
         }
       });
       
-      // Check for redirect result immediately
-      const { getRedirectResult } = await import('firebase/auth');
+      // Check for redirect result immediately and handle redirect
+      const { handleRedirectResult } = await import('@/lib/firebase-auth');
       try {
-        const redirectResult = await getRedirectResult(auth);
-        if (redirectResult) {
-          addLog(`Redirect result found: ${redirectResult.user.email}`);
+        const redirectUser = await handleRedirectResult();
+        if (redirectUser) {
+          addLog(`Redirect result found: ${redirectUser.email}`);
+          addLog('User will be redirected to Industry Pulse in a moment...');
+          // handleRedirectResult will handle the redirect automatically
         } else {
           addLog('No redirect result found');
         }
-      } catch (redirectError) {
+      } catch (redirectError: any) {
         addLog(`Redirect result error: ${redirectError.message}`);
       }
       
