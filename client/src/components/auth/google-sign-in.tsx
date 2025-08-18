@@ -20,7 +20,7 @@ export function GoogleSignIn() {
       if (isAuthenticated()) {
         const user = getCurrentUser();
         console.log('User already authenticated:', user?.email);
-        redirectToIndustryPulse();
+        // User will be redirected by handleRedirectResult
         return;
       }
       
@@ -28,11 +28,7 @@ export function GoogleSignIn() {
       const user = await handleRedirectResult();
       if (user) {
         console.log('Authentication successful via redirect:', user.email);
-        toast({
-          title: 'Welcome!',
-          description: `Signed in as ${user.displayName || user.email}`,
-        });
-        redirectToIndustryPulse();
+        // handleRedirectResult will handle the redirect, no need to do it here
         return;
       }
       
@@ -49,11 +45,7 @@ export function GoogleSignIn() {
     }
   };
 
-  const redirectToIndustryPulse = () => {
-    setTimeout(() => {
-      window.location.href = '/industry-pulse';
-    }, 1500);
-  };
+  // Removed redirectToIndustryPulse - handled directly in firebase-auth.ts
 
   const handleSignIn = async () => {
     setIsLoading(true);

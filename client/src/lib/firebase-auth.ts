@@ -58,6 +58,10 @@ export const handleRedirectResult = async (): Promise<User | null> => {
       sessionStorage.setItem('brandentifier_user', JSON.stringify(user));
       localStorage.setItem('brandentifier_auth', 'true');
       
+      // Directly redirect to Industry Pulse
+      console.log('Authentication successful, redirecting to Industry Pulse...');
+      window.location.href = '/industry-pulse';
+      
       return user;
     }
     return null;
