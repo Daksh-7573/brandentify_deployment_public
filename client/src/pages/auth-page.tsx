@@ -19,6 +19,7 @@ import { DemoLogin } from "@/components/auth/demo-login";
 import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
 import { AuthDebugOverlay } from "@/components/auth/auth-debug-overlay";
 import { RedirectAuthHandler } from "@/components/auth/redirect-auth-handler";
+import { AuthStatusChecker } from "@/components/auth/auth-status-checker";
 import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
 
 export default function AuthPage() {
@@ -68,6 +69,7 @@ export default function AuthPage() {
       
       {/* Content layer */}
       <div className="relative z-10">
+        <AuthStatusChecker />
         <RedirectAuthHandler />
         <AuthDebugOverlay />
         <NeoGlassLayout className="mt-0 pt-2 px-2 md:px-4 min-h-screen flex flex-col justify-start py-2 md:py-4">

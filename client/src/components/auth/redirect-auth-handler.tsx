@@ -10,12 +10,25 @@ export function RedirectAuthHandler() {
 
   useEffect(() => {
     const handleRedirectResult = async () => {
-      // Only check on pages that might receive redirects
+      // Check for redirect results more broadly
       const urlParams = new URLSearchParams(window.location.search);
       const hasAuthParams = urlParams.has('code') || urlParams.has('state') || urlParams.has('scope');
+      const hasHashParams = window.location.hash.includes('access_token') || window.location.hash.includes('id_token');
+      const isAuthPage = window.location.pathname === '/' || window.location.pathname === '/auth';
       
-      if (!hasAuthParams && !window.location.hash.includes('access_token')) {
-        return; // No redirect params, skip check
+      console.log('RedirectAuthHandler - URL check:', {
+        hasAuthParams,
+        hasHashParams,
+        isAuthPage,
+        pathname: window.location.pathname,
+        search: window.location.search,
+        hash: window.location.hash
+      });
+      
+      // Always check on auth page after a redirect
+      if (!hasAuthParams && !hasHashParams && !isAuthPage) {
+        console.log('No auth params and not on auth page, skipping redirect check');
+        return;
       }
 
       console.log('Checking for Google OAuth redirect result...');

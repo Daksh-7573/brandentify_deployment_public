@@ -19,7 +19,16 @@ export function RedirectOnlyAuth() {
     setIsCheckingRedirect(true);
     
     try {
-      console.log('Checking for redirect result...');
+      console.log('🔍 Checking for redirect result...');
+      
+      // Check URL parameters first
+      const urlParams = new URLSearchParams(window.location.search);
+      const hasAuthParams = urlParams.has('code') || urlParams.has('state') || urlParams.has('scope');
+      const hasHashParams = window.location.hash.includes('access_token') || window.location.hash.includes('id_token');
+      
+      console.log('URL has auth params:', hasAuthParams);
+      console.log('URL has hash params:', hasHashParams);
+      console.log('Current URL:', window.location.href);
       
       const { initializeApp, getApps } = await import('firebase/app');
       const { getAuth, getRedirectResult } = await import('firebase/auth');
@@ -36,45 +45,74 @@ export function RedirectOnlyAuth() {
       const existingApps = getApps();
       if (existingApps.length > 0) {
         app = existingApps[0];
+        console.log('Using existing Firebase app');
       } else {
-        app = initializeApp(firebaseConfig, 'redirect-only');
+        app = initializeApp(firebaseConfig, 'redirect-check');
+        console.log('Initialized new Firebase app');
       }
       
       const auth = getAuth(app);
+      console.log('Getting redirect result...');
+      
       const result = await getRedirectResult(auth);
+      console.log('Redirect result:', result);
       
       if (result && result.user) {
-        console.log('🎉 Redirect authentication successful!', result.user.email);
+        console.log('🎉 Redirect authentication successful!');
+        console.log('User email:', result.user.email);
+        console.log('User name:', result.user.displayName);
         
-        // Store user data
+        // Store user data in multiple locations for reliability
         const userData = {
           uid: result.user.uid,
           email: result.user.email,
           displayName: result.user.displayName,
           photoURL: result.user.photoURL,
           authenticated: true,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
+          authMethod: 'redirect'
         };
         
+        // Store in session and local storage
         sessionStorage.setItem('firebase_user', JSON.stringify(userData));
         sessionStorage.setItem('user_authenticated', 'true');
         localStorage.setItem('auth_success', 'true');
+        localStorage.setItem('last_user', JSON.stringify(userData));
+        
+        console.log('User data stored successfully');
+        
+        // Clear URL parameters
+        const cleanUrl = window.location.pathname;
+        window.history.replaceState({}, document.title, cleanUrl);
+        console.log('URL cleaned:', cleanUrl);
         
         toast({
           title: 'Login Successful!',
           description: `Welcome back, ${result.user.displayName || result.user.email}!`,
         });
         
-        // Redirect to Industry Pulse
+        // Redirect to Industry Pulse after a short delay
+        console.log('Redirecting to Industry Pulse in 2 seconds...');
         setTimeout(() => {
+          console.log('Executing redirect to /industry-pulse');
           window.location.href = '/industry-pulse';
-        }, 1500);
+        }, 2000);
+        
+        return true; // Indicate success
       } else {
-        console.log('No redirect result found');
+        console.log('No redirect result found or no user in result');
+        console.log('Auth current user:', auth.currentUser);
+        return false;
       }
       
     } catch (error: any) {
       console.error('Error checking redirect result:', error);
+      console.error('Error details:', {
+        code: error.code,
+        message: error.message,
+        stack: error.stack
+      });
+      return false;
     } finally {
       setIsCheckingRedirect(false);
     }
