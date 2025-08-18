@@ -134,6 +134,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.sendFile(path.join(__dirname, '../clear-current-auth.html'));
   });
   
+  app.get('/auth-fix.html', (req: Request, res: Response) => {
+    res.sendFile(path.join(__dirname, '../auth-fix.html'));
+  });
+  
   // Health check endpoint for enterprise scaling
   apiRouter.get("/health", (req: Request, res: Response) => {
     res.status(200).json({
