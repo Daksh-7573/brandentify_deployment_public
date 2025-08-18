@@ -30,6 +30,7 @@ export function GoogleLoginButton({
     event.stopPropagation();
     
     console.log("🔴 GoogleLoginButton: Button clicked!");
+    console.log("🔴 GoogleLoginButton: signInWithGoogle function:", typeof signInWithGoogle);
     
     try {
       setIsLoading(true);
@@ -41,12 +42,23 @@ export function GoogleLoginButton({
       sessionStorage.removeItem('redirect_auth_success');
       console.log("🔴 GoogleLoginButton: Cleared old auth flags for fresh start");
       
+      // Check if the function exists
+      if (typeof signInWithGoogle !== 'function') {
+        throw new Error('signInWithGoogle is not a function - check AuthContext');
+      }
+      
       console.log("🔴 GoogleLoginButton: About to call signInWithGoogle...");
-      await signInWithGoogle();
-      console.log("🔴 GoogleLoginButton: signInWithGoogle completed");
+      const result = await signInWithGoogle();
+      console.log("🔴 GoogleLoginButton: signInWithGoogle completed with result:", result);
       
     } catch (error) {
       console.error("🔴 GoogleLoginButton: Failed to authenticate with Google:", error);
+      console.error("🔴 GoogleLoginButton: Error details:", {
+        message: error.message,
+        code: error.code,
+        stack: error.stack
+      });
+      
       // Clear any auth flags on error
       sessionStorage.removeItem('redirect_auth_attempt');
       sessionStorage.removeItem('redirect_auth_time');
