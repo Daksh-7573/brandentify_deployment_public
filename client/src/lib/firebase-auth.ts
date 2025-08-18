@@ -1,5 +1,5 @@
 import { initializeApp, getApps } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult, signOut } from 'firebase/auth';
+import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
 
 // Firebase configuration
 const firebaseConfig = {
@@ -46,29 +46,57 @@ export const signInWithGoogle = async (): Promise<void> => {
   await signInWithRedirect(auth, googleProvider);
 };
 
-export const handleRedirectResult = async (): Promise<User | null> => {
-  try {
-    console.log('Checking for Firebase redirect result...');
-    const result = await getRedirectResult(auth);
+// Global auth state
+let currentFirebaseUser: FirebaseUser | null = null;
+let authInitialized = false;
+
+// Initialize auth state listener
+const initializeAuthListener = () => {
+  if (authInitialized) return;
+  authInitialized = true;
+
+  onAuthStateChanged(auth, (firebaseUser) => {
+    currentFirebaseUser = firebaseUser;
     
-    if (result && result.user) {
+    if (firebaseUser) {
+      // User is signed in
       const user: User = {
-        uid: result.user.uid,
-        email: result.user.email,
-        displayName: result.user.displayName,
-        photoURL: result.user.photoURL,
+        uid: firebaseUser.uid,
+        email: firebaseUser.email,
+        displayName: firebaseUser.displayName,
+        photoURL: firebaseUser.photoURL,
       };
       
       // Store user data
       sessionStorage.setItem('brandentifier_user', JSON.stringify(user));
       localStorage.setItem('brandentifier_auth', 'true');
+      console.log('Firebase user authenticated:', firebaseUser.email);
+    } else {
+      // User is signed out
+      sessionStorage.removeItem('brandentifier_user');
+      localStorage.removeItem('brandentifier_auth');
+      console.log('Firebase user signed out');
+    }
+  });
+};
+
+export const handleRedirectResult = async (): Promise<User | null> => {
+  try {
+    console.log('Checking for Firebase redirect result...');
+    initializeAuthListener(); // Ensure listener is set up
+    
+    const result = await getRedirectResult(auth);
+    
+    if (result && result.user) {
+      console.log('Redirect result found! User:', result.user.email);
       
-      console.log('Authentication successful! User logged in:', user.email);
-      
-      // Clear the redirect target since we're handling it here
-      sessionStorage.removeItem('auth_redirect_target');
-      
-      return user;
+      // Auth state listener will handle storing the user data
+      return {
+        uid: result.user.uid,
+        email: result.user.email,
+        displayName: result.user.displayName,
+        photoURL: result.user.photoURL,
+      };
     }
     
     console.log('No redirect result found');
@@ -80,6 +108,19 @@ export const handleRedirectResult = async (): Promise<User | null> => {
 };
 
 export const getCurrentUser = (): User | null => {
+  initializeAuthListener(); // Ensure listener is set up
+  
+  // First check if Firebase has a current user
+  if (currentFirebaseUser) {
+    return {
+      uid: currentFirebaseUser.uid,
+      email: currentFirebaseUser.email,
+      displayName: currentFirebaseUser.displayName,
+      photoURL: currentFirebaseUser.photoURL,
+    };
+  }
+  
+  // Fallback to stored data
   try {
     const userData = sessionStorage.getItem('brandentifier_user');
     return userData ? JSON.parse(userData) : null;
@@ -89,12 +130,35 @@ export const getCurrentUser = (): User | null => {
 };
 
 export const isAuthenticated = (): boolean => {
+  initializeAuthListener(); // Ensure listener is set up
+  
+  // Check Firebase auth state first
+  if (currentFirebaseUser) {
+    return true;
+  }
+  
+  // Fallback to stored data
   return !!getCurrentUser() && localStorage.getItem('brandentifier_auth') === 'true';
+};
+
+// Wait for auth state to initialize
+export const waitForAuthInit = (): Promise<FirebaseUser | null> => {
+  return new Promise((resolve) => {
+    if (authInitialized) {
+      resolve(currentFirebaseUser);
+      return;
+    }
+    
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      unsubscribe();
+      resolve(user);
+    });
+  });
 };
 
 export const logout = async (): Promise<void> => {
   await signOut(auth);
-  sessionStorage.removeItem('brandentifier_user');
-  localStorage.removeItem('brandentifier_auth');
+  // Auth state listener will handle clearing stored data
+  currentFirebaseUser = null;
   window.location.href = '/';
 };

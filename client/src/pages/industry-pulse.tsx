@@ -15,14 +15,24 @@ export default function IndustryPulsePage() {
       try {
         console.log('Industry Pulse: Checking authentication...');
         
-        const { isAuthenticated, getCurrentUser } = await import('@/lib/firebase-auth');
+        const { waitForAuthInit, getCurrentUser } = await import('@/lib/firebase-auth');
         
-        // Check if user is authenticated
-        if (isAuthenticated()) {
+        // Wait for Firebase auth state to initialize
+        const firebaseUser = await waitForAuthInit();
+        
+        if (firebaseUser) {
           const currentUser = getCurrentUser();
           console.log('User authenticated:', currentUser?.email);
           setUser(currentUser);
           setIsLoading(false);
+          
+          // Show welcome message for newly authenticated users
+          if (window.location.search.includes('from=auth')) {
+            toast({
+              title: 'Welcome!',
+              description: `Successfully signed in as ${currentUser?.displayName || currentUser?.email}`,
+            });
+          }
           return;
         }
         
@@ -37,7 +47,6 @@ export default function IndustryPulsePage() {
         
       } catch (error) {
         console.error('Error checking authentication:', error);
-        setIsLoading(false);
         // On error, redirect to auth page
         window.location.href = '/';
       }

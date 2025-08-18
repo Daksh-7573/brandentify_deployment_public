@@ -32,24 +32,27 @@ export default function AuthPage() {
   useEffect(() => {
     const initializeAuth = async () => {
       try {
-        console.log('Auth page loaded, initializing authentication...');
+        console.log('Auth page loaded, checking authentication...');
         
-        const { handleRedirectResult, isAuthenticated, getCurrentUser } = await import('@/lib/firebase-auth');
+        const { waitForAuthInit, handleRedirectResult } = await import('@/lib/firebase-auth');
         
-        // First check for redirect result from Google OAuth
-        const redirectUser = await handleRedirectResult();
-        if (redirectUser) {
-          console.log('OAuth success! Redirecting user:', redirectUser.email);
-          // Redirect to Industry Pulse after successful OAuth
+        // Wait for Firebase auth to initialize
+        const firebaseUser = await waitForAuthInit();
+        
+        if (firebaseUser) {
+          console.log('User already authenticated, redirecting:', firebaseUser.email);
           window.location.href = '/industry-pulse';
           return;
         }
         
-        // Check if user is already authenticated
-        if (isAuthenticated()) {
-          const user = getCurrentUser();
-          console.log('User already authenticated, redirecting:', user?.email);
-          window.location.href = '/industry-pulse';
+        // Check for redirect result from Google OAuth
+        const redirectUser = await handleRedirectResult();
+        if (redirectUser) {
+          console.log('OAuth redirect processed! Redirecting user:', redirectUser.email);
+          // Small delay to ensure auth state is updated
+          setTimeout(() => {
+            window.location.href = '/industry-pulse';
+          }, 500);
           return;
         }
         
