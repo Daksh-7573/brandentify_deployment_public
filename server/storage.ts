@@ -1296,8 +1296,8 @@ export class MemStorage implements IStorage {
       title: "Become a Senior Software Engineer",
       description: "Advance to a senior-level position with increased technical leadership responsibilities",
       targetDate: new Date(new Date().setFullYear(new Date().getFullYear() + 3)), // 3 years from now
-      goalType: "position_change",
-      status: "in_progress",
+      goalType: "position",
+      status: "in-progress",
       createdAt: new Date(),
       updatedAt: new Date(),
       progress: 25,
@@ -1714,10 +1714,6 @@ export class MemStorage implements IStorage {
   
   async getUserByPhoneNumber(phoneNumber: string): Promise<User | undefined> {
     return Array.from(this.users.values()).find(user => user.phoneNumber === phoneNumber);
-  }
-
-  async getUserByEmail(email: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(user => user.email === email);
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
@@ -2489,7 +2485,7 @@ export class MemStorage implements IStorage {
           userId: 1,
           title: "Web Application Development",
           description: "Full-stack web application development using modern JavaScript frameworks.",
-          category: "development",
+          category: "Development",
           price: "100",
           currency: "USD",
           duration: "1",
@@ -2503,7 +2499,7 @@ export class MemStorage implements IStorage {
           userId: 1,
           title: "Technical Consulting",
           description: "Expert advice on architecture, technology selection, and development best practices.",
-          category: "consulting",
+          category: "Consulting",
           price: "150",
           currency: "USD",
           duration: "1",
@@ -2517,7 +2513,7 @@ export class MemStorage implements IStorage {
           userId: 1,
           title: "Code Review & Optimization",
           description: "Thorough code review with performance optimization recommendations.",
-          category: "development",
+          category: "Development",
           price: "75",
           currency: "USD",
           duration: "30",
