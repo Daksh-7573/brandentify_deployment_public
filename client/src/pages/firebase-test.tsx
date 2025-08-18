@@ -68,26 +68,19 @@ export default function FirebaseTestPage() {
         }
       });
       
-      // Check for redirect result immediately and handle redirect
+      // Check for redirect result - Firebase will handle redirect automatically
       const { handleRedirectResult } = await import('@/lib/firebase-auth');
       try {
         const redirectUser = await handleRedirectResult();
         if (redirectUser) {
-          addLog(`Redirect result found: ${redirectUser.email}`);
-          addLog('Redirecting to Industry Pulse in 2 seconds...');
-          
-          // Manually redirect after auth success
-          setTimeout(() => {
-            const finalDestination = sessionStorage.getItem('auth_final_destination') || '/industry-pulse';
-            sessionStorage.removeItem('auth_final_destination'); // Clean up
-            addLog(`Redirecting to: ${finalDestination}`);
-            window.location.href = `${finalDestination}?from=auth`;
-          }, 2000);
+          addLog(`✅ Authentication successful: ${redirectUser.email}`);
+          addLog('🚀 Redirecting to Industry Pulse...');
+          // handleRedirectResult will automatically redirect to Industry Pulse
         } else {
           addLog('No redirect result found');
         }
       } catch (redirectError: any) {
-        addLog(`Redirect result error: ${redirectError.message}`);
+        addLog(`❌ Authentication error: ${redirectError.message}`);
       }
       
     } catch (error: any) {
@@ -107,10 +100,9 @@ export default function FirebaseTestPage() {
       
       const { signInWithGoogle } = await import('@/lib/firebase-auth');
       
-      // Use dedicated auth success page for testing
-      await signInWithGoogle('/firebase-test');
-      addLog('Google sign-in initiated - you should be redirected to Google OAuth');
-      addLog('After completing Google login, you will be redirected back here with auth result');
+      await signInWithGoogle();
+      addLog('Google sign-in initiated - redirecting to Google OAuth...');
+      addLog('After Google login: Success → Industry Pulse | Error → Back here');
     } catch (error: any) {
       addLog(`Google sign-in error: ${error.message}`);
     }

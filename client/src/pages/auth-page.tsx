@@ -48,8 +48,8 @@ export default function AuthPage() {
         // Check for redirect result from Google OAuth
         const redirectUser = await handleRedirectResult();
         if (redirectUser) {
-          console.log('OAuth redirect processed! User will be redirected automatically:', redirectUser.email);
-          // handleRedirectResult will handle the redirect automatically
+          console.log('OAuth redirect processed! Redirecting to Industry Pulse:', redirectUser.email);
+          // handleRedirectResult will automatically redirect to Industry Pulse
           return;
         }
         
