@@ -22,12 +22,13 @@ if (existingApps.length === 0) {
 // Initialize Auth
 export const auth = getAuth(app);
 
-// Google Auth Provider
+// Google Auth Provider with custom redirect
 const googleProvider = new GoogleAuthProvider();
 googleProvider.addScope('email');
 googleProvider.addScope('profile');
 googleProvider.setCustomParameters({
-  prompt: 'select_account'
+  prompt: 'select_account',
+  redirect_uri: `${window.location.origin}/industry-pulse`
 });
 
 // User data interface
@@ -40,14 +41,7 @@ export interface User {
 
 // Authentication functions
 export const signInWithGoogle = async (): Promise<void> => {
-  // Set redirect URL before sign-in
-  sessionStorage.setItem('auth_redirect_url', '/industry-pulse');
-  
-  // Set custom redirect URL for Firebase
-  const currentOrigin = window.location.origin;
-  const redirectUrl = `${currentOrigin}/auth-callback`;
-  console.log('Setting redirect URL to:', redirectUrl);
-  
+  console.log('Starting Google sign-in with direct redirect to Industry Pulse...');
   await signInWithRedirect(auth, googleProvider);
 };
 
@@ -66,14 +60,7 @@ export const handleRedirectResult = async (): Promise<User | null> => {
       sessionStorage.setItem('brandentifier_user', JSON.stringify(user));
       localStorage.setItem('brandentifier_auth', 'true');
       
-      // Get the intended redirect URL
-      const redirectUrl = sessionStorage.getItem('auth_redirect_url') || '/industry-pulse';
-      sessionStorage.removeItem('auth_redirect_url');
-      
-      // Directly redirect to the intended page
-      console.log(`Authentication successful, redirecting to ${redirectUrl}...`);
-      window.location.href = redirectUrl;
-      
+      console.log('Authentication successful, user data stored:', user.email);
       return user;
     }
     return null;

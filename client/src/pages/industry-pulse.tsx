@@ -13,6 +13,29 @@ export default function IndustryPulsePage() {
     checkAuth();
   }, []);
 
+  // Handle OAuth redirect result if user lands here directly from Google
+  useEffect(() => {
+    const handleOAuthRedirect = async () => {
+      try {
+        const { handleRedirectResult } = await import('@/lib/firebase-auth');
+        const redirectUser = await handleRedirectResult();
+        if (redirectUser) {
+          console.log('OAuth redirect processed on Industry Pulse page:', redirectUser.email);
+          setUser(redirectUser);
+          setIsLoading(false);
+          toast({
+            title: 'Welcome!',
+            description: `Successfully signed in as ${redirectUser.displayName || redirectUser.email}`,
+          });
+        }
+      } catch (error) {
+        console.error('Error processing OAuth redirect:', error);
+      }
+    };
+
+    handleOAuthRedirect();
+  }, [toast]);
+
   const checkAuth = () => {
     if (!isAuthenticated()) {
       toast({
