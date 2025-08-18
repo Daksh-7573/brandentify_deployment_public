@@ -493,10 +493,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 console.log("Current URL:", window.location.href);
                 
                 // Always redirect to industry pulse after successful auth, regardless of current path
-                setTimeout(() => {
-                  console.log("✅ Executing redirect to industry pulse");
-                  window.location.href = '/industry-pulse';
-                }, 100); // Small delay to ensure state is set
+                console.log("✅ Executing immediate redirect to industry pulse");
+                // Use multiple redirect methods to ensure it works
+                window.history.pushState(null, '', '/industry-pulse');
+                window.location.href = '/industry-pulse';
               }
             } else {
               console.log("Creating fallback user");
@@ -528,10 +528,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 console.log("Current URL:", window.location.href);
                 
                 // Always redirect to industry pulse after successful auth (fallback user)
-                setTimeout(() => {
-                  console.log("✅ Executing redirect to industry pulse (fallback)");
-                  window.location.href = '/industry-pulse';
-                }, 100); // Small delay to ensure state is set
+                console.log("✅ Executing immediate redirect to industry pulse (fallback)");
+                // Use multiple redirect methods to ensure it works
+                window.history.pushState(null, '', '/industry-pulse');
+                window.location.href = '/industry-pulse';
               }
             }
           }

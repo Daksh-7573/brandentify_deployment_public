@@ -33,27 +33,27 @@ export default function AuthPage() {
     setUseDemoBypass(false);
   }, []);
 
-  // Check for redirect results on auth page load
-  useEffect(() => {
-    const checkRedirect = async () => {
-      const { checkAndHandleAuthRedirect } = await import('@/utils/auth-redirect-handler');
-      await checkAndHandleAuthRedirect();
-    };
-    
-    checkRedirect();
-  }, []);
+  // Disabled auth redirect handler - let the AuthContext handle this
+  // useEffect(() => {
+  //   const checkRedirect = async () => {
+  //     const { checkAndHandleAuthRedirect } = await import('@/utils/auth-redirect-handler');
+  //     await checkAndHandleAuthRedirect();
+  //   };
+  //   
+  //   checkRedirect();
+  // }, []);
 
-  // Redirect to industry pulse if already authenticated
-  useEffect(() => {
-    if (isAuthenticated) {
-      // Use a small delay to ensure the auth state has fully settled
-      const timer = setTimeout(() => {
-        console.log("User is authenticated, redirecting to industry pulse");
-        setLocation("/industry-pulse");
-      }, 100);
-      return () => clearTimeout(timer);
-    }
-  }, [isAuthenticated, setLocation]);
+  // Let AuthContext handle redirects - avoid competing redirect logic
+  // useEffect(() => {
+  //   if (isAuthenticated) {
+  //     // Use a small delay to ensure the auth state has fully settled
+  //     const timer = setTimeout(() => {
+  //       console.log("User is authenticated, redirecting to industry pulse");
+  //       setLocation("/industry-pulse");
+  //     }, 100);
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, [isAuthenticated, setLocation]);
 
   return (
     <div 
