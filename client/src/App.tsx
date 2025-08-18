@@ -9,12 +9,8 @@ import GlobalMuskButton from "@/components/musk/global-musk-button";
 import { DomainHelper } from "./lib/domain-helper";
 import { DomainAuthHelper } from "@/components/firebase/DomainAuthHelper";
 import { FeedSkeleton } from "@/components/ui/skeleton-components";
-const AuthCallback = lazy(() => import("@/pages/auth-callback"));
-const AuthRedirectPage = lazy(() => import("@/pages/auth-redirect"));
-const FirebaseTestPage = lazy(() => import("@/pages/firebase-test"));
-const AuthSuccessPage = lazy(() => import("@/pages/auth-success"));
+import AuthCallback from "@/pages/auth-callback";
 import CatchAllAuthHandler from "@/routes/CatchAllAuthHandler";
-// IndustryPulsePage imported as lazy component below
 
 // Enhanced progressive loading state management
 const useProgressiveLoading = () => {
@@ -65,7 +61,7 @@ function SimpleTestApp() {
 
 // Critical components (loaded first for fast perceived performance)
 const Landing = lazy(() => import("@/pages/landing"));
-const IndustryPulsePage = lazy(() => import("@/pages/industry-pulse"));
+const IndustryPulsePage = lazy(() => import("@/pages/industry-pulse-new"));
 const Profile = lazy(() => import("@/pages/profile"));
 const AuthPage = lazy(() => import("@/pages/auth-page"));
 
@@ -186,10 +182,6 @@ function Router() {
       <Route path="/industry-pulse" component={IndustryPulsePage} />
       <Route path="/create-pulse" component={CreatePulsePage} />
       <Route path="/auth" component={AuthPage} />
-      <Route path="/auth-callback" component={AuthCallback} />
-      <Route path="/auth-redirect" component={AuthRedirectPage} />
-      <Route path="/firebase-test" component={FirebaseTestPage} />
-      <Route path="/auth-success" component={AuthSuccessPage} />
 
 
 

@@ -18,7 +18,7 @@ import { EmailAuth } from "@/components/auth/email-auth";
 import { DemoLogin } from "@/components/auth/demo-login";
 import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
 import { AuthDebugOverlay } from "@/components/auth/auth-debug-overlay";
-// Removed old auth handlers
+import { RedirectAuthHandler } from "@/components/auth/redirect-auth-handler";
 import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
 
 export default function AuthPage() {
@@ -26,44 +26,11 @@ export default function AuthPage() {
   const [_, setLocation] = useLocation();
   const [authMethod, setAuthMethod] = useState<"email" | "phone">("email");
   const [useDemoBypass, setUseDemoBypass] = useState(false);
-  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   
-  // Handle authentication state and redirects
+  // We used to bypass Google auth on the problematic domain, but now we're properly 
+  // supporting it directly and want to use Google auth instead
   useEffect(() => {
-    const initializeAuth = async () => {
-      try {
-        console.log('Auth page loaded, checking authentication...');
-        
-        const { waitForAuthInit, handleRedirectResult } = await import('@/lib/firebase-auth');
-        
-        // Wait for Firebase auth to initialize
-        const firebaseUser = await waitForAuthInit();
-        
-        if (firebaseUser) {
-          console.log('User already authenticated, redirecting:', firebaseUser.email);
-          window.location.href = '/industry-pulse';
-          return;
-        }
-        
-        // Check for redirect result from Google OAuth
-        const redirectUser = await handleRedirectResult();
-        if (redirectUser) {
-          console.log('OAuth redirect processed! Redirecting to Industry Pulse:', redirectUser.email);
-          // handleRedirectResult will automatically redirect to Industry Pulse
-          return;
-        }
-        
-        // No authentication found, show login form
-        console.log('No authentication detected, showing login form');
-        setIsCheckingAuth(false);
-        
-      } catch (error) {
-        console.error('Error initializing authentication:', error);
-        setIsCheckingAuth(false);
-      }
-    };
-    
-    initializeAuth();
+    // Instead of automatically enabling demo mode, we now properly support Google auth on all domains
     setUseDemoBypass(false);
   }, []);
 
@@ -89,18 +56,6 @@ export default function AuthPage() {
   //   }
   // }, [isAuthenticated, setLocation]);
 
-  // Show loading state while checking authentication
-  if (isCheckingAuth) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-300">Checking authentication...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div 
       className="responsive-background min-h-screen w-full relative overflow-hidden"
@@ -113,6 +68,7 @@ export default function AuthPage() {
       
       {/* Content layer */}
       <div className="relative z-10">
+        <RedirectAuthHandler />
         <AuthDebugOverlay />
         <NeoGlassLayout className="mt-0 pt-2 px-2 md:px-4 min-h-screen flex flex-col justify-start py-2 md:py-4">
           <div className="text-center mb-6 md:mb-8">

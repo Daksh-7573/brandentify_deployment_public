@@ -28,7 +28,6 @@ Add these domains one by one:
 *.replit.dev
 *.replit.app
 localhost
-127.0.0.1:5000
 ```
 
 ### Step 4: Verify Setup
