@@ -383,17 +383,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const { getRedirectResult } = await import('firebase/auth');
             console.log(`🔍 Checking for redirect result (attempt ${redirectCheckAttempts + 1}/${maxRedirectChecks})...`);
             
-            // Check for redirect attempt flags first
-            const hasRedirectAttempt = sessionStorage.getItem('redirect_auth_attempt') === 'true' || 
-                                     localStorage.getItem('redirect_auth_attempt') === 'true';
-            if (hasRedirectAttempt) {
-              console.log("📍 Found redirect attempt flag - checking for auth result");
-              console.log("📍 Redirect flags found in:", {
-                session: sessionStorage.getItem('redirect_auth_attempt'),
-                local: localStorage.getItem('redirect_auth_attempt'),
-                time: sessionStorage.getItem('redirect_auth_time') || localStorage.getItem('redirect_auth_time')
-              });
-            }
+            // Clean approach - don't rely on redirect attempt flags
+            console.log("📍 Checking for auth result without relying on redirect flags");
             
             const redirectResult = await getRedirectResult(auth as any);
             if (redirectResult?.user) {
@@ -416,23 +407,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             } else {
               console.log("❌ No redirect result found");
               
-              // If we had a redirect attempt but no result, retry a few times
-              if (hasRedirectAttempt && redirectCheckAttempts < maxRedirectChecks - 1) {
+              // Simply check if we should retry without flag dependency
+              if (redirectCheckAttempts < maxRedirectChecks - 1) {
                 redirectCheckAttempts++;
                 console.log(`⏳ Retrying redirect check in 1 second (${redirectCheckAttempts}/${maxRedirectChecks})...`);
                 setTimeout(checkRedirectResultWithRetry, 1000);
                 return false; // Will retry
-              } else if (hasRedirectAttempt) {
-                console.log("⚠️ WARNING: Had redirect attempt but no result after all retries - auth failed");
-                // Clear the stale attempt flags thoroughly
-                sessionStorage.removeItem('redirect_auth_attempt');
-                sessionStorage.removeItem('redirect_auth_time');
-                localStorage.removeItem('redirect_auth_attempt');
-                localStorage.removeItem('redirect_auth_time');
-                sessionStorage.removeItem('redirect_auth_success');
-                localStorage.removeItem('redirect_auth_success');
-                sessionStorage.removeItem('authSuccess');
-                localStorage.removeItem('authSuccess');
               }
               
               // Check if user is already authenticated

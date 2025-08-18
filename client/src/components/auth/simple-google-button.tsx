@@ -13,8 +13,10 @@ export function SimpleGoogleButton() {
     console.log("🟢 SIMPLE BUTTON: Click detected!");
     
     // Immediately set flag for testing
-    sessionStorage.setItem('redirect_auth_attempt', 'true');
-    sessionStorage.setItem('redirect_auth_time', new Date().toISOString());
+    // Clear any old auth flags for clean authentication
+    sessionStorage.removeItem('redirect_auth_attempt');
+    sessionStorage.removeItem('redirect_auth_time');
+    sessionStorage.removeItem('redirect_auth_success');
     
     console.log("🟢 SIMPLE BUTTON: Flags set - attempting auth");
     

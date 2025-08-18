@@ -71,8 +71,10 @@ export default function AuthRedirectTest() {
       
       // Clear any previous results
       sessionStorage.removeItem('redirect_auth_success');
-      sessionStorage.setItem('redirect_auth_attempt', 'true');
-      sessionStorage.setItem('redirect_auth_time', new Date().toISOString());
+      // Clear old auth flags instead of setting new ones
+      sessionStorage.removeItem('redirect_auth_attempt');
+      sessionStorage.removeItem('redirect_auth_time');
+      sessionStorage.removeItem('redirect_auth_success');
       
       addLog("Initiating signInWithRedirect...");
       await signInWithRedirect(auth, googleProvider);
