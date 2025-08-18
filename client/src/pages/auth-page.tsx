@@ -17,6 +17,7 @@ import { AuthCallback } from "@/components/auth/AuthCallback";
 import { AuthDebug } from "@/components/auth/AuthDebug";
 import { QuickAuthTest } from "@/components/auth/QuickAuthTest";
 import { AuthCallbackHandler } from "@/components/auth/AuthCallbackHandler";
+import { GoogleAuthTest } from "@/components/auth/GoogleAuthTest";
 import { PhoneAuth } from "@/components/auth/phone-auth";
 import { EmailAuth } from "@/components/auth/email-auth";
 import { DemoLogin } from "@/components/auth/demo-login";
@@ -125,6 +126,17 @@ export default function AuthPage() {
                       </div>
                       
                       <QuickAuthTest />
+                      
+                      <div className="relative">
+                        <div className="absolute inset-0 flex items-center">
+                          <span className="w-full border-t border-white/20" />
+                        </div>
+                        <div className="relative flex justify-center text-xs uppercase">
+                          <span className="bg-black/50 px-2 text-gray-300">debug</span>
+                        </div>
+                      </div>
+                      
+                      <GoogleAuthTest />
                       
                       <div className="text-center">
                         <p className="text-sm text-gray-400">

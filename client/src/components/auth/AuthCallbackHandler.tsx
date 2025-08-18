@@ -15,18 +15,26 @@ export function AuthCallbackHandler() {
   useEffect(() => {
     const handleCallback = async () => {
       try {
-        console.log('🔄 Processing OAuth callback...');
+        console.log('🔄 AuthCallbackHandler: Checking for OAuth callback...');
+        console.log('🔄 Current URL:', window.location.href);
+        console.log('🔄 URL search params:', window.location.search);
         
-        // Check if this is actually a callback URL
+        // Check if this is actually a callback URL  
         const urlParams = new URLSearchParams(window.location.search);
         const hasOAuthParams = urlParams.has('code') || urlParams.has('state') || urlParams.has('authuser');
         
-        if (!hasOAuthParams) {
-          console.log('No OAuth parameters found');
+        console.log('🔄 Has OAuth params:', hasOAuthParams);
+        console.log('🔄 Auth initiated flag:', sessionStorage.getItem('auth_initiated'));
+        
+        // Only process if we have OAuth params OR if auth was initiated
+        const authInitiated = sessionStorage.getItem('auth_initiated') === 'true';
+        
+        if (!hasOAuthParams && !authInitiated) {
+          console.log('No OAuth parameters and no auth initiated - skipping');
           return;
         }
 
-        console.log('OAuth parameters detected, processing with Firebase...');
+        console.log('Processing OAuth callback with Firebase...');
 
         // Dynamic Firebase imports
         const [
@@ -50,8 +58,13 @@ export function AuthCallbackHandler() {
         const app = initializeApp(firebaseConfig, 'brandentifier-auth-main');
         const auth = getAuth(app);
 
+        // Clear auth initiated flag first
+        sessionStorage.removeItem('auth_initiated');
+        
         // Get the redirect result
+        console.log('🔄 Calling getRedirectResult...');
         const result = await getRedirectResult(auth);
+        console.log('🔄 Redirect result:', result?.user?.email || 'No result');
         
         if (result?.user) {
           console.log('✅ Google authentication successful:', result.user.email);
@@ -99,7 +112,8 @@ export function AuthCallbackHandler() {
             throw new Error(data.message || 'Authentication failed');
           }
         } else {
-          console.log('No redirect result found');
+          console.log('No redirect result found - user may need to retry authentication');
+          // Don't navigate away if no result - user might be on auth page legitimately
         }
 
       } catch (error: any) {
