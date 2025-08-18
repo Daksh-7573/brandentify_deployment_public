@@ -45,9 +45,10 @@ export function QuickAuthTest() {
           description: 'Redirecting to dashboard...'
         });
         
+        // Force page reload to trigger auth context update
         setTimeout(() => {
           window.location.href = '/industry-pulse';
-        }, 1500);
+        }, 1000);
       } else {
         throw new Error(data.message || 'Authentication failed');
       }

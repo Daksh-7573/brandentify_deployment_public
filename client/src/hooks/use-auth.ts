@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { AuthContext } from '@/context/auth-context';
+import { AuthContext } from '@/context/simple-auth-context';
 
 /**
  * Hook to access simplified authentication context

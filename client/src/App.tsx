@@ -2,7 +2,7 @@ import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
-import { AuthProvider } from "./context/auth-context";
+import { AuthProvider } from "./context/simple-auth-context";
 import { useAuth } from "./hooks/use-auth";
 import { useEffect, Suspense, lazy, useState } from "react";
 import GlobalMuskButton from "@/components/musk/global-musk-button";
@@ -156,7 +156,8 @@ function ProtectedRoute({ component: Component, ...rest }: { component: React.Co
   
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      navigate('/');
+      console.log('User not authenticated, redirecting to auth page');
+      navigate('/auth');
     }
   }, [isAuthenticated, isLoading, navigate]);
   
@@ -180,8 +181,12 @@ function Router() {
       <Route path="/" component={Landing} />
       <Route path="/nav-test" component={NavigationTest} />
       <Route path="/url-demo" component={URLInputDemo} />
-      <Route path="/industry-pulse" component={IndustryPulsePage} />
-      <Route path="/create-pulse" component={CreatePulsePage} />
+      <Route path="/industry-pulse" component={() => (
+        <ProtectedRoute path="/industry-pulse" component={IndustryPulsePage} />
+      )} />
+      <Route path="/create-pulse" component={() => (
+        <ProtectedRoute path="/create-pulse" component={CreatePulsePage} />
+      )} />
       <Route path="/auth" component={AuthPage} />
 
 
