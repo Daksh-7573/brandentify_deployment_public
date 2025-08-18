@@ -22,13 +22,12 @@ if (existingApps.length === 0) {
 // Initialize Auth
 export const auth = getAuth(app);
 
-// Google Auth Provider with custom redirect
+// Google Auth Provider 
 const googleProvider = new GoogleAuthProvider();
 googleProvider.addScope('email');
 googleProvider.addScope('profile');
 googleProvider.setCustomParameters({
-  prompt: 'select_account',
-  redirect_uri: `${window.location.origin}/industry-pulse`
+  prompt: 'select_account'
 });
 
 // User data interface
@@ -41,13 +40,17 @@ export interface User {
 
 // Authentication functions
 export const signInWithGoogle = async (): Promise<void> => {
-  console.log('Starting Google sign-in with direct redirect to Industry Pulse...');
+  console.log('Starting Google sign-in...');
+  // Store intended redirect destination
+  sessionStorage.setItem('auth_redirect_target', '/industry-pulse');
   await signInWithRedirect(auth, googleProvider);
 };
 
 export const handleRedirectResult = async (): Promise<User | null> => {
   try {
+    console.log('Checking for Firebase redirect result...');
     const result = await getRedirectResult(auth);
+    
     if (result && result.user) {
       const user: User = {
         uid: result.user.uid,
@@ -60,9 +63,15 @@ export const handleRedirectResult = async (): Promise<User | null> => {
       sessionStorage.setItem('brandentifier_user', JSON.stringify(user));
       localStorage.setItem('brandentifier_auth', 'true');
       
-      console.log('Authentication successful, user data stored:', user.email);
+      console.log('Authentication successful! User logged in:', user.email);
+      
+      // Clear the redirect target since we're handling it here
+      sessionStorage.removeItem('auth_redirect_target');
+      
       return user;
     }
+    
+    console.log('No redirect result found');
     return null;
   } catch (error) {
     console.error('Error handling redirect result:', error);

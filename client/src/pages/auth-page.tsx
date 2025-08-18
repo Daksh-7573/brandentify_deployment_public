@@ -28,14 +28,24 @@ export default function AuthPage() {
   const [useDemoBypass, setUseDemoBypass] = useState(false);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   
-  // Check if user returned from Google OAuth and handle redirect immediately
+  // Handle authentication state and redirects
   useEffect(() => {
-    const checkAuthRedirect = async () => {
+    const initializeAuth = async () => {
       try {
-        console.log('Auth page loaded, checking for authentication...');
+        console.log('Auth page loaded, initializing authentication...');
+        
+        const { handleRedirectResult, isAuthenticated, getCurrentUser } = await import('@/lib/firebase-auth');
+        
+        // First check for redirect result from Google OAuth
+        const redirectUser = await handleRedirectResult();
+        if (redirectUser) {
+          console.log('OAuth success! Redirecting user:', redirectUser.email);
+          // Redirect to Industry Pulse after successful OAuth
+          window.location.href = '/industry-pulse';
+          return;
+        }
         
         // Check if user is already authenticated
-        const { isAuthenticated, getCurrentUser } = await import('@/lib/firebase-auth');
         if (isAuthenticated()) {
           const user = getCurrentUser();
           console.log('User already authenticated, redirecting:', user?.email);
@@ -43,24 +53,17 @@ export default function AuthPage() {
           return;
         }
         
-        // Check for Firebase redirect result immediately
-        const { handleRedirectResult } = await import('@/lib/firebase-auth');
-        const user = await handleRedirectResult();
-        if (user) {
-          console.log('OAuth success, user authenticated:', user.email);
-          // The redirect should happen in handleRedirectResult
-          return;
-        }
-        
+        // No authentication found, show login form
         console.log('No authentication detected, showing login form');
         setIsCheckingAuth(false);
+        
       } catch (error) {
-        console.error('Error checking auth redirect:', error);
+        console.error('Error initializing authentication:', error);
         setIsCheckingAuth(false);
       }
     };
     
-    checkAuthRedirect();
+    initializeAuth();
     setUseDemoBypass(false);
   }, []);
 

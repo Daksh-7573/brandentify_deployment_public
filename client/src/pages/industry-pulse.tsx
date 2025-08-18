@@ -9,48 +9,44 @@ export default function IndustryPulsePage() {
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
+  // Initialize authentication for Industry Pulse page
   useEffect(() => {
-    checkAuth();
-  }, []);
-
-  // Handle OAuth redirect result if user lands here directly from Google
-  useEffect(() => {
-    const handleOAuthRedirect = async () => {
+    const checkAuth = async () => {
       try {
-        const { handleRedirectResult } = await import('@/lib/firebase-auth');
-        const redirectUser = await handleRedirectResult();
-        if (redirectUser) {
-          console.log('OAuth redirect processed on Industry Pulse page:', redirectUser.email);
-          setUser(redirectUser);
+        console.log('Industry Pulse: Checking authentication...');
+        
+        const { isAuthenticated, getCurrentUser } = await import('@/lib/firebase-auth');
+        
+        // Check if user is authenticated
+        if (isAuthenticated()) {
+          const currentUser = getCurrentUser();
+          console.log('User authenticated:', currentUser?.email);
+          setUser(currentUser);
           setIsLoading(false);
-          toast({
-            title: 'Welcome!',
-            description: `Successfully signed in as ${redirectUser.displayName || redirectUser.email}`,
-          });
+          return;
         }
+        
+        // User is not authenticated, redirect to auth page
+        console.log('User not authenticated, redirecting to auth page...');
+        toast({
+          title: 'Access Denied',
+          description: 'Please sign in to access Industry Pulse.',
+          variant: 'destructive',
+        });
+        window.location.href = '/';
+        
       } catch (error) {
-        console.error('Error processing OAuth redirect:', error);
+        console.error('Error checking authentication:', error);
+        setIsLoading(false);
+        // On error, redirect to auth page
+        window.location.href = '/';
       }
     };
 
-    handleOAuthRedirect();
+    checkAuth();
   }, [toast]);
 
-  const checkAuth = () => {
-    if (!isAuthenticated()) {
-      toast({
-        title: 'Access Denied',
-        description: 'Please sign in to access Industry Pulse.',
-        variant: 'destructive',
-      });
-      window.location.href = '/';
-      return;
-    }
-
-    const currentUser = getCurrentUser();
-    setUser(currentUser);
-    setIsLoading(false);
-  };
+  // Remove checkAuth function as it's now handled in useEffect
 
   const handleLogout = async () => {
     try {
