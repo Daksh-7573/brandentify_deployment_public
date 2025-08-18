@@ -130,23 +130,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.sendFile(path.join(__dirname, '../connectivity-test.html'));
   });
   
-  app.get('/clear-current-auth.html', (req: Request, res: Response) => {
-    res.sendFile(path.join(__dirname, '../clear-current-auth.html'));
-  });
-  
-  app.get('/auth-fix.html', (req: Request, res: Response) => {
-    res.sendFile(path.join(__dirname, '../auth-fix.html'));
-  });
-  
-  app.get('/quick-fix.html', (req: Request, res: Response) => {
-    res.sendFile(path.join(__dirname, '../quick-fix.html'));
-  });
-  
-  app.get('/direct-auth-fix.js', (req: Request, res: Response) => {
-    res.setHeader('Content-Type', 'application/javascript');
-    res.sendFile(path.join(__dirname, '../direct-auth-fix.js'));
-  });
-  
   // Health check endpoint for enterprise scaling
   apiRouter.get("/health", (req: Request, res: Response) => {
     res.status(200).json({
