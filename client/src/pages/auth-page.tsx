@@ -49,10 +49,8 @@ export default function AuthPage() {
         const redirectUser = await handleRedirectResult();
         if (redirectUser) {
           console.log('OAuth redirect processed! Redirecting user:', redirectUser.email);
-          // Small delay to ensure auth state is updated
-          setTimeout(() => {
-            window.location.href = '/industry-pulse';
-          }, 500);
+          // Immediate redirect since we've already stored the auth data
+          window.location.href = '/industry-pulse?from=auth';
           return;
         }
         

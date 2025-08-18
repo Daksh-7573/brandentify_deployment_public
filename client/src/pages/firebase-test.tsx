@@ -50,6 +50,15 @@ export default function FirebaseTestPage() {
       onAuthStateChanged(auth, (user) => {
         if (user) {
           addLog(`Auth state changed: User logged in - ${user.email}`);
+          addLog(`User ID: ${user.uid}`);
+          addLog(`Display Name: ${user.displayName || 'Not set'}`);
+          
+          // Check stored auth data
+          const storedAuth = localStorage.getItem('brandentifier_auth');
+          const storedUser = sessionStorage.getItem('brandentifier_user');
+          addLog(`Stored auth flag: ${storedAuth || 'Not set'}`);
+          addLog(`Stored user data: ${storedUser ? 'Present' : 'Not set'}`);
+          
           setUser(user);
           setAuthStatus('✅ Authenticated');
         } else {
@@ -58,6 +67,19 @@ export default function FirebaseTestPage() {
           setAuthStatus('❌ Not authenticated');
         }
       });
+      
+      // Check for redirect result immediately
+      const { getRedirectResult } = await import('firebase/auth');
+      try {
+        const redirectResult = await getRedirectResult(auth);
+        if (redirectResult) {
+          addLog(`Redirect result found: ${redirectResult.user.email}`);
+        } else {
+          addLog('No redirect result found');
+        }
+      } catch (redirectError) {
+        addLog(`Redirect result error: ${redirectError.message}`);
+      }
       
     } catch (error: any) {
       addLog(`Error: ${error.message}`);
@@ -68,9 +90,16 @@ export default function FirebaseTestPage() {
   const testGoogleSignIn = async () => {
     try {
       addLog('Testing Google sign-in...');
+      addLog('Clearing any existing auth data...');
+      
+      // Clear existing auth data
+      sessionStorage.removeItem('brandentifier_user');
+      localStorage.removeItem('brandentifier_auth');
+      
       const { signInWithGoogle } = await import('@/lib/firebase-auth');
       await signInWithGoogle();
-      addLog('Google sign-in initiated');
+      addLog('Google sign-in initiated - you should be redirected to Google OAuth');
+      addLog('After completing Google login, you will be redirected back here');
     } catch (error: any) {
       addLog(`Google sign-in error: ${error.message}`);
     }

@@ -15,40 +15,55 @@ export default function IndustryPulsePage() {
       try {
         console.log('Industry Pulse: Checking authentication...');
         
-        const { waitForAuthInit, getCurrentUser } = await import('@/lib/firebase-auth');
+        // First check stored authentication immediately
+        const storedAuth = localStorage.getItem('brandentifier_auth');
+        const storedUserData = sessionStorage.getItem('brandentifier_user');
         
-        // Wait for Firebase auth state to initialize
-        const firebaseUser = await waitForAuthInit();
-        
-        if (firebaseUser) {
-          const currentUser = getCurrentUser();
-          console.log('User authenticated:', currentUser?.email);
-          setUser(currentUser);
+        if (storedAuth === 'true' && storedUserData) {
+          const userData = JSON.parse(storedUserData);
+          console.log('Found stored auth data:', userData.email);
+          setUser(userData);
           setIsLoading(false);
           
           // Show welcome message for newly authenticated users
           if (window.location.search.includes('from=auth')) {
             toast({
               title: 'Welcome!',
-              description: `Successfully signed in as ${currentUser?.displayName || currentUser?.email}`,
+              description: `Successfully signed in as ${userData.displayName || userData.email}`,
             });
           }
           return;
         }
         
+        // If no stored auth, check Firebase
+        const { waitForAuthInit, getCurrentUser } = await import('@/lib/firebase-auth');
+        
+        // Wait for Firebase auth state to initialize (with timeout)
+        const timeoutPromise = new Promise(resolve => setTimeout(() => resolve(null), 2000));
+        const firebaseUser = await Promise.race([waitForAuthInit(), timeoutPromise]);
+        
+        if (firebaseUser) {
+          const currentUser = getCurrentUser();
+          console.log('User authenticated via Firebase:', currentUser?.email);
+          setUser(currentUser);
+          setIsLoading(false);
+          return;
+        }
+        
         // User is not authenticated, redirect to auth page
         console.log('User not authenticated, redirecting to auth page...');
-        toast({
-          title: 'Access Denied',
-          description: 'Please sign in to access Industry Pulse.',
-          variant: 'destructive',
-        });
-        window.location.href = '/';
+        setIsLoading(false);
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 100);
         
       } catch (error) {
         console.error('Error checking authentication:', error);
-        // On error, redirect to auth page
-        window.location.href = '/';
+        setIsLoading(false);
+        // On error, redirect to auth page after a short delay
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 100);
       }
     };
 

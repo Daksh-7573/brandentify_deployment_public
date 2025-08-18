@@ -90,13 +90,19 @@ export const handleRedirectResult = async (): Promise<User | null> => {
     if (result && result.user) {
       console.log('Redirect result found! User:', result.user.email);
       
-      // Auth state listener will handle storing the user data
-      return {
+      // Immediately store user data and auth status
+      const user: User = {
         uid: result.user.uid,
         email: result.user.email,
         displayName: result.user.displayName,
         photoURL: result.user.photoURL,
       };
+      
+      sessionStorage.setItem('brandentifier_user', JSON.stringify(user));
+      localStorage.setItem('brandentifier_auth', 'true');
+      console.log('User data stored immediately after OAuth redirect');
+      
+      return user;
     }
     
     console.log('No redirect result found');
