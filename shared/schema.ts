@@ -4,7 +4,7 @@ import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 import { notifications, insertNotificationSchema } from "./notification-schema";
 
-// User model
+// User model  
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   username: text("username").notNull().unique(),
@@ -12,6 +12,11 @@ export const users = pgTable("users", {
   password: text("password"),
   phoneNumber: text("phone_number").unique(), // Added phone number for mobile login
   name: text("name"),
+  // Firebase authentication fields
+  firebaseUid: text("firebase_uid").unique(), // Firebase user ID
+  googleId: text("google_id").unique(), // Google OAuth ID
+  authProvider: text("auth_provider").default("email"), // 'email', 'google', 'phone'
+  lastLoginAt: timestamp("last_login_at"),
   brandName: text("brand_name").unique(), // Professional brand name for URL
   photoURL: text("photo_url"),
   profileUrl: text("profile_url"), // Portfolio or LinkedIn URL

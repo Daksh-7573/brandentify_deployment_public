@@ -64,6 +64,7 @@ const Landing = lazy(() => import("@/pages/landing"));
 const IndustryPulsePage = lazy(() => import("@/pages/industry-pulse-new"));
 const Profile = lazy(() => import("@/pages/profile"));
 const AuthPage = lazy(() => import("@/pages/auth-page"));
+const AuthCallbackPage = lazy(() => import("@/pages/auth-callback"));
 
 // Secondary components (loaded after first paint)
 const NotFound = lazy(() => import("@/pages/not-found"));
@@ -258,10 +259,10 @@ function Router() {
         );
       }} />
 
-      <Route path="/auth-callback" component={AuthCallback} />
-      <Route path="/__/auth/handler" component={AuthCallback} />
-      <Route path="/_/auth/callback" component={AuthCallback} />
-      <Route path="/auth/callback" component={AuthCallback} />
+      <Route path="/auth-callback" component={AuthCallbackPage} />
+      <Route path="/__/auth/handler" component={AuthCallbackPage} />
+      <Route path="/_/auth/callback" component={AuthCallbackPage} />
+      <Route path="/auth/callback" component={AuthCallbackPage} />
       
       {/* Tier 2: Secondary Routes (Load after 50ms) */}
       {secondaryLoaded && (

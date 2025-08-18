@@ -55,6 +55,7 @@ import personalizedFeedRoutes from "./routes-personalized-feed";
 import notificationRoutes from "./routes-notifications";
 import directAccessRoutes from "./routes-direct-access";
 import directAnalyticsRoutes from "./routes-direct-analytics";
+import { authRoutes } from "./auth-routes";
 import { 
   handleSmartConnect, 
   handleCareerRecommendations, 
@@ -6920,6 +6921,10 @@ ${extractedText.substring(0, 5000)}
   app.use(demoAuthRoutes);
   app.use(directAuthRoutes);
   console.log("Universal authentication routes loaded");
+  
+  // Clean Google Authentication routes
+  app.use('/api/auth', authRoutes);
+  console.log("Clean Google authentication routes loaded");
   
   // Career Capsule routes - removed
   // app.use('/api', careerCapsuleRoutes);

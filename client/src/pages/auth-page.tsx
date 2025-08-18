@@ -12,7 +12,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Mail, Phone, Check, Sparkles, Target, Users } from "lucide-react";
-import { GoogleAuth } from "@/components/auth/google-auth";
+import { GoogleAuthButton } from "@/components/auth/GoogleAuthButton";
+import { AuthCallback } from "@/components/auth/AuthCallback";
 import { PhoneAuth } from "@/components/auth/phone-auth";
 import { EmailAuth } from "@/components/auth/email-auth";
 import { DemoLogin } from "@/components/auth/demo-login";
@@ -99,29 +100,21 @@ export default function AuthPage() {
                 {/* Email Authentication */}
                 <TabsContent value="email">
                   <div className="space-y-4 md:space-y-6">
-                    {useDemoBypass ? (
-                      <>
-                        <div className="bg-blue-500/20 px-3 py-2 rounded-lg mb-4 text-sm text-blue-200 border border-blue-400/30">
-                          Using direct demo login for this domain
-                        </div>
-                        <DemoLogin />
-                      </>
-                    ) : (
-                      <>
-                        <EmailAuth />
-                        
-                        <div className="relative w-full">
-                          <div className="absolute inset-0 flex items-center">
-                            <span className="w-full border-t border-white/20" />
-                          </div>
-                          <div className="relative flex justify-center text-xs uppercase">
-                            <span className="bg-black/50 px-2 text-gray-300">or</span>
-                          </div>
-                        </div>
-                        
-                        <GoogleAuth />
-                      </>
-                    )}
+                    {/* Clean Google Authentication Only */}
+                    <div className="space-y-6">
+                      <div className="text-center space-y-3">
+                        <h3 className="text-xl font-semibold text-white">Welcome to Brandentifier</h3>
+                        <p className="text-gray-300">Your AI-powered career development platform</p>
+                      </div>
+                      
+                      <GoogleAuthButton />
+                      
+                      <div className="text-center">
+                        <p className="text-sm text-gray-400">
+                          By continuing, you agree to our Terms of Service and Privacy Policy
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </TabsContent>
 
