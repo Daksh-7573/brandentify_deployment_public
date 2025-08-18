@@ -40,6 +40,8 @@ export interface User {
 
 // Authentication functions
 export const signInWithGoogle = async (): Promise<void> => {
+  // Set redirect URL before sign-in
+  sessionStorage.setItem('auth_redirect_url', '/industry-pulse');
   await signInWithRedirect(auth, googleProvider);
 };
 
@@ -58,9 +60,13 @@ export const handleRedirectResult = async (): Promise<User | null> => {
       sessionStorage.setItem('brandentifier_user', JSON.stringify(user));
       localStorage.setItem('brandentifier_auth', 'true');
       
-      // Directly redirect to Industry Pulse
-      console.log('Authentication successful, redirecting to Industry Pulse...');
-      window.location.href = '/industry-pulse';
+      // Get the intended redirect URL
+      const redirectUrl = sessionStorage.getItem('auth_redirect_url') || '/industry-pulse';
+      sessionStorage.removeItem('auth_redirect_url');
+      
+      // Directly redirect to the intended page
+      console.log(`Authentication successful, redirecting to ${redirectUrl}...`);
+      window.location.href = redirectUrl;
       
       return user;
     }

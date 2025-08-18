@@ -26,11 +26,35 @@ export default function AuthPage() {
   const [_, setLocation] = useLocation();
   const [authMethod, setAuthMethod] = useState<"email" | "phone">("email");
   const [useDemoBypass, setUseDemoBypass] = useState(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   
-  // We used to bypass Google auth on the problematic domain, but now we're properly 
-  // supporting it directly and want to use Google auth instead
+  // Check if user returned from Google OAuth and handle redirect
   useEffect(() => {
-    // Instead of automatically enabling demo mode, we now properly support Google auth on all domains
+    const checkAuthRedirect = async () => {
+      try {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('code') || window.location.hash.includes('access_token')) {
+          console.log('Detected OAuth redirect, checking authentication...');
+          // Give Firebase time to process the redirect
+          setTimeout(async () => {
+            const { handleRedirectResult } = await import('@/lib/firebase-auth');
+            const user = await handleRedirectResult();
+            if (user) {
+              console.log('OAuth success, redirecting to Industry Pulse');
+              // Firebase auth will handle the redirect
+            }
+            setIsCheckingAuth(false);
+          }, 1000);
+        } else {
+          setIsCheckingAuth(false);
+        }
+      } catch (error) {
+        console.error('Error checking auth redirect:', error);
+        setIsCheckingAuth(false);
+      }
+    };
+    
+    checkAuthRedirect();
     setUseDemoBypass(false);
   }, []);
 

@@ -20,7 +20,8 @@ export function GoogleSignIn() {
       if (isAuthenticated()) {
         const user = getCurrentUser();
         console.log('User already authenticated:', user?.email);
-        // User will be redirected by handleRedirectResult
+        // Redirect already authenticated user
+        window.location.href = '/industry-pulse';
         return;
       }
       
