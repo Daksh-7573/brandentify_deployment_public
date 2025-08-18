@@ -96,7 +96,13 @@ import {
   InsertPulseShare,
   InsertNewsSource,
   InsertNewsArticle,
-  InsertNewsUserPreference
+  InsertNewsUserPreference,
+  GoalMilestone,
+  InsertGoalMilestone,
+  GoalSkill,
+  InsertGoalSkill,
+  GoalProgressLog,
+  InsertGoalProgressLog
 } from "@shared/schema";
 import { generateCareerAdvice } from "./services/ai-service";
 import { getJobTitleSuggestions } from "./services/title-suggestions";

@@ -87,9 +87,5 @@ export default function AuthPage() {
         </NeoGlassLayout>
       </div>
     </div>
-          </div>
-        </NeoGlassLayout>
-      </div>
-    </div>
   );
 }
