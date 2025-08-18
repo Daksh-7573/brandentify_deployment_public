@@ -58,6 +58,7 @@ export function GoogleAuthButton() {
       // Store return URL for after authentication
       sessionStorage.setItem('auth_return_url', '/industry-pulse');
       sessionStorage.setItem('auth_timestamp', new Date().toISOString());
+      sessionStorage.setItem('auth_initiated', 'true');
 
       toast({
         title: 'Redirecting to Google',

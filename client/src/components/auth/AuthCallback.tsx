@@ -96,8 +96,30 @@ export function AuthCallback() {
           }, 2000);
 
         } else {
-          // No redirect result - user might have navigated here directly
+          // No redirect result - check if this was an intended auth callback
           console.log('No redirect result found');
+          
+          const authInitiated = sessionStorage.getItem('auth_initiated');
+          const authTimestamp = sessionStorage.getItem('auth_timestamp');
+          
+          if (authInitiated && authTimestamp) {
+            const timeSinceAuth = Date.now() - new Date(authTimestamp).getTime();
+            
+            if (timeSinceAuth < 300000) { // 5 minutes
+              // Recent auth attempt failed
+              setStatus('error');
+              setMessage('Google authentication was cancelled or failed. Please try again.');
+              
+              // Clear auth flags
+              sessionStorage.removeItem('auth_initiated');
+              sessionStorage.removeItem('auth_timestamp');
+              
+              setTimeout(() => {
+                window.location.href = '/auth';
+              }, 3000);
+              return;
+            }
+          }
           
           // Check if user is already authenticated
           if (auth.currentUser) {

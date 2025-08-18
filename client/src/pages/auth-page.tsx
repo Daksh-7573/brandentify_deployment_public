@@ -14,6 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Mail, Phone, Check, Sparkles, Target, Users } from "lucide-react";
 import { GoogleAuthButton } from "@/components/auth/GoogleAuthButton";
 import { AuthCallback } from "@/components/auth/AuthCallback";
+import { AuthDebug } from "@/components/auth/AuthDebug";
 import { PhoneAuth } from "@/components/auth/phone-auth";
 import { EmailAuth } from "@/components/auth/email-auth";
 import { DemoLogin } from "@/components/auth/demo-login";
@@ -72,6 +73,8 @@ export default function AuthPage() {
         <RedirectAuthHandler />
         <AuthDebugOverlay />
         <NeoGlassLayout className="mt-0 pt-2 px-2 md:px-4 min-h-screen flex flex-col justify-start py-2 md:py-4">
+          {/* Debug Panel */}
+          <AuthDebug />
           <div className="text-center mb-6 md:mb-8">
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-white via-blue-200 to-purple-200 bg-clip-text text-transparent mb-3 md:mb-4">
             Welcome to Brandentifier
