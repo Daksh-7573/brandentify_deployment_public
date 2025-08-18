@@ -93,8 +93,8 @@ export function SimpleFirebaseAuth() {
       console.log('Starting direct Firebase authentication...');
       
       // Import Firebase modules directly
-      const { initializeApp } = await import('firebase/app');
-      const { getAuth, GoogleAuthProvider, signInWithPopup } = await import('firebase/auth');
+      const { initializeApp, getApps } = await import('firebase/app');
+      const { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect } = await import('firebase/auth');
       
       // Get Firebase config from environment
       const firebaseConfig = {
@@ -111,9 +111,31 @@ export function SimpleFirebaseAuth() {
         hasApiKey: !!firebaseConfig.apiKey
       });
       
-      // Initialize Firebase
-      const app = initializeApp(firebaseConfig, 'simple-auth');
+      // Validate config
+      if (!firebaseConfig.apiKey || !firebaseConfig.projectId || !firebaseConfig.appId) {
+        throw new Error('Missing Firebase configuration. Please check your environment variables.');
+      }
+      
+      // Initialize Firebase app (prevent duplicate initialization)
+      let app;
+      const existingApps = getApps();
+      if (existingApps.length > 0) {
+        app = existingApps[0];
+        console.log('Using existing Firebase app');
+      } else {
+        app = initializeApp(firebaseConfig);
+        console.log('Initialized new Firebase app');
+      }
+      
+      // Get auth instance
       const auth = getAuth(app);
+      
+      // Verify auth is properly initialized
+      if (!auth) {
+        throw new Error('Failed to initialize Firebase Auth');
+      }
+      
+      console.log('Firebase Auth initialized successfully');
       
       // Create Google provider
       const provider = new GoogleAuthProvider();
@@ -125,17 +147,36 @@ export function SimpleFirebaseAuth() {
       
       console.log('Opening Google authentication popup...');
       
-      // Attempt popup authentication with timeout and better error handling
-      const popupPromise = signInWithPopup(auth, provider);
+      // Try popup first, then redirect if popup fails
+      let result;
       
-      // Add timeout to prevent hanging
-      const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => {
-          reject(new Error('Authentication timeout after 60 seconds'));
-        }, 60000);
-      });
-      
-      const result = await Promise.race([popupPromise, timeoutPromise]);
+      try {
+        console.log('Attempting popup authentication...');
+        result = await signInWithPopup(auth, provider);
+        console.log('Popup authentication succeeded');
+      } catch (popupError: any) {
+        console.log('Popup failed:', popupError.code, popupError.message);
+        
+        // If popup fails, immediately try redirect
+        if (popupError.code === 'auth/popup-blocked' || 
+            popupError.code === 'auth/popup-closed-by-user' ||
+            popupError.code === 'auth/cancelled-popup-request') {
+          
+          console.log('Switching to redirect authentication...');
+          
+          toast({
+            title: 'Switching to redirect',
+            description: 'Redirecting to Google for authentication...',
+          });
+          
+          // Use redirect authentication
+          await signInWithRedirect(auth, provider);
+          return; // Exit function - redirect will handle completion
+        } else {
+          // Re-throw other errors
+          throw popupError;
+        }
+      }
       
       if (result && result.user) {
         console.log('Authentication successful:', result.user.email);
@@ -188,7 +229,7 @@ export function SimpleFirebaseAuth() {
           return; // Exit function as redirect will handle the rest
         } catch (redirectError: any) {
           console.error('Redirect authentication also failed:', redirectError);
-          errorMessage = `Both popup and redirect failed. Error: ${redirectError.message || 'Unknown error'}`;
+          errorMessage = `Authentication failed: ${redirectError.message || 'Unknown error'}. Please check your browser settings.`;
         }
       } else if (error.code === 'auth/unauthorized-domain') {
         errorMessage = 'This domain is not authorized for Google authentication.';

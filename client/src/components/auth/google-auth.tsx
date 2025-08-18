@@ -7,6 +7,7 @@ import { DomainAuthAlert } from "@/components/auth/domain-auth-alert";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { checkFirebaseConfig } from "@/utils/auth-diagnostics";
 import { SimpleFirebaseAuth } from "@/components/auth/simple-firebase-auth";
+import { FirebaseDirectAuth } from "@/components/auth/firebase-direct-auth";
 
 /**
  * Google Authentication component with enhanced error handling
@@ -41,13 +42,21 @@ export function GoogleAuth() {
         </Alert>
       )}
       
-      {/* Use simplified Firebase auth component to bypass AuthContext issues */}
-      <SimpleFirebaseAuth />
+      {/* Primary: Most reliable direct Firebase auth */}
+      <FirebaseDirectAuth />
       
-      {/* Fallback to original component */}
+      {/* Secondary: Simplified Firebase auth */}
       <div className="mt-4 pt-4 border-t border-gray-600">
         <p className="text-xs text-gray-400 text-center mb-3">
-          Alternative: Use complex auth system
+          Alternative: Simplified Firebase authentication
+        </p>
+        <SimpleFirebaseAuth />
+      </div>
+      
+      {/* Fallback: Complex auth system */}
+      <div className="mt-4 pt-4 border-t border-gray-600">
+        <p className="text-xs text-gray-400 text-center mb-3">
+          Last resort: Complex auth system
         </p>
         <GoogleLoginButton 
           variant="outline"
