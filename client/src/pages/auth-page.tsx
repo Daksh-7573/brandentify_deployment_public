@@ -12,13 +12,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Mail, Phone, Check, Sparkles, Target, Users } from "lucide-react";
-import { GoogleAuth } from "@/components/auth/google-auth";
-import { PhoneAuth } from "@/components/auth/phone-auth";
-import { EmailAuth } from "@/components/auth/email-auth";
-import { DemoLogin } from "@/components/auth/demo-login";
+import { CleanGoogleAuth } from "@/components/auth/clean-google-auth";
+import { AuthRedirectHandler } from "@/components/auth/auth-redirect-handler";
 import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
-import { AuthDebugOverlay } from "@/components/auth/auth-debug-overlay";
-import { RedirectAuthHandler } from "@/components/auth/redirect-auth-handler";
 import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
 
 export default function AuthPage() {
@@ -68,121 +64,29 @@ export default function AuthPage() {
       
       {/* Content layer */}
       <div className="relative z-10">
-        <RedirectAuthHandler />
-        <AuthDebugOverlay />
-        <NeoGlassLayout className="mt-0 pt-2 px-2 md:px-4 min-h-screen flex flex-col justify-start py-2 md:py-4">
-          <div className="text-center mb-6 md:mb-8">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-white via-blue-200 to-purple-200 bg-clip-text text-transparent mb-3 md:mb-4">
-            Welcome to Brandentifier
-          </h1>
-          <p className="text-sm sm:text-base md:text-lg text-gray-300 px-2">
-            Sign in to accelerate your professional growth with AI-powered career guidance
-          </p>
-        </div>
+        <AuthRedirectHandler />
+        <NeoGlassLayout className="mt-0 pt-2 px-2 md:px-4 min-h-screen flex flex-col justify-center items-center">
+          <div className="text-center mb-8 md:mb-12">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-white via-blue-200 to-purple-200 bg-clip-text text-transparent mb-4 md:mb-6">
+              Welcome to Brandentifier
+            </h1>
+            <p className="text-lg sm:text-xl md:text-2xl text-gray-300 px-4 max-w-2xl mx-auto">
+              Accelerate your professional growth with AI-powered career guidance
+            </p>
+          </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 max-w-6xl mx-auto">
-          {/* Left column - Auth forms */}
-          <NeoGlassSection>
-            <div className="space-y-4 md:space-y-6">
-              <Tabs defaultValue="email" onValueChange={(v) => setAuthMethod(v as "email" | "phone")}>
-                <TabsList className="grid grid-cols-2 mb-4 md:mb-6 dark-tabs-list w-full">
-                  <TabsTrigger value="email" className="flex items-center gap-1 md:gap-1.5 dark-tabs-trigger text-sm md:text-base">
-                    <Mail className="h-3 w-3 md:h-4 md:w-4" />
-                    <span>Email</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="phone" className="flex items-center gap-1 md:gap-1.5 dark-tabs-trigger text-sm md:text-base">
-                    <Phone className="h-3 w-3 md:h-4 md:w-4" />
-                    <span>Phone</span>
-                  </TabsTrigger>
-                </TabsList>
-
-                {/* Email Authentication */}
-                <TabsContent value="email">
-                  <div className="space-y-4 md:space-y-6">
-                    {useDemoBypass ? (
-                      <>
-                        <div className="bg-blue-500/20 px-3 py-2 rounded-lg mb-4 text-sm text-blue-200 border border-blue-400/30">
-                          Using direct demo login for this domain
-                        </div>
-                        <DemoLogin />
-                      </>
-                    ) : (
-                      <>
-                        <EmailAuth />
-                        
-                        <div className="relative w-full">
-                          <div className="absolute inset-0 flex items-center">
-                            <span className="w-full border-t border-white/20" />
-                          </div>
-                          <div className="relative flex justify-center text-xs uppercase">
-                            <span className="bg-black/50 px-2 text-gray-300">or</span>
-                          </div>
-                        </div>
-                        
-                        <GoogleAuth />
-                      </>
-                    )}
-                  </div>
-                </TabsContent>
-
-                {/* Phone Authentication */}
-                <TabsContent value="phone">
-                  {useDemoBypass ? (
-                    <>
-                      <div className="bg-blue-500/20 px-3 py-2 rounded-lg mb-4 text-sm text-blue-200 border border-blue-400/30">
-                        Using direct demo login for this domain
-                      </div>
-                      <DemoLogin />
-                    </>
-                  ) : (
-                    <PhoneAuth />
-                  )}
-                </TabsContent>
-              </Tabs>
+          {/* Single Google Authentication */}
+          <NeoGlassSection className="w-full max-w-md mx-auto">
+            <div className="text-center mb-6">
+              <h2 className="text-xl font-semibold text-white mb-2">Sign In to Continue</h2>
+              <p className="text-sm text-gray-400">Connect with your Google account to get started</p>
             </div>
+            
+            <CleanGoogleAuth />
           </NeoGlassSection>
-
-          {/* Right column - Features showcase */}
-          <NeoGlassSection>
-            <div className="space-y-4 md:space-y-6">
-              <h2 className="text-xl md:text-2xl font-bold text-white mb-4 md:mb-6">Elevate Your Career</h2>
-              <p className="text-gray-300 text-base md:text-lg mb-6 md:mb-8">
-                Brandentifier helps you discover your professional strengths and connect with opportunities that match your unique profile.
-              </p>
-              
-              <div className="grid gap-3 md:gap-4">
-                <div className="flex items-start space-x-3 md:space-x-4 p-3 md:p-4 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
-                  <div className="p-1.5 md:p-2 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 flex-shrink-0">
-                    <Sparkles className="h-4 w-4 md:h-5 md:w-5 text-white" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <h3 className="font-semibold text-white mb-1 text-sm md:text-base">AI-Powered Career Guidance</h3>
-                    <p className="text-gray-300 text-xs md:text-sm">Get personalized advice tailored to your experience and goals</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start space-x-3 md:space-x-4 p-3 md:p-4 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
-                  <div className="p-1.5 md:p-2 rounded-lg bg-gradient-to-r from-blue-500 to-cyan-500 flex-shrink-0">
-                    <Target className="h-4 w-4 md:h-5 md:w-5 text-white" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <h3 className="font-semibold text-white mb-1 text-sm md:text-base">Smart Opportunity Matching</h3>
-                    <p className="text-gray-300 text-xs md:text-sm">Discover roles and projects that align with your skills</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start space-x-3 md:space-x-4 p-3 md:p-4 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
-                  <div className="p-1.5 md:p-2 rounded-lg bg-gradient-to-r from-green-500 to-emerald-500 flex-shrink-0">
-                    <Users className="h-4 w-4 md:h-5 md:w-5 text-white" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <h3 className="font-semibold text-white mb-1 text-sm md:text-base">Professional Networking</h3>
-                    <p className="text-gray-300 text-xs md:text-sm">Connect with industry professionals and mentors</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </NeoGlassSection>
+        </NeoGlassLayout>
+      </div>
+    </div>
           </div>
         </NeoGlassLayout>
       </div>

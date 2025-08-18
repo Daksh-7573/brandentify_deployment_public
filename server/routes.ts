@@ -48,6 +48,7 @@ import muskFeedbackRoutes from "./routes-musk-feedback";
 import { setupServicesRoutes } from "./routes-services";
 import addProjectUpdateRoutes from "./routes-project-update";
 import careerCapsuleRoutes from "./routes-career-capsule";
+import googleAuthRoutes from "./routes/google-auth";
 import muskPulseAutomationRoutes from "./routes-musk-pulse-automation";
 import aiMonitoringRoutes from "./routes-ai-monitoring";
 import { setupPersonalizedHashtagRoutes } from "./routes-personalized-hashtags";
@@ -7546,6 +7547,9 @@ ${extractedText.substring(0, 5000)}
   apiRouter.post('/musk/resume-upload', handleResumeUploadFixed);
   console.log("Musk file upload routes loaded");
 
+  // Google authentication routes
+  app.use("/api/auth", googleAuthRoutes);
+  
   app.use("/api", apiRouter);
 
   // Add route for hashtag suggestions test page

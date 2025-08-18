@@ -64,6 +64,7 @@ const Landing = lazy(() => import("@/pages/landing"));
 const IndustryPulsePage = lazy(() => import("@/pages/industry-pulse-new"));
 const Profile = lazy(() => import("@/pages/profile"));
 const AuthPage = lazy(() => import("@/pages/auth-page"));
+const AuthTestPage = lazy(() => import("@/pages/auth-test"));
 
 // Secondary components (loaded after first paint)
 const NotFound = lazy(() => import("@/pages/not-found"));
