@@ -100,9 +100,31 @@ export const handleRedirectResult = async (): Promise<User | null> => {
       localStorage.setItem('brandentifier_auth', 'true');
       console.log('User data stored immediately after OAuth redirect');
       
-      // Direct redirect to Industry Pulse
-      console.log('Authentication successful! Redirecting to Industry Pulse...');
-      window.location.href = '/industry-pulse?from=auth';
+      // FORCE redirect to Industry Pulse with multiple methods
+      console.log('🚀 AUTHENTICATION SUCCESS! FORCING REDIRECT TO INDUSTRY PULSE...');
+      console.log('User email:', result.user.email);
+      console.log('User display name:', result.user.displayName);
+      
+      // Try multiple redirect methods to ensure it works
+      const redirectUrl = '/industry-pulse?from=auth';
+      console.log('Redirect URL:', redirectUrl);
+      
+      // Method 1: Immediate redirect with replace
+      window.location.replace(redirectUrl);
+      
+      // Method 2: Backup redirect with href (in case replace fails)
+      setTimeout(() => {
+        console.log('Backup redirect executing...');
+        window.location.href = redirectUrl;
+      }, 100);
+      
+      // Method 3: Final fallback redirect
+      setTimeout(() => {
+        console.log('Final fallback redirect executing...');
+        if (window.location.pathname !== '/industry-pulse') {
+          window.location = redirectUrl as any;
+        }
+      }, 500);
       
       return user;
     }

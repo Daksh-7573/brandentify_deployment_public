@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Redirect Test</title>
+</head>
+<body>
+    <h1>Debug Redirect Test</h1>
+    <button onclick="testRedirect1()">Test window.location.href</button>
+    <button onclick="testRedirect2()">Test window.location.replace</button>
+    <button onclick="testRedirect3()">Test window.location assignment</button>
+    
+    <div id="logs"></div>
+    
+    <script>
+        function log(message) {
+            const logs = document.getElementById('logs');
+            logs.innerHTML += '<div>' + new Date().toLocaleTimeString() + ': ' + message + '</div>';
+            console.log(message);
+        }
+        
+        function testRedirect1() {
+            log('Testing window.location.href redirect...');
+            setTimeout(() => {
+                window.location.href = '/industry-pulse?test=1';
+            }, 1000);
+        }
+        
+        function testRedirect2() {
+            log('Testing window.location.replace redirect...');
+            setTimeout(() => {
+                window.location.replace('/industry-pulse?test=2');
+            }, 1000);
+        }
+        
+        function testRedirect3() {
+            log('Testing window.location assignment...');
+            setTimeout(() => {
+                window.location = '/industry-pulse?test=3';
+            }, 1000);
+        }
+    </script>
+</body>
+</html>

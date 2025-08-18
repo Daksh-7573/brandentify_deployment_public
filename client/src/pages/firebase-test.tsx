@@ -73,11 +73,18 @@ export default function FirebaseTestPage() {
       try {
         const redirectUser = await handleRedirectResult();
         if (redirectUser) {
-          addLog(`✅ Authentication successful: ${redirectUser.email}`);
-          addLog('🚀 Redirecting to Industry Pulse...');
-          // handleRedirectResult will automatically redirect to Industry Pulse
+          addLog(`✅ AUTHENTICATION SUCCESS: ${redirectUser.email}`);
+          addLog(`✅ Display Name: ${redirectUser.displayName || 'Not set'}`);
+          addLog('🚀 REDIRECT SHOULD HAPPEN NOW...');
+          addLog('⚠️ IF YOU SEE THIS, REDIRECT FAILED!');
+          
+          // If we're still here after 3 seconds, something is wrong
+          setTimeout(() => {
+            addLog('❌ REDIRECT FAILED - MANUAL REDIRECT ATTEMPT');
+            window.location.href = '/industry-pulse?from=auth';
+          }, 3000);
         } else {
-          addLog('No redirect result found');
+          addLog('No redirect result found - this is normal if no OAuth happened');
         }
       } catch (redirectError: any) {
         addLog(`❌ Authentication error: ${redirectError.message}`);
