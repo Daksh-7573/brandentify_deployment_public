@@ -195,13 +195,13 @@ export function AuthDebug() {
           </Button>
         </div>
         
-        <div className="bg-yellow-900/30 p-3 rounded border border-yellow-600/30">
-          <div className="text-sm font-semibold text-yellow-200 mb-2">🔧 Firebase Setup Required</div>
-          <div className="text-xs text-yellow-300 space-y-1">
-            <div>1. Go to: <a href="https://console.firebase.google.com/" target="_blank" className="underline">Firebase Console</a></div>
-            <div>2. Select project: <strong>brandentifier-app</strong></div>
-            <div>3. Go to: Authentication → Settings → Authorized domains</div>
-            <div>4. Add: <code className="bg-black/30 px-1 rounded">25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev</code></div>
+        <div className="bg-green-900/30 p-3 rounded border border-green-600/30">
+          <div className="text-sm font-semibold text-green-200 mb-2">✅ Setup Complete</div>
+          <div className="text-xs text-green-300 space-y-1">
+            <div>✅ Firebase domain authorized</div>
+            <div>✅ Brandentifier API working</div>
+            <div>✅ User creation/update working</div>
+            <div>🚀 Google authentication should now work properly!</div>
           </div>
         </div>
         
