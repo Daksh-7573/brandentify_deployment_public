@@ -51,7 +51,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     };
 
+    // Handle Google auth success event
+    const handleGoogleAuthSuccess = (event: CustomEvent) => {
+      const { user: userData } = event.detail;
+      console.log('Google auth success event received:', userData.email);
+      setUser(userData);
+      sessionStorage.setItem('brandentifier_user', JSON.stringify(userData));
+    };
+
+    window.addEventListener('googleAuthSuccess', handleGoogleAuthSuccess as EventListener);
     checkStoredAuth();
+
+    return () => {
+      window.removeEventListener('googleAuthSuccess', handleGoogleAuthSuccess as EventListener);
+    };
   }, []);
 
   const signIn = (userData: AuthUser) => {

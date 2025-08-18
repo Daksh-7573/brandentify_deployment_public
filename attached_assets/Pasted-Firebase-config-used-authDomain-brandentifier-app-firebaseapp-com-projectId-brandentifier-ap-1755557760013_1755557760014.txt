@@ -1,0 +1,94 @@
+Firebase config used: {authDomain: 'brandentifier-app.firebaseapp.com', projectId: 'brandentifier-app', currentDomain: '25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev', isReplitDomain: true, googleProviderScopes: Array(2), …}
+Console.js:61 Firebase Environment Check: {apiKey: 'Present (39 chars)', projectId: 'brandentifier-app', appId: 'Present (41 chars)', envVarsDetected: {…}}
+Console.js:61 Firebase initialization: {environment: 'development', hostname: '25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev', projectId: 'brandentifier-app', apiKeyPresent: true, apiKeyLength: 39, …}
+Console.js:61 Using simplified Google auth configuration for maximum compatibility
+Console.js:61 Firebase initialized successfully
+Console.js:61 Firebase config used: {authDomain: 'brandentifier-app.firebaseapp.com', projectId: 'brandentifier-app', currentDomain: '25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev', isReplitDomain: true, googleProviderScopes: Array(2), …}
+Console.js:61 [PERF] React app initialization started
+Console.js:61 [PERF] React rendering started
+Console.js:61 [Skeleton] DOM loaded, preparing smooth transition
+Console.js:61 [Progressive Loading] Starting tiered component loading
+Console.js:61 [Progressive Loading] ⚡ Core components ready
+Console.js:61  ⚠️ FIREBASE DOMAIN SETUP INFORMATION ⚠️ 
+Console.js:61  Add these domains to Firebase Auth > Settings > Authorized domains: 
+Console.js:61  1. 25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev 
+Console.js:61  2. 25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev.replit.app 
+Console.js:61  3. *.replit.dev 
+Console.js:61  4. *.replit.app 
+Console.js:61 No stored user found
+Console.js:61 [PERF] React app rendered in 74.00 ms
+Console.js:61 [PERF] Total initialization time: 74.50 ms
+Console.js:61 🚀 [PERF] COMPLETE PERFORMANCE OPTIMIZATION REPORT:
+Console.js:61 📊 Total page load time: 7070.90ms
+Console.js:61 🔥 Firebase init time: 7070.90ms
+Console.js:61 ✅ [Strategy 1] Preconnect/Preload: 9 preconnect + 4 preload + 2 modulepreload links active
+Console.js:61 ⚡ Expected improvement: 100-300ms faster cold starts
+Console.js:61 ✅ [Strategy 2] Firebase Auth Caching: Active - cached state available
+Console.js:61 ⚡ Expected improvement: 150-250ms faster auth loads
+Console.js:61 ✅ [Strategy 4] Service Worker v2: Active with enhanced caching
+Console.js:61 ⚡ Return visits: Near-instant loading (0-50ms)
+Console.js:61 🎯 PERFORMANCE STATUS: OPTIMIZING - Further improvements in progress
+Console.js:61 📈 Performance Optimization Complete - All 4 strategies active!
+Console.js:61 [Skeleton] Starting fade-out transition
+Console.js:61 [Progressive Loading] 🚀 Secondary components loaded
+Console.js:61 [PERF] Skeleton loader removed in 172.30 ms
+Console.js:61 [Progressive Loading] 🔧 All components loaded in 204.80ms
+Console.js:61 [Skeleton] Skeleton loading complete - app ready
+Console.js:61 ⚡ [PERF] Skeleton-to-app transition: 7226.90ms
+Console.js:61 🔧 initializeRedirectHandler: hasRedirectAttempt = false
+Console.js:61 ❌ No redirect attempt flag found - not initializing handler
+Console.js:61 Signing in user: nishant.brodos@gmail.com
+Console.js:61 User account created successfully
+Console.js:61 User not authenticated, redirecting to auth page
+Console.js:61 ✅ [Strategy 3] Progressive Rendering: Core(0) + Secondary(0) components loaded
+Console.js:61 ⚡ Expected improvement: 50-100ms perceived performance boost
+Console.js:61 🔄 AuthCallbackHandler: Checking for OAuth callback...
+Console.js:61 🔄 Current URL: https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/auth
+Console.js:61 🔄 URL search params: 
+Console.js:61 🔄 Has OAuth params: false
+Console.js:61 🔄 Auth initiated flag: true
+Console.js:61 Processing OAuth callback with Firebase...
+Console.js:61 🔧 Debug overlay update: {redirectAttempt: null, redirectTime: null, authSuccess: null, userAuthenticated: null, hasCurrentUser: false}
+Console.js:61 [AuthDebug] Checking authentication state...
+Console.js:61 [AuthDebug] Firebase Project: brandentifier-app
+Console.js:61 [AuthDebug] Current Domain: 25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev
+Console.js:61 [AuthDebug] Full URL: https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/auth
+Console.js:61 [AuthDebug] Found stored Brandentifier user
+Console.js:61 Checking for redirect result...
+Console.js:61 🔄 Calling getRedirectResult...
+Console.js:61 No redirect result found
+Console.js:61 Cached response for /api/users/2
+Console.js:61 Cached response for /api/users/2/educations
+Console.js:61 🔄 Redirect result: No result
+Console.js:61 No redirect result found - user may need to retry authentication
+Console.js:61 🔧 Debug overlay update: {redirectAttempt: null, redirectTime: null, authSuccess: null, userAuthenticated: null, hasCurrentUser: false}
+Console.js:61 🔧 Debug overlay update: {redirectAttempt: null, redirectTime: null, authSuccess: null, userAuthenticated: null, hasCurrentUser: false}
+Console.js:61 Cached response for /api/users/2/experiences
+Console.js:61 Cached response for /api/users/2/skills
+Console.js:61 Cached response for /api/users/2/projects
+Console.js:61 🔧 Debug overlay update: {redirectAttempt: null, redirectTime: null, authSuccess: null, userAuthenticated: null, hasCurrentUser: false}
+Console.js:61 🔧 Debug overlay update: {redirectAttempt: null, redirectTime: null, authSuccess: null, userAuthenticated: null, hasCurrentUser: false}
+Console.js:61 🔧 Debug overlay update: {redirectAttempt: null, redirectTime: null, authSuccess: null, userAuthenticated: null, hasCurrentUser: false}
+Console.js:61 🔧 Debug overlay update: {redirectAttempt: null, redirectTime: null, authSuccess: null, userAuthenticated: null, hasCurrentUser: false}
+Console.js:61 🔧 Debug overlay update: {redirectAttempt: null, redirectTime: null, authSuccess: null, userAuthenticated: null, hasCurrentUser: false}
+Console.js:61 🔧 Debug overlay update: {redirectAttempt: null, redirectTime: null, authSuccess: null, userAuthenticated: null, hasCurrentUser: false}
+Console.js:61 🔧 Debug overlay update: {redirectAttempt: null, redirectTime: null, authSuccess: null, userAuthenticated: null, hasCurrentUser: false}
+Console.js:61 🔧 Debug overlay update: {redirectAttempt: null, redirectTime: null, authSuccess: null, userAuthenticated: null, hasCurrentUser: false}
+Console.js:61 🔧 Debug overlay update: {redirectAttempt: null, redirectTime: null, authSuccess: null, userAuthenticated: null, hasCurrentUser: false}
+Console.js:61 🔧 Debug overlay update: {redirectAttempt: null, redirectTime: null, authSuccess: null, userAuthenticated: null, hasCurrentUser: false}
+Console.js:61 🔧 Debug overlay update: {redirectAttempt: null, redirectTime: null, authSuccess: null, userAuthenticated: null, hasCurrentUser: false}
+Console.js:61 🔧 Debug overlay update: {redirectAttempt: null, redirectTime: null, authSuccess: null, userAuthenticated: null, hasCurrentUser: false}
+Console.js:61 🔧 Debug overlay update: {redirectAttempt: null, redirectTime: null, authSuccess: null, userAuthenticated: null, hasCurrentUser: false}
+Console.js:61 🔧 Debug overlay update: {redirectAttempt: null, redirectTime: null, authSuccess: null, userAuthenticated: null, hasCurrentUser: false}
+Console.js:61 🔧 Debug overlay update: {redirectAttempt: null, redirectTime: null, authSuccess: null, userAuthenticated: null, hasCurrentUser: false}
+Console.js:61 🔧 Debug overlay update: {redirectAttempt: null, redirectTime: null, authSuccess: null, userAuthenticated: null, hasCurrentUser: false}
+Console.js:61 🔧 Debug overlay update: {redirectAttempt: null, redirectTime: null, authSuccess: null, userAuthenticated: null, hasCurrentUser: false}
+Console.js:61 🔧 Debug overlay update: {redirectAttempt: null, redirectTime: null, authSuccess: null, userAuthenticated: null, hasCurrentUser: false}
+Console.js:61 🔧 Debug overlay update: {redirectAttempt: null, redirectTime: null, authSuccess: null, userAuthenticated: null, hasCurrentUser: false}
+Console.js:61 🔧 Debug overlay update: {redirectAttempt: null, redirectTime: null, authSuccess: null, userAuthenticated: null, hasCurrentUser: false}
+Console.js:61 🔧 Debug overlay update: {redirectAttempt: null, redirectTime: null, authSuccess: null, userAuthenticated: null, hasCurrentUser: false}
+Console.js:61 🔧 Debug overlay update: {redirectAttempt: null, redirectTime: null, authSuccess: null, userAuthenticated: null, hasCurrentUser: false}
+Console.js:61 🔧 Debug overlay update: {redirectAttempt: null, redirectTime: null, authSuccess: null, userAuthenticated: null, hasCurrentUser: false}
+Console.js:61 🔧 Debug overlay update: {redirectAttempt: null, redirectTime: null, authSuccess: null, userAuthenticated: null, hasCurrentUser: false}
+Console.js:61 🔧 Debug overlay update: {redirectAttempt: null, redirectTime: null, authSuccess: null, userAuthenticated: null, hasCurrentUser: false}
+Console.js:61 🔧 Debug overlay update: {redirectAttempt: null, redirectTime: null, authSuccess: null, userAuthenticated: null, hasCurrentUser: false}

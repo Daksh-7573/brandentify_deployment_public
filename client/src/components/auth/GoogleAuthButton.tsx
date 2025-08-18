@@ -58,7 +58,6 @@ export function GoogleAuthButton() {
       // Store return URL for after authentication
       sessionStorage.setItem('auth_return_url', '/industry-pulse');
       sessionStorage.setItem('auth_timestamp', new Date().toISOString());
-      sessionStorage.setItem('auth_initiated', 'true');
 
       toast({
         title: 'Redirecting to Google',
@@ -98,8 +97,19 @@ export function GoogleAuthButton() {
       const data = await response.json();
       
       if (data.success) {
-        // Navigate to auth success page with user data
-        window.location.href = '/auth-success?user=' + encodeURIComponent(JSON.stringify(data.user));
+        // Import the auth hook and sign in directly
+        const { useAuth } = await import('@/hooks/use-auth');
+        
+        // Since we can't use hooks here, let's trigger a custom event
+        const authEvent = new CustomEvent('googleAuthSuccess', { 
+          detail: { user: data.user }
+        });
+        window.dispatchEvent(authEvent);
+        
+        // Navigate to intended page
+        const returnUrl = sessionStorage.getItem('auth_return_url') || '/industry-pulse';
+        sessionStorage.removeItem('auth_return_url');
+        window.location.href = returnUrl;
       } else {
         throw new Error(data.message || 'Authentication failed');
       }
