@@ -374,18 +374,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           return () => {};
         }
         
-        // Check for redirect result in case we fell back to redirect
-        const { getRedirectResult } = await import('firebase/auth');
-        console.log("📍 Checking for redirect result (in case popup failed and we used redirect)...");
-        
-        try {
-          const redirectResult = await getRedirectResult(auth as any);
-          if (redirectResult?.user) {
-            console.log("🎉 Redirect fallback successful:", redirectResult.user.email);
-          }
-        } catch (redirectError) {
-          console.log("No redirect result found (this is normal for popup auth)");
-        }
+        // Since we're using popup auth, we don't need redirect result checking
+        console.log("📍 Using popup authentication - no redirect result checking needed");
         
         console.log("Auth object available, setting up listener");
         const { onAuthStateChanged } = await import('firebase/auth');
@@ -563,52 +553,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       console.log("🔧 Old auth flags cleared, ready for clean popup authentication");
       
-      // Try popup first, fallback to redirect if popup fails
-      console.log("🚀 Attempting popup authentication...");
+      // Use popup method - much cleaner than redirect
+      console.log("🚀 Initiating signInWithPopup...");
+      const result = await signInWithPopup(auth as any, googleProvider as any);
       
-      try {
-        const result = await signInWithPopup(auth as any, googleProvider as any);
+      if (result && result.user) {
+        console.log("🎉 Popup authentication successful:", result.user.email);
         
-        if (result && result.user) {
-          console.log("🎉 Popup authentication successful:", result.user.email);
-          
-          // Show success toast immediately
-          toast({
-            title: "Authentication successful",
-            description: `Welcome ${result.user.displayName || result.user.email}!`,
-          });
-          
-          // The onAuthStateChanged listener will handle the rest
-          return;
-        }
-      } catch (popupError: any) {
-        console.log("Popup failed, trying redirect fallback:", popupError.code);
+        // Show success toast immediately
+        toast({
+          title: "Authentication successful",
+          description: `Welcome ${result.user.displayName || result.user.email}!`,
+        });
         
-        if (popupError.code === 'auth/popup-blocked' || 
-            popupError.code === 'auth/popup-closed-by-user' ||
-            popupError.code === 'auth/cancelled-popup-request') {
-          
-          console.log("🔄 Switching to redirect authentication...");
-          
-          // Import redirect method
-          const { signInWithRedirect } = await import('firebase/auth');
-          
-          // Show redirect message
-          toast({
-            title: "Switching to redirect",
-            description: "Opening Google authentication in the same window...",
-          });
-          
-          // Use redirect as fallback
-          await signInWithRedirect(auth as any, googleProvider as any);
-          return;
-        }
-        
-        // If it's not a popup-related error, re-throw it
-        throw popupError;
+        // The onAuthStateChanged listener will handle the rest
+        return;
       }
       
-      console.log("Authentication completed successfully");
+      console.log("Popup authentication completed successfully");
       
     } catch (error: any) {
       console.error("Google sign-in error:", error);
