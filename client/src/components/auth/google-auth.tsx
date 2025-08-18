@@ -8,6 +8,8 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { checkFirebaseConfig } from "@/utils/auth-diagnostics";
 import { SimpleFirebaseAuth } from "@/components/auth/simple-firebase-auth";
 import { FirebaseDirectAuth } from "@/components/auth/firebase-direct-auth";
+import { RedirectOnlyAuth } from "@/components/auth/redirect-only-auth";
+import { FirebaseConfigTest } from "@/components/auth/firebase-config-test";
 
 /**
  * Google Authentication component with enhanced error handling
@@ -42,15 +44,31 @@ export function GoogleAuth() {
         </Alert>
       )}
       
-      {/* Primary: Most reliable direct Firebase auth */}
-      <FirebaseDirectAuth />
+      {/* Primary: Redirect-only authentication (most reliable) */}
+      <RedirectOnlyAuth />
       
-      {/* Secondary: Simplified Firebase auth */}
+      {/* Secondary: Direct Firebase auth with popup */}
+      <div className="mt-4 pt-4 border-t border-gray-600">
+        <p className="text-xs text-gray-400 text-center mb-3">
+          Alternative: Direct Firebase authentication (popup)
+        </p>
+        <FirebaseDirectAuth />
+      </div>
+      
+      {/* Third: Simplified Firebase auth */}
       <div className="mt-4 pt-4 border-t border-gray-600">
         <p className="text-xs text-gray-400 text-center mb-3">
           Alternative: Simplified Firebase authentication
         </p>
         <SimpleFirebaseAuth />
+      </div>
+      
+      {/* Configuration Test */}
+      <div className="mt-4 pt-4 border-t border-gray-600">
+        <p className="text-xs text-gray-400 text-center mb-3">
+          Troubleshooting: Test Firebase configuration
+        </p>
+        <FirebaseConfigTest />
       </div>
       
       {/* Fallback: Complex auth system */}
