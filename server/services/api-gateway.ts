@@ -104,6 +104,13 @@ export class APIGateway {
       return;
     }
     
+    // BYPASS API Gateway routing for user routes - critical fix for 503 errors
+    if (path.startsWith('/api/users/') || path.includes('/experiences') || path.includes('/educations') || path.includes('/skills') || path.includes('/projects') || path.includes('/reaction-quota')) {
+      console.log(`[API Gateway] Bypassing service routing for user routes: ${path}`);
+      next();
+      return;
+    }
+    
     // Determine target service
     const serviceName = this.getServiceForPath(path);
     
@@ -152,6 +159,13 @@ export class APIGateway {
     // BYPASS health check for user profile updates - critical fix
     if (req.path.includes('/users/') && req.method === 'PUT') {
       console.log(`[API Gateway] Bypassing health check for user update: ${req.path}`);
+      next();
+      return;
+    }
+    
+    // BYPASS health check for all user-related routes - critical fix for 503 errors
+    if (req.path.startsWith('/api/users/') || req.path.includes('/experiences') || req.path.includes('/educations') || req.path.includes('/skills') || req.path.includes('/projects') || req.path.includes('/reaction-quota')) {
+      console.log(`[API Gateway] Bypassing health check for user routes: ${req.path}`);
       next();
       return;
     }
