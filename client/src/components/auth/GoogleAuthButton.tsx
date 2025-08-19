@@ -97,19 +97,24 @@ export function GoogleAuthButton() {
       const data = await response.json();
       
       if (data.success) {
-        // Import the auth hook and sign in directly
-        const { useAuth } = await import('@/hooks/use-auth');
-        
-        // Since we can't use hooks here, let's trigger a custom event
+        // Trigger a custom event for the auth context to handle
         const authEvent = new CustomEvent('googleAuthSuccess', { 
           detail: { user: data.user }
         });
         window.dispatchEvent(authEvent);
         
-        // Navigate to intended page
+        toast({
+          title: data.user.profileCompleted > 20 ? 'Welcome back!' : 'Welcome to Brandentifier!',
+          description: `Signed in as ${data.user.name}`
+        });
+        
+        // Navigate to intended page after a brief delay
         const returnUrl = sessionStorage.getItem('auth_return_url') || '/industry-pulse';
         sessionStorage.removeItem('auth_return_url');
-        window.location.href = returnUrl;
+        
+        setTimeout(() => {
+          window.location.href = returnUrl;
+        }, 1500);
       } else {
         throw new Error(data.message || 'Authentication failed');
       }
