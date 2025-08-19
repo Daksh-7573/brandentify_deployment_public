@@ -29,9 +29,8 @@ app.use((req, res, next) => {
   // Allow access from Replit domains and external sources
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, HEAD');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-  // Explicitly override any X-Frame-Options that might be added by other middleware
-  res.removeHeader('X-Frame-Options');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, X-Frame-Options');
+  res.header('X-Frame-Options', 'ALLOWALL');
   res.header('X-Content-Type-Options', 'nosniff');
   
   // Handle preflight requests

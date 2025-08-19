@@ -93,7 +93,7 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
       const availableTitles = jobTitlesData.jobTitles || [];
       
       // Check if the title exactly matches any dropdown option
-      const matchedDropdownTitle = availableTitles.find((title: string) => 
+      const matchedDropdownTitle = availableTitles.find(title => 
         existingTitle === title
       );
       
@@ -269,6 +269,7 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
                 <p className="text-sm text-white font-medium">
                   {selectedJobTitleFromDropdown || jobTitle}
                 </p>
+                )}
               </div>
             )}
           </div>

@@ -1,43 +1,11 @@
-// Service Worker temporarily disabled to fix X-Frame-Options caching issue
-console.log('[SW] Service worker disabled to fix frame options');
+// Enhanced Service Worker v2 for Maximum Performance
+const CACHE_NAME = 'brandentifier-v2';
+const STATIC_CACHE_NAME = 'brandentifier-static-v2';
+const API_CACHE_NAME = 'brandentifier-api-v2';
+const RUNTIME_CACHE_NAME = 'brandentifier-runtime-v2';
 
-// Force unregister all existing service workers
-self.addEventListener('install', event => {
-  console.log('[SW] Unregistering service worker...');
-  self.skipWaiting();
-});
-
-self.addEventListener('activate', event => {
-  console.log('[SW] Clearing all caches...');
-  event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames.map(cacheName => {
-          console.log('[SW] Deleting cache:', cacheName);
-          return caches.delete(cacheName);
-        })
-      );
-    }).then(() => {
-      console.log('[SW] All caches cleared');
-      return self.clients.claim();
-    })
-  );
-});
-
-// Disable all fetch interception
-// self.addEventListener('fetch', event => {
-//   // Service worker disabled - let all requests go through normally
-// });
-
-return; // Exit early to disable all caching logic below
-
-const CACHE_NAME = 'disabled';
-const STATIC_CACHE_NAME = 'disabled';
-const API_CACHE_NAME = 'disabled';
-const RUNTIME_CACHE_NAME = 'disabled';
-
-// DISABLED - Enhanced critical files for aggressive caching
-const STATIC_FILES_DISABLED = [
+// Enhanced critical files for aggressive caching
+const STATIC_FILES = [
   '/',
   '/index.html',
   '/src/main.tsx',
@@ -95,7 +63,7 @@ self.addEventListener('activate', event => {
       caches.keys().then(cacheNames => {
         return Promise.all(
           cacheNames.map(cacheName => {
-            if (!cacheName.includes('v3')) {
+            if (!cacheName.includes('v2')) {
               console.log('[SW v2] Deleting old cache:', cacheName);
               return caches.delete(cacheName);
             }
