@@ -97,6 +97,13 @@ export class APIGateway {
     const startTime = Date.now();
     const path = req.path;
     
+    // BYPASS API Gateway routing for ALL user routes - critical fix for profile loading  
+    if (path.includes('/users/') || path.includes('/api/users/')) {
+      console.log(`[API Gateway] Bypassing service routing for user route: ${path}`);
+      next();
+      return;
+    }
+    
     // BYPASS API Gateway routing for career capsule routes - critical fix
     if (path.includes('/career-capsule') || path.includes('/career-goals')) {
       console.log(`[API Gateway] Bypassing service routing for career capsule: ${path}`);
@@ -149,9 +156,9 @@ export class APIGateway {
    * Service health check middleware
    */
   healthCheckMiddleware = (req: Request, res: Response, next: NextFunction): void => {
-    // BYPASS health check for user profile updates - critical fix
-    if (req.path.includes('/users/') && req.method === 'PUT') {
-      console.log(`[API Gateway] Bypassing health check for user update: ${req.path}`);
+    // BYPASS health check for ALL user routes - critical fix for profile loading
+    if (req.path.includes('/users/') || req.path.includes('/api/users/')) {
+      console.log(`[API Gateway] Bypassing health check for user route: ${req.path}`);
       next();
       return;
     }
