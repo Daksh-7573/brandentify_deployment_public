@@ -103,18 +103,17 @@ export function GoogleAuthButton() {
         });
         window.dispatchEvent(authEvent);
         
-        toast({
-          title: data.user.profileCompleted > 20 ? 'Welcome back!' : 'Welcome to Brandentifier!',
-          description: `Signed in as ${data.user.name}`
-        });
-        
-        // Navigate to intended page after a brief delay
+        // Navigate immediately to intended page
         const returnUrl = sessionStorage.getItem('auth_return_url') || '/industry-pulse';
         sessionStorage.removeItem('auth_return_url');
         
-        setTimeout(() => {
-          window.location.href = returnUrl;
-        }, 1500);
+        toast({
+          title: data.user.profileCompleted > 20 ? 'Welcome back!' : 'Welcome to Brandentifier!',
+          description: `Redirecting to ${returnUrl.replace('/', '').replace('-', ' ')}...`
+        });
+        
+        // Immediate redirect - no delay
+        window.location.href = returnUrl;
       } else {
         throw new Error(data.message || 'Authentication failed');
       }
