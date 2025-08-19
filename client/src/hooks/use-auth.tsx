@@ -7,5 +7,11 @@ export const useAuth = () => {
   if (!context) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
-  return context;
+  
+  // Add helper properties for profile page
+  return {
+    ...context,
+    uid: context.user?.username || context.user?.email || '',
+    isReady: !context.isLoading && !!context.user
+  };
 };

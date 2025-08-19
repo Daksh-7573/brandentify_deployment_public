@@ -6,6 +6,7 @@ import { storage } from "./storage";
 import { pool } from "./db";
 import { z } from "zod";
 import { cacheMiddleware } from "./middleware/cache-middleware";
+import { getCachedUserData, setCachedUserData } from "./middleware/user-cache";
 import crypto from "crypto";
 import path from "path";
 import fs from "fs";
@@ -729,10 +730,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Add cache middleware for user data endpoints
-  apiRouter.get("/users/:id", cacheMiddleware(30), async (req: Request, res: Response) => {
+  // Optimized user data endpoint with caching
+  apiRouter.get("/users/:id", async (req: Request, res: Response) => {
     try {
       const idParam = req.params.id;
+      const cacheKey = `user_${idParam}`;
+      
+      // Check cache first
+      const cachedUser = getCachedUserData(cacheKey);
+      if (cachedUser) {
+        console.log(`[GET /users/:id] Cache hit for user ${idParam}`);
+        return res.json(cachedUser);
+      }
+      
       console.log(`[GET /users/:id] Fetching user with ID: ${idParam}`);
       console.log(`[GET /users/:id] Query parameters:`, req.query);
       
@@ -804,7 +814,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
 
-      console.log(`[GET /users/:id] Returning user data:`, user);
+      // Cache the result
+      setCachedUserData(cacheKey, user);
+      
+      console.log(`[GET /users/:id] Found user with numeric ID: ${user.id}`);
       res.json(user);
     } catch (error) {
       console.error("Error fetching user:", error);

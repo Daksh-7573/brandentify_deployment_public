@@ -68,6 +68,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signIn = (userData: AuthUser) => {
     console.log('Signing in user:', userData.email);
     setUser(userData);
+    setIsLoading(false);
     sessionStorage.setItem('brandentifier_user', JSON.stringify(userData));
   };
 

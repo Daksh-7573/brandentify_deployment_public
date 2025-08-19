@@ -92,16 +92,23 @@ export default function ProfileNeo() {
     return null;
   }
   
-  // Get user profile data
-  const { data: userData, isLoading: isUserDataLoading } = useQuery({
+  // Get user profile data with optimized error handling
+  const { data: userData, isLoading: isUserDataLoading, error: userDataError } = useQuery({
     queryKey: ['/api/users', user.uid],
     queryFn: async () => {
+      console.log('Fetching user data for:', user.uid);
       const response = await fetch(`/api/users/${user.uid}`);
       if (!response.ok) {
-        throw new Error('Failed to fetch user data');
+        console.error('Failed to fetch user data:', response.status, response.statusText);
+        throw new Error(`Failed to fetch user data: ${response.status}`);
       }
-      return response.json();
-    }
+      const data = await response.json();
+      console.log('User data fetched successfully:', data);
+      return data;
+    },
+    enabled: !!user?.uid,
+    retry: 2,
+    staleTime: 30000, // 30 seconds
   });
   
   // Query for user's industries and domain preferences
