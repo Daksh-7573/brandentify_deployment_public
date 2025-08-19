@@ -31,9 +31,9 @@ app.use((req, res, next) => {
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, HEAD');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, X-Frame-Options');
   
-  // Force remove any existing X-Frame-Options and set to ALLOWALL
+  // Completely remove X-Frame-Options header to allow iframe embedding
   res.removeHeader('X-Frame-Options');
-  res.header('X-Frame-Options', 'ALLOWALL');
+  // Do not set X-Frame-Options at all - this allows iframe embedding
   res.header('X-Content-Type-Options', 'nosniff');
   
   // Add cache-busting headers to prevent caching issues
