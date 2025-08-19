@@ -1,11 +1,43 @@
-// Enhanced Service Worker v3 for Maximum Performance (cache invalidated to fix X-Frame-Options)
-const CACHE_NAME = 'brandentifier-v3';
-const STATIC_CACHE_NAME = 'brandentifier-static-v3';
-const API_CACHE_NAME = 'brandentifier-api-v3';
-const RUNTIME_CACHE_NAME = 'brandentifier-runtime-v3';
+// Service Worker temporarily disabled to fix X-Frame-Options caching issue
+console.log('[SW] Service worker disabled to fix frame options');
 
-// Enhanced critical files for aggressive caching
-const STATIC_FILES = [
+// Force unregister all existing service workers
+self.addEventListener('install', event => {
+  console.log('[SW] Unregistering service worker...');
+  self.skipWaiting();
+});
+
+self.addEventListener('activate', event => {
+  console.log('[SW] Clearing all caches...');
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(cacheName => {
+          console.log('[SW] Deleting cache:', cacheName);
+          return caches.delete(cacheName);
+        })
+      );
+    }).then(() => {
+      console.log('[SW] All caches cleared');
+      return self.clients.claim();
+    })
+  );
+});
+
+// Disable all fetch interception
+// self.addEventListener('fetch', event => {
+//   // Service worker disabled - let all requests go through normally
+// });
+
+return; // Exit early to disable all caching logic below
+
+const CACHE_NAME = 'disabled';
+const STATIC_CACHE_NAME = 'disabled';
+const API_CACHE_NAME = 'disabled';
+const RUNTIME_CACHE_NAME = 'disabled';
+
+// DISABLED - Enhanced critical files for aggressive caching
+const STATIC_FILES_DISABLED = [
   '/',
   '/index.html',
   '/src/main.tsx',
