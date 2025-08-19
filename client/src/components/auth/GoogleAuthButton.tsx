@@ -66,53 +66,19 @@ export function GoogleAuthButton() {
 
       console.log('Initiating Google redirect...');
       
-      // Use popup flow to avoid X-Frame-Options issues
-      const { signInWithPopup } = await import('firebase/auth');
+      // Use redirect flow to avoid popup and X-Frame-Options issues
+      console.log('Initiating Google redirect authentication...');
       
-      console.log('Opening Google popup...');
-      const result = await signInWithPopup(auth, provider);
+      // Store current path to return to after authentication
+      sessionStorage.setItem('pre_auth_path', window.location.pathname);
+      sessionStorage.setItem('auth_in_progress', 'true');
+      sessionStorage.setItem('auth_provider', 'google');
       
-      console.log('✅ Google authentication successful:', result.user.email);
+      // Use signInWithRedirect to avoid popup issues
+      await signInWithRedirect(auth, provider);
       
-      // Create Brandentifier account
-      const userData = {
-        firebaseUid: result.user.uid,
-        email: result.user.email || '',
-        name: result.user.displayName || 'Google User',
-        photoURL: result.user.photoURL || '',
-        googleId: result.user.uid,
-        authProvider: 'google',
-        emailVerified: result.user.emailVerified
-      };
-
-      console.log('Sending user data to backend:', userData.email);
-
-      // Call backend to create/get user (backend handles existing accounts)
-      const response = await fetch('/api/auth/google-signin', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(userData)
-      });
-
-      const data = await response.json();
-      
-      if (data.success) {
-        // Import the auth hook and sign in directly
-        const { useAuth } = await import('@/hooks/use-auth');
-        
-        // Since we can't use hooks here, let's trigger a custom event
-        const authEvent = new CustomEvent('googleAuthSuccess', { 
-          detail: { user: data.user }
-        });
-        window.dispatchEvent(authEvent);
-        
-        // Navigate to intended page
-        const returnUrl = sessionStorage.getItem('auth_return_url') || '/industry-pulse';
-        sessionStorage.removeItem('auth_return_url');
-        window.location.href = returnUrl;
-      } else {
-        throw new Error(data.message || 'Authentication failed');
-      }
+      // This code won't execute as the redirect takes over immediately
+      // The redirect result will be handled by the AuthRedirectHandler component
       
     } catch (error: any) {
       console.error('Google authentication error:', error);

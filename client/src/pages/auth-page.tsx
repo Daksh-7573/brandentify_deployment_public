@@ -24,6 +24,7 @@ import { DemoLogin } from "@/components/auth/demo-login";
 import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
 import { AuthDebugOverlay } from "@/components/auth/auth-debug-overlay";
 import { RedirectAuthHandler } from "@/components/auth/redirect-auth-handler";
+import { AuthRedirectHandler } from "@/components/auth/AuthRedirectHandler";
 import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
 
 export default function AuthPage() {
