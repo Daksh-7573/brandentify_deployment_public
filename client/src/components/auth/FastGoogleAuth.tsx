@@ -24,6 +24,8 @@ export function FastGoogleAuth() {
       if (!auth) {
         throw new Error('Firebase auth not initialized');
       }
+      
+      console.log('🔧 Auth instance ready:', !!auth);
 
       // Create a fresh Google provider for this session
       const provider = new GoogleAuthProvider();
@@ -42,6 +44,12 @@ export function FastGoogleAuth() {
       const result = await signInWithPopup(auth, provider);
       
       console.log('✅ Google auth successful:', result.user.email);
+      console.log('✅ User object received:', {
+        uid: result.user.uid,
+        email: result.user.email,
+        displayName: result.user.displayName,
+        emailVerified: result.user.emailVerified
+      });
       
       // Prepare user data with proper validation
       const userData = {
@@ -93,18 +101,25 @@ export function FastGoogleAuth() {
         
         if (data.success && data.user) {
           console.log('✅ Authentication successful!');
+          console.log('✅ User data from backend:', data.user);
           
           // Store user data and trigger auth context update
           sessionStorage.setItem('brandentifier_user', JSON.stringify(data.user));
+          console.log('✅ User data stored in session');
           
           // Trigger custom event for auth context
           window.dispatchEvent(new CustomEvent('googleAuthSuccess', {
             detail: { user: data.user }
           }));
+          console.log('✅ Auth context event dispatched');
           
-          // Redirect to dashboard
-          window.location.href = '/dashboard';
+          // Small delay to ensure everything is processed
+          setTimeout(() => {
+            console.log('✅ Redirecting to dashboard...');
+            window.location.href = '/dashboard';
+          }, 100);
         } else {
+          console.error('❌ Backend response invalid:', data);
           throw new Error(data.message || 'Backend returned no user data');
         }
       } catch (fetchError: any) {
@@ -117,10 +132,15 @@ export function FastGoogleAuth() {
       
     } catch (error: any) {
       console.error('❌ Google authentication error:', error);
+      console.error('❌ Error details:', {
+        code: error.code,
+        message: error.message,
+        stack: error.stack
+      });
       
       // Don't show error for user-cancelled actions
       if (error.code === 'auth/popup-closed-by-user' || error.code === 'auth/cancelled-popup-request') {
-        console.log('User cancelled sign-in');
+        console.log('ℹ️ User cancelled sign-in');
         setIsLoading(false);
         return; // Don't show error toast for user cancellation
       }
