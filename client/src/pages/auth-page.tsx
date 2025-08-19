@@ -24,10 +24,6 @@ import { DemoLogin } from "@/components/auth/demo-login";
 import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
 import { AuthDebugOverlay } from "@/components/auth/auth-debug-overlay";
 import { RedirectAuthHandler } from "@/components/auth/redirect-auth-handler";
-import { AuthRedirectHandler } from "@/components/auth/AuthRedirectHandler";
-import { DomainAuthAlert } from "@/components/auth/DomainAuthAlert";
-import { SimpleGoogleAuth } from "@/components/auth/SimpleGoogleAuth";
-import { BypassAuth } from "@/components/auth/BypassAuth";
 import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
 
 export default function AuthPage() {
@@ -79,7 +75,6 @@ export default function AuthPage() {
       <div className="relative z-10">
         <RedirectAuthHandler />
         <AuthCallbackHandler />
-        <AuthRedirectHandler />
         <AuthDebugOverlay />
         <NeoGlassLayout className="mt-0 pt-2 px-2 md:px-4 min-h-screen flex flex-col justify-start py-2 md:py-4">
           {/* Debug Panel */}
@@ -112,21 +107,6 @@ export default function AuthPage() {
                 {/* Email Authentication */}
                 <TabsContent value="email">
                   <div className="space-y-4 md:space-y-6">
-                    {/* IMMEDIATE DEMO ACCESS - BYPASS GOOGLE OAUTH ISSUES */}
-                    <div className="mb-8 p-6 bg-gradient-to-r from-green-500/20 to-blue-500/20 border-2 border-green-400/50 rounded-xl shadow-lg">
-                      <div className="text-center">
-                        <div className="text-3xl mb-4">🚀⚡🚀</div>
-                        <h3 className="font-bold text-green-300 mb-3 text-xl">Google OAuth Issues? Skip Them!</h3>
-                        <p className="text-green-200 mb-4">
-                          Instant demo access with full app functionality - no Firebase setup required
-                        </p>
-                        <BypassAuth />
-                      </div>
-                    </div>
-
-                    {/* Domain Authorization Alert */}
-                    <DomainAuthAlert />
-                    
                     {/* Clean Google Authentication Only */}
                     <div className="space-y-6">
                       <div className="text-center space-y-3">
@@ -134,18 +114,7 @@ export default function AuthPage() {
                         <p className="text-gray-300">Your AI-powered career development platform</p>
                       </div>
                       
-                      <div className="space-y-6">
-                        <GoogleAuthButton />
-                        
-                        <div className="text-center text-sm text-gray-400">
-                          Having issues? Try the direct method below:
-                        </div>
-                        <SimpleGoogleAuth />
-                        
-                        <div className="text-center text-xs text-gray-500">
-                          Google OAuth continues to have 403 errors despite domain configuration
-                        </div>
-                      </div>
+                      <GoogleAuthButton />
                       
                       <div className="relative">
                         <div className="absolute inset-0 flex items-center">

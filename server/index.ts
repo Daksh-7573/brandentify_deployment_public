@@ -28,15 +28,6 @@ app.use((req, res, next) => {
   res.header('X-Content-Type-Options', 'nosniff');
   res.header('Cache-Control', 'no-cache, no-store, must-revalidate');
   
-  // Ensure proper MIME types for static assets
-  if (req.url.endsWith('.css')) {
-    res.header('Content-Type', 'text/css');
-  } else if (req.url.endsWith('.js') || req.url.endsWith('.jsx')) {
-    res.header('Content-Type', 'application/javascript');
-  } else if (req.url.endsWith('.ts') || req.url.endsWith('.tsx')) {
-    res.header('Content-Type', 'text/typescript');
-  }
-  
   // Handle preflight requests
   if (req.method === 'OPTIONS') {
     res.sendStatus(200);

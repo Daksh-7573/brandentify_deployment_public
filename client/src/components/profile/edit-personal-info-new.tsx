@@ -520,8 +520,8 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
               console.log("[BUTTON] API response:", result);
 
               // Invalidate queries to refresh data - match profile page query key
-              if (user?.id) {
-                await queryClient.invalidateQueries({ queryKey: ['/api/users', user.id] });
+              if (user?.uid) {
+                await queryClient.invalidateQueries({ queryKey: ['/api/users', user.uid] });
               }
               await queryClient.invalidateQueries({ queryKey: [`/api/users/${userData.id}`] });
               await queryClient.invalidateQueries({ queryKey: ['/api/users', userData.username] });
