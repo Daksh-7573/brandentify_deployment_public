@@ -372,39 +372,7 @@ console.log("Starting Musk Pulse automation system...");
 muskPulseScheduler.start();
 console.log("Musk Pulse automation system started - scheduling pulses for 9 AM, 2 PM, and 7 PM daily");
 
-// EMERGENCY FINAL IFRAME FIX - This runs AFTER everything else
-app.use((req: Request, res: Response, next: NextFunction) => {
-  // Intercept the response just before it's sent
-  const originalSend = res.send;
-  const originalJson = res.json;
-  const originalEnd = res.end;
-  
-  res.send = function(body) {
-    console.log('[FINAL IFRAME FIX] Removing X-Frame-Options from response');
-    this.removeHeader('X-Frame-Options');
-    this.removeHeader('x-frame-options'); 
-    this.removeHeader('X-FRAME-OPTIONS');
-    return originalSend.call(this, body);
-  };
-  
-  res.json = function(obj) {
-    console.log('[FINAL IFRAME FIX] Removing X-Frame-Options from JSON response');
-    this.removeHeader('X-Frame-Options');
-    this.removeHeader('x-frame-options');
-    this.removeHeader('X-FRAME-OPTIONS');
-    return originalJson.call(this, obj);
-  };
-  
-  res.end = function(chunk, encoding) {
-    console.log('[FINAL IFRAME FIX] Removing X-Frame-Options from final response');
-    this.removeHeader('X-Frame-Options');
-    this.removeHeader('x-frame-options');
-    this.removeHeader('X-FRAME-OPTIONS');
-    return originalEnd.call(this, chunk, encoding);
-  };
-  
-  next();
-});
+// Note: Removed problematic iframe fix middleware that was causing ERR_HTTP_HEADERS_SENT errors
 
 (async () => {
   const server = await registerRoutes(app);
