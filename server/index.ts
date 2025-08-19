@@ -23,8 +23,8 @@ app.use((req, res, next) => {
   // Allow access from Replit domains and external sources
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, HEAD');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, X-Frame-Options');
-  res.header('X-Frame-Options', 'ALLOWALL');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  // X-Frame-Options completely removed to eliminate frame display errors
   res.header('X-Content-Type-Options', 'nosniff');
   res.header('Cache-Control', 'no-cache, no-store, must-revalidate');
   
