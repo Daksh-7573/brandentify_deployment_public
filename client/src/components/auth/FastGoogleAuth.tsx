@@ -43,49 +43,76 @@ export function FastGoogleAuth() {
       
       console.log('✅ Google auth successful:', result.user.email);
       
-      // Optimized user data preparation
+      // Prepare user data with proper validation
       const userData = {
-        firebaseUid: result.user.uid,
+        firebaseUid: result.user.uid || '',
         email: result.user.email || '',
         name: result.user.displayName || 'Google User',
         photoURL: result.user.photoURL || '',
-        googleId: result.user.uid,
-        authProvider: 'google',
-        emailVerified: result.user.emailVerified
+        googleId: result.user.uid || '',
+        authProvider: 'google' as const,
+        emailVerified: result.user.emailVerified || false
       };
-
-      console.log('📡 Sending user data to backend...');
       
-      // Send to backend authentication endpoint  
-      const response = await fetch('/api/auth/google-signin', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(userData)
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Backend error: ${response.status} - ${errorText}`);
+      // Validate required fields before sending
+      if (!userData.firebaseUid || !userData.email || !userData.googleId) {
+        throw new Error('Missing required Google account information. Please try again.');
       }
 
-      const data = await response.json();
+      console.log('📡 Sending user data to backend...');
+      console.log('User data being sent:', {
+        email: userData.email,
+        name: userData.name,
+        firebaseUid: userData.firebaseUid
+      });
       
-      if (data.success || data.user) {
-        console.log('✅ Authentication successful!');
+      // Send to backend authentication endpoint with timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+      
+      try {
+        const response = await fetch('/api/auth/google-signin', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(userData),
+          signal: controller.signal
+        });
         
-        // Store user data and trigger auth context update
-        const user = data.user || data;
-        sessionStorage.setItem('brandentifier_user', JSON.stringify(user));
+        clearTimeout(timeoutId);
         
-        // Trigger custom event for auth context
-        window.dispatchEvent(new CustomEvent('googleAuthSuccess', {
-          detail: { user }
-        }));
+        console.log('Backend response status:', response.status);
         
-        // Redirect to dashboard
-        window.location.href = '/dashboard';
-      } else {
-        throw new Error(data.message || 'Authentication failed');
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('Backend error response:', errorText);
+          throw new Error(`Backend error: ${response.status} - ${errorText}`);
+        }
+
+        const data = await response.json();
+        console.log('Backend response data:', data);
+        
+        if (data.success && data.user) {
+          console.log('✅ Authentication successful!');
+          
+          // Store user data and trigger auth context update
+          sessionStorage.setItem('brandentifier_user', JSON.stringify(data.user));
+          
+          // Trigger custom event for auth context
+          window.dispatchEvent(new CustomEvent('googleAuthSuccess', {
+            detail: { user: data.user }
+          }));
+          
+          // Redirect to dashboard
+          window.location.href = '/dashboard';
+        } else {
+          throw new Error(data.message || 'Backend returned no user data');
+        }
+      } catch (fetchError: any) {
+        clearTimeout(timeoutId);
+        if (fetchError.name === 'AbortError') {
+          throw new Error('Request timed out. Please try again.');
+        }
+        throw fetchError;
       }
       
     } catch (error: any) {
