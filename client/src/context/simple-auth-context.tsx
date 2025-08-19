@@ -7,6 +7,7 @@ type AuthUser = {
   email: string;
   name: string;
   photoURL?: string;
+  uid?: string; // Add Firebase UID for profile queries
 };
 
 // Simple auth context type

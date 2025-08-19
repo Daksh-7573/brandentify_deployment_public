@@ -11,7 +11,7 @@ export const useAuth = () => {
   // Add helper properties for profile page
   return {
     ...context,
-    uid: context.user?.username || context.user?.email || '',
+    uid: context.user?.username || context.user?.uid || context.user?.email || '',
     isReady: !context.isLoading && !!context.user
   };
 };

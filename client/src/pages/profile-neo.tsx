@@ -91,6 +91,13 @@ export default function ProfileNeo() {
   if (!user) {
     return null;
   }
+
+  // Debug logging for user data
+  console.log('Profile page render - user:', user);
+  console.log('Profile page render - user.uid:', user.uid);
+  console.log('Profile page render - isUserDataLoading:', isUserDataLoading);
+  console.log('Profile page render - userData:', userData);
+  console.log('Profile page render - userDataError:', userDataError);
   
   // Get user profile data with optimized error handling
   const { data: userData, isLoading: isUserDataLoading, error: userDataError } = useQuery({
@@ -109,6 +116,7 @@ export default function ProfileNeo() {
     enabled: !!user?.uid,
     retry: 2,
     staleTime: 30000, // 30 seconds
+    refetchOnWindowFocus: false, // Prevent unnecessary refetches
   });
   
   // Query for user's industries and domain preferences
