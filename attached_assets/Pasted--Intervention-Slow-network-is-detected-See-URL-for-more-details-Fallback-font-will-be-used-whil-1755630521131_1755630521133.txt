@@ -1,0 +1,3323 @@
+[Intervention] Slow network is detected. See <URL> for more details. Fallback font will be used while loading: <URL>
+[Intervention] Slow network is detected. See <URL> for more details. Fallback font will be used while loading: <URL>
+[Intervention] Slow network is detected. See <URL> for more details. Fallback font will be used while loading: <URL>
+[Intervention] Slow network is detected. See <URL> for more details. Fallback font will be used while loading: <URL>
+[Intervention] Slow network is detected. See <URL> for more details. Fallback font will be used while loading: <URL>
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+DhvaniAssistant:1 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+DhvaniAssistant:1 The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+DhvaniAssistant:1 The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+ 
+      /////////////////////
+   ///////////////////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////        Curious and driven?
+  ///////////////@@@@@@@///////        Work with us!
+  ///////////////@@@@@@@///////
+  ///////////////@@@@@@@///////        https://join.replit.com/hack.with.us
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@#//////////////
+   ///////////////////////////
+      /////////////////////
+      
+ [LaunchDarkly] LaunchDarkly client initialized
+sp.replit.com/v1/i:1  Failed to load resource: the server responded with a status of 400 ()
+sp.replit.com/v1/i:1  Failed to load resource: the server responded with a status of 400 ()
+DhvaniAssistant:1 Banner not shown: beforeinstallpromptevent.preventDefault() called. The page must call beforeinstallpromptevent.prompt() to show the banner.
+sp.replit.com/v1/i:1  Failed to load resource: the server responded with a status of 400 ()
+sp.replit.com/v1/i:1  Failed to load resource: the server responded with a status of 400 ()
+sp.replit.com/v1/i:1  Failed to load resource: the server responded with a status of 400 ()
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+ Unrecognized feature: 'ambient-light-sensor'.
+_ @ framework-a683264d78a29e65.js:1
+ Unrecognized feature: 'battery'.
+_ @ framework-a683264d78a29e65.js:1
+ Unrecognized feature: 'execution-while-not-rendered'.
+_ @ framework-a683264d78a29e65.js:1
+ Unrecognized feature: 'execution-while-out-of-viewport'.
+_ @ framework-a683264d78a29e65.js:1
+ Unrecognized feature: 'layout-animations'.
+_ @ framework-a683264d78a29e65.js:1
+ Unrecognized feature: 'legacy-image-formats'.
+_ @ framework-a683264d78a29e65.js:1
+ Unrecognized feature: 'navigation-override'.
+_ @ framework-a683264d78a29e65.js:1
+ Unrecognized feature: 'oversized-images'.
+_ @ framework-a683264d78a29e65.js:1
+ Unrecognized feature: 'publickey-credentials'.
+_ @ framework-a683264d78a29e65.js:1
+ Unrecognized feature: 'speaker-selection'.
+_ @ framework-a683264d78a29e65.js:1
+ Unrecognized feature: 'unoptimized-images'.
+_ @ framework-a683264d78a29e65.js:1
+ Unrecognized feature: 'unsized-media'.
+_ @ framework-a683264d78a29e65.js:1
+ Unrecognized feature: 'pointer-lock'.
+_ @ framework-a683264d78a29e65.js:1
+ Allow attribute will take precedence over 'allowfullscreen'.
+_ @ framework-a683264d78a29e65.js:1
+ Allow attribute will take precedence over 'allowpaymentrequest'.
+_ @ framework-a683264d78a29e65.js:1
+ stallwart: failed ping 1
+ stallwart: failed ping 1
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar2q1%3A:32 Unrecognized feature: 'ambient-light-sensor'.
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar2q1%3A:32 Unrecognized feature: 'battery'.
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar2q1%3A:32 Unrecognized feature: 'execution-while-not-rendered'.
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar2q1%3A:32 Unrecognized feature: 'execution-while-out-of-viewport'.
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar2q1%3A:32 Unrecognized feature: 'layout-animations'.
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar2q1%3A:32 Unrecognized feature: 'legacy-image-formats'.
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar2q1%3A:32 Unrecognized feature: 'navigation-override'.
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar2q1%3A:32 Unrecognized feature: 'oversized-images'.
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar2q1%3A:32 Unrecognized feature: 'publickey-credentials'.
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar2q1%3A:32 Unrecognized feature: 'speaker-selection'.
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar2q1%3A:32 Unrecognized feature: 'unoptimized-images'.
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar2q1%3A:32 Unrecognized feature: 'unsized-media'.
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar2q1%3A:32 Allow attribute will take precedence over 'allowfullscreen'.
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2F&id=%3Ar2q1%3A:32 Allow attribute will take precedence over 'allowpaymentrequest'.
+chrome-error://chromewebdata/:1 Refused to display 'https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/' in a frame because it set 'X-Frame-Options' to 'sameorigin'.
+ [SW] Serving from cache: https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap
+ [SW] Serving from cache: https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js
+ [SW] Serving from cache: https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/static/devtools/injected.js
+ [SW] Serving from cache: https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/index.css
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/auth:1 Refused to apply style from 'https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/index.css' because its MIME type ('text/javascript') is not a supported stylesheet MIME type, and strict MIME checking is enabled.
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/auth:107 A preload for 'https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/main.tsx' is found, but is not used because the request credentials mode does not match. Consider taking a look at crossorigin attribute.
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/auth:108 A preload for 'https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/App.tsx' is found, but is not used because the request credentials mode does not match. Consider taking a look at crossorigin attribute.
+ [SW] Serving from cache: https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/index.css
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/auth:113 Refused to apply style from 'https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/index.css' because its MIME type ('text/javascript') is not a supported stylesheet MIME type, and strict MIME checking is enabled.
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2 [SW] Service Worker v2 registered: https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/
+eruda.js:2 [PERF] Service Worker registered in 15.00 ms
+sw.js:64 [SW] Fetching from network: https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/index.css?v=MQk6K4mkQVfKw_EKEkqia
+eruda.js:2 WebSocket connection to 'wss://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/?token=8z91qK6jyXAa' failed: 
+t @ VM12 eruda.js:2
+eruda.js:2 Uncaught (in promise) SyntaxError: Failed to construct 'WebSocket': The URL 'wss://localhost:undefined/?token=8z91qK6jyXAa' is invalid.
+    at new t (eruda.js:2:218737)
+    at setupWebSocket (client:536:19)
+    at fallback (client:509:16)
+    at WebSocket.<anonymous> (client:555:7)
+sw.js:60 [SW] Serving from cache: https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/styles/neo-glass-spotify.css
+eruda.js:2 [Skeleton] Backup removal after 3s
+eruda.js:2 Firebase Environment Check: Object
+eruda.js:2 Firebase initialization: Object
+eruda.js:2 Using simplified Google auth configuration for maximum compatibility
+eruda.js:2 Firebase initialized successfully
+eruda.js:2 Firebase config used: Object
+eruda.js:2 Firebase Environment Check: Object
+eruda.js:2 Firebase initialization: Object
+eruda.js:2 Using simplified Google auth configuration for maximum compatibility
+eruda.js:2 Firebase initialized successfully
+eruda.js:2 Firebase config used: Object
+eruda.js:2 [PERF] React app initialization started
+eruda.js:2 [PERF] React rendering started
+eruda.js:2 [Skeleton] DOM loaded, preparing smooth transition
+eruda.js:2 [PERF] React app rendered in 40.90 ms
+eruda.js:2 [PERF] Total initialization time: 41.00 ms
+eruda.js:2 Found stored user: nishant.brodos@gmail.com
+eruda.js:2 🚀 [PERF] COMPLETE PERFORMANCE OPTIMIZATION REPORT:
+eruda.js:2 📊 Total page load time: 5787.00ms
+eruda.js:2 🔥 Firebase init time: 5786.90ms
+eruda.js:2 ✅ [Strategy 1] Preconnect/Preload: 9 preconnect + 4 preload + 2 modulepreload links active
+eruda.js:2 ⚡ Expected improvement: 100-300ms faster cold starts
+eruda.js:2 ✅ [Strategy 2] Firebase Auth Caching: Active - cached state available
+eruda.js:2 ⚡ Expected improvement: 150-250ms faster auth loads
+eruda.js:2 ✅ [Strategy 4] Service Worker v2: Active with enhanced caching
+eruda.js:2 ⚡ Return visits: Near-instant loading (0-50ms)
+eruda.js:2 🎯 PERFORMANCE STATUS: OPTIMIZING - Further improvements in progress
+eruda.js:2 📈 Performance Optimization Complete - All 4 strategies active!
+eruda.js:2 [Skeleton] Starting fade-out transition
+eruda.js:2 [PERF] Skeleton loader removed in 153.80 ms
+eruda.js:2 [Skeleton] Skeleton loading complete - app ready
+eruda.js:2 ⚡ [PERF] Skeleton-to-app transition: 5946.70ms
+eruda.js:2 ✅ [Strategy 3] Progressive Rendering: Core(0) + Secondary(0) components loaded
+eruda.js:2 ⚡ Expected improvement: 50-100ms perceived performance boost
+eruda.js:2 🔄 AuthCallbackHandler: Checking for OAuth callback...
+eruda.js:2 🔄 Current URL: https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/auth
+eruda.js:2 🔄 URL search params: 
+eruda.js:2 🔄 Has OAuth params: false
+eruda.js:2 🔄 Auth initiated flag: null
+eruda.js:2 No OAuth parameters and no auth initiated - skipping
+eruda.js:2 🔧 Debug overlay update: Object
+eruda.js:2 [AuthDebug] Checking authentication state...
+eruda.js:2 [AuthDebug] Firebase Project: brandentifier-app
+eruda.js:2 [AuthDebug] Current Domain: 25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev
+eruda.js:2 [AuthDebug] Full URL: https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/auth
+eruda.js:2 [AuthDebug] Found stored Brandentifier user
+eruda.js:2 Checking for redirect result...
+eruda.js:2 Auth page: User already authenticated, redirecting to: /industry-pulse
+eruda.js:2 [Progressive Loading] Starting tiered component loading
+eruda.js:2 [Progressive Loading] ⚡ Core components ready
+eruda.js:2  ⚠️ FIREBASE DOMAIN SETUP INFORMATION ⚠️ 
+eruda.js:2  Add these domains to Firebase Auth > Settings > Authorized domains: 
+eruda.js:2  1. 25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev 
+eruda.js:2  2. 25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev.replit.app 
+eruda.js:2  3. *.replit.dev 
+eruda.js:2  4. *.replit.app 
+eruda.js:2 [Progressive Loading] 🚀 Secondary components loaded
+eruda.js:2 No redirect result found
+eruda.js:2 [Progressive Loading] 🔧 All components loaded in 209.70ms
+eruda.js:2 Cached response for /api/users/2/projects
+eruda.js:2 Cached response for /api/users/2/educations
+eruda.js:2 Cached response for /api/users/2
+eruda.js:2 Cached response for /api/users/2/skills
+eruda.js:2 Cached response for /api/users/2/experiences
+eruda.js:2 🔧 initializeRedirectHandler: hasRedirectAttempt = false
+eruda.js:2 ❌ No redirect attempt flag found - not initializing handler
+sw.js:60 [SW] Serving from cache: https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap
+eruda.js:2 🔧 Debug overlay update: {redirectAttempt: null, redirectTime: null, authSuccess: 'true', userAuthenticated: null, hasCurrentUser: false}
+eruda.js:2 🔧 Debug overlay update: {redirectAttempt: null, redirectTime: null, authSuccess: 'true', userAuthenticated: null, hasCurrentUser: false}
+eruda.js:2 Fetching data from: /api/nowboard-items
+eruda.js:2 Fetching data from: /api/pulses
+eruda.js:2 ProtectedRoute: User authenticated: nishant.brodos@gmail.com
+The resource <URL> was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.
+The resource <URL> was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.
+The resource <URL> was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.
+The resource <URL> was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.
+The resource <URL> was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.
+The resource <URL> was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.
+The resource <URL> was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.
+The resource <URL> was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.
+eruda.js:2 NowboardMenu rendering for item: 7 currentUser: 4 itemUser: 4
+eruda.js:2 NowboardMenu rendering for item: 3 currentUser: 4 itemUser: 4
+eruda.js:2 NowboardMenu rendering for item: 5 currentUser: 4 itemUser: 4
+eruda.js:2 NowboardMenu rendering for item: 1 currentUser: 4 itemUser: 4
+eruda.js:2 NowboardMenu rendering for item: 4 currentUser: 4 itemUser: 4
+eruda.js:2 NowboardMenu rendering for item: 2 currentUser: 4 itemUser: 4
+eruda.js:2 NowboardMenu rendering for item: 6 currentUser: 4 itemUser: 4
+eruda.js:2 NowboardMenu rendering for item: 7 currentUser: 4 itemUser: 4
+eruda.js:2 NowboardMenu rendering for item: 3 currentUser: 4 itemUser: 4
+eruda.js:2 NowboardMenu rendering for item: 5 currentUser: 4 itemUser: 4
+eruda.js:2 NowboardMenu rendering for item: 1 currentUser: 4 itemUser: 4
+eruda.js:2 NowboardMenu rendering for item: 4 currentUser: 4 itemUser: 4
+eruda.js:2 NowboardMenu rendering for item: 2 currentUser: 4 itemUser: 4
+eruda.js:2 NowboardMenu rendering for item: 6 currentUser: 4 itemUser: 4
+eruda.js:2 Fetching data from: /api/users/1/reaction-quota
+eruda.js:2 Fetching data from: /api/pulses/62/reactions
+eruda.js:2 Fetching data from: /api/pulses/61/reactions
+eruda.js:2 Fetching data from: /api/pulses/60/reactions
+eruda.js:2 Fetching data from: /api/pulses/59/reactions
+eruda.js:2 Fetching data from: /api/pulses/58/reactions
+eruda.js:2 Fetching data from: /api/pulses/57/reactions
+eruda.js:2 Fetching data from: /api/pulses/56/reactions
+eruda.js:2 Fetching data from: /api/pulses/55/reactions
+eruda.js:2 Fetching data from: /api/pulses/54/reactions
+eruda.js:2 Fetching data from: /api/pulses/53/reactions
+eruda.js:2 Fetching data from: /api/pulses/52/reactions
+eruda.js:2 Fetching data from: /api/pulses/51/reactions
+eruda.js:2 Fetching data from: /api/pulses/50/reactions
+eruda.js:2 Fetching data from: /api/pulses/49/reactions
+eruda.js:2 Fetching data from: /api/pulses/48/reactions
+eruda.js:2 Fetching data from: /api/pulses/47/reactions
+eruda.js:2 Fetching data from: /api/pulses/46/reactions
+eruda.js:2 Fetching data from: /api/pulses/45/reactions
+eruda.js:2 Fetching data from: /api/pulses/44/reactions
+eruda.js:2 Fetching data from: /api/pulses/43/reactions
+eruda.js:2 Fetching data from: /api/pulses/42/reactions
+eruda.js:2 Fetching data from: /api/poll-votes/user/1/pulse/41
+eruda.js:2 Fetching data from: /api/pulses/41/poll-votes
+eruda.js:2 Fetching data from: /api/pulses/41/reactions
+eruda.js:2 Fetching data from: /api/poll-votes/user/1/pulse/40
+eruda.js:2 Fetching data from: /api/pulses/40/poll-votes
+eruda.js:2 Fetching data from: /api/pulses/40/reactions
+eruda.js:2 Fetching data from: /api/pulses/39/reactions
+eruda.js:2 Fetching data from: /api/pulses/38/reactions
+eruda.js:2 Fetching data from: /api/pulses/37/reactions
+eruda.js:2 Fetching data from: /api/pulses/36/reactions
+eruda.js:2 Fetching data from: /api/pulses/35/reactions
+eruda.js:2 Fetching data from: /api/pulses/34/reactions
+eruda.js:2 Fetching data from: /api/pulses/33/reactions
+eruda.js:2 Fetching data from: /api/pulses/32/reactions
+eruda.js:2 Fetching data from: /api/pulses/31/reactions
+eruda.js:2 Fetching data from: /api/pulses/30/reactions
+eruda.js:2 Fetching data from: /api/pulses/29/reactions
+eruda.js:2 Fetching data from: /api/pulses/28/reactions
+eruda.js:2 Fetching data from: /api/pulses/27/reactions
+eruda.js:2 Fetching data from: /api/pulses/26/reactions
+eruda.js:2 Fetching data from: /api/pulses/25/reactions
+eruda.js:2 Fetching data from: /api/pulses/24/reactions
+eruda.js:2 Fetching data from: /api/pulses/23/reactions
+eruda.js:2 Fetching data from: /api/pulses/22/reactions
+eruda.js:2 Fetching data from: /api/pulses/21/reactions
+eruda.js:2 Fetching data from: /api/pulses/20/reactions
+eruda.js:2 Fetching data from: /api/pulses/19/reactions
+eruda.js:2 Fetching data from: /api/pulses/18/reactions
+eruda.js:2 Fetching data from: /api/pulses/17/reactions
+eruda.js:2 Fetching data from: /api/pulses/16/reactions
+eruda.js:2 Fetching data from: /api/pulses/15/reactions
+eruda.js:2 Fetching data from: /api/pulses/14/reactions
+eruda.js:2 Fetching data from: /api/pulses/13/reactions
+eruda.js:2 Fetching data from: /api/pulses/12/reactions
+eruda.js:2 Fetching data from: /api/pulses/11/reactions
+eruda.js:2 Fetching data from: /api/pulses/10/reactions
+eruda.js:2 Fetching data from: /api/pulses/9/reactions
+eruda.js:2 Fetching data from: /api/pulses/7/reactions
+eruda.js:2 Pulse received for carousel: {id: 6, userId: 4, type: 'media-pulse', category: null, title: ' file extension not allowed. I try to upload JPG image. But it still shows error.', …}
+eruda.js:2 Media URLs: (5) ['/uploads/media/media_4_1748642270806.JPG', '/uploads/media/media_4_1748642270808.JPG', '/uploads/media/media_4_1748642270809.jpg', '/uploads/media/media_4_1748642270811.jpg', '/uploads/media/media_4_1748642270812.jpg']
+eruda.js:2 Media localStorage keys: []
+eruda.js:2 Using mediaUrls for carousel: (5) ['/uploads/media/media_4_1748642270806.JPG', '/uploads/media/media_4_1748642270808.JPG', '/uploads/media/media_4_1748642270809.jpg', '/uploads/media/media_4_1748642270811.jpg', '/uploads/media/media_4_1748642270812.jpg']
+eruda.js:2 Fetching data from: /api/pulses/6/reactions
+eruda.js:2 Fetching data from: /api/poll-votes/user/1/pulse/4
+eruda.js:2 Fetching data from: /api/pulses/4/poll-votes
+eruda.js:2 Fetching data from: /api/pulses/4/reactions
+eruda.js:2 Fetching data from: /api/poll-votes/user/1/pulse/3
+eruda.js:2 Fetching data from: /api/pulses/3/poll-votes
+eruda.js:2 Fetching data from: /api/pulses/3/reactions
+eruda.js:2 Fetching data from: /api/pulses/2/reactions
+eruda.js:2 Fetching data from: /api/pulses/1/reactions
+eruda.js:2  GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/poll-votes/user/1/pulse/41?t=1755630228082 404 (Not Found)
+window.fetch @ VM12 eruda.js:2
+(anonymous) @ VM51 queryClient.ts:166
+fetchFn @ VM47 @tanstack_react-query.js:840
+run @ VM47 @tanstack_react-query.js:494
+start @ VM47 @tanstack_react-query.js:536
+fetch @ VM47 @tanstack_react-query.js:926
+executeFetch_fn @ VM47 @tanstack_react-query.js:2211
+onSubscribe @ VM47 @tanstack_react-query.js:1898
+subscribe @ VM47 @tanstack_react-query.js:24
+(anonymous) @ VM47 @tanstack_react-query.js:3022
+subscribeToStore @ VM33 chunk-RPCDYKBN.js:11984
+commitHookEffectListMount @ VM33 chunk-RPCDYKBN.js:16915
+commitPassiveMountOnFiber @ VM33 chunk-RPCDYKBN.js:18156
+commitPassiveMountEffects_complete @ VM33 chunk-RPCDYKBN.js:18129
+commitPassiveMountEffects_begin @ VM33 chunk-RPCDYKBN.js:18119
+commitPassiveMountEffects @ VM33 chunk-RPCDYKBN.js:18109
+flushPassiveEffectsImpl @ VM33 chunk-RPCDYKBN.js:19490
+flushPassiveEffects @ VM33 chunk-RPCDYKBN.js:19447
+commitRootImpl @ VM33 chunk-RPCDYKBN.js:19416
+commitRoot @ VM33 chunk-RPCDYKBN.js:19277
+performSyncWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18895
+flushSyncCallbacks @ VM33 chunk-RPCDYKBN.js:9119
+(anonymous) @ VM33 chunk-RPCDYKBN.js:18627
+setTimeout
+scheduleFn @ VM47 @tanstack_react-query.js:555
+flush @ VM47 @tanstack_react-query.js:569
+batch @ VM47 @tanstack_react-query.js:587
+dispatch_fn @ VM47 @tanstack_react-query.js:996
+setData @ VM47 @tanstack_react-query.js:696
+onSuccess @ VM47 @tanstack_react-query.js:897
+resolve @ VM47 @tanstack_react-query.js:456
+Promise.then
+run @ VM47 @tanstack_react-query.js:498
+start @ VM47 @tanstack_react-query.js:536
+fetch @ VM47 @tanstack_react-query.js:926
+executeFetch_fn @ VM47 @tanstack_react-query.js:2211
+onSubscribe @ VM47 @tanstack_react-query.js:1898
+subscribe @ VM47 @tanstack_react-query.js:24
+(anonymous) @ VM47 @tanstack_react-query.js:3022
+subscribeToStore @ VM33 chunk-RPCDYKBN.js:11984
+commitHookEffectListMount @ VM33 chunk-RPCDYKBN.js:16915
+commitPassiveMountOnFiber @ VM33 chunk-RPCDYKBN.js:18156
+commitPassiveMountEffects_complete @ VM33 chunk-RPCDYKBN.js:18129
+commitPassiveMountEffects_begin @ VM33 chunk-RPCDYKBN.js:18119
+commitPassiveMountEffects @ VM33 chunk-RPCDYKBN.js:18109
+flushPassiveEffectsImpl @ VM33 chunk-RPCDYKBN.js:19490
+flushPassiveEffects @ VM33 chunk-RPCDYKBN.js:19447
+performSyncWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18868
+flushSyncCallbacks @ VM33 chunk-RPCDYKBN.js:9119
+commitRootImpl @ VM33 chunk-RPCDYKBN.js:19432
+commitRoot @ VM33 chunk-RPCDYKBN.js:19277
+finishConcurrentRender @ VM33 chunk-RPCDYKBN.js:18805
+performConcurrentWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18718
+workLoop @ VM33 chunk-RPCDYKBN.js:197
+flushWork @ VM33 chunk-RPCDYKBN.js:176
+performWorkUntilDeadline @ VM33 chunk-RPCDYKBN.js:384
+eruda.js:2 API Error 404 for /api/poll-votes/user/1/pulse/41
+Mt.forEach.n.<computed> @ VM12 eruda.js:2
+(anonymous) @ VM51 queryClient.ts:186
+await in (anonymous)
+fetchFn @ VM47 @tanstack_react-query.js:840
+run @ VM47 @tanstack_react-query.js:494
+start @ VM47 @tanstack_react-query.js:536
+fetch @ VM47 @tanstack_react-query.js:926
+executeFetch_fn @ VM47 @tanstack_react-query.js:2211
+onSubscribe @ VM47 @tanstack_react-query.js:1898
+subscribe @ VM47 @tanstack_react-query.js:24
+(anonymous) @ VM47 @tanstack_react-query.js:3022
+subscribeToStore @ VM33 chunk-RPCDYKBN.js:11984
+commitHookEffectListMount @ VM33 chunk-RPCDYKBN.js:16915
+commitPassiveMountOnFiber @ VM33 chunk-RPCDYKBN.js:18156
+commitPassiveMountEffects_complete @ VM33 chunk-RPCDYKBN.js:18129
+commitPassiveMountEffects_begin @ VM33 chunk-RPCDYKBN.js:18119
+commitPassiveMountEffects @ VM33 chunk-RPCDYKBN.js:18109
+flushPassiveEffectsImpl @ VM33 chunk-RPCDYKBN.js:19490
+flushPassiveEffects @ VM33 chunk-RPCDYKBN.js:19447
+commitRootImpl @ VM33 chunk-RPCDYKBN.js:19416
+commitRoot @ VM33 chunk-RPCDYKBN.js:19277
+performSyncWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18895
+flushSyncCallbacks @ VM33 chunk-RPCDYKBN.js:9119
+(anonymous) @ VM33 chunk-RPCDYKBN.js:18627
+setTimeout
+scheduleFn @ VM47 @tanstack_react-query.js:555
+flush @ VM47 @tanstack_react-query.js:569
+batch @ VM47 @tanstack_react-query.js:587
+dispatch_fn @ VM47 @tanstack_react-query.js:996
+setData @ VM47 @tanstack_react-query.js:696
+onSuccess @ VM47 @tanstack_react-query.js:897
+resolve @ VM47 @tanstack_react-query.js:456
+Promise.then
+run @ VM47 @tanstack_react-query.js:498
+start @ VM47 @tanstack_react-query.js:536
+fetch @ VM47 @tanstack_react-query.js:926
+executeFetch_fn @ VM47 @tanstack_react-query.js:2211
+onSubscribe @ VM47 @tanstack_react-query.js:1898
+subscribe @ VM47 @tanstack_react-query.js:24
+(anonymous) @ VM47 @tanstack_react-query.js:3022
+subscribeToStore @ VM33 chunk-RPCDYKBN.js:11984
+commitHookEffectListMount @ VM33 chunk-RPCDYKBN.js:16915
+commitPassiveMountOnFiber @ VM33 chunk-RPCDYKBN.js:18156
+commitPassiveMountEffects_complete @ VM33 chunk-RPCDYKBN.js:18129
+commitPassiveMountEffects_begin @ VM33 chunk-RPCDYKBN.js:18119
+commitPassiveMountEffects @ VM33 chunk-RPCDYKBN.js:18109
+flushPassiveEffectsImpl @ VM33 chunk-RPCDYKBN.js:19490
+flushPassiveEffects @ VM33 chunk-RPCDYKBN.js:19447
+performSyncWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18868
+flushSyncCallbacks @ VM33 chunk-RPCDYKBN.js:9119
+commitRootImpl @ VM33 chunk-RPCDYKBN.js:19432
+commitRoot @ VM33 chunk-RPCDYKBN.js:19277
+finishConcurrentRender @ VM33 chunk-RPCDYKBN.js:18805
+performConcurrentWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18718
+workLoop @ VM33 chunk-RPCDYKBN.js:197
+flushWork @ VM33 chunk-RPCDYKBN.js:176
+performWorkUntilDeadline @ VM33 chunk-RPCDYKBN.js:384
+eruda.js:2 Query error for /api/poll-votes/user/1/pulse/41: Error: 404: {"message":"No vote found"}
+    at queryClient.ts:192:15
+Mt.forEach.n.<computed> @ VM12 eruda.js:2
+(anonymous) @ VM51 queryClient.ts:241
+await in (anonymous)
+fetchFn @ VM47 @tanstack_react-query.js:840
+run @ VM47 @tanstack_react-query.js:494
+start @ VM47 @tanstack_react-query.js:536
+fetch @ VM47 @tanstack_react-query.js:926
+executeFetch_fn @ VM47 @tanstack_react-query.js:2211
+onSubscribe @ VM47 @tanstack_react-query.js:1898
+subscribe @ VM47 @tanstack_react-query.js:24
+(anonymous) @ VM47 @tanstack_react-query.js:3022
+subscribeToStore @ VM33 chunk-RPCDYKBN.js:11984
+commitHookEffectListMount @ VM33 chunk-RPCDYKBN.js:16915
+commitPassiveMountOnFiber @ VM33 chunk-RPCDYKBN.js:18156
+commitPassiveMountEffects_complete @ VM33 chunk-RPCDYKBN.js:18129
+commitPassiveMountEffects_begin @ VM33 chunk-RPCDYKBN.js:18119
+commitPassiveMountEffects @ VM33 chunk-RPCDYKBN.js:18109
+flushPassiveEffectsImpl @ VM33 chunk-RPCDYKBN.js:19490
+flushPassiveEffects @ VM33 chunk-RPCDYKBN.js:19447
+commitRootImpl @ VM33 chunk-RPCDYKBN.js:19416
+commitRoot @ VM33 chunk-RPCDYKBN.js:19277
+performSyncWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18895
+flushSyncCallbacks @ VM33 chunk-RPCDYKBN.js:9119
+(anonymous) @ VM33 chunk-RPCDYKBN.js:18627
+setTimeout
+scheduleFn @ VM47 @tanstack_react-query.js:555
+flush @ VM47 @tanstack_react-query.js:569
+batch @ VM47 @tanstack_react-query.js:587
+dispatch_fn @ VM47 @tanstack_react-query.js:996
+setData @ VM47 @tanstack_react-query.js:696
+onSuccess @ VM47 @tanstack_react-query.js:897
+resolve @ VM47 @tanstack_react-query.js:456
+Promise.then
+run @ VM47 @tanstack_react-query.js:498
+start @ VM47 @tanstack_react-query.js:536
+fetch @ VM47 @tanstack_react-query.js:926
+executeFetch_fn @ VM47 @tanstack_react-query.js:2211
+onSubscribe @ VM47 @tanstack_react-query.js:1898
+subscribe @ VM47 @tanstack_react-query.js:24
+(anonymous) @ VM47 @tanstack_react-query.js:3022
+subscribeToStore @ VM33 chunk-RPCDYKBN.js:11984
+commitHookEffectListMount @ VM33 chunk-RPCDYKBN.js:16915
+commitPassiveMountOnFiber @ VM33 chunk-RPCDYKBN.js:18156
+commitPassiveMountEffects_complete @ VM33 chunk-RPCDYKBN.js:18129
+commitPassiveMountEffects_begin @ VM33 chunk-RPCDYKBN.js:18119
+commitPassiveMountEffects @ VM33 chunk-RPCDYKBN.js:18109
+flushPassiveEffectsImpl @ VM33 chunk-RPCDYKBN.js:19490
+flushPassiveEffects @ VM33 chunk-RPCDYKBN.js:19447
+performSyncWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18868
+flushSyncCallbacks @ VM33 chunk-RPCDYKBN.js:9119
+commitRootImpl @ VM33 chunk-RPCDYKBN.js:19432
+commitRoot @ VM33 chunk-RPCDYKBN.js:19277
+finishConcurrentRender @ VM33 chunk-RPCDYKBN.js:18805
+performConcurrentWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18718
+workLoop @ VM33 chunk-RPCDYKBN.js:197
+flushWork @ VM33 chunk-RPCDYKBN.js:176
+performWorkUntilDeadline @ VM33 chunk-RPCDYKBN.js:384
+eruda.js:2  GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/poll-votes/user/1/pulse/40?t=1755630228089 404 (Not Found)
+window.fetch @ VM12 eruda.js:2
+(anonymous) @ VM51 queryClient.ts:166
+fetchFn @ VM47 @tanstack_react-query.js:840
+run @ VM47 @tanstack_react-query.js:494
+start @ VM47 @tanstack_react-query.js:536
+fetch @ VM47 @tanstack_react-query.js:926
+executeFetch_fn @ VM47 @tanstack_react-query.js:2211
+onSubscribe @ VM47 @tanstack_react-query.js:1898
+subscribe @ VM47 @tanstack_react-query.js:24
+(anonymous) @ VM47 @tanstack_react-query.js:3022
+subscribeToStore @ VM33 chunk-RPCDYKBN.js:11984
+commitHookEffectListMount @ VM33 chunk-RPCDYKBN.js:16915
+commitPassiveMountOnFiber @ VM33 chunk-RPCDYKBN.js:18156
+commitPassiveMountEffects_complete @ VM33 chunk-RPCDYKBN.js:18129
+commitPassiveMountEffects_begin @ VM33 chunk-RPCDYKBN.js:18119
+commitPassiveMountEffects @ VM33 chunk-RPCDYKBN.js:18109
+flushPassiveEffectsImpl @ VM33 chunk-RPCDYKBN.js:19490
+flushPassiveEffects @ VM33 chunk-RPCDYKBN.js:19447
+commitRootImpl @ VM33 chunk-RPCDYKBN.js:19416
+commitRoot @ VM33 chunk-RPCDYKBN.js:19277
+performSyncWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18895
+flushSyncCallbacks @ VM33 chunk-RPCDYKBN.js:9119
+(anonymous) @ VM33 chunk-RPCDYKBN.js:18627
+setTimeout
+scheduleFn @ VM47 @tanstack_react-query.js:555
+flush @ VM47 @tanstack_react-query.js:569
+batch @ VM47 @tanstack_react-query.js:587
+dispatch_fn @ VM47 @tanstack_react-query.js:996
+setData @ VM47 @tanstack_react-query.js:696
+onSuccess @ VM47 @tanstack_react-query.js:897
+resolve @ VM47 @tanstack_react-query.js:456
+Promise.then
+run @ VM47 @tanstack_react-query.js:498
+start @ VM47 @tanstack_react-query.js:536
+fetch @ VM47 @tanstack_react-query.js:926
+executeFetch_fn @ VM47 @tanstack_react-query.js:2211
+onSubscribe @ VM47 @tanstack_react-query.js:1898
+subscribe @ VM47 @tanstack_react-query.js:24
+(anonymous) @ VM47 @tanstack_react-query.js:3022
+subscribeToStore @ VM33 chunk-RPCDYKBN.js:11984
+commitHookEffectListMount @ VM33 chunk-RPCDYKBN.js:16915
+commitPassiveMountOnFiber @ VM33 chunk-RPCDYKBN.js:18156
+commitPassiveMountEffects_complete @ VM33 chunk-RPCDYKBN.js:18129
+commitPassiveMountEffects_begin @ VM33 chunk-RPCDYKBN.js:18119
+commitPassiveMountEffects @ VM33 chunk-RPCDYKBN.js:18109
+flushPassiveEffectsImpl @ VM33 chunk-RPCDYKBN.js:19490
+flushPassiveEffects @ VM33 chunk-RPCDYKBN.js:19447
+performSyncWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18868
+flushSyncCallbacks @ VM33 chunk-RPCDYKBN.js:9119
+commitRootImpl @ VM33 chunk-RPCDYKBN.js:19432
+commitRoot @ VM33 chunk-RPCDYKBN.js:19277
+finishConcurrentRender @ VM33 chunk-RPCDYKBN.js:18805
+performConcurrentWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18718
+workLoop @ VM33 chunk-RPCDYKBN.js:197
+flushWork @ VM33 chunk-RPCDYKBN.js:176
+performWorkUntilDeadline @ VM33 chunk-RPCDYKBN.js:384
+eruda.js:2 API Error 404 for /api/poll-votes/user/1/pulse/40
+Mt.forEach.n.<computed> @ VM12 eruda.js:2
+(anonymous) @ VM51 queryClient.ts:186
+await in (anonymous)
+fetchFn @ VM47 @tanstack_react-query.js:840
+run @ VM47 @tanstack_react-query.js:494
+start @ VM47 @tanstack_react-query.js:536
+fetch @ VM47 @tanstack_react-query.js:926
+executeFetch_fn @ VM47 @tanstack_react-query.js:2211
+onSubscribe @ VM47 @tanstack_react-query.js:1898
+subscribe @ VM47 @tanstack_react-query.js:24
+(anonymous) @ VM47 @tanstack_react-query.js:3022
+subscribeToStore @ VM33 chunk-RPCDYKBN.js:11984
+commitHookEffectListMount @ VM33 chunk-RPCDYKBN.js:16915
+commitPassiveMountOnFiber @ VM33 chunk-RPCDYKBN.js:18156
+commitPassiveMountEffects_complete @ VM33 chunk-RPCDYKBN.js:18129
+commitPassiveMountEffects_begin @ VM33 chunk-RPCDYKBN.js:18119
+commitPassiveMountEffects @ VM33 chunk-RPCDYKBN.js:18109
+flushPassiveEffectsImpl @ VM33 chunk-RPCDYKBN.js:19490
+flushPassiveEffects @ VM33 chunk-RPCDYKBN.js:19447
+commitRootImpl @ VM33 chunk-RPCDYKBN.js:19416
+commitRoot @ VM33 chunk-RPCDYKBN.js:19277
+performSyncWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18895
+flushSyncCallbacks @ VM33 chunk-RPCDYKBN.js:9119
+(anonymous) @ VM33 chunk-RPCDYKBN.js:18627
+setTimeout
+scheduleFn @ VM47 @tanstack_react-query.js:555
+flush @ VM47 @tanstack_react-query.js:569
+batch @ VM47 @tanstack_react-query.js:587
+dispatch_fn @ VM47 @tanstack_react-query.js:996
+setData @ VM47 @tanstack_react-query.js:696
+onSuccess @ VM47 @tanstack_react-query.js:897
+resolve @ VM47 @tanstack_react-query.js:456
+Promise.then
+run @ VM47 @tanstack_react-query.js:498
+start @ VM47 @tanstack_react-query.js:536
+fetch @ VM47 @tanstack_react-query.js:926
+executeFetch_fn @ VM47 @tanstack_react-query.js:2211
+onSubscribe @ VM47 @tanstack_react-query.js:1898
+subscribe @ VM47 @tanstack_react-query.js:24
+(anonymous) @ VM47 @tanstack_react-query.js:3022
+subscribeToStore @ VM33 chunk-RPCDYKBN.js:11984
+commitHookEffectListMount @ VM33 chunk-RPCDYKBN.js:16915
+commitPassiveMountOnFiber @ VM33 chunk-RPCDYKBN.js:18156
+commitPassiveMountEffects_complete @ VM33 chunk-RPCDYKBN.js:18129
+commitPassiveMountEffects_begin @ VM33 chunk-RPCDYKBN.js:18119
+commitPassiveMountEffects @ VM33 chunk-RPCDYKBN.js:18109
+flushPassiveEffectsImpl @ VM33 chunk-RPCDYKBN.js:19490
+flushPassiveEffects @ VM33 chunk-RPCDYKBN.js:19447
+performSyncWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18868
+flushSyncCallbacks @ VM33 chunk-RPCDYKBN.js:9119
+commitRootImpl @ VM33 chunk-RPCDYKBN.js:19432
+commitRoot @ VM33 chunk-RPCDYKBN.js:19277
+finishConcurrentRender @ VM33 chunk-RPCDYKBN.js:18805
+performConcurrentWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18718
+workLoop @ VM33 chunk-RPCDYKBN.js:197
+flushWork @ VM33 chunk-RPCDYKBN.js:176
+performWorkUntilDeadline @ VM33 chunk-RPCDYKBN.js:384
+eruda.js:2 Query error for /api/poll-votes/user/1/pulse/40: Error: 404: {"message":"No vote found"}
+    at queryClient.ts:192:15
+Mt.forEach.n.<computed> @ VM12 eruda.js:2
+(anonymous) @ VM51 queryClient.ts:241
+await in (anonymous)
+fetchFn @ VM47 @tanstack_react-query.js:840
+run @ VM47 @tanstack_react-query.js:494
+start @ VM47 @tanstack_react-query.js:536
+fetch @ VM47 @tanstack_react-query.js:926
+executeFetch_fn @ VM47 @tanstack_react-query.js:2211
+onSubscribe @ VM47 @tanstack_react-query.js:1898
+subscribe @ VM47 @tanstack_react-query.js:24
+(anonymous) @ VM47 @tanstack_react-query.js:3022
+subscribeToStore @ VM33 chunk-RPCDYKBN.js:11984
+commitHookEffectListMount @ VM33 chunk-RPCDYKBN.js:16915
+commitPassiveMountOnFiber @ VM33 chunk-RPCDYKBN.js:18156
+commitPassiveMountEffects_complete @ VM33 chunk-RPCDYKBN.js:18129
+commitPassiveMountEffects_begin @ VM33 chunk-RPCDYKBN.js:18119
+commitPassiveMountEffects @ VM33 chunk-RPCDYKBN.js:18109
+flushPassiveEffectsImpl @ VM33 chunk-RPCDYKBN.js:19490
+flushPassiveEffects @ VM33 chunk-RPCDYKBN.js:19447
+commitRootImpl @ VM33 chunk-RPCDYKBN.js:19416
+commitRoot @ VM33 chunk-RPCDYKBN.js:19277
+performSyncWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18895
+flushSyncCallbacks @ VM33 chunk-RPCDYKBN.js:9119
+(anonymous) @ VM33 chunk-RPCDYKBN.js:18627
+setTimeout
+scheduleFn @ VM47 @tanstack_react-query.js:555
+flush @ VM47 @tanstack_react-query.js:569
+batch @ VM47 @tanstack_react-query.js:587
+dispatch_fn @ VM47 @tanstack_react-query.js:996
+setData @ VM47 @tanstack_react-query.js:696
+onSuccess @ VM47 @tanstack_react-query.js:897
+resolve @ VM47 @tanstack_react-query.js:456
+Promise.then
+run @ VM47 @tanstack_react-query.js:498
+start @ VM47 @tanstack_react-query.js:536
+fetch @ VM47 @tanstack_react-query.js:926
+executeFetch_fn @ VM47 @tanstack_react-query.js:2211
+onSubscribe @ VM47 @tanstack_react-query.js:1898
+subscribe @ VM47 @tanstack_react-query.js:24
+(anonymous) @ VM47 @tanstack_react-query.js:3022
+subscribeToStore @ VM33 chunk-RPCDYKBN.js:11984
+commitHookEffectListMount @ VM33 chunk-RPCDYKBN.js:16915
+commitPassiveMountOnFiber @ VM33 chunk-RPCDYKBN.js:18156
+commitPassiveMountEffects_complete @ VM33 chunk-RPCDYKBN.js:18129
+commitPassiveMountEffects_begin @ VM33 chunk-RPCDYKBN.js:18119
+commitPassiveMountEffects @ VM33 chunk-RPCDYKBN.js:18109
+flushPassiveEffectsImpl @ VM33 chunk-RPCDYKBN.js:19490
+flushPassiveEffects @ VM33 chunk-RPCDYKBN.js:19447
+performSyncWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18868
+flushSyncCallbacks @ VM33 chunk-RPCDYKBN.js:9119
+commitRootImpl @ VM33 chunk-RPCDYKBN.js:19432
+commitRoot @ VM33 chunk-RPCDYKBN.js:19277
+finishConcurrentRender @ VM33 chunk-RPCDYKBN.js:18805
+performConcurrentWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18718
+workLoop @ VM33 chunk-RPCDYKBN.js:197
+flushWork @ VM33 chunk-RPCDYKBN.js:176
+performWorkUntilDeadline @ VM33 chunk-RPCDYKBN.js:384
+eruda.js:2 Fetching data from: /api/poll-votes/user/1/pulse/41
+eruda.js:2 Fetching data from: /api/poll-votes/user/1/pulse/40
+eruda.js:2  GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/poll-votes/user/1/pulse/4?t=1755630228175 404 (Not Found)
+window.fetch @ VM12 eruda.js:2
+(anonymous) @ VM51 queryClient.ts:166
+fetchFn @ VM47 @tanstack_react-query.js:840
+run @ VM47 @tanstack_react-query.js:494
+start @ VM47 @tanstack_react-query.js:536
+fetch @ VM47 @tanstack_react-query.js:926
+executeFetch_fn @ VM47 @tanstack_react-query.js:2211
+onSubscribe @ VM47 @tanstack_react-query.js:1898
+subscribe @ VM47 @tanstack_react-query.js:24
+(anonymous) @ VM47 @tanstack_react-query.js:3022
+subscribeToStore @ VM33 chunk-RPCDYKBN.js:11984
+commitHookEffectListMount @ VM33 chunk-RPCDYKBN.js:16915
+commitPassiveMountOnFiber @ VM33 chunk-RPCDYKBN.js:18156
+commitPassiveMountEffects_complete @ VM33 chunk-RPCDYKBN.js:18129
+commitPassiveMountEffects_begin @ VM33 chunk-RPCDYKBN.js:18119
+commitPassiveMountEffects @ VM33 chunk-RPCDYKBN.js:18109
+flushPassiveEffectsImpl @ VM33 chunk-RPCDYKBN.js:19490
+flushPassiveEffects @ VM33 chunk-RPCDYKBN.js:19447
+commitRootImpl @ VM33 chunk-RPCDYKBN.js:19416
+commitRoot @ VM33 chunk-RPCDYKBN.js:19277
+performSyncWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18895
+flushSyncCallbacks @ VM33 chunk-RPCDYKBN.js:9119
+(anonymous) @ VM33 chunk-RPCDYKBN.js:18627
+setTimeout
+scheduleFn @ VM47 @tanstack_react-query.js:555
+flush @ VM47 @tanstack_react-query.js:569
+batch @ VM47 @tanstack_react-query.js:587
+dispatch_fn @ VM47 @tanstack_react-query.js:996
+setData @ VM47 @tanstack_react-query.js:696
+onSuccess @ VM47 @tanstack_react-query.js:897
+resolve @ VM47 @tanstack_react-query.js:456
+Promise.then
+run @ VM47 @tanstack_react-query.js:498
+start @ VM47 @tanstack_react-query.js:536
+fetch @ VM47 @tanstack_react-query.js:926
+executeFetch_fn @ VM47 @tanstack_react-query.js:2211
+onSubscribe @ VM47 @tanstack_react-query.js:1898
+subscribe @ VM47 @tanstack_react-query.js:24
+(anonymous) @ VM47 @tanstack_react-query.js:3022
+subscribeToStore @ VM33 chunk-RPCDYKBN.js:11984
+commitHookEffectListMount @ VM33 chunk-RPCDYKBN.js:16915
+commitPassiveMountOnFiber @ VM33 chunk-RPCDYKBN.js:18156
+commitPassiveMountEffects_complete @ VM33 chunk-RPCDYKBN.js:18129
+commitPassiveMountEffects_begin @ VM33 chunk-RPCDYKBN.js:18119
+commitPassiveMountEffects @ VM33 chunk-RPCDYKBN.js:18109
+flushPassiveEffectsImpl @ VM33 chunk-RPCDYKBN.js:19490
+flushPassiveEffects @ VM33 chunk-RPCDYKBN.js:19447
+performSyncWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18868
+flushSyncCallbacks @ VM33 chunk-RPCDYKBN.js:9119
+commitRootImpl @ VM33 chunk-RPCDYKBN.js:19432
+commitRoot @ VM33 chunk-RPCDYKBN.js:19277
+finishConcurrentRender @ VM33 chunk-RPCDYKBN.js:18805
+performConcurrentWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18718
+workLoop @ VM33 chunk-RPCDYKBN.js:197
+flushWork @ VM33 chunk-RPCDYKBN.js:176
+performWorkUntilDeadline @ VM33 chunk-RPCDYKBN.js:384
+eruda.js:2 API Error 404 for /api/poll-votes/user/1/pulse/4
+Mt.forEach.n.<computed> @ VM12 eruda.js:2
+(anonymous) @ VM51 queryClient.ts:186
+await in (anonymous)
+fetchFn @ VM47 @tanstack_react-query.js:840
+run @ VM47 @tanstack_react-query.js:494
+start @ VM47 @tanstack_react-query.js:536
+fetch @ VM47 @tanstack_react-query.js:926
+executeFetch_fn @ VM47 @tanstack_react-query.js:2211
+onSubscribe @ VM47 @tanstack_react-query.js:1898
+subscribe @ VM47 @tanstack_react-query.js:24
+(anonymous) @ VM47 @tanstack_react-query.js:3022
+subscribeToStore @ VM33 chunk-RPCDYKBN.js:11984
+commitHookEffectListMount @ VM33 chunk-RPCDYKBN.js:16915
+commitPassiveMountOnFiber @ VM33 chunk-RPCDYKBN.js:18156
+commitPassiveMountEffects_complete @ VM33 chunk-RPCDYKBN.js:18129
+commitPassiveMountEffects_begin @ VM33 chunk-RPCDYKBN.js:18119
+commitPassiveMountEffects @ VM33 chunk-RPCDYKBN.js:18109
+flushPassiveEffectsImpl @ VM33 chunk-RPCDYKBN.js:19490
+flushPassiveEffects @ VM33 chunk-RPCDYKBN.js:19447
+commitRootImpl @ VM33 chunk-RPCDYKBN.js:19416
+commitRoot @ VM33 chunk-RPCDYKBN.js:19277
+performSyncWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18895
+flushSyncCallbacks @ VM33 chunk-RPCDYKBN.js:9119
+(anonymous) @ VM33 chunk-RPCDYKBN.js:18627
+setTimeout
+scheduleFn @ VM47 @tanstack_react-query.js:555
+flush @ VM47 @tanstack_react-query.js:569
+batch @ VM47 @tanstack_react-query.js:587
+dispatch_fn @ VM47 @tanstack_react-query.js:996
+setData @ VM47 @tanstack_react-query.js:696
+onSuccess @ VM47 @tanstack_react-query.js:897
+resolve @ VM47 @tanstack_react-query.js:456
+Promise.then
+run @ VM47 @tanstack_react-query.js:498
+start @ VM47 @tanstack_react-query.js:536
+fetch @ VM47 @tanstack_react-query.js:926
+executeFetch_fn @ VM47 @tanstack_react-query.js:2211
+onSubscribe @ VM47 @tanstack_react-query.js:1898
+subscribe @ VM47 @tanstack_react-query.js:24
+(anonymous) @ VM47 @tanstack_react-query.js:3022
+subscribeToStore @ VM33 chunk-RPCDYKBN.js:11984
+commitHookEffectListMount @ VM33 chunk-RPCDYKBN.js:16915
+commitPassiveMountOnFiber @ VM33 chunk-RPCDYKBN.js:18156
+commitPassiveMountEffects_complete @ VM33 chunk-RPCDYKBN.js:18129
+commitPassiveMountEffects_begin @ VM33 chunk-RPCDYKBN.js:18119
+commitPassiveMountEffects @ VM33 chunk-RPCDYKBN.js:18109
+flushPassiveEffectsImpl @ VM33 chunk-RPCDYKBN.js:19490
+flushPassiveEffects @ VM33 chunk-RPCDYKBN.js:19447
+performSyncWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18868
+flushSyncCallbacks @ VM33 chunk-RPCDYKBN.js:9119
+commitRootImpl @ VM33 chunk-RPCDYKBN.js:19432
+commitRoot @ VM33 chunk-RPCDYKBN.js:19277
+finishConcurrentRender @ VM33 chunk-RPCDYKBN.js:18805
+performConcurrentWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18718
+workLoop @ VM33 chunk-RPCDYKBN.js:197
+flushWork @ VM33 chunk-RPCDYKBN.js:176
+performWorkUntilDeadline @ VM33 chunk-RPCDYKBN.js:384
+eruda.js:2 Query error for /api/poll-votes/user/1/pulse/4: Error: 404: {"message":"No vote found"}
+    at queryClient.ts:192:15
+Mt.forEach.n.<computed> @ VM12 eruda.js:2
+(anonymous) @ VM51 queryClient.ts:241
+await in (anonymous)
+fetchFn @ VM47 @tanstack_react-query.js:840
+run @ VM47 @tanstack_react-query.js:494
+start @ VM47 @tanstack_react-query.js:536
+fetch @ VM47 @tanstack_react-query.js:926
+executeFetch_fn @ VM47 @tanstack_react-query.js:2211
+onSubscribe @ VM47 @tanstack_react-query.js:1898
+subscribe @ VM47 @tanstack_react-query.js:24
+(anonymous) @ VM47 @tanstack_react-query.js:3022
+subscribeToStore @ VM33 chunk-RPCDYKBN.js:11984
+commitHookEffectListMount @ VM33 chunk-RPCDYKBN.js:16915
+commitPassiveMountOnFiber @ VM33 chunk-RPCDYKBN.js:18156
+commitPassiveMountEffects_complete @ VM33 chunk-RPCDYKBN.js:18129
+commitPassiveMountEffects_begin @ VM33 chunk-RPCDYKBN.js:18119
+commitPassiveMountEffects @ VM33 chunk-RPCDYKBN.js:18109
+flushPassiveEffectsImpl @ VM33 chunk-RPCDYKBN.js:19490
+flushPassiveEffects @ VM33 chunk-RPCDYKBN.js:19447
+commitRootImpl @ VM33 chunk-RPCDYKBN.js:19416
+commitRoot @ VM33 chunk-RPCDYKBN.js:19277
+performSyncWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18895
+flushSyncCallbacks @ VM33 chunk-RPCDYKBN.js:9119
+(anonymous) @ VM33 chunk-RPCDYKBN.js:18627
+setTimeout
+scheduleFn @ VM47 @tanstack_react-query.js:555
+flush @ VM47 @tanstack_react-query.js:569
+batch @ VM47 @tanstack_react-query.js:587
+dispatch_fn @ VM47 @tanstack_react-query.js:996
+setData @ VM47 @tanstack_react-query.js:696
+onSuccess @ VM47 @tanstack_react-query.js:897
+resolve @ VM47 @tanstack_react-query.js:456
+Promise.then
+run @ VM47 @tanstack_react-query.js:498
+start @ VM47 @tanstack_react-query.js:536
+fetch @ VM47 @tanstack_react-query.js:926
+executeFetch_fn @ VM47 @tanstack_react-query.js:2211
+onSubscribe @ VM47 @tanstack_react-query.js:1898
+subscribe @ VM47 @tanstack_react-query.js:24
+(anonymous) @ VM47 @tanstack_react-query.js:3022
+subscribeToStore @ VM33 chunk-RPCDYKBN.js:11984
+commitHookEffectListMount @ VM33 chunk-RPCDYKBN.js:16915
+commitPassiveMountOnFiber @ VM33 chunk-RPCDYKBN.js:18156
+commitPassiveMountEffects_complete @ VM33 chunk-RPCDYKBN.js:18129
+commitPassiveMountEffects_begin @ VM33 chunk-RPCDYKBN.js:18119
+commitPassiveMountEffects @ VM33 chunk-RPCDYKBN.js:18109
+flushPassiveEffectsImpl @ VM33 chunk-RPCDYKBN.js:19490
+flushPassiveEffects @ VM33 chunk-RPCDYKBN.js:19447
+performSyncWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18868
+flushSyncCallbacks @ VM33 chunk-RPCDYKBN.js:9119
+commitRootImpl @ VM33 chunk-RPCDYKBN.js:19432
+commitRoot @ VM33 chunk-RPCDYKBN.js:19277
+finishConcurrentRender @ VM33 chunk-RPCDYKBN.js:18805
+performConcurrentWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18718
+workLoop @ VM33 chunk-RPCDYKBN.js:197
+flushWork @ VM33 chunk-RPCDYKBN.js:176
+performWorkUntilDeadline @ VM33 chunk-RPCDYKBN.js:384
+eruda.js:2  GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/poll-votes/user/1/pulse/3?t=1755630228183 404 (Not Found)
+window.fetch @ VM12 eruda.js:2
+(anonymous) @ VM51 queryClient.ts:166
+fetchFn @ VM47 @tanstack_react-query.js:840
+run @ VM47 @tanstack_react-query.js:494
+start @ VM47 @tanstack_react-query.js:536
+fetch @ VM47 @tanstack_react-query.js:926
+executeFetch_fn @ VM47 @tanstack_react-query.js:2211
+onSubscribe @ VM47 @tanstack_react-query.js:1898
+subscribe @ VM47 @tanstack_react-query.js:24
+(anonymous) @ VM47 @tanstack_react-query.js:3022
+subscribeToStore @ VM33 chunk-RPCDYKBN.js:11984
+commitHookEffectListMount @ VM33 chunk-RPCDYKBN.js:16915
+commitPassiveMountOnFiber @ VM33 chunk-RPCDYKBN.js:18156
+commitPassiveMountEffects_complete @ VM33 chunk-RPCDYKBN.js:18129
+commitPassiveMountEffects_begin @ VM33 chunk-RPCDYKBN.js:18119
+commitPassiveMountEffects @ VM33 chunk-RPCDYKBN.js:18109
+flushPassiveEffectsImpl @ VM33 chunk-RPCDYKBN.js:19490
+flushPassiveEffects @ VM33 chunk-RPCDYKBN.js:19447
+commitRootImpl @ VM33 chunk-RPCDYKBN.js:19416
+commitRoot @ VM33 chunk-RPCDYKBN.js:19277
+performSyncWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18895
+flushSyncCallbacks @ VM33 chunk-RPCDYKBN.js:9119
+(anonymous) @ VM33 chunk-RPCDYKBN.js:18627
+setTimeout
+scheduleFn @ VM47 @tanstack_react-query.js:555
+flush @ VM47 @tanstack_react-query.js:569
+batch @ VM47 @tanstack_react-query.js:587
+dispatch_fn @ VM47 @tanstack_react-query.js:996
+setData @ VM47 @tanstack_react-query.js:696
+onSuccess @ VM47 @tanstack_react-query.js:897
+resolve @ VM47 @tanstack_react-query.js:456
+Promise.then
+run @ VM47 @tanstack_react-query.js:498
+start @ VM47 @tanstack_react-query.js:536
+fetch @ VM47 @tanstack_react-query.js:926
+executeFetch_fn @ VM47 @tanstack_react-query.js:2211
+onSubscribe @ VM47 @tanstack_react-query.js:1898
+subscribe @ VM47 @tanstack_react-query.js:24
+(anonymous) @ VM47 @tanstack_react-query.js:3022
+subscribeToStore @ VM33 chunk-RPCDYKBN.js:11984
+commitHookEffectListMount @ VM33 chunk-RPCDYKBN.js:16915
+commitPassiveMountOnFiber @ VM33 chunk-RPCDYKBN.js:18156
+commitPassiveMountEffects_complete @ VM33 chunk-RPCDYKBN.js:18129
+commitPassiveMountEffects_begin @ VM33 chunk-RPCDYKBN.js:18119
+commitPassiveMountEffects @ VM33 chunk-RPCDYKBN.js:18109
+flushPassiveEffectsImpl @ VM33 chunk-RPCDYKBN.js:19490
+flushPassiveEffects @ VM33 chunk-RPCDYKBN.js:19447
+performSyncWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18868
+flushSyncCallbacks @ VM33 chunk-RPCDYKBN.js:9119
+commitRootImpl @ VM33 chunk-RPCDYKBN.js:19432
+commitRoot @ VM33 chunk-RPCDYKBN.js:19277
+finishConcurrentRender @ VM33 chunk-RPCDYKBN.js:18805
+performConcurrentWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18718
+workLoop @ VM33 chunk-RPCDYKBN.js:197
+flushWork @ VM33 chunk-RPCDYKBN.js:176
+performWorkUntilDeadline @ VM33 chunk-RPCDYKBN.js:384
+eruda.js:2 API Error 404 for /api/poll-votes/user/1/pulse/3
+Mt.forEach.n.<computed> @ VM12 eruda.js:2
+(anonymous) @ VM51 queryClient.ts:186
+await in (anonymous)
+fetchFn @ VM47 @tanstack_react-query.js:840
+run @ VM47 @tanstack_react-query.js:494
+start @ VM47 @tanstack_react-query.js:536
+fetch @ VM47 @tanstack_react-query.js:926
+executeFetch_fn @ VM47 @tanstack_react-query.js:2211
+onSubscribe @ VM47 @tanstack_react-query.js:1898
+subscribe @ VM47 @tanstack_react-query.js:24
+(anonymous) @ VM47 @tanstack_react-query.js:3022
+subscribeToStore @ VM33 chunk-RPCDYKBN.js:11984
+commitHookEffectListMount @ VM33 chunk-RPCDYKBN.js:16915
+commitPassiveMountOnFiber @ VM33 chunk-RPCDYKBN.js:18156
+commitPassiveMountEffects_complete @ VM33 chunk-RPCDYKBN.js:18129
+commitPassiveMountEffects_begin @ VM33 chunk-RPCDYKBN.js:18119
+commitPassiveMountEffects @ VM33 chunk-RPCDYKBN.js:18109
+flushPassiveEffectsImpl @ VM33 chunk-RPCDYKBN.js:19490
+flushPassiveEffects @ VM33 chunk-RPCDYKBN.js:19447
+commitRootImpl @ VM33 chunk-RPCDYKBN.js:19416
+commitRoot @ VM33 chunk-RPCDYKBN.js:19277
+performSyncWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18895
+flushSyncCallbacks @ VM33 chunk-RPCDYKBN.js:9119
+(anonymous) @ VM33 chunk-RPCDYKBN.js:18627
+setTimeout
+scheduleFn @ VM47 @tanstack_react-query.js:555
+flush @ VM47 @tanstack_react-query.js:569
+batch @ VM47 @tanstack_react-query.js:587
+dispatch_fn @ VM47 @tanstack_react-query.js:996
+setData @ VM47 @tanstack_react-query.js:696
+onSuccess @ VM47 @tanstack_react-query.js:897
+resolve @ VM47 @tanstack_react-query.js:456
+Promise.then
+run @ VM47 @tanstack_react-query.js:498
+start @ VM47 @tanstack_react-query.js:536
+fetch @ VM47 @tanstack_react-query.js:926
+executeFetch_fn @ VM47 @tanstack_react-query.js:2211
+onSubscribe @ VM47 @tanstack_react-query.js:1898
+subscribe @ VM47 @tanstack_react-query.js:24
+(anonymous) @ VM47 @tanstack_react-query.js:3022
+subscribeToStore @ VM33 chunk-RPCDYKBN.js:11984
+commitHookEffectListMount @ VM33 chunk-RPCDYKBN.js:16915
+commitPassiveMountOnFiber @ VM33 chunk-RPCDYKBN.js:18156
+commitPassiveMountEffects_complete @ VM33 chunk-RPCDYKBN.js:18129
+commitPassiveMountEffects_begin @ VM33 chunk-RPCDYKBN.js:18119
+commitPassiveMountEffects @ VM33 chunk-RPCDYKBN.js:18109
+flushPassiveEffectsImpl @ VM33 chunk-RPCDYKBN.js:19490
+flushPassiveEffects @ VM33 chunk-RPCDYKBN.js:19447
+performSyncWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18868
+flushSyncCallbacks @ VM33 chunk-RPCDYKBN.js:9119
+commitRootImpl @ VM33 chunk-RPCDYKBN.js:19432
+commitRoot @ VM33 chunk-RPCDYKBN.js:19277
+finishConcurrentRender @ VM33 chunk-RPCDYKBN.js:18805
+performConcurrentWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18718
+workLoop @ VM33 chunk-RPCDYKBN.js:197
+flushWork @ VM33 chunk-RPCDYKBN.js:176
+performWorkUntilDeadline @ VM33 chunk-RPCDYKBN.js:384
+eruda.js:2 Query error for /api/poll-votes/user/1/pulse/3: Error: 404: {"message":"No vote found"}
+    at queryClient.ts:192:15
+Mt.forEach.n.<computed> @ VM12 eruda.js:2
+(anonymous) @ VM51 queryClient.ts:241
+await in (anonymous)
+fetchFn @ VM47 @tanstack_react-query.js:840
+run @ VM47 @tanstack_react-query.js:494
+start @ VM47 @tanstack_react-query.js:536
+fetch @ VM47 @tanstack_react-query.js:926
+executeFetch_fn @ VM47 @tanstack_react-query.js:2211
+onSubscribe @ VM47 @tanstack_react-query.js:1898
+subscribe @ VM47 @tanstack_react-query.js:24
+(anonymous) @ VM47 @tanstack_react-query.js:3022
+subscribeToStore @ VM33 chunk-RPCDYKBN.js:11984
+commitHookEffectListMount @ VM33 chunk-RPCDYKBN.js:16915
+commitPassiveMountOnFiber @ VM33 chunk-RPCDYKBN.js:18156
+commitPassiveMountEffects_complete @ VM33 chunk-RPCDYKBN.js:18129
+commitPassiveMountEffects_begin @ VM33 chunk-RPCDYKBN.js:18119
+commitPassiveMountEffects @ VM33 chunk-RPCDYKBN.js:18109
+flushPassiveEffectsImpl @ VM33 chunk-RPCDYKBN.js:19490
+flushPassiveEffects @ VM33 chunk-RPCDYKBN.js:19447
+commitRootImpl @ VM33 chunk-RPCDYKBN.js:19416
+commitRoot @ VM33 chunk-RPCDYKBN.js:19277
+performSyncWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18895
+flushSyncCallbacks @ VM33 chunk-RPCDYKBN.js:9119
+(anonymous) @ VM33 chunk-RPCDYKBN.js:18627
+setTimeout
+scheduleFn @ VM47 @tanstack_react-query.js:555
+flush @ VM47 @tanstack_react-query.js:569
+batch @ VM47 @tanstack_react-query.js:587
+dispatch_fn @ VM47 @tanstack_react-query.js:996
+setData @ VM47 @tanstack_react-query.js:696
+onSuccess @ VM47 @tanstack_react-query.js:897
+resolve @ VM47 @tanstack_react-query.js:456
+Promise.then
+run @ VM47 @tanstack_react-query.js:498
+start @ VM47 @tanstack_react-query.js:536
+fetch @ VM47 @tanstack_react-query.js:926
+executeFetch_fn @ VM47 @tanstack_react-query.js:2211
+onSubscribe @ VM47 @tanstack_react-query.js:1898
+subscribe @ VM47 @tanstack_react-query.js:24
+(anonymous) @ VM47 @tanstack_react-query.js:3022
+subscribeToStore @ VM33 chunk-RPCDYKBN.js:11984
+commitHookEffectListMount @ VM33 chunk-RPCDYKBN.js:16915
+commitPassiveMountOnFiber @ VM33 chunk-RPCDYKBN.js:18156
+commitPassiveMountEffects_complete @ VM33 chunk-RPCDYKBN.js:18129
+commitPassiveMountEffects_begin @ VM33 chunk-RPCDYKBN.js:18119
+commitPassiveMountEffects @ VM33 chunk-RPCDYKBN.js:18109
+flushPassiveEffectsImpl @ VM33 chunk-RPCDYKBN.js:19490
+flushPassiveEffects @ VM33 chunk-RPCDYKBN.js:19447
+performSyncWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18868
+flushSyncCallbacks @ VM33 chunk-RPCDYKBN.js:9119
+commitRootImpl @ VM33 chunk-RPCDYKBN.js:19432
+commitRoot @ VM33 chunk-RPCDYKBN.js:19277
+finishConcurrentRender @ VM33 chunk-RPCDYKBN.js:18805
+performConcurrentWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18718
+workLoop @ VM33 chunk-RPCDYKBN.js:197
+flushWork @ VM33 chunk-RPCDYKBN.js:176
+performWorkUntilDeadline @ VM33 chunk-RPCDYKBN.js:384
+eruda.js:2  GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/poll-votes/user/1/pulse/41?t=1755630230561 404 (Not Found)
+window.fetch @ VM12 eruda.js:2
+(anonymous) @ VM51 queryClient.ts:166
+fetchFn @ VM47 @tanstack_react-query.js:840
+run @ VM47 @tanstack_react-query.js:494
+(anonymous) @ VM47 @tanstack_react-query.js:519
+Promise.then
+(anonymous) @ VM47 @tanstack_react-query.js:515
+Promise.catch
+run @ VM47 @tanstack_react-query.js:498
+start @ VM47 @tanstack_react-query.js:536
+fetch @ VM47 @tanstack_react-query.js:926
+executeFetch_fn @ VM47 @tanstack_react-query.js:2211
+onSubscribe @ VM47 @tanstack_react-query.js:1898
+subscribe @ VM47 @tanstack_react-query.js:24
+(anonymous) @ VM47 @tanstack_react-query.js:3022
+subscribeToStore @ VM33 chunk-RPCDYKBN.js:11984
+commitHookEffectListMount @ VM33 chunk-RPCDYKBN.js:16915
+commitPassiveMountOnFiber @ VM33 chunk-RPCDYKBN.js:18156
+commitPassiveMountEffects_complete @ VM33 chunk-RPCDYKBN.js:18129
+commitPassiveMountEffects_begin @ VM33 chunk-RPCDYKBN.js:18119
+commitPassiveMountEffects @ VM33 chunk-RPCDYKBN.js:18109
+flushPassiveEffectsImpl @ VM33 chunk-RPCDYKBN.js:19490
+flushPassiveEffects @ VM33 chunk-RPCDYKBN.js:19447
+commitRootImpl @ VM33 chunk-RPCDYKBN.js:19416
+commitRoot @ VM33 chunk-RPCDYKBN.js:19277
+performSyncWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18895
+flushSyncCallbacks @ VM33 chunk-RPCDYKBN.js:9119
+(anonymous) @ VM33 chunk-RPCDYKBN.js:18627
+setTimeout
+scheduleFn @ VM47 @tanstack_react-query.js:555
+flush @ VM47 @tanstack_react-query.js:569
+batch @ VM47 @tanstack_react-query.js:587
+dispatch_fn @ VM47 @tanstack_react-query.js:996
+setData @ VM47 @tanstack_react-query.js:696
+onSuccess @ VM47 @tanstack_react-query.js:897
+resolve @ VM47 @tanstack_react-query.js:456
+Promise.then
+run @ VM47 @tanstack_react-query.js:498
+start @ VM47 @tanstack_react-query.js:536
+fetch @ VM47 @tanstack_react-query.js:926
+executeFetch_fn @ VM47 @tanstack_react-query.js:2211
+onSubscribe @ VM47 @tanstack_react-query.js:1898
+subscribe @ VM47 @tanstack_react-query.js:24
+(anonymous) @ VM47 @tanstack_react-query.js:3022
+subscribeToStore @ VM33 chunk-RPCDYKBN.js:11984
+commitHookEffectListMount @ VM33 chunk-RPCDYKBN.js:16915
+commitPassiveMountOnFiber @ VM33 chunk-RPCDYKBN.js:18156
+commitPassiveMountEffects_complete @ VM33 chunk-RPCDYKBN.js:18129
+commitPassiveMountEffects_begin @ VM33 chunk-RPCDYKBN.js:18119
+commitPassiveMountEffects @ VM33 chunk-RPCDYKBN.js:18109
+flushPassiveEffectsImpl @ VM33 chunk-RPCDYKBN.js:19490
+flushPassiveEffects @ VM33 chunk-RPCDYKBN.js:19447
+performSyncWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18868
+flushSyncCallbacks @ VM33 chunk-RPCDYKBN.js:9119
+commitRootImpl @ VM33 chunk-RPCDYKBN.js:19432
+commitRoot @ VM33 chunk-RPCDYKBN.js:19277
+finishConcurrentRender @ VM33 chunk-RPCDYKBN.js:18805
+performConcurrentWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18718
+workLoop @ VM33 chunk-RPCDYKBN.js:197
+flushWork @ VM33 chunk-RPCDYKBN.js:176
+performWorkUntilDeadline @ VM33 chunk-RPCDYKBN.js:384
+eruda.js:2 API Error 404 for /api/poll-votes/user/1/pulse/41
+Mt.forEach.n.<computed> @ VM12 eruda.js:2
+(anonymous) @ VM51 queryClient.ts:186
+await in (anonymous)
+fetchFn @ VM47 @tanstack_react-query.js:840
+run @ VM47 @tanstack_react-query.js:494
+(anonymous) @ VM47 @tanstack_react-query.js:519
+Promise.then
+(anonymous) @ VM47 @tanstack_react-query.js:515
+Promise.catch
+run @ VM47 @tanstack_react-query.js:498
+start @ VM47 @tanstack_react-query.js:536
+fetch @ VM47 @tanstack_react-query.js:926
+executeFetch_fn @ VM47 @tanstack_react-query.js:2211
+onSubscribe @ VM47 @tanstack_react-query.js:1898
+subscribe @ VM47 @tanstack_react-query.js:24
+(anonymous) @ VM47 @tanstack_react-query.js:3022
+subscribeToStore @ VM33 chunk-RPCDYKBN.js:11984
+commitHookEffectListMount @ VM33 chunk-RPCDYKBN.js:16915
+commitPassiveMountOnFiber @ VM33 chunk-RPCDYKBN.js:18156
+commitPassiveMountEffects_complete @ VM33 chunk-RPCDYKBN.js:18129
+commitPassiveMountEffects_begin @ VM33 chunk-RPCDYKBN.js:18119
+commitPassiveMountEffects @ VM33 chunk-RPCDYKBN.js:18109
+flushPassiveEffectsImpl @ VM33 chunk-RPCDYKBN.js:19490
+flushPassiveEffects @ VM33 chunk-RPCDYKBN.js:19447
+commitRootImpl @ VM33 chunk-RPCDYKBN.js:19416
+commitRoot @ VM33 chunk-RPCDYKBN.js:19277
+performSyncWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18895
+flushSyncCallbacks @ VM33 chunk-RPCDYKBN.js:9119
+(anonymous) @ VM33 chunk-RPCDYKBN.js:18627
+setTimeout
+scheduleFn @ VM47 @tanstack_react-query.js:555
+flush @ VM47 @tanstack_react-query.js:569
+batch @ VM47 @tanstack_react-query.js:587
+dispatch_fn @ VM47 @tanstack_react-query.js:996
+setData @ VM47 @tanstack_react-query.js:696
+onSuccess @ VM47 @tanstack_react-query.js:897
+resolve @ VM47 @tanstack_react-query.js:456
+Promise.then
+run @ VM47 @tanstack_react-query.js:498
+start @ VM47 @tanstack_react-query.js:536
+fetch @ VM47 @tanstack_react-query.js:926
+executeFetch_fn @ VM47 @tanstack_react-query.js:2211
+onSubscribe @ VM47 @tanstack_react-query.js:1898
+subscribe @ VM47 @tanstack_react-query.js:24
+(anonymous) @ VM47 @tanstack_react-query.js:3022
+subscribeToStore @ VM33 chunk-RPCDYKBN.js:11984
+commitHookEffectListMount @ VM33 chunk-RPCDYKBN.js:16915
+commitPassiveMountOnFiber @ VM33 chunk-RPCDYKBN.js:18156
+commitPassiveMountEffects_complete @ VM33 chunk-RPCDYKBN.js:18129
+commitPassiveMountEffects_begin @ VM33 chunk-RPCDYKBN.js:18119
+commitPassiveMountEffects @ VM33 chunk-RPCDYKBN.js:18109
+flushPassiveEffectsImpl @ VM33 chunk-RPCDYKBN.js:19490
+flushPassiveEffects @ VM33 chunk-RPCDYKBN.js:19447
+performSyncWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18868
+flushSyncCallbacks @ VM33 chunk-RPCDYKBN.js:9119
+commitRootImpl @ VM33 chunk-RPCDYKBN.js:19432
+commitRoot @ VM33 chunk-RPCDYKBN.js:19277
+finishConcurrentRender @ VM33 chunk-RPCDYKBN.js:18805
+performConcurrentWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18718
+workLoop @ VM33 chunk-RPCDYKBN.js:197
+flushWork @ VM33 chunk-RPCDYKBN.js:176
+performWorkUntilDeadline @ VM33 chunk-RPCDYKBN.js:384
+eruda.js:2  GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/poll-votes/user/1/pulse/40?t=1755630230726 404 (Not Found)
+window.fetch @ VM12 eruda.js:2
+(anonymous) @ VM51 queryClient.ts:166
+fetchFn @ VM47 @tanstack_react-query.js:840
+run @ VM47 @tanstack_react-query.js:494
+(anonymous) @ VM47 @tanstack_react-query.js:519
+Promise.then
+(anonymous) @ VM47 @tanstack_react-query.js:515
+Promise.catch
+run @ VM47 @tanstack_react-query.js:498
+start @ VM47 @tanstack_react-query.js:536
+fetch @ VM47 @tanstack_react-query.js:926
+executeFetch_fn @ VM47 @tanstack_react-query.js:2211
+onSubscribe @ VM47 @tanstack_react-query.js:1898
+subscribe @ VM47 @tanstack_react-query.js:24
+(anonymous) @ VM47 @tanstack_react-query.js:3022
+subscribeToStore @ VM33 chunk-RPCDYKBN.js:11984
+commitHookEffectListMount @ VM33 chunk-RPCDYKBN.js:16915
+commitPassiveMountOnFiber @ VM33 chunk-RPCDYKBN.js:18156
+commitPassiveMountEffects_complete @ VM33 chunk-RPCDYKBN.js:18129
+commitPassiveMountEffects_begin @ VM33 chunk-RPCDYKBN.js:18119
+commitPassiveMountEffects @ VM33 chunk-RPCDYKBN.js:18109
+flushPassiveEffectsImpl @ VM33 chunk-RPCDYKBN.js:19490
+flushPassiveEffects @ VM33 chunk-RPCDYKBN.js:19447
+commitRootImpl @ VM33 chunk-RPCDYKBN.js:19416
+commitRoot @ VM33 chunk-RPCDYKBN.js:19277
+performSyncWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18895
+flushSyncCallbacks @ VM33 chunk-RPCDYKBN.js:9119
+(anonymous) @ VM33 chunk-RPCDYKBN.js:18627
+setTimeout
+scheduleFn @ VM47 @tanstack_react-query.js:555
+flush @ VM47 @tanstack_react-query.js:569
+batch @ VM47 @tanstack_react-query.js:587
+dispatch_fn @ VM47 @tanstack_react-query.js:996
+setData @ VM47 @tanstack_react-query.js:696
+onSuccess @ VM47 @tanstack_react-query.js:897
+resolve @ VM47 @tanstack_react-query.js:456
+Promise.then
+run @ VM47 @tanstack_react-query.js:498
+start @ VM47 @tanstack_react-query.js:536
+fetch @ VM47 @tanstack_react-query.js:926
+executeFetch_fn @ VM47 @tanstack_react-query.js:2211
+onSubscribe @ VM47 @tanstack_react-query.js:1898
+subscribe @ VM47 @tanstack_react-query.js:24
+(anonymous) @ VM47 @tanstack_react-query.js:3022
+subscribeToStore @ VM33 chunk-RPCDYKBN.js:11984
+commitHookEffectListMount @ VM33 chunk-RPCDYKBN.js:16915
+commitPassiveMountOnFiber @ VM33 chunk-RPCDYKBN.js:18156
+commitPassiveMountEffects_complete @ VM33 chunk-RPCDYKBN.js:18129
+commitPassiveMountEffects_begin @ VM33 chunk-RPCDYKBN.js:18119
+commitPassiveMountEffects @ VM33 chunk-RPCDYKBN.js:18109
+flushPassiveEffectsImpl @ VM33 chunk-RPCDYKBN.js:19490
+flushPassiveEffects @ VM33 chunk-RPCDYKBN.js:19447
+performSyncWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18868
+flushSyncCallbacks @ VM33 chunk-RPCDYKBN.js:9119
+commitRootImpl @ VM33 chunk-RPCDYKBN.js:19432
+commitRoot @ VM33 chunk-RPCDYKBN.js:19277
+finishConcurrentRender @ VM33 chunk-RPCDYKBN.js:18805
+performConcurrentWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18718
+workLoop @ VM33 chunk-RPCDYKBN.js:197
+flushWork @ VM33 chunk-RPCDYKBN.js:176
+performWorkUntilDeadline @ VM33 chunk-RPCDYKBN.js:384
+eruda.js:2 API Error 404 for /api/poll-votes/user/1/pulse/40
+Mt.forEach.n.<computed> @ VM12 eruda.js:2
+(anonymous) @ VM51 queryClient.ts:186
+await in (anonymous)
+fetchFn @ VM47 @tanstack_react-query.js:840
+run @ VM47 @tanstack_react-query.js:494
+(anonymous) @ VM47 @tanstack_react-query.js:519
+Promise.then
+(anonymous) @ VM47 @tanstack_react-query.js:515
+Promise.catch
+run @ VM47 @tanstack_react-query.js:498
+start @ VM47 @tanstack_react-query.js:536
+fetch @ VM47 @tanstack_react-query.js:926
+executeFetch_fn @ VM47 @tanstack_react-query.js:2211
+onSubscribe @ VM47 @tanstack_react-query.js:1898
+subscribe @ VM47 @tanstack_react-query.js:24
+(anonymous) @ VM47 @tanstack_react-query.js:3022
+subscribeToStore @ VM33 chunk-RPCDYKBN.js:11984
+commitHookEffectListMount @ VM33 chunk-RPCDYKBN.js:16915
+commitPassiveMountOnFiber @ VM33 chunk-RPCDYKBN.js:18156
+commitPassiveMountEffects_complete @ VM33 chunk-RPCDYKBN.js:18129
+commitPassiveMountEffects_begin @ VM33 chunk-RPCDYKBN.js:18119
+commitPassiveMountEffects @ VM33 chunk-RPCDYKBN.js:18109
+flushPassiveEffectsImpl @ VM33 chunk-RPCDYKBN.js:19490
+flushPassiveEffects @ VM33 chunk-RPCDYKBN.js:19447
+commitRootImpl @ VM33 chunk-RPCDYKBN.js:19416
+commitRoot @ VM33 chunk-RPCDYKBN.js:19277
+performSyncWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18895
+flushSyncCallbacks @ VM33 chunk-RPCDYKBN.js:9119
+(anonymous) @ VM33 chunk-RPCDYKBN.js:18627
+setTimeout
+scheduleFn @ VM47 @tanstack_react-query.js:555
+flush @ VM47 @tanstack_react-query.js:569
+batch @ VM47 @tanstack_react-query.js:587
+dispatch_fn @ VM47 @tanstack_react-query.js:996
+setData @ VM47 @tanstack_react-query.js:696
+onSuccess @ VM47 @tanstack_react-query.js:897
+resolve @ VM47 @tanstack_react-query.js:456
+Promise.then
+run @ VM47 @tanstack_react-query.js:498
+start @ VM47 @tanstack_react-query.js:536
+fetch @ VM47 @tanstack_react-query.js:926
+executeFetch_fn @ VM47 @tanstack_react-query.js:2211
+onSubscribe @ VM47 @tanstack_react-query.js:1898
+subscribe @ VM47 @tanstack_react-query.js:24
+(anonymous) @ VM47 @tanstack_react-query.js:3022
+subscribeToStore @ VM33 chunk-RPCDYKBN.js:11984
+commitHookEffectListMount @ VM33 chunk-RPCDYKBN.js:16915
+commitPassiveMountOnFiber @ VM33 chunk-RPCDYKBN.js:18156
+commitPassiveMountEffects_complete @ VM33 chunk-RPCDYKBN.js:18129
+commitPassiveMountEffects_begin @ VM33 chunk-RPCDYKBN.js:18119
+commitPassiveMountEffects @ VM33 chunk-RPCDYKBN.js:18109
+flushPassiveEffectsImpl @ VM33 chunk-RPCDYKBN.js:19490
+flushPassiveEffects @ VM33 chunk-RPCDYKBN.js:19447
+performSyncWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18868
+flushSyncCallbacks @ VM33 chunk-RPCDYKBN.js:9119
+commitRootImpl @ VM33 chunk-RPCDYKBN.js:19432
+commitRoot @ VM33 chunk-RPCDYKBN.js:19277
+finishConcurrentRender @ VM33 chunk-RPCDYKBN.js:18805
+performConcurrentWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18718
+workLoop @ VM33 chunk-RPCDYKBN.js:197
+flushWork @ VM33 chunk-RPCDYKBN.js:176
+performWorkUntilDeadline @ VM33 chunk-RPCDYKBN.js:384
+eruda.js:2 Query error for /api/poll-votes/user/1/pulse/40: Error: 404: {"message":"No vote found"}
+    at queryClient.ts:192:15
+Mt.forEach.n.<computed> @ VM12 eruda.js:2
+(anonymous) @ VM51 queryClient.ts:241
+await in (anonymous)
+fetchFn @ VM47 @tanstack_react-query.js:840
+run @ VM47 @tanstack_react-query.js:494
+(anonymous) @ VM47 @tanstack_react-query.js:519
+Promise.then
+(anonymous) @ VM47 @tanstack_react-query.js:515
+Promise.catch
+run @ VM47 @tanstack_react-query.js:498
+start @ VM47 @tanstack_react-query.js:536
+fetch @ VM47 @tanstack_react-query.js:926
+executeFetch_fn @ VM47 @tanstack_react-query.js:2211
+onSubscribe @ VM47 @tanstack_react-query.js:1898
+subscribe @ VM47 @tanstack_react-query.js:24
+(anonymous) @ VM47 @tanstack_react-query.js:3022
+subscribeToStore @ VM33 chunk-RPCDYKBN.js:11984
+commitHookEffectListMount @ VM33 chunk-RPCDYKBN.js:16915
+commitPassiveMountOnFiber @ VM33 chunk-RPCDYKBN.js:18156
+commitPassiveMountEffects_complete @ VM33 chunk-RPCDYKBN.js:18129
+commitPassiveMountEffects_begin @ VM33 chunk-RPCDYKBN.js:18119
+commitPassiveMountEffects @ VM33 chunk-RPCDYKBN.js:18109
+flushPassiveEffectsImpl @ VM33 chunk-RPCDYKBN.js:19490
+flushPassiveEffects @ VM33 chunk-RPCDYKBN.js:19447
+commitRootImpl @ VM33 chunk-RPCDYKBN.js:19416
+commitRoot @ VM33 chunk-RPCDYKBN.js:19277
+performSyncWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18895
+flushSyncCallbacks @ VM33 chunk-RPCDYKBN.js:9119
+(anonymous) @ VM33 chunk-RPCDYKBN.js:18627
+setTimeout
+scheduleFn @ VM47 @tanstack_react-query.js:555
+flush @ VM47 @tanstack_react-query.js:569
+batch @ VM47 @tanstack_react-query.js:587
+dispatch_fn @ VM47 @tanstack_react-query.js:996
+setData @ VM47 @tanstack_react-query.js:696
+onSuccess @ VM47 @tanstack_react-query.js:897
+resolve @ VM47 @tanstack_react-query.js:456
+Promise.then
+run @ VM47 @tanstack_react-query.js:498
+start @ VM47 @tanstack_react-query.js:536
+fetch @ VM47 @tanstack_react-query.js:926
+executeFetch_fn @ VM47 @tanstack_react-query.js:2211
+onSubscribe @ VM47 @tanstack_react-query.js:1898
+subscribe @ VM47 @tanstack_react-query.js:24
+(anonymous) @ VM47 @tanstack_react-query.js:3022
+subscribeToStore @ VM33 chunk-RPCDYKBN.js:11984
+commitHookEffectListMount @ VM33 chunk-RPCDYKBN.js:16915
+commitPassiveMountOnFiber @ VM33 chunk-RPCDYKBN.js:18156
+commitPassiveMountEffects_complete @ VM33 chunk-RPCDYKBN.js:18129
+commitPassiveMountEffects_begin @ VM33 chunk-RPCDYKBN.js:18119
+commitPassiveMountEffects @ VM33 chunk-RPCDYKBN.js:18109
+flushPassiveEffectsImpl @ VM33 chunk-RPCDYKBN.js:19490
+flushPassiveEffects @ VM33 chunk-RPCDYKBN.js:19447
+performSyncWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18868
+flushSyncCallbacks @ VM33 chunk-RPCDYKBN.js:9119
+commitRootImpl @ VM33 chunk-RPCDYKBN.js:19432
+commitRoot @ VM33 chunk-RPCDYKBN.js:19277
+finishConcurrentRender @ VM33 chunk-RPCDYKBN.js:18805
+performConcurrentWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18718
+workLoop @ VM33 chunk-RPCDYKBN.js:197
+flushWork @ VM33 chunk-RPCDYKBN.js:176
+performWorkUntilDeadline @ VM33 chunk-RPCDYKBN.js:384
+eruda.js:2 Fetching data from: /api/poll-votes/user/1/pulse/4
+eruda.js:2 Fetching data from: /api/poll-votes/user/1/pulse/3
+eruda.js:2  GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/poll-votes/user/1/pulse/4?t=1755630232589 404 (Not Found)
+window.fetch @ VM12 eruda.js:2
+(anonymous) @ VM51 queryClient.ts:166
+fetchFn @ VM47 @tanstack_react-query.js:840
+run @ VM47 @tanstack_react-query.js:494
+(anonymous) @ VM47 @tanstack_react-query.js:519
+Promise.then
+(anonymous) @ VM47 @tanstack_react-query.js:515
+Promise.catch
+run @ VM47 @tanstack_react-query.js:498
+start @ VM47 @tanstack_react-query.js:536
+fetch @ VM47 @tanstack_react-query.js:926
+executeFetch_fn @ VM47 @tanstack_react-query.js:2211
+onSubscribe @ VM47 @tanstack_react-query.js:1898
+subscribe @ VM47 @tanstack_react-query.js:24
+(anonymous) @ VM47 @tanstack_react-query.js:3022
+subscribeToStore @ VM33 chunk-RPCDYKBN.js:11984
+commitHookEffectListMount @ VM33 chunk-RPCDYKBN.js:16915
+commitPassiveMountOnFiber @ VM33 chunk-RPCDYKBN.js:18156
+commitPassiveMountEffects_complete @ VM33 chunk-RPCDYKBN.js:18129
+commitPassiveMountEffects_begin @ VM33 chunk-RPCDYKBN.js:18119
+commitPassiveMountEffects @ VM33 chunk-RPCDYKBN.js:18109
+flushPassiveEffectsImpl @ VM33 chunk-RPCDYKBN.js:19490
+flushPassiveEffects @ VM33 chunk-RPCDYKBN.js:19447
+commitRootImpl @ VM33 chunk-RPCDYKBN.js:19416
+commitRoot @ VM33 chunk-RPCDYKBN.js:19277
+performSyncWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18895
+flushSyncCallbacks @ VM33 chunk-RPCDYKBN.js:9119
+(anonymous) @ VM33 chunk-RPCDYKBN.js:18627
+setTimeout
+scheduleFn @ VM47 @tanstack_react-query.js:555
+flush @ VM47 @tanstack_react-query.js:569
+batch @ VM47 @tanstack_react-query.js:587
+dispatch_fn @ VM47 @tanstack_react-query.js:996
+setData @ VM47 @tanstack_react-query.js:696
+onSuccess @ VM47 @tanstack_react-query.js:897
+resolve @ VM47 @tanstack_react-query.js:456
+Promise.then
+run @ VM47 @tanstack_react-query.js:498
+start @ VM47 @tanstack_react-query.js:536
+fetch @ VM47 @tanstack_react-query.js:926
+executeFetch_fn @ VM47 @tanstack_react-query.js:2211
+onSubscribe @ VM47 @tanstack_react-query.js:1898
+subscribe @ VM47 @tanstack_react-query.js:24
+(anonymous) @ VM47 @tanstack_react-query.js:3022
+subscribeToStore @ VM33 chunk-RPCDYKBN.js:11984
+commitHookEffectListMount @ VM33 chunk-RPCDYKBN.js:16915
+commitPassiveMountOnFiber @ VM33 chunk-RPCDYKBN.js:18156
+commitPassiveMountEffects_complete @ VM33 chunk-RPCDYKBN.js:18129
+commitPassiveMountEffects_begin @ VM33 chunk-RPCDYKBN.js:18119
+commitPassiveMountEffects @ VM33 chunk-RPCDYKBN.js:18109
+flushPassiveEffectsImpl @ VM33 chunk-RPCDYKBN.js:19490
+flushPassiveEffects @ VM33 chunk-RPCDYKBN.js:19447
+performSyncWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18868
+flushSyncCallbacks @ VM33 chunk-RPCDYKBN.js:9119
+commitRootImpl @ VM33 chunk-RPCDYKBN.js:19432
+commitRoot @ VM33 chunk-RPCDYKBN.js:19277
+finishConcurrentRender @ VM33 chunk-RPCDYKBN.js:18805
+performConcurrentWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18718
+workLoop @ VM33 chunk-RPCDYKBN.js:197
+flushWork @ VM33 chunk-RPCDYKBN.js:176
+performWorkUntilDeadline @ VM33 chunk-RPCDYKBN.js:384
+eruda.js:2 API Error 404 for /api/poll-votes/user/1/pulse/4
+Mt.forEach.n.<computed> @ VM12 eruda.js:2
+(anonymous) @ VM51 queryClient.ts:186
+await in (anonymous)
+fetchFn @ VM47 @tanstack_react-query.js:840
+run @ VM47 @tanstack_react-query.js:494
+(anonymous) @ VM47 @tanstack_react-query.js:519
+Promise.then
+(anonymous) @ VM47 @tanstack_react-query.js:515
+Promise.catch
+run @ VM47 @tanstack_react-query.js:498
+start @ VM47 @tanstack_react-query.js:536
+fetch @ VM47 @tanstack_react-query.js:926
+executeFetch_fn @ VM47 @tanstack_react-query.js:2211
+onSubscribe @ VM47 @tanstack_react-query.js:1898
+subscribe @ VM47 @tanstack_react-query.js:24
+(anonymous) @ VM47 @tanstack_react-query.js:3022
+subscribeToStore @ VM33 chunk-RPCDYKBN.js:11984
+commitHookEffectListMount @ VM33 chunk-RPCDYKBN.js:16915
+commitPassiveMountOnFiber @ VM33 chunk-RPCDYKBN.js:18156
+commitPassiveMountEffects_complete @ VM33 chunk-RPCDYKBN.js:18129
+commitPassiveMountEffects_begin @ VM33 chunk-RPCDYKBN.js:18119
+commitPassiveMountEffects @ VM33 chunk-RPCDYKBN.js:18109
+flushPassiveEffectsImpl @ VM33 chunk-RPCDYKBN.js:19490
+flushPassiveEffects @ VM33 chunk-RPCDYKBN.js:19447
+commitRootImpl @ VM33 chunk-RPCDYKBN.js:19416
+commitRoot @ VM33 chunk-RPCDYKBN.js:19277
+performSyncWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18895
+flushSyncCallbacks @ VM33 chunk-RPCDYKBN.js:9119
+(anonymous) @ VM33 chunk-RPCDYKBN.js:18627
+setTimeout
+scheduleFn @ VM47 @tanstack_react-query.js:555
+flush @ VM47 @tanstack_react-query.js:569
+batch @ VM47 @tanstack_react-query.js:587
+dispatch_fn @ VM47 @tanstack_react-query.js:996
+setData @ VM47 @tanstack_react-query.js:696
+onSuccess @ VM47 @tanstack_react-query.js:897
+resolve @ VM47 @tanstack_react-query.js:456
+Promise.then
+run @ VM47 @tanstack_react-query.js:498
+start @ VM47 @tanstack_react-query.js:536
+fetch @ VM47 @tanstack_react-query.js:926
+executeFetch_fn @ VM47 @tanstack_react-query.js:2211
+onSubscribe @ VM47 @tanstack_react-query.js:1898
+subscribe @ VM47 @tanstack_react-query.js:24
+(anonymous) @ VM47 @tanstack_react-query.js:3022
+subscribeToStore @ VM33 chunk-RPCDYKBN.js:11984
+commitHookEffectListMount @ VM33 chunk-RPCDYKBN.js:16915
+commitPassiveMountOnFiber @ VM33 chunk-RPCDYKBN.js:18156
+commitPassiveMountEffects_complete @ VM33 chunk-RPCDYKBN.js:18129
+commitPassiveMountEffects_begin @ VM33 chunk-RPCDYKBN.js:18119
+commitPassiveMountEffects @ VM33 chunk-RPCDYKBN.js:18109
+flushPassiveEffectsImpl @ VM33 chunk-RPCDYKBN.js:19490
+flushPassiveEffects @ VM33 chunk-RPCDYKBN.js:19447
+performSyncWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18868
+flushSyncCallbacks @ VM33 chunk-RPCDYKBN.js:9119
+commitRootImpl @ VM33 chunk-RPCDYKBN.js:19432
+commitRoot @ VM33 chunk-RPCDYKBN.js:19277
+finishConcurrentRender @ VM33 chunk-RPCDYKBN.js:18805
+performConcurrentWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18718
+workLoop @ VM33 chunk-RPCDYKBN.js:197
+flushWork @ VM33 chunk-RPCDYKBN.js:176
+performWorkUntilDeadline @ VM33 chunk-RPCDYKBN.js:384
+eruda.js:2 Query error for /api/poll-votes/user/1/pulse/4: Error: 404: {"message":"No vote found"}
+    at queryClient.ts:192:15
+Mt.forEach.n.<computed> @ VM12 eruda.js:2
+(anonymous) @ VM51 queryClient.ts:241
+await in (anonymous)
+fetchFn @ VM47 @tanstack_react-query.js:840
+run @ VM47 @tanstack_react-query.js:494
+(anonymous) @ VM47 @tanstack_react-query.js:519
+Promise.then
+(anonymous) @ VM47 @tanstack_react-query.js:515
+Promise.catch
+run @ VM47 @tanstack_react-query.js:498
+start @ VM47 @tanstack_react-query.js:536
+fetch @ VM47 @tanstack_react-query.js:926
+executeFetch_fn @ VM47 @tanstack_react-query.js:2211
+onSubscribe @ VM47 @tanstack_react-query.js:1898
+subscribe @ VM47 @tanstack_react-query.js:24
+(anonymous) @ VM47 @tanstack_react-query.js:3022
+subscribeToStore @ VM33 chunk-RPCDYKBN.js:11984
+commitHookEffectListMount @ VM33 chunk-RPCDYKBN.js:16915
+commitPassiveMountOnFiber @ VM33 chunk-RPCDYKBN.js:18156
+commitPassiveMountEffects_complete @ VM33 chunk-RPCDYKBN.js:18129
+commitPassiveMountEffects_begin @ VM33 chunk-RPCDYKBN.js:18119
+commitPassiveMountEffects @ VM33 chunk-RPCDYKBN.js:18109
+flushPassiveEffectsImpl @ VM33 chunk-RPCDYKBN.js:19490
+flushPassiveEffects @ VM33 chunk-RPCDYKBN.js:19447
+commitRootImpl @ VM33 chunk-RPCDYKBN.js:19416
+commitRoot @ VM33 chunk-RPCDYKBN.js:19277
+performSyncWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18895
+flushSyncCallbacks @ VM33 chunk-RPCDYKBN.js:9119
+(anonymous) @ VM33 chunk-RPCDYKBN.js:18627
+setTimeout
+scheduleFn @ VM47 @tanstack_react-query.js:555
+flush @ VM47 @tanstack_react-query.js:569
+batch @ VM47 @tanstack_react-query.js:587
+dispatch_fn @ VM47 @tanstack_react-query.js:996
+setData @ VM47 @tanstack_react-query.js:696
+onSuccess @ VM47 @tanstack_react-query.js:897
+resolve @ VM47 @tanstack_react-query.js:456
+Promise.then
+run @ VM47 @tanstack_react-query.js:498
+start @ VM47 @tanstack_react-query.js:536
+fetch @ VM47 @tanstack_react-query.js:926
+executeFetch_fn @ VM47 @tanstack_react-query.js:2211
+onSubscribe @ VM47 @tanstack_react-query.js:1898
+subscribe @ VM47 @tanstack_react-query.js:24
+(anonymous) @ VM47 @tanstack_react-query.js:3022
+subscribeToStore @ VM33 chunk-RPCDYKBN.js:11984
+commitHookEffectListMount @ VM33 chunk-RPCDYKBN.js:16915
+commitPassiveMountOnFiber @ VM33 chunk-RPCDYKBN.js:18156
+commitPassiveMountEffects_complete @ VM33 chunk-RPCDYKBN.js:18129
+commitPassiveMountEffects_begin @ VM33 chunk-RPCDYKBN.js:18119
+commitPassiveMountEffects @ VM33 chunk-RPCDYKBN.js:18109
+flushPassiveEffectsImpl @ VM33 chunk-RPCDYKBN.js:19490
+flushPassiveEffects @ VM33 chunk-RPCDYKBN.js:19447
+performSyncWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18868
+flushSyncCallbacks @ VM33 chunk-RPCDYKBN.js:9119
+commitRootImpl @ VM33 chunk-RPCDYKBN.js:19432
+commitRoot @ VM33 chunk-RPCDYKBN.js:19277
+finishConcurrentRender @ VM33 chunk-RPCDYKBN.js:18805
+performConcurrentWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18718
+workLoop @ VM33 chunk-RPCDYKBN.js:197
+flushWork @ VM33 chunk-RPCDYKBN.js:176
+performWorkUntilDeadline @ VM33 chunk-RPCDYKBN.js:384
+eruda.js:2  GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/poll-votes/user/1/pulse/3?t=1755630232859 404 (Not Found)
+window.fetch @ VM12 eruda.js:2
+(anonymous) @ VM51 queryClient.ts:166
+fetchFn @ VM47 @tanstack_react-query.js:840
+run @ VM47 @tanstack_react-query.js:494
+(anonymous) @ VM47 @tanstack_react-query.js:519
+Promise.then
+(anonymous) @ VM47 @tanstack_react-query.js:515
+Promise.catch
+run @ VM47 @tanstack_react-query.js:498
+start @ VM47 @tanstack_react-query.js:536
+fetch @ VM47 @tanstack_react-query.js:926
+executeFetch_fn @ VM47 @tanstack_react-query.js:2211
+onSubscribe @ VM47 @tanstack_react-query.js:1898
+subscribe @ VM47 @tanstack_react-query.js:24
+(anonymous) @ VM47 @tanstack_react-query.js:3022
+subscribeToStore @ VM33 chunk-RPCDYKBN.js:11984
+commitHookEffectListMount @ VM33 chunk-RPCDYKBN.js:16915
+commitPassiveMountOnFiber @ VM33 chunk-RPCDYKBN.js:18156
+commitPassiveMountEffects_complete @ VM33 chunk-RPCDYKBN.js:18129
+commitPassiveMountEffects_begin @ VM33 chunk-RPCDYKBN.js:18119
+commitPassiveMountEffects @ VM33 chunk-RPCDYKBN.js:18109
+flushPassiveEffectsImpl @ VM33 chunk-RPCDYKBN.js:19490
+flushPassiveEffects @ VM33 chunk-RPCDYKBN.js:19447
+commitRootImpl @ VM33 chunk-RPCDYKBN.js:19416
+commitRoot @ VM33 chunk-RPCDYKBN.js:19277
+performSyncWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18895
+flushSyncCallbacks @ VM33 chunk-RPCDYKBN.js:9119
+(anonymous) @ VM33 chunk-RPCDYKBN.js:18627
+setTimeout
+scheduleFn @ VM47 @tanstack_react-query.js:555
+flush @ VM47 @tanstack_react-query.js:569
+batch @ VM47 @tanstack_react-query.js:587
+dispatch_fn @ VM47 @tanstack_react-query.js:996
+setData @ VM47 @tanstack_react-query.js:696
+onSuccess @ VM47 @tanstack_react-query.js:897
+resolve @ VM47 @tanstack_react-query.js:456
+Promise.then
+run @ VM47 @tanstack_react-query.js:498
+start @ VM47 @tanstack_react-query.js:536
+fetch @ VM47 @tanstack_react-query.js:926
+executeFetch_fn @ VM47 @tanstack_react-query.js:2211
+onSubscribe @ VM47 @tanstack_react-query.js:1898
+subscribe @ VM47 @tanstack_react-query.js:24
+(anonymous) @ VM47 @tanstack_react-query.js:3022
+subscribeToStore @ VM33 chunk-RPCDYKBN.js:11984
+commitHookEffectListMount @ VM33 chunk-RPCDYKBN.js:16915
+commitPassiveMountOnFiber @ VM33 chunk-RPCDYKBN.js:18156
+commitPassiveMountEffects_complete @ VM33 chunk-RPCDYKBN.js:18129
+commitPassiveMountEffects_begin @ VM33 chunk-RPCDYKBN.js:18119
+commitPassiveMountEffects @ VM33 chunk-RPCDYKBN.js:18109
+flushPassiveEffectsImpl @ VM33 chunk-RPCDYKBN.js:19490
+flushPassiveEffects @ VM33 chunk-RPCDYKBN.js:19447
+performSyncWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18868
+flushSyncCallbacks @ VM33 chunk-RPCDYKBN.js:9119
+commitRootImpl @ VM33 chunk-RPCDYKBN.js:19432
+commitRoot @ VM33 chunk-RPCDYKBN.js:19277
+finishConcurrentRender @ VM33 chunk-RPCDYKBN.js:18805
+performConcurrentWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18718
+workLoop @ VM33 chunk-RPCDYKBN.js:197
+flushWork @ VM33 chunk-RPCDYKBN.js:176
+performWorkUntilDeadline @ VM33 chunk-RPCDYKBN.js:384
+eruda.js:2 API Error 404 for /api/poll-votes/user/1/pulse/3
+Mt.forEach.n.<computed> @ VM12 eruda.js:2
+(anonymous) @ VM51 queryClient.ts:186
+await in (anonymous)
+fetchFn @ VM47 @tanstack_react-query.js:840
+run @ VM47 @tanstack_react-query.js:494
+(anonymous) @ VM47 @tanstack_react-query.js:519
+Promise.then
+(anonymous) @ VM47 @tanstack_react-query.js:515
+Promise.catch
+run @ VM47 @tanstack_react-query.js:498
+start @ VM47 @tanstack_react-query.js:536
+fetch @ VM47 @tanstack_react-query.js:926
+executeFetch_fn @ VM47 @tanstack_react-query.js:2211
+onSubscribe @ VM47 @tanstack_react-query.js:1898
+subscribe @ VM47 @tanstack_react-query.js:24
+(anonymous) @ VM47 @tanstack_react-query.js:3022
+subscribeToStore @ VM33 chunk-RPCDYKBN.js:11984
+commitHookEffectListMount @ VM33 chunk-RPCDYKBN.js:16915
+commitPassiveMountOnFiber @ VM33 chunk-RPCDYKBN.js:18156
+commitPassiveMountEffects_complete @ VM33 chunk-RPCDYKBN.js:18129
+commitPassiveMountEffects_begin @ VM33 chunk-RPCDYKBN.js:18119
+commitPassiveMountEffects @ VM33 chunk-RPCDYKBN.js:18109
+flushPassiveEffectsImpl @ VM33 chunk-RPCDYKBN.js:19490
+flushPassiveEffects @ VM33 chunk-RPCDYKBN.js:19447
+commitRootImpl @ VM33 chunk-RPCDYKBN.js:19416
+commitRoot @ VM33 chunk-RPCDYKBN.js:19277
+performSyncWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18895
+flushSyncCallbacks @ VM33 chunk-RPCDYKBN.js:9119
+(anonymous) @ VM33 chunk-RPCDYKBN.js:18627
+setTimeout
+scheduleFn @ VM47 @tanstack_react-query.js:555
+flush @ VM47 @tanstack_react-query.js:569
+batch @ VM47 @tanstack_react-query.js:587
+dispatch_fn @ VM47 @tanstack_react-query.js:996
+setData @ VM47 @tanstack_react-query.js:696
+onSuccess @ VM47 @tanstack_react-query.js:897
+resolve @ VM47 @tanstack_react-query.js:456
+Promise.then
+run @ VM47 @tanstack_react-query.js:498
+start @ VM47 @tanstack_react-query.js:536
+fetch @ VM47 @tanstack_react-query.js:926
+executeFetch_fn @ VM47 @tanstack_react-query.js:2211
+onSubscribe @ VM47 @tanstack_react-query.js:1898
+subscribe @ VM47 @tanstack_react-query.js:24
+(anonymous) @ VM47 @tanstack_react-query.js:3022
+subscribeToStore @ VM33 chunk-RPCDYKBN.js:11984
+commitHookEffectListMount @ VM33 chunk-RPCDYKBN.js:16915
+commitPassiveMountOnFiber @ VM33 chunk-RPCDYKBN.js:18156
+commitPassiveMountEffects_complete @ VM33 chunk-RPCDYKBN.js:18129
+commitPassiveMountEffects_begin @ VM33 chunk-RPCDYKBN.js:18119
+commitPassiveMountEffects @ VM33 chunk-RPCDYKBN.js:18109
+flushPassiveEffectsImpl @ VM33 chunk-RPCDYKBN.js:19490
+flushPassiveEffects @ VM33 chunk-RPCDYKBN.js:19447
+performSyncWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18868
+flushSyncCallbacks @ VM33 chunk-RPCDYKBN.js:9119
+commitRootImpl @ VM33 chunk-RPCDYKBN.js:19432
+commitRoot @ VM33 chunk-RPCDYKBN.js:19277
+finishConcurrentRender @ VM33 chunk-RPCDYKBN.js:18805
+performConcurrentWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18718
+workLoop @ VM33 chunk-RPCDYKBN.js:197
+flushWork @ VM33 chunk-RPCDYKBN.js:176
+performWorkUntilDeadline @ VM33 chunk-RPCDYKBN.js:384
+eruda.js:2 Query error for /api/poll-votes/user/1/pulse/3: Error: 404: {"message":"No vote found"}
+    at queryClient.ts:192:15
+Mt.forEach.n.<computed> @ VM12 eruda.js:2
+(anonymous) @ VM51 queryClient.ts:241
+await in (anonymous)
+fetchFn @ VM47 @tanstack_react-query.js:840
+run @ VM47 @tanstack_react-query.js:494
+(anonymous) @ VM47 @tanstack_react-query.js:519
+Promise.then
+(anonymous) @ VM47 @tanstack_react-query.js:515
+Promise.catch
+run @ VM47 @tanstack_react-query.js:498
+start @ VM47 @tanstack_react-query.js:536
+fetch @ VM47 @tanstack_react-query.js:926
+executeFetch_fn @ VM47 @tanstack_react-query.js:2211
+onSubscribe @ VM47 @tanstack_react-query.js:1898
+subscribe @ VM47 @tanstack_react-query.js:24
+(anonymous) @ VM47 @tanstack_react-query.js:3022
+subscribeToStore @ VM33 chunk-RPCDYKBN.js:11984
+commitHookEffectListMount @ VM33 chunk-RPCDYKBN.js:16915
+commitPassiveMountOnFiber @ VM33 chunk-RPCDYKBN.js:18156
+commitPassiveMountEffects_complete @ VM33 chunk-RPCDYKBN.js:18129
+commitPassiveMountEffects_begin @ VM33 chunk-RPCDYKBN.js:18119
+commitPassiveMountEffects @ VM33 chunk-RPCDYKBN.js:18109
+flushPassiveEffectsImpl @ VM33 chunk-RPCDYKBN.js:19490
+flushPassiveEffects @ VM33 chunk-RPCDYKBN.js:19447
+commitRootImpl @ VM33 chunk-RPCDYKBN.js:19416
+commitRoot @ VM33 chunk-RPCDYKBN.js:19277
+performSyncWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18895
+flushSyncCallbacks @ VM33 chunk-RPCDYKBN.js:9119
+(anonymous) @ VM33 chunk-RPCDYKBN.js:18627
+setTimeout
+scheduleFn @ VM47 @tanstack_react-query.js:555
+flush @ VM47 @tanstack_react-query.js:569
+batch @ VM47 @tanstack_react-query.js:587
+dispatch_fn @ VM47 @tanstack_react-query.js:996
+setData @ VM47 @tanstack_react-query.js:696
+onSuccess @ VM47 @tanstack_react-query.js:897
+resolve @ VM47 @tanstack_react-query.js:456
+Promise.then
+run @ VM47 @tanstack_react-query.js:498
+start @ VM47 @tanstack_react-query.js:536
+fetch @ VM47 @tanstack_react-query.js:926
+executeFetch_fn @ VM47 @tanstack_react-query.js:2211
+onSubscribe @ VM47 @tanstack_react-query.js:1898
+subscribe @ VM47 @tanstack_react-query.js:24
+(anonymous) @ VM47 @tanstack_react-query.js:3022
+subscribeToStore @ VM33 chunk-RPCDYKBN.js:11984
+commitHookEffectListMount @ VM33 chunk-RPCDYKBN.js:16915
+commitPassiveMountOnFiber @ VM33 chunk-RPCDYKBN.js:18156
+commitPassiveMountEffects_complete @ VM33 chunk-RPCDYKBN.js:18129
+commitPassiveMountEffects_begin @ VM33 chunk-RPCDYKBN.js:18119
+commitPassiveMountEffects @ VM33 chunk-RPCDYKBN.js:18109
+flushPassiveEffectsImpl @ VM33 chunk-RPCDYKBN.js:19490
+flushPassiveEffects @ VM33 chunk-RPCDYKBN.js:19447
+performSyncWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18868
+flushSyncCallbacks @ VM33 chunk-RPCDYKBN.js:9119
+commitRootImpl @ VM33 chunk-RPCDYKBN.js:19432
+commitRoot @ VM33 chunk-RPCDYKBN.js:19277
+finishConcurrentRender @ VM33 chunk-RPCDYKBN.js:18805
+performConcurrentWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18718
+workLoop @ VM33 chunk-RPCDYKBN.js:197
+flushWork @ VM33 chunk-RPCDYKBN.js:176
+performWorkUntilDeadline @ VM33 chunk-RPCDYKBN.js:384
+eruda.js:2 Query error for /api/poll-votes/user/1/pulse/41: Error: 404: {"message":"No vote found"}
+    at queryClient.ts:192:15
+Mt.forEach.n.<computed> @ VM12 eruda.js:2
+(anonymous) @ VM51 queryClient.ts:241
+await in (anonymous)
+fetchFn @ VM47 @tanstack_react-query.js:840
+run @ VM47 @tanstack_react-query.js:494
+(anonymous) @ VM47 @tanstack_react-query.js:519
+Promise.then
+(anonymous) @ VM47 @tanstack_react-query.js:515
+Promise.catch
+run @ VM47 @tanstack_react-query.js:498
+start @ VM47 @tanstack_react-query.js:536
+fetch @ VM47 @tanstack_react-query.js:926
+executeFetch_fn @ VM47 @tanstack_react-query.js:2211
+onSubscribe @ VM47 @tanstack_react-query.js:1898
+subscribe @ VM47 @tanstack_react-query.js:24
+(anonymous) @ VM47 @tanstack_react-query.js:3022
+subscribeToStore @ VM33 chunk-RPCDYKBN.js:11984
+commitHookEffectListMount @ VM33 chunk-RPCDYKBN.js:16915
+commitPassiveMountOnFiber @ VM33 chunk-RPCDYKBN.js:18156
+commitPassiveMountEffects_complete @ VM33 chunk-RPCDYKBN.js:18129
+commitPassiveMountEffects_begin @ VM33 chunk-RPCDYKBN.js:18119
+commitPassiveMountEffects @ VM33 chunk-RPCDYKBN.js:18109
+flushPassiveEffectsImpl @ VM33 chunk-RPCDYKBN.js:19490
+flushPassiveEffects @ VM33 chunk-RPCDYKBN.js:19447
+commitRootImpl @ VM33 chunk-RPCDYKBN.js:19416
+commitRoot @ VM33 chunk-RPCDYKBN.js:19277
+performSyncWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18895
+flushSyncCallbacks @ VM33 chunk-RPCDYKBN.js:9119
+(anonymous) @ VM33 chunk-RPCDYKBN.js:18627
+setTimeout
+scheduleFn @ VM47 @tanstack_react-query.js:555
+flush @ VM47 @tanstack_react-query.js:569
+batch @ VM47 @tanstack_react-query.js:587
+dispatch_fn @ VM47 @tanstack_react-query.js:996
+setData @ VM47 @tanstack_react-query.js:696
+onSuccess @ VM47 @tanstack_react-query.js:897
+resolve @ VM47 @tanstack_react-query.js:456
+Promise.then
+run @ VM47 @tanstack_react-query.js:498
+start @ VM47 @tanstack_react-query.js:536
+fetch @ VM47 @tanstack_react-query.js:926
+executeFetch_fn @ VM47 @tanstack_react-query.js:2211
+onSubscribe @ VM47 @tanstack_react-query.js:1898
+subscribe @ VM47 @tanstack_react-query.js:24
+(anonymous) @ VM47 @tanstack_react-query.js:3022
+subscribeToStore @ VM33 chunk-RPCDYKBN.js:11984
+commitHookEffectListMount @ VM33 chunk-RPCDYKBN.js:16915
+commitPassiveMountOnFiber @ VM33 chunk-RPCDYKBN.js:18156
+commitPassiveMountEffects_complete @ VM33 chunk-RPCDYKBN.js:18129
+commitPassiveMountEffects_begin @ VM33 chunk-RPCDYKBN.js:18119
+commitPassiveMountEffects @ VM33 chunk-RPCDYKBN.js:18109
+flushPassiveEffectsImpl @ VM33 chunk-RPCDYKBN.js:19490
+flushPassiveEffects @ VM33 chunk-RPCDYKBN.js:19447
+performSyncWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18868
+flushSyncCallbacks @ VM33 chunk-RPCDYKBN.js:9119
+commitRootImpl @ VM33 chunk-RPCDYKBN.js:19432
+commitRoot @ VM33 chunk-RPCDYKBN.js:19277
+finishConcurrentRender @ VM33 chunk-RPCDYKBN.js:18805
+performConcurrentWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18718
+workLoop @ VM33 chunk-RPCDYKBN.js:197
+flushWork @ VM33 chunk-RPCDYKBN.js:176
+performWorkUntilDeadline @ VM33 chunk-RPCDYKBN.js:384
+sw.js:60 [SW] Serving from cache: https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-switch.js?v=204557f4
+sw.js:60 [SW] Serving from cache: https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-slider.js?v=204557f4
+eruda.js:2 [DIALOG STATE] showEditPersonalInfoDialog changed to: false
+eruda.js:2 Fetching user data for Firebase UID: undefined
+eruda.js:2 ProtectedRoute: User authenticated: nishant.brodos@gmail.com
+eruda.js:2  GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/username/undefined 404 (Not Found)
+window.fetch @ VM12 eruda.js:2
+queryFn @ VM305 profile-neo.tsx:98
+fetchFn @ VM47 @tanstack_react-query.js:840
+run @ VM47 @tanstack_react-query.js:494
+start @ VM47 @tanstack_react-query.js:536
+fetch @ VM47 @tanstack_react-query.js:926
+executeFetch_fn @ VM47 @tanstack_react-query.js:2211
+onSubscribe @ VM47 @tanstack_react-query.js:1898
+subscribe @ VM47 @tanstack_react-query.js:24
+(anonymous) @ VM47 @tanstack_react-query.js:3022
+subscribeToStore @ VM33 chunk-RPCDYKBN.js:11984
+commitHookEffectListMount @ VM33 chunk-RPCDYKBN.js:16915
+commitPassiveMountOnFiber @ VM33 chunk-RPCDYKBN.js:18156
+commitPassiveMountEffects_complete @ VM33 chunk-RPCDYKBN.js:18129
+commitPassiveMountEffects_begin @ VM33 chunk-RPCDYKBN.js:18119
+commitPassiveMountEffects @ VM33 chunk-RPCDYKBN.js:18109
+flushPassiveEffectsImpl @ VM33 chunk-RPCDYKBN.js:19490
+flushPassiveEffects @ VM33 chunk-RPCDYKBN.js:19447
+performSyncWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18868
+flushSyncCallbacks @ VM33 chunk-RPCDYKBN.js:9119
+commitRootImpl @ VM33 chunk-RPCDYKBN.js:19432
+commitRoot @ VM33 chunk-RPCDYKBN.js:19277
+finishConcurrentRender @ VM33 chunk-RPCDYKBN.js:18805
+performConcurrentWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18718
+workLoop @ VM33 chunk-RPCDYKBN.js:197
+flushWork @ VM33 chunk-RPCDYKBN.js:176
+performWorkUntilDeadline @ VM33 chunk-RPCDYKBN.js:384
+eruda.js:2 Failed to fetch user data: 404 Not Found
+Mt.forEach.n.<computed> @ VM12 eruda.js:2
+queryFn @ VM305 profile-neo.tsx:100
+await in queryFn
+fetchFn @ VM47 @tanstack_react-query.js:840
+run @ VM47 @tanstack_react-query.js:494
+start @ VM47 @tanstack_react-query.js:536
+fetch @ VM47 @tanstack_react-query.js:926
+executeFetch_fn @ VM47 @tanstack_react-query.js:2211
+onSubscribe @ VM47 @tanstack_react-query.js:1898
+subscribe @ VM47 @tanstack_react-query.js:24
+(anonymous) @ VM47 @tanstack_react-query.js:3022
+subscribeToStore @ VM33 chunk-RPCDYKBN.js:11984
+commitHookEffectListMount @ VM33 chunk-RPCDYKBN.js:16915
+commitPassiveMountOnFiber @ VM33 chunk-RPCDYKBN.js:18156
+commitPassiveMountEffects_complete @ VM33 chunk-RPCDYKBN.js:18129
+commitPassiveMountEffects_begin @ VM33 chunk-RPCDYKBN.js:18119
+commitPassiveMountEffects @ VM33 chunk-RPCDYKBN.js:18109
+flushPassiveEffectsImpl @ VM33 chunk-RPCDYKBN.js:19490
+flushPassiveEffects @ VM33 chunk-RPCDYKBN.js:19447
+performSyncWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18868
+flushSyncCallbacks @ VM33 chunk-RPCDYKBN.js:9119
+commitRootImpl @ VM33 chunk-RPCDYKBN.js:19432
+commitRoot @ VM33 chunk-RPCDYKBN.js:19277
+finishConcurrentRender @ VM33 chunk-RPCDYKBN.js:18805
+performConcurrentWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18718
+workLoop @ VM33 chunk-RPCDYKBN.js:197
+flushWork @ VM33 chunk-RPCDYKBN.js:176
+performWorkUntilDeadline @ VM33 chunk-RPCDYKBN.js:384
+eruda.js:2 Fetching user data for Firebase UID: undefined
+eruda.js:2  GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/username/undefined 404 (Not Found)
+window.fetch @ VM12 eruda.js:2
+queryFn @ VM305 profile-neo.tsx:98
+fetchFn @ VM47 @tanstack_react-query.js:840
+run @ VM47 @tanstack_react-query.js:494
+(anonymous) @ VM47 @tanstack_react-query.js:519
+Promise.then
+(anonymous) @ VM47 @tanstack_react-query.js:515
+Promise.catch
+run @ VM47 @tanstack_react-query.js:498
+start @ VM47 @tanstack_react-query.js:536
+fetch @ VM47 @tanstack_react-query.js:926
+executeFetch_fn @ VM47 @tanstack_react-query.js:2211
+onSubscribe @ VM47 @tanstack_react-query.js:1898
+subscribe @ VM47 @tanstack_react-query.js:24
+(anonymous) @ VM47 @tanstack_react-query.js:3022
+subscribeToStore @ VM33 chunk-RPCDYKBN.js:11984
+commitHookEffectListMount @ VM33 chunk-RPCDYKBN.js:16915
+commitPassiveMountOnFiber @ VM33 chunk-RPCDYKBN.js:18156
+commitPassiveMountEffects_complete @ VM33 chunk-RPCDYKBN.js:18129
+commitPassiveMountEffects_begin @ VM33 chunk-RPCDYKBN.js:18119
+commitPassiveMountEffects @ VM33 chunk-RPCDYKBN.js:18109
+flushPassiveEffectsImpl @ VM33 chunk-RPCDYKBN.js:19490
+flushPassiveEffects @ VM33 chunk-RPCDYKBN.js:19447
+performSyncWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18868
+flushSyncCallbacks @ VM33 chunk-RPCDYKBN.js:9119
+commitRootImpl @ VM33 chunk-RPCDYKBN.js:19432
+commitRoot @ VM33 chunk-RPCDYKBN.js:19277
+finishConcurrentRender @ VM33 chunk-RPCDYKBN.js:18805
+performConcurrentWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18718
+workLoop @ VM33 chunk-RPCDYKBN.js:197
+flushWork @ VM33 chunk-RPCDYKBN.js:176
+performWorkUntilDeadline @ VM33 chunk-RPCDYKBN.js:384
+eruda.js:2 Failed to fetch user data: 404 Not Found
+Mt.forEach.n.<computed> @ VM12 eruda.js:2
+queryFn @ VM305 profile-neo.tsx:100
+await in queryFn
+fetchFn @ VM47 @tanstack_react-query.js:840
+run @ VM47 @tanstack_react-query.js:494
+(anonymous) @ VM47 @tanstack_react-query.js:519
+Promise.then
+(anonymous) @ VM47 @tanstack_react-query.js:515
+Promise.catch
+run @ VM47 @tanstack_react-query.js:498
+start @ VM47 @tanstack_react-query.js:536
+fetch @ VM47 @tanstack_react-query.js:926
+executeFetch_fn @ VM47 @tanstack_react-query.js:2211
+onSubscribe @ VM47 @tanstack_react-query.js:1898
+subscribe @ VM47 @tanstack_react-query.js:24
+(anonymous) @ VM47 @tanstack_react-query.js:3022
+subscribeToStore @ VM33 chunk-RPCDYKBN.js:11984
+commitHookEffectListMount @ VM33 chunk-RPCDYKBN.js:16915
+commitPassiveMountOnFiber @ VM33 chunk-RPCDYKBN.js:18156
+commitPassiveMountEffects_complete @ VM33 chunk-RPCDYKBN.js:18129
+commitPassiveMountEffects_begin @ VM33 chunk-RPCDYKBN.js:18119
+commitPassiveMountEffects @ VM33 chunk-RPCDYKBN.js:18109
+flushPassiveEffectsImpl @ VM33 chunk-RPCDYKBN.js:19490
+flushPassiveEffects @ VM33 chunk-RPCDYKBN.js:19447
+performSyncWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18868
+flushSyncCallbacks @ VM33 chunk-RPCDYKBN.js:9119
+commitRootImpl @ VM33 chunk-RPCDYKBN.js:19432
+commitRoot @ VM33 chunk-RPCDYKBN.js:19277
+finishConcurrentRender @ VM33 chunk-RPCDYKBN.js:18805
+performConcurrentWorkOnRoot @ VM33 chunk-RPCDYKBN.js:18718
+workLoop @ VM33 chunk-RPCDYKBN.js:197
+flushWork @ VM33 chunk-RPCDYKBN.js:176
+performWorkUntilDeadline @ VM33 chunk-RPCDYKBN.js:384
+sw.js:60 [SW] Serving from cache: https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js
+sw.js:60 [SW] Serving from cache: https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/static/devtools/injected.js
+sw.js:60 [SW] Serving from cache: https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap
+sw.js:60 [SW] Serving from cache: https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/index.css
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/profile:1 Refused to apply style from 'https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/index.css' because its MIME type ('text/javascript') is not a supported stylesheet MIME type, and strict MIME checking is enabled.
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/profile:107 A preload for 'https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/main.tsx' is found, but is not used because the request credentials mode does not match. Consider taking a look at crossorigin attribute.
+sw.js:60 [SW] Serving from cache: https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/index.css
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/profile:108 A preload for 'https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/App.tsx' is found, but is not used because the request credentials mode does not match. Consider taking a look at crossorigin attribute.
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/profile:113 Refused to apply style from 'https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/index.css' because its MIME type ('text/javascript') is not a supported stylesheet MIME type, and strict MIME checking is enabled.
+eruda.js:2 [SW] Service Worker v2 registered: https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/
+eruda.js:2 [PERF] Service Worker registered in 24.90 ms
+sw.js:64 [SW] Fetching from network: https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/index.css?v=kBnfbEuaQenRuIJAmEyMZ
+eruda.js:2 WebSocket connection to 'wss://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/?token=8z91qK6jyXAa' failed: 
+t @ Network.js:227
+setupWebSocket @ client:536
+(anonymous) @ client:531
+eruda.js:2 Uncaught (in promise) SyntaxError: Failed to construct 'WebSocket': The URL 'wss://localhost:undefined/?token=8z91qK6jyXAa' is invalid.
+    at new t (eruda.js:2:218737)
+    at setupWebSocket (client:536:19)
+    at fallback (client:509:16)
+    at WebSocket.<anonymous> (client:555:7)
+t @ Network.js:227
+setupWebSocket @ client:536
+fallback @ client:509
+(anonymous) @ client:555
+sw.js:60 [SW] Serving from cache: https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/styles/neo-glass-spotify.css
+eruda.js:2 [Skeleton] Backup removal after 3s
+eruda.js:2 Firebase Environment Check: {apiKey: 'Present (39 chars)', projectId: 'brandentifier-app', appId: 'Present (41 chars)', envVarsDetected: {…}}
+eruda.js:2 Firebase initialization: {environment: 'development', hostname: '25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev', projectId: 'brandentifier-app', apiKeyPresent: true, apiKeyLength: 39, …}
+eruda.js:2 Using simplified Google auth configuration for maximum compatibility
+eruda.js:2 Firebase initialized successfully
+eruda.js:2 Firebase config used: {authDomain: 'brandentifier-app.firebaseapp.com', projectId: 'brandentifier-app', currentDomain: '25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev', isReplitDomain: true, googleProviderScopes: Array(2), …}
+eruda.js:2 Firebase Environment Check: {apiKey: 'Present (39 chars)', projectId: 'brandentifier-app', appId: 'Present (41 chars)', envVarsDetected: {…}}
+eruda.js:2 Firebase initialization: {environment: 'development', hostname: '25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev', projectId: 'brandentifier-app', apiKeyPresent: true, apiKeyLength: 39, …}
+eruda.js:2 Using simplified Google auth configuration for maximum compatibility
+eruda.js:2 Firebase initialized successfully
+eruda.js:2 Firebase config used: {authDomain: 'brandentifier-app.firebaseapp.com', projectId: 'brandentifier-app', currentDomain: '25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev', isReplitDomain: true, googleProviderScopes: Array(2), …}
+eruda.js:2 [PERF] React app initialization started
+eruda.js:2 [PERF] React rendering started
+eruda.js:2 [Skeleton] DOM loaded, preparing smooth transition
+eruda.js:2 [PERF] React app rendered in 42.80 ms
+eruda.js:2 [PERF] Total initialization time: 43.20 ms
+eruda.js:2 Found stored user: nishant.brodos@gmail.com
+eruda.js:2 🚀 [PERF] COMPLETE PERFORMANCE OPTIMIZATION REPORT:
+eruda.js:2 📊 Total page load time: 4868.40ms
+eruda.js:2 🔥 Firebase init time: 4868.40ms
+eruda.js:2 ✅ [Strategy 1] Preconnect/Preload: 9 preconnect + 4 preload + 2 modulepreload links active
+eruda.js:2 ⚡ Expected improvement: 100-300ms faster cold starts
+eruda.js:2 ✅ [Strategy 2] Firebase Auth Caching: Active - cached state available
+eruda.js:2 ⚡ Expected improvement: 150-250ms faster auth loads
+eruda.js:2 ✅ [Strategy 4] Service Worker v2: Active with enhanced caching
+eruda.js:2 ⚡ Return visits: Near-instant loading (0-50ms)
+eruda.js:2 🎯 PERFORMANCE STATUS: OPTIMIZING - Further improvements in progress
+eruda.js:2 📈 Performance Optimization Complete - All 4 strategies active!
+eruda.js:2 [Skeleton] Starting fade-out transition
+eruda.js:2 [PERF] Skeleton loader removed in 236.00 ms
+eruda.js:2 [Skeleton] Skeleton loading complete - app ready
+eruda.js:2 ⚡ [PERF] Skeleton-to-app transition: 5033.80ms
+eruda.js:2 ✅ [Strategy 3] Progressive Rendering: Core(0) + Secondary(0) components loaded
+eruda.js:2 ⚡ Expected improvement: 50-100ms perceived performance boost
+sw.js:60 [SW] Serving from cache: https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/styles/animated-template.css
+sw.js:60 [SW] Serving from cache: https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/react-simple-typewriter.js?v=204557f4
+sw.js:60 [SW] Serving from cache: https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/react-icons_fa.js?v=204557f4
+eruda.js:2 [BrandProfile] Loading profile for brand name: profile
+eruda.js:2 Brand profile debug:
+eruda.js:2 - userData: undefined
+eruda.js:2 - publishedPortfolio: undefined
+eruda.js:2 - portfolioError: null
+eruda.js:2 - isPortfolioDataLoading: false
+eruda.js:2 Portfolio data construction:
+eruda.js:2 - userData exists: false
+eruda.js:2 - publishedPortfolio exists: false
+eruda.js:2 - portfolioData result: false
+eruda.js:2 - isPortfolioLoading: false
+eruda.js:2 Fetching data from: /api/users/brand/profile
+eruda.js:2 [Progressive Loading] Starting tiered component loading
+eruda.js:2 [Progressive Loading] ⚡ Core components ready
+eruda.js:2  ⚠️ FIREBASE DOMAIN SETUP INFORMATION ⚠️ 
+eruda.js:2  Add these domains to Firebase Auth > Settings > Authorized domains: 
+eruda.js:2  1. 25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev 
+eruda.js:2  2. 25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev.replit.app 
+eruda.js:2  3. *.replit.dev 
+eruda.js:2  4. *.replit.app 
+eruda.js:2 [BrandProfile] Loading profile for brand name: profile
+eruda.js:2 Brand profile debug:
+eruda.js:2 - userData: undefined
+eruda.js:2 - publishedPortfolio: undefined
+eruda.js:2 - portfolioError: null
+eruda.js:2 - isPortfolioDataLoading: false
+eruda.js:2 Portfolio data construction:
+eruda.js:2 - userData exists: false
+eruda.js:2 - publishedPortfolio exists: false
+eruda.js:2 - portfolioData result: false
+eruda.js:2 - isPortfolioLoading: false
+eruda.js:2 [Progressive Loading] 🚀 Secondary components loaded
+eruda.js:2 [Progressive Loading] 🔧 All components loaded in 215.00ms
+eruda.js:2 Cached response for /api/users/2/projects
+eruda.js:2 Cached response for /api/users/2/experiences
+eruda.js:2 Cached response for /api/users/2/skills
+eruda.js:2 Cached response for /api/users/2/educations
+eruda.js:2  GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/brand/profile?t=5852100 404 (Not Found)
+window.fetch @ Network.js:219
+(anonymous) @ queryClient.ts:306
+fetchFn @ @tanstack_react-query.js?v=204557f4:840
+run @ @tanstack_react-query.js?v=204557f4:494
+start @ @tanstack_react-query.js?v=204557f4:536
+fetch @ @tanstack_react-query.js?v=204557f4:926
+executeFetch_fn @ @tanstack_react-query.js?v=204557f4:2211
+onSubscribe @ @tanstack_react-query.js?v=204557f4:1898
+subscribe @ @tanstack_react-query.js?v=204557f4:24
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=204557f4:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=204557f4:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=204557f4:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=204557f4:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=204557f4:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=204557f4:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=204557f4:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=204557f4:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=204557f4:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=204557f4:19432
+commitRoot @ chunk-RPCDYKBN.js?v=204557f4:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=204557f4:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18718
+workLoop @ chunk-RPCDYKBN.js?v=204557f4:197
+flushWork @ chunk-RPCDYKBN.js?v=204557f4:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=204557f4:384
+eruda.js:2 API Error 404 for /api/users/brand/profile
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:332
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=204557f4:840
+run @ @tanstack_react-query.js?v=204557f4:494
+start @ @tanstack_react-query.js?v=204557f4:536
+fetch @ @tanstack_react-query.js?v=204557f4:926
+executeFetch_fn @ @tanstack_react-query.js?v=204557f4:2211
+onSubscribe @ @tanstack_react-query.js?v=204557f4:1898
+subscribe @ @tanstack_react-query.js?v=204557f4:24
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=204557f4:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=204557f4:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=204557f4:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=204557f4:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=204557f4:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=204557f4:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=204557f4:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=204557f4:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=204557f4:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=204557f4:19432
+commitRoot @ chunk-RPCDYKBN.js?v=204557f4:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=204557f4:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18718
+workLoop @ chunk-RPCDYKBN.js?v=204557f4:197
+flushWork @ chunk-RPCDYKBN.js?v=204557f4:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=204557f4:384
+eruda.js:2 Query error for /api/users/brand/profile: Error: 404: {"message":"User not found"}
+    at queryClient.ts:192:15
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:433
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=204557f4:840
+run @ @tanstack_react-query.js?v=204557f4:494
+start @ @tanstack_react-query.js?v=204557f4:536
+fetch @ @tanstack_react-query.js?v=204557f4:926
+executeFetch_fn @ @tanstack_react-query.js?v=204557f4:2211
+onSubscribe @ @tanstack_react-query.js?v=204557f4:1898
+subscribe @ @tanstack_react-query.js?v=204557f4:24
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=204557f4:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=204557f4:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=204557f4:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=204557f4:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=204557f4:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=204557f4:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=204557f4:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=204557f4:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=204557f4:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=204557f4:19432
+commitRoot @ chunk-RPCDYKBN.js?v=204557f4:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=204557f4:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18718
+workLoop @ chunk-RPCDYKBN.js?v=204557f4:197
+flushWork @ chunk-RPCDYKBN.js?v=204557f4:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=204557f4:384
+eruda.js:2 Cached response for /api/users/2
+eruda.js:2 🔧 initializeRedirectHandler: hasRedirectAttempt = false
+eruda.js:2 ❌ No redirect attempt flag found - not initializing handler
+eruda.js:2 Fetching data from: /api/users/brand/profile
+eruda.js:2  GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/brand/profile?t=5852100 404 (Not Found)
+window.fetch @ Network.js:219
+(anonymous) @ queryClient.ts:306
+fetchFn @ @tanstack_react-query.js?v=204557f4:840
+run @ @tanstack_react-query.js?v=204557f4:494
+(anonymous) @ @tanstack_react-query.js?v=204557f4:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=204557f4:515
+Promise.catch
+run @ @tanstack_react-query.js?v=204557f4:498
+start @ @tanstack_react-query.js?v=204557f4:536
+fetch @ @tanstack_react-query.js?v=204557f4:926
+executeFetch_fn @ @tanstack_react-query.js?v=204557f4:2211
+onSubscribe @ @tanstack_react-query.js?v=204557f4:1898
+subscribe @ @tanstack_react-query.js?v=204557f4:24
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=204557f4:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=204557f4:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=204557f4:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=204557f4:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=204557f4:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=204557f4:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=204557f4:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=204557f4:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=204557f4:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=204557f4:19432
+commitRoot @ chunk-RPCDYKBN.js?v=204557f4:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=204557f4:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18718
+workLoop @ chunk-RPCDYKBN.js?v=204557f4:197
+flushWork @ chunk-RPCDYKBN.js?v=204557f4:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=204557f4:384
+eruda.js:2 API Error 404 for /api/users/brand/profile
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:332
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=204557f4:840
+run @ @tanstack_react-query.js?v=204557f4:494
+(anonymous) @ @tanstack_react-query.js?v=204557f4:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=204557f4:515
+Promise.catch
+run @ @tanstack_react-query.js?v=204557f4:498
+start @ @tanstack_react-query.js?v=204557f4:536
+fetch @ @tanstack_react-query.js?v=204557f4:926
+executeFetch_fn @ @tanstack_react-query.js?v=204557f4:2211
+onSubscribe @ @tanstack_react-query.js?v=204557f4:1898
+subscribe @ @tanstack_react-query.js?v=204557f4:24
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=204557f4:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=204557f4:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=204557f4:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=204557f4:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=204557f4:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=204557f4:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=204557f4:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=204557f4:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=204557f4:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=204557f4:19432
+commitRoot @ chunk-RPCDYKBN.js?v=204557f4:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=204557f4:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18718
+workLoop @ chunk-RPCDYKBN.js?v=204557f4:197
+flushWork @ chunk-RPCDYKBN.js?v=204557f4:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=204557f4:384
+eruda.js:2 Query error for /api/users/brand/profile: Error: 404: {"message":"User not found"}
+    at queryClient.ts:192:15
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:433
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=204557f4:840
+run @ @tanstack_react-query.js?v=204557f4:494
+(anonymous) @ @tanstack_react-query.js?v=204557f4:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=204557f4:515
+Promise.catch
+run @ @tanstack_react-query.js?v=204557f4:498
+start @ @tanstack_react-query.js?v=204557f4:536
+fetch @ @tanstack_react-query.js?v=204557f4:926
+executeFetch_fn @ @tanstack_react-query.js?v=204557f4:2211
+onSubscribe @ @tanstack_react-query.js?v=204557f4:1898
+subscribe @ @tanstack_react-query.js?v=204557f4:24
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=204557f4:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=204557f4:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=204557f4:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=204557f4:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=204557f4:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=204557f4:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=204557f4:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=204557f4:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=204557f4:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=204557f4:19432
+commitRoot @ chunk-RPCDYKBN.js?v=204557f4:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=204557f4:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18718
+workLoop @ chunk-RPCDYKBN.js?v=204557f4:197
+flushWork @ chunk-RPCDYKBN.js?v=204557f4:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=204557f4:384
+eruda.js:2 [DIALOG STATE] showEditPersonalInfoDialog changed to: false
+eruda.js:2 Fetching user data for Firebase UID: undefined
+eruda.js:2 ProtectedRoute: User authenticated: nishant.brodos@gmail.com
+eruda.js:2  GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/username/undefined 404 (Not Found)
+window.fetch @ Network.js:219
+queryFn @ profile-neo.tsx:100
+fetchFn @ @tanstack_react-query.js?v=204557f4:840
+run @ @tanstack_react-query.js?v=204557f4:494
+start @ @tanstack_react-query.js?v=204557f4:536
+fetch @ @tanstack_react-query.js?v=204557f4:926
+executeFetch_fn @ @tanstack_react-query.js?v=204557f4:2211
+onSubscribe @ @tanstack_react-query.js?v=204557f4:1898
+subscribe @ @tanstack_react-query.js?v=204557f4:24
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=204557f4:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=204557f4:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=204557f4:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=204557f4:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=204557f4:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=204557f4:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=204557f4:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=204557f4:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=204557f4:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=204557f4:19432
+commitRoot @ chunk-RPCDYKBN.js?v=204557f4:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=204557f4:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18718
+workLoop @ chunk-RPCDYKBN.js?v=204557f4:197
+flushWork @ chunk-RPCDYKBN.js?v=204557f4:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=204557f4:384
+eruda.js:2 Failed to fetch user data: 404 Not Found
+Mt.forEach.n.<computed> @ Console.js:61
+queryFn @ profile-neo.tsx:102
+await in queryFn
+fetchFn @ @tanstack_react-query.js?v=204557f4:840
+run @ @tanstack_react-query.js?v=204557f4:494
+start @ @tanstack_react-query.js?v=204557f4:536
+fetch @ @tanstack_react-query.js?v=204557f4:926
+executeFetch_fn @ @tanstack_react-query.js?v=204557f4:2211
+onSubscribe @ @tanstack_react-query.js?v=204557f4:1898
+subscribe @ @tanstack_react-query.js?v=204557f4:24
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=204557f4:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=204557f4:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=204557f4:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=204557f4:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=204557f4:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=204557f4:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=204557f4:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=204557f4:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=204557f4:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=204557f4:19432
+commitRoot @ chunk-RPCDYKBN.js?v=204557f4:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=204557f4:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18718
+workLoop @ chunk-RPCDYKBN.js?v=204557f4:197
+flushWork @ chunk-RPCDYKBN.js?v=204557f4:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=204557f4:384
+eruda.js:2 Fetching user data for Firebase UID: undefined
+eruda.js:2  GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/username/undefined 404 (Not Found)
+window.fetch @ Network.js:219
+queryFn @ profile-neo.tsx:100
+fetchFn @ @tanstack_react-query.js?v=204557f4:840
+run @ @tanstack_react-query.js?v=204557f4:494
+(anonymous) @ @tanstack_react-query.js?v=204557f4:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=204557f4:515
+Promise.catch
+run @ @tanstack_react-query.js?v=204557f4:498
+start @ @tanstack_react-query.js?v=204557f4:536
+fetch @ @tanstack_react-query.js?v=204557f4:926
+executeFetch_fn @ @tanstack_react-query.js?v=204557f4:2211
+onSubscribe @ @tanstack_react-query.js?v=204557f4:1898
+subscribe @ @tanstack_react-query.js?v=204557f4:24
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=204557f4:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=204557f4:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=204557f4:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=204557f4:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=204557f4:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=204557f4:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=204557f4:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=204557f4:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=204557f4:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=204557f4:19432
+commitRoot @ chunk-RPCDYKBN.js?v=204557f4:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=204557f4:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18718
+workLoop @ chunk-RPCDYKBN.js?v=204557f4:197
+flushWork @ chunk-RPCDYKBN.js?v=204557f4:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=204557f4:384
+eruda.js:2 Failed to fetch user data: 404 Not Found
+Mt.forEach.n.<computed> @ Console.js:61
+queryFn @ profile-neo.tsx:102
+await in queryFn
+fetchFn @ @tanstack_react-query.js?v=204557f4:840
+run @ @tanstack_react-query.js?v=204557f4:494
+(anonymous) @ @tanstack_react-query.js?v=204557f4:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=204557f4:515
+Promise.catch
+run @ @tanstack_react-query.js?v=204557f4:498
+start @ @tanstack_react-query.js?v=204557f4:536
+fetch @ @tanstack_react-query.js?v=204557f4:926
+executeFetch_fn @ @tanstack_react-query.js?v=204557f4:2211
+onSubscribe @ @tanstack_react-query.js?v=204557f4:1898
+subscribe @ @tanstack_react-query.js?v=204557f4:24
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=204557f4:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=204557f4:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=204557f4:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=204557f4:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=204557f4:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=204557f4:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=204557f4:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=204557f4:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=204557f4:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=204557f4:19432
+commitRoot @ chunk-RPCDYKBN.js?v=204557f4:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=204557f4:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18718
+workLoop @ chunk-RPCDYKBN.js?v=204557f4:197
+flushWork @ chunk-RPCDYKBN.js?v=204557f4:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=204557f4:384
+eruda.js:2 🔄 AuthCallbackHandler: Checking for OAuth callback...
+eruda.js:2 🔄 Current URL: https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/auth
+eruda.js:2 🔄 URL search params: 
+eruda.js:2 🔄 Has OAuth params: false
+eruda.js:2 🔄 Auth initiated flag: null
+eruda.js:2 No OAuth parameters and no auth initiated - skipping
+eruda.js:2 🔧 Debug overlay update: {redirectAttempt: null, redirectTime: null, authSuccess: 'true', userAuthenticated: null, hasCurrentUser: false}
+eruda.js:2 [AuthDebug] Checking authentication state...
+eruda.js:2 [AuthDebug] Firebase Project: brandentifier-app
+eruda.js:2 [AuthDebug] Current Domain: 25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev
+eruda.js:2 [AuthDebug] Full URL: https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/auth
+eruda.js:2 [AuthDebug] Found stored Brandentifier user
+eruda.js:2 Checking for redirect result...
+eruda.js:2 Auth page: User already authenticated, redirecting to: /industry-pulse
+eruda.js:2 No redirect result found
+eruda.js:2 Fetching data from: /api/nowboard-items
+eruda.js:2 Fetching data from: /api/pulses
+eruda.js:2 ProtectedRoute: User authenticated: nishant.brodos@gmail.com
+eruda.js:2 NowboardMenu rendering for item: 7 currentUser: 4 itemUser: 4
+eruda.js:2 NowboardMenu rendering for item: 3 currentUser: 4 itemUser: 4
+eruda.js:2 NowboardMenu rendering for item: 5 currentUser: 4 itemUser: 4
+eruda.js:2 NowboardMenu rendering for item: 1 currentUser: 4 itemUser: 4
+eruda.js:2 NowboardMenu rendering for item: 4 currentUser: 4 itemUser: 4
+eruda.js:2 NowboardMenu rendering for item: 2 currentUser: 4 itemUser: 4
+eruda.js:2 NowboardMenu rendering for item: 6 currentUser: 4 itemUser: 4
+eruda.js:2 NowboardMenu rendering for item: 7 currentUser: 4 itemUser: 4
+eruda.js:2 NowboardMenu rendering for item: 3 currentUser: 4 itemUser: 4
+eruda.js:2 NowboardMenu rendering for item: 5 currentUser: 4 itemUser: 4
+eruda.js:2 NowboardMenu rendering for item: 1 currentUser: 4 itemUser: 4
+eruda.js:2 NowboardMenu rendering for item: 4 currentUser: 4 itemUser: 4
+eruda.js:2 NowboardMenu rendering for item: 2 currentUser: 4 itemUser: 4
+eruda.js:2 NowboardMenu rendering for item: 6 currentUser: 4 itemUser: 4
+eruda.js:2 Fetching data from: /api/users/1/reaction-quota
+eruda.js:2 Fetching data from: /api/pulses/62/reactions
+eruda.js:2 Fetching data from: /api/pulses/61/reactions
+eruda.js:2 Fetching data from: /api/pulses/60/reactions
+eruda.js:2 Fetching data from: /api/pulses/59/reactions
+eruda.js:2 Fetching data from: /api/pulses/58/reactions
+eruda.js:2 Fetching data from: /api/pulses/57/reactions
+eruda.js:2 Fetching data from: /api/pulses/56/reactions
+eruda.js:2 Fetching data from: /api/pulses/55/reactions
+eruda.js:2 Fetching data from: /api/pulses/54/reactions
+eruda.js:2 Fetching data from: /api/pulses/53/reactions
+eruda.js:2 Fetching data from: /api/pulses/52/reactions
+eruda.js:2 Fetching data from: /api/pulses/51/reactions
+eruda.js:2 Fetching data from: /api/pulses/50/reactions
+eruda.js:2 Fetching data from: /api/pulses/49/reactions
+eruda.js:2 Fetching data from: /api/pulses/48/reactions
+eruda.js:2 Fetching data from: /api/pulses/47/reactions
+eruda.js:2 Fetching data from: /api/pulses/46/reactions
+eruda.js:2 Fetching data from: /api/pulses/45/reactions
+eruda.js:2 Fetching data from: /api/pulses/44/reactions
+eruda.js:2 Fetching data from: /api/pulses/43/reactions
+eruda.js:2 Fetching data from: /api/pulses/42/reactions
+eruda.js:2 Fetching data from: /api/poll-votes/user/1/pulse/41
+eruda.js:2 Fetching data from: /api/pulses/41/poll-votes
+eruda.js:2 Fetching data from: /api/pulses/41/reactions
+eruda.js:2 Fetching data from: /api/poll-votes/user/1/pulse/40
+eruda.js:2 Fetching data from: /api/pulses/40/poll-votes
+eruda.js:2 Fetching data from: /api/pulses/40/reactions
+eruda.js:2 Fetching data from: /api/pulses/39/reactions
+eruda.js:2 Fetching data from: /api/pulses/38/reactions
+eruda.js:2 Fetching data from: /api/pulses/37/reactions
+eruda.js:2 Fetching data from: /api/pulses/36/reactions
+eruda.js:2 Fetching data from: /api/pulses/35/reactions
+eruda.js:2 Fetching data from: /api/pulses/34/reactions
+eruda.js:2 Fetching data from: /api/pulses/33/reactions
+eruda.js:2 Fetching data from: /api/pulses/32/reactions
+eruda.js:2 Fetching data from: /api/pulses/31/reactions
+eruda.js:2 Fetching data from: /api/pulses/30/reactions
+eruda.js:2 Fetching data from: /api/pulses/29/reactions
+eruda.js:2 Fetching data from: /api/pulses/28/reactions
+eruda.js:2 Fetching data from: /api/pulses/27/reactions
+eruda.js:2 Fetching data from: /api/pulses/26/reactions
+eruda.js:2 Fetching data from: /api/pulses/25/reactions
+eruda.js:2 Fetching data from: /api/pulses/24/reactions
+eruda.js:2 Fetching data from: /api/pulses/23/reactions
+eruda.js:2 Fetching data from: /api/pulses/22/reactions
+eruda.js:2 Fetching data from: /api/pulses/21/reactions
+eruda.js:2 Fetching data from: /api/pulses/20/reactions
+eruda.js:2 Fetching data from: /api/pulses/19/reactions
+eruda.js:2 Fetching data from: /api/pulses/18/reactions
+eruda.js:2 Fetching data from: /api/pulses/17/reactions
+eruda.js:2 Fetching data from: /api/pulses/16/reactions
+eruda.js:2 Fetching data from: /api/pulses/15/reactions
+eruda.js:2 Fetching data from: /api/pulses/14/reactions
+eruda.js:2 Fetching data from: /api/pulses/13/reactions
+eruda.js:2 Fetching data from: /api/pulses/12/reactions
+eruda.js:2 Fetching data from: /api/pulses/11/reactions
+eruda.js:2 Fetching data from: /api/pulses/10/reactions
+eruda.js:2 Fetching data from: /api/pulses/9/reactions
+eruda.js:2 Fetching data from: /api/pulses/7/reactions
+eruda.js:2 Pulse received for carousel: {id: 6, userId: 4, type: 'media-pulse', category: null, title: ' file extension not allowed. I try to upload JPG image. But it still shows error.', …}
+eruda.js:2 Media URLs: (5) ['/uploads/media/media_4_1748642270806.JPG', '/uploads/media/media_4_1748642270808.JPG', '/uploads/media/media_4_1748642270809.jpg', '/uploads/media/media_4_1748642270811.jpg', '/uploads/media/media_4_1748642270812.jpg']
+eruda.js:2 Media localStorage keys: []
+eruda.js:2 Using mediaUrls for carousel: (5) ['/uploads/media/media_4_1748642270806.JPG', '/uploads/media/media_4_1748642270808.JPG', '/uploads/media/media_4_1748642270809.jpg', '/uploads/media/media_4_1748642270811.jpg', '/uploads/media/media_4_1748642270812.jpg']
+eruda.js:2 Fetching data from: /api/pulses/6/reactions
+eruda.js:2 Fetching data from: /api/poll-votes/user/1/pulse/4
+eruda.js:2 Fetching data from: /api/pulses/4/poll-votes
+eruda.js:2 Fetching data from: /api/pulses/4/reactions
+eruda.js:2 Fetching data from: /api/poll-votes/user/1/pulse/3
+eruda.js:2 Fetching data from: /api/pulses/3/poll-votes
+eruda.js:2 Fetching data from: /api/pulses/3/reactions
+eruda.js:2 Fetching data from: /api/pulses/2/reactions
+eruda.js:2 Fetching data from: /api/pulses/1/reactions
+eruda.js:2 [DIALOG STATE] showEditPersonalInfoDialog changed to: false
+eruda.js:2 Fetching user data for Firebase UID: undefined
+eruda.js:2 ProtectedRoute: User authenticated: nishant.brodos@gmail.com
+eruda.js:2  GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/poll-votes/user/1/pulse/41?t=1755630259825 404 (Not Found)
+window.fetch @ Network.js:219
+(anonymous) @ queryClient.ts:306
+fetchFn @ @tanstack_react-query.js?v=204557f4:840
+run @ @tanstack_react-query.js?v=204557f4:494
+start @ @tanstack_react-query.js?v=204557f4:536
+fetch @ @tanstack_react-query.js?v=204557f4:926
+executeFetch_fn @ @tanstack_react-query.js?v=204557f4:2211
+onSubscribe @ @tanstack_react-query.js?v=204557f4:1898
+subscribe @ @tanstack_react-query.js?v=204557f4:24
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=204557f4:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=204557f4:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=204557f4:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=204557f4:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=204557f4:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=204557f4:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=204557f4:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=204557f4:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=204557f4:19416
+commitRoot @ chunk-RPCDYKBN.js?v=204557f4:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=204557f4:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=204557f4:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=204557f4:555
+flush @ @tanstack_react-query.js?v=204557f4:569
+batch @ @tanstack_react-query.js?v=204557f4:587
+dispatch_fn @ @tanstack_react-query.js?v=204557f4:996
+setData @ @tanstack_react-query.js?v=204557f4:696
+onSuccess @ @tanstack_react-query.js?v=204557f4:897
+resolve @ @tanstack_react-query.js?v=204557f4:456
+Promise.then
+run @ @tanstack_react-query.js?v=204557f4:498
+start @ @tanstack_react-query.js?v=204557f4:536
+fetch @ @tanstack_react-query.js?v=204557f4:926
+executeFetch_fn @ @tanstack_react-query.js?v=204557f4:2211
+onSubscribe @ @tanstack_react-query.js?v=204557f4:1898
+subscribe @ @tanstack_react-query.js?v=204557f4:24
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=204557f4:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=204557f4:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=204557f4:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=204557f4:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=204557f4:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=204557f4:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=204557f4:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=204557f4:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=204557f4:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=204557f4:19432
+commitRoot @ chunk-RPCDYKBN.js?v=204557f4:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=204557f4:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18718
+workLoop @ chunk-RPCDYKBN.js?v=204557f4:197
+flushWork @ chunk-RPCDYKBN.js?v=204557f4:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=204557f4:384
+eruda.js:2 API Error 404 for /api/poll-votes/user/1/pulse/41
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:332
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=204557f4:840
+run @ @tanstack_react-query.js?v=204557f4:494
+start @ @tanstack_react-query.js?v=204557f4:536
+fetch @ @tanstack_react-query.js?v=204557f4:926
+executeFetch_fn @ @tanstack_react-query.js?v=204557f4:2211
+onSubscribe @ @tanstack_react-query.js?v=204557f4:1898
+subscribe @ @tanstack_react-query.js?v=204557f4:24
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=204557f4:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=204557f4:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=204557f4:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=204557f4:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=204557f4:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=204557f4:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=204557f4:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=204557f4:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=204557f4:19416
+commitRoot @ chunk-RPCDYKBN.js?v=204557f4:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=204557f4:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=204557f4:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=204557f4:555
+flush @ @tanstack_react-query.js?v=204557f4:569
+batch @ @tanstack_react-query.js?v=204557f4:587
+dispatch_fn @ @tanstack_react-query.js?v=204557f4:996
+setData @ @tanstack_react-query.js?v=204557f4:696
+onSuccess @ @tanstack_react-query.js?v=204557f4:897
+resolve @ @tanstack_react-query.js?v=204557f4:456
+Promise.then
+run @ @tanstack_react-query.js?v=204557f4:498
+start @ @tanstack_react-query.js?v=204557f4:536
+fetch @ @tanstack_react-query.js?v=204557f4:926
+executeFetch_fn @ @tanstack_react-query.js?v=204557f4:2211
+onSubscribe @ @tanstack_react-query.js?v=204557f4:1898
+subscribe @ @tanstack_react-query.js?v=204557f4:24
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=204557f4:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=204557f4:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=204557f4:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=204557f4:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=204557f4:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=204557f4:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=204557f4:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=204557f4:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=204557f4:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=204557f4:19432
+commitRoot @ chunk-RPCDYKBN.js?v=204557f4:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=204557f4:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18718
+workLoop @ chunk-RPCDYKBN.js?v=204557f4:197
+flushWork @ chunk-RPCDYKBN.js?v=204557f4:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=204557f4:384
+eruda.js:2 Query error for /api/poll-votes/user/1/pulse/41: Error: 404: {"message":"No vote found"}
+    at queryClient.ts:192:15
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:433
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=204557f4:840
+run @ @tanstack_react-query.js?v=204557f4:494
+start @ @tanstack_react-query.js?v=204557f4:536
+fetch @ @tanstack_react-query.js?v=204557f4:926
+executeFetch_fn @ @tanstack_react-query.js?v=204557f4:2211
+onSubscribe @ @tanstack_react-query.js?v=204557f4:1898
+subscribe @ @tanstack_react-query.js?v=204557f4:24
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=204557f4:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=204557f4:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=204557f4:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=204557f4:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=204557f4:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=204557f4:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=204557f4:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=204557f4:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=204557f4:19416
+commitRoot @ chunk-RPCDYKBN.js?v=204557f4:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=204557f4:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=204557f4:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=204557f4:555
+flush @ @tanstack_react-query.js?v=204557f4:569
+batch @ @tanstack_react-query.js?v=204557f4:587
+dispatch_fn @ @tanstack_react-query.js?v=204557f4:996
+setData @ @tanstack_react-query.js?v=204557f4:696
+onSuccess @ @tanstack_react-query.js?v=204557f4:897
+resolve @ @tanstack_react-query.js?v=204557f4:456
+Promise.then
+run @ @tanstack_react-query.js?v=204557f4:498
+start @ @tanstack_react-query.js?v=204557f4:536
+fetch @ @tanstack_react-query.js?v=204557f4:926
+executeFetch_fn @ @tanstack_react-query.js?v=204557f4:2211
+onSubscribe @ @tanstack_react-query.js?v=204557f4:1898
+subscribe @ @tanstack_react-query.js?v=204557f4:24
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=204557f4:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=204557f4:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=204557f4:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=204557f4:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=204557f4:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=204557f4:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=204557f4:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=204557f4:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=204557f4:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=204557f4:19432
+commitRoot @ chunk-RPCDYKBN.js?v=204557f4:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=204557f4:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18718
+workLoop @ chunk-RPCDYKBN.js?v=204557f4:197
+flushWork @ chunk-RPCDYKBN.js?v=204557f4:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=204557f4:384
+eruda.js:2  GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/poll-votes/user/1/pulse/40?t=1755630259831 404 (Not Found)
+window.fetch @ Network.js:219
+(anonymous) @ queryClient.ts:306
+fetchFn @ @tanstack_react-query.js?v=204557f4:840
+run @ @tanstack_react-query.js?v=204557f4:494
+start @ @tanstack_react-query.js?v=204557f4:536
+fetch @ @tanstack_react-query.js?v=204557f4:926
+executeFetch_fn @ @tanstack_react-query.js?v=204557f4:2211
+onSubscribe @ @tanstack_react-query.js?v=204557f4:1898
+subscribe @ @tanstack_react-query.js?v=204557f4:24
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=204557f4:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=204557f4:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=204557f4:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=204557f4:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=204557f4:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=204557f4:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=204557f4:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=204557f4:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=204557f4:19416
+commitRoot @ chunk-RPCDYKBN.js?v=204557f4:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=204557f4:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=204557f4:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=204557f4:555
+flush @ @tanstack_react-query.js?v=204557f4:569
+batch @ @tanstack_react-query.js?v=204557f4:587
+dispatch_fn @ @tanstack_react-query.js?v=204557f4:996
+setData @ @tanstack_react-query.js?v=204557f4:696
+onSuccess @ @tanstack_react-query.js?v=204557f4:897
+resolve @ @tanstack_react-query.js?v=204557f4:456
+Promise.then
+run @ @tanstack_react-query.js?v=204557f4:498
+start @ @tanstack_react-query.js?v=204557f4:536
+fetch @ @tanstack_react-query.js?v=204557f4:926
+executeFetch_fn @ @tanstack_react-query.js?v=204557f4:2211
+onSubscribe @ @tanstack_react-query.js?v=204557f4:1898
+subscribe @ @tanstack_react-query.js?v=204557f4:24
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=204557f4:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=204557f4:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=204557f4:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=204557f4:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=204557f4:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=204557f4:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=204557f4:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=204557f4:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=204557f4:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=204557f4:19432
+commitRoot @ chunk-RPCDYKBN.js?v=204557f4:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=204557f4:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18718
+workLoop @ chunk-RPCDYKBN.js?v=204557f4:197
+flushWork @ chunk-RPCDYKBN.js?v=204557f4:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=204557f4:384
+eruda.js:2 API Error 404 for /api/poll-votes/user/1/pulse/40
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:332
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=204557f4:840
+run @ @tanstack_react-query.js?v=204557f4:494
+start @ @tanstack_react-query.js?v=204557f4:536
+fetch @ @tanstack_react-query.js?v=204557f4:926
+executeFetch_fn @ @tanstack_react-query.js?v=204557f4:2211
+onSubscribe @ @tanstack_react-query.js?v=204557f4:1898
+subscribe @ @tanstack_react-query.js?v=204557f4:24
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=204557f4:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=204557f4:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=204557f4:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=204557f4:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=204557f4:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=204557f4:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=204557f4:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=204557f4:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=204557f4:19416
+commitRoot @ chunk-RPCDYKBN.js?v=204557f4:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=204557f4:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=204557f4:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=204557f4:555
+flush @ @tanstack_react-query.js?v=204557f4:569
+batch @ @tanstack_react-query.js?v=204557f4:587
+dispatch_fn @ @tanstack_react-query.js?v=204557f4:996
+setData @ @tanstack_react-query.js?v=204557f4:696
+onSuccess @ @tanstack_react-query.js?v=204557f4:897
+resolve @ @tanstack_react-query.js?v=204557f4:456
+Promise.then
+run @ @tanstack_react-query.js?v=204557f4:498
+start @ @tanstack_react-query.js?v=204557f4:536
+fetch @ @tanstack_react-query.js?v=204557f4:926
+executeFetch_fn @ @tanstack_react-query.js?v=204557f4:2211
+onSubscribe @ @tanstack_react-query.js?v=204557f4:1898
+subscribe @ @tanstack_react-query.js?v=204557f4:24
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=204557f4:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=204557f4:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=204557f4:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=204557f4:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=204557f4:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=204557f4:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=204557f4:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=204557f4:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=204557f4:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=204557f4:19432
+commitRoot @ chunk-RPCDYKBN.js?v=204557f4:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=204557f4:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18718
+workLoop @ chunk-RPCDYKBN.js?v=204557f4:197
+flushWork @ chunk-RPCDYKBN.js?v=204557f4:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=204557f4:384
+eruda.js:2 Query error for /api/poll-votes/user/1/pulse/40: Error: 404: {"message":"No vote found"}
+    at queryClient.ts:192:15
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:433
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=204557f4:840
+run @ @tanstack_react-query.js?v=204557f4:494
+start @ @tanstack_react-query.js?v=204557f4:536
+fetch @ @tanstack_react-query.js?v=204557f4:926
+executeFetch_fn @ @tanstack_react-query.js?v=204557f4:2211
+onSubscribe @ @tanstack_react-query.js?v=204557f4:1898
+subscribe @ @tanstack_react-query.js?v=204557f4:24
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=204557f4:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=204557f4:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=204557f4:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=204557f4:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=204557f4:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=204557f4:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=204557f4:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=204557f4:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=204557f4:19416
+commitRoot @ chunk-RPCDYKBN.js?v=204557f4:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=204557f4:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=204557f4:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=204557f4:555
+flush @ @tanstack_react-query.js?v=204557f4:569
+batch @ @tanstack_react-query.js?v=204557f4:587
+dispatch_fn @ @tanstack_react-query.js?v=204557f4:996
+setData @ @tanstack_react-query.js?v=204557f4:696
+onSuccess @ @tanstack_react-query.js?v=204557f4:897
+resolve @ @tanstack_react-query.js?v=204557f4:456
+Promise.then
+run @ @tanstack_react-query.js?v=204557f4:498
+start @ @tanstack_react-query.js?v=204557f4:536
+fetch @ @tanstack_react-query.js?v=204557f4:926
+executeFetch_fn @ @tanstack_react-query.js?v=204557f4:2211
+onSubscribe @ @tanstack_react-query.js?v=204557f4:1898
+subscribe @ @tanstack_react-query.js?v=204557f4:24
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=204557f4:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=204557f4:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=204557f4:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=204557f4:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=204557f4:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=204557f4:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=204557f4:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=204557f4:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=204557f4:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=204557f4:19432
+commitRoot @ chunk-RPCDYKBN.js?v=204557f4:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=204557f4:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18718
+workLoop @ chunk-RPCDYKBN.js?v=204557f4:197
+flushWork @ chunk-RPCDYKBN.js?v=204557f4:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=204557f4:384
+eruda.js:2  GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/poll-votes/user/1/pulse/4?t=1755630259926 404 (Not Found)
+window.fetch @ Network.js:219
+(anonymous) @ queryClient.ts:306
+fetchFn @ @tanstack_react-query.js?v=204557f4:840
+run @ @tanstack_react-query.js?v=204557f4:494
+start @ @tanstack_react-query.js?v=204557f4:536
+fetch @ @tanstack_react-query.js?v=204557f4:926
+executeFetch_fn @ @tanstack_react-query.js?v=204557f4:2211
+onSubscribe @ @tanstack_react-query.js?v=204557f4:1898
+subscribe @ @tanstack_react-query.js?v=204557f4:24
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=204557f4:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=204557f4:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=204557f4:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=204557f4:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=204557f4:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=204557f4:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=204557f4:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=204557f4:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=204557f4:19416
+commitRoot @ chunk-RPCDYKBN.js?v=204557f4:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=204557f4:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=204557f4:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=204557f4:555
+flush @ @tanstack_react-query.js?v=204557f4:569
+batch @ @tanstack_react-query.js?v=204557f4:587
+dispatch_fn @ @tanstack_react-query.js?v=204557f4:996
+setData @ @tanstack_react-query.js?v=204557f4:696
+onSuccess @ @tanstack_react-query.js?v=204557f4:897
+resolve @ @tanstack_react-query.js?v=204557f4:456
+Promise.then
+run @ @tanstack_react-query.js?v=204557f4:498
+start @ @tanstack_react-query.js?v=204557f4:536
+fetch @ @tanstack_react-query.js?v=204557f4:926
+executeFetch_fn @ @tanstack_react-query.js?v=204557f4:2211
+onSubscribe @ @tanstack_react-query.js?v=204557f4:1898
+subscribe @ @tanstack_react-query.js?v=204557f4:24
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=204557f4:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=204557f4:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=204557f4:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=204557f4:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=204557f4:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=204557f4:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=204557f4:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=204557f4:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=204557f4:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=204557f4:19432
+commitRoot @ chunk-RPCDYKBN.js?v=204557f4:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=204557f4:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18718
+workLoop @ chunk-RPCDYKBN.js?v=204557f4:197
+flushWork @ chunk-RPCDYKBN.js?v=204557f4:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=204557f4:384
+eruda.js:2 API Error 404 for /api/poll-votes/user/1/pulse/4
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:332
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=204557f4:840
+run @ @tanstack_react-query.js?v=204557f4:494
+start @ @tanstack_react-query.js?v=204557f4:536
+fetch @ @tanstack_react-query.js?v=204557f4:926
+executeFetch_fn @ @tanstack_react-query.js?v=204557f4:2211
+onSubscribe @ @tanstack_react-query.js?v=204557f4:1898
+subscribe @ @tanstack_react-query.js?v=204557f4:24
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=204557f4:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=204557f4:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=204557f4:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=204557f4:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=204557f4:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=204557f4:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=204557f4:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=204557f4:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=204557f4:19416
+commitRoot @ chunk-RPCDYKBN.js?v=204557f4:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=204557f4:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=204557f4:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=204557f4:555
+flush @ @tanstack_react-query.js?v=204557f4:569
+batch @ @tanstack_react-query.js?v=204557f4:587
+dispatch_fn @ @tanstack_react-query.js?v=204557f4:996
+setData @ @tanstack_react-query.js?v=204557f4:696
+onSuccess @ @tanstack_react-query.js?v=204557f4:897
+resolve @ @tanstack_react-query.js?v=204557f4:456
+Promise.then
+run @ @tanstack_react-query.js?v=204557f4:498
+start @ @tanstack_react-query.js?v=204557f4:536
+fetch @ @tanstack_react-query.js?v=204557f4:926
+executeFetch_fn @ @tanstack_react-query.js?v=204557f4:2211
+onSubscribe @ @tanstack_react-query.js?v=204557f4:1898
+subscribe @ @tanstack_react-query.js?v=204557f4:24
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=204557f4:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=204557f4:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=204557f4:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=204557f4:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=204557f4:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=204557f4:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=204557f4:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=204557f4:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=204557f4:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=204557f4:19432
+commitRoot @ chunk-RPCDYKBN.js?v=204557f4:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=204557f4:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18718
+workLoop @ chunk-RPCDYKBN.js?v=204557f4:197
+flushWork @ chunk-RPCDYKBN.js?v=204557f4:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=204557f4:384
+eruda.js:2 Query error for /api/poll-votes/user/1/pulse/4: Error: 404: {"message":"No vote found"}
+    at queryClient.ts:192:15
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:433
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=204557f4:840
+run @ @tanstack_react-query.js?v=204557f4:494
+start @ @tanstack_react-query.js?v=204557f4:536
+fetch @ @tanstack_react-query.js?v=204557f4:926
+executeFetch_fn @ @tanstack_react-query.js?v=204557f4:2211
+onSubscribe @ @tanstack_react-query.js?v=204557f4:1898
+subscribe @ @tanstack_react-query.js?v=204557f4:24
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=204557f4:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=204557f4:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=204557f4:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=204557f4:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=204557f4:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=204557f4:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=204557f4:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=204557f4:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=204557f4:19416
+commitRoot @ chunk-RPCDYKBN.js?v=204557f4:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=204557f4:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=204557f4:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=204557f4:555
+flush @ @tanstack_react-query.js?v=204557f4:569
+batch @ @tanstack_react-query.js?v=204557f4:587
+dispatch_fn @ @tanstack_react-query.js?v=204557f4:996
+setData @ @tanstack_react-query.js?v=204557f4:696
+onSuccess @ @tanstack_react-query.js?v=204557f4:897
+resolve @ @tanstack_react-query.js?v=204557f4:456
+Promise.then
+run @ @tanstack_react-query.js?v=204557f4:498
+start @ @tanstack_react-query.js?v=204557f4:536
+fetch @ @tanstack_react-query.js?v=204557f4:926
+executeFetch_fn @ @tanstack_react-query.js?v=204557f4:2211
+onSubscribe @ @tanstack_react-query.js?v=204557f4:1898
+subscribe @ @tanstack_react-query.js?v=204557f4:24
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=204557f4:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=204557f4:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=204557f4:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=204557f4:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=204557f4:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=204557f4:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=204557f4:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=204557f4:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=204557f4:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=204557f4:19432
+commitRoot @ chunk-RPCDYKBN.js?v=204557f4:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=204557f4:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18718
+workLoop @ chunk-RPCDYKBN.js?v=204557f4:197
+flushWork @ chunk-RPCDYKBN.js?v=204557f4:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=204557f4:384
+eruda.js:2  GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/poll-votes/user/1/pulse/3?t=1755630259933 404 (Not Found)
+window.fetch @ Network.js:219
+(anonymous) @ queryClient.ts:306
+fetchFn @ @tanstack_react-query.js?v=204557f4:840
+run @ @tanstack_react-query.js?v=204557f4:494
+start @ @tanstack_react-query.js?v=204557f4:536
+fetch @ @tanstack_react-query.js?v=204557f4:926
+executeFetch_fn @ @tanstack_react-query.js?v=204557f4:2211
+onSubscribe @ @tanstack_react-query.js?v=204557f4:1898
+subscribe @ @tanstack_react-query.js?v=204557f4:24
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=204557f4:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=204557f4:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=204557f4:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=204557f4:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=204557f4:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=204557f4:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=204557f4:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=204557f4:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=204557f4:19416
+commitRoot @ chunk-RPCDYKBN.js?v=204557f4:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=204557f4:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=204557f4:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=204557f4:555
+flush @ @tanstack_react-query.js?v=204557f4:569
+batch @ @tanstack_react-query.js?v=204557f4:587
+dispatch_fn @ @tanstack_react-query.js?v=204557f4:996
+setData @ @tanstack_react-query.js?v=204557f4:696
+onSuccess @ @tanstack_react-query.js?v=204557f4:897
+resolve @ @tanstack_react-query.js?v=204557f4:456
+Promise.then
+run @ @tanstack_react-query.js?v=204557f4:498
+start @ @tanstack_react-query.js?v=204557f4:536
+fetch @ @tanstack_react-query.js?v=204557f4:926
+executeFetch_fn @ @tanstack_react-query.js?v=204557f4:2211
+onSubscribe @ @tanstack_react-query.js?v=204557f4:1898
+subscribe @ @tanstack_react-query.js?v=204557f4:24
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=204557f4:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=204557f4:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=204557f4:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=204557f4:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=204557f4:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=204557f4:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=204557f4:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=204557f4:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=204557f4:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=204557f4:19432
+commitRoot @ chunk-RPCDYKBN.js?v=204557f4:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=204557f4:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18718
+workLoop @ chunk-RPCDYKBN.js?v=204557f4:197
+flushWork @ chunk-RPCDYKBN.js?v=204557f4:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=204557f4:384
+eruda.js:2 API Error 404 for /api/poll-votes/user/1/pulse/3
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:332
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=204557f4:840
+run @ @tanstack_react-query.js?v=204557f4:494
+start @ @tanstack_react-query.js?v=204557f4:536
+fetch @ @tanstack_react-query.js?v=204557f4:926
+executeFetch_fn @ @tanstack_react-query.js?v=204557f4:2211
+onSubscribe @ @tanstack_react-query.js?v=204557f4:1898
+subscribe @ @tanstack_react-query.js?v=204557f4:24
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=204557f4:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=204557f4:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=204557f4:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=204557f4:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=204557f4:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=204557f4:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=204557f4:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=204557f4:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=204557f4:19416
+commitRoot @ chunk-RPCDYKBN.js?v=204557f4:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=204557f4:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=204557f4:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=204557f4:555
+flush @ @tanstack_react-query.js?v=204557f4:569
+batch @ @tanstack_react-query.js?v=204557f4:587
+dispatch_fn @ @tanstack_react-query.js?v=204557f4:996
+setData @ @tanstack_react-query.js?v=204557f4:696
+onSuccess @ @tanstack_react-query.js?v=204557f4:897
+resolve @ @tanstack_react-query.js?v=204557f4:456
+Promise.then
+run @ @tanstack_react-query.js?v=204557f4:498
+start @ @tanstack_react-query.js?v=204557f4:536
+fetch @ @tanstack_react-query.js?v=204557f4:926
+executeFetch_fn @ @tanstack_react-query.js?v=204557f4:2211
+onSubscribe @ @tanstack_react-query.js?v=204557f4:1898
+subscribe @ @tanstack_react-query.js?v=204557f4:24
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=204557f4:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=204557f4:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=204557f4:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=204557f4:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=204557f4:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=204557f4:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=204557f4:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=204557f4:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=204557f4:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=204557f4:19432
+commitRoot @ chunk-RPCDYKBN.js?v=204557f4:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=204557f4:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18718
+workLoop @ chunk-RPCDYKBN.js?v=204557f4:197
+flushWork @ chunk-RPCDYKBN.js?v=204557f4:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=204557f4:384
+eruda.js:2 Query error for /api/poll-votes/user/1/pulse/3: Error: 404: {"message":"No vote found"}
+    at queryClient.ts:192:15
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:433
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=204557f4:840
+run @ @tanstack_react-query.js?v=204557f4:494
+start @ @tanstack_react-query.js?v=204557f4:536
+fetch @ @tanstack_react-query.js?v=204557f4:926
+executeFetch_fn @ @tanstack_react-query.js?v=204557f4:2211
+onSubscribe @ @tanstack_react-query.js?v=204557f4:1898
+subscribe @ @tanstack_react-query.js?v=204557f4:24
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=204557f4:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=204557f4:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=204557f4:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=204557f4:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=204557f4:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=204557f4:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=204557f4:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=204557f4:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=204557f4:19416
+commitRoot @ chunk-RPCDYKBN.js?v=204557f4:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=204557f4:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=204557f4:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=204557f4:555
+flush @ @tanstack_react-query.js?v=204557f4:569
+batch @ @tanstack_react-query.js?v=204557f4:587
+dispatch_fn @ @tanstack_react-query.js?v=204557f4:996
+setData @ @tanstack_react-query.js?v=204557f4:696
+onSuccess @ @tanstack_react-query.js?v=204557f4:897
+resolve @ @tanstack_react-query.js?v=204557f4:456
+Promise.then
+run @ @tanstack_react-query.js?v=204557f4:498
+start @ @tanstack_react-query.js?v=204557f4:536
+fetch @ @tanstack_react-query.js?v=204557f4:926
+executeFetch_fn @ @tanstack_react-query.js?v=204557f4:2211
+onSubscribe @ @tanstack_react-query.js?v=204557f4:1898
+subscribe @ @tanstack_react-query.js?v=204557f4:24
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=204557f4:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=204557f4:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=204557f4:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=204557f4:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=204557f4:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=204557f4:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=204557f4:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=204557f4:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=204557f4:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=204557f4:19432
+commitRoot @ chunk-RPCDYKBN.js?v=204557f4:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=204557f4:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18718
+workLoop @ chunk-RPCDYKBN.js?v=204557f4:197
+flushWork @ chunk-RPCDYKBN.js?v=204557f4:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=204557f4:384
+eruda.js:2  GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/username/undefined 404 (Not Found)
+window.fetch @ Network.js:219
+queryFn @ profile-neo.tsx:100
+fetchFn @ @tanstack_react-query.js?v=204557f4:840
+run @ @tanstack_react-query.js?v=204557f4:494
+start @ @tanstack_react-query.js?v=204557f4:536
+fetch @ @tanstack_react-query.js?v=204557f4:926
+executeFetch_fn @ @tanstack_react-query.js?v=204557f4:2211
+onSubscribe @ @tanstack_react-query.js?v=204557f4:1898
+subscribe @ @tanstack_react-query.js?v=204557f4:24
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=204557f4:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=204557f4:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=204557f4:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=204557f4:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=204557f4:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=204557f4:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=204557f4:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=204557f4:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=204557f4:19416
+commitRoot @ chunk-RPCDYKBN.js?v=204557f4:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=204557f4:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=204557f4:18627
+eruda.js:2 Failed to fetch user data: 404 Not Found
+Mt.forEach.n.<computed> @ Console.js:61
+queryFn @ profile-neo.tsx:102
+await in queryFn
+fetchFn @ @tanstack_react-query.js?v=204557f4:840
+run @ @tanstack_react-query.js?v=204557f4:494
+start @ @tanstack_react-query.js?v=204557f4:536
+fetch @ @tanstack_react-query.js?v=204557f4:926
+executeFetch_fn @ @tanstack_react-query.js?v=204557f4:2211
+onSubscribe @ @tanstack_react-query.js?v=204557f4:1898
+subscribe @ @tanstack_react-query.js?v=204557f4:24
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=204557f4:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=204557f4:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=204557f4:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=204557f4:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=204557f4:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=204557f4:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=204557f4:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=204557f4:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=204557f4:19416
+commitRoot @ chunk-RPCDYKBN.js?v=204557f4:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=204557f4:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=204557f4:18627
+eruda.js:2 Fetching user data for Firebase UID: undefined
+eruda.js:2  GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/username/undefined 404 (Not Found)
+window.fetch @ Network.js:219
+queryFn @ profile-neo.tsx:100
+fetchFn @ @tanstack_react-query.js?v=204557f4:840
+run @ @tanstack_react-query.js?v=204557f4:494
+(anonymous) @ @tanstack_react-query.js?v=204557f4:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=204557f4:515
+Promise.catch
+run @ @tanstack_react-query.js?v=204557f4:498
+start @ @tanstack_react-query.js?v=204557f4:536
+fetch @ @tanstack_react-query.js?v=204557f4:926
+executeFetch_fn @ @tanstack_react-query.js?v=204557f4:2211
+onSubscribe @ @tanstack_react-query.js?v=204557f4:1898
+subscribe @ @tanstack_react-query.js?v=204557f4:24
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=204557f4:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=204557f4:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=204557f4:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=204557f4:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=204557f4:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=204557f4:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=204557f4:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=204557f4:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=204557f4:19416
+commitRoot @ chunk-RPCDYKBN.js?v=204557f4:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=204557f4:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=204557f4:18627
+eruda.js:2 Failed to fetch user data: 404 Not Found
+Mt.forEach.n.<computed> @ Console.js:61
+queryFn @ profile-neo.tsx:102
+await in queryFn
+fetchFn @ @tanstack_react-query.js?v=204557f4:840
+run @ @tanstack_react-query.js?v=204557f4:494
+(anonymous) @ @tanstack_react-query.js?v=204557f4:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=204557f4:515
+Promise.catch
+run @ @tanstack_react-query.js?v=204557f4:498
+start @ @tanstack_react-query.js?v=204557f4:536
+fetch @ @tanstack_react-query.js?v=204557f4:926
+executeFetch_fn @ @tanstack_react-query.js?v=204557f4:2211
+onSubscribe @ @tanstack_react-query.js?v=204557f4:1898
+subscribe @ @tanstack_react-query.js?v=204557f4:24
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=204557f4:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=204557f4:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=204557f4:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=204557f4:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=204557f4:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=204557f4:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=204557f4:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=204557f4:19447
+commitRootImpl @ chunk-RPCDYKBN.js?v=204557f4:19416
+commitRoot @ chunk-RPCDYKBN.js?v=204557f4:19277
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18895
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=204557f4:9119
+(anonymous) @ chunk-RPCDYKBN.js?v=204557f4:18627
+workspace_iframe.html?initialPath=%2F&id=%3Ar2s7%3A:32 Unrecognized feature: 'ambient-light-sensor'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar2s7%3A:32 Unrecognized feature: 'battery'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar2s7%3A:32 Unrecognized feature: 'execution-while-not-rendered'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar2s7%3A:32 Unrecognized feature: 'execution-while-out-of-viewport'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar2s7%3A:32 Unrecognized feature: 'layout-animations'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar2s7%3A:32 Unrecognized feature: 'legacy-image-formats'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar2s7%3A:32 Unrecognized feature: 'navigation-override'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar2s7%3A:32 Unrecognized feature: 'oversized-images'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar2s7%3A:32 Unrecognized feature: 'publickey-credentials'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar2s7%3A:32 Unrecognized feature: 'speaker-selection'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar2s7%3A:32 Unrecognized feature: 'unoptimized-images'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar2s7%3A:32 Unrecognized feature: 'unsized-media'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar2s7%3A:32 Allow attribute will take precedence over 'allowfullscreen'.
+workspace_iframe.html?initialPath=%2F&id=%3Ar2s7%3A:32 Allow attribute will take precedence over 'allowpaymentrequest'.
+sw.js:60 [SW] Serving from cache: https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/
+chrome-error://chromewebdata/:1 Refused to display 'https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/' in a frame because it set 'X-Frame-Options' to 'sameorigin'.
