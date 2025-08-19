@@ -57,6 +57,8 @@ import notificationRoutes from "./routes-notifications";
 import directAccessRoutes from "./routes-direct-access";
 import directAnalyticsRoutes from "./routes-direct-analytics";
 import { authRoutes } from "./auth-routes";
+import authDomainRoutes from "./routes-auth-domain";
+import demoSigninRoutes from "./routes-demo-signin";
 import { 
   handleSmartConnect, 
   handleCareerRecommendations, 
@@ -6978,6 +6980,14 @@ ${extractedText.substring(0, 5000)}
   // Clean Google Authentication routes
   app.use('/api/auth', authRoutes);
   console.log("Clean Google authentication routes loaded");
+  
+  // Domain authorization fixes for Firebase OAuth
+  app.use('/api', authDomainRoutes);
+  console.log("Auth domain registration routes loaded");
+  
+  // Demo authentication for OAuth issues
+  app.use('/api', demoSigninRoutes);
+  console.log("Demo signin routes loaded");
   
   // Career Capsule routes - removed
   // app.use('/api', careerCapsuleRoutes);

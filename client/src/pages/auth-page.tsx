@@ -13,6 +13,8 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Mail, Phone, Check, Sparkles, Target, Users } from "lucide-react";
 import { GoogleAuthButton } from "@/components/auth/GoogleAuthButton";
+import { AuthFallback } from "@/components/auth/AuthFallback";
+import { DomainFixedAuth } from "@/components/auth/DomainFixedAuth";
 import { AuthCallback } from "@/components/auth/AuthCallback";
 import { AuthDebug } from "@/components/auth/AuthDebug";
 import { QuickAuthTest } from "@/components/auth/QuickAuthTest";
@@ -135,15 +137,17 @@ export default function AuthPage() {
                       </div>
                       
                       <div className="space-y-6">
-                        <GoogleAuthButton />
+                        <DomainFixedAuth />
                         
                         <div className="text-center text-sm text-gray-400">
-                          Having issues? Try the direct method below:
+                          Multiple authentication methods available
                         </div>
-                        <SimpleGoogleAuth />
                         
-                        <div className="text-center text-xs text-gray-500">
-                          Google OAuth continues to have 403 errors despite domain configuration
+                        <div className="mt-4 pt-4 border-t border-white/20">
+                          <p className="text-xs text-gray-500 text-center mb-3">
+                            Having issues? Try the fallback authentication:
+                          </p>
+                          <AuthFallback />
                         </div>
                       </div>
                       
