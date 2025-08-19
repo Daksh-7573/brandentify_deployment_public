@@ -11,24 +11,38 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Mail, Phone, Check, Sparkles, Target, Users } from "lucide-react";
+import { Mail, Phone, Check, Sparkles, Target, Users, ExternalLink, AlertCircle } from "lucide-react";
 import { FastGoogleAuth } from "@/components/auth/FastGoogleAuth";
 import { FastQuickAuth } from "@/components/auth/FastQuickAuth";
+import { DesktopAuthFallback } from "@/components/auth/DesktopAuthFallback";
 import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
 import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
+
+// Detect if running in desktop app
+const isDesktopApp = () => {
+  const userAgent = navigator.userAgent.toLowerCase();
+  const isElectron = userAgent.includes('electron');
+  const hasDesktopIndicators = !!(window as any).electronAPI || !!(window as any).__REPLIT_DESKTOP__;
+  return isElectron || hasDesktopIndicators;
+};
 
 export default function AuthPage() {
   const { isAuthenticated, isLoading } = useAuth();
   const [_, setLocation] = useLocation();
   const [authMethod, setAuthMethod] = useState<"email" | "phone">("email");
   const [useDemoBypass, setUseDemoBypass] = useState(false);
+  const [showDesktopFallback, setShowDesktopFallback] = useState(false);
+  const [isDesktop] = useState(isDesktopApp());
   
   // We used to bypass Google auth on the problematic domain, but now we're properly 
   // supporting it directly and want to use Google auth instead
   useEffect(() => {
     // Instead of automatically enabling demo mode, we now properly support Google auth on all domains
     setUseDemoBypass(false);
-  }, []);
+    
+    // Log environment detection
+    console.log('Auth environment:', { isDesktop, userAgent: navigator.userAgent });
+  }, [isDesktop]);
 
   // Disabled auth redirect handler - let the AuthContext handle this
   // useEffect(() => {
@@ -94,32 +108,63 @@ export default function AuthPage() {
                 {/* Email Authentication */}
                 <TabsContent value="email">
                   <div className="space-y-4 md:space-y-6">
-                    {/* Clean Google Authentication Only */}
-                    <div className="space-y-6">
-                      <div className="text-center space-y-3">
-                        <h3 className="text-xl font-semibold text-white">Welcome to Brandentifier</h3>
-                        <p className="text-gray-300">Your AI-powered career development platform</p>
-                      </div>
-                      
-                      <FastGoogleAuth />
-                      
-                      <div className="relative">
-                        <div className="absolute inset-0 flex items-center">
-                          <span className="w-full border-t border-white/20" />
+                    {/* Desktop App Detection and Guidance */}
+                    {isDesktop && !showDesktopFallback && (
+                      <div className="p-4 bg-amber-900/20 border border-amber-500/30 rounded-lg">
+                        <div className="flex items-start gap-3">
+                          <AlertCircle className="h-5 w-5 text-amber-400 mt-0.5 flex-shrink-0" />
+                          <div className="space-y-2">
+                            <h4 className="text-amber-200 font-medium">Desktop App Detected</h4>
+                            <p className="text-amber-100/80 text-sm">
+                              If Google authentication doesn't work, try the alternative options below or open this page in your browser.
+                            </p>
+                            <Button
+                              onClick={() => setShowDesktopFallback(true)}
+                              size="sm"
+                              variant="outline"
+                              className="border-amber-500/50 text-amber-200 hover:bg-amber-900/30"
+                            >
+                              <ExternalLink className="mr-2 h-4 w-4" />
+                              Show Alternative Options
+                            </Button>
+                          </div>
                         </div>
-                        <div className="relative flex justify-center text-xs uppercase">
-                          <span className="bg-black/50 px-2 text-gray-300">or</span>
+                      </div>
+                    )}
+                    
+                    {/* Show desktop fallback if requested */}
+                    {showDesktopFallback ? (
+                      <DesktopAuthFallback onClose={() => setShowDesktopFallback(false)} />
+                    ) : (
+                      <>
+                        {/* Clean Google Authentication Only */}
+                        <div className="space-y-6">
+                          <div className="text-center space-y-3">
+                            <h3 className="text-xl font-semibold text-white">Welcome to Brandentifier</h3>
+                            <p className="text-gray-300">Your AI-powered career development platform</p>
+                          </div>
+                          
+                          <FastGoogleAuth />
+                          
+                          <div className="relative">
+                            <div className="absolute inset-0 flex items-center">
+                              <span className="w-full border-t border-white/20" />
+                            </div>
+                            <div className="relative flex justify-center text-xs uppercase">
+                              <span className="bg-black/50 px-2 text-gray-300">or</span>
+                            </div>
+                          </div>
+                          
+                          <FastQuickAuth />
+                          
+                          <div className="text-center">
+                            <p className="text-sm text-gray-400">
+                              By continuing, you agree to our Terms of Service and Privacy Policy
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                      
-                      <FastQuickAuth />
-                      
-                      <div className="text-center">
-                        <p className="text-sm text-gray-400">
-                          By continuing, you agree to our Terms of Service and Privacy Policy
-                        </p>
-                      </div>
-                    </div>
+                      </>
+                    )}
                   </div>
                 </TabsContent>
 

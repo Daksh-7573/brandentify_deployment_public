@@ -141,6 +141,142 @@ router.post('/google-signin', async (req, res) => {
 });
 
 /**
+ * Email signup for desktop users
+ * Simple email-based authentication when Google OAuth doesn't work
+ */
+router.post('/email-signup', async (req, res) => {
+  try {
+    const { email } = req.body;
+    
+    if (!email || !email.includes('@')) {
+      return res.status(400).json({
+        success: false,
+        message: 'Valid email address required'
+      });
+    }
+
+    console.log('Email signup request for:', email);
+    
+    // For now, create a simple token-based auth link
+    // In production, you'd send a proper email with a secure token
+    const authToken = Buffer.from(`${email}:${Date.now()}`).toString('base64');
+    const authLink = `${req.protocol}://${req.get('host')}/auth/email-verify?token=${authToken}`;
+    
+    console.log('Generated auth link:', authLink);
+    
+    // For development, we'll return the link directly
+    // In production, send this via email
+    res.json({
+      success: true,
+      message: 'Authentication link generated',
+      // For development - remove in production
+      authLink: authLink,
+      instructions: 'Copy this link and open it in your browser to complete authentication'
+    });
+
+  } catch (error: any) {
+    console.error('Email signup error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to process email signup',
+      error: error.message
+    });
+  }
+});
+
+/**
+ * Email verification endpoint
+ * Verifies email-based authentication tokens
+ */
+router.get('/email-verify', async (req, res) => {
+  try {
+    const { token } = req.query;
+    
+    if (!token) {
+      return res.status(400).json({
+        success: false,
+        message: 'Authentication token required'
+      });
+    }
+
+    // Decode the token
+    const decoded = Buffer.from(token as string, 'base64').toString();
+    const [email, timestamp] = decoded.split(':');
+    
+    // Check if token is recent (within 15 minutes)
+    const tokenAge = Date.now() - parseInt(timestamp);
+    if (tokenAge > 15 * 60 * 1000) {
+      return res.status(400).json({
+        success: false,
+        message: 'Authentication link expired. Please try again.'
+      });
+    }
+
+    console.log('Email verification for:', email);
+
+    // Check if user exists or create new one
+    const existingUser = await db
+      .select()
+      .from(users)
+      .where(eq(users.email, email))
+      .limit(1);
+
+    let user;
+    
+    if (existingUser.length > 0) {
+      // Update existing user
+      const [updatedUser] = await db
+        .update(users)
+        .set({
+          authProvider: 'email',
+          emailVerified: true,
+          lastLoginAt: new Date()
+        })
+        .where(eq(users.id, existingUser[0].id))
+        .returning();
+      user = updatedUser;
+    } else {
+      // Create new user
+      const username = email.split('@')[0].toLowerCase();
+      const [newUser] = await db
+        .insert(users)
+        .values({
+          username,
+          email,
+          name: email.split('@')[0],
+          authProvider: 'email',
+          emailVerified: true,
+          lastLoginAt: new Date(),
+          profileCompleted: 10
+        })
+        .returning();
+      user = newUser;
+    }
+
+    // Redirect to frontend with user data
+    const userData = {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      name: user.name,
+      photoURL: user.photoURL
+    };
+
+    // Redirect to a success page that will handle the authentication
+    const redirectUrl = `/auth/success?user=${encodeURIComponent(JSON.stringify(userData))}`;
+    res.redirect(redirectUrl);
+
+  } catch (error: any) {
+    console.error('Email verification error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to verify email',
+      error: error.message
+    });
+  }
+});
+
+/**
  * Get current user data
  * Returns user information for the authenticated user
  */

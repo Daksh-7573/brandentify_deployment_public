@@ -12,6 +12,19 @@ const isDevelopment =
   currentHostname.includes('replit.dev') || 
   currentHostname.includes('replit.app');
 
+// Detect if running in desktop app vs browser
+const isDesktopApp = () => {
+  // Check for desktop app specific indicators
+  const userAgent = navigator.userAgent.toLowerCase();
+  const isElectron = userAgent.includes('electron');
+  const hasDesktopIndicators = !!(window as any).electronAPI || !!(window as any).__REPLIT_DESKTOP__;
+  
+  return isElectron || hasDesktopIndicators;
+};
+
+const runningInDesktop = isDesktopApp();
+console.log('Environment detection:', { isDevelopment, runningInDesktop });
+
 // Check environment variables and log configuration status
 const apiKey = import.meta.env.VITE_FIREBASE_API_KEY;
 const projectId = import.meta.env.VITE_FIREBASE_PROJECT_ID;
@@ -132,15 +145,19 @@ try {
   // Configure Google Auth Provider for maximum compatibility
   googleProvider = new GoogleAuthProvider();
   
-  // Simplified configuration for maximum compatibility with Replit
-  googleProvider.setCustomParameters({
+  // Desktop-app-friendly configuration
+  const providerConfig = {
     prompt: 'select_account',
     access_type: 'online'
-  });
+  };
+  
+  googleProvider.setCustomParameters(providerConfig);
   
   // Add essential OAuth scopes only
   googleProvider.addScope('email');
   googleProvider.addScope('profile');
+  
+  console.log('Auth provider configured for:', runningInDesktop ? 'Desktop App' : 'Browser', providerConfig);
   
   // Ensure the auth provider trusts our domain
   auth.useDeviceLanguage();
