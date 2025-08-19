@@ -254,6 +254,11 @@ export interface IStorage {
   unfollowUser(followerId: number, followeeId: number): Promise<boolean>;
   isUserFollowing(followerId: number, followeeId: number): Promise<boolean>;
   
+  // Search operations
+  searchPulses(query: string): Promise<Pulse[]>;
+  searchProfiles(query: string): Promise<User[]>;
+  searchHashtags(query: string): Promise<any[]>;
+
   // User operations
   getUser(id: number): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
@@ -304,6 +309,7 @@ export interface IStorage {
   
   // Work Experience operations
   getWorkExperiencesByUserId(userId: number): Promise<WorkExperience[]>;
+  getWorkExperienceById(id: number): Promise<WorkExperience | undefined>;
   createWorkExperience(experience: InsertWorkExperience): Promise<WorkExperience>;
   updateWorkExperience(id: number, experience: Partial<WorkExperience>): Promise<WorkExperience | undefined>;
   deleteWorkExperience(id: number): Promise<boolean>;
@@ -311,6 +317,7 @@ export interface IStorage {
   
   // Education operations
   getEducationsByUserId(userId: number): Promise<Education[]>;
+  getEducationById(id: number): Promise<Education | undefined>;
   createEducation(education: InsertEducation): Promise<Education>;
   updateEducation(id: number, education: Partial<Education>): Promise<Education | undefined>;
   deleteEducation(id: number): Promise<boolean>;
