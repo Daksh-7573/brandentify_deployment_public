@@ -33,11 +33,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Failsafe timeout to prevent infinite loading
+  useEffect(() => {
+    const failsafeTimeout = setTimeout(() => {
+      console.warn('AuthProvider: Failsafe timeout - forcing loading to false');
+      setIsLoading(false);
+    }, 2000); // 2 second maximum loading time
+
+    return () => clearTimeout(failsafeTimeout);
+  }, []);
+
   // Ultra-fast stored user check
   useEffect(() => {
-    console.log('AuthProvider: Starting auth check');
+    console.log('AuthProvider: Starting auth check, current loading state:', isLoading);
     
     const checkStoredAuth = () => {
+      console.log('AuthProvider: Running checkStoredAuth');
       try {
         const storedUser = sessionStorage.getItem('brandentifier_user');
         if (storedUser) {
@@ -52,7 +63,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // Clear any corrupted data
         sessionStorage.removeItem('brandentifier_user');
       } finally {
-        console.log('Setting isLoading to false');
+        console.log('Setting isLoading to false from checkStoredAuth');
         setIsLoading(false);
       }
     };
@@ -68,14 +79,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     window.addEventListener('googleAuthSuccess', handleGoogleAuthSuccess as EventListener);
     
-    // Use setTimeout to ensure this runs after the initial render
-    const timeoutId = setTimeout(() => {
-      checkStoredAuth();
-    }, 0);
+    // Run immediately instead of with timeout
+    checkStoredAuth();
 
     return () => {
       window.removeEventListener('googleAuthSuccess', handleGoogleAuthSuccess as EventListener);
-      clearTimeout(timeoutId);
     };
   }, []);
 
