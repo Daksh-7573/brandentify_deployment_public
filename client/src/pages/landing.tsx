@@ -13,6 +13,11 @@ export default function Landing() {
   
   const [_, setLocation] = useLocation();
 
+  // Debug auth state
+  useEffect(() => {
+    console.log('Landing: Auth state changed - isLoading:', isLoading, 'isAuthenticated:', isAuthenticated);
+  }, [isLoading, isAuthenticated]);
+
   // Check if user wants to stay on landing page (via query parameter)
   const urlParams = new URLSearchParams(window.location.search);
   const stayOnLanding = urlParams.get('stay') === 'true';
