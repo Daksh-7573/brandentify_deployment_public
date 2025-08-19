@@ -40,17 +40,13 @@ export default function AuthPage() {
   //   checkRedirect();
   // }, []);
 
-  // Let AuthContext handle redirects - avoid competing redirect logic
-  // useEffect(() => {
-  //   if (isAuthenticated) {
-  //     // Use a small delay to ensure the auth state has fully settled
-  //     const timer = setTimeout(() => {
-  //       console.log("User is authenticated, redirecting to industry pulse");
-  //       setLocation("/industry-pulse");
-  //     }, 100);
-  //     return () => clearTimeout(timer);
-  //   }
-  // }, [isAuthenticated, setLocation]);
+  // Handle authenticated user redirect
+  useEffect(() => {
+    if (isAuthenticated && !isLoading) {
+      console.log("✅ User is authenticated, redirecting to dashboard");
+      setLocation("/dashboard");
+    }
+  }, [isAuthenticated, isLoading, setLocation]);
 
   return (
     <div 
