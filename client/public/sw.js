@@ -1,8 +1,8 @@
-// Enhanced Service Worker v2 for Maximum Performance
-const CACHE_NAME = 'brandentifier-v2';
-const STATIC_CACHE_NAME = 'brandentifier-static-v2';
-const API_CACHE_NAME = 'brandentifier-api-v2';
-const RUNTIME_CACHE_NAME = 'brandentifier-runtime-v2';
+// Enhanced Service Worker v3 for Maximum Performance (cache invalidated to fix X-Frame-Options)
+const CACHE_NAME = 'brandentifier-v3';
+const STATIC_CACHE_NAME = 'brandentifier-static-v3';
+const API_CACHE_NAME = 'brandentifier-api-v3';
+const RUNTIME_CACHE_NAME = 'brandentifier-runtime-v3';
 
 // Enhanced critical files for aggressive caching
 const STATIC_FILES = [
@@ -63,7 +63,7 @@ self.addEventListener('activate', event => {
       caches.keys().then(cacheNames => {
         return Promise.all(
           cacheNames.map(cacheName => {
-            if (!cacheName.includes('v2')) {
+            if (!cacheName.includes('v3')) {
               console.log('[SW v2] Deleting old cache:', cacheName);
               return caches.delete(cacheName);
             }
