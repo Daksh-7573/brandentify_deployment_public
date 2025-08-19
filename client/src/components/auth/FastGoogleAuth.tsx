@@ -69,13 +69,23 @@ export function FastGoogleAuth() {
       console.log('⚡ Fast backend call...');
       
       // Fast backend call
+      console.log('📡 Making backend call to /api/auth/google-signin');
       const response = await fetch('/api/auth/google-signin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(userData)
       });
 
+      console.log('📡 Backend response status:', response.status);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('❌ Backend error response:', errorText);
+        throw new Error(`Server error (${response.status}): ${errorText}`);
+      }
+      
       const data = await response.json();
+      console.log('📡 Backend response data:', data);
       
       if (data.success) {
         console.log('✅ Success - immediate redirect');
@@ -92,9 +102,32 @@ export function FastGoogleAuth() {
     } catch (error: any) {
       console.error('❌ Fast auth error:', error);
       
+      let errorMessage = 'Unknown error occurred';
+      
+      if (error.code) {
+        switch (error.code) {
+          case 'auth/popup-closed-by-user':
+            errorMessage = 'Sign-in was cancelled';
+            break;
+          case 'auth/popup-blocked':
+            errorMessage = 'Popup blocked by browser. Please allow popups and try again';
+            break;
+          case 'auth/unauthorized-domain':
+            errorMessage = 'This domain is not authorized for authentication';
+            break;
+          case 'auth/operation-not-allowed':
+            errorMessage = 'Google sign-in is not enabled for this project';
+            break;
+          default:
+            errorMessage = `Firebase error: ${error.message}`;
+        }
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
       toast({
         title: 'Authentication Error',
-        description: 'Please try again',
+        description: errorMessage,
         variant: 'destructive'
       });
       
