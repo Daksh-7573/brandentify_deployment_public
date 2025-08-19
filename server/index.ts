@@ -30,8 +30,16 @@ app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, HEAD');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, X-Frame-Options');
+  
+  // Force remove any existing X-Frame-Options and set to ALLOWALL
+  res.removeHeader('X-Frame-Options');
   res.header('X-Frame-Options', 'ALLOWALL');
   res.header('X-Content-Type-Options', 'nosniff');
+  
+  // Add cache-busting headers to prevent caching issues
+  res.header('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.header('Pragma', 'no-cache');
+  res.header('Expires', '0');
   
   // Handle preflight requests
   if (req.method === 'OPTIONS') {
