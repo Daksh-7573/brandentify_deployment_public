@@ -31,10 +31,11 @@ app.use((req, res, next) => {
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, HEAD');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, X-Frame-Options');
   
-  // Completely remove X-Frame-Options header to allow iframe embedding
+  // NUCLEAR IFRAME FIX - Remove ALL frame-related headers
   res.removeHeader('X-Frame-Options');
-  // Do not set X-Frame-Options at all - this allows iframe embedding
-  res.header('X-Content-Type-Options', 'nosniff');
+  res.removeHeader('x-frame-options');
+  res.removeHeader('X-FRAME-OPTIONS');
+  res.setHeader('X-Content-Type-Options', 'nosniff');
   
   // Add cache-busting headers to prevent caching issues
   res.header('Cache-Control', 'no-cache, no-store, must-revalidate');
