@@ -196,9 +196,8 @@
       }
     };
     
-    // EMERGENCY: DISABLE SERVICE WORKER FOR IFRAME EMBEDDING FIX
-    // if ('serviceWorker' in navigator) {
-    if (false) {  // FORCE DISABLE SERVICE WORKER
+    // Progressive Service Worker Registration
+    if ('serviceWorker' in navigator) {
       // Register immediately for maximum caching benefit
       navigator.serviceWorker.register('/sw.js')
         .then(function(registration) {

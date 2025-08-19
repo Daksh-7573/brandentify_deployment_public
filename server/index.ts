@@ -30,17 +30,8 @@ app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, HEAD');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, X-Frame-Options');
-  
-  // NUCLEAR IFRAME FIX - Remove ALL frame-related headers
-  res.removeHeader('X-Frame-Options');
-  res.removeHeader('x-frame-options');
-  res.removeHeader('X-FRAME-OPTIONS');
-  res.setHeader('X-Content-Type-Options', 'nosniff');
-  
-  // Add cache-busting headers to prevent caching issues
-  res.header('Cache-Control', 'no-cache, no-store, must-revalidate');
-  res.header('Pragma', 'no-cache');
-  res.header('Expires', '0');
+  res.header('X-Frame-Options', 'ALLOWALL');
+  res.header('X-Content-Type-Options', 'nosniff');
   
   // Handle preflight requests
   if (req.method === 'OPTIONS') {
@@ -371,8 +362,6 @@ console.log("Phase 3 microservices architecture initialized");
 console.log("Starting Musk Pulse automation system...");
 muskPulseScheduler.start();
 console.log("Musk Pulse automation system started - scheduling pulses for 9 AM, 2 PM, and 7 PM daily");
-
-// Note: Removed problematic iframe fix middleware that was causing ERR_HTTP_HEADERS_SENT errors
 
 (async () => {
   const server = await registerRoutes(app);

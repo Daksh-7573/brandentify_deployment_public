@@ -322,19 +322,13 @@ export function csrfProtection(req: Request, res: Response, next: NextFunction) 
  * @param app Express application
  */
 export function setupSecurity(app: any) {
-  // 1. COMPLETELY DISABLE HELMET - it was still setting X-Frame-Options somewhere
-  // app.use(helmet({...})) - DISABLED FOR IFRAME EMBEDDING
-  
-  // 2. EXPLICIT HEADER OVERRIDE - Force remove any X-Frame-Options
-  app.use((req: Request, res: Response, next: NextFunction) => {
-    // Aggressively remove any X-Frame-Options header
-    res.removeHeader('X-Frame-Options');
-    res.removeHeader('x-frame-options');
-    // Set iframe-friendly headers explicitly
-    res.setHeader('X-Content-Type-Options', 'nosniff');
-    res.setHeader('X-XSS-Protection', '1; mode=block');
-    next();
-  });
+  // 1. Enable helmet for secure headers with a permissive but useful Content Security Policy
+  app.use(
+    helmet({
+      contentSecurityPolicy: false, // Completely disable CSP to fix WebSocket connection issues
+      crossOriginEmbedderPolicy: false, // Disable COEP to prevent breaking existing functionality
+    })
+  );
   
   // 2. Set up CORS with whitelisted origins
   const corsOptions = {
@@ -430,8 +424,7 @@ export function setupSecurity(app: any) {
     // Security headers that won't break existing functionality
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('X-XSS-Protection', '1; mode=block');
-    // Remove X-Frame-Options entirely to allow iframe embedding
-    res.removeHeader('X-Frame-Options');
+    res.setHeader('X-Frame-Options', 'SAMEORIGIN');
     res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
     res.setHeader('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
     next();

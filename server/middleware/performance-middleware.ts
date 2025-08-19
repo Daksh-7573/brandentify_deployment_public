@@ -7,8 +7,7 @@ export function performanceMiddleware() {
     
     // Add response headers for performance
     res.setHeader('X-Content-Type-Options', 'nosniff');
-    // Remove X-Frame-Options to allow iframe embedding
-    res.removeHeader('X-Frame-Options');
+    res.setHeader('X-Frame-Options', 'DENY');
     res.setHeader('X-XSS-Protection', '1; mode=block');
     
     // Cache static API responses for user data

@@ -15,7 +15,7 @@ import { projectThumbnailUpload, getFileUrl } from "./utils/upload";
 // Resume parsing functionality
 import { handleParseResume } from "./routes-parse-resume";
 import { upload, extractTextFromFile, cleanupFile, parseResume } from "./services/resume-parser-service";
-// Demo profiles functionality has been removed
+import { handleCreateDemoProfiles } from "./routes-demo-profiles";
 import { updateUserGeolocation, updateUserRadarVisibility, getNearbyUsers } from "./routes-radar";
 import { handleMuskChat, handleResumeUpload, handlePitchDeckUpload } from "./routes-musk";
 import muskSuggestionRoutes from "./routes-musk-suggestions";
