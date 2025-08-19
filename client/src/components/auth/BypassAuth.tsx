@@ -27,46 +27,71 @@ export function BypassAuth() {
 
       console.log('Creating demo user account...');
 
-      // Call backend to create demo user
-      const response = await fetch('/api/auth/demo-signin', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(demoUserData)
+      // Store demo user in localStorage to bypass Firebase entirely
+      const demoUser = {
+        id: Date.now(),
+        email: demoUserData.email,
+        name: demoUserData.name,
+        username: demoUserData.email.split('@')[0],
+        photoURL: demoUserData.photoURL || '',
+        emailVerified: true,
+        authProvider: 'demo'
+      };
+      
+      // Set authentication state directly in localStorage
+      localStorage.setItem('auth_bypass', 'true');
+      localStorage.setItem('demo_user', JSON.stringify(demoUser));
+      sessionStorage.setItem('authSuccess', 'true');
+      sessionStorage.setItem('userAuthenticated', 'true');
+      
+      console.log('Demo authentication set successfully');
+      
+      // Trigger authentication success event
+      const authEvent = new CustomEvent('authStateChanged', { 
+        detail: { 
+          isAuthenticated: true, 
+          user: demoUser,
+          bypass: true
+        }
       });
-
-      const data = await response.json();
-      
-      if (data.success) {
-        console.log('Demo user created successfully');
-        
-        // Trigger auth success event
-        const authEvent = new CustomEvent('googleAuthSuccess', { 
-          detail: { user: data.user }
-        });
-        window.dispatchEvent(authEvent);
-        
-        toast({
-          title: 'Welcome!',
-          description: 'Demo account created successfully',
-        });
-        
-        // Navigate to dashboard
-        setTimeout(() => {
-          setLocation('/industry-pulse');
-        }, 1000);
-        
-      } else {
-        throw new Error(data.message || 'Demo login failed');
-      }
-      
-    } catch (error: any) {
-      console.error('Demo login error:', error);
+      window.dispatchEvent(authEvent);
       
       toast({
-        title: 'Demo Login Failed',
-        description: 'Could not create demo account. Please try again.',
-        variant: 'destructive'
+        title: 'Welcome to Brandentifier!',
+        description: 'Demo access granted - exploring with full features',
       });
+      
+      // Navigate to main app
+      setTimeout(() => {
+        setLocation('/industry-pulse');
+      }, 1500);
+      
+    } catch (error: any) {
+      console.error('Demo authentication error:', error);
+      
+      // Even if backend fails, set local demo auth
+      const fallbackUser = {
+        id: Date.now(),
+        email: 'demo@brandentifier.com',
+        name: 'Demo User',
+        username: 'demo',
+        photoURL: '',
+        emailVerified: true,
+        authProvider: 'demo'
+      };
+      
+      localStorage.setItem('auth_bypass', 'true');
+      localStorage.setItem('demo_user', JSON.stringify(fallbackUser));
+      sessionStorage.setItem('authSuccess', 'true');
+      
+      toast({
+        title: 'Demo Access Granted',
+        description: 'Continuing with offline demo mode',
+      });
+      
+      setTimeout(() => {
+        setLocation('/industry-pulse');
+      }, 1000);
       
       setIsLoading(false);
     }
@@ -74,20 +99,23 @@ export function BypassAuth() {
 
   return (
     <div className="space-y-4">
-      <div className="text-center p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg">
-        <h4 className="font-semibold text-blue-300 mb-2">Demo Access Available</h4>
-        <p className="text-sm text-blue-200">
-          While Firebase is being configured, you can access the app with a demo account
+      <div className="text-center p-4 bg-green-500/10 border border-green-500/30 rounded-lg">
+        <h4 className="font-semibold text-green-300 mb-2">Instant Demo Access</h4>
+        <p className="text-sm text-green-200">
+          Skip the Firebase setup and explore the full app with a demo account
+        </p>
+        <p className="text-xs text-green-300 mt-2">
+          No configuration required - works immediately
         </p>
       </div>
       
       <Button
         onClick={handleDemoLogin}
         disabled={isLoading}
-        className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+        className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold"
         size="lg"
       >
-        {isLoading ? 'Creating Demo Account...' : 'Continue with Demo Account'}
+        {isLoading ? 'Setting up demo access...' : '🚀 Enter Brandentifier Now'}
       </Button>
     </div>
   );
