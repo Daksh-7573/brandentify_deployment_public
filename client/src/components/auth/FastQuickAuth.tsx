@@ -40,26 +40,13 @@ export function FastQuickAuth() {
       const data = await response.json();
       
       if (data.success) {
-        console.log('✅ Backend success, storing user...');
+        console.log('✅ Quick auth success - instant redirect');
         
-        // Store user immediately
+        // Ultra-fast storage and redirect
         sessionStorage.setItem('brandentifier_user', JSON.stringify(data.user));
         
-        // Trigger auth update
-        window.dispatchEvent(new CustomEvent('googleAuthSuccess', { 
-          detail: { user: data.user }
-        }));
-        
-        toast({
-          title: 'Quick Auth Successful!',
-          description: 'Redirecting...',
-          variant: 'default'
-        });
-        
-        console.log('🎯 Redirecting directly...');
-        
-        // Immediate redirect
-        window.location.href = '/industry-pulse';
+        // Instant redirect without delays
+        window.location.replace('/industry-pulse');
       } else {
         throw new Error(data.message || 'Authentication failed');
       }

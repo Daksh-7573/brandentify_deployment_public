@@ -32,7 +32,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Check for stored user on mount
+  // Ultra-fast stored user check
   useEffect(() => {
     const checkStoredAuth = () => {
       try {
@@ -41,8 +41,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           const userData = JSON.parse(storedUser);
           console.log('Found stored user:', userData.email);
           setUser(userData);
-        } else {
-          console.log('No stored user found');
         }
       } catch (error) {
         console.error('Error checking stored auth:', error);

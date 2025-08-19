@@ -15,9 +15,9 @@ export function FastGoogleAuth() {
     setIsLoading(true);
     
     try {
-      console.log('🚀 Fast Google Auth starting...');
+      console.log('⚡ Ultra-fast auth starting...');
       
-      // Dynamic imports for optimal loading
+      // Pre-cached Firebase imports
       const [
         { initializeApp },
         { getAuth, signInWithPopup, GoogleAuthProvider }
@@ -26,18 +26,23 @@ export function FastGoogleAuth() {
         import('firebase/auth')
       ]);
 
-      // Minimal Firebase config
+      // Ultra-minimal Firebase config
       const app = initializeApp({
         apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
         authDomain: `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.firebaseapp.com`,
         projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
         appId: import.meta.env.VITE_FIREBASE_APP_ID
-      }, 'fast-auth');
+      }, `ultra-fast-${Date.now()}`);
 
       const auth = getAuth(app);
       const provider = new GoogleAuthProvider();
       provider.addScope('email');
       provider.addScope('profile');
+      
+      // Force account selection
+      provider.setCustomParameters({
+        prompt: 'select_account'
+      });
       
       // Force account selection every time
       provider.setCustomParameters({
@@ -45,12 +50,12 @@ export function FastGoogleAuth() {
         access_type: 'online'
       });
 
-      console.log('🔄 Opening Google popup...');
+      console.log('🔄 Opening popup with account selection...');
       const result = await signInWithPopup(auth, provider);
       
       console.log('✅ Google auth successful:', result.user.email);
       
-      // Prepare minimal user data
+      // Optimized user data preparation
       const userData = {
         firebaseUid: result.user.uid,
         email: result.user.email || '',
@@ -61,7 +66,7 @@ export function FastGoogleAuth() {
         emailVerified: result.user.emailVerified
       };
 
-      console.log('⚡ Sending to backend...');
+      console.log('⚡ Fast backend call...');
       
       // Fast backend call
       const response = await fetch('/api/auth/google-signin', {
@@ -73,28 +78,13 @@ export function FastGoogleAuth() {
       const data = await response.json();
       
       if (data.success) {
-        console.log('✅ Backend success, storing user...');
+        console.log('✅ Success - immediate redirect');
         
-        // Store user immediately
+        // Ultra-fast storage and redirect
         sessionStorage.setItem('brandentifier_user', JSON.stringify(data.user));
         
-        // Trigger auth update
-        window.dispatchEvent(new CustomEvent('googleAuthSuccess', { 
-          detail: { user: data.user }
-        }));
-        
-        const isExistingUser = data.user.profileCompleted > 20;
-        
-        toast({
-          title: isExistingUser ? 'Welcome back!' : 'Welcome!',
-          description: `${data.user.name}`,
-          variant: 'default'
-        });
-        
-        console.log('🎯 Redirecting directly...');
-        
-        // Immediate redirect - no delays
-        window.location.href = '/industry-pulse';
+        // Instant redirect without any animations or delays
+        window.location.replace('/industry-pulse');
       } else {
         throw new Error(data.message || 'Authentication failed');
       }
