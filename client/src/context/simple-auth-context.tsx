@@ -35,6 +35,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Ultra-fast stored user check
   useEffect(() => {
+    console.log('AuthProvider: Starting auth check');
+    
     const checkStoredAuth = () => {
       try {
         const storedUser = sessionStorage.getItem('brandentifier_user');
@@ -42,10 +44,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           const userData = JSON.parse(storedUser);
           console.log('Found stored user:', userData.email);
           setUser(userData);
+        } else {
+          console.log('No stored user found');
         }
       } catch (error) {
         console.error('Error checking stored auth:', error);
+        // Clear any corrupted data
+        sessionStorage.removeItem('brandentifier_user');
       } finally {
+        console.log('Setting isLoading to false');
         setIsLoading(false);
       }
     };
@@ -55,14 +62,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const { user: userData } = event.detail;
       console.log('Google auth success event received:', userData.email);
       setUser(userData);
+      setIsLoading(false);
       sessionStorage.setItem('brandentifier_user', JSON.stringify(userData));
     };
 
     window.addEventListener('googleAuthSuccess', handleGoogleAuthSuccess as EventListener);
-    checkStoredAuth();
+    
+    // Use setTimeout to ensure this runs after the initial render
+    const timeoutId = setTimeout(() => {
+      checkStoredAuth();
+    }, 0);
 
     return () => {
       window.removeEventListener('googleAuthSuccess', handleGoogleAuthSuccess as EventListener);
+      clearTimeout(timeoutId);
     };
   }, []);
 
