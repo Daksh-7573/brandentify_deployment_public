@@ -92,31 +92,39 @@ export default function ProfileNeo() {
     return null;
   }
   
-  // Get user profile data
-  const { data: userData, isLoading: isUserDataLoading } = useQuery({
-    queryKey: ['/api/users', user.uid],
+  // Get user profile data - using username instead of UID for proper lookup
+  const { data: userData, isLoading: isUserDataLoading, error: userDataError } = useQuery({
+    queryKey: ['/api/users/username', user.uid],
     queryFn: async () => {
-      const response = await fetch(`/api/users/${user.uid}`);
+      console.log('Fetching user data for Firebase UID:', user.uid);
+      const response = await fetch(`/api/users/username/${user.uid}`);
       if (!response.ok) {
+        console.error('Failed to fetch user data:', response.status, response.statusText);
         throw new Error('Failed to fetch user data');
       }
-      return response.json();
+      const data = await response.json();
+      console.log('User data received:', data);
+      return data;
     }
   });
   
-  // Query for user's industries and domain preferences
+  // Query for user's industries and domain preferences - only if we have userData
   const { data: userPreferences, isLoading: isPreferencesLoading } = useQuery({
-    queryKey: ['/api/user-preferences', user.uid],
+    queryKey: ['/api/user-preferences', userData?.id],
+    enabled: !!userData?.id,
   });
   
   // Profile picture functionality
   const [showProfileDialog, setShowProfileDialog] = useState(false);
   const { profilePictureUrl, isUploading, uploadProgress, updateProfilePicture } = useProfilePicture(user.uid);
   
-  // Update about me mutation
+  // Update about me mutation - use numeric user ID from userData
   const updateAboutMeMutation = useMutation({
     mutationFn: async (newAbout: string) => {
-      const res = await apiRequest("PATCH", `/api/users/${user.uid}`, {
+      if (!userData?.id) {
+        throw new Error('User ID not available');
+      }
+      const res = await apiRequest("PATCH", `/api/users/${userData.id}`, {
         about: newAbout
       });
       return res.json();
@@ -127,7 +135,7 @@ export default function ProfileNeo() {
         description: "Your professional summary has been updated successfully."
       });
       setShowEditAboutDialog(false);
-      queryClient.invalidateQueries({ queryKey: ['/api/users', user.uid] });
+      queryClient.invalidateQueries({ queryKey: ['/api/users/username', user.uid] });
     },
     onError: (error) => {
       toast({
@@ -139,10 +147,13 @@ export default function ProfileNeo() {
     }
   });
   
-  // Update looking for
+  // Update looking for - use numeric user ID from userData
   const updateLookingForMutation = useMutation({
     mutationFn: async (lookingFor: string | null) => {
-      const res = await apiRequest("PATCH", `/api/users/${user.uid}`, {
+      if (!userData?.id) {
+        throw new Error('User ID not available');
+      }
+      const res = await apiRequest("PATCH", `/api/users/${userData.id}`, {
         lookingFor
       });
       return res.json();
@@ -153,7 +164,7 @@ export default function ProfileNeo() {
         description: "Your 'I am looking for' preference has been updated."
       });
       setShowLookingForDialog(false);
-      queryClient.invalidateQueries({ queryKey: ['/api/users', user.uid] });
+      queryClient.invalidateQueries({ queryKey: ['/api/users/username', user.uid] });
     },
     onError: (error) => {
       toast({
@@ -165,10 +176,13 @@ export default function ProfileNeo() {
     }
   });
   
-  // Update industry and domain preferences
+  // Update industry and domain preferences - use numeric user ID from userData
   const updateIndustryMutation = useMutation({
     mutationFn: async () => {
-      const res = await apiRequest("PATCH", `/api/users/${user.uid}`, {
+      if (!userData?.id) {
+        throw new Error('User ID not available');
+      }
+      const res = await apiRequest("PATCH", `/api/users/${userData.id}`, {
         industry: industryValue,
         domain: domainValue
       });
@@ -180,7 +194,7 @@ export default function ProfileNeo() {
         description: "Your industry and domain preferences have been updated."
       });
       setShowIndustryDialog(false);
-      queryClient.invalidateQueries({ queryKey: ['/api/users', user.uid] });
+      queryClient.invalidateQueries({ queryKey: ['/api/users/username', user.uid] });
     },
     onError: (error) => {
       toast({
@@ -202,7 +216,7 @@ export default function ProfileNeo() {
     }
   }, [userData]);
   
-  // If loading, show standard loading screen
+  // If loading or error, show appropriate state
   if (isUserDataLoading) {
     return (
       <div 
@@ -214,6 +228,45 @@ export default function ProfileNeo() {
           <Header />
           <div className="container mx-auto px-4 py-6">
             <ProfileCardSkeleton />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state if user data couldn't be loaded
+  if (userDataError || !userData) {
+    return (
+      <div 
+        className="min-h-screen bg-cover bg-center bg-fixed relative"
+        style={{ backgroundImage: `url(${backgroundImage})` }}
+      >
+        <div className="fixed inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm"></div>
+        <div className="relative z-10">
+          <Header />
+          <div className="container mx-auto px-4 py-6">
+            <div className="neo-glass-card p-8 text-center">
+              <AlertCircle className="h-16 w-16 text-red-400 mx-auto mb-4" />
+              <h2 className="text-2xl font-bold text-white mb-2">Unable to Load Profile</h2>
+              <p className="text-white/80 mb-6">
+                We couldn't load your profile data. This might be because your account is still being set up.
+              </p>
+              <div className="flex gap-4 justify-center">
+                <Button
+                  onClick={() => window.location.reload()}
+                  className="bg-white text-black hover:bg-white/90"
+                >
+                  Refresh Page
+                </Button>
+                <Button
+                  onClick={() => setLocation('/auth')}
+                  variant="outline"
+                  className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+                >
+                  Sign In Again
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
       </div>

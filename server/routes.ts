@@ -728,6 +728,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Get user by username (Firebase UID) - dedicated route
+  apiRouter.get("/users/username/:username", async (req: Request, res: Response) => {
+    try {
+      const { username } = req.params;
+      console.log(`[GET /users/username/:username] Looking up user by username: ${username}`);
+      
+      const user = await storage.getUserByUsername(username);
+      if (!user) {
+        console.log(`[GET /users/username/:username] User not found: ${username}`);
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      console.log(`[GET /users/username/:username] Found user:`, user.id, user.name);
+      return res.json(user);
+    } catch (error) {
+      console.error(`[GET /users/username/:username] Error:`, error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   apiRouter.get("/users/:id", async (req: Request, res: Response) => {
     try {
       const idParam = req.params.id;
