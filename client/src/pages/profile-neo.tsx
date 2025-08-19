@@ -92,12 +92,12 @@ export default function ProfileNeo() {
     return null;
   }
   
-  // Get user profile data - using username instead of UID for proper lookup
+  // Get user profile data - using username (Firebase UID) for proper lookup
   const { data: userData, isLoading: isUserDataLoading, error: userDataError } = useQuery({
-    queryKey: ['/api/users/username', user.uid],
+    queryKey: ['/api/users/username', user.username],
     queryFn: async () => {
-      console.log('Fetching user data for Firebase UID:', user.uid);
-      const response = await fetch(`/api/users/username/${user.uid}`);
+      console.log('Fetching user data for Firebase UID:', user.username);
+      const response = await fetch(`/api/users/username/${user.username}`);
       if (!response.ok) {
         console.error('Failed to fetch user data:', response.status, response.statusText);
         throw new Error('Failed to fetch user data');
@@ -105,7 +105,8 @@ export default function ProfileNeo() {
       const data = await response.json();
       console.log('User data received:', data);
       return data;
-    }
+    },
+    enabled: !!user.username,
   });
   
   // Query for user's industries and domain preferences - only if we have userData
@@ -116,7 +117,7 @@ export default function ProfileNeo() {
   
   // Profile picture functionality
   const [showProfileDialog, setShowProfileDialog] = useState(false);
-  const { profilePictureUrl, isUploading, uploadProgress, updateProfilePicture } = useProfilePicture(user.uid);
+  const { profilePictureUrl, isUploading, uploadProgress, updateProfilePicture } = useProfilePicture(user.username);
   
   // Update about me mutation - use numeric user ID from userData
   const updateAboutMeMutation = useMutation({
@@ -135,7 +136,7 @@ export default function ProfileNeo() {
         description: "Your professional summary has been updated successfully."
       });
       setShowEditAboutDialog(false);
-      queryClient.invalidateQueries({ queryKey: ['/api/users/username', user.uid] });
+      queryClient.invalidateQueries({ queryKey: ['/api/users/username', user.username] });
     },
     onError: (error) => {
       toast({
@@ -164,7 +165,7 @@ export default function ProfileNeo() {
         description: "Your 'I am looking for' preference has been updated."
       });
       setShowLookingForDialog(false);
-      queryClient.invalidateQueries({ queryKey: ['/api/users/username', user.uid] });
+      queryClient.invalidateQueries({ queryKey: ['/api/users/username', user.username] });
     },
     onError: (error) => {
       toast({
@@ -194,7 +195,7 @@ export default function ProfileNeo() {
         description: "Your industry and domain preferences have been updated."
       });
       setShowIndustryDialog(false);
-      queryClient.invalidateQueries({ queryKey: ['/api/users/username', user.uid] });
+      queryClient.invalidateQueries({ queryKey: ['/api/users/username', user.username] });
     },
     onError: (error) => {
       toast({
@@ -793,7 +794,7 @@ export default function ProfileNeo() {
       </Dialog>
       {/* Add Profile Picture Dialog component */}
       <ProfilePictureDialog 
-        userId={user.uid}
+        userId={user.username}
         open={showProfileDialog}
         onOpenChange={setShowProfileDialog}
         currentPhotoURL={profilePictureUrl}
