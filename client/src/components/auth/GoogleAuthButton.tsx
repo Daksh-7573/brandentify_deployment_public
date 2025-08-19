@@ -52,7 +52,8 @@ export function GoogleAuthButton() {
       provider.addScope('email');
       provider.addScope('profile');
       provider.setCustomParameters({
-        prompt: 'select_account'
+        prompt: 'select_account',
+        access_type: 'online'
       });
 
       // Store return URL for after authentication

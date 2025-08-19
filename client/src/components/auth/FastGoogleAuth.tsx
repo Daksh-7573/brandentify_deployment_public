@@ -38,6 +38,12 @@ export function FastGoogleAuth() {
       const provider = new GoogleAuthProvider();
       provider.addScope('email');
       provider.addScope('profile');
+      
+      // Force account selection every time
+      provider.setCustomParameters({
+        prompt: 'select_account',
+        access_type: 'online'
+      });
 
       console.log('🔄 Opening Google popup...');
       const result = await signInWithPopup(auth, provider);
