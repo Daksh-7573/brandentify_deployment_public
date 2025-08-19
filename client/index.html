@@ -196,15 +196,41 @@
       }
     };
     
-    // Service Worker DISABLED to fix X-Frame-Options caching issue
+    // Progressive Service Worker Registration
     if ('serviceWorker' in navigator) {
-      console.log('[SW] Unregistering all service workers to fix frame options...');
-      navigator.serviceWorker.getRegistrations().then(function(registrations) {
-        for(let registration of registrations) {
-          console.log('[SW] Unregistering:', registration.scope);
-          registration.unregister();
-        }
-      });
+      // Register immediately for maximum caching benefit
+      navigator.serviceWorker.register('/sw.js')
+        .then(function(registration) {
+          console.log('[SW] Service Worker v2 registered:', registration.scope);
+          console.log('[PERF] Service Worker registered in', (performance.now() - window.__performance_start).toFixed(2), 'ms');
+          
+          // Check for updates immediately
+          registration.update();
+          
+          // Listen for new service worker
+          registration.addEventListener('updatefound', function() {
+            const newWorker = registration.installing;
+            if (newWorker) {
+              console.log('[SW] New service worker installing...');
+              newWorker.addEventListener('statechange', function() {
+                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                  console.log('[SW] New service worker available! Refresh to update.');
+                }
+              });
+            }
+          });
+        })
+        .catch(function(error) {
+          console.log('[SW] Registration failed:', error);
+          // Fallback registration
+          navigator.serviceWorker.register('./sw.js')
+            .then(function(registration) {
+              console.log('[SW] Registration successful (fallback):', registration.scope);
+            })
+            .catch(function(fallbackError) {
+              console.log('[SW] Fallback registration also failed:', fallbackError);
+            });
+        });
     }
     
     // Enhanced performance monitoring and reporting
