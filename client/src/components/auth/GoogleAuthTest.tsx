@@ -79,7 +79,7 @@ export function GoogleAuthTest() {
               description: `Welcome ${data.user.name}`
             });
 
-            setTimeout(() => navigate('/industry-pulse'), 1000);
+            navigate('/industry-pulse');
           } else {
             addLog(`❌ Backend error: ${data.message}`);
           }
@@ -158,7 +158,7 @@ export function GoogleAuthTest() {
           description: `Welcome ${data.user.name}`
         });
 
-        setTimeout(() => navigate('/industry-pulse'), 1000);
+        navigate('/industry-pulse');
       } else {
         addLog(`❌ Backend error: ${data.message}`);
       }

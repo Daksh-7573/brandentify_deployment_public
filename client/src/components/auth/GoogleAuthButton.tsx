@@ -113,12 +113,10 @@ export function GoogleAuthButton() {
         
         console.log(`User ${isExistingUser ? 'signed in' : 'account created'} successfully`);
         
-        // Navigate to intended page after a short delay for UI feedback
-        setTimeout(() => {
-          const returnUrl = sessionStorage.getItem('auth_return_url') || '/industry-pulse';
-          sessionStorage.removeItem('auth_return_url');
-          window.location.href = returnUrl;
-        }, 1000);
+        // Navigate directly to Industry Pulse without delay
+        const returnUrl = sessionStorage.getItem('auth_return_url') || '/industry-pulse';
+        sessionStorage.removeItem('auth_return_url');
+        window.location.href = returnUrl;
       } else {
         throw new Error(data.message || 'Authentication failed');
       }

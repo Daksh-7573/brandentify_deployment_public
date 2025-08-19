@@ -45,10 +45,8 @@ export function QuickAuthTest() {
           description: 'Redirecting to dashboard...'
         });
         
-        // Force page reload to trigger auth context update
-        setTimeout(() => {
-          window.location.href = '/industry-pulse';
-        }, 1000);
+        // Redirect directly to Industry Pulse
+        window.location.href = '/industry-pulse';
       } else {
         throw new Error(data.message || 'Authentication failed');
       }
