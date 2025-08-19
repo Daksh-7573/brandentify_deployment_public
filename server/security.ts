@@ -327,6 +327,10 @@ export function setupSecurity(app: any) {
     helmet({
       contentSecurityPolicy: false, // Completely disable CSP to fix WebSocket connection issues
       crossOriginEmbedderPolicy: false, // Disable COEP to prevent breaking existing functionality
+      crossOriginOpenerPolicy: false, // Disable COOP to allow embedding
+      crossOriginResourcePolicy: false, // Disable CORP to allow embedding
+      frameguard: false, // Disable X-Frame-Options to allow embedding in Replit preview
+      originAgentCluster: false, // Disable Origin-Agent-Cluster header
     })
   );
   
@@ -424,7 +428,7 @@ export function setupSecurity(app: any) {
     // Security headers that won't break existing functionality
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('X-XSS-Protection', '1; mode=block');
-    res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+    // X-Frame-Options removed to allow embedding in Replit preview
     res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
     res.setHeader('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
     next();

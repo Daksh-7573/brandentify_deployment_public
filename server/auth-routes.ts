@@ -23,10 +23,13 @@ const googleSignInSchema = z.object({
  */
 router.post('/google-signin', async (req, res) => {
   try {
-    console.log('Google sign-in request received:', req.body.email);
+    console.log('=== GOOGLE SIGN-IN REQUEST ===');
+    console.log('Request body:', JSON.stringify(req.body, null, 2));
+    console.log('Email from request:', req.body.email);
     
     // Validate request data
     const userData = googleSignInSchema.parse(req.body);
+    console.log('✅ Data validation successful');
     
     // Check if user already exists by Firebase UID, Google ID, or email
     const existingUser = await db
@@ -122,20 +125,30 @@ router.post('/google-signin', async (req, res) => {
     });
 
   } catch (error: any) {
-    console.error('Google sign-in error:', error);
+    console.error('❌ GOOGLE SIGN-IN ERROR:', error);
+    console.error('Error stack:', error.stack);
     
     if (error instanceof z.ZodError) {
+      console.error('❌ Zod validation errors:', error.errors);
       return res.status(400).json({
         success: false,
         message: 'Invalid request data',
-        errors: error.errors
+        errors: error.errors,
+        receivedData: req.body
       });
     }
+    
+    console.error('❌ Server error details:', {
+      message: error.message,
+      code: error.code,
+      stack: error.stack
+    });
     
     res.status(500).json({
       success: false,
       message: 'Internal server error during authentication',
-      error: error.message
+      error: error.message,
+      details: error.code ? `Error code: ${error.code}` : 'No error code provided'
     });
   }
 });

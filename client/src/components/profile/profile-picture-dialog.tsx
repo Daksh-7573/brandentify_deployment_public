@@ -59,17 +59,17 @@ export function ProfilePictureDialog({
         console.log("Starting profile picture upload...");
         console.log("Image size (bytes):", imageSizeInBytes);
         
-        // Send only the photoURL update to the API
-        const res = await apiRequest(
-          'PUT',
-          `/api/users/${actualUserId}`,
-          {
+        // Send only the photoURL update to the API using the new API request format
+        const res = await apiRequest({
+          method: 'PUT',
+          url: `/api/users/${actualUserId}`,
+          data: {
             photoURL: base64Image
           }
-        );
+        });
         
         console.log("Profile picture update successful");
-        return res;
+        return await res.json();
       } catch (error) {
         console.error("API request failed:", error);
         throw new Error("Failed to update profile picture. Please try again.");
