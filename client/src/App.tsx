@@ -155,15 +155,18 @@ function ProtectedRoute({ component: Component, ...rest }: { component: React.Co
   const [_, navigate] = useLocation();
   
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
+    // Check session storage first for immediate auth state
+    const storedUser = sessionStorage.getItem('brandentifier_user');
+    
+    if (!isLoading && !isAuthenticated && !storedUser) {
       console.log('ProtectedRoute: User not authenticated, redirecting to auth page');
       console.log('ProtectedRoute: isLoading:', isLoading, 'isAuthenticated:', isAuthenticated, 'user:', user?.email);
       
       // Set return URL for after authentication
       sessionStorage.setItem('auth_return_url', window.location.pathname);
       navigate('/auth');
-    } else if (isAuthenticated) {
-      console.log('ProtectedRoute: User authenticated:', user?.email);
+    } else if (isAuthenticated || storedUser) {
+      console.log('ProtectedRoute: User authenticated:', user?.email || 'from session storage');
     }
   }, [isAuthenticated, isLoading, navigate, user]);
   

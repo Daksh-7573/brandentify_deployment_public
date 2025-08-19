@@ -97,6 +97,9 @@ export function GoogleAuthButton() {
       const data = await response.json();
       
       if (data.success) {
+        // Store user data immediately in session storage
+        sessionStorage.setItem('brandentifier_user', JSON.stringify(data.user));
+        
         // Trigger a custom event for the auth context to handle
         const authEvent = new CustomEvent('googleAuthSuccess', { 
           detail: { user: data.user }
@@ -107,13 +110,10 @@ export function GoogleAuthButton() {
         const returnUrl = sessionStorage.getItem('auth_return_url') || '/industry-pulse';
         sessionStorage.removeItem('auth_return_url');
         
-        toast({
-          title: data.user.profileCompleted > 20 ? 'Welcome back!' : 'Welcome to Brandentifier!',
-          description: `Redirecting to ${returnUrl.replace('/', '').replace('-', ' ')}...`
-        });
+        console.log('Google auth complete, redirecting to:', returnUrl);
         
-        // Immediate redirect - no delay
-        window.location.href = returnUrl;
+        // Use location.replace for immediate navigation without back button issues
+        window.location.replace(returnUrl);
       } else {
         throw new Error(data.message || 'Authentication failed');
       }

@@ -55,8 +55,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const handleGoogleAuthSuccess = (event: CustomEvent) => {
       const { user: userData } = event.detail;
       console.log('AuthContext: Google auth success event received:', userData.email);
+      console.log('AuthContext: Setting user state and updating session');
       setUser(userData);
-      sessionStorage.setItem('brandentifier_user', JSON.stringify(userData));
       setIsLoading(false); // Ensure loading is false after auth
     };
 
