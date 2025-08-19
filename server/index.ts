@@ -14,11 +14,17 @@ import { firebaseAuthRedirectHandler } from "./firebase-auth-handler";
 import { apiGateway } from "./services/api-gateway";
 import { messageQueue, TaskTypes } from "./services/message-queue";
 import { muskPulseScheduler } from "./services/musk-pulse-scheduler";
+import { cacheMiddleware } from "./middleware/cache-middleware";
+import { performanceMiddleware } from "./middleware/performance-middleware";
 
 const app = express();
 
 // Configure for external domain access
 app.set('trust proxy', true);
+
+// Add performance middleware first
+app.use(performanceMiddleware());
+
 app.use((req, res, next) => {
   // Allow access from Replit domains and external sources
   res.header('Access-Control-Allow-Origin', '*');
@@ -26,7 +32,6 @@ app.use((req, res, next) => {
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, X-Frame-Options');
   res.header('X-Frame-Options', 'ALLOWALL');
   res.header('X-Content-Type-Options', 'nosniff');
-  res.header('Cache-Control', 'no-cache, no-store, must-revalidate');
   
   // Handle preflight requests
   if (req.method === 'OPTIONS') {

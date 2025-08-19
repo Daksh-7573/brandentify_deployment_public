@@ -13,14 +13,16 @@ if (!process.env.DATABASE_URL) {
   );
 }
 
-// Configure the pool with more robust settings
+// Configure the pool for maximum performance
 export const pool = new Pool({ 
   connectionString: process.env.DATABASE_URL,
-  // Set longer timeouts to prevent disconnects during slowdowns
-  connectionTimeoutMillis: 15000, // 15 seconds
-  idleTimeoutMillis: 60000, // 1 minute
-  // Increase max connections for better concurrency
-  max: 20
+  // Optimize for fast connections
+  connectionTimeoutMillis: 5000, // 5 seconds
+  idleTimeoutMillis: 30000, // 30 seconds
+  // Optimize connection pool for better performance
+  max: 10, // Fewer connections, better performance
+  min: 2,  // Keep minimum connections alive
+  acquireTimeoutMillis: 3000, // 3 seconds max wait
 });
 
 // Handle pool errors to prevent crashes

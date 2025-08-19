@@ -5,6 +5,7 @@ import { WebSocketServer, WebSocket } from "ws";
 import { storage } from "./storage";
 import { pool } from "./db";
 import { z } from "zod";
+import { cacheMiddleware } from "./middleware/cache-middleware";
 import crypto from "crypto";
 import path from "path";
 import fs from "fs";
@@ -728,7 +729,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  apiRouter.get("/users/:id", async (req: Request, res: Response) => {
+  // Add cache middleware for user data endpoints
+  apiRouter.get("/users/:id", cacheMiddleware(30), async (req: Request, res: Response) => {
     try {
       const idParam = req.params.id;
       console.log(`[GET /users/:id] Fetching user with ID: ${idParam}`);
@@ -1557,7 +1559,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Work Experience routes
-  apiRouter.get("/users/:userId/experiences", async (req: Request, res: Response) => {
+  apiRouter.get("/users/:userId/experiences", cacheMiddleware(60), async (req: Request, res: Response) => {
     try {
       const userIdParam = req.params.userId;
       console.log(`[GET /users/:userId/experiences] Request for experiences with userId: ${userIdParam}`);
@@ -2118,7 +2120,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Project routes
-  apiRouter.get("/users/:userId/projects", async (req: Request, res: Response) => {
+  apiRouter.get("/users/:userId/projects", cacheMiddleware(60), async (req: Request, res: Response) => {
     try {
       const userIdParam = req.params.userId;
       console.log(`[GET /users/:userId/projects] Request for projects with userId: ${userIdParam}`);

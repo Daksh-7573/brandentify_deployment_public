@@ -88,12 +88,17 @@ export interface InsertCapsuleJournal {
   content: string;
 }
 
-// Helper function for executing database queries
+// Optimized helper function for executing database queries
 async function executeQuery(queryText: string, params: any[] = []) {
   try {
+    const start = Date.now();
     const client = await pool.connect();
     try {
       const result = await client.query(queryText, params);
+      const duration = Date.now() - start;
+      if (duration > 1000) {
+        console.warn(`Slow query detected (${duration}ms):`, queryText.substring(0, 100));
+      }
       return result;
     } finally {
       client.release();
