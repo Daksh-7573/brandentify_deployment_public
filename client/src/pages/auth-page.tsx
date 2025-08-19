@@ -112,6 +112,18 @@ export default function AuthPage() {
                 {/* Email Authentication */}
                 <TabsContent value="email">
                   <div className="space-y-4 md:space-y-6">
+                    {/* IMMEDIATE DEMO ACCESS - BYPASS GOOGLE OAUTH ISSUES */}
+                    <div className="mb-8 p-6 bg-gradient-to-r from-green-500/20 to-blue-500/20 border-2 border-green-400/50 rounded-xl shadow-lg">
+                      <div className="text-center">
+                        <div className="text-3xl mb-4">🚀⚡🚀</div>
+                        <h3 className="font-bold text-green-300 mb-3 text-xl">Google OAuth Issues? Skip Them!</h3>
+                        <p className="text-green-200 mb-4">
+                          Instant demo access with full app functionality - no Firebase setup required
+                        </p>
+                        <BypassAuth />
+                      </div>
+                    </div>
+
                     {/* Domain Authorization Alert */}
                     <DomainAuthAlert />
                     
@@ -130,16 +142,9 @@ export default function AuthPage() {
                         </div>
                         <SimpleGoogleAuth />
                         
-                        <div className="relative">
-                          <div className="absolute inset-0 flex items-center">
-                            <span className="w-full border-t border-white/20" />
-                          </div>
-                          <div className="relative flex justify-center text-xs uppercase">
-                            <span className="bg-black/50 px-2 text-gray-300">or</span>
-                          </div>
+                        <div className="text-center text-xs text-gray-500">
+                          Google OAuth continues to have 403 errors despite domain configuration
                         </div>
-                        
-                        <BypassAuth />
                       </div>
                       
                       <div className="relative">

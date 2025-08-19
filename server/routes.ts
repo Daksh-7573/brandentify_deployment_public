@@ -219,6 +219,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
+  // Instant demo access page
+  app.get('/instant-demo-access', (req: Request, res: Response) => {
+    res.sendFile(path.resolve('./instant-demo-access.html'));
+  });
+
   // Demo authentication endpoint
   apiRouter.post("/auth/demo-signin", async (req: Request, res: Response) => {
     try {
