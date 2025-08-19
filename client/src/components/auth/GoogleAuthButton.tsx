@@ -112,7 +112,13 @@ export function GoogleAuthButton() {
         
         console.log('Google auth complete, redirecting to:', returnUrl);
         
-        // Use location.replace for immediate navigation without back button issues
+        // Close the popup if it exists
+        const popup = (window as any).googleAuthPopup;
+        if (popup && !popup.closed) {
+          popup.close();
+        }
+        
+        // Force immediate navigation - bypass any loading states
         window.location.replace(returnUrl);
       } else {
         throw new Error(data.message || 'Authentication failed');

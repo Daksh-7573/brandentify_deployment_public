@@ -32,12 +32,18 @@ export default function AuthPage() {
   const [authMethod, setAuthMethod] = useState<"email" | "phone">("email");
   const [useDemoBypass, setUseDemoBypass] = useState(false);
   
-  // We used to bypass Google auth on the problematic domain, but now we're properly 
-  // supporting it directly and want to use Google auth instead
+  // Check if user is already authenticated and redirect immediately
   useEffect(() => {
-    // Instead of automatically enabling demo mode, we now properly support Google auth on all domains
+    const storedUser = sessionStorage.getItem('brandentifier_user');
+    if (isAuthenticated || storedUser) {
+      const returnUrl = sessionStorage.getItem('auth_return_url') || '/industry-pulse';
+      sessionStorage.removeItem('auth_return_url');
+      console.log('Auth page: User already authenticated, redirecting to:', returnUrl);
+      setLocation(returnUrl);
+      return;
+    }
     setUseDemoBypass(false);
-  }, []);
+  }, [isAuthenticated, setLocation]);
 
   // Disabled auth redirect handler - let the AuthContext handle this
   // useEffect(() => {
