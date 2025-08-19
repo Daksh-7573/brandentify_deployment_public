@@ -39,17 +39,34 @@ export function FastGoogleAuth() {
       });
 
       console.log('🔄 Opening Google sign-in popup...');
+      console.log('🔄 Provider configured with scopes:', provider.getCustomParameters());
       
-      // Add better popup configuration
-      const result = await signInWithPopup(auth, provider);
+      // Add comprehensive popup monitoring
+      console.log('⏱️ Starting popup process with timeout monitoring...');
+      
+      const popupPromise = signInWithPopup(auth, provider);
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => {
+          console.error('⏰ Popup timed out after 25 seconds');
+          reject(new Error('Authentication popup timed out. Please try again.'));
+        }, 25000);
+      });
+      
+      // Monitor popup state
+      console.log('👀 Monitoring popup completion...');
+      const result = await Promise.race([popupPromise, timeoutPromise]) as any;
+      
+      console.log('🎉 Popup completed successfully!');
       
       console.log('✅ Google auth successful:', result.user.email);
       console.log('✅ User object received:', {
         uid: result.user.uid,
         email: result.user.email,
         displayName: result.user.displayName,
-        emailVerified: result.user.emailVerified
+        emailVerified: result.user.emailVerified,
+        photoURL: result.user.photoURL
       });
+      console.log('📋 Firebase user properties:', Object.keys(result.user));
       
       // Prepare user data with proper validation
       const userData = {
@@ -108,41 +125,64 @@ export function FastGoogleAuth() {
           console.log('✅ User data stored in session');
           
           // Trigger custom event for auth context
-          window.dispatchEvent(new CustomEvent('googleAuthSuccess', {
+          const customEvent = new CustomEvent('googleAuthSuccess', {
             detail: { user: data.user }
-          }));
+          });
+          window.dispatchEvent(customEvent);
           console.log('✅ Auth context event dispatched');
           
-          // Small delay to ensure everything is processed
+          // Add more time for auth context to update
+          console.log('⏳ Waiting for auth context to update...');
           setTimeout(() => {
             console.log('✅ Redirecting to dashboard...');
+            setIsLoading(false); // Clear loading state before redirect
             window.location.href = '/dashboard';
-          }, 100);
+          }, 500);
         } else {
           console.error('❌ Backend response invalid:', data);
-          throw new Error(data.message || 'Backend returned no user data');
+          console.error('❌ Expected: {success: true, user: {...}}');
+          console.error('❌ Received:', {
+            success: data.success,
+            hasUser: !!data.user,
+            userKeys: data.user ? Object.keys(data.user) : 'no user',
+            message: data.message
+          });
+          throw new Error(data.message || 'Authentication failed: Invalid response from server');
         }
       } catch (fetchError: any) {
         clearTimeout(timeoutId);
+        console.error('🚨 Backend request failed:', {
+          name: fetchError.name,
+          message: fetchError.message,
+          isTimeout: fetchError.name === 'AbortError'
+        });
+        
         if (fetchError.name === 'AbortError') {
-          throw new Error('Request timed out. Please try again.');
+          throw new Error('Backend request timed out. Please check your connection and try again.');
         }
         throw fetchError;
       }
       
     } catch (error: any) {
       console.error('❌ Google authentication error:', error);
-      console.error('❌ Error details:', {
+      console.error('❌ Full error details:', {
         code: error.code,
         message: error.message,
-        stack: error.stack
+        name: error.name,
+        stack: error.stack?.substring(0, 200) + '...' // Truncated stack
       });
       
-      // Don't show error for user-cancelled actions
-      if (error.code === 'auth/popup-closed-by-user' || error.code === 'auth/cancelled-popup-request') {
-        console.log('ℹ️ User cancelled sign-in');
+      // Check for popup closure by user
+      if (error.code === 'auth/popup-closed-by-user') {
+        console.log('ℹ️ User manually closed the popup');
         setIsLoading(false);
-        return; // Don't show error toast for user cancellation
+        return;
+      }
+      
+      if (error.code === 'auth/cancelled-popup-request') {
+        console.log('ℹ️ Popup request was cancelled (another popup may be open)');
+        setIsLoading(false);
+        return;
       }
       
       let errorMessage = 'Authentication failed. Please try again.';
@@ -152,12 +192,16 @@ export function FastGoogleAuth() {
       } else if (error.code === 'auth/network-request-failed') {
         errorMessage = 'Network error. Please check your internet connection.';
       } else if (error.code === 'auth/unauthorized-domain') {
-        errorMessage = 'This domain is not authorized. Please contact support.';
+        errorMessage = 'This domain is not authorized for Google sign-in. Please contact support.';
       } else if (error.code === 'auth/operation-not-allowed') {
         errorMessage = 'Google sign-in is not enabled. Please contact support.';
+      } else if (error.message?.includes('timeout')) {
+        errorMessage = 'Authentication timed out. Please try again.';
       } else if (error.message && !error.message.includes('cancelled')) {
         errorMessage = error.message;
       }
+      
+      console.log('🚨 Showing error to user:', errorMessage);
       
       toast({
         title: 'Authentication Error',
@@ -165,6 +209,7 @@ export function FastGoogleAuth() {
         variant: 'destructive'
       });
       
+      console.log('❌ Setting isLoading to false due to error');
       setIsLoading(false);
     }
   };
