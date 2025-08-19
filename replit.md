@@ -39,6 +39,18 @@ Preferred communication style: Simple, everyday language.
 - **Content Moderation**: Democratic flagging and AI-powered auto-deletion.
 - **Deployment Strategy**: Docker for containerization, Kubernetes for orchestration (production), Nginx for load balancing, Redis for caching, PostgreSQL (Neon serverless) for database.
 
+## Recent Changes (August 19, 2025)
+### Fixed Critical Issues
+- **X-Frame-Options**: Removed to allow embedding in Replit environment
+- **503 Service Errors**: Bypassed API Gateway routing for user-related endpoints
+- **CORS Package**: Installed missing CORS dependency
+- **JSON Parsing**: Fixed security audit parsing errors
+- **Firebase Secrets**: Added VITE_FIREBASE_API_KEY, VITE_FIREBASE_APP_ID, VITE_FIREBASE_PROJECT_ID
+
+### Current Issue
+- **Firebase OAuth**: Need to add current Replit domain to Firebase Console authorized domains
+- **Domain**: 25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev
+
 ## External Dependencies
 ### Core Infrastructure
 - **Database**: PostgreSQL (Neon serverless)
@@ -52,5 +64,5 @@ Preferred communication style: Simple, everyday language.
 
 ### Third-Party Integrations
 - **Email**: SendGrid
-- **Authentication**: JWT, bcrypt
+- **Authentication**: Firebase + JWT, bcrypt
 - **File Processing**: Advanced PDF parsing
