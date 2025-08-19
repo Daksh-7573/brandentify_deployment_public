@@ -12,18 +12,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Mail, Phone, Check, Sparkles, Target, Users } from "lucide-react";
-import { GoogleAuthButton } from "@/components/auth/GoogleAuthButton";
-import { AuthCallback } from "@/components/auth/AuthCallback";
-import { AuthDebug } from "@/components/auth/AuthDebug";
-import { QuickAuthTest } from "@/components/auth/QuickAuthTest";
-import { AuthCallbackHandler } from "@/components/auth/AuthCallbackHandler";
-import { GoogleAuthTest } from "@/components/auth/GoogleAuthTest";
-import { PhoneAuth } from "@/components/auth/phone-auth";
-import { EmailAuth } from "@/components/auth/email-auth";
-import { DemoLogin } from "@/components/auth/demo-login";
+import { FastGoogleAuth } from "@/components/auth/FastGoogleAuth";
+import { FastQuickAuth } from "@/components/auth/FastQuickAuth";
 import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-layout";
-import { AuthDebugOverlay } from "@/components/auth/auth-debug-overlay";
-import { RedirectAuthHandler } from "@/components/auth/redirect-auth-handler";
 import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
 
 export default function AuthPage() {
@@ -73,12 +64,8 @@ export default function AuthPage() {
       
       {/* Content layer */}
       <div className="relative z-10">
-        <RedirectAuthHandler />
-        <AuthCallbackHandler />
-        <AuthDebugOverlay />
         <NeoGlassLayout className="mt-0 pt-2 px-2 md:px-4 min-h-screen flex flex-col justify-start py-2 md:py-4">
-          {/* Debug Panel */}
-          <AuthDebug />
+          {/* Minimal auth page - no debug components */}
           <div className="text-center mb-6 md:mb-8">
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-white via-blue-200 to-purple-200 bg-clip-text text-transparent mb-3 md:mb-4">
             Welcome to Brandentifier
@@ -114,7 +101,7 @@ export default function AuthPage() {
                         <p className="text-gray-300">Your AI-powered career development platform</p>
                       </div>
                       
-                      <GoogleAuthButton />
+                      <FastGoogleAuth />
                       
                       <div className="relative">
                         <div className="absolute inset-0 flex items-center">
@@ -125,18 +112,7 @@ export default function AuthPage() {
                         </div>
                       </div>
                       
-                      <QuickAuthTest />
-                      
-                      <div className="relative">
-                        <div className="absolute inset-0 flex items-center">
-                          <span className="w-full border-t border-white/20" />
-                        </div>
-                        <div className="relative flex justify-center text-xs uppercase">
-                          <span className="bg-black/50 px-2 text-gray-300">debug</span>
-                        </div>
-                      </div>
-                      
-                      <GoogleAuthTest />
+                      <FastQuickAuth />
                       
                       <div className="text-center">
                         <p className="text-sm text-gray-400">
@@ -149,16 +125,11 @@ export default function AuthPage() {
 
                 {/* Phone Authentication */}
                 <TabsContent value="phone">
-                  {useDemoBypass ? (
-                    <>
-                      <div className="bg-blue-500/20 px-3 py-2 rounded-lg mb-4 text-sm text-blue-200 border border-blue-400/30">
-                        Using direct demo login for this domain
-                      </div>
-                      <DemoLogin />
-                    </>
-                  ) : (
-                    <PhoneAuth />
-                  )}
+                  <div className="text-center space-y-4">
+                    <h3 className="text-lg font-semibold text-white">Phone Authentication</h3>
+                    <p className="text-gray-300">Phone auth coming soon - use Google for now</p>
+                    <FastGoogleAuth />
+                  </div>
                 </TabsContent>
               </Tabs>
             </div>
