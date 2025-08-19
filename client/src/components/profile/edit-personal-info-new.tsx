@@ -90,24 +90,19 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
     
     if (userData.title && jobTitlesData?.jobTitles) {
       const existingTitle = userData.title;
-      const availableTitles = jobTitlesData.jobTitles.map(jt => jt.title);
+      const availableTitles = jobTitlesData.jobTitles || [];
       
-      // Check if the title starts with any dropdown option
+      // Check if the title exactly matches any dropdown option
       const matchedDropdownTitle = availableTitles.find(title => 
-        existingTitle.startsWith(title + ' - ') || existingTitle === title
+        existingTitle === title
       );
       
       if (matchedDropdownTitle) {
+        // Use dropdown selection
         setSelectedJobTitleFromDropdown(matchedDropdownTitle);
-        // Extract the text part after " - "
-        const textPart = existingTitle.replace(matchedDropdownTitle + ' - ', '');
-        if (textPart !== matchedDropdownTitle) {
-          setJobTitle(textPart);
-        } else {
-          setJobTitle('');
-        }
+        setJobTitle('');
       } else {
-        // If no dropdown match, put everything in text input
+        // Use custom text input
         setSelectedJobTitleFromDropdown('');
         setJobTitle(existingTitle);
       }
@@ -129,10 +124,8 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
     
     setIsLoading(true);
     try {
-      // Combine dropdown and text input values for job title
-      const combinedJobTitle = [selectedJobTitleFromDropdown, jobTitle]
-        .filter(Boolean)
-        .join(' - ') || null;
+      // Use either dropdown selection OR custom text input (not both combined)
+      const combinedJobTitle = selectedJobTitleFromDropdown || jobTitle.trim() || null;
       
       const updateData = {
         name: name.trim(),
@@ -229,6 +222,10 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
                 value={selectedJobTitleFromDropdown}
                 onChange={(e) => {
                   setSelectedJobTitleFromDropdown(e.target.value);
+                  // Clear custom text when dropdown is selected
+                  if (e.target.value) {
+                    setJobTitle("");
+                  }
                 }}
                 disabled={jobTitlesLoading}
                 className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-12 px-3 pr-10 rounded-md border appearance-none cursor-pointer focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none text-sm leading-relaxed"
@@ -249,30 +246,29 @@ const EditPersonalInfoNew: React.FC<EditPersonalInfoProps> = ({ userData, onCanc
               id="jobTitle"
               type="text"
               value={jobTitle}
-              onChange={(e) => setJobTitle(e.target.value)}
+              onChange={(e) => {
+                setJobTitle(e.target.value);
+                // Clear dropdown when custom text is entered
+                if (e.target.value) {
+                  setSelectedJobTitleFromDropdown("");
+                }
+              }}
               placeholder="Enter your custom job title"
               className="bg-[rgba(18,18,18,0.95)] backdrop-blur-md text-white border-white/20 shadow-md transition-all hover:border-white/30 w-full h-10 px-3 rounded-md border placeholder-white/50 focus:border-white/50 focus:ring-2 focus:ring-white/30 focus:outline-none"
             />
             
             {/* Help text explaining the functionality */}
             <p className="text-xs text-white/60 mt-2">
-              Select from common titles and/or add custom text. Both values will be combined as your job title.
+              Select from common titles OR enter a custom job title. Only one selection will be used.
             </p>
             
-            {/* Display current selections and preview */}
+            {/* Display current selection */}
             {(selectedJobTitleFromDropdown || jobTitle) && (
               <div className="mt-2 p-2 bg-white/5 rounded-md border border-white/10">
-                <p className="text-xs text-white/70 mb-1">Current selections:</p>
-                {selectedJobTitleFromDropdown && (
-                  <p className="text-sm text-white/90">From dropdown: {selectedJobTitleFromDropdown}</p>
-                )}
-                {jobTitle && (
-                  <p className="text-sm text-white/90">Custom text: {jobTitle}</p>
-                )}
-                {(selectedJobTitleFromDropdown && jobTitle) && (
-                  <p className="text-sm text-white font-medium mt-1">
-                    Final title: {selectedJobTitleFromDropdown} - {jobTitle}
-                  </p>
+                <p className="text-xs text-white/70 mb-1">Current job title:</p>
+                <p className="text-sm text-white font-medium">
+                  {selectedJobTitleFromDropdown || jobTitle}
+                </p>
                 )}
               </div>
             )}
