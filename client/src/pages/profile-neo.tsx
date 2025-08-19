@@ -92,13 +92,6 @@ export default function ProfileNeo() {
     return null;
   }
 
-  // Debug logging for user data
-  console.log('Profile page render - user:', user);
-  console.log('Profile page render - user.uid:', user.uid);
-  console.log('Profile page render - isUserDataLoading:', isUserDataLoading);
-  console.log('Profile page render - userData:', userData);
-  console.log('Profile page render - userDataError:', userDataError);
-  
   // Get the correct user identifier for API calls
   const userIdentifier = user?.username || user?.id?.toString() || user?.uid || '';
   
@@ -121,6 +114,13 @@ export default function ProfileNeo() {
     staleTime: 30000, // 30 seconds
     refetchOnWindowFocus: false, // Prevent unnecessary refetches
   });
+
+  // Debug logging for user data after variables are defined
+  console.log('Profile page render - user:', user);
+  console.log('Profile page render - userIdentifier:', userIdentifier);
+  console.log('Profile page render - isUserDataLoading:', isUserDataLoading);
+  console.log('Profile page render - userData:', userData);
+  console.log('Profile page render - userDataError:', userDataError);
   
   // Query for user's industries and domain preferences
   const { data: userPreferences, isLoading: isPreferencesLoading } = useQuery({
