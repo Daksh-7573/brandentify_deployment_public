@@ -26,6 +26,8 @@ import { AuthDebugOverlay } from "@/components/auth/auth-debug-overlay";
 import { RedirectAuthHandler } from "@/components/auth/redirect-auth-handler";
 import { AuthRedirectHandler } from "@/components/auth/AuthRedirectHandler";
 import { DomainAuthAlert } from "@/components/auth/DomainAuthAlert";
+import { SimpleGoogleAuth } from "@/components/auth/SimpleGoogleAuth";
+import { BypassAuth } from "@/components/auth/BypassAuth";
 import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
 
 export default function AuthPage() {
@@ -120,7 +122,25 @@ export default function AuthPage() {
                         <p className="text-gray-300">Your AI-powered career development platform</p>
                       </div>
                       
-                      <GoogleAuthButton />
+                      <div className="space-y-6">
+                        <GoogleAuthButton />
+                        
+                        <div className="text-center text-sm text-gray-400">
+                          Having issues? Try the direct method below:
+                        </div>
+                        <SimpleGoogleAuth />
+                        
+                        <div className="relative">
+                          <div className="absolute inset-0 flex items-center">
+                            <span className="w-full border-t border-white/20" />
+                          </div>
+                          <div className="relative flex justify-center text-xs uppercase">
+                            <span className="bg-black/50 px-2 text-gray-300">or</span>
+                          </div>
+                        </div>
+                        
+                        <BypassAuth />
+                      </div>
                       
                       <div className="relative">
                         <div className="absolute inset-0 flex items-center">

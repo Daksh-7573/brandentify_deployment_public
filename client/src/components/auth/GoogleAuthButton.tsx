@@ -74,11 +74,20 @@ export function GoogleAuthButton() {
       sessionStorage.setItem('auth_in_progress', 'true');
       sessionStorage.setItem('auth_provider', 'google');
       
-      // Use signInWithRedirect to avoid popup issues
-      await signInWithRedirect(auth, provider);
+      // Force full window redirect to avoid any frame issues
+      const redirectUrl = `https://accounts.google.com/o/oauth2/v2/auth?` + new URLSearchParams({
+        client_id: firebaseConfig.apiKey.split(':')[0], // Extract client ID from API key
+        redirect_uri: window.location.origin + '/auth',
+        response_type: 'code',
+        scope: 'email profile',
+        access_type: 'online',
+        prompt: 'select_account'
+      }).toString();
       
-      // This code won't execute as the redirect takes over immediately
-      // The redirect result will be handled by the AuthRedirectHandler component
+      console.log('Direct redirect to:', redirectUrl);
+      
+      // Use window.location.href for complete page redirect (no frames)
+      window.location.href = redirectUrl;
       
     } catch (error: any) {
       console.error('Google authentication error:', error);
