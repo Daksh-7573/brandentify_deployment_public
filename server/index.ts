@@ -23,12 +23,19 @@ app.use((req, res, next) => {
   // Allow access from Replit domains and external sources
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, HEAD');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-  // X-Frame-Options completely removed to eliminate frame display errors
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, X-Frame-Options');
+  res.header('X-Frame-Options', 'ALLOWALL');
   res.header('X-Content-Type-Options', 'nosniff');
   res.header('Cache-Control', 'no-cache, no-store, must-revalidate');
-  res.header('Pragma', 'no-cache');
-  res.header('Expires', '0');
+  
+  // Ensure proper MIME types for static assets
+  if (req.url.endsWith('.css')) {
+    res.header('Content-Type', 'text/css');
+  } else if (req.url.endsWith('.js') || req.url.endsWith('.jsx')) {
+    res.header('Content-Type', 'application/javascript');
+  } else if (req.url.endsWith('.ts') || req.url.endsWith('.tsx')) {
+    res.header('Content-Type', 'text/typescript');
+  }
   
   // Handle preflight requests
   if (req.method === 'OPTIONS') {
@@ -310,29 +317,23 @@ app.use(questProgressMiddleware);
 
 // Setup security features (in a non-breaking way)
 console.log("Setting up Enhanced Security Features");
-// Temporarily disabled to eliminate repetitive CSP console errors
-// setupSecurity(app);
-console.log("Enhanced security features temporarily disabled to reduce console noise");
+setupSecurity(app);
 
 // Setup infrastructure and hosting security (in a non-breaking way)
 console.log("Setting up Infrastructure & Hosting Security");
-// Temporarily disabled to eliminate console noise
-// setupInfrastructureSecurity(app);
+setupInfrastructureSecurity(app);
 
 // Setup privacy and compliance features (in a non-breaking way)
 console.log("Setting up Privacy & Compliance Features");
-// Temporarily disabled to eliminate console noise
-// setupPrivacyRoutes(app);
+setupPrivacyRoutes(app);
 
 // Setup AI-specific security middleware (in a non-breaking way)
 console.log("Setting up AI-Specific Security");
-// Temporarily disabled to eliminate console noise
-// app.use(aiSecurityMiddleware);
+app.use(aiSecurityMiddleware);
 
 // Setup security monitoring and threat detection (in a non-breaking way)
 console.log("Setting up Security Monitoring & Threat Detection");
-// Temporarily disabled to eliminate console noise
-// app.use(securityMonitoringMiddleware);
+app.use(securityMonitoringMiddleware);
 
 // Add security dashboard routes (admin only)
 app.use('/api/security', securityDashboardRoutes);

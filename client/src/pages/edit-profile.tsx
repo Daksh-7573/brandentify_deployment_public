@@ -27,9 +27,9 @@ export default function EditProfilePage() {
   const [completionPercentage, setCompletionPercentage] = useState(0);
   
   // Fetch user data with optimized caching
-  const { data: userData, isLoading: isLoadingUserData } = useQuery({
-    queryKey: ['/api/users', user?.uid || user?.id],
-    enabled: !!(user?.uid || user?.id) && isAuthenticated,
+  const { data: userData, isLoading: isLoadingUserData, error: userDataError } = useQuery({
+    queryKey: ['/api/users', user?.id],
+    enabled: !!user?.id && isAuthenticated,
     staleTime: 1000 * 60 * 10, // 10 minutes
     refetchOnMount: false,
     refetchOnWindowFocus: false,
@@ -146,7 +146,7 @@ export default function EditProfilePage() {
   };
   
   const saveWhatIOffer = async (numericUserId: number, whatIOffer: string): Promise<boolean> => {
-    console.log(`Using numeric user ID ${numericUserId} instead of Firebase UID ${user?.uid || 'not available'}`);
+    console.log(`Using numeric user ID ${numericUserId} for What I Offer update`);
     
     try {
       // Generate cache buster
@@ -203,13 +203,6 @@ export default function EditProfilePage() {
       }
       
       // Invalidate ALL related queries with various patterns to ensure cache is fully cleared
-      // Use both the Firebase UID and numeric ID for invalidation to ensure cross-component compatibility
-      if (user?.uid) {
-        await queryClient.invalidateQueries({ queryKey: ['/api/users', user.uid] });
-        await queryClient.invalidateQueries({ queryKey: ['/api/users', user.uid, 'what-i-offer'] });
-        await queryClient.refetchQueries({ queryKey: ['/api/users', user.uid] });
-      }
-      
       await queryClient.invalidateQueries({ queryKey: ['/api/users', numericUserId] });
       await queryClient.invalidateQueries({ queryKey: ['/api/users', numericUserId, 'what-i-offer'] });
       await queryClient.refetchQueries({ queryKey: ['/api/users', numericUserId] });
@@ -279,7 +272,7 @@ export default function EditProfilePage() {
         numericUserId = userData.id;
       }
       
-      console.log(`Using numeric user ID ${numericUserId} instead of Firebase UID ${user?.uid} for all operations`);
+      console.log(`Using numeric user ID ${numericUserId} for all operations`);
       
       // Special handling for What I Offer tab - this gets highest priority
       if (activeTab === "what i offer" || formValues.whatIOffer) {
@@ -292,10 +285,7 @@ export default function EditProfilePage() {
           if (!success) {
             console.log("Falling back to regular update for What I Offer");
           } else {
-            // Force refresh all whatIOffer queries across components - use both ID formats
-            if (user?.uid) {
-              queryClient.invalidateQueries({ queryKey: ['/api/users', user.uid, 'what-i-offer'] });
-            }
+            // Force refresh all whatIOffer queries across components
             queryClient.invalidateQueries({ queryKey: ['/api/users', numericUserId, 'what-i-offer'] });
             
             // Manually update local storage as backup
@@ -306,10 +296,7 @@ export default function EditProfilePage() {
         }
       }
       
-      // First invalidate the query to ensure we get fresh data - use both ID formats
-      if (user?.uid) {
-        await queryClient.invalidateQueries({ queryKey: ['/api/users', user.uid] });
-      }
+      // First invalidate the query to ensure we get fresh data
       await queryClient.invalidateQueries({ queryKey: ['/api/users', numericUserId] });
       
       // Then force a refetch of the user data using the numeric ID
@@ -323,22 +310,7 @@ export default function EditProfilePage() {
         }
       });
       
-      // Also fetch with Firebase UID to ensure both formats are updated
-      if (user?.uid) {
-        console.log(`Also fetching with Firebase UID: ${user.uid} for cross-compatibility`);
-        await fetch(`/api/users/${user.uid}`, {
-          method: 'GET',
-          headers: {
-            'Cache-Control': 'no-cache',
-            'Pragma': 'no-cache'
-          }
-        });
-      }
-      
-      // Now invalidate the queries again to refresh the UI - both ID formats
-      if (user?.uid) {
-        await queryClient.invalidateQueries({ queryKey: ['/api/users', user.uid] });
-      }
+      // Now invalidate the queries again to refresh the UI
       await queryClient.invalidateQueries({ queryKey: ['/api/users', numericUserId] });
       
       setShowSuccessMessage(true);

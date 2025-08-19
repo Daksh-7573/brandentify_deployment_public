@@ -36,6 +36,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const checkStoredAuth = () => {
       try {
+        // Check for bypass/demo authentication first
+        const bypassAuth = localStorage.getItem('auth_bypass');
+        const demoUser = localStorage.getItem('demo_user');
+        
+        if (bypassAuth === 'true' && demoUser) {
+          const userData = JSON.parse(demoUser);
+          console.log('Found demo/bypass user:', userData.email);
+          setUser(userData);
+          setIsLoading(false);
+          return;
+        }
+        
+        // Check for regular stored user
         const storedUser = sessionStorage.getItem('brandentifier_user');
         if (storedUser) {
           const userData = JSON.parse(storedUser);
@@ -47,24 +60,42 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } catch (error) {
         console.error('Error checking stored auth:', error);
       } finally {
+        console.log('Auth check complete, setting isLoading to false');
         setIsLoading(false);
       }
     };
 
+    // Add a timeout to ensure loading state doesn't get stuck
+    const timeoutId = setTimeout(() => {
+      console.log('Auth timeout triggered, forcing isLoading to false');
+      setIsLoading(false);
+    }, 2000); // 2 second timeout
+
     // Handle Google auth success event
     const handleGoogleAuthSuccess = (event: CustomEvent) => {
       const { user: userData } = event.detail;
-      console.log('AuthContext: Google auth success event received:', userData.email);
-      console.log('AuthContext: Setting user state and updating session');
+      console.log('Google auth success event received:', userData.email);
       setUser(userData);
-      setIsLoading(false); // Ensure loading is false after auth
+      sessionStorage.setItem('brandentifier_user', JSON.stringify(userData));
+    };
+
+    // Handle bypass auth state changes
+    const handleAuthStateChange = (event: CustomEvent) => {
+      if (event.detail.bypass && event.detail.isAuthenticated) {
+        console.log('Demo auth event received:', event.detail.user.email);
+        setUser(event.detail.user);
+        setIsLoading(false);
+      }
     };
 
     window.addEventListener('googleAuthSuccess', handleGoogleAuthSuccess as EventListener);
+    window.addEventListener('authStateChanged', handleAuthStateChange as EventListener);
     checkStoredAuth();
 
     return () => {
       window.removeEventListener('googleAuthSuccess', handleGoogleAuthSuccess as EventListener);
+      window.removeEventListener('authStateChanged', handleAuthStateChange as EventListener);
+      clearTimeout(timeoutId);
     };
   }, []);
 

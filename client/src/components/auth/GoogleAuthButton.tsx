@@ -66,73 +66,46 @@ export function GoogleAuthButton() {
 
       console.log('Initiating Google redirect...');
       
-      // Use popup flow to avoid X-Frame-Options issues
-      const { signInWithPopup } = await import('firebase/auth');
+      // Use redirect flow to avoid popup and X-Frame-Options issues
+      console.log('Initiating Google redirect authentication...');
       
-      console.log('Opening Google popup...');
-      const result = await signInWithPopup(auth, provider);
+      // Store current path to return to after authentication
+      sessionStorage.setItem('pre_auth_path', window.location.pathname);
+      sessionStorage.setItem('auth_in_progress', 'true');
+      sessionStorage.setItem('auth_provider', 'google');
       
-      console.log('✅ Google authentication successful:', result.user.email);
+      // Force full window redirect to avoid any frame issues
+      const redirectUrl = `https://accounts.google.com/o/oauth2/v2/auth?` + new URLSearchParams({
+        client_id: firebaseConfig.apiKey.split(':')[0], // Extract client ID from API key
+        redirect_uri: window.location.origin + '/auth',
+        response_type: 'code',
+        scope: 'email profile',
+        access_type: 'online',
+        prompt: 'select_account'
+      }).toString();
       
-      // Create Brandentifier account
-      const userData = {
-        firebaseUid: result.user.uid,
-        email: result.user.email || '',
-        name: result.user.displayName || 'Google User',
-        photoURL: result.user.photoURL || '',
-        googleId: result.user.uid,
-        authProvider: 'google',
-        emailVerified: result.user.emailVerified
-      };
-
-      console.log('Sending user data to backend:', userData.email);
-
-      // Call backend to create/get user (backend handles existing accounts)
-      const response = await fetch('/api/auth/google-signin', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(userData)
-      });
-
-      const data = await response.json();
+      console.log('Direct redirect to:', redirectUrl);
       
-      if (data.success) {
-        // Store user data immediately in session storage
-        sessionStorage.setItem('brandentifier_user', JSON.stringify(data.user));
-        
-        // Trigger a custom event for the auth context to handle
-        const authEvent = new CustomEvent('googleAuthSuccess', { 
-          detail: { user: data.user }
-        });
-        window.dispatchEvent(authEvent);
-        
-        // Navigate immediately to intended page
-        const returnUrl = sessionStorage.getItem('auth_return_url') || '/industry-pulse';
-        sessionStorage.removeItem('auth_return_url');
-        
-        console.log('Google auth complete, redirecting to:', returnUrl);
-        
-        // Close the popup if it exists
-        const popup = (window as any).googleAuthPopup;
-        if (popup && !popup.closed) {
-          popup.close();
-        }
-        
-        // Force immediate navigation - bypass any loading states
-        window.location.replace(returnUrl);
-      } else {
-        throw new Error(data.message || 'Authentication failed');
-      }
+      // Use window.location.href for complete page redirect (no frames)
+      window.location.href = redirectUrl;
       
     } catch (error: any) {
       console.error('Google authentication error:', error);
       
       let errorMessage = 'Authentication failed. Please try again.';
       
-      if (error.code === 'auth/unauthorized-domain') {
-        errorMessage = 'This domain is not authorized for Google authentication. Please contact support.';
+      if (error.code === 'auth/unauthorized-domain' || error.message.includes('refused to connect')) {
+        errorMessage = `🔒 Domain Authorization Required: Add "${window.location.hostname}" to Firebase Auth > Settings > Authorized domains. See console for detailed instructions.`;
+        console.error('🔒 FIREBASE DOMAIN SETUP REQUIRED:');
+        console.error('1. Go to: https://console.firebase.google.com/');
+        console.error('2. Select project: brandentifier-app');
+        console.error('3. Go to: Authentication > Settings > Authorized domains');
+        console.error('4. Add domain:', window.location.hostname);
+        console.error('5. Also add: *.replit.dev and *.replit.app');
       } else if (error.message.includes('Firebase configuration')) {
         errorMessage = 'Firebase is not properly configured. Please contact support.';
+      } else if (error.message.includes('popup')) {
+        errorMessage = 'Popup was blocked or closed. Please allow popups and try again.';
       }
       
       toast({

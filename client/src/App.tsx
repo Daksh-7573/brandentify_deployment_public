@@ -151,24 +151,15 @@ const PageRedirect = ({ to }: { to: string }) => {
 
 // Protected route component that checks if the user is authenticated
 function ProtectedRoute({ component: Component, ...rest }: { component: React.ComponentType, path: string }) {
-  const { isAuthenticated, isLoading, user } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
   const [_, navigate] = useLocation();
   
   useEffect(() => {
-    // Check session storage first for immediate auth state
-    const storedUser = sessionStorage.getItem('brandentifier_user');
-    
-    if (!isLoading && !isAuthenticated && !storedUser) {
-      console.log('ProtectedRoute: User not authenticated, redirecting to auth page');
-      console.log('ProtectedRoute: isLoading:', isLoading, 'isAuthenticated:', isAuthenticated, 'user:', user?.email);
-      
-      // Set return URL for after authentication
-      sessionStorage.setItem('auth_return_url', window.location.pathname);
+    if (!isLoading && !isAuthenticated) {
+      console.log('User not authenticated, redirecting to auth page');
       navigate('/auth');
-    } else if (isAuthenticated || storedUser) {
-      console.log('ProtectedRoute: User authenticated:', user?.email || 'from session storage');
     }
-  }, [isAuthenticated, isLoading, navigate, user]);
+  }, [isAuthenticated, isLoading, navigate]);
   
   if (isLoading) {
     return (

@@ -219,6 +219,58 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
+  // Instant demo access page
+  app.get('/instant-demo-access', (req: Request, res: Response) => {
+    res.sendFile(path.resolve('./instant-demo-access.html'));
+  });
+
+  // Demo authentication endpoint
+  apiRouter.post("/auth/demo-signin", async (req: Request, res: Response) => {
+    try {
+      const { email, name, photoURL, authProvider } = req.body;
+      
+      console.log('Demo signin request:', { email, name });
+      
+      // Check if user exists
+      let user = await storage.getUserByEmail?.(email) || await storage.getUserByUsername(email.split('@')[0]);
+      
+      if (!user) {
+        // Create new demo user
+        const newUser = {
+          email,
+          name: name || 'Demo User',
+          username: email.split('@')[0],
+          firebaseUid: `demo_${Date.now()}`,
+          authProvider: authProvider || 'demo',
+          emailVerified: true
+        };
+        
+        user = await storage.createUser(newUser);
+        console.log('Created new demo user:', user.id);
+      }
+      
+      res.json({
+        success: true,
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          username: user.username,
+          photoURL: user.profilePicture || '',
+          emailVerified: true
+        },
+        message: 'Demo authentication successful'
+      });
+      
+    } catch (error) {
+      console.error('Demo signin error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Demo authentication failed'
+      });
+    }
+  });
+
   // Job title options endpoint
   apiRouter.get("/job-titles", (req: Request, res: Response) => {
     const jobTitles = [
@@ -728,26 +780,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Get user by username (Firebase UID) - dedicated route
-  apiRouter.get("/users/username/:username", async (req: Request, res: Response) => {
-    try {
-      const { username } = req.params;
-      console.log(`[GET /users/username/:username] Looking up user by username: ${username}`);
-      
-      const user = await storage.getUserByUsername(username);
-      if (!user) {
-        console.log(`[GET /users/username/:username] User not found: ${username}`);
-        return res.status(404).json({ message: "User not found" });
-      }
-      
-      console.log(`[GET /users/username/:username] Found user:`, user.id, user.name);
-      return res.json(user);
-    } catch (error) {
-      console.error(`[GET /users/username/:username] Error:`, error);
-      return res.status(500).json({ message: "Internal server error" });
-    }
-  });
-
   apiRouter.get("/users/:id", async (req: Request, res: Response) => {
     try {
       const idParam = req.params.id;

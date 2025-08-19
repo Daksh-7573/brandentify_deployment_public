@@ -13,6 +13,11 @@ export default function Landing() {
   
   const [_, setLocation] = useLocation();
 
+  // Debug auth state
+  useEffect(() => {
+    console.log('Landing: Auth state changed - isLoading:', isLoading, 'isAuthenticated:', isAuthenticated);
+  }, [isLoading, isAuthenticated]);
+
   // Check if user wants to stay on landing page (via query parameter)
   const urlParams = new URLSearchParams(window.location.search);
   const stayOnLanding = urlParams.get('stay') === 'true';
@@ -72,11 +77,10 @@ export default function Landing() {
                 <>
                   <Button 
                     onClick={() => setLocation('/auth')}
-                    disabled={isLoading}
                     size="lg"
                     className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-8 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105"
                   >
-                    {isLoading ? "Loading..." : "Get Started"}
+                    Get Started
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
                 </>
@@ -234,11 +238,10 @@ export default function Landing() {
             {!isAuthenticated && (
               <Button 
                 onClick={() => setLocation('/auth')}
-                disabled={isLoading}
                 size="lg"
                 className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-12 py-4 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105"
               >
-                {isLoading ? "Loading..." : "Start Your Journey"}
+                Start Your Journey
                 <ArrowRight className="ml-2 h-6 w-6" />
               </Button>
             )}
