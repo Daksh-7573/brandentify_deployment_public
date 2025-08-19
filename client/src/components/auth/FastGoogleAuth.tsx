@@ -17,18 +17,29 @@ export function FastGoogleAuth() {
     try {
       console.log('🔄 Starting Google authentication...');
       
-      // Use existing Firebase configuration to avoid conflicts
-      const { auth, googleProvider } = await import('@/lib/firebase');
+      // Import Firebase auth with better error handling
+      const { signInWithPopup, GoogleAuthProvider } = await import('firebase/auth');
+      const { auth } = await import('@/lib/firebase');
       
-      if (!auth || !googleProvider) {
-        throw new Error('Firebase not properly initialized');
+      if (!auth) {
+        throw new Error('Firebase auth not initialized');
       }
-      
-      // Import Firebase auth types
-      const { signInWithPopup } = await import('firebase/auth');
 
-      console.log('🔄 Opening Google auth popup...');
-      const result = await signInWithPopup(auth, googleProvider);
+      // Create a fresh Google provider for this session
+      const provider = new GoogleAuthProvider();
+      provider.addScope('email');
+      provider.addScope('profile');
+      
+      // Force account picker and ensure fresh login
+      provider.setCustomParameters({
+        prompt: 'select_account',
+        access_type: 'online'
+      });
+
+      console.log('🔄 Opening Google sign-in popup...');
+      
+      // Add better popup configuration
+      const result = await signInWithPopup(auth, provider);
       
       console.log('✅ Google auth successful:', result.user.email);
       
@@ -80,15 +91,24 @@ export function FastGoogleAuth() {
     } catch (error: any) {
       console.error('❌ Google authentication error:', error);
       
+      // Don't show error for user-cancelled actions
+      if (error.code === 'auth/popup-closed-by-user' || error.code === 'auth/cancelled-popup-request') {
+        console.log('User cancelled sign-in');
+        setIsLoading(false);
+        return; // Don't show error toast for user cancellation
+      }
+      
       let errorMessage = 'Authentication failed. Please try again.';
       
       if (error.code === 'auth/popup-blocked') {
-        errorMessage = 'Popup blocked. Please allow popups and try again.';
-      } else if (error.code === 'auth/popup-closed-by-user') {
-        errorMessage = 'Sign-in cancelled. Please try again.';
+        errorMessage = 'Popup was blocked. Please allow popups for this site and try again.';
       } else if (error.code === 'auth/network-request-failed') {
-        errorMessage = 'Network error. Please check your connection.';
-      } else if (error.message) {
+        errorMessage = 'Network error. Please check your internet connection.';
+      } else if (error.code === 'auth/unauthorized-domain') {
+        errorMessage = 'This domain is not authorized. Please contact support.';
+      } else if (error.code === 'auth/operation-not-allowed') {
+        errorMessage = 'Google sign-in is not enabled. Please contact support.';
+      } else if (error.message && !error.message.includes('cancelled')) {
         errorMessage = error.message;
       }
       
