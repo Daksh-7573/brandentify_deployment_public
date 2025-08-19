@@ -17,31 +17,15 @@ export function FastGoogleAuth() {
     try {
       console.log('🔄 Starting Google authentication...');
       
-      // Check if we're on a Replit domain that might have auth issues
-      const isReplitDomain = window.location.hostname.includes('replit.dev') || window.location.hostname.includes('replit.app');
-      
-      if (isReplitDomain) {
-        console.log('🔧 Detected Replit domain, using redirect auth flow...');
-        // Use redirect flow for Replit domains to avoid popup issues
-        const { auth, googleProvider } = await import('@/lib/firebase');
-        const { signInWithRedirect } = await import('firebase/auth');
-        
-        if (!auth || !googleProvider) {
-          throw new Error('Firebase not properly initialized');
-        }
-        
-        // Use redirect instead of popup for better Replit compatibility
-        await signInWithRedirect(auth, googleProvider);
-        return; // The redirect will handle the rest
-      }
-      
-      // Use popup flow for other domains
+      // Use existing Firebase configuration to avoid conflicts
       const { auth, googleProvider } = await import('@/lib/firebase');
-      const { signInWithPopup } = await import('firebase/auth');
       
       if (!auth || !googleProvider) {
         throw new Error('Firebase not properly initialized');
       }
+      
+      // Import Firebase auth types
+      const { signInWithPopup } = await import('firebase/auth');
 
       console.log('🔄 Opening Google auth popup...');
       const result = await signInWithPopup(auth, googleProvider);
@@ -104,15 +88,6 @@ export function FastGoogleAuth() {
         errorMessage = 'Sign-in cancelled. Please try again.';
       } else if (error.code === 'auth/network-request-failed') {
         errorMessage = 'Network error. Please check your connection.';
-      } else if (error.code === 'auth/unauthorized-domain') {
-        errorMessage = 'Domain not authorized. Using alternative sign-in method...';
-        // Try alternative authentication
-        try {
-          await handleAlternativeAuth();
-          return;
-        } catch (altError) {
-          errorMessage = 'Alternative authentication also failed. Please contact support.';
-        }
       } else if (error.message) {
         errorMessage = error.message;
       }
@@ -124,45 +99,6 @@ export function FastGoogleAuth() {
       });
       
       setIsLoading(false);
-    }
-  };
-
-  // Alternative authentication method for problematic domains
-  const handleAlternativeAuth = async () => {
-    console.log('🔄 Trying alternative authentication...');
-    
-    // Create a demo user for testing on problematic domains
-    const demoUserData = {
-      firebaseUid: `demo_${Date.now()}`,
-      email: 'demo@example.com',
-      name: 'Demo User',
-      photoURL: '',
-      googleId: `demo_${Date.now()}`,
-      authProvider: 'demo' as const,
-      emailVerified: true
-    };
-
-    const response = await fetch('/api/auth/demo-signin', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(demoUserData)
-    });
-
-    if (!response.ok) {
-      throw new Error('Demo authentication failed');
-    }
-
-    const data = await response.json();
-    
-    if (data.success || data.user) {
-      const user = data.user || data;
-      sessionStorage.setItem('brandentifier_user', JSON.stringify(user));
-      
-      window.dispatchEvent(new CustomEvent('googleAuthSuccess', {
-        detail: { user }
-      }));
-      
-      window.location.href = '/dashboard';
     }
   };
 
