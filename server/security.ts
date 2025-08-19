@@ -327,6 +327,7 @@ export function setupSecurity(app: any) {
     helmet({
       contentSecurityPolicy: false, // Completely disable CSP to fix WebSocket connection issues
       crossOriginEmbedderPolicy: false, // Disable COEP to prevent breaking existing functionality
+      frameguard: false, // Completely disable X-Frame-Options header
     })
   );
   

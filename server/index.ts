@@ -27,6 +27,8 @@ app.use((req, res, next) => {
   // X-Frame-Options completely removed to eliminate frame display errors
   res.header('X-Content-Type-Options', 'nosniff');
   res.header('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.header('Pragma', 'no-cache');
+  res.header('Expires', '0');
   
   // Handle preflight requests
   if (req.method === 'OPTIONS') {
