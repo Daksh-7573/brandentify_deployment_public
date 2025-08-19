@@ -7,14 +7,14 @@ import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 export function useProfilePicture(userId: number | string | null = null) {
-  // Get the refresh function and current user from auth context
-  const { refreshUserData, user } = useAuth();
+  // Get the current user from auth context
+  const { user } = useAuth();
   const [showProfilePictureDialog, setShowProfilePictureDialog] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   
-  // If userId is not provided, use the current user's UID
-  const targetUserId = userId || user?.uid || null;
+  // If userId is not provided, use the current user's ID
+  const targetUserId = userId || user?.id || null;
   
   // Get user data to extract the profile picture URL
   const { data: userData } = useQuery({
@@ -34,7 +34,7 @@ export function useProfilePicture(userId: number | string | null = null) {
   };
   
   // Extract profile picture URL from user data
-  const profilePictureUrl = userData?.photoURL || null;
+  const profilePictureUrl = (userData as any)?.photoURL || null;
   
   // Mutation for updating the profile picture
   const profilePictureMutation = useMutation({
@@ -74,21 +74,21 @@ export function useProfilePicture(userId: number | string | null = null) {
           });
         }, 200);
         
-        // Send only the photoURL update to the API using the new API request format
-        const res = await apiRequest({
-          method: 'PUT',
-          url: `/api/users/${targetUserId}`,
-          data: {
+        // Send only the photoURL update to the API
+        const res = await apiRequest(
+          'PUT',
+          `/api/users/${targetUserId}`,
+          {
             photoURL: base64Image
           }
-        });
+        );
         
         // Complete the progress
         clearInterval(progressInterval);
         setUploadProgress(100);
         
         console.log("Profile picture update successful");
-        return await res.json() as User;
+        return res;
       } catch (error) {
         console.error("API request failed:", error);
         setIsUploading(false);
@@ -116,17 +116,12 @@ export function useProfilePicture(userId: number | string | null = null) {
       // Invalidate and refetch user data
       queryClient.invalidateQueries({ queryKey: [`/api/users/${targetUserId}`] });
       
-      // Immediately refresh the auth context
-      if (refreshUserData) {
-        try {
-          await refreshUserData();
-        } catch (err) {
-          console.warn("Could not refresh user data after profile picture update", err);
-        }
-      }
-      
-      // Force invalidate all user data queries
+      // Force invalidate all user data queries to refresh the UI
       queryClient.invalidateQueries({ queryKey: [`/api/users/${targetUserId}`] });
+      queryClient.invalidateQueries({ queryKey: ['currentUser'] });
+      
+      // Also invalidate any auth-related queries
+      queryClient.invalidateQueries({ queryKey: ['auth'] });
       
       toast({
         title: "Success!",
