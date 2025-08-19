@@ -15,43 +15,20 @@ export function FastGoogleAuth() {
     setIsLoading(true);
     
     try {
-      console.log('⚡ Ultra-fast auth starting...');
+      console.log('🔄 Starting Google authentication...');
       
-      // Pre-cached Firebase imports
-      const [
-        { initializeApp },
-        { getAuth, signInWithPopup, GoogleAuthProvider }
-      ] = await Promise.all([
-        import('firebase/app'),
-        import('firebase/auth')
-      ]);
-
-      // Ultra-minimal Firebase config
-      const app = initializeApp({
-        apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-        authDomain: `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.firebaseapp.com`,
-        projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-        appId: import.meta.env.VITE_FIREBASE_APP_ID
-      }, `ultra-fast-${Date.now()}`);
-
-      const auth = getAuth(app);
-      const provider = new GoogleAuthProvider();
-      provider.addScope('email');
-      provider.addScope('profile');
+      // Use existing Firebase configuration to avoid conflicts
+      const { auth, googleProvider } = await import('@/lib/firebase');
       
-      // Force account selection
-      provider.setCustomParameters({
-        prompt: 'select_account'
-      });
+      if (!auth || !googleProvider) {
+        throw new Error('Firebase not properly initialized');
+      }
       
-      // Force account selection every time
-      provider.setCustomParameters({
-        prompt: 'select_account',
-        access_type: 'online'
-      });
+      // Import Firebase auth types
+      const { signInWithPopup } = await import('firebase/auth');
 
-      console.log('🔄 Opening popup with account selection...');
-      const result = await signInWithPopup(auth, provider);
+      console.log('🔄 Opening Google auth popup...');
+      const result = await signInWithPopup(auth, googleProvider);
       
       console.log('✅ Google auth successful:', result.user.email);
       
@@ -66,35 +43,58 @@ export function FastGoogleAuth() {
         emailVerified: result.user.emailVerified
       };
 
-      console.log('⚡ Fast backend call...');
+      console.log('📡 Sending user data to backend...');
       
-      // Fast backend call
+      // Send to backend authentication endpoint  
       const response = await fetch('/api/auth/google-signin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(userData)
       });
 
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Backend error: ${response.status} - ${errorText}`);
+      }
+
       const data = await response.json();
       
-      if (data.success) {
-        console.log('✅ Success - immediate redirect');
+      if (data.success || data.user) {
+        console.log('✅ Authentication successful!');
         
-        // Ultra-fast storage and redirect
-        sessionStorage.setItem('brandentifier_user', JSON.stringify(data.user));
+        // Store user data and trigger auth context update
+        const user = data.user || data;
+        sessionStorage.setItem('brandentifier_user', JSON.stringify(user));
         
-        // Instant redirect without any animations or delays
-        window.location.replace('/industry-pulse');
+        // Trigger custom event for auth context
+        window.dispatchEvent(new CustomEvent('googleAuthSuccess', {
+          detail: { user }
+        }));
+        
+        // Redirect to dashboard
+        window.location.href = '/dashboard';
       } else {
         throw new Error(data.message || 'Authentication failed');
       }
       
     } catch (error: any) {
-      console.error('❌ Fast auth error:', error);
+      console.error('❌ Google authentication error:', error);
+      
+      let errorMessage = 'Authentication failed. Please try again.';
+      
+      if (error.code === 'auth/popup-blocked') {
+        errorMessage = 'Popup blocked. Please allow popups and try again.';
+      } else if (error.code === 'auth/popup-closed-by-user') {
+        errorMessage = 'Sign-in cancelled. Please try again.';
+      } else if (error.code === 'auth/network-request-failed') {
+        errorMessage = 'Network error. Please check your connection.';
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
       
       toast({
         title: 'Authentication Error',
-        description: 'Please try again',
+        description: errorMessage,
         variant: 'destructive'
       });
       
