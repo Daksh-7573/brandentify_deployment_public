@@ -120,9 +120,11 @@ export function GoogleAuthButton() {
       let errorMessage = 'Authentication failed. Please try again.';
       
       if (error.code === 'auth/unauthorized-domain') {
-        errorMessage = 'This domain is not authorized for Google authentication. Please contact support.';
+        errorMessage = 'Domain not authorized. Please add this domain to Firebase Auth > Settings > Authorized domains: ' + window.location.hostname;
       } else if (error.message.includes('Firebase configuration')) {
         errorMessage = 'Firebase is not properly configured. Please contact support.';
+      } else if (error.message.includes('popup')) {
+        errorMessage = 'Popup was blocked or closed. Please allow popups and try again.';
       }
       
       toast({
