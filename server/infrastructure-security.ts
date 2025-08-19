@@ -82,23 +82,11 @@ export async function runSecurityAudit(): Promise<AuditResults> {
     // Note: In production, replace this with your preferred security scanning tool
     // This is a simplified version for demonstration purposes
     const { stdout } = await execPromise('npm audit --json || echo "{}"');
-    let auditData;
-    try {
-      auditData = JSON.parse(stdout.trim() || '{}');
-    } catch (parseError) {
-      console.warn('Failed to parse npm audit output, using empty object:', parseError);
-      auditData = {};
-    }
+    const auditData = JSON.parse(stdout);
     
     // Get outdated packages
     const { stdout: outdatedStdout } = await execPromise('npm outdated --json || echo "{}"');
-    let outdatedData;
-    try {
-      outdatedData = JSON.parse(outdatedStdout.trim() || '{}');
-    } catch (parseError) {
-      console.warn('Failed to parse npm outdated output, using empty object:', parseError);
-      outdatedData = {};
-    }
+    const outdatedData = JSON.parse(outdatedStdout);
     
     // Process results
     const results: AuditResults = {

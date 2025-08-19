@@ -13,8 +13,7 @@ import { projectThumbnailUpload, getFileUrl } from "./utils/upload";
 // Resume parsing functionality
 import { handleParseResume } from "./routes-parse-resume";
 import { upload, extractTextFromFile, cleanupFile, parseResume } from "./services/resume-parser-service";
-// Demo profiles functionality has been removed
-// import { handleCreateDemoProfiles } from "./routes-demo-profiles";
+import { handleCreateDemoProfiles } from "./routes-demo-profiles";
 import { updateUserGeolocation, updateUserRadarVisibility, getNearbyUsers } from "./routes-radar";
 import { handleMuskChat, handleResumeUpload, handlePitchDeckUpload } from "./routes-musk";
 import muskSuggestionRoutes from "./routes-musk-suggestions";
@@ -57,8 +56,6 @@ import notificationRoutes from "./routes-notifications";
 import directAccessRoutes from "./routes-direct-access";
 import directAnalyticsRoutes from "./routes-direct-analytics";
 import { authRoutes } from "./auth-routes";
-import authDomainRoutes from "./routes-auth-domain";
-import demoSigninRoutes from "./routes-demo-signin";
 import { 
   handleSmartConnect, 
   handleCareerRecommendations, 
@@ -220,58 +217,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       uptime: process.uptime(),
       version: "1.0.0"
     });
-  });
-
-  // Instant demo access page
-  app.get('/instant-demo-access', (req: Request, res: Response) => {
-    res.sendFile(path.resolve('./instant-demo-access.html'));
-  });
-
-  // Demo authentication endpoint
-  apiRouter.post("/auth/demo-signin", async (req: Request, res: Response) => {
-    try {
-      const { email, name, photoURL, authProvider } = req.body;
-      
-      console.log('Demo signin request:', { email, name });
-      
-      // Check if user exists
-      let user = await storage.getUserByEmail?.(email) || await storage.getUserByUsername(email.split('@')[0]);
-      
-      if (!user) {
-        // Create new demo user
-        const newUser = {
-          email,
-          name: name || 'Demo User',
-          username: email.split('@')[0],
-          firebaseUid: `demo_${Date.now()}`,
-          authProvider: authProvider || 'demo',
-          emailVerified: true
-        };
-        
-        user = await storage.createUser(newUser);
-        console.log('Created new demo user:', user.id);
-      }
-      
-      res.json({
-        success: true,
-        user: {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          username: user.username,
-          photoURL: (user as any).profilePicture || '',
-          emailVerified: true
-        },
-        message: 'Demo authentication successful'
-      });
-      
-    } catch (error) {
-      console.error('Demo signin error:', error);
-      res.status(500).json({
-        success: false,
-        message: 'Demo authentication failed'
-      });
-    }
   });
 
   // Job title options endpoint
@@ -1258,8 +1203,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
               const { cacheService } = require('./services/cache-service');
               await cacheService.invalidatePattern(`user:${user.id}:*`);
               await cacheService.invalidatePattern(`users:*`);
-            } catch (cacheError: unknown) {
-              console.log(`[PUT /users/:id] Cache invalidation skipped:`, (cacheError as Error).message);
+            } catch (cacheError) {
+              console.log(`[PUT /users/:id] Cache invalidation skipped:`, cacheError.message);
             }
           }
         } catch (directError) {
@@ -1803,8 +1748,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid experience ID format" });
       }
       
-      // Note: getWorkExperienceById doesn't exist in storage interface
-      // We'll proceed with the update and let it fail if the experience doesn't exist
+      // Check if experience exists
+      const existingExperience = await storage.getWorkExperienceById(experienceId);
       
       if (!existingExperience) {
         return res.status(404).json({ message: "Experience not found" });
@@ -6980,14 +6925,6 @@ ${extractedText.substring(0, 5000)}
   // Clean Google Authentication routes
   app.use('/api/auth', authRoutes);
   console.log("Clean Google authentication routes loaded");
-  
-  // Domain authorization fixes for Firebase OAuth
-  app.use('/api', authDomainRoutes);
-  console.log("Auth domain registration routes loaded");
-  
-  // Demo authentication for OAuth issues
-  app.use('/api', demoSigninRoutes);
-  console.log("Demo signin routes loaded");
   
   // Career Capsule routes - removed
   // app.use('/api', careerCapsuleRoutes);

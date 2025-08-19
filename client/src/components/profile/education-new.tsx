@@ -31,7 +31,7 @@ type EducationItem = {
 
 export default function Education() {
   const { user, isDemoMode } = useAuth();
-  const userId = isDemoMode ? 1 : (user?.id || 1);
+  const userId = isDemoMode ? 1 : (user?.uid ? parseInt(user.uid) : 1);
   
   // Fetch education items from the API with advanced options
   const { data: serverEducations, isLoading, refetch } = useQuery({

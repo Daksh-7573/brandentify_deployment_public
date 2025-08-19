@@ -29,7 +29,7 @@ type WorkExperienceItem = {
 
 export default function WorkExperience() {
   const { user, isDemoMode } = useAuth();
-  const userId = isDemoMode ? 1 : (user?.id || 1);
+  const userId = isDemoMode ? 1 : (user?.uid ? parseInt(user.uid) : 1);
   
   // Fetch work experiences from the API with advanced options
   const { data: serverExperiences, isLoading, refetch } = useQuery({

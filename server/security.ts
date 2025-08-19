@@ -20,7 +20,7 @@ import CryptoJS from 'crypto-js';
 import { Request, Response, NextFunction } from 'express';
 import path from 'path';
 import fs from 'fs';
-import cors from 'cors';
+import cors from 'express';
 import { z } from 'zod';
 import { securityMonitorMiddleware, enhancedApiProtection } from './security-monitor';
 import { endpointProtectionMiddleware, createEndpointRateLimiters } from './endpoint-protection';
@@ -347,7 +347,7 @@ export function setupSecurity(app: any) {
     allowedHeaders: ['Content-Type', 'Authorization', 'X-CSRF-Token', 'x-firebase-auth']
   };
   
-  app.use(cors());
+  app.use(cors(corsOptions));
   
   // 3. Rate limiting to prevent brute force attacks
   const apiLimiter = rateLimit({
@@ -424,8 +424,7 @@ export function setupSecurity(app: any) {
     // Security headers that won't break existing functionality
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('X-XSS-Protection', '1; mode=block');
-    // Remove X-Frame-Options to allow embedding in Replit
-    // res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+    res.setHeader('X-Frame-Options', 'SAMEORIGIN');
     res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
     res.setHeader('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
     next();
