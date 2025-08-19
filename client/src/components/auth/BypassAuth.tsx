@@ -74,20 +74,20 @@ export function BypassAuth() {
 
   return (
     <div className="space-y-4">
-      <div className="text-center p-4 bg-green-500/10 border border-green-500/30 rounded-lg">
-        <h4 className="font-semibold text-green-300 mb-2">Ready to Test</h4>
-        <p className="text-sm text-green-200">
-          Skip the Google setup and access Brandentifier immediately with a demo account
+      <div className="text-center p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg">
+        <h4 className="font-semibold text-blue-300 mb-2">Demo Access Available</h4>
+        <p className="text-sm text-blue-200">
+          While Firebase is being configured, you can access the app with a demo account
         </p>
       </div>
       
       <Button
         onClick={handleDemoLogin}
         disabled={isLoading}
-        className="w-full bg-green-600 hover:bg-green-700 text-white"
+        className="w-full bg-blue-600 hover:bg-blue-700 text-white"
         size="lg"
       >
-        {isLoading ? 'Setting up your account...' : 'Enter Brandentifier Now'}
+        {isLoading ? 'Creating Demo Account...' : 'Continue with Demo Account'}
       </Button>
     </div>
   );

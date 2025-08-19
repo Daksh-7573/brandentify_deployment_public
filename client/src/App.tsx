@@ -190,10 +190,7 @@ function Router() {
       <Route path="/create-pulse-new" component={() => (
         <ProtectedRoute path="/create-pulse-new" component={CreatePulsePage} />
       )} />
-      <Route path="/auth" component={() => {
-        const AuthSimple = lazy(() => import('./pages/auth-simple'));
-        return <Suspense fallback={<div>Loading auth...</div>}><AuthSimple /></Suspense>;
-      }} />
+      <Route path="/auth" component={AuthPage} />
       <Route path="/auth-success" component={() => {
         const AuthSuccessPage = lazy(() => import('./pages/auth-success'));
         return <Suspense fallback={<div>Loading...</div>}><AuthSuccessPage /></Suspense>;
@@ -646,27 +643,19 @@ function Router() {
 }
 
 function App() {
-  console.log("App component rendering...");
-  
+  // Add a root-level Suspense boundary to ensure we never show a white screen
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <div style={{ 
-          minHeight: '100vh', 
-          background: 'linear-gradient(135deg, rgba(17, 24, 39, 0.9) 0%, rgba(0, 0, 0, 0.8) 50%, rgba(31, 41, 55, 0.9) 100%)', 
-          color: '#fff',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '20px'
-        }}>
+        <Suspense fallback={<FeedSkeleton count={3} />}>
           <Router />
           <GlobalMuskButton />
           <DomainHelper />
           <DomainAuthHelper />
           <Toaster />
-        </div>
+          {/* Cookie Consent Banner - shown based on user's consent status */}
+          <CookieConsentBanner />
+        </Suspense>
       </AuthProvider>
     </QueryClientProvider>
   );
