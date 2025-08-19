@@ -85,8 +85,14 @@ export function GoogleAuthButton() {
       
       let errorMessage = 'Authentication failed. Please try again.';
       
-      if (error.code === 'auth/unauthorized-domain') {
-        errorMessage = 'Domain not authorized. Please add this domain to Firebase Auth > Settings > Authorized domains: ' + window.location.hostname;
+      if (error.code === 'auth/unauthorized-domain' || error.message.includes('refused to connect')) {
+        errorMessage = `🔒 Domain Authorization Required: Add "${window.location.hostname}" to Firebase Auth > Settings > Authorized domains. See console for detailed instructions.`;
+        console.error('🔒 FIREBASE DOMAIN SETUP REQUIRED:');
+        console.error('1. Go to: https://console.firebase.google.com/');
+        console.error('2. Select project: brandentifier-app');
+        console.error('3. Go to: Authentication > Settings > Authorized domains');
+        console.error('4. Add domain:', window.location.hostname);
+        console.error('5. Also add: *.replit.dev and *.replit.app');
       } else if (error.message.includes('Firebase configuration')) {
         errorMessage = 'Firebase is not properly configured. Please contact support.';
       } else if (error.message.includes('popup')) {
