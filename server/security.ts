@@ -327,7 +327,10 @@ export function setupSecurity(app: any) {
     helmet({
       contentSecurityPolicy: false, // Completely disable CSP to fix WebSocket connection issues
       crossOriginEmbedderPolicy: false, // Disable COEP to prevent breaking existing functionality
+      crossOriginOpenerPolicy: false, // Disable COOP to allow embedding
+      crossOriginResourcePolicy: false, // Disable CORP to allow embedding
       frameguard: false, // Disable X-Frame-Options to allow embedding in Replit preview
+      originAgentCluster: false, // Disable Origin-Agent-Cluster header
     })
   );
   
