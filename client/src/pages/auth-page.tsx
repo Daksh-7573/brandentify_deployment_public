@@ -123,23 +123,24 @@ export default function AuthPage() {
                       </div>
                       
                       <div className="space-y-6">
-                        <GoogleAuthButton />
-                        
-                        <div className="text-center text-sm text-gray-400">
-                          Having issues? Try the direct method below:
-                        </div>
-                        <SimpleGoogleAuth />
+                        <BypassAuth />
                         
                         <div className="relative">
                           <div className="absolute inset-0 flex items-center">
                             <span className="w-full border-t border-white/20" />
                           </div>
                           <div className="relative flex justify-center text-xs uppercase">
-                            <span className="bg-black/50 px-2 text-gray-300">or</span>
+                            <span className="bg-black/50 px-2 text-gray-300">or configure google auth</span>
                           </div>
                         </div>
                         
-                        <BypassAuth />
+                        <div className="space-y-4">
+                          <GoogleAuthButton />
+                          <div className="text-center text-sm text-gray-400">
+                            Alternative: Try direct method
+                          </div>
+                          <SimpleGoogleAuth />
+                        </div>
                       </div>
                       
                       <div className="relative">
