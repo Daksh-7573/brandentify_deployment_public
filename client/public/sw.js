@@ -1,8 +1,8 @@
-// Enhanced Service Worker v2 for Maximum Performance
-const CACHE_NAME = 'brandentifier-v2';
-const STATIC_CACHE_NAME = 'brandentifier-static-v2';
-const API_CACHE_NAME = 'brandentifier-api-v2';
-const RUNTIME_CACHE_NAME = 'brandentifier-runtime-v2';
+// Enhanced Service Worker v3 - IFRAME EMBEDDING FIX
+const CACHE_NAME = 'brandentifier-v3-iframe-fix';
+const STATIC_CACHE_NAME = 'brandentifier-static-v3-iframe-fix';
+const API_CACHE_NAME = 'brandentifier-api-v3-iframe-fix';
+const RUNTIME_CACHE_NAME = 'brandentifier-runtime-v3-iframe-fix';
 
 // Enhanced critical files for aggressive caching
 const STATIC_FILES = [
@@ -32,7 +32,7 @@ const RUNTIME_CACHE_PATTERNS = [
 
 // Install event - cache critical files with enhanced strategy
 self.addEventListener('install', event => {
-  console.log('[SW v2] Installing enhanced service worker...');
+  console.log('[SW v3] Installing iframe-compatible service worker...');
   event.waitUntil(
     Promise.all([
       // Cache static files
@@ -56,15 +56,15 @@ self.addEventListener('install', event => {
 
 // Activate event - enhanced cleanup and immediate claiming
 self.addEventListener('activate', event => {
-  console.log('[SW v2] Activating enhanced service worker...');
+  console.log('[SW v3] Activating iframe-compatible service worker...');
   event.waitUntil(
     Promise.all([
       // Clean up old caches
       caches.keys().then(cacheNames => {
         return Promise.all(
           cacheNames.map(cacheName => {
-            if (!cacheName.includes('v2')) {
-              console.log('[SW v2] Deleting old cache:', cacheName);
+            if (!cacheName.includes('v3-iframe-fix')) {
+              console.log('[SW v3] Deleting old cache:', cacheName);
               return caches.delete(cacheName);
             }
           })
