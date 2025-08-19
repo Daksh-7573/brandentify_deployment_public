@@ -47,9 +47,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } catch (error) {
         console.error('Error checking stored auth:', error);
       } finally {
+        console.log('Auth check complete, setting isLoading to false');
         setIsLoading(false);
       }
     };
+
+    // Add a timeout to ensure loading state doesn't get stuck
+    const timeoutId = setTimeout(() => {
+      console.log('Auth timeout triggered, forcing isLoading to false');
+      setIsLoading(false);
+    }, 2000); // 2 second timeout
 
     // Handle Google auth success event
     const handleGoogleAuthSuccess = (event: CustomEvent) => {
@@ -64,6 +71,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     return () => {
       window.removeEventListener('googleAuthSuccess', handleGoogleAuthSuccess as EventListener);
+      clearTimeout(timeoutId);
     };
   }, []);
 
