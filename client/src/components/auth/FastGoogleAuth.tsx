@@ -4,202 +4,101 @@ import { Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 /**
- * Optimized Google Authentication Component
- * Minimal overhead for fastest possible authentication
+ * Simplified Google Authentication Component
  */
 export function FastGoogleAuth() {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
   const handleGoogleAuth = async () => {
-    // Clear any existing auth state first
-    sessionStorage.clear();
-    console.log('🧹 Cleared all session storage before Google auth');
-    
     setIsLoading(true);
     
     try {
       console.log('🔄 Starting Google authentication...');
       
-      // Import Firebase auth with better error handling
+      // Dynamic imports for Firebase
       const { signInWithPopup, GoogleAuthProvider } = await import('firebase/auth');
       const { auth } = await import('@/lib/firebase');
       
       if (!auth) {
         throw new Error('Firebase auth not initialized');
       }
-      
-      console.log('🔧 Auth instance ready:', !!auth);
 
-      // Create a fresh Google provider for this session
+      // Create Google provider
       const provider = new GoogleAuthProvider();
       provider.addScope('email');
       provider.addScope('profile');
-      
-      // Force account picker and ensure fresh login
       provider.setCustomParameters({
         prompt: 'select_account',
         access_type: 'online'
       });
 
       console.log('🔄 Opening Google sign-in popup...');
-      console.log('🔄 Provider configured with scopes:', provider.getCustomParameters());
       
-      // Add comprehensive popup monitoring
-      console.log('⏱️ Starting popup process with timeout monitoring...');
-      
-      const popupPromise = signInWithPopup(auth, provider);
-      const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => {
-          console.error('⏰ Popup timed out after 25 seconds');
-          reject(new Error('Authentication popup timed out. Please try again.'));
-        }, 25000);
-      });
-      
-      // Monitor popup state
-      console.log('👀 Monitoring popup completion...');
-      const result = await Promise.race([popupPromise, timeoutPromise]) as any;
-      
-      console.log('🎉 Popup completed successfully!');
+      // Sign in with popup
+      const result = await signInWithPopup(auth, provider);
       
       console.log('✅ Google auth successful:', result.user.email);
-      console.log('✅ User object received:', {
-        uid: result.user.uid,
-        email: result.user.email,
-        displayName: result.user.displayName,
-        emailVerified: result.user.emailVerified,
-        photoURL: result.user.photoURL
-      });
-      console.log('📋 Firebase user properties:', Object.keys(result.user));
       
-      // Prepare user data with proper validation
+      // Prepare user data for backend
       const userData = {
-        firebaseUid: result.user.uid || '',
+        firebaseUid: result.user.uid,
         email: result.user.email || '',
         name: result.user.displayName || 'Google User',
         photoURL: result.user.photoURL || '',
-        googleId: result.user.uid || '',
+        googleId: result.user.uid,
         authProvider: 'google' as const,
         emailVerified: result.user.emailVerified || false
       };
-      
-      // Validate required fields before sending
-      if (!userData.firebaseUid || !userData.email || !userData.googleId) {
-        throw new Error('Missing required Google account information. Please try again.');
-      }
 
       console.log('📡 Sending user data to backend...');
-      console.log('User data being sent:', {
-        email: userData.email,
-        name: userData.name,
-        firebaseUid: userData.firebaseUid
+      
+      // Send to backend
+      const response = await fetch('/api/auth/google-signin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userData)
       });
-      
-      // Send to backend authentication endpoint with timeout
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-      
-      try {
-        const response = await fetch('/api/auth/google-signin', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(userData),
-          signal: controller.signal
-        });
-        
-        clearTimeout(timeoutId);
-        
-        console.log('Backend response status:', response.status);
-        
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error('Backend error response:', errorText);
-          throw new Error(`Backend error: ${response.status} - ${errorText}`);
-        }
 
-        const data = await response.json();
-        console.log('Backend response data:', data);
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Backend error: ${response.status} - ${errorText}`);
+      }
+
+      const data = await response.json();
+      
+      if (data.success && data.user) {
+        console.log('✅ Authentication successful!');
         
-        if (data.success && data.user) {
-          console.log('✅ Authentication successful!');
-          console.log('✅ User data from backend:', data.user);
-          
-          // Store user data and force page reload for clean state
-          sessionStorage.setItem('brandentifier_user', JSON.stringify(data.user));
-          console.log('✅ User data stored in session');
-          console.log('✅ Stored user data:', {
-            id: data.user.id,
-            email: data.user.email,
-            name: data.user.name
-          });
-          
-          // Force a complete page reload to ensure clean auth state
-          console.log('🔄 Forcing page reload to ensure clean authentication...');
-          window.location.href = '/dashboard';
-        } else {
-          console.error('❌ Backend response invalid:', data);
-          console.error('❌ Expected: {success: true, user: {...}}');
-          console.error('❌ Received:', {
-            success: data.success,
-            hasUser: !!data.user,
-            userKeys: data.user ? Object.keys(data.user) : 'no user',
-            message: data.message
-          });
-          throw new Error(data.message || 'Authentication failed: Invalid response from server');
-        }
-      } catch (fetchError: any) {
-        clearTimeout(timeoutId);
-        console.error('🚨 Backend request failed:', {
-          name: fetchError.name,
-          message: fetchError.message,
-          isTimeout: fetchError.name === 'AbortError'
-        });
+        // Store user data
+        sessionStorage.setItem('brandentifier_user', JSON.stringify(data.user));
         
-        if (fetchError.name === 'AbortError') {
-          throw new Error('Backend request timed out. Please check your connection and try again.');
-        }
-        throw fetchError;
+        // Redirect to dashboard
+        window.location.href = '/dashboard';
+      } else {
+        throw new Error(data.message || 'Authentication failed');
       }
       
     } catch (error: any) {
       console.error('❌ Google authentication error:', error);
-      console.error('❌ Full error details:', {
-        code: error.code,
-        message: error.message,
-        name: error.name,
-        stack: error.stack?.substring(0, 200) + '...' // Truncated stack
-      });
       
-      // Check for popup closure by user
-      if (error.code === 'auth/popup-closed-by-user') {
-        console.log('ℹ️ User manually closed the popup');
+      // Handle user cancellation quietly
+      if (error.code === 'auth/popup-closed-by-user' || 
+          error.code === 'auth/cancelled-popup-request') {
         setIsLoading(false);
         return;
       }
       
-      if (error.code === 'auth/cancelled-popup-request') {
-        console.log('ℹ️ Popup request was cancelled (another popup may be open)');
-        setIsLoading(false);
-        return;
-      }
-      
+      // Show error for other cases
       let errorMessage = 'Authentication failed. Please try again.';
       
       if (error.code === 'auth/popup-blocked') {
-        errorMessage = 'Popup was blocked. Please allow popups for this site and try again.';
+        errorMessage = 'Popup was blocked. Please allow popups and try again.';
       } else if (error.code === 'auth/network-request-failed') {
-        errorMessage = 'Network error. Please check your internet connection.';
-      } else if (error.code === 'auth/unauthorized-domain') {
-        errorMessage = 'This domain is not authorized for Google sign-in. Please contact support.';
-      } else if (error.code === 'auth/operation-not-allowed') {
-        errorMessage = 'Google sign-in is not enabled. Please contact support.';
-      } else if (error.message?.includes('timeout')) {
-        errorMessage = 'Authentication timed out. Please try again.';
-      } else if (error.message && !error.message.includes('cancelled')) {
+        errorMessage = 'Network error. Please check your connection.';
+      } else if (error.message) {
         errorMessage = error.message;
       }
-      
-      console.log('🚨 Showing error to user:', errorMessage);
       
       toast({
         title: 'Authentication Error',
@@ -207,7 +106,6 @@ export function FastGoogleAuth() {
         variant: 'destructive'
       });
       
-      console.log('❌ Setting isLoading to false due to error');
       setIsLoading(false);
     }
   };
