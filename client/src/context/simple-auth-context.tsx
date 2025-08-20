@@ -49,21 +49,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     
     const checkStoredAuth = () => {
       console.log('AuthProvider: Running checkStoredAuth');
+      console.log('AuthProvider: Current sessionStorage keys:', Object.keys(sessionStorage));
+      
       try {
         const storedUser = sessionStorage.getItem('brandentifier_user');
+        console.log('AuthProvider: Raw stored data:', storedUser);
+        
         if (storedUser) {
           const userData = JSON.parse(storedUser);
-          console.log('Found stored user:', userData.email);
+          console.log('AuthProvider: Parsed user data:', {
+            email: userData.email,
+            id: userData.id,
+            name: userData.name
+          });
           setUser(userData);
+          console.log('AuthProvider: User state set, isAuthenticated should be true');
         } else {
-          console.log('No stored user found');
+          console.log('AuthProvider: No stored user found in sessionStorage');
         }
       } catch (error) {
-        console.error('Error checking stored auth:', error);
+        console.error('AuthProvider: Error checking stored auth:', error);
         // Clear any corrupted data
         sessionStorage.removeItem('brandentifier_user');
       } finally {
-        console.log('Setting isLoading to false from checkStoredAuth');
+        console.log('AuthProvider: Setting isLoading to false from checkStoredAuth');
         setIsLoading(false);
       }
     };
@@ -110,6 +119,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     signIn,
     signOut,
   };
+  
+  // Debug authentication state changes
+  console.log('AuthProvider: Current state:', {
+    hasUser: !!user,
+    isAuthenticated: !!user,
+    isLoading,
+    userEmail: user?.email
+  });
 
   return (
     <AuthContext.Provider value={contextValue}>

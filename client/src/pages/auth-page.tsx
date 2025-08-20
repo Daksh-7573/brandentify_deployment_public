@@ -18,10 +18,18 @@ import { NeoGlassLayout, NeoGlassSection } from "@/components/layout/neo-glass-l
 import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
 
 export default function AuthPage() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, user } = useAuth();
   const [_, setLocation] = useLocation();
   const [authMethod, setAuthMethod] = useState<"email" | "phone">("email");
   const [useDemoBypass, setUseDemoBypass] = useState(false);
+  
+  // Debug auth state on auth page
+  console.log('AuthPage: Current auth state:', {
+    isAuthenticated,
+    isLoading,
+    hasUser: !!user,
+    userEmail: user?.email
+  });
   
   // We used to bypass Google auth on the problematic domain, but now we're properly 
   // supporting it directly and want to use Google auth instead
