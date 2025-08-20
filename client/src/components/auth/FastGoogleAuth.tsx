@@ -4,42 +4,149 @@ import { Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 /**
- * Working Google Authentication Component
+ * Google Authentication Component - Fixed
  */
 export function FastGoogleAuth() {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
-  const handleDirectAuth = async () => {
+  const handleGoogleAuth = async () => {
     setIsLoading(true);
     
     try {
-      console.log('🔄 Creating authenticated session for nishant.brodos@gmail.com...');
+      console.log('🔄 Starting Google authentication...');
       
-      // Since backend authentication works, create user session directly
+      // Import Firebase auth
+      const { signInWithPopup, GoogleAuthProvider } = await import('firebase/auth');
+      const { auth } = await import('@/lib/firebase');
+      
+      if (!auth) {
+        throw new Error('Firebase auth not initialized');
+      }
+
+      console.log('🔧 Firebase auth instance ready');
+
+      // Create Google provider with proper configuration
+      const provider = new GoogleAuthProvider();
+      provider.addScope('email');
+      provider.addScope('profile');
+      
+      // Set custom parameters for consistent behavior
+      provider.setCustomParameters({
+        prompt: 'select_account',
+        access_type: 'online'
+      });
+
+      console.log('🔄 Opening Google sign-in popup...');
+      
+      // Sign in with popup - this is where the 9-12 second hang happens
+      const result = await signInWithPopup(auth, provider);
+      
+      console.log('✅ Google popup completed successfully!');
+      console.log('✅ Google auth result:', {
+        email: result.user.email,
+        name: result.user.displayName,
+        uid: result.user.uid
+      });
+      
+      // Prepare user data for backend
       const userData = {
-        id: 2,
-        username: "Unvhj38FHSg36vbagvGL8MvDJuL2",
-        email: "nishant.brodos@gmail.com",
-        name: "Nishant Chopra",
-        photoURL: "https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c",
-        profileCompleted: 0,
-        emailVerified: true
+        firebaseUid: result.user.uid,
+        email: result.user.email || '',
+        name: result.user.displayName || 'Google User',
+        photoURL: result.user.photoURL || '',
+        googleId: result.user.uid,
+        authProvider: 'google',
+        emailVerified: result.user.emailVerified || false
       };
+
+      console.log('📡 Sending to backend:', {
+        email: userData.email,
+        name: userData.name,
+        authProvider: userData.authProvider
+      });
       
-      // Store user data in session storage
-      sessionStorage.setItem('brandentifier_user', JSON.stringify(userData));
-      console.log('✅ User session created successfully');
+      // Send to backend with faster timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second timeout
       
-      // Redirect to dashboard
-      window.location.href = '/dashboard';
+      const response = await fetch('/api/auth/google-signin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userData),
+        signal: controller.signal
+      });
+      
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('❌ Backend error:', response.status, errorText);
+        throw new Error(`Backend error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('✅ Backend response:', data);
+      
+      if (data.success && data.user) {
+        console.log('✅ Authentication successful - storing user data');
+        
+        // Store user data in session storage
+        sessionStorage.setItem('brandentifier_user', JSON.stringify(data.user));
+        
+        // Force immediate redirect
+        console.log('✅ Redirecting to dashboard...');
+        window.location.href = '/dashboard';
+      } else {
+        throw new Error(data.message || 'Authentication failed - no user data');
+      }
       
     } catch (error: any) {
-      console.error('❌ Authentication error:', error);
+      console.error('❌ Google authentication error:', error);
+      
+      // Handle specific Firebase auth errors
+      if (error.code === 'auth/popup-closed-by-user') {
+        console.log('ℹ️ User closed popup');
+        setIsLoading(false);
+        return;
+      }
+      
+      if (error.code === 'auth/cancelled-popup-request') {
+        console.log('ℹ️ Popup cancelled');
+        setIsLoading(false);
+        return;
+      }
+      
+      // Handle timeout errors
+      if (error.name === 'AbortError') {
+        console.error('❌ Backend request timed out');
+        toast({
+          title: 'Request Timeout',
+          description: 'The authentication request took too long. Please try again.',
+          variant: 'destructive'
+        });
+        setIsLoading(false);
+        return;
+      }
+      
+      // Handle other errors
+      let errorMessage = 'Authentication failed. Please try again.';
+      
+      if (error.code === 'auth/popup-blocked') {
+        errorMessage = 'Popup was blocked. Please allow popups and try again.';
+      } else if (error.code === 'auth/network-request-failed') {
+        errorMessage = 'Network error. Please check your connection.';
+      } else if (error.code === 'auth/unauthorized-domain') {
+        errorMessage = 'This domain is not authorized for Google sign-in.';
+      } else if (error.message && !error.message.includes('cancelled')) {
+        errorMessage = error.message;
+      }
+      
+      console.error('❌ Showing error to user:', errorMessage);
       
       toast({
         title: 'Authentication Error',
-        description: 'Failed to authenticate. Please try again.',
+        description: errorMessage,
         variant: 'destructive'
       });
       
@@ -49,7 +156,7 @@ export function FastGoogleAuth() {
 
   return (
     <Button
-      onClick={handleDirectAuth}
+      onClick={handleGoogleAuth}
       disabled={isLoading}
       className="w-full flex items-center justify-center gap-3 bg-white hover:bg-gray-50 text-gray-900 border border-gray-300"
       size="lg"
