@@ -18,7 +18,8 @@ export function FastGoogleAuth() {
       
       // Import Firebase auth
       const { signInWithPopup, GoogleAuthProvider } = await import('firebase/auth');
-      const { auth } = await import('@/lib/firebase');
+      const firebaseModule = await import('@/lib/firebase');
+      const auth = firebaseModule.auth;
       
       if (!auth) {
         throw new Error('Firebase auth not initialized');
