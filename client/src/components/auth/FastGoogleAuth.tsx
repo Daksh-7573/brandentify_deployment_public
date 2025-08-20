@@ -12,6 +12,10 @@ export function FastGoogleAuth() {
   const { toast } = useToast();
 
   const handleGoogleAuth = async () => {
+    // Clear any existing auth state first
+    sessionStorage.clear();
+    console.log('🧹 Cleared all session storage before Google auth');
+    
     setIsLoading(true);
     
     try {
@@ -120,24 +124,18 @@ export function FastGoogleAuth() {
           console.log('✅ Authentication successful!');
           console.log('✅ User data from backend:', data.user);
           
-          // Store user data and trigger auth context update
+          // Store user data and force page reload for clean state
           sessionStorage.setItem('brandentifier_user', JSON.stringify(data.user));
           console.log('✅ User data stored in session');
-          
-          // Trigger custom event for auth context
-          const customEvent = new CustomEvent('googleAuthSuccess', {
-            detail: { user: data.user }
+          console.log('✅ Stored user data:', {
+            id: data.user.id,
+            email: data.user.email,
+            name: data.user.name
           });
-          window.dispatchEvent(customEvent);
-          console.log('✅ Auth context event dispatched');
           
-          // Add more time for auth context to update
-          console.log('⏳ Waiting for auth context to update...');
-          setTimeout(() => {
-            console.log('✅ Redirecting to dashboard...');
-            setIsLoading(false); // Clear loading state before redirect
-            window.location.href = '/dashboard';
-          }, 500);
+          // Force a complete page reload to ensure clean auth state
+          console.log('🔄 Forcing page reload to ensure clean authentication...');
+          window.location.href = '/dashboard';
         } else {
           console.error('❌ Backend response invalid:', data);
           console.error('❌ Expected: {success: true, user: {...}}');
