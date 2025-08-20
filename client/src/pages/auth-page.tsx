@@ -78,6 +78,17 @@ export default function AuthPage() {
           <p className="text-sm sm:text-base md:text-lg text-gray-300 px-2">
             Sign in to accelerate your professional growth with AI-powered career guidance
           </p>
+          
+          {/* Temporary manual redirect button for testing */}
+          <div className="mt-4">
+            <Button 
+              onClick={() => window.location.href = '/dashboard'} 
+              variant="outline"
+              className="text-sm"
+            >
+              🔧 Test Dashboard Access (Manual)
+            </Button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 max-w-6xl mx-auto">
