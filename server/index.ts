@@ -19,8 +19,8 @@ import { performanceMiddleware } from "./middleware/performance-middleware";
 
 const app = express();
 
-// Configure for external domain access
-app.set('trust proxy', true);
+// Configure for external domain access with specific trust proxy setting for rate limiting
+app.set('trust proxy', 1); // Trust only the first proxy (Replit's load balancer)
 
 // Add performance middleware first
 app.use(performanceMiddleware());
