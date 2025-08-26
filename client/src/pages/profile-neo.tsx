@@ -142,6 +142,7 @@ export default function ProfileNeo() {
   const refreshUserData = () => {
     console.log('[PROFILE PICTURE DEBUG] Force refreshing user data...');
     queryClient.invalidateQueries({ queryKey: ['/api/users', userIdentifier] });
+    // Only refetch the specific user, not all users to avoid HTML response errors
     queryClient.refetchQueries({ queryKey: ['/api/users', userIdentifier] });
   };
   

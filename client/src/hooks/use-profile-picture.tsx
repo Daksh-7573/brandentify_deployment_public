@@ -127,8 +127,9 @@ export function useProfilePicture(userId: number | string | null = null) {
       queryClient.invalidateQueries({ queryKey: ['currentUser'] });
       queryClient.invalidateQueries({ queryKey: ['auth'] });
       
-      // Force refetch of all user data queries to ensure immediate update
-      queryClient.refetchQueries({ queryKey: ['/api/users'] });
+      // Force refetch of specific user data only to avoid HTML response errors
+      queryClient.refetchQueries({ queryKey: ['/api/users', targetUserId] });
+      queryClient.refetchQueries({ queryKey: ['/api/users', targetUserId.toString()] });
       
       toast({
         title: "Success!",
