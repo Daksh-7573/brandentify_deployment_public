@@ -118,18 +118,9 @@ export function useProfilePicture(userId: number | string | null = null) {
       setUploadProgress(0);
       closeProfilePictureDialog();
       
-      // Invalidate all possible user data query combinations
+      // Simple targeted cache invalidation - no refetch operations
       queryClient.invalidateQueries({ queryKey: ['/api/users', targetUserId] });
       queryClient.invalidateQueries({ queryKey: ['/api/users', targetUserId.toString()] });
-      queryClient.invalidateQueries({ queryKey: ['/api/users', String(targetUserId)] });
-      
-      // Also invalidate any auth-related queries
-      queryClient.invalidateQueries({ queryKey: ['currentUser'] });
-      queryClient.invalidateQueries({ queryKey: ['auth'] });
-      
-      // Force refetch of specific user data only to avoid HTML response errors
-      queryClient.refetchQueries({ queryKey: ['/api/users', targetUserId] });
-      queryClient.refetchQueries({ queryKey: ['/api/users', targetUserId.toString()] });
       
       toast({
         title: "Success!",

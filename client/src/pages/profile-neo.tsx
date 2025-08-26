@@ -141,9 +141,8 @@ export default function ProfileNeo() {
   // Force refresh userData after profile picture updates
   const refreshUserData = () => {
     console.log('[PROFILE PICTURE DEBUG] Force refreshing user data...');
+    // Simple invalidation only - let React Query handle the refetch automatically
     queryClient.invalidateQueries({ queryKey: ['/api/users', userIdentifier] });
-    // Only refetch the specific user, not all users to avoid HTML response errors
-    queryClient.refetchQueries({ queryKey: ['/api/users', userIdentifier] });
   };
   
   // Update about me mutation
@@ -781,7 +780,7 @@ export default function ProfileNeo() {
           setShowProfileDialog(open);
           // If closing after successful upload, refresh user data
           if (!open && !isUploading) {
-            setTimeout(refreshUserData, 500); // Small delay to ensure backend is updated
+            setTimeout(refreshUserData, 1000); // Longer delay to ensure backend is fully updated
           }
         }}
         currentPhotoURL={profilePictureUrl}

@@ -1186,8 +1186,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
           console.log(`[PUT /users/:id] Processing userData keys:`, Object.keys(userData));
           for (const [key, value] of Object.entries(userData)) {
             console.log(`[PUT /users/:id] Processing field: ${key} = ${value ? '[VALUE_EXISTS]' : '[NULL_OR_EMPTY]'}`);
-            // Convert camelCase to snake_case for PostgreSQL
-            const columnName = key.replace(/([A-Z])/g, '_$1').toLowerCase();
+            // Convert camelCase to snake_case for PostgreSQL with special handling for photoURL
+            let columnName;
+            if (key === 'photoURL') {
+              columnName = 'photo_url';
+            } else {
+              columnName = key.replace(/([A-Z])/g, '_$1').toLowerCase();
+            }
+            console.log(`[PUT /users/:id] Mapped field ${key} -> ${columnName}`);
             updateParts.push(`${columnName} = $${paramIndex}`);
             updateValues.push(value);
             paramIndex++;
@@ -1257,8 +1263,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
           
           // Add each property to the update
           for (const [key, value] of Object.entries(userData)) {
-            // Convert camelCase to snake_case for PostgreSQL
-            const columnName = key.replace(/([A-Z])/g, '_$1').toLowerCase();
+            // Convert camelCase to snake_case for PostgreSQL with special handling for photoURL
+            let columnName;
+            if (key === 'photoURL') {
+              columnName = 'photo_url';
+            } else {
+              columnName = key.replace(/([A-Z])/g, '_$1').toLowerCase();
+            }
+            console.log(`[PUT /users/:id] Numeric ID - Mapped field ${key} -> ${columnName}`);
             updateParts.push(`${columnName} = $${paramIndex}`);
             updateValues.push(value);
             paramIndex++;
