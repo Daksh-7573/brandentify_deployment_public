@@ -60,6 +60,9 @@ export function ProfilePictureDialog({
         console.log("Image size (bytes):", imageSizeInBytes);
         
         // Send only the photoURL update to the API
+        console.log('[PROFILE DIALOG DEBUG] Uploading to user ID:', actualUserId);
+        console.log('[PROFILE DIALOG DEBUG] Base64 image length:', base64Image.length);
+        
         const res = await apiRequest(
           'PUT',
           `/api/users/${actualUserId}`,
@@ -67,6 +70,8 @@ export function ProfilePictureDialog({
             photoURL: base64Image
           }
         );
+        
+        console.log('[PROFILE DIALOG DEBUG] API response:', res);
         
         console.log("Profile picture update successful");
         return res;

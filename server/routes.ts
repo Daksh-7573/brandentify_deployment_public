@@ -1183,7 +1183,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           let paramIndex = 1;
           
           // Add each property to the update
+          console.log(`[PUT /users/:id] Processing userData keys:`, Object.keys(userData));
           for (const [key, value] of Object.entries(userData)) {
+            console.log(`[PUT /users/:id] Processing field: ${key} = ${value ? '[VALUE_EXISTS]' : '[NULL_OR_EMPTY]'}`);
             // Convert camelCase to snake_case for PostgreSQL
             const columnName = key.replace(/([A-Z])/g, '_$1').toLowerCase();
             updateParts.push(`${columnName} = $${paramIndex}`);

@@ -134,6 +134,17 @@ export default function ProfileNeo() {
   // Use the photoURL from the main userData query instead of the hook's separate query
   const profilePictureUrl = userData?.photoURL || null;
   
+  // Debug logging for profile picture URL
+  console.log('[PROFILE PICTURE DEBUG] userData?.photoURL:', userData?.photoURL);
+  console.log('[PROFILE PICTURE DEBUG] profilePictureUrl:', profilePictureUrl);
+  
+  // Force refresh userData after profile picture updates
+  const refreshUserData = () => {
+    console.log('[PROFILE PICTURE DEBUG] Force refreshing user data...');
+    queryClient.invalidateQueries({ queryKey: ['/api/users', userIdentifier] });
+    queryClient.refetchQueries({ queryKey: ['/api/users', userIdentifier] });
+  };
+  
   // Update about me mutation
   const updateAboutMeMutation = useMutation({
     mutationFn: async (newAbout: string) => {
@@ -351,6 +362,8 @@ export default function ProfileNeo() {
                           src={profilePictureUrl || "https://api.dicebear.com/7.x/initials/svg?seed=" + userData?.name} 
                           alt={userData?.name || "Profile"} 
                           className="w-full h-full object-cover"
+                          onLoad={() => console.log('[PROFILE PICTURE DEBUG] Image loaded successfully:', profilePictureUrl)}
+                          onError={(e) => console.error('[PROFILE PICTURE DEBUG] Image failed to load:', profilePictureUrl, e)}
                         />
                         {isUploading && (
                           <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/50 text-white">
@@ -763,7 +776,13 @@ export default function ProfileNeo() {
       <ProfilePictureDialog 
         userId={userIdentifier}
         open={showProfileDialog}
-        onOpenChange={setShowProfileDialog}
+        onOpenChange={(open) => {
+          setShowProfileDialog(open);
+          // If closing after successful upload, refresh user data
+          if (!open && !isUploading) {
+            setTimeout(refreshUserData, 500); // Small delay to ensure backend is updated
+          }
+        }}
         currentPhotoURL={profilePictureUrl}
         onSave={updateProfilePicture}
       />
