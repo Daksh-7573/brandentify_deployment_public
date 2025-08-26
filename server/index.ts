@@ -43,9 +43,11 @@ app.use((req, res, next) => {
   // Also override res.end to ensure no headers are set at response time
   const originalEnd = res.end.bind(res);
   res.end = function(chunk?: any, encoding?: any) {
-    // Final removal of X-Frame-Options right before sending response
-    this.removeHeader('X-Frame-Options');
-    console.log(`🔧 Final response for ${req.method} ${req.path} - headers:`, this.getHeaders());
+    // Final removal of X-Frame-Options right before sending response (only if headers haven't been sent)
+    if (!this.headersSent) {
+      this.removeHeader('X-Frame-Options');
+      console.log(`🔧 Final response for ${req.method} ${req.path} - headers:`, this.getHeaders());
+    }
     return originalEnd.call(this, chunk, encoding);
   };
   
