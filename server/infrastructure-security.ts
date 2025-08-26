@@ -104,10 +104,10 @@ export async function runSecurityAudit(): Promise<AuditResults> {
     const results: AuditResults = {
       timestamp: new Date(),
       vulnerabilities: {
-        critical: auditData.metadata?.vulnerabilities?.critical || 0,
-        high: auditData.metadata?.vulnerabilities?.high || 0,
-        moderate: auditData.metadata?.vulnerabilities?.moderate || 0,
-        low: auditData.metadata?.vulnerabilities?.low || 0
+        critical: (auditData as any).metadata?.vulnerabilities?.critical || 0,
+        high: (auditData as any).metadata?.vulnerabilities?.high || 0,
+        moderate: (auditData as any).metadata?.vulnerabilities?.moderate || 0,
+        low: (auditData as any).metadata?.vulnerabilities?.low || 0
       },
       packages: {
         outdated: Object.keys(outdatedData),
@@ -173,7 +173,7 @@ export async function createBackup(): Promise<{ success: boolean; filename?: str
     console.error('Error creating backup:', error);
     return {
       success: false,
-      error: error.message
+      error: (error as Error).message
     };
   }
 }
@@ -398,7 +398,7 @@ export function setupInfrastructureSecurity(app: any) {
         const results = await runSecurityAudit();
         res.json(results);
       } catch (error) {
-        res.status(500).json({ message: 'Failed to run security audit', error: error.message });
+        res.status(500).json({ message: 'Failed to run security audit', error: (error as Error).message });
       }
     });
     
@@ -408,7 +408,7 @@ export function setupInfrastructureSecurity(app: any) {
         const result = await createBackup();
         res.json(result);
       } catch (error) {
-        res.status(500).json({ message: 'Failed to create backup', error: error.message });
+        res.status(500).json({ message: 'Failed to create backup', error: (error as Error).message });
       }
     });
     
@@ -417,7 +417,7 @@ export function setupInfrastructureSecurity(app: any) {
         const backups = listBackups();
         res.json(backups);
       } catch (error) {
-        res.status(500).json({ message: 'Failed to list backups', error: error.message });
+        res.status(500).json({ message: 'Failed to list backups', error: (error as Error).message });
       }
     });
     

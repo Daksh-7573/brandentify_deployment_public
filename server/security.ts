@@ -20,7 +20,7 @@ import CryptoJS from 'crypto-js';
 import { Request, Response, NextFunction } from 'express';
 import path from 'path';
 import fs from 'fs';
-import cors from 'express';
+import cors from 'cors';
 import { z } from 'zod';
 import { securityMonitorMiddleware, enhancedApiProtection } from './security-monitor';
 import { endpointProtectionMiddleware, createEndpointRateLimiters } from './endpoint-protection';
@@ -321,7 +321,7 @@ export function csrfProtection(req: Request, res: Response, next: NextFunction) 
  * Express middleware setup for all security features
  * @param app Express application
  */
-export function setupSecurity(app: any) {
+export async function setupSecurity(app: any) {
   // 1. Enable helmet for secure headers with a permissive but useful Content Security Policy
   app.use(
     helmet({

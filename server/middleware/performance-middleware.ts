@@ -46,7 +46,7 @@ export function setUserCache(key: string, data: any) {
   // Clean up old entries
   if (userCache.size > 100) {
     const now = Date.now();
-    for (const [k, v] of userCache.entries()) {
+    for (const [k, v] of Array.from(userCache.entries())) {
       if (now - v.timestamp > CACHE_TTL) {
         userCache.delete(k);
       }
