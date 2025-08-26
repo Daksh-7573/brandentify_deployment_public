@@ -40,6 +40,15 @@ app.use((req, res, next) => {
     return originalSetHeader(name, value);
   };
   
+  // Also override res.end to ensure no headers are set at response time
+  const originalEnd = res.end.bind(res);
+  res.end = function(chunk?: any, encoding?: any) {
+    // Final removal of X-Frame-Options right before sending response
+    this.removeHeader('X-Frame-Options');
+    console.log(`🔧 Final response for ${req.method} ${req.path} - headers:`, this.getHeaders());
+    return originalEnd.call(this, chunk, encoding);
+  };
+  
   console.log(`🔧 Request: ${req.method} ${req.path} - X-Frame-Options removal applied`);
   next();
 });
