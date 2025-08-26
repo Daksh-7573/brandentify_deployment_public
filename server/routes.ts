@@ -1103,7 +1103,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Debug endpoint to trace all PUT requests
+  apiRouter.put("/debug/users/:id", async (req: Request, res: Response) => {
+    console.log(`[DEBUG PUT] Route hit with ID: ${req.params.id}`);
+    console.log(`[DEBUG PUT] Body:`, req.body);
+    res.json({ message: "Debug PUT endpoint reached", id: req.params.id, body: req.body });
+  });
+
   apiRouter.put("/users/:id", async (req: Request, res: Response) => {
+    console.log(`[PUT /users/:id] *** ROUTE HIT *** ID: ${req.params.id}`);
     // BYPASS API Gateway health check for user updates - critical fix
     res.set('X-Service-Bypass', 'true');
     // Disable all caching for user updates

@@ -77,6 +77,7 @@ export function useProfilePicture(userId: number | string | null = null) {
         // Send only the photoURL update to the API
         console.log('[PROFILE UPLOAD DEBUG] Uploading to user ID:', targetUserId);
         console.log('[PROFILE UPLOAD DEBUG] Base64 image length:', base64Image.length);
+        console.log('[PROFILE UPLOAD DEBUG] Base64 preview:', base64Image.substring(0, 100) + '...');
         
         const res = await apiRequest(
           'PUT',
@@ -87,6 +88,7 @@ export function useProfilePicture(userId: number | string | null = null) {
         );
         
         console.log('[PROFILE UPLOAD DEBUG] API response:', res);
+        console.log('[PROFILE UPLOAD DEBUG] Response photoURL:', res?.photoURL ? 'EXISTS' : 'MISSING');
         
         // Complete the progress
         clearInterval(progressInterval);

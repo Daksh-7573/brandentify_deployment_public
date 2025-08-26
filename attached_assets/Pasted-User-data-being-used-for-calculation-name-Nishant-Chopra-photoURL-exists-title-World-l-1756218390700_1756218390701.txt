@@ -1,0 +1,702 @@
+User data being used for calculation: {name: 'Nishant Chopra', photoURL: 'exists', title: 'World', location: 'Gandhinagar, Gujarat, India', industry: 'Hospitality', …}
+VM410 profile-utils.ts:46 Profile completion percentage: 60
+VM437 profile-neo.tsx:260 [PROFILE NEO DEBUG] userData?.lookingFor: career_advice
+VM437 profile-neo.tsx:262 [PROFILE NEO DEBUG] Found category: {value: 'career_advice', label: 'Career Advice', icon: '💡'}
+VM437 profile-neo.tsx:265 [PROFILE NEO DEBUG] Final label: Career Advice Icon: 💡
+VM454 use-profile-services.tsx:297 useProfileServices hook - services found directly: 3
+VM454 use-profile-services.tsx:306 useProfileServices hook - processed data {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', servicesCount: 3, isLoading: false, isError: false, error: undefined}
+VM443 skills.tsx:34 Skills component - Using userNumericId: 2
+VM441 profile-picture-dialog.tsx:43 ProfilePictureDialog rendered with open: false
+VM308 queryClient.ts:212 Error parsing response as JSON: SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+(anonymous) @ VM308 queryClient.ts:212
+await in (anonymous)
+fetchFn @ VM299 @tanstack_react-query.js:840
+run @ VM299 @tanstack_react-query.js:494
+start @ VM299 @tanstack_react-query.js:536
+fetch @ VM299 @tanstack_react-query.js:926
+(anonymous) @ VM299 @tanstack_react-query.js:1726
+(anonymous) @ VM299 @tanstack_react-query.js:1725
+batch @ VM299 @tanstack_react-query.js:583
+refetchQueries @ VM299 @tanstack_react-query.js:1724
+(anonymous) @ VM299 @tanstack_react-query.js:1716
+batch @ VM299 @tanstack_react-query.js:583
+invalidateQueries @ VM299 @tanstack_react-query.js:1705
+refreshUserData @ VM437 profile-neo.tsx:129
+setTimeout
+onOpenChange @ VM437 profile-neo.tsx:1411
+handleSaveProfilePicture @ VM441 profile-picture-dialog.tsx:106
+img.onload @ VM453 profile-upload.tsx:118Understand this error
+VM308 queryClient.ts:245 Query error for /api/users: Error: Invalid response format from server
+    at VM308 queryClient.ts:217:15
+(anonymous) @ VM308 queryClient.ts:245
+await in (anonymous)
+fetchFn @ VM299 @tanstack_react-query.js:840
+run @ VM299 @tanstack_react-query.js:494
+start @ VM299 @tanstack_react-query.js:536
+fetch @ VM299 @tanstack_react-query.js:926
+(anonymous) @ VM299 @tanstack_react-query.js:1726
+(anonymous) @ VM299 @tanstack_react-query.js:1725
+batch @ VM299 @tanstack_react-query.js:583
+refetchQueries @ VM299 @tanstack_react-query.js:1724
+(anonymous) @ VM299 @tanstack_react-query.js:1716
+batch @ VM299 @tanstack_react-query.js:583
+invalidateQueries @ VM299 @tanstack_react-query.js:1705
+refreshUserData @ VM437 profile-neo.tsx:129
+setTimeout
+onOpenChange @ VM437 profile-neo.tsx:1411
+handleSaveProfilePicture @ VM441 profile-picture-dialog.tsx:106
+img.onload @ VM453 profile-upload.tsx:118Understand this error
+VM308 queryClient.ts:212 Error parsing response as JSON: SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+(anonymous) @ VM308 queryClient.ts:212
+await in (anonymous)
+fetchFn @ VM299 @tanstack_react-query.js:840
+run @ VM299 @tanstack_react-query.js:494
+start @ VM299 @tanstack_react-query.js:536
+fetch @ VM299 @tanstack_react-query.js:926
+(anonymous) @ VM299 @tanstack_react-query.js:1726
+(anonymous) @ VM299 @tanstack_react-query.js:1725
+batch @ VM299 @tanstack_react-query.js:583
+refetchQueries @ VM299 @tanstack_react-query.js:1724
+(anonymous) @ VM299 @tanstack_react-query.js:1716
+batch @ VM299 @tanstack_react-query.js:583
+invalidateQueries @ VM299 @tanstack_react-query.js:1705
+onSuccess @ VM438 use-profile-picture.tsx:102
+execute @ VM299 @tanstack_react-query.js:1233
+await in execute
+mutate @ VM299 @tanstack_react-query.js:2630
+(anonymous) @ VM299 @tanstack_react-query.js:3295
+handleSaveProfilePicture @ VM441 profile-picture-dialog.tsx:99
+img.onload @ VM453 profile-upload.tsx:118Understand this error
+VM308 queryClient.ts:245 Query error for /api/users: Error: Invalid response format from server
+    at VM308 queryClient.ts:217:15
+(anonymous) @ VM308 queryClient.ts:245
+await in (anonymous)
+fetchFn @ VM299 @tanstack_react-query.js:840
+run @ VM299 @tanstack_react-query.js:494
+start @ VM299 @tanstack_react-query.js:536
+fetch @ VM299 @tanstack_react-query.js:926
+(anonymous) @ VM299 @tanstack_react-query.js:1726
+(anonymous) @ VM299 @tanstack_react-query.js:1725
+batch @ VM299 @tanstack_react-query.js:583
+refetchQueries @ VM299 @tanstack_react-query.js:1724
+(anonymous) @ VM299 @tanstack_react-query.js:1716
+batch @ VM299 @tanstack_react-query.js:583
+invalidateQueries @ VM299 @tanstack_react-query.js:1705
+onSuccess @ VM438 use-profile-picture.tsx:102
+execute @ VM299 @tanstack_react-query.js:1233
+await in execute
+mutate @ VM299 @tanstack_react-query.js:2630
+(anonymous) @ VM299 @tanstack_react-query.js:3295
+handleSaveProfilePicture @ VM441 profile-picture-dialog.tsx:99
+img.onload @ VM453 profile-upload.tsx:118Understand this error
+VM440 projects-fixed.tsx:94 Project 22 - Collaborators: (2) [{…}, {…}] Endorsements: (2) [{…}, {…}]
+VM438 use-profile-picture.tsx:104 [PROFILE PICTURE] Refreshing page to show updated picture...
+VM440 projects-fixed.tsx:94 Project 28 - Collaborators: (2) [{…}, {…}] Endorsements: (2) [{…}, {…}]
+VM440 projects-fixed.tsx:94 Project 27 - Collaborators: (2) [{…}, {…}] Endorsements: (2) [{…}, {…}]
+VM440 projects-fixed.tsx:94 Project 24 - Collaborators: (2) [{…}, {…}] Endorsements: (2) [{…}, {…}]
+VM440 projects-fixed.tsx:101 Error fetching project data for project 25: TypeError: Failed to fetch
+    at VM440 projects-fixed.tsx:92:50
+    at async Promise.all (25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/index 4)
+    at async queryFn (VM440 projects-fixed.tsx:87:34)
+(anonymous) @ VM440 projects-fixed.tsx:101
+await in (anonymous)
+queryFn @ VM440 projects-fixed.tsx:88
+await in queryFn
+fetchFn @ VM299 @tanstack_react-query.js:840
+run @ VM299 @tanstack_react-query.js:494
+start @ VM299 @tanstack_react-query.js:536
+fetch @ VM299 @tanstack_react-query.js:926
+(anonymous) @ VM299 @tanstack_react-query.js:1726
+(anonymous) @ VM299 @tanstack_react-query.js:1725
+batch @ VM299 @tanstack_react-query.js:583
+refetchQueries @ VM299 @tanstack_react-query.js:1724
+(anonymous) @ VM299 @tanstack_react-query.js:1716
+batch @ VM299 @tanstack_react-query.js:583
+invalidateQueries @ VM299 @tanstack_react-query.js:1705
+onSuccess @ VM438 use-profile-picture.tsx:102
+execute @ VM299 @tanstack_react-query.js:1233
+await in execute
+mutate @ VM299 @tanstack_react-query.js:2630
+(anonymous) @ VM299 @tanstack_react-query.js:3295
+handleSaveProfilePicture @ VM441 profile-picture-dialog.tsx:99
+img.onload @ VM453 profile-upload.tsx:118Understand this error
+VM440 projects-fixed.tsx:101 Error fetching project data for project 23: TypeError: Failed to fetch
+    at VM440 projects-fixed.tsx:92:50
+    at async Promise.all (25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/index 5)
+    at async queryFn (VM440 projects-fixed.tsx:87:34)
+(anonymous) @ VM440 projects-fixed.tsx:101
+await in (anonymous)
+queryFn @ VM440 projects-fixed.tsx:88
+await in queryFn
+fetchFn @ VM299 @tanstack_react-query.js:840
+run @ VM299 @tanstack_react-query.js:494
+start @ VM299 @tanstack_react-query.js:536
+fetch @ VM299 @tanstack_react-query.js:926
+(anonymous) @ VM299 @tanstack_react-query.js:1726
+(anonymous) @ VM299 @tanstack_react-query.js:1725
+batch @ VM299 @tanstack_react-query.js:583
+refetchQueries @ VM299 @tanstack_react-query.js:1724
+(anonymous) @ VM299 @tanstack_react-query.js:1716
+batch @ VM299 @tanstack_react-query.js:583
+invalidateQueries @ VM299 @tanstack_react-query.js:1705
+refreshUserData @ VM437 profile-neo.tsx:129
+setTimeout
+onOpenChange @ VM437 profile-neo.tsx:1411
+handleSaveProfilePicture @ VM441 profile-picture-dialog.tsx:106
+img.onload @ VM453 profile-upload.tsx:118Understand this error
+VM440 projects-fixed.tsx:101 Error fetching project data for project 23: TypeError: Failed to fetch
+    at VM440 projects-fixed.tsx:92:50
+    at async Promise.all (25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/index 5)
+    at async queryFn (VM440 projects-fixed.tsx:87:34)
+(anonymous) @ VM440 projects-fixed.tsx:101
+await in (anonymous)
+queryFn @ VM440 projects-fixed.tsx:88
+await in queryFn
+fetchFn @ VM299 @tanstack_react-query.js:840
+run @ VM299 @tanstack_react-query.js:494
+start @ VM299 @tanstack_react-query.js:536
+fetch @ VM299 @tanstack_react-query.js:926
+(anonymous) @ VM299 @tanstack_react-query.js:1726
+(anonymous) @ VM299 @tanstack_react-query.js:1725
+batch @ VM299 @tanstack_react-query.js:583
+refetchQueries @ VM299 @tanstack_react-query.js:1724
+(anonymous) @ VM299 @tanstack_react-query.js:1716
+batch @ VM299 @tanstack_react-query.js:583
+invalidateQueries @ VM299 @tanstack_react-query.js:1705
+onSuccess @ VM438 use-profile-picture.tsx:102
+execute @ VM299 @tanstack_react-query.js:1233
+await in execute
+mutate @ VM299 @tanstack_react-query.js:2630
+(anonymous) @ VM299 @tanstack_react-query.js:3295
+handleSaveProfilePicture @ VM441 profile-picture-dialog.tsx:99
+img.onload @ VM453 profile-upload.tsx:118Understand this error
+VM440 projects-fixed.tsx:101 Error fetching project data for project 24: TypeError: Failed to fetch
+    at VM440 projects-fixed.tsx:92:50
+    at async Promise.all (25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/index 3)
+    at async queryFn (VM440 projects-fixed.tsx:87:34)
+(anonymous) @ VM440 projects-fixed.tsx:101
+await in (anonymous)
+queryFn @ VM440 projects-fixed.tsx:88
+await in queryFn
+fetchFn @ VM299 @tanstack_react-query.js:840
+run @ VM299 @tanstack_react-query.js:494
+start @ VM299 @tanstack_react-query.js:536
+fetch @ VM299 @tanstack_react-query.js:926
+(anonymous) @ VM299 @tanstack_react-query.js:1726
+(anonymous) @ VM299 @tanstack_react-query.js:1725
+batch @ VM299 @tanstack_react-query.js:583
+refetchQueries @ VM299 @tanstack_react-query.js:1724
+(anonymous) @ VM299 @tanstack_react-query.js:1716
+batch @ VM299 @tanstack_react-query.js:583
+invalidateQueries @ VM299 @tanstack_react-query.js:1705
+onSuccess @ VM438 use-profile-picture.tsx:102
+execute @ VM299 @tanstack_react-query.js:1233
+await in execute
+mutate @ VM299 @tanstack_react-query.js:2630
+(anonymous) @ VM299 @tanstack_react-query.js:3295
+handleSaveProfilePicture @ VM441 profile-picture-dialog.tsx:99
+img.onload @ VM453 profile-upload.tsx:118Understand this error
+VM440 projects-fixed.tsx:101 Error fetching project data for project 25: TypeError: Failed to fetch
+    at VM440 projects-fixed.tsx:92:50
+    at async Promise.all (25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/index 4)
+    at async queryFn (VM440 projects-fixed.tsx:87:34)
+(anonymous) @ VM440 projects-fixed.tsx:101
+await in (anonymous)
+queryFn @ VM440 projects-fixed.tsx:88
+await in queryFn
+fetchFn @ VM299 @tanstack_react-query.js:840
+run @ VM299 @tanstack_react-query.js:494
+start @ VM299 @tanstack_react-query.js:536
+fetch @ VM299 @tanstack_react-query.js:926
+(anonymous) @ VM299 @tanstack_react-query.js:1726
+(anonymous) @ VM299 @tanstack_react-query.js:1725
+batch @ VM299 @tanstack_react-query.js:583
+refetchQueries @ VM299 @tanstack_react-query.js:1724
+(anonymous) @ VM299 @tanstack_react-query.js:1716
+batch @ VM299 @tanstack_react-query.js:583
+invalidateQueries @ VM299 @tanstack_react-query.js:1705
+refreshUserData @ VM437 profile-neo.tsx:129
+setTimeout
+onOpenChange @ VM437 profile-neo.tsx:1411
+handleSaveProfilePicture @ VM441 profile-picture-dialog.tsx:106
+img.onload @ VM453 profile-upload.tsx:118Understand this error
+VM440 projects-fixed.tsx:101 Error fetching project data for project 28: TypeError: Failed to fetch
+    at VM440 projects-fixed.tsx:92:50
+    at async Promise.all (25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/index 2)
+    at async queryFn (VM440 projects-fixed.tsx:87:34)
+(anonymous) @ VM440 projects-fixed.tsx:101
+await in (anonymous)
+queryFn @ VM440 projects-fixed.tsx:88
+await in queryFn
+fetchFn @ VM299 @tanstack_react-query.js:840
+run @ VM299 @tanstack_react-query.js:494
+start @ VM299 @tanstack_react-query.js:536
+fetch @ VM299 @tanstack_react-query.js:926
+(anonymous) @ VM299 @tanstack_react-query.js:1726
+(anonymous) @ VM299 @tanstack_react-query.js:1725
+batch @ VM299 @tanstack_react-query.js:583
+refetchQueries @ VM299 @tanstack_react-query.js:1724
+(anonymous) @ VM299 @tanstack_react-query.js:1716
+batch @ VM299 @tanstack_react-query.js:583
+invalidateQueries @ VM299 @tanstack_react-query.js:1705
+onSuccess @ VM438 use-profile-picture.tsx:102
+execute @ VM299 @tanstack_react-query.js:1233
+await in execute
+mutate @ VM299 @tanstack_react-query.js:2630
+(anonymous) @ VM299 @tanstack_react-query.js:3295
+handleSaveProfilePicture @ VM441 profile-picture-dialog.tsx:99
+img.onload @ VM453 profile-upload.tsx:118Understand this error
+VM440 projects-fixed.tsx:101 Error fetching project data for project 27: TypeError: Failed to fetch
+    at VM440 projects-fixed.tsx:92:50
+    at async Promise.all (25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/index 0)
+    at async queryFn (VM440 projects-fixed.tsx:87:34)
+(anonymous) @ VM440 projects-fixed.tsx:101
+await in (anonymous)
+queryFn @ VM440 projects-fixed.tsx:88
+await in queryFn
+fetchFn @ VM299 @tanstack_react-query.js:840
+run @ VM299 @tanstack_react-query.js:494
+start @ VM299 @tanstack_react-query.js:536
+fetch @ VM299 @tanstack_react-query.js:926
+(anonymous) @ VM299 @tanstack_react-query.js:1726
+(anonymous) @ VM299 @tanstack_react-query.js:1725
+batch @ VM299 @tanstack_react-query.js:583
+refetchQueries @ VM299 @tanstack_react-query.js:1724
+(anonymous) @ VM299 @tanstack_react-query.js:1716
+batch @ VM299 @tanstack_react-query.js:583
+invalidateQueries @ VM299 @tanstack_react-query.js:1705
+onSuccess @ VM438 use-profile-picture.tsx:102
+execute @ VM299 @tanstack_react-query.js:1233
+await in execute
+mutate @ VM299 @tanstack_react-query.js:2630
+(anonymous) @ VM299 @tanstack_react-query.js:3295
+handleSaveProfilePicture @ VM441 profile-picture-dialog.tsx:99
+img.onload @ VM453 profile-upload.tsx:118Understand this error
+VM440 projects-fixed.tsx:101 Error fetching project data for project 22: TypeError: Failed to fetch
+    at VM440 projects-fixed.tsx:92:50
+    at async Promise.all (25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/index 1)
+    at async queryFn (VM440 projects-fixed.tsx:87:34)
+(anonymous) @ VM440 projects-fixed.tsx:101
+await in (anonymous)
+queryFn @ VM440 projects-fixed.tsx:88
+await in queryFn
+fetchFn @ VM299 @tanstack_react-query.js:840
+run @ VM299 @tanstack_react-query.js:494
+start @ VM299 @tanstack_react-query.js:536
+fetch @ VM299 @tanstack_react-query.js:926
+(anonymous) @ VM299 @tanstack_react-query.js:1726
+(anonymous) @ VM299 @tanstack_react-query.js:1725
+batch @ VM299 @tanstack_react-query.js:583
+refetchQueries @ VM299 @tanstack_react-query.js:1724
+(anonymous) @ VM299 @tanstack_react-query.js:1716
+batch @ VM299 @tanstack_react-query.js:583
+invalidateQueries @ VM299 @tanstack_react-query.js:1705
+onSuccess @ VM438 use-profile-picture.tsx:102
+execute @ VM299 @tanstack_react-query.js:1233
+await in execute
+mutate @ VM299 @tanstack_react-query.js:2630
+(anonymous) @ VM299 @tanstack_react-query.js:3295
+handleSaveProfilePicture @ VM441 profile-picture-dialog.tsx:99
+img.onload @ VM453 profile-upload.tsx:118Understand this error
+VM440 projects-fixed.tsx:110 Final enriched projects: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+VM440 projects-fixed.tsx:110 Final enriched projects: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+sw.js:60 [SW] Serving from cache: https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js
+sw.js:60 [SW] Serving from cache: https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/static/devtools/injected.js
+2sw.js:60 [SW] Serving from cache: https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/index.css
+sw.js:64 [SW] Fetching from network: https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/index.css?t=1756217986581&v=-Z_vXL19V93SVcpamF76T
+Console.js:61 [SW] Service Worker v2 registered: https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/
+Console.js:61 [PERF] Service Worker registered in 59.00 ms
+client:536 WebSocket connection to 'wss://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/?token=msng540sajhY' failed: 
+t @ Network.js:227
+setupWebSocket @ client:536
+(anonymous) @ client:531Understand this error
+Network.js:227 Uncaught (in promise) SyntaxError: Failed to construct 'WebSocket': The URL 'wss://localhost:undefined/?token=msng540sajhY' is invalid.
+    at new t (Network.js:227:18)
+    at setupWebSocket (client:536:19)
+    at fallback (client:509:16)
+    at WebSocket.<anonymous> (client:555:7)
+t @ Network.js:227
+setupWebSocket @ client:536
+fallback @ client:509
+(anonymous) @ client:555Understand this error
+sw.js:60 [SW] Serving from cache: https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/styles/neo-glass-spotify.css
+Console.js:61 [Skeleton] Backup removal after 3s
+Console.js:61 Firebase Environment Check: {apiKey: 'Present (39 chars)', projectId: 'brandentifier-app', appId: 'Present (41 chars)', envVarsDetected: {…}}
+Console.js:61 Firebase initialization: {environment: 'development', hostname: '25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev', projectId: 'brandentifier-app', apiKeyPresent: true, apiKeyLength: 39, …}
+Console.js:61 Using simplified Google auth configuration for maximum compatibility
+Console.js:61 Firebase initialized successfully
+Console.js:61 Firebase config used: {authDomain: 'brandentifier-app.firebaseapp.com', projectId: 'brandentifier-app', currentDomain: '25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev', isReplitDomain: true, googleProviderScopes: Array(2), …}
+Console.js:61 Firebase Environment Check: {apiKey: 'Present (39 chars)', projectId: 'brandentifier-app', appId: 'Present (41 chars)', envVarsDetected: {…}}
+Console.js:61 Firebase initialization: {environment: 'development', hostname: '25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev', projectId: 'brandentifier-app', apiKeyPresent: true, apiKeyLength: 39, …}
+Console.js:61 Using simplified Google auth configuration for maximum compatibility
+Console.js:61 Firebase initialized successfully
+Console.js:61 Firebase config used: {authDomain: 'brandentifier-app.firebaseapp.com', projectId: 'brandentifier-app', currentDomain: '25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev', isReplitDomain: true, googleProviderScopes: Array(2), …}
+Console.js:61 [PERF] React app initialization started
+Console.js:61 [PERF] React rendering started
+Console.js:61 [Skeleton] DOM loaded, preparing smooth transition
+Console.js:61 AuthProvider: Current state: {hasUser: false, isAuthenticated: false, isLoading: true, userEmail: undefined}
+Console.js:61 [PERF] React app rendered in 56.50 ms
+Console.js:61 [PERF] Total initialization time: 57.00 ms
+Console.js:61 AuthProvider: Starting auth check, current loading state: true
+Console.js:61 AuthProvider: Running checkStoredAuth
+Console.js:61 AuthProvider: Current sessionStorage keys: ['brandentifier_user']
+Console.js:61 AuthProvider: Raw stored data: {"id":2,"username":"Unvhj38FHSg36vbagvGL8MvDJuL2","email":"nishant.brodos@gmail.com","name":"Nishant Chopra","photoURL":"https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c","profileCompleted":0,"authProvider":"google","emailVerified":true}
+Console.js:61 AuthProvider: Parsed user data: {email: 'nishant.brodos@gmail.com', id: 2, name: 'Nishant Chopra'}
+Console.js:61 AuthProvider: User state set, isAuthenticated should be true
+Console.js:61 AuthProvider: Setting isLoading to false from checkStoredAuth
+Console.js:61 AuthProvider: Current state: {hasUser: true, isAuthenticated: true, isLoading: false, userEmail: 'nishant.brodos@gmail.com'}
+Console.js:61 🚀 [PERF] COMPLETE PERFORMANCE OPTIMIZATION REPORT:
+Console.js:61 📊 Total page load time: 4761.80ms
+Console.js:61 🔥 Firebase init time: 4761.80ms
+Console.js:61 ✅ [Strategy 1] Preconnect/Preload: 9 preconnect + 4 preload + 2 modulepreload links active
+Console.js:61 ⚡ Expected improvement: 100-300ms faster cold starts
+Console.js:61 ✅ [Strategy 2] Firebase Auth Caching: Active - cached state available
+Console.js:61 ⚡ Expected improvement: 150-250ms faster auth loads
+Console.js:61 ✅ [Strategy 4] Service Worker v2: Active with enhanced caching
+Console.js:61 ⚡ Return visits: Near-instant loading (0-50ms)
+Console.js:61 🎯 PERFORMANCE STATUS: OPTIMIZING - Further improvements in progress
+Console.js:61 📈 Performance Optimization Complete - All 4 strategies active!
+Console.js:61 [Skeleton] Starting fade-out transition
+Console.js:61 [PERF] Skeleton loader removed in 214.30 ms
+Console.js:61 [Skeleton] Skeleton loading complete - app ready
+Console.js:61 ⚡ [PERF] Skeleton-to-app transition: 4935.60ms
+Console.js:61 ✅ [Strategy 3] Progressive Rendering: Core(0) + Secondary(0) components loaded
+Console.js:61 ⚡ Expected improvement: 50-100ms perceived performance boost
+Console.js:61 AuthProvider: Failsafe timeout - forcing loading to false
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ simple-auth-context.tsx:39
+setTimeout
+(anonymous) @ simple-auth-context.tsx:38
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=204557f4:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=204557f4:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=204557f4:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=204557f4:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=204557f4:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=204557f4:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=204557f4:19447
+(anonymous) @ chunk-RPCDYKBN.js?v=204557f4:19328
+workLoop @ chunk-RPCDYKBN.js?v=204557f4:197
+flushWork @ chunk-RPCDYKBN.js?v=204557f4:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=204557f4:384Understand this warning
+Console.js:61 AuthProvider: Current state: {hasUser: true, isAuthenticated: true, isLoading: false, userEmail: 'nishant.brodos@gmail.com'}
+sw.js:64 [SW] Fetching from network: https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/react-icons_fa.js?v=204557f4
+sw.js:64 [SW] Fetching from network: https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/styles/animated-template.css
+sw.js:64 [SW] Fetching from network: https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/react-simple-typewriter.js?v=204557f4
+Console.js:61 [BrandProfile] Loading profile for brand name: profile
+Console.js:61 Brand profile debug:
+Console.js:61 - userData: undefined
+Console.js:61 - publishedPortfolio: undefined
+Console.js:61 - portfolioError: null
+Console.js:61 - isPortfolioDataLoading: false
+Console.js:61 Portfolio data construction:
+Console.js:61 - userData exists: false
+Console.js:61 - publishedPortfolio exists: false
+Console.js:61 - portfolioData result: false
+Console.js:61 - isPortfolioLoading: false
+Console.js:61 Fetching data from: /api/users/brand/profile
+Console.js:61 [Progressive Loading] Starting tiered component loading
+Console.js:61 [Progressive Loading] ⚡ Core components ready
+Console.js:61  ⚠️ FIREBASE DOMAIN SETUP INFORMATION ⚠️ 
+Console.js:61  Add these domains to Firebase Auth > Settings > Authorized domains: 
+Console.js:61  1. 25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev 
+Console.js:61  2. 25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev.replit.app 
+Console.js:61  3. *.replit.dev 
+Console.js:61  4. *.replit.app 
+Console.js:61 [BrandProfile] Loading profile for brand name: profile
+Console.js:61 Brand profile debug:
+Console.js:61 - userData: undefined
+Console.js:61 - publishedPortfolio: undefined
+Console.js:61 - portfolioError: null
+Console.js:61 - isPortfolioDataLoading: false
+Console.js:61 Portfolio data construction:
+Console.js:61 - userData exists: false
+Console.js:61 - publishedPortfolio exists: false
+Console.js:61 - portfolioData result: false
+Console.js:61 - isPortfolioLoading: false
+Console.js:61 [Progressive Loading] 🚀 Secondary components loaded
+Console.js:61 [Progressive Loading] 🔧 All components loaded in 202.00ms
+Console.js:61 Cached response for /api/users/2/experiences
+Console.js:61 Cached response for /api/users/2/projects
+injected.js:253  GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/brand/profile?t=5854061 404 (Not Found)
+window.fetch @ Network.js:219
+apply @ injected.js:253
+(anonymous) @ queryClient.ts:306
+fetchFn @ @tanstack_react-query.js?v=204557f4:840
+run @ @tanstack_react-query.js?v=204557f4:494
+start @ @tanstack_react-query.js?v=204557f4:536
+fetch @ @tanstack_react-query.js?v=204557f4:926
+executeFetch_fn @ @tanstack_react-query.js?v=204557f4:2211
+onSubscribe @ @tanstack_react-query.js?v=204557f4:1898
+subscribe @ @tanstack_react-query.js?v=204557f4:24
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=204557f4:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=204557f4:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=204557f4:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=204557f4:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=204557f4:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=204557f4:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=204557f4:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=204557f4:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=204557f4:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=204557f4:19432
+commitRoot @ chunk-RPCDYKBN.js?v=204557f4:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=204557f4:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18718
+workLoop @ chunk-RPCDYKBN.js?v=204557f4:197
+flushWork @ chunk-RPCDYKBN.js?v=204557f4:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=204557f4:384Understand this error
+Console.js:61 API Error 404 for /api/users/brand/profile
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:338
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=204557f4:840
+run @ @tanstack_react-query.js?v=204557f4:494
+start @ @tanstack_react-query.js?v=204557f4:536
+fetch @ @tanstack_react-query.js?v=204557f4:926
+executeFetch_fn @ @tanstack_react-query.js?v=204557f4:2211
+onSubscribe @ @tanstack_react-query.js?v=204557f4:1898
+subscribe @ @tanstack_react-query.js?v=204557f4:24
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=204557f4:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=204557f4:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=204557f4:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=204557f4:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=204557f4:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=204557f4:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=204557f4:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=204557f4:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=204557f4:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=204557f4:19432
+commitRoot @ chunk-RPCDYKBN.js?v=204557f4:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=204557f4:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18718
+workLoop @ chunk-RPCDYKBN.js?v=204557f4:197
+flushWork @ chunk-RPCDYKBN.js?v=204557f4:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=204557f4:384Understand this error
+Console.js:61 Query error for /api/users/brand/profile: Error: 404: {"message":"User not found"}
+    at queryClient.ts:351:17
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:439
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=204557f4:840
+run @ @tanstack_react-query.js?v=204557f4:494
+start @ @tanstack_react-query.js?v=204557f4:536
+fetch @ @tanstack_react-query.js?v=204557f4:926
+executeFetch_fn @ @tanstack_react-query.js?v=204557f4:2211
+onSubscribe @ @tanstack_react-query.js?v=204557f4:1898
+subscribe @ @tanstack_react-query.js?v=204557f4:24
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=204557f4:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=204557f4:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=204557f4:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=204557f4:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=204557f4:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=204557f4:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=204557f4:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=204557f4:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=204557f4:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=204557f4:19432
+commitRoot @ chunk-RPCDYKBN.js?v=204557f4:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=204557f4:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18718
+workLoop @ chunk-RPCDYKBN.js?v=204557f4:197
+flushWork @ chunk-RPCDYKBN.js?v=204557f4:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=204557f4:384Understand this error
+Console.js:61 Cached response for /api/users/2/skills
+Console.js:61 Cached response for /api/users/2/educations
+Console.js:61 Cached response for /api/users/2
+Console.js:61 🔧 initializeRedirectHandler: hasRedirectAttempt = false
+Console.js:61 ❌ No redirect attempt flag found - not initializing handler
+Console.js:61 Fetching data from: /api/users/brand/profile
+injected.js:253  GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/brand/profile?t=5854061 404 (Not Found)
+window.fetch @ Network.js:219
+apply @ injected.js:253
+(anonymous) @ queryClient.ts:306
+fetchFn @ @tanstack_react-query.js?v=204557f4:840
+run @ @tanstack_react-query.js?v=204557f4:494
+(anonymous) @ @tanstack_react-query.js?v=204557f4:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=204557f4:515
+Promise.catch
+run @ @tanstack_react-query.js?v=204557f4:498
+start @ @tanstack_react-query.js?v=204557f4:536
+fetch @ @tanstack_react-query.js?v=204557f4:926
+executeFetch_fn @ @tanstack_react-query.js?v=204557f4:2211
+onSubscribe @ @tanstack_react-query.js?v=204557f4:1898
+subscribe @ @tanstack_react-query.js?v=204557f4:24
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=204557f4:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=204557f4:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=204557f4:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=204557f4:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=204557f4:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=204557f4:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=204557f4:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=204557f4:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=204557f4:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=204557f4:19432
+commitRoot @ chunk-RPCDYKBN.js?v=204557f4:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=204557f4:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18718
+workLoop @ chunk-RPCDYKBN.js?v=204557f4:197
+flushWork @ chunk-RPCDYKBN.js?v=204557f4:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=204557f4:384Understand this error
+Console.js:61 Profile page render - user: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', photoURL: 'https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c', …}
+Console.js:61 Profile page render - userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Profile page render - isUserDataLoading: true
+Console.js:61 Profile page render - userData: undefined
+Console.js:61 Profile page render - userDataError: null
+Console.js:61 [PROFILE PICTURE DEBUG] userData?.photoURL: undefined
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl: null
+Console.js:61 API Error 404 for /api/users/brand/profile
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:338
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=204557f4:840
+run @ @tanstack_react-query.js?v=204557f4:494
+(anonymous) @ @tanstack_react-query.js?v=204557f4:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=204557f4:515
+Promise.catch
+run @ @tanstack_react-query.js?v=204557f4:498
+start @ @tanstack_react-query.js?v=204557f4:536
+fetch @ @tanstack_react-query.js?v=204557f4:926
+executeFetch_fn @ @tanstack_react-query.js?v=204557f4:2211
+onSubscribe @ @tanstack_react-query.js?v=204557f4:1898
+subscribe @ @tanstack_react-query.js?v=204557f4:24
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=204557f4:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=204557f4:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=204557f4:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=204557f4:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=204557f4:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=204557f4:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=204557f4:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=204557f4:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=204557f4:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=204557f4:19432
+commitRoot @ chunk-RPCDYKBN.js?v=204557f4:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=204557f4:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18718
+workLoop @ chunk-RPCDYKBN.js?v=204557f4:197
+flushWork @ chunk-RPCDYKBN.js?v=204557f4:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=204557f4:384Understand this error
+Console.js:61 Query error for /api/users/brand/profile: Error: 404: {"message":"User not found"}
+    at queryClient.ts:351:17
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:439
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=204557f4:840
+run @ @tanstack_react-query.js?v=204557f4:494
+(anonymous) @ @tanstack_react-query.js?v=204557f4:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=204557f4:515
+Promise.catch
+run @ @tanstack_react-query.js?v=204557f4:498
+start @ @tanstack_react-query.js?v=204557f4:536
+fetch @ @tanstack_react-query.js?v=204557f4:926
+executeFetch_fn @ @tanstack_react-query.js?v=204557f4:2211
+onSubscribe @ @tanstack_react-query.js?v=204557f4:1898
+subscribe @ @tanstack_react-query.js?v=204557f4:24
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=204557f4:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=204557f4:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=204557f4:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=204557f4:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=204557f4:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=204557f4:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=204557f4:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=204557f4:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=204557f4:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=204557f4:19432
+commitRoot @ chunk-RPCDYKBN.js?v=204557f4:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=204557f4:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18718
+workLoop @ chunk-RPCDYKBN.js?v=204557f4:197
+flushWork @ chunk-RPCDYKBN.js?v=204557f4:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=204557f4:384Understand this error
+Console.js:61 Profile page render - user: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', photoURL: 'https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c', …}
+Console.js:61 Profile page render - userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Profile page render - isUserDataLoading: true
+Console.js:61 Profile page render - userData: undefined
+Console.js:61 Profile page render - userDataError: null
+Console.js:61 [PROFILE PICTURE DEBUG] userData?.photoURL: undefined
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl: null
+Console.js:61 [DIALOG STATE] showEditPersonalInfoDialog changed to: false
+Console.js:61 Fetching user data for: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Fetching data from: /api/user-preferences
+Console.js:61 Profile page render - user: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', photoURL: 'https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c', …}
+Console.js:61 Profile page render - userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Profile page render - isUserDataLoading: true
+Console.js:61 Profile page render - userData: undefined
+Console.js:61 Profile page render - userDataError: null
+Console.js:61 [PROFILE PICTURE DEBUG] userData?.photoURL: undefined
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl: null
+Console.js:61 User data fetched successfully: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 Profile page render - user: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', photoURL: 'https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c', …}
+Console.js:61 Profile page render - userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Profile page render - isUserDataLoading: false
+Console.js:61 Profile page render - userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 Profile page render - userDataError: null
+Console.js:61 [PROFILE PICTURE DEBUG] userData?.photoURL: https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl: https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c
+Console.js:61 Profile Completion Input: {userData: 'User ID: 2', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+Console.js:61 User data being used for calculation: {name: 'Nishant Chopra', photoURL: 'exists', title: 'World', location: 'Gandhinagar, Gujarat, India', industry: 'Hospitality', …}
+Console.js:61 Profile completion percentage: 60
+Console.js:61 [PROFILE NEO DEBUG] userData?.lookingFor: career_advice
+Console.js:61 [PROFILE NEO DEBUG] Found category: {value: 'career_advice', label: 'Career Advice', icon: '💡'}
+Console.js:61 [PROFILE NEO DEBUG] Final label: Career Advice Icon: 💡
+Console.js:61 useProfileServices hook - no services found in response. Raw data: {}
+Console.js:61 useProfileServices hook - processed data {whatIOffer: '', servicesCount: 0, isLoading: true, isError: false, error: undefined}
+Console.js:61 Skills component - Using userNumericId: 2
+Console.js:61 ProfilePictureDialog rendered with open: false
+Console.js:61 Services component - initial fetch for user ID: 2
+Console.js:61 Services component - direct fetch #0 started for user ID: 2
+Console.js:61 useProfileServices hook - fetching data for: 2
+Console.js:61 Fetching data from: /api/users/1/skills
+Console.js:61 Fetching data from: /api/users/2/experiences
+Console.js:61 Fetching data from: /api/users/2/educations
+Console.js:61 Profile page render - user: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', photoURL: 'https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c', …}
+Console.js:61 Profile page render - userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Profile page render - isUserDataLoading: false
+Console.js:61 Profile page render - userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 Profile page render - userDataError: null
+Console.js:61 [PROFILE PICTURE DEBUG] userData?.photoURL: https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl: https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c
+Console.js:61 Profile Completion Input: {userData: 'User ID: 2', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+Console.js:61 User data being used for calculation: {name: 'Nishant Chopra', photoURL: 'exists', title: 'World', location: 'Gandhinagar, Gujarat, India', industry: 'Hospitality', …}
+Console.js:61 Profile completion percentage: 60
+Console.js:61 [PROFILE NEO DEBUG] userData?.lookingFor: career_advice
+Console.js:61 [PROFILE NEO DEBUG] Found category: {value: 'career_advice', label: 'Career Advice', icon: '💡'}
+Console.js:61 [PROFILE NEO DEBUG] Final label: Career Advice Icon: 💡
+Console.js:61 useProfileServices hook - no services found in response. Raw data: {}
+Console.js:61 useProfileServices hook - processed data {whatIOffer: '', servicesCount: 0, isLoading: true, isError: false, error: undefined}
+Console.js:61 Skills component - Using userNumericId: 2
+Console.js:61 ProfilePictureDialog rendered with open: false
+Console.js:61 [PROFILE PICTURE DEBUG] Image loaded successfully: https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c
+Console.js:61 Skills component - Using userNumericId: 2
+Console.js:61 Skills component - Using userNumericId: 2
+Console.js:61 Services component - direct fetch #0 result: {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', services: Array(3), success: true, timestamp: 1756218326327}
+Console.js:61 Services component - found 3 services in response
+Console.js:61 useProfileServices hook - no services found in response. Raw data: {}
+Console.js:61 useProfileServices hook - processed data {whatIOffer: '', servicesCount: 0, isLoading: true, isError: false, error: undefined}
+Console.js:61 useProfileServices hook - received data: {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', services: Array(3), success: true, timestamp: 1756218326346}
+Console.js:61 useProfileServices hook - services found directly: 3
+Console.js:61 useProfileServices hook - processed data {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', servicesCount: 3, isLoading: false, isError: false, error: undefined}
+Console.js:61 Services component - using services from useProfileServices hook: 3
+Console.js:61 Services component - using whatIOffer from hook: I am a skilled software developer specializing in full-stack web development with expertise in modern JavaScript frameworks. I offer clean, scalable code solutions and bring a detail-oriented approach to every project.
+Console.js:61 useProfileServices hook - services found directly: 3
+Console.js:61 useProfileServices hook - processed data {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', servicesCount: 3, isLoading: false, isError: false, error: undefined}
+Console.js:61 Project 27 - Collaborators: (2) [{…}, {…}] Endorsements: (2) [{…}, {…}]
+Console.js:61 Project 22 - Collaborators: (2) [{…}, {…}] Endorsements: (2) [{…}, {…}]
+Console.js:61 Project 28 - Collaborators: (2) [{…}, {…}] Endorsements: (2) [{…}, {…}]
+Console.js:61 Project 24 - Collaborators: (2) [{…}, {…}] Endorsements: (2) [{…}, {…}]
+Console.js:61 Project 25 - Collaborators: (2) [{…}, {…}] Endorsements: (2) [{…}, {…}]
+Console.js:61 Project 23 - Collaborators: (2) [{…}, {…}] Endorsements: (2) [{…}, {…}]
+Console.js:61 Final enriched projects: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
