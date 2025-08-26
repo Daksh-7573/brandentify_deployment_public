@@ -327,6 +327,12 @@ export const getQueryFn: <T>(options: {
           throw new Error("You must be logged in to view this content");
         }
         
+        // Handle expected 404s for poll votes (user hasn't voted yet) - return null instead of throwing
+        if (res.status === 404 && url.includes('/poll-votes/user/')) {
+          console.log("No poll vote found (expected):", url);
+          return null as unknown as T;
+        }
+        
         // For other error responses
         if (!res.ok) {
           console.error(`API Error ${res.status} for ${url}`);
@@ -456,8 +462,15 @@ export const queryClient = new QueryClient({
       refetchInterval: false,
       refetchOnWindowFocus: false,
       staleTime: 1000 * 60 * 15, // 15 minutes instead of 5 minutes
-      retry: 1, // Only retry once to avoid cascading failures
-      retryDelay: attempt => Math.min(1000 * 3 ** attempt, 30000), // Slower exponential backoff
+      retry: (failureCount, error) => {
+        // Don't retry 404s for poll-votes (expected when user hasn't voted)
+        if (error && error.message && error.message.includes('404') && error.message.includes('poll-votes')) {
+          return false;
+        }
+        // Only retry once for other errors to avoid cascading failures
+        return failureCount < 1;
+      },
+      retryDelay: attempt => Math.min(1000 * 2 ** attempt, 10000), // Faster, shorter exponential backoff
       // Add network mode to avoid multiple simultaneous requests
       networkMode: 'always', // Keep trying even if browser is offline
       // Reduce query cache size to avoid memory issues
