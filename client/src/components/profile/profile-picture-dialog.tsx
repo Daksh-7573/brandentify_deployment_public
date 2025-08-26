@@ -88,9 +88,14 @@ export function ProfilePictureDialog({
         variant: "default",
       });
       
-      // Simple targeted cache invalidation - no refetch operations
+      // Force invalidate all user data queries with consistent query keys
       queryClient.invalidateQueries({ queryKey: ['/api/users', actualUserId] });
       queryClient.invalidateQueries({ queryKey: ['/api/users', actualUserId.toString()] });
+      queryClient.invalidateQueries({ queryKey: ['/api/users', String(actualUserId)] });
+      
+      // Force refetch specific user data only to avoid HTML response errors
+      queryClient.refetchQueries({ queryKey: ['/api/users', actualUserId] });
+      queryClient.refetchQueries({ queryKey: ['/api/users', actualUserId.toString()] });
       
       onOpenChange(false);
     },
