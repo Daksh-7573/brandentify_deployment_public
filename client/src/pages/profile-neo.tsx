@@ -129,7 +129,10 @@ export default function ProfileNeo() {
   
   // Profile picture functionality
   const [showProfileDialog, setShowProfileDialog] = useState(false);
-  const { profilePictureUrl, isUploading, uploadProgress, updateProfilePicture } = useProfilePicture(userIdentifier);
+  const { isUploading, uploadProgress, updateProfilePicture } = useProfilePicture(userIdentifier);
+  
+  // Use the photoURL from the main userData query instead of the hook's separate query
+  const profilePictureUrl = userData?.photoURL || null;
   
   // Update about me mutation
   const updateAboutMeMutation = useMutation({

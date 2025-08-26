@@ -86,9 +86,10 @@ export function ProfilePictureDialog({
       // Force invalidate all user data queries with consistent query keys
       queryClient.invalidateQueries({ queryKey: ['/api/users', actualUserId] });
       queryClient.invalidateQueries({ queryKey: ['/api/users', actualUserId.toString()] });
+      queryClient.invalidateQueries({ queryKey: ['/api/users', String(actualUserId)] });
       
-      // Force refetch of user data
-      queryClient.refetchQueries({ queryKey: ['/api/users', actualUserId] });
+      // Force refetch all user data queries to ensure immediate update
+      queryClient.refetchQueries({ queryKey: ['/api/users'] });
       
       onOpenChange(false);
     },
