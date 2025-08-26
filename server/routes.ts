@@ -1186,8 +1186,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
           console.log(`[PUT /users/:id] Processing userData keys:`, Object.keys(userData));
           for (const [key, value] of Object.entries(userData)) {
             console.log(`[PUT /users/:id] Processing field: ${key} = ${value ? '[VALUE_EXISTS]' : '[NULL_OR_EMPTY]'}`);
+            
+            // Special debug for photoURL field
+            if (key === 'photoURL') {
+              console.log(`[PUT /users/:id] *** PHOTO URL FIELD DETECTED ***`);
+              console.log(`[PUT /users/:id] photoURL value length:`, value ? value.length : 'NULL');
+              console.log(`[PUT /users/:id] photoURL starts with:`, value ? value.substring(0, 50) + '...' : 'NULL');
+            }
+            
             // Convert camelCase to snake_case for PostgreSQL
             const columnName = key.replace(/([A-Z])/g, '_$1').toLowerCase();
+            console.log(`[PUT /users/:id] Field ${key} -> Column ${columnName}`);
             updateParts.push(`${columnName} = $${paramIndex}`);
             updateValues.push(value);
             paramIndex++;
