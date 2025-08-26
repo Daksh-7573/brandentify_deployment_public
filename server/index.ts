@@ -25,12 +25,32 @@ app.set('trust proxy', true);
 // Add performance middleware first
 app.use(performanceMiddleware());
 
+// Force removal of X-Frame-Options header - this must run before all other middleware
+app.use((req, res, next) => {
+  // Remove any existing X-Frame-Options header
+  res.removeHeader('X-Frame-Options');
+  
+  // Override the setHeader method to prevent X-Frame-Options from being set
+  const originalSetHeader = res.setHeader.bind(res);
+  res.setHeader = function(name: string, value: any) {
+    if (name.toLowerCase() === 'x-frame-options') {
+      console.log(`🚫 Blocked attempt to set X-Frame-Options: ${value}`);
+      return this; // Don't set the header
+    }
+    return originalSetHeader(name, value);
+  };
+  
+  console.log(`🔧 Request: ${req.method} ${req.path} - X-Frame-Options removal applied`);
+  next();
+});
+
 app.use((req, res, next) => {
   // Allow access from Replit domains and external sources
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, HEAD');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, X-Frame-Options');
-  res.header('X-Frame-Options', 'ALLOWALL');
+  // Forcibly remove X-Frame-Options to allow iframe embedding
+  res.removeHeader('X-Frame-Options');
   res.header('X-Content-Type-Options', 'nosniff');
   
   // Handle preflight requests

@@ -1,0 +1,65 @@
+33.2 kB used out of 76,103 MB storage quota
+﻿
+10
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+10
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+10
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+_app-703506d0c307dea6.js:38 
+      /////////////////////
+   ///////////////////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////        Curious and driven?
+  ///////////////@@@@@@@///////        Work with us!
+  ///////////////@@@@@@@///////
+  ///////////////@@@@@@@///////        https://join.replit.com/hack.with.us
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@#//////////////
+   ///////////////////////////
+      /////////////////////
+      
+Brandentifier:1 The source list for the Content Security Policy directive 'default-src' contains an invalid source: ''unsafe-dynamic''. It will be ignored.
+Brandentifier:1 The Content-Security-Policy directive 'default-src' contains 'report-uri' as a source expression. Did you want to add it as a directive and forget a semicolon?
+Brandentifier:1 The source list for Content Security Policy directive 'default-src' contains a source with an invalid path: '/api/4509669501698048/security/?sentry_key=7eb3d90eb4660416caf507087367e67e'. The query component, including the '?', will be ignored.
+_app-703506d0c307dea6.js:38 [LaunchDarkly] LaunchDarkly client initialized
+www.google.co.in/pag…7&rmt_tld=1&ipr=y:1 
+ GET https://www.google.co.in/pagead/1p-user-list/11411994397/?random=1756214873…s1k1NB9Txn-9FK1h-Ezpq031XwZT6BqHvVTaFNes&random=2452578847&rmt_tld=1&ipr=y net::ERR_CONNECTION_CLOSED
+Brandentifier:1 Banner not shown: beforeinstallpromptevent.preventDefault() called. The page must call beforeinstallpromptevent.prompt() to show the banner.
+framework-0ee7ad8bf58c0bb4.js:1 Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+framework-0ee7ad8bf58c0bb4.js:1 Unrecognized feature: 'ambient-light-sensor'.
+framework-0ee7ad8bf58c0bb4.js:1 Unrecognized feature: 'battery'.
+framework-0ee7ad8bf58c0bb4.js:1 Unrecognized feature: 'execution-while-not-rendered'.
+framework-0ee7ad8bf58c0bb4.js:1 Unrecognized feature: 'execution-while-out-of-viewport'.
+framework-0ee7ad8bf58c0bb4.js:1 Unrecognized feature: 'layout-animations'.
+framework-0ee7ad8bf58c0bb4.js:1 Unrecognized feature: 'legacy-image-formats'.
+framework-0ee7ad8bf58c0bb4.js:1 Unrecognized feature: 'navigation-override'.
+framework-0ee7ad8bf58c0bb4.js:1 Unrecognized feature: 'oversized-images'.
+framework-0ee7ad8bf58c0bb4.js:1 Unrecognized feature: 'publickey-credentials'.
+framework-0ee7ad8bf58c0bb4.js:1 Unrecognized feature: 'speaker-selection'.
+framework-0ee7ad8bf58c0bb4.js:1 Unrecognized feature: 'unoptimized-images'.
+framework-0ee7ad8bf58c0bb4.js:1 Unrecognized feature: 'unsized-media'.
+framework-0ee7ad8bf58c0bb4.js:1 Unrecognized feature: 'pointer-lock'.
+framework-0ee7ad8bf58c0bb4.js:1 Allow attribute will take precedence over 'allowfullscreen'.
+framework-0ee7ad8bf58c0bb4.js:1 Allow attribute will take precedence over 'allowpaymentrequest'.
+25d68c5d-166d-4f92-b…%2F&id=%3Ar8v%3A:32 Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+25d68c5d-166d-4f92-b…%2F&id=%3Ar8v%3A:32 Unrecognized feature: 'ambient-light-sensor'.
+25d68c5d-166d-4f92-b…%2F&id=%3Ar8v%3A:32 Unrecognized feature: 'battery'.
+25d68c5d-166d-4f92-b…%2F&id=%3Ar8v%3A:32 Unrecognized feature: 'execution-while-not-rendered'.
+25d68c5d-166d-4f92-b…%2F&id=%3Ar8v%3A:32 Unrecognized feature: 'execution-while-out-of-viewport'.
+25d68c5d-166d-4f92-b…%2F&id=%3Ar8v%3A:32 Unrecognized feature: 'layout-animations'.
+25d68c5d-166d-4f92-b…%2F&id=%3Ar8v%3A:32 Unrecognized feature: 'legacy-image-formats'.
+25d68c5d-166d-4f92-b…%2F&id=%3Ar8v%3A:32 Unrecognized feature: 'navigation-override'.
+25d68c5d-166d-4f92-b…%2F&id=%3Ar8v%3A:32 Unrecognized feature: 'oversized-images'.
+25d68c5d-166d-4f92-b…%2F&id=%3Ar8v%3A:32 Unrecognized feature: 'publickey-credentials'.
+25d68c5d-166d-4f92-b…%2F&id=%3Ar8v%3A:32 Unrecognized feature: 'speaker-selection'.
+25d68c5d-166d-4f92-b…%2F&id=%3Ar8v%3A:32 Unrecognized feature: 'unoptimized-images'.
+25d68c5d-166d-4f92-b…%2F&id=%3Ar8v%3A:32 Unrecognized feature: 'unsized-media'.
+25d68c5d-166d-4f92-b…%2F&id=%3Ar8v%3A:32 Allow attribute will take precedence over 'allowfullscreen'.
+25d68c5d-166d-4f92-b…%2F&id=%3Ar8v%3A:32 Allow attribute will take precedence over 'allowpaymentrequest'.
+chrome-error://chromewebdata/:1 Refused to display 'https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/' in a frame because it set 'X-Frame-Options' to 'sameorigin'.
