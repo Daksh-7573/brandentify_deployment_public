@@ -83,8 +83,12 @@ export function ProfilePictureDialog({
         variant: "default",
       });
       
-      // Force invalidate all user data queries
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${actualUserId}`] });
+      // Force invalidate all user data queries with consistent query keys
+      queryClient.invalidateQueries({ queryKey: ['/api/users', actualUserId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/users', actualUserId.toString()] });
+      
+      // Force refetch of user data
+      queryClient.refetchQueries({ queryKey: ['/api/users', actualUserId] });
       
       onOpenChange(false);
     },

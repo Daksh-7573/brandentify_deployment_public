@@ -18,7 +18,7 @@ export function useProfilePicture(userId: number | string | null = null) {
   
   // Get user data to extract the profile picture URL
   const { data: userData } = useQuery({
-    queryKey: [`/api/users/${targetUserId}`],
+    queryKey: ['/api/users', targetUserId],
     enabled: !!targetUserId,
   });
 
@@ -113,15 +113,16 @@ export function useProfilePicture(userId: number | string | null = null) {
       setUploadProgress(0);
       closeProfilePictureDialog();
       
-      // Invalidate and refetch user data
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${targetUserId}`] });
-      
-      // Force invalidate all user data queries to refresh the UI
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${targetUserId}`] });
-      queryClient.invalidateQueries({ queryKey: ['currentUser'] });
+      // Invalidate and refetch user data with consistent query keys
+      queryClient.invalidateQueries({ queryKey: ['/api/users', targetUserId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/users', targetUserId.toString()] });
       
       // Also invalidate any auth-related queries
+      queryClient.invalidateQueries({ queryKey: ['currentUser'] });
       queryClient.invalidateQueries({ queryKey: ['auth'] });
+      
+      // Force refetch of user data
+      queryClient.refetchQueries({ queryKey: ['/api/users', targetUserId] });
       
       toast({
         title: "Success!",

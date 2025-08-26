@@ -758,7 +758,7 @@ export default function ProfileNeo() {
       </Dialog>
       {/* Add Profile Picture Dialog component */}
       <ProfilePictureDialog 
-        userId={user.uid}
+        userId={userIdentifier}
         open={showProfileDialog}
         onOpenChange={setShowProfileDialog}
         currentPhotoURL={profilePictureUrl}
