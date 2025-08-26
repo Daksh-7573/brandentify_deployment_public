@@ -146,7 +146,29 @@ export async function apiRequest(
         credentials: "include",
       };
       
+      // Special debugging for profile picture updates
+      if (url.includes('/users/') && method === 'PUT') {
+        console.log(`[API CLIENT DEBUG] === PROFILE PICTURE PUT REQUEST ===`);
+        console.log(`[API CLIENT DEBUG] URL: ${url}`);
+        console.log(`[API CLIENT DEBUG] Method: ${method}`);
+        console.log(`[API CLIENT DEBUG] Request options:`, requestOptions);
+        console.log(`[API CLIENT DEBUG] Data keys:`, data ? Object.keys(data as any) : 'NO DATA');
+        if (data && (data as any).photoURL) {
+          console.log(`[API CLIENT DEBUG] photoURL length:`, (data as any).photoURL.length);
+          console.log(`[API CLIENT DEBUG] photoURL preview:`, (data as any).photoURL.substring(0, 100));
+        }
+        console.log(`[API CLIENT DEBUG] About to send fetch request...`);
+      }
+      
       const res = await fetch(url, requestOptions);
+      
+      // Log response for profile picture updates
+      if (url.includes('/users/') && method === 'PUT') {
+        console.log(`[API CLIENT DEBUG] === RESPONSE RECEIVED ===`);
+        console.log(`[API CLIENT DEBUG] Status:`, res.status);
+        console.log(`[API CLIENT DEBUG] Status text:`, res.statusText);
+        console.log(`[API CLIENT DEBUG] Response headers:`, Object.fromEntries(res.headers.entries()));
+      }
       
       // Handle response status codes
       if (!res.ok) {
