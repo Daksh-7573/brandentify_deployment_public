@@ -362,9 +362,15 @@ export default function ProfileNeo() {
                           src={profilePictureUrl || "https://api.dicebear.com/7.x/initials/svg?seed=" + userData?.name} 
                           alt={userData?.name || "Profile"} 
                           className="w-full h-full object-cover"
-                          onLoad={() => console.log('[PROFILE PICTURE DEBUG] Image loaded successfully:', profilePictureUrl)}
+                          onLoad={() => {
+                            console.log('[PROFILE PICTURE DEBUG] Image loaded successfully');
+                            console.log('[PROFILE PICTURE DEBUG] Image source type:', profilePictureUrl?.startsWith('data:') ? 'BASE64' : 'URL');
+                            console.log('[PROFILE PICTURE DEBUG] Image size:', profilePictureUrl?.length || 'N/A');
+                          }}
                           onError={(e) => {
-                            console.error('[PROFILE PICTURE DEBUG] Image failed to load, falling back to default:', profilePictureUrl, e);
+                            console.error('[PROFILE PICTURE DEBUG] Image failed to load, falling back to default');
+                            console.error('[PROFILE PICTURE DEBUG] Failed source type:', profilePictureUrl?.startsWith('data:') ? 'BASE64' : 'URL');
+                            console.error('[PROFILE PICTURE DEBUG] Failed source length:', profilePictureUrl?.length || 'N/A');
                             // Set fallback image on error
                             e.currentTarget.src = "https://api.dicebear.com/7.x/initials/svg?seed=" + (userData?.name || "User");
                           }}

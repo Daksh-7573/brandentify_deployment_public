@@ -95,8 +95,13 @@ export default function Header() {
     }
   }, [path, checkUnreadMessages, userId]);
 
-  // Determine which photo URL to use (prioritize userData if available)
+  // Determine which photo URL to use (prioritize base64 uploaded image over Google image)
   const photoURL = userData?.photoURL || user?.photoURL;
+  
+  // Debug logging for photo URL priority
+  console.log('[HEADER DEBUG] userData?.photoURL:', userData?.photoURL ? 'BASE64_IMAGE_EXISTS' : 'NULL');
+  console.log('[HEADER DEBUG] user?.photoURL:', user?.photoURL ? 'GOOGLE_IMAGE_EXISTS' : 'NULL');
+  console.log('[HEADER DEBUG] Final photoURL source:', photoURL === userData?.photoURL ? 'USING_BASE64' : 'USING_GOOGLE');
 
   return (
     <nav className="neo-glass-panel fixed top-0 left-0 right-0 z-50">
