@@ -1,0 +1,203 @@
+https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/projects/23/endorsements
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/projects/24/endorsements
+Console.js:61 Error parsing response as JSON: SyntaxError: Failed to execute 'json' on 'Response': Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+    at queryClient.ts:392:34
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:407
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=204557f4:840
+run @ @tanstack_react-query.js?v=204557f4:494
+start @ @tanstack_react-query.js?v=204557f4:536
+fetch @ @tanstack_react-query.js?v=204557f4:926
+(anonymous) @ @tanstack_react-query.js?v=204557f4:1726
+(anonymous) @ @tanstack_react-query.js?v=204557f4:1725
+batch @ @tanstack_react-query.js?v=204557f4:583
+refetchQueries @ @tanstack_react-query.js?v=204557f4:1724
+(anonymous) @ @tanstack_react-query.js?v=204557f4:1716
+batch @ @tanstack_react-query.js?v=204557f4:583
+invalidateQueries @ @tanstack_react-query.js?v=204557f4:1705
+onSuccess @ use-profile-picture.tsx:126
+execute @ @tanstack_react-query.js?v=204557f4:1233
+await in execute
+mutate @ @tanstack_react-query.js?v=204557f4:2630
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3295
+handleSaveProfilePicture @ profile-picture-dialog.tsx:114
+img.onload @ profile-upload.tsx:140Understand this error
+Console.js:61 Query error for /api/users: Error: Invalid response format from server
+    at queryClient.ts:419:17
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:461
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=204557f4:840
+run @ @tanstack_react-query.js?v=204557f4:494
+start @ @tanstack_react-query.js?v=204557f4:536
+fetch @ @tanstack_react-query.js?v=204557f4:926
+(anonymous) @ @tanstack_react-query.js?v=204557f4:1726
+(anonymous) @ @tanstack_react-query.js?v=204557f4:1725
+batch @ @tanstack_react-query.js?v=204557f4:583
+refetchQueries @ @tanstack_react-query.js?v=204557f4:1724
+(anonymous) @ @tanstack_react-query.js?v=204557f4:1716
+batch @ @tanstack_react-query.js?v=204557f4:583
+invalidateQueries @ @tanstack_react-query.js?v=204557f4:1705
+onSuccess @ use-profile-picture.tsx:126
+execute @ @tanstack_react-query.js?v=204557f4:1233
+await in execute
+mutate @ @tanstack_react-query.js?v=204557f4:2630
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3295
+handleSaveProfilePicture @ profile-picture-dialog.tsx:114
+img.onload @ profile-upload.tsx:140Understand this error
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/projects/22/endorsements
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/projects/28/endorsements
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/projects/27/endorsements
+Console.js:61 Project 24 - Collaborators: (2) [{…}, {…}] Endorsements: (2) [{…}, {…}]
+Console.js:61 Project 22 - Collaborators: (2) [{…}, {…}] Endorsements: (2) [{…}, {…}]
+Console.js:61 Project 28 - Collaborators: (2) [{…}, {…}] Endorsements: (2) [{…}, {…}]
+Console.js:61 Error parsing response as JSON: SyntaxError: Failed to execute 'json' on 'Response': Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+    at queryClient.ts:392:34
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:407
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=204557f4:840
+run @ @tanstack_react-query.js?v=204557f4:494
+start @ @tanstack_react-query.js?v=204557f4:536
+fetch @ @tanstack_react-query.js?v=204557f4:926
+(anonymous) @ @tanstack_react-query.js?v=204557f4:1726
+(anonymous) @ @tanstack_react-query.js?v=204557f4:1725
+batch @ @tanstack_react-query.js?v=204557f4:583
+refetchQueries @ @tanstack_react-query.js?v=204557f4:1724
+(anonymous) @ use-profile-picture.tsx:135
+setTimeout
+onSuccess @ use-profile-picture.tsx:134
+execute @ @tanstack_react-query.js?v=204557f4:1233
+await in execute
+mutate @ @tanstack_react-query.js?v=204557f4:2630
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3295
+handleSaveProfilePicture @ profile-picture-dialog.tsx:114
+img.onload @ profile-upload.tsx:140Understand this error
+Console.js:61 Query error for /api/users: Error: Invalid response format from server
+    at queryClient.ts:419:17
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:461
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=204557f4:840
+run @ @tanstack_react-query.js?v=204557f4:494
+start @ @tanstack_react-query.js?v=204557f4:536
+fetch @ @tanstack_react-query.js?v=204557f4:926
+(anonymous) @ @tanstack_react-query.js?v=204557f4:1726
+(anonymous) @ @tanstack_react-query.js?v=204557f4:1725
+batch @ @tanstack_react-query.js?v=204557f4:583
+refetchQueries @ @tanstack_react-query.js?v=204557f4:1724
+(anonymous) @ use-profile-picture.tsx:135
+setTimeout
+onSuccess @ use-profile-picture.tsx:134
+execute @ @tanstack_react-query.js?v=204557f4:1233
+await in execute
+mutate @ @tanstack_react-query.js?v=204557f4:2630
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3295
+handleSaveProfilePicture @ profile-picture-dialog.tsx:114
+img.onload @ profile-upload.tsx:140Understand this error
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/projects/25/endorsements
+Console.js:61 Project 27 - Collaborators: (2) [{…}, {…}] Endorsements: (2) [{…}, {…}]
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/projects/23/endorsements
+Console.js:61 Project 23 - Collaborators: (2) [{…}, {…}] Endorsements: (2) [{…}, {…}]
+Console.js:61 Project 25 - Collaborators: (2) [{…}, {…}] Endorsements: (2) [{…}, {…}]
+Console.js:61 Final enriched projects: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+Console.js:61 Project 24 - Collaborators: (2) [{…}, {…}] Endorsements: (2) [{…}, {…}]
+Console.js:61 Project 22 - Collaborators: (2) [{…}, {…}] Endorsements: (2) [{…}, {…}]
+Console.js:61 Project 28 - Collaborators: (2) [{…}, {…}] Endorsements: (2) [{…}, {…}]
+Console.js:61 Project 27 - Collaborators: (2) [{…}, {…}] Endorsements: (2) [{…}, {…}]
+Console.js:61 Project 23 - Collaborators: (2) [{…}, {…}] Endorsements: (2) [{…}, {…}]
+Console.js:61 Project 25 - Collaborators: (2) [{…}, {…}] Endorsements: (2) [{…}, {…}]
+Console.js:61 Final enriched projects: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+Console.js:61 Fetching data from: /api/users
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users?t=5854615
+Console.js:61 Error parsing response as JSON: SyntaxError: Failed to execute 'json' on 'Response': Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+    at queryClient.ts:392:34
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:407
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=204557f4:840
+run @ @tanstack_react-query.js?v=204557f4:494
+(anonymous) @ @tanstack_react-query.js?v=204557f4:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=204557f4:515
+Promise.catch
+run @ @tanstack_react-query.js?v=204557f4:498
+start @ @tanstack_react-query.js?v=204557f4:536
+fetch @ @tanstack_react-query.js?v=204557f4:926
+(anonymous) @ @tanstack_react-query.js?v=204557f4:1726
+(anonymous) @ @tanstack_react-query.js?v=204557f4:1725
+batch @ @tanstack_react-query.js?v=204557f4:583
+refetchQueries @ @tanstack_react-query.js?v=204557f4:1724
+(anonymous) @ use-profile-picture.tsx:135
+setTimeout
+onSuccess @ use-profile-picture.tsx:134
+execute @ @tanstack_react-query.js?v=204557f4:1233
+await in execute
+mutate @ @tanstack_react-query.js?v=204557f4:2630
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3295
+handleSaveProfilePicture @ profile-picture-dialog.tsx:114
+img.onload @ profile-upload.tsx:140Understand this error
+Console.js:61 Query error for /api/users: Error: Invalid response format from server
+    at queryClient.ts:419:17
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:461
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=204557f4:840
+run @ @tanstack_react-query.js?v=204557f4:494
+(anonymous) @ @tanstack_react-query.js?v=204557f4:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=204557f4:515
+Promise.catch
+run @ @tanstack_react-query.js?v=204557f4:498
+start @ @tanstack_react-query.js?v=204557f4:536
+fetch @ @tanstack_react-query.js?v=204557f4:926
+(anonymous) @ @tanstack_react-query.js?v=204557f4:1726
+(anonymous) @ @tanstack_react-query.js?v=204557f4:1725
+batch @ @tanstack_react-query.js?v=204557f4:583
+refetchQueries @ @tanstack_react-query.js?v=204557f4:1724
+(anonymous) @ use-profile-picture.tsx:135
+setTimeout
+onSuccess @ use-profile-picture.tsx:134
+execute @ @tanstack_react-query.js?v=204557f4:1233
+await in execute
+mutate @ @tanstack_react-query.js?v=204557f4:2630
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3295
+handleSaveProfilePicture @ profile-picture-dialog.tsx:114
+img.onload @ profile-upload.tsx:140Understand this error
+Console.js:61 Profile page render - user: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', photoURL: 'https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c', …}
+Console.js:61 Profile page render - userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Profile page render - isUserDataLoading: false
+Console.js:61 Profile page render - userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 Profile page render - userDataError: Error: Invalid response format from server
+    at queryClient.ts:419:17
+Console.js:61 [PROFILE PICTURE DEBUG] userData?.photoURL: https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl: https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c
+Console.js:61 Profile Completion Input: {userData: 'User ID: 2', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+Console.js:61 User data being used for calculation: {name: 'Nishant Chopra', photoURL: 'exists', title: 'World', location: 'Gandhinagar, Gujarat, India', industry: 'Hospitality', …}
+Console.js:61 Profile completion percentage: 60
+Console.js:61 [PROFILE NEO DEBUG] userData?.lookingFor: career_advice
+Console.js:61 [PROFILE NEO DEBUG] Found category: {value: 'career_advice', label: 'Career Advice', icon: '💡'}
+Console.js:61 [PROFILE NEO DEBUG] Final label: Career Advice Icon: 💡
+Console.js:61 useProfileServices hook - services found directly: 3
+Console.js:61 useProfileServices hook - processed data {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', servicesCount: 3, isLoading: false, isError: false, error: undefined}
+Console.js:61 Skills component - Using userNumericId: 2
+Console.js:61 ProfilePictureDialog rendered with open: false
+Console.js:61 Profile page render - user: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', photoURL: 'https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c', …}
+Console.js:61 Profile page render - userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Profile page render - isUserDataLoading: false
+Console.js:61 Profile page render - userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 Profile page render - userDataError: Error: Invalid response format from server
+    at queryClient.ts:419:17
+Console.js:61 [PROFILE PICTURE DEBUG] userData?.photoURL: https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl: https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c
+Console.js:61 Profile Completion Input: {userData: 'User ID: 2', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+Console.js:61 User data being used for calculation: {name: 'Nishant Chopra', photoURL: 'exists', title: 'World', location: 'Gandhinagar, Gujarat, India', industry: 'Hospitality', …}
+Console.js:61 Profile completion percentage: 60
+Console.js:61 [PROFILE NEO DEBUG] userData?.lookingFor: career_advice
+Console.js:61 [PROFILE NEO DEBUG] Found category: {value: 'career_advice', label: 'Career Advice', icon: '💡'}
+Console.js:61 [PROFILE NEO DEBUG] Final label: Career Advice Icon: 💡
+Console.js:61 useProfileServices hook - services found directly: 3
+Console.js:61 useProfileServices hook - processed data {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', servicesCount: 3, isLoading: false, isError: false, error: undefined}
+Console.js:61 Skills component - Using userNumericId: 2
+Console.js:61 ProfilePictureDialog rendered with open: false

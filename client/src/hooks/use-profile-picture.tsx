@@ -130,10 +130,11 @@ export function useProfilePicture(userId: number | string | null = null) {
         description: "Your profile picture has been updated successfully",
       });
       
-      // Wait a moment then refresh to ensure UI updates
+      // Force immediate cache update with fresh data
       setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ['/api/users', targetUserId] });
         queryClient.refetchQueries({ queryKey: ['/api/users', targetUserId] });
-      }, 100);
+      }, 200);
     },
     onError: (error: Error) => {
       console.error("Error updating profile picture:", error);
