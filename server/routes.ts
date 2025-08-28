@@ -1103,6 +1103,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Global middleware to log ALL PUT requests
+  apiRouter.use((req: Request, res: Response, next) => {
+    if (req.method === 'PUT') {
+      console.log(`[MIDDLEWARE] === PUT REQUEST INTERCEPTED ===`);
+      console.log(`[MIDDLEWARE] URL: ${req.url}`);
+      console.log(`[MIDDLEWARE] Path: ${req.path}`);
+      console.log(`[MIDDLEWARE] Body keys:`, req.body ? Object.keys(req.body) : 'NO BODY');
+      console.log(`[MIDDLEWARE] Headers:`, req.headers);
+    }
+    next();
+  });
+
   // Debug endpoint to trace all PUT requests
   apiRouter.put("/debug/users/:id", async (req: Request, res: Response) => {
     console.log(`[DEBUG PUT] Route hit with ID: ${req.params.id}`);
