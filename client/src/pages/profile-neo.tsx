@@ -782,10 +782,7 @@ export default function ProfileNeo() {
         open={showProfileDialog}
         onOpenChange={(open) => {
           setShowProfileDialog(open);
-          // If closing after successful upload, refresh user data
-          if (!open && !isUploading) {
-            setTimeout(refreshUserData, 500); // Small delay to ensure backend is updated
-          }
+          // Don't call refreshUserData here - let the mutation handle cache updates
         }}
         currentPhotoURL={profilePictureUrl}
         onSave={updateProfilePicture}
