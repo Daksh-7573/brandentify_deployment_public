@@ -140,6 +140,22 @@ export default function ProfileNeo() {
   console.log('[PROFILE PICTURE DEBUG] userIdentifier:', userIdentifier);
   console.log('[PROFILE PICTURE DEBUG] userData full object:', userData);
   console.log('[PROFILE PICTURE DEBUG] profilePictureUrl value:', profilePictureUrl?.substring(0, 100) + (profilePictureUrl?.length > 100 ? '...' : ''));
+
+  // Test base64 image loading manually
+  useEffect(() => {
+    if (profilePictureUrl?.startsWith('data:image/')) {
+      console.log('[PROFILE PICTURE DEBUG] 🧪 Testing manual image load...');
+      const img = new Image();
+      img.onload = () => {
+        console.log('[PROFILE PICTURE DEBUG] ✅ Manual image test: SUCCESSFUL');
+        console.log('[PROFILE PICTURE DEBUG] Manual test dimensions:', img.naturalWidth + 'x' + img.naturalHeight);
+      };
+      img.onerror = (e) => {
+        console.error('[PROFILE PICTURE DEBUG] ❌ Manual image test: FAILED', e);
+      };
+      img.src = profilePictureUrl;
+    }
+  }, [profilePictureUrl]);
   
   // Force refresh userData after profile picture updates
   const refreshUserData = () => {
@@ -360,20 +376,27 @@ export default function ProfileNeo() {
                   {/* Profile Image */}
                   <div className="flex-shrink-0 flex flex-col items-center">
                     <div className="relative group">
-                      <div className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-full overflow-hidden border-2 border-white/20 bg-black/30 backdrop-blur-md">
+                      <div className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-full overflow-hidden border-2 border-white/20 bg-black/30">
                         <img 
                           key={profilePictureUrl || 'fallback'} // Force re-render when URL changes
                           src={profilePictureUrl || "https://api.dicebear.com/7.x/initials/svg?seed=" + userData?.name} 
                           alt={userData?.name || "Profile"} 
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-cover block"
+                          style={{ 
+                            display: 'block',
+                            visibility: 'visible',
+                            opacity: 1,
+                            backgroundColor: 'transparent'
+                          }}
                           onLoad={(e) => {
-                            console.log('[PROFILE PICTURE DEBUG] Image loaded successfully');
+                            console.log('[PROFILE PICTURE DEBUG] ✅ Image loaded successfully');
                             console.log('[PROFILE PICTURE DEBUG] Final src:', e.currentTarget.src?.substring(0, 100) + '...');
                             console.log('[PROFILE PICTURE DEBUG] Image source type:', profilePictureUrl?.startsWith('data:') ? 'BASE64' : 'URL');
                             console.log('[PROFILE PICTURE DEBUG] Image size:', profilePictureUrl?.length || 'N/A');
+                            console.log('[PROFILE PICTURE DEBUG] Image dimensions:', e.currentTarget.naturalWidth + 'x' + e.currentTarget.naturalHeight);
                           }}
                           onError={(e) => {
-                            console.error('[PROFILE PICTURE DEBUG] Image failed to load, falling back to default');
+                            console.error('[PROFILE PICTURE DEBUG] ❌ Image failed to load, falling back to default');
                             console.error('[PROFILE PICTURE DEBUG] Attempted src:', e.currentTarget.src?.substring(0, 100) + '...');
                             console.error('[PROFILE PICTURE DEBUG] Failed source type:', profilePictureUrl?.startsWith('data:') ? 'BASE64' : 'URL');
                             console.error('[PROFILE PICTURE DEBUG] Failed source length:', profilePictureUrl?.length || 'N/A');
