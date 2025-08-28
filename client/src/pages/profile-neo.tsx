@@ -135,8 +135,10 @@ export default function ProfileNeo() {
   const profilePictureUrl = userData?.photoURL || null;
   
   // Debug logging for profile picture URL
-  console.log('[PROFILE PICTURE DEBUG] userData?.photoURL:', userData?.photoURL);
-  console.log('[PROFILE PICTURE DEBUG] profilePictureUrl:', profilePictureUrl);
+  console.log('[PROFILE PICTURE DEBUG] userData?.photoURL:', userData?.photoURL ? 'BASE64_EXISTS' : 'NULL');
+  console.log('[PROFILE PICTURE DEBUG] profilePictureUrl:', profilePictureUrl ? 'HAS_URL' : 'NULL');
+  console.log('[PROFILE PICTURE DEBUG] userIdentifier:', userIdentifier);
+  console.log('[PROFILE PICTURE DEBUG] userData full object:', userData);
   
   // Force refresh userData after profile picture updates
   const refreshUserData = () => {

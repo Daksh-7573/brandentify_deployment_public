@@ -1,0 +1,262 @@
+ ⚠️ FIREBASE DOMAIN SETUP INFORMATION ⚠️ 
+Console.js:61  Add these domains to Firebase Auth > Settings > Authorized domains: 
+Console.js:61  1. 25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev 
+Console.js:61  2. 25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev.replit.app 
+Console.js:61  3. *.replit.dev 
+Console.js:61  4. *.replit.app 
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/utils/auth-redirect-handler.ts
+Console.js:61 [BrandProfile] Loading profile for brand name: profile
+Console.js:61 Brand profile debug:
+Console.js:61 - userData: undefined
+Console.js:61 - publishedPortfolio: undefined
+Console.js:61 - portfolioError: null
+Console.js:61 - isPortfolioDataLoading: false
+Console.js:61 Portfolio data construction:
+Console.js:61 - userData exists: false
+Console.js:61 - publishedPortfolio exists: false
+Console.js:61 - portfolioData result: false
+Console.js:61 - isPortfolioLoading: false
+Console.js:61 [Progressive Loading] 🚀 Secondary components loaded
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/pages/profile-neo.tsx
+Console.js:61 [Progressive Loading] 🔧 All components loaded in 204.50ms
+Console.js:61 AuthProvider: Failsafe timeout - forcing loading to false
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ simple-auth-context.tsx:39
+setTimeout
+(anonymous) @ simple-auth-context.tsx:38
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=204557f4:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=204557f4:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=204557f4:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=204557f4:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=204557f4:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=204557f4:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=204557f4:19447
+(anonymous) @ chunk-RPCDYKBN.js?v=204557f4:19328
+workLoop @ chunk-RPCDYKBN.js?v=204557f4:197
+flushWork @ chunk-RPCDYKBN.js?v=204557f4:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=204557f4:384Understand this warning
+injected.js:253  GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/brand/profile?t=5854632 404 (Not Found)
+window.fetch @ Network.js:219
+apply @ injected.js:253
+(anonymous) @ queryClient.ts:328
+fetchFn @ @tanstack_react-query.js?v=204557f4:840
+run @ @tanstack_react-query.js?v=204557f4:494
+start @ @tanstack_react-query.js?v=204557f4:536
+fetch @ @tanstack_react-query.js?v=204557f4:926
+executeFetch_fn @ @tanstack_react-query.js?v=204557f4:2211
+onSubscribe @ @tanstack_react-query.js?v=204557f4:1898
+subscribe @ @tanstack_react-query.js?v=204557f4:24
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=204557f4:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=204557f4:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=204557f4:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=204557f4:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=204557f4:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=204557f4:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=204557f4:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=204557f4:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=204557f4:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=204557f4:19432
+commitRoot @ chunk-RPCDYKBN.js?v=204557f4:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=204557f4:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18718
+workLoop @ chunk-RPCDYKBN.js?v=204557f4:197
+flushWork @ chunk-RPCDYKBN.js?v=204557f4:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=204557f4:384Understand this error
+Console.js:61 API Error 404 for /api/users/brand/profile
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:360
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=204557f4:840
+run @ @tanstack_react-query.js?v=204557f4:494
+start @ @tanstack_react-query.js?v=204557f4:536
+fetch @ @tanstack_react-query.js?v=204557f4:926
+executeFetch_fn @ @tanstack_react-query.js?v=204557f4:2211
+onSubscribe @ @tanstack_react-query.js?v=204557f4:1898
+subscribe @ @tanstack_react-query.js?v=204557f4:24
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=204557f4:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=204557f4:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=204557f4:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=204557f4:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=204557f4:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=204557f4:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=204557f4:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=204557f4:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=204557f4:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=204557f4:19432
+commitRoot @ chunk-RPCDYKBN.js?v=204557f4:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=204557f4:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18718
+workLoop @ chunk-RPCDYKBN.js?v=204557f4:197
+flushWork @ chunk-RPCDYKBN.js?v=204557f4:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=204557f4:384Understand this error
+Console.js:61 Query error for /api/users/brand/profile: Error: 404: {"message":"User not found"}
+    at queryClient.ts:373:17
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:461
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=204557f4:840
+run @ @tanstack_react-query.js?v=204557f4:494
+start @ @tanstack_react-query.js?v=204557f4:536
+fetch @ @tanstack_react-query.js?v=204557f4:926
+executeFetch_fn @ @tanstack_react-query.js?v=204557f4:2211
+onSubscribe @ @tanstack_react-query.js?v=204557f4:1898
+subscribe @ @tanstack_react-query.js?v=204557f4:24
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=204557f4:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=204557f4:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=204557f4:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=204557f4:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=204557f4:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=204557f4:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=204557f4:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=204557f4:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=204557f4:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=204557f4:19432
+commitRoot @ chunk-RPCDYKBN.js?v=204557f4:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=204557f4:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18718
+workLoop @ chunk-RPCDYKBN.js?v=204557f4:197
+flushWork @ chunk-RPCDYKBN.js?v=204557f4:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=204557f4:384Understand this error
+Console.js:61 Cached response for /api/users/2/projects
+Console.js:61 Cached response for /api/users/2/skills
+Console.js:61 Cached response for /api/users/2/experiences
+Console.js:61 Cached response for /api/users/2
+Console.js:61 Cached response for /api/users/2/educations
+Console.js:61 🔧 initializeRedirectHandler: hasRedirectAttempt = false
+Console.js:61 ❌ No redirect attempt flag found - not initializing handler
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/profile/work-experience.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/profile/education.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/profile/skills.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/profile/projects-fixed.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/profile/services-fixed.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/profile/edit-personal-info-new.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/hooks/use-profile-picture.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/profile/profile-picture-dialog.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/shared/constants.ts
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/ui/slider.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/hooks/use-profile-services.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/services/service-form.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/lib/constants.ts
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/ui/location-autocomplete.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/lib/location-data.ts
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/ui/switch.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/ui/degree-combobox.tsx
+Console.js:61 Fetching data from: /api/users/brand/profile
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/brand/profile?t=5854632
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/profile/profile-upload.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/ui/custom-select/index.tsx
+injected.js:253  GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/brand/profile?t=5854632 404 (Not Found)
+window.fetch @ Network.js:219
+apply @ injected.js:253
+(anonymous) @ queryClient.ts:328
+fetchFn @ @tanstack_react-query.js?v=204557f4:840
+run @ @tanstack_react-query.js?v=204557f4:494
+(anonymous) @ @tanstack_react-query.js?v=204557f4:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=204557f4:515
+Promise.catch
+run @ @tanstack_react-query.js?v=204557f4:498
+start @ @tanstack_react-query.js?v=204557f4:536
+fetch @ @tanstack_react-query.js?v=204557f4:926
+executeFetch_fn @ @tanstack_react-query.js?v=204557f4:2211
+onSubscribe @ @tanstack_react-query.js?v=204557f4:1898
+subscribe @ @tanstack_react-query.js?v=204557f4:24
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=204557f4:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=204557f4:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=204557f4:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=204557f4:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=204557f4:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=204557f4:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=204557f4:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=204557f4:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=204557f4:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=204557f4:19432
+commitRoot @ chunk-RPCDYKBN.js?v=204557f4:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=204557f4:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18718
+workLoop @ chunk-RPCDYKBN.js?v=204557f4:197
+flushWork @ chunk-RPCDYKBN.js?v=204557f4:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=204557f4:384Understand this error
+Console.js:61 API Error 404 for /api/users/brand/profile
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:360
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=204557f4:840
+run @ @tanstack_react-query.js?v=204557f4:494
+(anonymous) @ @tanstack_react-query.js?v=204557f4:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=204557f4:515
+Promise.catch
+run @ @tanstack_react-query.js?v=204557f4:498
+start @ @tanstack_react-query.js?v=204557f4:536
+fetch @ @tanstack_react-query.js?v=204557f4:926
+executeFetch_fn @ @tanstack_react-query.js?v=204557f4:2211
+onSubscribe @ @tanstack_react-query.js?v=204557f4:1898
+subscribe @ @tanstack_react-query.js?v=204557f4:24
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=204557f4:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=204557f4:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=204557f4:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=204557f4:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=204557f4:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=204557f4:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=204557f4:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=204557f4:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=204557f4:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=204557f4:19432
+commitRoot @ chunk-RPCDYKBN.js?v=204557f4:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=204557f4:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18718
+workLoop @ chunk-RPCDYKBN.js?v=204557f4:197
+flushWork @ chunk-RPCDYKBN.js?v=204557f4:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=204557f4:384Understand this error
+Console.js:61 Query error for /api/users/brand/profile: Error: 404: {"message":"User not found"}
+    at queryClient.ts:373:17
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ queryClient.ts:461
+await in (anonymous)
+fetchFn @ @tanstack_react-query.js?v=204557f4:840
+run @ @tanstack_react-query.js?v=204557f4:494
+(anonymous) @ @tanstack_react-query.js?v=204557f4:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=204557f4:515
+Promise.catch
+run @ @tanstack_react-query.js?v=204557f4:498
+start @ @tanstack_react-query.js?v=204557f4:536
+fetch @ @tanstack_react-query.js?v=204557f4:926
+executeFetch_fn @ @tanstack_react-query.js?v=204557f4:2211
+onSubscribe @ @tanstack_react-query.js?v=204557f4:1898
+subscribe @ @tanstack_react-query.js?v=204557f4:24
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3022
+subscribeToStore @ chunk-RPCDYKBN.js?v=204557f4:11984
+commitHookEffectListMount @ chunk-RPCDYKBN.js?v=204557f4:16915
+commitPassiveMountOnFiber @ chunk-RPCDYKBN.js?v=204557f4:18156
+commitPassiveMountEffects_complete @ chunk-RPCDYKBN.js?v=204557f4:18129
+commitPassiveMountEffects_begin @ chunk-RPCDYKBN.js?v=204557f4:18119
+commitPassiveMountEffects @ chunk-RPCDYKBN.js?v=204557f4:18109
+flushPassiveEffectsImpl @ chunk-RPCDYKBN.js?v=204557f4:19490
+flushPassiveEffects @ chunk-RPCDYKBN.js?v=204557f4:19447
+performSyncWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18868
+flushSyncCallbacks @ chunk-RPCDYKBN.js?v=204557f4:9119
+commitRootImpl @ chunk-RPCDYKBN.js?v=204557f4:19432
+commitRoot @ chunk-RPCDYKBN.js?v=204557f4:19277
+finishConcurrentRender @ chunk-RPCDYKBN.js?v=204557f4:18805
+performConcurrentWorkOnRoot @ chunk-RPCDYKBN.js?v=204557f4:18718
+workLoop @ chunk-RPCDYKBN.js?v=204557f4:197
+flushWork @ chunk-RPCDYKBN.js?v=204557f4:176
+performWorkUntilDeadline @ chunk-RPCDYKBN.js?v=204557f4:384Understand this error
+Console.js:61 Profile page render - user: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', photoURL: 'https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c', …}
+Console.js:61 Profile page render - userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Profile page render - isUserDataLoading: true
+Console.js:61 Profile page render - userData: undefined
+Console.js:61 Profile page render - userDataError: null
+Console.js:61 [PROFILE PICTURE DEBUG] userData?.photoURL: undefined

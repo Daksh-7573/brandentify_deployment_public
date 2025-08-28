@@ -17,8 +17,8 @@ export default function Header() {
   // Helper function to check if current path matches
   const isActive = (routePath: string) => path === routePath;
   
-  // Get the user ID for queries
-  const userId = isDemoMode ? 1 : user?.uid;
+  // Get the user ID for queries - use same logic as profile page for consistency
+  const userId = isDemoMode ? 1 : (user?.username || user?.id?.toString() || user?.uid || '');
   
   // Use TanStack Query to fetch and cache user data
   const { data: userData, isError } = useQuery({
@@ -96,12 +96,14 @@ export default function Header() {
   }, [path, checkUnreadMessages, userId]);
 
   // Determine which photo URL to use (prioritize base64 uploaded image over Google image)
+  // Only use Google image if no base64 uploaded image exists
   const photoURL = userData?.photoURL || user?.photoURL;
   
   // Debug logging for photo URL priority
   console.log('[HEADER DEBUG] userData?.photoURL:', userData?.photoURL ? 'BASE64_IMAGE_EXISTS' : 'NULL');
   console.log('[HEADER DEBUG] user?.photoURL:', user?.photoURL ? 'GOOGLE_IMAGE_EXISTS' : 'NULL');
   console.log('[HEADER DEBUG] Final photoURL source:', photoURL === userData?.photoURL ? 'USING_BASE64' : 'USING_GOOGLE');
+  console.log('[HEADER DEBUG] userId used for query:', userId);
 
   return (
     <nav className="neo-glass-panel fixed top-0 left-0 right-0 z-50">
