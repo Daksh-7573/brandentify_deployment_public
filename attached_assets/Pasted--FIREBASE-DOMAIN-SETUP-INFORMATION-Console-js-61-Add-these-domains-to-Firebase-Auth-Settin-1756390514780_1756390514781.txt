@@ -1,0 +1,235 @@
+ ⚠️ FIREBASE DOMAIN SETUP INFORMATION ⚠️ 
+Console.js:61  Add these domains to Firebase Auth > Settings > Authorized domains: 
+Console.js:61  1. 25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev 
+Console.js:61  2. 25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev.replit.app 
+Console.js:61  3. *.replit.dev 
+Console.js:61  4. *.replit.app 
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/utils/auth-redirect-handler.ts
+Console.js:61 [BrandProfile] Loading profile for brand name: profile
+Console.js:61 Brand profile debug:
+Console.js:61 - userData: undefined
+Console.js:61 - publishedPortfolio: undefined
+Console.js:61 - portfolioError: null
+Console.js:61 - isPortfolioDataLoading: false
+Console.js:61 Portfolio data construction:
+Console.js:61 - userData exists: false
+Console.js:61 - publishedPortfolio exists: false
+Console.js:61 - portfolioData result: false
+Console.js:61 - isPortfolioLoading: false
+Console.js:61 Cached response for /api/users/2
+Console.js:61 Cached response for /api/users/2/experiences
+Console.js:61 Cached response for /api/users/2/educations
+Console.js:61 Cached response for /api/users/2/skills
+Console.js:61 Cached response for /api/users/2/projects
+Console.js:61 [Progressive Loading] 🚀 Secondary components loaded
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/pages/profile-neo.tsx
+Console.js:61 [Progressive Loading] 🔧 All components loaded in 210.80ms
+Console.js:61 🔧 initializeRedirectHandler: hasRedirectAttempt = false
+Console.js:61 ❌ No redirect attempt flag found - not initializing handler
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/brand/profile?t=5854634:1  Failed to load resource: the server responded with a status of 404 (Not Found)Understand this error
+Console.js:61 API Error 404 for /api/users/brand/profile
+Mt.forEach.n.<computed> @ Console.js:61Understand this error
+Console.js:61 Query error for /api/users/brand/profile: Error: 404: {"message":"User not found"}
+    at queryClient.ts:373:17
+Mt.forEach.n.<computed> @ Console.js:61Understand this error
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/profile/work-experience.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/profile/education.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/profile/skills.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/profile/projects-fixed.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/profile/services-fixed.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/profile/edit-personal-info-new.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/hooks/use-profile-picture.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/profile/profile-picture-dialog.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/shared/constants.ts
+Console.js:61 AuthProvider: Failsafe timeout - forcing loading to false
+Mt.forEach.n.<computed> @ Console.js:61Understand this warning
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/hooks/use-profile-services.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/services/service-form.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/lib/constants.ts
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/ui/location-autocomplete.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/lib/location-data.ts
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/ui/switch.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/ui/degree-combobox.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/ui/slider.tsx
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/profile/profile-upload.tsx
+Console.js:61 Fetching data from: /api/users/brand/profile
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/brand/profile?t=5854634
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/components/ui/custom-select/index.tsx
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/brand/profile?t=5854634:1  Failed to load resource: the server responded with a status of 404 (Not Found)Understand this error
+Console.js:61 API Error 404 for /api/users/brand/profile
+Mt.forEach.n.<computed> @ Console.js:61Understand this error
+Console.js:61 Query error for /api/users/brand/profile: Error: 404: {"message":"User not found"}
+    at queryClient.ts:373:17
+Mt.forEach.n.<computed> @ Console.js:61Understand this error
+Console.js:61 Profile page render - user: Object
+Console.js:61 Profile page render - userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Profile page render - isUserDataLoading: true
+Console.js:61 Profile page render - userData: undefined
+Console.js:61 Profile page render - userDataError: null
+Console.js:61 [PROFILE PICTURE DEBUG] userData?.photoURL: NULL
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl: NULL
+Console.js:61 [PROFILE PICTURE DEBUG] userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 [PROFILE PICTURE DEBUG] userData full object: undefined
+Console.js:61 [HEADER DEBUG] userData?.photoURL: NULL
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_GOOGLE
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Fetching user data for header with ID: Unvhj38FHSg36vbagvGL8MvDJuL2
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/Unvhj38FHSg36vbagvGL8MvDJuL2
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/attached_assets/Brandentifier%20Landing_1751376023002.png
+Console.js:61 Header mounted - invalidating user query
+2sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/messaging/unread/count?userId=Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 [DIALOG STATE] showEditPersonalInfoDialog changed to: false
+Console.js:61 Fetching user data for: Unvhj38FHSg36vbagvGL8MvDJuL2
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Fetching data from: /api/user-preferences
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/user-preferences?t=1756390384136
+sw.js:48 [SW] Passing through to network: GET https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c
+Console.js:61 Profile page render - user: Object
+Console.js:61 Profile page render - userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Profile page render - isUserDataLoading: true
+Console.js:61 Profile page render - userData: undefined
+Console.js:61 Profile page render - userDataError: null
+Console.js:61 [PROFILE PICTURE DEBUG] userData?.photoURL: NULL
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl: NULL
+Console.js:61 [PROFILE PICTURE DEBUG] userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 [PROFILE PICTURE DEBUG] userData full object: undefined
+Console.js:61 [HEADER DEBUG] userData?.photoURL: NULL
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_GOOGLE
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Cached response for /api/users/Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Fetched user data for header: Object
+Console.js:61 [HEADER IMAGE DEBUG] Image loaded successfully
+Console.js:61 [HEADER IMAGE DEBUG] Image source type: URL
+Console.js:61 [HEADER IMAGE DEBUG] Image source length: 96
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 [HEADER IMAGE DEBUG] Image loaded successfully
+Console.js:61 [HEADER IMAGE DEBUG] Image source type: BASE64
+Console.js:61 [HEADER IMAGE DEBUG] Image source length: 1939
+Console.js:61 User data fetched successfully: Object
+Console.js:61 Profile page render - user: Object
+Console.js:61 Profile page render - userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Profile page render - isUserDataLoading: false
+Console.js:61 Profile page render - userData: Object
+Console.js:61 Profile page render - userDataError: null
+Console.js:61 [PROFILE PICTURE DEBUG] userData?.photoURL: BASE64_EXISTS
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl: HAS_URL
+Console.js:61 [PROFILE PICTURE DEBUG] userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 [PROFILE PICTURE DEBUG] userData full object: Object
+Console.js:61 Profile Completion Input: Object
+Console.js:61 User data being used for calculation: Object
+Console.js:61 Profile completion percentage: 60
+Console.js:61 [PROFILE NEO DEBUG] userData?.lookingFor: career_advice
+Console.js:61 [PROFILE NEO DEBUG] Found category: Object
+Console.js:61 [PROFILE NEO DEBUG] Final label: Career Advice Icon: 💡
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 useProfileServices hook - no services found in response. Raw data: Object
+Console.js:61 useProfileServices hook - processed data Object
+Console.js:61 Skills component - Using userNumericId: 2
+Console.js:61 ProfilePictureDialog rendered with open: false
+Console.js:61 Services component - initial fetch for user ID: 2
+Console.js:61 Services component - direct fetch #0 started for user ID: 2
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/2/profile-services?t=1756390384474&r=0
+Console.js:61 useProfileServices hook - fetching data for: 2
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/2/profile-services?t=1756390384481
+Console.js:61 Fetching data from: /api/users/1/skills
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/1/skills?t=5854634
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/Unvhj38FHSg36vbagvGL8MvDJuL2/projects
+Console.js:61 Fetching data from: /api/users/2/experiences
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/2/experiences?t=5854634
+Console.js:61 Fetching data from: /api/users/2/educations
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/2/educations?t=5854634
+Console.js:61 Profile page render - user: Object
+Console.js:61 Profile page render - userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Profile page render - isUserDataLoading: false
+Console.js:61 Profile page render - userData: Object
+Console.js:61 Profile page render - userDataError: null
+Console.js:61 [PROFILE PICTURE DEBUG] userData?.photoURL: BASE64_EXISTS
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl: HAS_URL
+Console.js:61 [PROFILE PICTURE DEBUG] userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 [PROFILE PICTURE DEBUG] userData full object: Object
+Console.js:61 Profile Completion Input: Object
+Console.js:61 User data being used for calculation: Object
+Console.js:61 Profile completion percentage: 60
+Console.js:61 [PROFILE NEO DEBUG] userData?.lookingFor: career_advice
+Console.js:61 [PROFILE NEO DEBUG] Found category: Object
+Console.js:61 [PROFILE NEO DEBUG] Final label: Career Advice Icon: 💡
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 useProfileServices hook - no services found in response. Raw data: Object
+Console.js:61 useProfileServices hook - processed data Object
+Console.js:61 Skills component - Using userNumericId: 2
+Console.js:61 ProfilePictureDialog rendered with open: false
+Console.js:61 [PROFILE PICTURE DEBUG] Image loaded successfully
+Console.js:61 [PROFILE PICTURE DEBUG] Image source type: BASE64
+Console.js:61 [PROFILE PICTURE DEBUG] Image size: 1939
+Console.js:61 Cached response for /api/messaging/unread/count?userId=Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 useProfileServices hook - received data: Object
+Console.js:61 useProfileServices hook - services found directly: 3
+Console.js:61 useProfileServices hook - processed data Object
+Console.js:61 Services component - using services from useProfileServices hook: 3
+Console.js:61 Services component - using whatIOffer from hook: I am a skilled software developer specializing in full-stack web development with expertise in modern JavaScript frameworks. I offer clean, scalable code solutions and bring a detail-oriented approach to every project.
+Console.js:61 useProfileServices hook - services found directly: 3
+Console.js:61 useProfileServices hook - processed data Object
+Console.js:61 Services component - direct fetch #0 result: Object
+Console.js:61 Services component - found 3 services in response
+Console.js:61 useProfileServices hook - services found directly: 3
+Console.js:61 useProfileServices hook - processed data Object
+2Console.js:61 Skills component - Using userNumericId: 2
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/projects/27/collaborators
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/projects/22/collaborators
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/projects/28/collaborators
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/projects/24/collaborators
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/projects/25/collaborators
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/projects/23/collaborators
+Console.js:61 Cached response for /api/messaging/unread/count?userId=Unvhj38FHSg36vbagvGL8MvDJuL2
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/projects/22/endorsements
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/projects/27/endorsements
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/projects/24/endorsements
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/projects/28/endorsements
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/projects/25/endorsements
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/projects/23/endorsements
+Console.js:61 Project 22 - Collaborators: Array(2) Endorsements: Array(2)
+Console.js:61 Project 27 - Collaborators: Array(2) Endorsements: Array(2)
+Console.js:61 Project 24 - Collaborators: Array(2) Endorsements: Array(2)
+Console.js:61 Project 28 - Collaborators: Array(2) Endorsements: Array(2)
+Console.js:61 Project 25 - Collaborators: Array(2) Endorsements: Array(2)
+Console.js:61 Project 23 - Collaborators: Array(2) Endorsements: Array(2)
+Console.js:61 Final enriched projects: Array(6)
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/uploads/projects/project_22_image_1745450284250.jpg
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/uploads/projects/project_28_image_1746046133196.png
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/uploads/projects/project_24_image_1745662341115.png
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/uploads/projects/project_25_image_1745663550263.png
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/uploads/projects/project_23_image_1745513076683.jpg
+24The resource <URL> was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.Understand this warning
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/messaging/unread/count?userId=Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Cached response for /api/messaging/unread/count?userId=Unvhj38FHSg36vbagvGL8MvDJuL2
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/workspace_iframe.html?initialPath=%2Fprofile&id=%3Ar7r%3A
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/profile
+Console.js:61 Fetching user data for header with ID: Unvhj38FHSg36vbagvGL8MvDJuL2
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Fetching data from: /api/users/2/educations
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/2/educations?t=5854634
+Console.js:61 Cached response for /api/users/Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Fetched user data for header: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/messaging/unread/count?userId=Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Cached response for /api/messaging/unread/count?userId=Unvhj38FHSg36vbagvGL8MvDJuL2
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/messaging/unread/count?userId=Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Cached response for /api/messaging/unread/count?userId=Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Fetching user data for header with ID: Unvhj38FHSg36vbagvGL8MvDJuL2
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Fetching data from: /api/users/2/educations
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/2/educations?t=5854634
+Console.js:61 Cached response for /api/users/Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Fetched user data for header: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/messaging/unread/count?userId=Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Cached response for /api/messaging/unread/count?userId=Unvhj38FHSg36vbagvGL8MvDJuL2
