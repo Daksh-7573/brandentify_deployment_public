@@ -307,7 +307,15 @@ export default function Header() {
                       className="h-full w-full object-cover" 
                       src={photoURL || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"} 
                       alt="User profile"
+                      onLoad={() => {
+                        console.log('[HEADER IMAGE DEBUG] Image loaded successfully');
+                        console.log('[HEADER IMAGE DEBUG] Image source type:', photoURL?.startsWith('data:') ? 'BASE64' : 'URL');
+                        console.log('[HEADER IMAGE DEBUG] Image source length:', photoURL?.length || 'N/A');
+                      }}
                       onError={(e) => {
+                        console.error('[HEADER IMAGE DEBUG] Image failed to load');
+                        console.error('[HEADER IMAGE DEBUG] Failed source type:', photoURL?.startsWith('data:') ? 'BASE64' : 'URL');
+                        console.error('[HEADER IMAGE DEBUG] Failed source length:', photoURL?.length || 'N/A');
                         const target = e.target as HTMLImageElement;
                         target.src = "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80";
                       }}
