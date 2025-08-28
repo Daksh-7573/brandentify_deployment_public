@@ -322,16 +322,24 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(express.json({ 
-  limit: '50mb',
-  verify: (req, res, buf, encoding) => {
-    if (req.url && req.url.includes('/career-capsule')) {
-      console.log('[JSON Parser Debug] Raw buffer length:', buf.length);
-      console.log('[JSON Parser Debug] Raw buffer content:', buf.toString('utf8'));
-    }
+// Conditional body parser - only for specific routes that need debugging
+app.use((req, res, next) => {
+  if (req.url && req.url.includes('/career-capsule')) {
+    console.log('[JSON Parser Debug] Before parsing - Path:', req.path);
+    console.log('[JSON Parser Debug] Content-Type:', req.headers['content-type']);
+    return express.json({ 
+      limit: '50mb',
+      verify: (req, res, buf, encoding) => {
+        console.log('[JSON Parser Debug] Raw buffer length:', buf.length);
+        console.log('[JSON Parser Debug] Raw buffer content:', buf.toString('utf8'));
+      }
+    })(req, res, next);
   }
-}));
+  next();
+});
 
+// Standard body parsers for all other routes
+app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 
