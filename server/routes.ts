@@ -1214,8 +1214,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
               console.log(`[PUT /users/:id] photoURL starts with:`, value ? value.substring(0, 50) + '...' : 'NULL');
             }
             
-            // Convert camelCase to snake_case for PostgreSQL
-            const columnName = key.replace(/([A-Z])/g, '_$1').toLowerCase();
+            // Convert camelCase to snake_case for PostgreSQL with proper field mapping
+            let columnName;
+            if (key === 'photoURL') {
+              columnName = 'photo_url';  // CRITICAL FIX: photoURL -> photo_url (not photo_u_r_l)
+            } else if (key === 'aboutMe') {
+              columnName = 'about_me';
+            } else if (key === 'phoneNumber') {
+              columnName = 'phone_number';
+            } else if (key === 'brandName') {
+              columnName = 'brand_name';
+            } else if (key === 'lookingFor') {
+              columnName = 'looking_for';
+            } else if (key === 'whatIOffer') {
+              columnName = 'what_i_offer';
+            } else if (key === 'visitingCardType') {
+              columnName = 'visiting_card_type';
+            } else if (key === 'profileCompleted') {
+              columnName = 'profile_completed';
+            } else if (key === 'emailVerified') {
+              columnName = 'email_verified';
+            } else if (key === 'emailVerificationToken') {
+              columnName = 'email_verification_token';
+            } else if (key === 'emailVerificationExpires') {
+              columnName = 'email_verification_expires';
+            } else if (key === 'createdAt') {
+              columnName = 'created_at';
+            } else {
+              columnName = key.replace(/([A-Z])/g, '_$1').toLowerCase();
+            }
             console.log(`[PUT /users/:id] Field ${key} -> Column ${columnName}`);
             updateParts.push(`${columnName} = $${paramIndex}`);
             updateValues.push(value);

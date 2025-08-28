@@ -120,14 +120,14 @@ export function useProfilePicture(userId: number | string | null = null) {
       setUploadProgress(0);
       closeProfilePictureDialog();
       
-      // Simplified cache invalidation - only invalidate the specific user data
+      console.log('[PROFILE PICTURE] Upload successful, response data:', data);
+      
+      // Comprehensive cache invalidation to ensure UI updates immediately
+      queryClient.invalidateQueries({ queryKey: ['/api/users'] }); // Invalidate all user queries
       queryClient.invalidateQueries({ queryKey: ['/api/users', targetUserId] });
       
-      // Simple page refresh after successful upload to ensure we see the updated picture
-      setTimeout(() => {
-        console.log('[PROFILE PICTURE] Refreshing page to show updated picture...');
-        window.location.reload();
-      }, 1000);
+      // Also trigger manual refresh of specific queries  
+      queryClient.refetchQueries({ queryKey: ['/api/users', targetUserId] });
       
       toast({
         title: "Success!",
