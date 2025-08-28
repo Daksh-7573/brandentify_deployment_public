@@ -1,0 +1,243 @@
+FILE PICTURE DEBUG] profilePictureUrl: https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c
+VM465 profile-utils.ts:31 Profile Completion Input: {userData: 'User ID: 2', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+VM465 profile-utils.ts:13 User data being used for calculation: {name: 'Nishant Chopra', photoURL: 'exists', title: 'World', location: 'Gandhinagar, Gujarat, India', industry: 'Hospitality', …}
+VM465 profile-utils.ts:46 Profile completion percentage: 60
+VM492 profile-neo.tsx:260 [PROFILE NEO DEBUG] userData?.lookingFor: career_advice
+VM492 profile-neo.tsx:262 [PROFILE NEO DEBUG] Found category: {value: 'career_advice', label: 'Career Advice', icon: '💡'}
+VM492 profile-neo.tsx:265 [PROFILE NEO DEBUG] Final label: Career Advice Icon: 💡
+VM502 use-profile-services.tsx:297 useProfileServices hook - services found directly: 3
+VM502 use-profile-services.tsx:306 useProfileServices hook - processed data {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', servicesCount: 3, isLoading: false, isError: false, error: undefined}
+VM494 skills.tsx:34 Skills component - Using userNumericId: 2
+VM500 profile-picture-dialog.tsx:43 ProfilePictureDialog rendered with open: false
+VM363 queryClient.ts:103 [API CLIENT DEBUG] === RESPONSE RECEIVED ===
+VM363 queryClient.ts:104 [API CLIENT DEBUG] Status: 200
+VM363 queryClient.ts:105 [API CLIENT DEBUG] Status text: OK
+VM363 queryClient.ts:106 [API CLIENT DEBUG] Response headers: {access-control-allow-credentials: 'true', access-control-allow-headers: 'Origin, X-Requested-With, Content-Type, Accept, Authorization, X-Frame-Options', access-control-allow-methods: 'GET, POST, PUT, DELETE, OPTIONS, HEAD', access-control-allow-origin: 'https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev', cache-control: 'no-cache, no-store, must-revalidate', …}
+VM499 use-profile-picture.tsx:78 [PROFILE UPLOAD DEBUG] API response: Response {type: 'basic', url: 'https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2k…replit.dev/api/users/Unvhj38FHSg36vbagvGL8MvDJuL2', redirected: false, status: 200, ok: true, …}
+VM499 use-profile-picture.tsx:79 [PROFILE UPLOAD DEBUG] Response photoURL: MISSING
+VM499 use-profile-picture.tsx:82 Profile picture update successful
+VM363 queryClient.ts:170 Fetching data from: /api/users
+VM492 profile-neo.tsx:114 Profile page render - user: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', photoURL: 'https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c', …}
+VM492 profile-neo.tsx:115 Profile page render - userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+VM492 profile-neo.tsx:116 Profile page render - isUserDataLoading: false
+VM492 profile-neo.tsx:117 Profile page render - userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+VM492 profile-neo.tsx:118 Profile page render - userDataError: null
+VM492 profile-neo.tsx:125 [PROFILE PICTURE DEBUG] userData?.photoURL: https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c
+VM492 profile-neo.tsx:126 [PROFILE PICTURE DEBUG] profilePictureUrl: https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c
+VM465 profile-utils.ts:31 Profile Completion Input: {userData: 'User ID: 2', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+VM465 profile-utils.ts:13 User data being used for calculation: {name: 'Nishant Chopra', photoURL: 'exists', title: 'World', location: 'Gandhinagar, Gujarat, India', industry: 'Hospitality', …}
+VM465 profile-utils.ts:46 Profile completion percentage: 60
+VM492 profile-neo.tsx:260 [PROFILE NEO DEBUG] userData?.lookingFor: career_advice
+VM492 profile-neo.tsx:262 [PROFILE NEO DEBUG] Found category: {value: 'career_advice', label: 'Career Advice', icon: '💡'}
+VM492 profile-neo.tsx:265 [PROFILE NEO DEBUG] Final label: Career Advice Icon: 💡
+VM502 use-profile-services.tsx:297 useProfileServices hook - services found directly: 3
+VM502 use-profile-services.tsx:306 useProfileServices hook - processed data {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', servicesCount: 3, isLoading: false, isError: false, error: undefined}
+VM494 skills.tsx:34 Skills component - Using userNumericId: 2
+VM500 profile-picture-dialog.tsx:43 ProfilePictureDialog rendered with open: false
+VM492 profile-neo.tsx:128 [PROFILE PICTURE DEBUG] Force refreshing user data...
+VM363 queryClient.ts:170 Fetching data from: /api/users
+VM363 queryClient.ts:230 Error parsing response as JSON: SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+(anonymous) @ VM363 queryClient.ts:230
+await in (anonymous)
+fetchFn @ VM351 @tanstack_react-query.js:840
+run @ VM351 @tanstack_react-query.js:494
+start @ VM351 @tanstack_react-query.js:536
+fetch @ VM351 @tanstack_react-query.js:926
+(anonymous) @ VM351 @tanstack_react-query.js:1726
+(anonymous) @ VM351 @tanstack_react-query.js:1725
+batch @ VM351 @tanstack_react-query.js:583
+refetchQueries @ VM351 @tanstack_react-query.js:1724
+(anonymous) @ VM351 @tanstack_react-query.js:1716
+batch @ VM351 @tanstack_react-query.js:583
+invalidateQueries @ VM351 @tanstack_react-query.js:1705
+onSuccess @ VM499 use-profile-picture.tsx:104
+execute @ VM351 @tanstack_react-query.js:1233
+await in execute
+mutate @ VM351 @tanstack_react-query.js:2630
+(anonymous) @ VM351 @tanstack_react-query.js:3295
+handleSaveProfilePicture @ VM500 profile-picture-dialog.tsx:99
+img.onload @ VM512 profile-upload.tsx:118Understand this error
+VM363 queryClient.ts:263 Query error for /api/users: Error: Invalid response format from server
+    at VM363 queryClient.ts:235:15
+(anonymous) @ VM363 queryClient.ts:263
+await in (anonymous)
+fetchFn @ VM351 @tanstack_react-query.js:840
+run @ VM351 @tanstack_react-query.js:494
+start @ VM351 @tanstack_react-query.js:536
+fetch @ VM351 @tanstack_react-query.js:926
+(anonymous) @ VM351 @tanstack_react-query.js:1726
+(anonymous) @ VM351 @tanstack_react-query.js:1725
+batch @ VM351 @tanstack_react-query.js:583
+refetchQueries @ VM351 @tanstack_react-query.js:1724
+(anonymous) @ VM351 @tanstack_react-query.js:1716
+batch @ VM351 @tanstack_react-query.js:583
+invalidateQueries @ VM351 @tanstack_react-query.js:1705
+onSuccess @ VM499 use-profile-picture.tsx:104
+execute @ VM351 @tanstack_react-query.js:1233
+await in execute
+mutate @ VM351 @tanstack_react-query.js:2630
+(anonymous) @ VM351 @tanstack_react-query.js:3295
+handleSaveProfilePicture @ VM500 profile-picture-dialog.tsx:99
+img.onload @ VM512 profile-upload.tsx:118Understand this error
+VM498 projects-fixed.tsx:94 Project 24 - Collaborators: (2) [{…}, {…}] Endorsements: (2) [{…}, {…}]
+VM498 projects-fixed.tsx:94 Project 27 - Collaborators: (2) [{…}, {…}] Endorsements: (2) [{…}, {…}]
+VM498 projects-fixed.tsx:94 Project 28 - Collaborators: (2) [{…}, {…}] Endorsements: (2) [{…}, {…}]
+VM498 projects-fixed.tsx:94 Project 22 - Collaborators: (2) [{…}, {…}] Endorsements: (2) [{…}, {…}]
+VM363 queryClient.ts:230 Error parsing response as JSON: SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+(anonymous) @ VM363 queryClient.ts:230
+await in (anonymous)
+fetchFn @ VM351 @tanstack_react-query.js:840
+run @ VM351 @tanstack_react-query.js:494
+start @ VM351 @tanstack_react-query.js:536
+fetch @ VM351 @tanstack_react-query.js:926
+(anonymous) @ VM351 @tanstack_react-query.js:1726
+(anonymous) @ VM351 @tanstack_react-query.js:1725
+batch @ VM351 @tanstack_react-query.js:583
+refetchQueries @ VM351 @tanstack_react-query.js:1724
+(anonymous) @ VM351 @tanstack_react-query.js:1716
+batch @ VM351 @tanstack_react-query.js:583
+invalidateQueries @ VM351 @tanstack_react-query.js:1705
+refreshUserData @ VM492 profile-neo.tsx:129
+setTimeout
+onOpenChange @ VM492 profile-neo.tsx:1411
+handleSaveProfilePicture @ VM500 profile-picture-dialog.tsx:106
+img.onload @ VM512 profile-upload.tsx:118Understand this error
+VM363 queryClient.ts:263 Query error for /api/users: Error: Invalid response format from server
+    at VM363 queryClient.ts:235:15
+(anonymous) @ VM363 queryClient.ts:263
+await in (anonymous)
+fetchFn @ VM351 @tanstack_react-query.js:840
+run @ VM351 @tanstack_react-query.js:494
+start @ VM351 @tanstack_react-query.js:536
+fetch @ VM351 @tanstack_react-query.js:926
+(anonymous) @ VM351 @tanstack_react-query.js:1726
+(anonymous) @ VM351 @tanstack_react-query.js:1725
+batch @ VM351 @tanstack_react-query.js:583
+refetchQueries @ VM351 @tanstack_react-query.js:1724
+(anonymous) @ VM351 @tanstack_react-query.js:1716
+batch @ VM351 @tanstack_react-query.js:583
+invalidateQueries @ VM351 @tanstack_react-query.js:1705
+refreshUserData @ VM492 profile-neo.tsx:129
+setTimeout
+onOpenChange @ VM492 profile-neo.tsx:1411
+handleSaveProfilePicture @ VM500 profile-picture-dialog.tsx:106
+img.onload @ VM512 profile-upload.tsx:118Understand this error
+VM499 use-profile-picture.tsx:106 [PROFILE PICTURE] Refreshing page to show updated picture...
+VM498 projects-fixed.tsx:94 Project 25 - Collaborators: (2) [{…}, {…}] Endorsements: (2) [{…}, {…}]
+VM498 projects-fixed.tsx:94 Project 23 - Collaborators: (2) [{…}, {…}] Endorsements: (2) [{…}, {…}]
+VM498 projects-fixed.tsx:110 Final enriched projects: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+VM498 projects-fixed.tsx:94 Project 24 - Collaborators: (2) [{…}, {…}] Endorsements: (2) [{…}, {…}]
+VM498 projects-fixed.tsx:94 Project 27 - Collaborators: (2) [{…}, {…}] Endorsements: (2) [{…}, {…}]
+VM498 projects-fixed.tsx:94 Project 28 - Collaborators: (2) [{…}, {…}] Endorsements: (2) [{…}, {…}]
+VM498 projects-fixed.tsx:94 Project 22 - Collaborators: (2) [{…}, {…}] Endorsements: (2) [{…}, {…}]
+VM498 projects-fixed.tsx:101 Error fetching project data for project 23: TypeError: Failed to fetch
+    at VM498 projects-fixed.tsx:92:50
+    at async Promise.all (25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/index 5)
+    at async queryFn (VM498 projects-fixed.tsx:87:34)
+(anonymous) @ VM498 projects-fixed.tsx:101
+await in (anonymous)
+queryFn @ VM498 projects-fixed.tsx:88
+await in queryFn
+fetchFn @ VM351 @tanstack_react-query.js:840
+run @ VM351 @tanstack_react-query.js:494
+start @ VM351 @tanstack_react-query.js:536
+fetch @ VM351 @tanstack_react-query.js:926
+(anonymous) @ VM351 @tanstack_react-query.js:1726
+(anonymous) @ VM351 @tanstack_react-query.js:1725
+batch @ VM351 @tanstack_react-query.js:583
+refetchQueries @ VM351 @tanstack_react-query.js:1724
+(anonymous) @ VM351 @tanstack_react-query.js:1716
+batch @ VM351 @tanstack_react-query.js:583
+invalidateQueries @ VM351 @tanstack_react-query.js:1705
+refreshUserData @ VM492 profile-neo.tsx:129
+setTimeout
+onOpenChange @ VM492 profile-neo.tsx:1411
+handleSaveProfilePicture @ VM500 profile-picture-dialog.tsx:106
+img.onload @ VM512 profile-upload.tsx:118Understand this error
+VM498 projects-fixed.tsx:101 Error fetching project data for project 25: TypeError: Failed to fetch
+    at VM498 projects-fixed.tsx:92:50
+    at async Promise.all (25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/index 4)
+    at async queryFn (VM498 projects-fixed.tsx:87:34)
+(anonymous) @ VM498 projects-fixed.tsx:101
+await in (anonymous)
+queryFn @ VM498 projects-fixed.tsx:88
+await in queryFn
+fetchFn @ VM351 @tanstack_react-query.js:840
+run @ VM351 @tanstack_react-query.js:494
+start @ VM351 @tanstack_react-query.js:536
+fetch @ VM351 @tanstack_react-query.js:926
+(anonymous) @ VM351 @tanstack_react-query.js:1726
+(anonymous) @ VM351 @tanstack_react-query.js:1725
+batch @ VM351 @tanstack_react-query.js:583
+refetchQueries @ VM351 @tanstack_react-query.js:1724
+(anonymous) @ VM351 @tanstack_react-query.js:1716
+batch @ VM351 @tanstack_react-query.js:583
+invalidateQueries @ VM351 @tanstack_react-query.js:1705
+refreshUserData @ VM492 profile-neo.tsx:129
+setTimeout
+onOpenChange @ VM492 profile-neo.tsx:1411
+handleSaveProfilePicture @ VM500 profile-picture-dialog.tsx:106
+img.onload @ VM512 profile-upload.tsx:118Understand this error
+VM498 projects-fixed.tsx:110 Final enriched projects: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
+sw.js:60 [SW] Serving from cache: https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js
+sw.js:60 [SW] Serving from cache: https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/static/devtools/injected.js
+2sw.js:60 [SW] Serving from cache: https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/index.css
+Console.js:61 [SW] Service Worker v2 registered: https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/
+Console.js:61 [PERF] Service Worker registered in 4.90 ms
+sw.js:64 [SW] Fetching from network: https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/index.css?v=Pkc5W7qznliRvCZPsHMpo
+client:536 WebSocket connection to 'wss://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/?token=fYi4yFEl0BSl' failed: 
+t @ Network.js:227
+setupWebSocket @ client:536
+(anonymous) @ client:531Understand this error
+Network.js:227 Uncaught (in promise) SyntaxError: Failed to construct 'WebSocket': The URL 'wss://localhost:undefined/?token=fYi4yFEl0BSl' is invalid.
+    at new t (Network.js:227:18)
+    at setupWebSocket (client:536:19)
+    at fallback (client:509:16)
+    at WebSocket.<anonymous> (client:555:7)
+t @ Network.js:227
+setupWebSocket @ client:536
+fallback @ client:509
+(anonymous) @ client:555Understand this error
+sw.js:60 [SW] Serving from cache: https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/styles/neo-glass-spotify.css
+Console.js:61 [Skeleton] Backup removal after 3s
+Console.js:61 Firebase Environment Check: {apiKey: 'Present (39 chars)', projectId: 'brandentifier-app', appId: 'Present (41 chars)', envVarsDetected: {…}}
+Console.js:61 Firebase initialization: {environment: 'development', hostname: '25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev', projectId: 'brandentifier-app', apiKeyPresent: true, apiKeyLength: 39, …}
+Console.js:61 Using simplified Google auth configuration for maximum compatibility
+Console.js:61 Firebase initialized successfully
+Console.js:61 Firebase config used: {authDomain: 'brandentifier-app.firebaseapp.com', projectId: 'brandentifier-app', currentDomain: '25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev', isReplitDomain: true, googleProviderScopes: Array(2), …}
+Console.js:61 Firebase Environment Check: {apiKey: 'Present (39 chars)', projectId: 'brandentifier-app', appId: 'Present (41 chars)', envVarsDetected: {…}}
+Console.js:61 Firebase initialization: {environment: 'development', hostname: '25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev', projectId: 'brandentifier-app', apiKeyPresent: true, apiKeyLength: 39, …}
+Console.js:61 Using simplified Google auth configuration for maximum compatibility
+Console.js:61 Firebase initialized successfully
+Console.js:61 Firebase config used: {authDomain: 'brandentifier-app.firebaseapp.com', projectId: 'brandentifier-app', currentDomain: '25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev', isReplitDomain: true, googleProviderScopes: Array(2), …}
+Console.js:61 [PERF] React app initialization started
+Console.js:61 [PERF] React rendering started
+Console.js:61 [Skeleton] DOM loaded, preparing smooth transition
+Console.js:61 AuthProvider: Current state: {hasUser: false, isAuthenticated: false, isLoading: true, userEmail: undefined}
+Console.js:61 [PERF] React app rendered in 49.00 ms
+Console.js:61 [PERF] Total initialization time: 49.40 ms
+Console.js:61 AuthProvider: Starting auth check, current loading state: true
+Console.js:61 AuthProvider: Running checkStoredAuth
+Console.js:61 AuthProvider: Current sessionStorage keys: ['brandentifier_user']
+Console.js:61 AuthProvider: Raw stored data: {"id":2,"username":"Unvhj38FHSg36vbagvGL8MvDJuL2","email":"nishant.brodos@gmail.com","name":"Nishant Chopra","photoURL":"https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c","profileCompleted":0,"authProvider":"google","emailVerified":true}
+Console.js:61 AuthProvider: Parsed user data: {email: 'nishant.brodos@gmail.com', id: 2, name: 'Nishant Chopra'}
+Console.js:61 AuthProvider: User state set, isAuthenticated should be true
+Console.js:61 AuthProvider: Setting isLoading to false from checkStoredAuth
+Console.js:61 AuthProvider: Current state: {hasUser: true, isAuthenticated: true, isLoading: false, userEmail: 'nishant.brodos@gmail.com'}
+Console.js:61 🚀 [PERF] COMPLETE PERFORMANCE OPTIMIZATION REPORT:
+Console.js:61 📊 Total page load time: 4652.20ms
+Console.js:61 🔥 Firebase init time: 4652.20ms
+Console.js:61 ✅ [Strategy 1] Preconnect/Preload: 9 preconnect + 4 preload + 2 modulepreload links active
+Console.js:61 ⚡ Expected improvement: 100-300ms faster cold starts
+Console.js:61 ✅ [Strategy 2] Firebase Auth Caching: Active - cached state available
+Console.js:61 ⚡ Expected improvement: 150-250ms faster auth loads
+Console.js:61 ✅ [Strategy 4] Service Worker v2: Active with enhanced caching
+Console.js:61 ⚡ Return visits: Near-instant loading (0-50ms)
+Console.js:61 🎯 PERFORMANCE STATUS: OPTIMIZING - Further improvements in progress
+Console.js:61 📈 Performance Optimization Complete - All 4 strategies active!
+Console.js:61 [Skeleton] Starting fade-out transition
+Console.js:61 [PERF] Skeleton loader removed in 193.60 ms
+Console.js:61 [Skeleton] Skeleton loading complete - app ready
+Console.js:61 ⚡ [PERF] Skeleton-to-app transition: 4811.10ms
+Console.js:61 ✅ [Strategy 3] Progressive Rendering: Core(0) + Secondary(0) components loaded
+Console.js:61 ⚡ Expected improvement: 50-100ms perceived performance boost
