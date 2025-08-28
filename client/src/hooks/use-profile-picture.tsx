@@ -123,11 +123,10 @@ export function useProfilePicture(userId: number | string | null = null) {
       console.log('[PROFILE PICTURE] Upload successful, response data:', data);
       
       // Comprehensive cache invalidation to ensure UI updates immediately
-      queryClient.invalidateQueries({ queryKey: ['/api/users'] }); // Invalidate all user queries
       queryClient.invalidateQueries({ queryKey: ['/api/users', targetUserId] });
       
-      // Also trigger manual refresh of specific queries  
-      queryClient.refetchQueries({ queryKey: ['/api/users', targetUserId] });
+      // Force a fresh fetch of the user data to update the profile picture immediately
+      await queryClient.refetchQueries({ queryKey: ['/api/users', targetUserId] });
       
       toast({
         title: "Success!",

@@ -142,6 +142,8 @@ export default function ProfileNeo() {
   const refreshUserData = () => {
     console.log('[PROFILE PICTURE DEBUG] Force refreshing user data...');
     queryClient.invalidateQueries({ queryKey: ['/api/users', userIdentifier] });
+    // Force immediate refetch to update UI
+    queryClient.refetchQueries({ queryKey: ['/api/users', userIdentifier] });
   };
   
   // Update about me mutation
