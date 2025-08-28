@@ -178,9 +178,7 @@ app.use('/api/users/:userId/career-capsule', (req, res, next) => {
   next();
 });
 
-// Increase body size limit to handle file uploads (25MB)
-app.use(express.json({ limit: '25mb' }));
-app.use(express.urlencoded({ extended: false, limit: '25mb' }));
+// Body parsing is handled later with enhanced debugging - removed duplicate parser
 
 // Firebase Auth Handler - detect and handle Firebase auth redirects early in the middleware stack
 app.use(firebaseAuthRedirectHandler);
