@@ -8701,7 +8701,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateUser(id: number, userData: Partial<User>): Promise<User | undefined> {
-    console.log(`[DatabaseStorage.updateUser] CRITICAL FIX - Updating user with ID: ${id}`);
+    console.log(`[DatabaseStorage.updateUser] UPDATING user with ID: ${id}`);
     console.log(`[DatabaseStorage.updateUser] Update data:`, userData);
     
     // First validate the data by removing any fields that don't match the schema

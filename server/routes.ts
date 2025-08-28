@@ -1122,6 +1122,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({ message: "Debug PUT endpoint reached", id: req.params.id, body: req.body });
   });
 
+  // PROFILE PICTURE UPLOAD FIX - Simple direct route
+  apiRouter.put("/users/:id/photo", async (req: Request, res: Response) => {
+    try {
+      const { photoURL } = req.body;
+      const userId = req.params.id;
+      
+      console.log(`[PUT /users/:id/photo] PROFILE PICTURE UPDATE - User: ${userId}`);
+      console.log(`[PUT /users/:id/photo] PhotoURL length: ${photoURL ? photoURL.length : 'NULL'}`);
+      
+      if (!photoURL) {
+        return res.status(400).json({ message: "photoURL is required" });
+      }
+      
+      // Direct database update - bypassing all complex logic
+      const result = await pool.query(
+        `UPDATE users SET photo_url = $1 WHERE username = $2 OR id = $2 RETURNING 
+         id, username, email, password, phone_number as "phoneNumber", 
+         name, brand_name as "brandName", photo_url as "photoURL", 
+         title, about_me as "aboutMe", location, industry, domain, 
+         looking_for as "lookingFor", what_i_offer as "whatIOffer", 
+         visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", 
+         email_verified as "emailVerified", email_verification_token as "emailVerificationToken", 
+         email_verification_expires as "emailVerificationExpires", created_at as "createdAt"`,
+        [photoURL, userId]
+      );
+      
+      if (result.rows.length === 0) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      console.log(`[PUT /users/:id/photo] SUCCESS - Updated photoURL for user ${userId}`);
+      res.json(result.rows[0]);
+    } catch (error) {
+      console.error(`[PUT /users/:id/photo] ERROR:`, error);
+      res.status(500).json({ message: "Failed to update profile picture" });
+    }
+  });
+
   apiRouter.put("/users/:id", async (req: Request, res: Response) => {
     console.log(`[PUT /users/:id] *** ROUTE HIT *** ID: ${req.params.id}`);
     // BYPASS API Gateway health check for user updates - critical fix
@@ -1313,8 +1351,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
           
           // Add each property to the update
           for (const [key, value] of Object.entries(userData)) {
-            // Convert camelCase to snake_case for PostgreSQL
-            const columnName = key.replace(/([A-Z])/g, '_$1').toLowerCase();
+            // Convert camelCase to snake_case for PostgreSQL with special handling for photoURL
+            let columnName;
+            if (key === 'photoURL') {
+              columnName = 'photo_url';
+              console.log(`[PUT /users/:id] *** PHOTO URL FIELD MAPPING FIX *** - ${key} -> ${columnName}`);
+            } else {
+              columnName = key.replace(/([A-Z])/g, '_$1').toLowerCase();
+            }
             updateParts.push(`${columnName} = $${paramIndex}`);
             updateValues.push(value);
             paramIndex++;
