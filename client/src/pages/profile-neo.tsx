@@ -141,9 +141,8 @@ export default function ProfileNeo() {
   // Force refresh userData after profile picture updates
   const refreshUserData = () => {
     console.log('[PROFILE PICTURE DEBUG] Force refreshing user data...');
+    // Only invalidate the specific user query, never the general /api/users route
     queryClient.invalidateQueries({ queryKey: ['/api/users', userIdentifier] });
-    // Force immediate refetch to update UI
-    queryClient.refetchQueries({ queryKey: ['/api/users', userIdentifier] });
   };
   
   // Update about me mutation

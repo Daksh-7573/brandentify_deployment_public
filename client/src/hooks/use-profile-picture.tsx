@@ -114,7 +114,7 @@ export function useProfilePicture(userId: number | string | null = null) {
         throw new Error("Failed to update profile picture. Please try again.");
       }
     },
-    onSuccess: async (data) => {
+    onSuccess: (data) => {
       // Complete upload and reset state
       setIsUploading(false);
       setUploadProgress(0);
@@ -122,16 +122,18 @@ export function useProfilePicture(userId: number | string | null = null) {
       
       console.log('[PROFILE PICTURE] Upload successful, response data:', data);
       
-      // Comprehensive cache invalidation to ensure UI updates immediately
+      // Only invalidate the specific user's data - avoid general /api/users route
       queryClient.invalidateQueries({ queryKey: ['/api/users', targetUserId] });
-      
-      // Force a fresh fetch of the user data to update the profile picture immediately
-      await queryClient.refetchQueries({ queryKey: ['/api/users', targetUserId] });
       
       toast({
         title: "Success!",
         description: "Your profile picture has been updated successfully",
       });
+      
+      // Wait a moment then refresh to ensure UI updates
+      setTimeout(() => {
+        queryClient.refetchQueries({ queryKey: ['/api/users', targetUserId] });
+      }, 100);
     },
     onError: (error: Error) => {
       console.error("Error updating profile picture:", error);
