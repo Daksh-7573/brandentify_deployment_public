@@ -367,6 +367,20 @@ app.use('/api/security', securityDashboardRoutes);
 
 // Setup API Gateway and Message Queue (Phase 3: Microservices Architecture)
 console.log("Setting up API Gateway and Message Queue services");
+
+// Add specific debugging for profile picture uploads
+app.use((req, res, next) => {
+  if (req.method === 'PUT' && req.path.includes('/users/')) {
+    console.log(`[FRONTEND UPLOAD DEBUG] === PUT REQUEST DETECTED ===`);
+    console.log(`[FRONTEND UPLOAD DEBUG] Path: ${req.path}`);
+    console.log(`[FRONTEND UPLOAD DEBUG] Method: ${req.method}`);
+    console.log(`[FRONTEND UPLOAD DEBUG] Headers:`, req.headers);
+    console.log(`[FRONTEND UPLOAD DEBUG] Content-Type:`, req.headers['content-type']);
+    console.log(`[FRONTEND UPLOAD DEBUG] Origin:`, req.headers['origin']);
+  }
+  next();
+});
+
 app.use(apiGateway.routeRequest);
 app.use(apiGateway.healthCheckMiddleware);
 app.use(apiGateway.timeoutMiddleware);

@@ -1,0 +1,238 @@
+NEO DEBUG] userData?.lookingFor: career_advice
+profile-neo.tsx:260 [PROFILE NEO DEBUG] Found category: [object Object]
+profile-neo.tsx:263 [PROFILE NEO DEBUG] Final label: Career Advice Icon: 💡
+use-profile-services.tsx:380 useProfileServices hook - services found directly: 3
+use-profile-services.tsx:393 useProfileServices hook - processed data [object Object]
+skills.tsx:31 Skills component - Using userNumericId: 2
+profile-picture-dialog.tsx:36 ProfilePictureDialog rendered with open: false
+projects-fixed.tsx:121 Project 27 - Collaborators: [object Object],[object Object] Endorsements: [object Object],[object Object]
+projects-fixed.tsx:121 Project 22 - Collaborators: [object Object],[object Object] Endorsements: [object Object],[object Object]
+queryClient.ts:407 Error parsing response as JSON: SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+(anonymous) @ queryClient.ts:407Understand this error
+queryClient.ts:461 Query error for /api/users: Error: Invalid response format from server
+(anonymous) @ queryClient.ts:461Understand this error
+projects-fixed.tsx:121 Project 28 - Collaborators: [object Object],[object Object] Endorsements: [object Object],[object Object]
+projects-fixed.tsx:121 Project 24 - Collaborators: [object Object],[object Object] Endorsements: [object Object],[object Object]
+projects-fixed.tsx:121 Project 25 - Collaborators: [object Object],[object Object] Endorsements: [object Object],[object Object]
+projects-fixed.tsx:121 Project 23 - Collaborators: [object Object],[object Object] Endorsements: [object Object],[object Object]
+projects-fixed.tsx:139 Final enriched projects: [object Object],[object Object],[object Object],[object Object],[object Object],[object Object]
+projects-fixed.tsx:121 Project 27 - Collaborators: [object Object],[object Object] Endorsements: [object Object],[object Object]
+projects-fixed.tsx:121 Project 22 - Collaborators: [object Object],[object Object] Endorsements: [object Object],[object Object]
+use-profile-picture.tsx:128 [PROFILE PICTURE] Refreshing page to show updated picture...
+projects-fixed.tsx:121 Project 28 - Collaborators: [object Object],[object Object] Endorsements: [object Object],[object Object]
+queryClient.ts:407 Error parsing response as JSON: SyntaxError: Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+(anonymous) @ queryClient.ts:407Understand this error
+queryClient.ts:461 Query error for /api/users: Error: Invalid response format from server
+(anonymous) @ queryClient.ts:461Understand this error
+projects-fixed.tsx:121 Project 24 - Collaborators: [object Object],[object Object] Endorsements: [object Object],[object Object]
+projects-fixed.tsx:121 Project 25 - Collaborators: [object Object],[object Object] Endorsements: [object Object],[object Object]
+projects-fixed.tsx:121 Project 23 - Collaborators: [object Object],[object Object] Endorsements: [object Object],[object Object]
+projects-fixed.tsx:139 Final enriched projects: [object Object],[object Object],[object Object],[object Object],[object Object],[object Object]
+sw.js:60 [SW] Serving from cache: https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js
+sw.js:60 [SW] Serving from cache: https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/__replco/static/devtools/injected.js
+sw.js:60 [SW] Serving from cache: https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/index.css
+profile:1 Refused to apply style from 'https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/index.css' because its MIME type ('text/javascript') is not a supported stylesheet MIME type, and strict MIME checking is enabled.Understand this error
+profile:107 A preload for 'https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/main.tsx' is found, but is not used because the request credentials mode does not match. Consider taking a look at crossorigin attribute.Understand this warning
+profile:108 A preload for 'https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/App.tsx' is found, but is not used because the request credentials mode does not match. Consider taking a look at crossorigin attribute.Understand this warning
+sw.js:60 [SW] Serving from cache: https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/index.css
+profile:113 Refused to apply style from 'https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/index.css' because its MIME type ('text/javascript') is not a supported stylesheet MIME type, and strict MIME checking is enabled.Understand this error
+Console.js:61 [SW] Service Worker v2 registered: https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/
+Console.js:61 [PERF] Service Worker registered in 6.00 ms
+sw.js:64 [SW] Fetching from network: https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/index.css?v=xk8jwvtlZpt5K2mZ33nGk
+Network.js:227 WebSocket connection to 'wss://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/?token=RJH9-WCHYfR6' failed: 
+t @ Network.js:227Understand this error
+Network.js:227 Uncaught (in promise) SyntaxError: Failed to construct 'WebSocket': The URL 'wss://localhost:undefined/?token=RJH9-WCHYfR6' is invalid.
+    at new t (Network.js:227:18)
+    at setupWebSocket (client:536:19)
+    at fallback (client:509:16)
+    at WebSocket.<anonymous> (client:555:7)Understand this error
+sw.js:60 [SW] Serving from cache: https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/styles/neo-glass-spotify.css
+Console.js:61 [Skeleton] Backup removal after 3s
+Console.js:61 Firebase Environment Check: Object
+Console.js:61 Firebase initialization: Object
+Console.js:61 Using simplified Google auth configuration for maximum compatibility
+Console.js:61 Firebase initialized successfully
+Console.js:61 Firebase config used: Object
+Console.js:61 Firebase Environment Check: Object
+Console.js:61 Firebase initialization: Object
+Console.js:61 Using simplified Google auth configuration for maximum compatibility
+Console.js:61 Firebase initialized successfully
+Console.js:61 Firebase config used: Object
+Console.js:61 [PERF] React app initialization started
+Console.js:61 [PERF] React rendering started
+Console.js:61 [Skeleton] DOM loaded, preparing smooth transition
+Console.js:61 AuthProvider: Current state: Object
+Console.js:61 [PERF] React app rendered in 34.90 ms
+Console.js:61 [PERF] Total initialization time: 34.90 ms
+Console.js:61 AuthProvider: Starting auth check, current loading state: true
+Console.js:61 AuthProvider: Running checkStoredAuth
+Console.js:61 AuthProvider: Current sessionStorage keys: Array(1)
+Console.js:61 AuthProvider: Raw stored data: {"id":2,"username":"Unvhj38FHSg36vbagvGL8MvDJuL2","email":"nishant.brodos@gmail.com","name":"Nishant Chopra","photoURL":"https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c","profileCompleted":0,"authProvider":"google","emailVerified":true}
+Console.js:61 AuthProvider: Parsed user data: Object
+Console.js:61 AuthProvider: User state set, isAuthenticated should be true
+Console.js:61 AuthProvider: Setting isLoading to false from checkStoredAuth
+Console.js:61 AuthProvider: Current state: Object
+Console.js:61 🚀 [PERF] COMPLETE PERFORMANCE OPTIMIZATION REPORT:
+Console.js:61 📊 Total page load time: 4472.00ms
+Console.js:61 🔥 Firebase init time: 4472.00ms
+Console.js:61 ✅ [Strategy 1] Preconnect/Preload: 9 preconnect + 4 preload + 2 modulepreload links active
+Console.js:61 ⚡ Expected improvement: 100-300ms faster cold starts
+Console.js:61 ✅ [Strategy 2] Firebase Auth Caching: Active - cached state available
+Console.js:61 ⚡ Expected improvement: 150-250ms faster auth loads
+Console.js:61 ✅ [Strategy 4] Service Worker v2: Active with enhanced caching
+Console.js:61 ⚡ Return visits: Near-instant loading (0-50ms)
+Console.js:61 🎯 PERFORMANCE STATUS: OPTIMIZING - Further improvements in progress
+Console.js:61 📈 Performance Optimization Complete - All 4 strategies active!
+Console.js:61 [Skeleton] Starting fade-out transition
+Console.js:61 [PERF] Skeleton loader removed in 154.70 ms
+Console.js:61 [Skeleton] Skeleton loading complete - app ready
+Console.js:61 ⚡ [PERF] Skeleton-to-app transition: 4634.10ms
+Console.js:61 ✅ [Strategy 3] Progressive Rendering: Core(0) + Secondary(0) components loaded
+Console.js:61 ⚡ Expected improvement: 50-100ms perceived performance boost
+sw.js:60 [SW] Serving from cache: https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/react-simple-typewriter.js?v=204557f4
+sw.js:60 [SW] Serving from cache: https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/src/styles/animated-template.css
+sw.js:60 [SW] Serving from cache: https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/react-icons_fa.js?v=204557f4
+Console.js:61 AuthProvider: Failsafe timeout - forcing loading to false
+Mt.forEach.n.<computed> @ Console.js:61Understand this warning
+Console.js:61 AuthProvider: Current state: Object
+Console.js:61 [BrandProfile] Loading profile for brand name: profile
+Console.js:61 Brand profile debug:
+Console.js:61 - userData: undefined
+Console.js:61 - publishedPortfolio: undefined
+Console.js:61 - portfolioError: null
+Console.js:61 - isPortfolioDataLoading: false
+Console.js:61 Portfolio data construction:
+Console.js:61 - userData exists: false
+Console.js:61 - publishedPortfolio exists: false
+Console.js:61 - portfolioData result: false
+Console.js:61 - isPortfolioLoading: false
+Console.js:61 Fetching data from: /api/users/brand/profile
+Console.js:61 [Progressive Loading] Starting tiered component loading
+Console.js:61 [Progressive Loading] ⚡ Core components ready
+Console.js:61  ⚠️ FIREBASE DOMAIN SETUP INFORMATION ⚠️ 
+Console.js:61  Add these domains to Firebase Auth > Settings > Authorized domains: 
+Console.js:61  1. 25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev 
+Console.js:61  2. 25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev.replit.app 
+Console.js:61  3. *.replit.dev 
+Console.js:61  4. *.replit.app 
+Console.js:61 [BrandProfile] Loading profile for brand name: profile
+Console.js:61 Brand profile debug:
+Console.js:61 - userData: undefined
+Console.js:61 - publishedPortfolio: undefined
+Console.js:61 - portfolioError: null
+Console.js:61 - isPortfolioDataLoading: false
+Console.js:61 Portfolio data construction:
+Console.js:61 - userData exists: false
+Console.js:61 - publishedPortfolio exists: false
+Console.js:61 - portfolioData result: false
+Console.js:61 - isPortfolioLoading: false
+Console.js:61 [Progressive Loading] 🚀 Secondary components loaded
+Console.js:61 [Progressive Loading] 🔧 All components loaded in 202.80ms
+Console.js:61 Cached response for /api/users/2/skills
+Console.js:61 Cached response for /api/users/2/projects
+Console.js:61 Cached response for /api/users/2/experiences
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/brand/profile?t=5854597:1  Failed to load resource: the server responded with a status of 404 (Not Found)Understand this error
+Console.js:61 API Error 404 for /api/users/brand/profile
+Mt.forEach.n.<computed> @ Console.js:61Understand this error
+Console.js:61 Query error for /api/users/brand/profile: Error: 404: {"message":"User not found"}
+    at queryClient.ts:373:17
+Mt.forEach.n.<computed> @ Console.js:61Understand this error
+Console.js:61 Cached response for /api/users/2
+Console.js:61 Cached response for /api/users/2/educations
+Console.js:61 🔧 initializeRedirectHandler: hasRedirectAttempt = false
+Console.js:61 ❌ No redirect attempt flag found - not initializing handler
+Console.js:61 Fetching data from: /api/users/brand/profile
+Console.js:61 Profile page render - user: Object
+Console.js:61 Profile page render - userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Profile page render - isUserDataLoading: true
+Console.js:61 Profile page render - userData: undefined
+Console.js:61 Profile page render - userDataError: null
+Console.js:61 [PROFILE PICTURE DEBUG] userData?.photoURL: undefined
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl: null
+Console.js:61 [DIALOG STATE] showEditPersonalInfoDialog changed to: false
+Console.js:61 Fetching user data for: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Fetching data from: /api/user-preferences
+25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/brand/profile?t=5854597:1  Failed to load resource: the server responded with a status of 404 (Not Found)Understand this error
+Console.js:61 API Error 404 for /api/users/brand/profile
+Mt.forEach.n.<computed> @ Console.js:61Understand this error
+Console.js:61 Query error for /api/users/brand/profile: Error: 404: {"message":"User not found"}
+    at queryClient.ts:373:17
+Mt.forEach.n.<computed> @ Console.js:61Understand this error
+Console.js:61 User data fetched successfully: Object
+Console.js:61 Profile page render - user: Object
+Console.js:61 Profile page render - userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Profile page render - isUserDataLoading: false
+Console.js:61 Profile page render - userData: Object
+Console.js:61 Profile page render - userDataError: null
+Console.js:61 [PROFILE PICTURE DEBUG] userData?.photoURL: https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl: https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c
+Console.js:61 Profile Completion Input: Object
+Console.js:61 User data being used for calculation: Object
+Console.js:61 Profile completion percentage: 60
+Console.js:61 [PROFILE NEO DEBUG] userData?.lookingFor: career_advice
+Console.js:61 [PROFILE NEO DEBUG] Found category: Object
+Console.js:61 [PROFILE NEO DEBUG] Final label: Career Advice Icon: 💡
+Console.js:61 useProfileServices hook - no services found in response. Raw data: Object
+Console.js:61 useProfileServices hook - processed data Object
+Console.js:61 Skills component - Using userNumericId: 2
+Console.js:61 ProfilePictureDialog rendered with open: false
+Console.js:61 Services component - initial fetch for user ID: 2
+Console.js:61 Services component - direct fetch #0 started for user ID: 2
+Console.js:61 useProfileServices hook - fetching data for: 2
+Console.js:61 Fetching data from: /api/users/1/skills
+Console.js:61 Fetching data from: /api/users/2/experiences
+Console.js:61 Fetching data from: /api/users/2/educations
+Console.js:61 Profile page render - user: Object
+Console.js:61 Profile page render - userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Profile page render - isUserDataLoading: false
+Console.js:61 Profile page render - userData: Object
+Console.js:61 Profile page render - userDataError: null
+Console.js:61 [PROFILE PICTURE DEBUG] userData?.photoURL: https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl: https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c
+Console.js:61 Profile Completion Input: Object
+Console.js:61 User data being used for calculation: Object
+Console.js:61 Profile completion percentage: 60
+Console.js:61 [PROFILE NEO DEBUG] userData?.lookingFor: career_advice
+Console.js:61 [PROFILE NEO DEBUG] Found category: Object
+Console.js:61 [PROFILE NEO DEBUG] Final label: Career Advice Icon: 💡
+Console.js:61 useProfileServices hook - no services found in response. Raw data: Object
+Console.js:61 useProfileServices hook - processed data Object
+Console.js:61 Skills component - Using userNumericId: 2
+Console.js:61 ProfilePictureDialog rendered with open: false
+Console.js:61 [PROFILE PICTURE DEBUG] Image loaded successfully: https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c
+Console.js:61 Profile page render - user: Object
+Console.js:61 Profile page render - userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Profile page render - isUserDataLoading: false
+Console.js:61 Profile page render - userData: Object
+Console.js:61 Profile page render - userDataError: null
+Console.js:61 [PROFILE PICTURE DEBUG] userData?.photoURL: https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl: https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c
+Console.js:61 Profile Completion Input: Object
+Console.js:61 User data being used for calculation: Object
+Console.js:61 Profile completion percentage: 60
+Console.js:61 [PROFILE NEO DEBUG] userData?.lookingFor: career_advice
+Console.js:61 [PROFILE NEO DEBUG] Found category: Object
+Console.js:61 [PROFILE NEO DEBUG] Final label: Career Advice Icon: 💡
+Console.js:61 useProfileServices hook - no services found in response. Raw data: Object
+Console.js:61 useProfileServices hook - processed data Object
+Console.js:61 Skills component - Using userNumericId: 2
+Console.js:61 ProfilePictureDialog rendered with open: false
+2Console.js:61 Skills component - Using userNumericId: 2
+Console.js:61 useProfileServices hook - received data: Object
+Console.js:61 useProfileServices hook - services found directly: 3
+Console.js:61 useProfileServices hook - processed data Object
+Console.js:61 Services component - using services from useProfileServices hook: 3
+Console.js:61 Services component - using whatIOffer from hook: I am a skilled software developer specializing in full-stack web development with expertise in modern JavaScript frameworks. I offer clean, scalable code solutions and bring a detail-oriented approach to every project.
+Console.js:61 useProfileServices hook - services found directly: 3
+Console.js:61 useProfileServices hook - processed data Object
+Console.js:61 Services component - direct fetch #0 result: Object
+Console.js:61 Services component - found 3 services in response
+Console.js:61 useProfileServices hook - services found directly: 3
+Console.js:61 useProfileServices hook - processed data Object
+Console.js:61 Project 27 - Collaborators: Array(2) Endorsements: Array(2)
+Console.js:61 Project 22 - Collaborators: (2) [{…}, {…}] Endorsements: (2) [{…}, {…}]
+Console.js:61 Project 28 - Collaborators: (2) [{…}, {…}] Endorsements: (2) [{…}, {…}]
+Console.js:61 Project 25 - Collaborators: (2) [{…}, {…}] Endorsements: (2) [{…}, {…}]
+Console.js:61 Project 24 - Collaborators: (2) [{…}, {…}] Endorsements: (2) [{…}, {…}]
+Console.js:61 Project 23 - Collaborators: (2) [{…}, {…}] Endorsements: (2) [{…}, {…}]
+Console.js:61 Final enriched projects: (6) [{…}, {…}, {…}, {…}, {…}, {…}]
