@@ -114,17 +114,9 @@ export function useProfilePicture(userId: number | string | null = null) {
         throw new Error("Failed to update profile picture. Please try again.");
       }
     },
-    onSuccess: (data) => {
-      // Complete upload and reset state
-      setIsUploading(false);
-      setUploadProgress(0);
-      closeProfilePictureDialog();
-      
+    onSuccess: async (data) => {
       console.log('[PROFILE PICTURE] Upload successful, response data:', data);
       console.log('[PROFILE PICTURE] Target user ID for cache invalidation:', targetUserId);
-      
-      // Force immediate fresh data fetch for ALL user query formats
-      console.log('[PROFILE PICTURE] Force refreshing user data for:', targetUserId);
       
       if (targetUserId) {
         // Get both Firebase UID and numeric ID for comprehensive cache clearing
@@ -133,16 +125,47 @@ export function useProfilePicture(userId: number | string | null = null) {
         console.log('[PROFILE PICTURE] Targeting Firebase UID:', targetUserId);
         console.log('[PROFILE PICTURE] Targeting numeric ID:', numericUserId);
         
-        // 1. REFETCH (not just invalidate) - Forces immediate fresh data
-        queryClient.refetchQueries({ queryKey: [`/api/users/${targetUserId}`] });
-        queryClient.refetchQueries({ queryKey: ['/api/users', targetUserId] });
+        // 1. IMMEDIATE CACHE UPDATE - Set fresh data directly into cache
+        const queryKeys = [
+          [`/api/users/${targetUserId}`],
+          ['/api/users', targetUserId]
+        ];
         
         if (numericUserId && numericUserId !== targetUserId) {
-          queryClient.refetchQueries({ queryKey: [`/api/users/${numericUserId}`] });
-          queryClient.refetchQueries({ queryKey: ['/api/users', numericUserId] });
+          queryKeys.push([`/api/users/${numericUserId}`]);
+          queryKeys.push(['/api/users', numericUserId]);
         }
         
-        // 2. INVALIDATE all related queries to mark them stale
+        // Update cache immediately with fresh user data
+        for (const queryKey of queryKeys) {
+          const existingData = queryClient.getQueryData(queryKey);
+          if (existingData) {
+            queryClient.setQueryData(queryKey, {
+              ...existingData,
+              photoURL: data.photoURL || data.profilePicture
+            });
+            console.log('[PROFILE PICTURE] Updated cache for key:', queryKey);
+          }
+        }
+        
+        // 2. FORCE REFETCH with await to ensure completion
+        console.log('[PROFILE PICTURE] Force refetching all user queries...');
+        try {
+          await Promise.all([
+            queryClient.refetchQueries({ queryKey: [`/api/users/${targetUserId}`] }),
+            queryClient.refetchQueries({ queryKey: ['/api/users', targetUserId] }),
+            ...(numericUserId && numericUserId !== targetUserId ? [
+              queryClient.refetchQueries({ queryKey: [`/api/users/${numericUserId}`] }),
+              queryClient.refetchQueries({ queryKey: ['/api/users', numericUserId] })
+            ] : [])
+          ]);
+          
+          console.log('[PROFILE PICTURE] All cache refresh operations completed successfully');
+        } catch (error) {
+          console.error('[PROFILE PICTURE] Cache refresh error:', error);
+        }
+        
+        // 3. INVALIDATE related queries as final cleanup
         queryClient.invalidateQueries({ 
           predicate: (query) => {
             const queryKey = query.queryKey;
@@ -155,13 +178,12 @@ export function useProfilePicture(userId: number | string | null = null) {
             );
           }
         });
-        
-        // 3. RESET specific queries to clear any stale cache
-        queryClient.resetQueries({ queryKey: [`/api/users/${targetUserId}`] });
-        queryClient.resetQueries({ queryKey: ['/api/users', targetUserId] });
-        
-        console.log('[PROFILE PICTURE] Force refresh and cache reset complete');
       }
+      
+      // Complete upload and reset state AFTER cache operations
+      setIsUploading(false);
+      setUploadProgress(0);
+      closeProfilePictureDialog();
       
       toast({
         title: "Success!",
