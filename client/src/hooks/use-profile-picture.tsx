@@ -114,65 +114,35 @@ export function useProfilePicture(userId: number | string | null = null) {
         throw new Error("Failed to update profile picture. Please try again.");
       }
     },
-    onSuccess: async (updatedUser: any) => {
-      console.log('[PROFILE PICTURE] Upload successful, updated user:', updatedUser);
+    onSuccess: (data) => {
+      // Complete upload and reset state
+      setIsUploading(false);
+      setUploadProgress(0);
+      closeProfilePictureDialog();
+      
+      console.log('[PROFILE PICTURE] Upload successful, response data:', data);
       console.log('[PROFILE PICTURE] Target user ID for cache invalidation:', targetUserId);
       
-      if (targetUserId && updatedUser) {
+      // Force immediate fresh data fetch for ALL user query formats
+      console.log('[PROFILE PICTURE] Force refreshing user data for:', targetUserId);
+      
+      if (targetUserId) {
         // Get both Firebase UID and numeric ID for comprehensive cache clearing
-        const numericUserId = updatedUser.id?.toString();
-        const newPhotoURL = updatedUser.photoURL;
+        const numericUserId = data?.id?.toString();
         
         console.log('[PROFILE PICTURE] Targeting Firebase UID:', targetUserId);
         console.log('[PROFILE PICTURE] Targeting numeric ID:', numericUserId);
-        console.log('[PROFILE PICTURE] New photo URL length:', newPhotoURL?.length || 'NULL');
         
-        // 1. IMMEDIATE CACHE UPDATE - Set fresh data directly into cache
-        const queryKeys = [
-          [`/api/users/${targetUserId}`],
-          ['/api/users', targetUserId]
-        ];
+        // 1. REFETCH (not just invalidate) - Forces immediate fresh data
+        queryClient.refetchQueries({ queryKey: [`/api/users/${targetUserId}`] });
+        queryClient.refetchQueries({ queryKey: ['/api/users', targetUserId] });
         
         if (numericUserId && numericUserId !== targetUserId) {
-          queryKeys.push([`/api/users/${numericUserId}`]);
-          queryKeys.push(['/api/users', numericUserId]);
+          queryClient.refetchQueries({ queryKey: [`/api/users/${numericUserId}`] });
+          queryClient.refetchQueries({ queryKey: ['/api/users', numericUserId] });
         }
         
-        // Update cache immediately with the complete updated user data
-        for (const queryKey of queryKeys) {
-          const existingData = queryClient.getQueryData(queryKey);
-          if (existingData) {
-            const updatedCacheData = {
-              ...existingData,
-              ...updatedUser // Merge the complete updated user object
-            };
-            queryClient.setQueryData(queryKey, updatedCacheData);
-            console.log('[PROFILE PICTURE] Updated cache for key:', queryKey, 'with photoURL:', updatedCacheData.photoURL ? 'YES' : 'NO');
-          } else {
-            // If no existing data, set the updated user directly
-            queryClient.setQueryData(queryKey, updatedUser);
-            console.log('[PROFILE PICTURE] Set fresh cache data for key:', queryKey);
-          }
-        }
-        
-        // 2. FORCE REFETCH with await to ensure completion
-        console.log('[PROFILE PICTURE] Force refetching all user queries...');
-        try {
-          await Promise.all([
-            queryClient.refetchQueries({ queryKey: [`/api/users/${targetUserId}`] }),
-            queryClient.refetchQueries({ queryKey: ['/api/users', targetUserId] }),
-            ...(numericUserId && numericUserId !== targetUserId ? [
-              queryClient.refetchQueries({ queryKey: [`/api/users/${numericUserId}`] }),
-              queryClient.refetchQueries({ queryKey: ['/api/users', numericUserId] })
-            ] : [])
-          ]);
-          
-          console.log('[PROFILE PICTURE] All cache refresh operations completed successfully');
-        } catch (error) {
-          console.error('[PROFILE PICTURE] Cache refresh error:', error);
-        }
-        
-        // 3. INVALIDATE related queries as final cleanup
+        // 2. INVALIDATE all related queries to mark them stale
         queryClient.invalidateQueries({ 
           predicate: (query) => {
             const queryKey = query.queryKey;
@@ -185,12 +155,13 @@ export function useProfilePicture(userId: number | string | null = null) {
             );
           }
         });
+        
+        // 3. RESET specific queries to clear any stale cache
+        queryClient.resetQueries({ queryKey: [`/api/users/${targetUserId}`] });
+        queryClient.resetQueries({ queryKey: ['/api/users', targetUserId] });
+        
+        console.log('[PROFILE PICTURE] Force refresh and cache reset complete');
       }
-      
-      // Complete upload and reset state AFTER cache operations
-      setIsUploading(false);
-      setUploadProgress(0);
-      closeProfilePictureDialog();
       
       toast({
         title: "Success!",
