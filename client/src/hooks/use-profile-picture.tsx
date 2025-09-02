@@ -133,16 +133,29 @@ export function useProfilePicture(userId: number | string | null = null) {
         console.log('[PROFILE PICTURE] Targeting Firebase UID:', targetUserId);
         console.log('[PROFILE PICTURE] Targeting numeric ID:', numericUserId);
         
-        // 1. REFETCH (not just invalidate) - Forces immediate fresh data
-        queryClient.refetchQueries({ queryKey: [`/api/users/${targetUserId}`] });
-        queryClient.refetchQueries({ queryKey: ['/api/users', targetUserId] });
+        // Use ONLY working query key formats that match actual component usage
+        
+        // 1. STRING FORMAT - Used by Header & Right Sidebar 
+        await queryClient.refetchQueries({ 
+          queryKey: [`/api/users/${targetUserId}`],
+          exact: true 
+        });
         
         if (numericUserId && numericUserId !== targetUserId) {
-          queryClient.refetchQueries({ queryKey: [`/api/users/${numericUserId}`] });
-          queryClient.refetchQueries({ queryKey: ['/api/users', numericUserId] });
+          await queryClient.refetchQueries({ 
+            queryKey: [`/api/users/${numericUserId}`],
+            exact: true 
+          });
         }
         
-        // 2. INVALIDATE all related queries to mark them stale
+        // 2. ARRAY FORMAT - Used by Profile Page (but causes wrong endpoint calls)
+        // Skip array format refetch to avoid /api/users calls
+        queryClient.invalidateQueries({ queryKey: ['/api/users', targetUserId] });
+        if (numericUserId && numericUserId !== targetUserId) {
+          queryClient.invalidateQueries({ queryKey: ['/api/users', numericUserId] });
+        }
+        
+        // 3. PREDICATE-based invalidation for any other formats
         queryClient.invalidateQueries({ 
           predicate: (query) => {
             const queryKey = query.queryKey;
@@ -155,10 +168,6 @@ export function useProfilePicture(userId: number | string | null = null) {
             );
           }
         });
-        
-        // 3. RESET specific queries to clear any stale cache
-        queryClient.resetQueries({ queryKey: [`/api/users/${targetUserId}`] });
-        queryClient.resetQueries({ queryKey: ['/api/users', targetUserId] });
         
         console.log('[PROFILE PICTURE] Force refresh and cache reset complete');
       }
