@@ -88,7 +88,7 @@ export function useProfilePicture(userId: number | string | null = null) {
         );
         
         console.log('[PROFILE UPLOAD DEBUG] API response:', res);
-        console.log('[PROFILE UPLOAD DEBUG] Response photoURL:', res?.photoURL ? 'EXISTS' : 'MISSING');
+        console.log('[PROFILE UPLOAD DEBUG] Response photoURL:', (res as any)?.photoURL ? 'EXISTS' : 'MISSING');
         
         // Complete the progress
         clearInterval(progressInterval);
@@ -114,7 +114,7 @@ export function useProfilePicture(userId: number | string | null = null) {
         throw new Error("Failed to update profile picture. Please try again.");
       }
     },
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       // Complete upload and reset state
       setIsUploading(false);
       setUploadProgress(0);
@@ -128,7 +128,7 @@ export function useProfilePicture(userId: number | string | null = null) {
       
       if (targetUserId) {
         // Get both Firebase UID and numeric ID for comprehensive cache clearing
-        const numericUserId = data?.id?.toString();
+        const numericUserId = (data as any)?.id?.toString();
         
         console.log('[PROFILE PICTURE] Targeting Firebase UID:', targetUserId);
         console.log('[PROFILE PICTURE] Targeting numeric ID:', numericUserId);
@@ -164,7 +164,7 @@ export function useProfilePicture(userId: number | string | null = null) {
             return queryKey.some(key => 
               typeof key === 'string' && 
               key.includes('/api/users') &&
-              (key.includes(targetUserId) || (numericUserId && key.includes(numericUserId)))
+              (key.includes(String(targetUserId)) || (numericUserId && key.includes(numericUserId)))
             );
           }
         });
