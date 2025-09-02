@@ -114,16 +114,18 @@ export function useProfilePicture(userId: number | string | null = null) {
         throw new Error("Failed to update profile picture. Please try again.");
       }
     },
-    onSuccess: async (data) => {
-      console.log('[PROFILE PICTURE] Upload successful, response data:', data);
+    onSuccess: async (updatedUser: any) => {
+      console.log('[PROFILE PICTURE] Upload successful, updated user:', updatedUser);
       console.log('[PROFILE PICTURE] Target user ID for cache invalidation:', targetUserId);
       
-      if (targetUserId) {
+      if (targetUserId && updatedUser) {
         // Get both Firebase UID and numeric ID for comprehensive cache clearing
-        const numericUserId = data?.id?.toString();
+        const numericUserId = updatedUser.id?.toString();
+        const newPhotoURL = updatedUser.photoURL;
         
         console.log('[PROFILE PICTURE] Targeting Firebase UID:', targetUserId);
         console.log('[PROFILE PICTURE] Targeting numeric ID:', numericUserId);
+        console.log('[PROFILE PICTURE] New photo URL length:', newPhotoURL?.length || 'NULL');
         
         // 1. IMMEDIATE CACHE UPDATE - Set fresh data directly into cache
         const queryKeys = [
@@ -136,15 +138,20 @@ export function useProfilePicture(userId: number | string | null = null) {
           queryKeys.push(['/api/users', numericUserId]);
         }
         
-        // Update cache immediately with fresh user data
+        // Update cache immediately with the complete updated user data
         for (const queryKey of queryKeys) {
           const existingData = queryClient.getQueryData(queryKey);
           if (existingData) {
-            queryClient.setQueryData(queryKey, {
+            const updatedCacheData = {
               ...existingData,
-              photoURL: data.photoURL || data.profilePicture
-            });
-            console.log('[PROFILE PICTURE] Updated cache for key:', queryKey);
+              ...updatedUser // Merge the complete updated user object
+            };
+            queryClient.setQueryData(queryKey, updatedCacheData);
+            console.log('[PROFILE PICTURE] Updated cache for key:', queryKey, 'with photoURL:', updatedCacheData.photoURL ? 'YES' : 'NO');
+          } else {
+            // If no existing data, set the updated user directly
+            queryClient.setQueryData(queryKey, updatedUser);
+            console.log('[PROFILE PICTURE] Set fresh cache data for key:', queryKey);
           }
         }
         
