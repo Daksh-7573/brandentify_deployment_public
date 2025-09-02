@@ -1122,7 +1122,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({ message: "Debug PUT endpoint reached", id: req.params.id, body: req.body });
   });
 
-  // PROFILE PICTURE UPLOAD FIX - Simple direct route
+  // PROFILE PICTURE UPLOAD FIX - Using storage layer
   apiRouter.put("/users/:id/photo", async (req: Request, res: Response) => {
     try {
       const { photoURL } = req.body;
@@ -1135,25 +1135,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "photoURL is required" });
       }
       
-      // Direct database update - bypassing all complex logic
-      const result = await pool.query(
-        `UPDATE users SET photo_url = $1 WHERE username = $2 OR id = $2 RETURNING 
-         id, username, email, password, phone_number as "phoneNumber", 
-         name, brand_name as "brandName", photo_url as "photoURL", 
-         title, about_me as "aboutMe", location, industry, domain, 
-         looking_for as "lookingFor", what_i_offer as "whatIOffer", 
-         visiting_card_type as "visitingCardType", profile_completed as "profileCompleted", 
-         email_verified as "emailVerified", email_verification_token as "emailVerificationToken", 
-         email_verification_expires as "emailVerificationExpires", created_at as "createdAt"`,
-        [photoURL, userId]
-      );
+      // Handle both Firebase UID and numeric ID
+      let user;
+      const isFirebaseUid = userId.length > 20 && /[^0-9]/.test(userId);
       
-      if (result.rows.length === 0) {
+      if (isFirebaseUid) {
+        console.log(`[PUT /users/:id/photo] Looking up user by Firebase UID: ${userId}`);
+        user = await storage.getUserByUsername(userId);
+      } else {
+        console.log(`[PUT /users/:id/photo] Looking up user by numeric ID: ${userId}`);
+        const numericUserId = parseInt(userId);
+        if (!isNaN(numericUserId)) {
+          user = await storage.getUser(numericUserId);
+        }
+      }
+      
+      if (!user) {
+        console.log(`[PUT /users/:id/photo] User not found: ${userId}`);
         return res.status(404).json({ message: "User not found" });
       }
       
-      console.log(`[PUT /users/:id/photo] SUCCESS - Updated photoURL for user ${userId}`);
-      res.json(result.rows[0]);
+      console.log(`[PUT /users/:id/photo] Found user ID ${user.id}, updating photoURL...`);
+      
+      // Update the user's photoURL using storage layer
+      const updatedUser = await storage.updateUser(user.id, { photoURL });
+      
+      if (!updatedUser) {
+        console.log(`[PUT /users/:id/photo] Update failed for user ID: ${user.id}`);
+        return res.status(500).json({ message: "Failed to update user" });
+      }
+      
+      console.log(`[PUT /users/:id/photo] SUCCESS - Updated photoURL for user ${user.id}`);
+      res.json(updatedUser);
     } catch (error) {
       console.error(`[PUT /users/:id/photo] ERROR:`, error);
       res.status(500).json({ message: "Failed to update profile picture" });

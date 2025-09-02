@@ -1,0 +1,1187 @@
+useProfileServices hook - processed data {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', servicesCount: 3, isLoading: false, isError: false, error: undefined}
+Console.js:61 Skills component - Using userNumericId: 2
+Console.js:61 ProfilePictureDialog rendered with open: false
+injected.js:253  PUT https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/Unvhj38FHSg36vbagvGL8MvDJuL2/photo 500 (Internal Server Error)
+window.fetch @ Network.js:219
+apply @ injected.js:253
+apiRequest @ queryClient.ts:163
+await in apiRequest
+mutationFn @ use-profile-picture.tsx:82
+fn @ @tanstack_react-query.js?v=204557f4:1189
+run @ @tanstack_react-query.js?v=204557f4:494
+start @ @tanstack_react-query.js?v=204557f4:536
+execute @ @tanstack_react-query.js?v=204557f4:1225
+await in execute
+mutate @ @tanstack_react-query.js?v=204557f4:2630
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3295
+handleSaveProfilePicture @ profile-picture-dialog.tsx:114
+img.onload @ profile-upload.tsx:140Understand this error
+Console.js:61 [API CLIENT DEBUG] === RESPONSE RECEIVED ===
+Console.js:61 [API CLIENT DEBUG] Status: 500
+Console.js:61 [API CLIENT DEBUG] Status text: Internal Server Error
+Console.js:61 [API CLIENT DEBUG] Response headers: {access-control-allow-credentials: 'true', access-control-allow-headers: 'Origin, X-Requested-With, Content-Type, Accept, Authorization, X-Frame-Options', access-control-allow-methods: 'GET, POST, PUT, DELETE, OPTIONS, HEAD', access-control-allow-origin: 'https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev', content-length: '46', …}
+Console.js:61 API request failed: PUT /api/users/Unvhj38FHSg36vbagvGL8MvDJuL2/photo - Status: 500
+Mt.forEach.n.<computed> @ Console.js:61
+apiRequest @ queryClient.ts:176
+await in apiRequest
+mutationFn @ use-profile-picture.tsx:82
+fn @ @tanstack_react-query.js?v=204557f4:1189
+run @ @tanstack_react-query.js?v=204557f4:494
+start @ @tanstack_react-query.js?v=204557f4:536
+execute @ @tanstack_react-query.js?v=204557f4:1225
+await in execute
+mutate @ @tanstack_react-query.js?v=204557f4:2630
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3295
+handleSaveProfilePicture @ profile-picture-dialog.tsx:114
+img.onload @ profile-upload.tsx:140Understand this warning
+Console.js:61 Server error 500, retry 3/3 for: /api/users/Unvhj38FHSg36vbagvGL8MvDJuL2/photo
+Console.js:61 Waiting 1200ms before retry 3...
+Console.js:61 Profile page render - user: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', photoURL: 'https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c', …}
+Console.js:61 Profile page render - userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Profile page render - isUserDataLoading: false
+Console.js:61 Profile page render - userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 Profile page render - userDataError: null
+Console.js:61 [PROFILE PICTURE DEBUG] userData?.photoURL: BASE64_EXISTS
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl: HAS_URL
+Console.js:61 [PROFILE PICTURE DEBUG] userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 [PROFILE PICTURE DEBUG] userData full object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl value: https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c
+Console.js:61 Profile Completion Input: {userData: 'User ID: 2', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+Console.js:61 User data being used for calculation: {name: 'Nishant Chopra', photoURL: 'exists', title: 'World', location: 'Gandhinagar, Gujarat, India', industry: 'Hospitality', …}
+Console.js:61 Profile completion percentage: 60
+Console.js:61 [PROFILE NEO DEBUG] userData?.lookingFor: career_advice
+Console.js:61 [PROFILE NEO DEBUG] Found category: {value: 'career_advice', label: 'Career Advice', icon: '💡'}
+Console.js:61 [PROFILE NEO DEBUG] Final label: Career Advice Icon: 💡
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 useProfileServices hook - services found directly: 3
+Console.js:61 useProfileServices hook - processed data {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', servicesCount: 3, isLoading: false, isError: false, error: undefined}
+Console.js:61 Skills component - Using userNumericId: 2
+Console.js:61 ProfilePictureDialog rendered with open: false
+Console.js:61 Profile page render - user: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', photoURL: 'https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c', …}
+Console.js:61 Profile page render - userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Profile page render - isUserDataLoading: false
+Console.js:61 Profile page render - userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 Profile page render - userDataError: null
+Console.js:61 [PROFILE PICTURE DEBUG] userData?.photoURL: BASE64_EXISTS
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl: HAS_URL
+Console.js:61 [PROFILE PICTURE DEBUG] userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 [PROFILE PICTURE DEBUG] userData full object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl value: https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c
+Console.js:61 Profile Completion Input: {userData: 'User ID: 2', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+Console.js:61 User data being used for calculation: {name: 'Nishant Chopra', photoURL: 'exists', title: 'World', location: 'Gandhinagar, Gujarat, India', industry: 'Hospitality', …}
+Console.js:61 Profile completion percentage: 60
+Console.js:61 [PROFILE NEO DEBUG] userData?.lookingFor: career_advice
+Console.js:61 [PROFILE NEO DEBUG] Found category: {value: 'career_advice', label: 'Career Advice', icon: '💡'}
+Console.js:61 [PROFILE NEO DEBUG] Final label: Career Advice Icon: 💡
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 useProfileServices hook - services found directly: 3
+Console.js:61 useProfileServices hook - processed data {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', servicesCount: 3, isLoading: false, isError: false, error: undefined}
+Console.js:61 Skills component - Using userNumericId: 2
+Console.js:61 ProfilePictureDialog rendered with open: false
+Console.js:61 Profile page render - user: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', photoURL: 'https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c', …}
+Console.js:61 Profile page render - userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Profile page render - isUserDataLoading: false
+Console.js:61 Profile page render - userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 Profile page render - userDataError: null
+Console.js:61 [PROFILE PICTURE DEBUG] userData?.photoURL: BASE64_EXISTS
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl: HAS_URL
+Console.js:61 [PROFILE PICTURE DEBUG] userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 [PROFILE PICTURE DEBUG] userData full object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl value: https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c
+Console.js:61 Profile Completion Input: {userData: 'User ID: 2', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+Console.js:61 User data being used for calculation: {name: 'Nishant Chopra', photoURL: 'exists', title: 'World', location: 'Gandhinagar, Gujarat, India', industry: 'Hospitality', …}
+Console.js:61 Profile completion percentage: 60
+Console.js:61 [PROFILE NEO DEBUG] userData?.lookingFor: career_advice
+Console.js:61 [PROFILE NEO DEBUG] Found category: {value: 'career_advice', label: 'Career Advice', icon: '💡'}
+Console.js:61 [PROFILE NEO DEBUG] Final label: Career Advice Icon: 💡
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 useProfileServices hook - services found directly: 3
+Console.js:61 useProfileServices hook - processed data {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', servicesCount: 3, isLoading: false, isError: false, error: undefined}
+Console.js:61 Skills component - Using userNumericId: 2
+Console.js:61 ProfilePictureDialog rendered with open: false
+Console.js:61 Profile page render - user: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', photoURL: 'https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c', …}
+Console.js:61 Profile page render - userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Profile page render - isUserDataLoading: false
+Console.js:61 Profile page render - userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 Profile page render - userDataError: null
+Console.js:61 [PROFILE PICTURE DEBUG] userData?.photoURL: BASE64_EXISTS
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl: HAS_URL
+Console.js:61 [PROFILE PICTURE DEBUG] userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 [PROFILE PICTURE DEBUG] userData full object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl value: https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c
+Console.js:61 Profile Completion Input: {userData: 'User ID: 2', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+Console.js:61 User data being used for calculation: {name: 'Nishant Chopra', photoURL: 'exists', title: 'World', location: 'Gandhinagar, Gujarat, India', industry: 'Hospitality', …}
+Console.js:61 Profile completion percentage: 60
+Console.js:61 [PROFILE NEO DEBUG] userData?.lookingFor: career_advice
+Console.js:61 [PROFILE NEO DEBUG] Found category: {value: 'career_advice', label: 'Career Advice', icon: '💡'}
+Console.js:61 [PROFILE NEO DEBUG] Final label: Career Advice Icon: 💡
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 useProfileServices hook - services found directly: 3
+Console.js:61 useProfileServices hook - processed data {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', servicesCount: 3, isLoading: false, isError: false, error: undefined}
+Console.js:61 Skills component - Using userNumericId: 2
+Console.js:61 ProfilePictureDialog rendered with open: false
+Console.js:61 Profile page render - user: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', photoURL: 'https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c', …}
+Console.js:61 Profile page render - userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Profile page render - isUserDataLoading: false
+Console.js:61 Profile page render - userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 Profile page render - userDataError: null
+Console.js:61 [PROFILE PICTURE DEBUG] userData?.photoURL: BASE64_EXISTS
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl: HAS_URL
+Console.js:61 [PROFILE PICTURE DEBUG] userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 [PROFILE PICTURE DEBUG] userData full object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl value: https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c
+Console.js:61 Profile Completion Input: {userData: 'User ID: 2', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+Console.js:61 User data being used for calculation: {name: 'Nishant Chopra', photoURL: 'exists', title: 'World', location: 'Gandhinagar, Gujarat, India', industry: 'Hospitality', …}
+Console.js:61 Profile completion percentage: 60
+Console.js:61 [PROFILE NEO DEBUG] userData?.lookingFor: career_advice
+Console.js:61 [PROFILE NEO DEBUG] Found category: {value: 'career_advice', label: 'Career Advice', icon: '💡'}
+Console.js:61 [PROFILE NEO DEBUG] Final label: Career Advice Icon: 💡
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 useProfileServices hook - services found directly: 3
+Console.js:61 useProfileServices hook - processed data {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', servicesCount: 3, isLoading: false, isError: false, error: undefined}
+Console.js:61 Skills component - Using userNumericId: 2
+Console.js:61 ProfilePictureDialog rendered with open: false
+Console.js:61 Profile page render - user: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', photoURL: 'https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c', …}
+Console.js:61 Profile page render - userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Profile page render - isUserDataLoading: false
+Console.js:61 Profile page render - userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 Profile page render - userDataError: null
+Console.js:61 [PROFILE PICTURE DEBUG] userData?.photoURL: BASE64_EXISTS
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl: HAS_URL
+Console.js:61 [PROFILE PICTURE DEBUG] userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 [PROFILE PICTURE DEBUG] userData full object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl value: https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c
+Console.js:61 Profile Completion Input: {userData: 'User ID: 2', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+Console.js:61 User data being used for calculation: {name: 'Nishant Chopra', photoURL: 'exists', title: 'World', location: 'Gandhinagar, Gujarat, India', industry: 'Hospitality', …}
+Console.js:61 Profile completion percentage: 60
+Console.js:61 [PROFILE NEO DEBUG] userData?.lookingFor: career_advice
+Console.js:61 [PROFILE NEO DEBUG] Found category: {value: 'career_advice', label: 'Career Advice', icon: '💡'}
+Console.js:61 [PROFILE NEO DEBUG] Final label: Career Advice Icon: 💡
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 useProfileServices hook - services found directly: 3
+Console.js:61 useProfileServices hook - processed data {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', servicesCount: 3, isLoading: false, isError: false, error: undefined}
+Console.js:61 Skills component - Using userNumericId: 2
+Console.js:61 ProfilePictureDialog rendered with open: false
+Console.js:61 [API CLIENT DEBUG] === PROFILE PICTURE PUT REQUEST ===
+Console.js:61 [API CLIENT DEBUG] URL: /api/users/Unvhj38FHSg36vbagvGL8MvDJuL2/photo
+Console.js:61 [API CLIENT DEBUG] Method: PUT
+Console.js:61 [API CLIENT DEBUG] Request options: {method: 'PUT', headers: {…}, body: '{"photoURL":"data:image/jpeg;base64,/9j/4AAQSkZJRg…cuZlEdabdVsJHsssf8AmqrKweymU9eDrOm9ZnbdCp+/B//Z"}', credentials: 'include'}
+Console.js:61 [API CLIENT DEBUG] Data keys: ['photoURL']
+Console.js:61 [API CLIENT DEBUG] photoURL length: 43307
+Console.js:61 [API CLIENT DEBUG] photoURL preview: data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCI
+Console.js:61 [API CLIENT DEBUG] About to send fetch request...
+sw.js:40 [SW] *** BYPASSING SERVICE WORKER FOR PUT REQUEST ***
+sw.js:41 [SW] URL: https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/Unvhj38FHSg36vbagvGL8MvDJuL2/photo
+sw.js:42 [SW] Method: PUT
+Console.js:61 Profile page render - user: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', photoURL: 'https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c', …}
+Console.js:61 Profile page render - userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Profile page render - isUserDataLoading: false
+Console.js:61 Profile page render - userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 Profile page render - userDataError: null
+Console.js:61 [PROFILE PICTURE DEBUG] userData?.photoURL: BASE64_EXISTS
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl: HAS_URL
+Console.js:61 [PROFILE PICTURE DEBUG] userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 [PROFILE PICTURE DEBUG] userData full object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl value: https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c
+Console.js:61 Profile Completion Input: {userData: 'User ID: 2', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+Console.js:61 User data being used for calculation: {name: 'Nishant Chopra', photoURL: 'exists', title: 'World', location: 'Gandhinagar, Gujarat, India', industry: 'Hospitality', …}
+Console.js:61 Profile completion percentage: 60
+Console.js:61 [PROFILE NEO DEBUG] userData?.lookingFor: career_advice
+Console.js:61 [PROFILE NEO DEBUG] Found category: {value: 'career_advice', label: 'Career Advice', icon: '💡'}
+Console.js:61 [PROFILE NEO DEBUG] Final label: Career Advice Icon: 💡
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 useProfileServices hook - services found directly: 3
+Console.js:61 useProfileServices hook - processed data {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', servicesCount: 3, isLoading: false, isError: false, error: undefined}
+Console.js:61 Skills component - Using userNumericId: 2
+Console.js:61 ProfilePictureDialog rendered with open: false
+Console.js:61 Profile page render - user: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', photoURL: 'https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c', …}
+Console.js:61 Profile page render - userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Profile page render - isUserDataLoading: false
+Console.js:61 Profile page render - userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 Profile page render - userDataError: null
+Console.js:61 [PROFILE PICTURE DEBUG] userData?.photoURL: BASE64_EXISTS
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl: HAS_URL
+Console.js:61 [PROFILE PICTURE DEBUG] userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 [PROFILE PICTURE DEBUG] userData full object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl value: https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c
+Console.js:61 Profile Completion Input: {userData: 'User ID: 2', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+Console.js:61 User data being used for calculation: {name: 'Nishant Chopra', photoURL: 'exists', title: 'World', location: 'Gandhinagar, Gujarat, India', industry: 'Hospitality', …}
+Console.js:61 Profile completion percentage: 60
+Console.js:61 [PROFILE NEO DEBUG] userData?.lookingFor: career_advice
+Console.js:61 [PROFILE NEO DEBUG] Found category: {value: 'career_advice', label: 'Career Advice', icon: '💡'}
+Console.js:61 [PROFILE NEO DEBUG] Final label: Career Advice Icon: 💡
+injected.js:253  PUT https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/Unvhj38FHSg36vbagvGL8MvDJuL2/photo 500 (Internal Server Error)
+window.fetch @ Network.js:219
+apply @ injected.js:253
+apiRequest @ queryClient.ts:163
+await in apiRequest
+mutationFn @ use-profile-picture.tsx:82
+fn @ @tanstack_react-query.js?v=204557f4:1189
+run @ @tanstack_react-query.js?v=204557f4:494
+start @ @tanstack_react-query.js?v=204557f4:536
+execute @ @tanstack_react-query.js?v=204557f4:1225
+await in execute
+mutate @ @tanstack_react-query.js?v=204557f4:2630
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3295
+handleSaveProfilePicture @ profile-picture-dialog.tsx:114
+img.onload @ profile-upload.tsx:140Understand this error
+Console.js:61 [API CLIENT DEBUG] === RESPONSE RECEIVED ===
+Console.js:61 [API CLIENT DEBUG] Status: 500
+Console.js:61 [API CLIENT DEBUG] Status text: Internal Server Error
+Console.js:61 [API CLIENT DEBUG] Response headers: {access-control-allow-credentials: 'true', access-control-allow-headers: 'Origin, X-Requested-With, Content-Type, Accept, Authorization, X-Frame-Options', access-control-allow-methods: 'GET, POST, PUT, DELETE, OPTIONS, HEAD', access-control-allow-origin: 'https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev', content-length: '46', …}
+Console.js:61 API request failed: PUT /api/users/Unvhj38FHSg36vbagvGL8MvDJuL2/photo - Status: 500
+Mt.forEach.n.<computed> @ Console.js:61
+apiRequest @ queryClient.ts:176
+await in apiRequest
+mutationFn @ use-profile-picture.tsx:82
+fn @ @tanstack_react-query.js?v=204557f4:1189
+run @ @tanstack_react-query.js?v=204557f4:494
+start @ @tanstack_react-query.js?v=204557f4:536
+execute @ @tanstack_react-query.js?v=204557f4:1225
+await in execute
+mutate @ @tanstack_react-query.js?v=204557f4:2630
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3295
+handleSaveProfilePicture @ profile-picture-dialog.tsx:114
+img.onload @ profile-upload.tsx:140Understand this warning
+Console.js:61 API Error 500 from https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/Unvhj38FHSg36vbagvGL8MvDJuL2/photo: {"message":"Failed to update profile picture"}
+Mt.forEach.n.<computed> @ Console.js:61
+throwIfResNotOk @ queryClient.ts:11
+await in throwIfResNotOk
+apiRequest @ queryClient.ts:206
+await in apiRequest
+mutationFn @ use-profile-picture.tsx:82
+fn @ @tanstack_react-query.js?v=204557f4:1189
+run @ @tanstack_react-query.js?v=204557f4:494
+start @ @tanstack_react-query.js?v=204557f4:536
+execute @ @tanstack_react-query.js?v=204557f4:1225
+await in execute
+mutate @ @tanstack_react-query.js?v=204557f4:2630
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3295
+handleSaveProfilePicture @ profile-picture-dialog.tsx:114
+img.onload @ profile-upload.tsx:140Understand this error
+Console.js:61 API request failed: Error: 500: {"message":"Failed to update profile picture"}
+    at throwIfResNotOk (queryClient.ts:12:13)
+    at async apiRequest (queryClient.ts:206:7)
+    at async Object.mutationFn (use-profile-picture.tsx:82:21)
+Mt.forEach.n.<computed> @ Console.js:61
+mutationFn @ use-profile-picture.tsx:100
+await in mutationFn
+fn @ @tanstack_react-query.js?v=204557f4:1189
+run @ @tanstack_react-query.js?v=204557f4:494
+start @ @tanstack_react-query.js?v=204557f4:536
+execute @ @tanstack_react-query.js?v=204557f4:1225
+await in execute
+mutate @ @tanstack_react-query.js?v=204557f4:2630
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3295
+handleSaveProfilePicture @ profile-picture-dialog.tsx:114
+img.onload @ profile-upload.tsx:140Understand this error
+Console.js:61 Profile page render - user: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', photoURL: 'https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c', …}
+Console.js:61 Profile page render - userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Profile page render - isUserDataLoading: false
+Console.js:61 Profile page render - userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 Profile page render - userDataError: null
+Console.js:61 [PROFILE PICTURE DEBUG] userData?.photoURL: BASE64_EXISTS
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl: HAS_URL
+Console.js:61 [PROFILE PICTURE DEBUG] userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 [PROFILE PICTURE DEBUG] userData full object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl value: https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c
+Console.js:61 Profile Completion Input: {userData: 'User ID: 2', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+Console.js:61 User data being used for calculation: {name: 'Nishant Chopra', photoURL: 'exists', title: 'World', location: 'Gandhinagar, Gujarat, India', industry: 'Hospitality', …}
+Console.js:61 Profile completion percentage: 60
+Console.js:61 [PROFILE NEO DEBUG] userData?.lookingFor: career_advice
+Console.js:61 [PROFILE NEO DEBUG] Found category: {value: 'career_advice', label: 'Career Advice', icon: '💡'}
+Console.js:61 [PROFILE NEO DEBUG] Final label: Career Advice Icon: 💡
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 useProfileServices hook - services found directly: 3
+Console.js:61 useProfileServices hook - processed data {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', servicesCount: 3, isLoading: false, isError: false, error: undefined}
+Console.js:61 Skills component - Using userNumericId: 2
+Console.js:61 ProfilePictureDialog rendered with open: false
+Console.js:61 Profile page render - user: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', photoURL: 'https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c', …}
+Console.js:61 Profile page render - userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Profile page render - isUserDataLoading: false
+Console.js:61 Profile page render - userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 Profile page render - userDataError: null
+Console.js:61 [PROFILE PICTURE DEBUG] userData?.photoURL: BASE64_EXISTS
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl: HAS_URL
+Console.js:61 [PROFILE PICTURE DEBUG] userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 [PROFILE PICTURE DEBUG] userData full object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl value: https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c
+Console.js:61 Profile Completion Input: {userData: 'User ID: 2', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+Console.js:61 User data being used for calculation: {name: 'Nishant Chopra', photoURL: 'exists', title: 'World', location: 'Gandhinagar, Gujarat, India', industry: 'Hospitality', …}
+Console.js:61 Profile completion percentage: 60
+Console.js:61 [PROFILE NEO DEBUG] userData?.lookingFor: career_advice
+Console.js:61 [PROFILE NEO DEBUG] Found category: {value: 'career_advice', label: 'Career Advice', icon: '💡'}
+Console.js:61 [PROFILE NEO DEBUG] Final label: Career Advice Icon: 💡
+Console.js:61 Updating profile picture for user ID: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Starting profile picture upload...
+Console.js:61 Image size (bytes): 32480.25
+Console.js:61 [PROFILE UPLOAD DEBUG] Uploading to user ID: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 [PROFILE UPLOAD DEBUG] Base64 image length: 43307
+Console.js:61 [PROFILE UPLOAD DEBUG] Base64 preview: data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCI...
+Console.js:61 [API CLIENT DEBUG] === PROFILE PICTURE PUT REQUEST ===
+Console.js:61 [API CLIENT DEBUG] URL: /api/users/Unvhj38FHSg36vbagvGL8MvDJuL2/photo
+Console.js:61 [API CLIENT DEBUG] Method: PUT
+Console.js:61 [API CLIENT DEBUG] Request options: {method: 'PUT', headers: {…}, body: '{"photoURL":"data:image/jpeg;base64,/9j/4AAQSkZJRg…cuZlEdabdVsJHsssf8AmqrKweymU9eDrOm9ZnbdCp+/B//Z"}', credentials: 'include'}
+Console.js:61 [API CLIENT DEBUG] Data keys: ['photoURL']
+Console.js:61 [API CLIENT DEBUG] photoURL length: 43307
+Console.js:61 [API CLIENT DEBUG] photoURL preview: data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCI
+Console.js:61 [API CLIENT DEBUG] About to send fetch request...
+sw.js:40 [SW] *** BYPASSING SERVICE WORKER FOR PUT REQUEST ***
+sw.js:41 [SW] URL: https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/Unvhj38FHSg36vbagvGL8MvDJuL2/photo
+sw.js:42 [SW] Method: PUT
+Console.js:61 Profile page render - user: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', photoURL: 'https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c', …}
+Console.js:61 Profile page render - userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Profile page render - isUserDataLoading: false
+Console.js:61 Profile page render - userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 Profile page render - userDataError: null
+Console.js:61 [PROFILE PICTURE DEBUG] userData?.photoURL: BASE64_EXISTS
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl: HAS_URL
+Console.js:61 [PROFILE PICTURE DEBUG] userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 [PROFILE PICTURE DEBUG] userData full object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl value: https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c
+Console.js:61 Profile Completion Input: {userData: 'User ID: 2', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+Console.js:61 User data being used for calculation: {name: 'Nishant Chopra', photoURL: 'exists', title: 'World', location: 'Gandhinagar, Gujarat, India', industry: 'Hospitality', …}
+Console.js:61 Profile completion percentage: 60
+Console.js:61 [PROFILE NEO DEBUG] userData?.lookingFor: career_advice
+Console.js:61 [PROFILE NEO DEBUG] Found category: {value: 'career_advice', label: 'Career Advice', icon: '💡'}
+Console.js:61 [PROFILE NEO DEBUG] Final label: Career Advice Icon: 💡
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 useProfileServices hook - services found directly: 3
+Console.js:61 useProfileServices hook - processed data {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', servicesCount: 3, isLoading: false, isError: false, error: undefined}
+Console.js:61 Skills component - Using userNumericId: 2
+Console.js:61 ProfilePictureDialog rendered with open: false
+Console.js:61 Profile page render - user: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', photoURL: 'https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c', …}
+Console.js:61 Profile page render - userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Profile page render - isUserDataLoading: false
+Console.js:61 Profile page render - userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 Profile page render - userDataError: null
+Console.js:61 [PROFILE PICTURE DEBUG] userData?.photoURL: BASE64_EXISTS
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl: HAS_URL
+Console.js:61 [PROFILE PICTURE DEBUG] userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 [PROFILE PICTURE DEBUG] userData full object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl value: https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c
+Console.js:61 Profile Completion Input: {userData: 'User ID: 2', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+Console.js:61 User data being used for calculation: {name: 'Nishant Chopra', photoURL: 'exists', title: 'World', location: 'Gandhinagar, Gujarat, India', industry: 'Hospitality', …}
+Console.js:61 Profile completion percentage: 60
+Console.js:61 [PROFILE NEO DEBUG] userData?.lookingFor: career_advice
+Console.js:61 [PROFILE NEO DEBUG] Found category: {value: 'career_advice', label: 'Career Advice', icon: '💡'}
+Console.js:61 [PROFILE NEO DEBUG] Final label: Career Advice Icon: 💡
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 useProfileServices hook - services found directly: 3
+Console.js:61 useProfileServices hook - processed data {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', servicesCount: 3, isLoading: false, isError: false, error: undefined}
+Console.js:61 Skills component - Using userNumericId: 2
+Console.js:61 ProfilePictureDialog rendered with open: false
+Console.js:61 Profile page render - user: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', photoURL: 'https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c', …}
+Console.js:61 Profile page render - userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Profile page render - isUserDataLoading: false
+Console.js:61 Profile page render - userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 Profile page render - userDataError: null
+Console.js:61 [PROFILE PICTURE DEBUG] userData?.photoURL: BASE64_EXISTS
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl: HAS_URL
+Console.js:61 [PROFILE PICTURE DEBUG] userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 [PROFILE PICTURE DEBUG] userData full object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl value: https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c
+Console.js:61 Profile Completion Input: {userData: 'User ID: 2', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+Console.js:61 User data being used for calculation: {name: 'Nishant Chopra', photoURL: 'exists', title: 'World', location: 'Gandhinagar, Gujarat, India', industry: 'Hospitality', …}
+Console.js:61 Profile completion percentage: 60
+Console.js:61 [PROFILE NEO DEBUG] userData?.lookingFor: career_advice
+Console.js:61 [PROFILE NEO DEBUG] Found category: {value: 'career_advice', label: 'Career Advice', icon: '💡'}
+Console.js:61 [PROFILE NEO DEBUG] Final label: Career Advice Icon: 💡
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 useProfileServices hook - services found directly: 3
+Console.js:61 useProfileServices hook - processed data {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', servicesCount: 3, isLoading: false, isError: false, error: undefined}
+Console.js:61 Skills component - Using userNumericId: 2
+Console.js:61 ProfilePictureDialog rendered with open: false
+Console.js:61 Profile page render - user: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', photoURL: 'https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c', …}
+Console.js:61 Profile page render - userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Profile page render - isUserDataLoading: false
+Console.js:61 Profile page render - userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 Profile page render - userDataError: null
+Console.js:61 [PROFILE PICTURE DEBUG] userData?.photoURL: BASE64_EXISTS
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl: HAS_URL
+Console.js:61 [PROFILE PICTURE DEBUG] userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 [PROFILE PICTURE DEBUG] userData full object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl value: https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c
+Console.js:61 Profile Completion Input: {userData: 'User ID: 2', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+Console.js:61 User data being used for calculation: {name: 'Nishant Chopra', photoURL: 'exists', title: 'World', location: 'Gandhinagar, Gujarat, India', industry: 'Hospitality', …}
+Console.js:61 Profile completion percentage: 60
+Console.js:61 [PROFILE NEO DEBUG] userData?.lookingFor: career_advice
+Console.js:61 [PROFILE NEO DEBUG] Found category: {value: 'career_advice', label: 'Career Advice', icon: '💡'}
+Console.js:61 [PROFILE NEO DEBUG] Final label: Career Advice Icon: 💡
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 useProfileServices hook - services found directly: 3
+Console.js:61 useProfileServices hook - processed data {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', servicesCount: 3, isLoading: false, isError: false, error: undefined}
+Console.js:61 Skills component - Using userNumericId: 2
+Console.js:61 ProfilePictureDialog rendered with open: false
+injected.js:253  PUT https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/Unvhj38FHSg36vbagvGL8MvDJuL2/photo 500 (Internal Server Error)
+window.fetch @ Network.js:219
+apply @ injected.js:253
+apiRequest @ queryClient.ts:163
+mutationFn @ use-profile-picture.tsx:82
+fn @ @tanstack_react-query.js?v=204557f4:1189
+run @ @tanstack_react-query.js?v=204557f4:494
+(anonymous) @ @tanstack_react-query.js?v=204557f4:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=204557f4:515
+Promise.catch
+run @ @tanstack_react-query.js?v=204557f4:498
+start @ @tanstack_react-query.js?v=204557f4:536
+execute @ @tanstack_react-query.js?v=204557f4:1225
+await in execute
+mutate @ @tanstack_react-query.js?v=204557f4:2630
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3295
+handleSaveProfilePicture @ profile-picture-dialog.tsx:114
+img.onload @ profile-upload.tsx:140Understand this error
+Console.js:61 [API CLIENT DEBUG] === RESPONSE RECEIVED ===
+Console.js:61 [API CLIENT DEBUG] Status: 500
+Console.js:61 [API CLIENT DEBUG] Status text: Internal Server Error
+Console.js:61 [API CLIENT DEBUG] Response headers: {access-control-allow-credentials: 'true', access-control-allow-headers: 'Origin, X-Requested-With, Content-Type, Accept, Authorization, X-Frame-Options', access-control-allow-methods: 'GET, POST, PUT, DELETE, OPTIONS, HEAD', access-control-allow-origin: 'https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev', content-length: '46', …}
+Console.js:61 API request failed: PUT /api/users/Unvhj38FHSg36vbagvGL8MvDJuL2/photo - Status: 500
+Mt.forEach.n.<computed> @ Console.js:61
+apiRequest @ queryClient.ts:176
+await in apiRequest
+mutationFn @ use-profile-picture.tsx:82
+fn @ @tanstack_react-query.js?v=204557f4:1189
+run @ @tanstack_react-query.js?v=204557f4:494
+(anonymous) @ @tanstack_react-query.js?v=204557f4:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=204557f4:515
+Promise.catch
+run @ @tanstack_react-query.js?v=204557f4:498
+start @ @tanstack_react-query.js?v=204557f4:536
+execute @ @tanstack_react-query.js?v=204557f4:1225
+await in execute
+mutate @ @tanstack_react-query.js?v=204557f4:2630
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3295
+handleSaveProfilePicture @ profile-picture-dialog.tsx:114
+img.onload @ profile-upload.tsx:140Understand this warning
+Console.js:61 Server error 500, retry 1/3 for: /api/users/Unvhj38FHSg36vbagvGL8MvDJuL2/photo
+Console.js:61 Waiting 300ms before retry 1...
+Console.js:61 Profile page render - user: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', photoURL: 'https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c', …}
+Console.js:61 Profile page render - userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Profile page render - isUserDataLoading: false
+Console.js:61 Profile page render - userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 Profile page render - userDataError: null
+Console.js:61 [PROFILE PICTURE DEBUG] userData?.photoURL: BASE64_EXISTS
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl: HAS_URL
+Console.js:61 [PROFILE PICTURE DEBUG] userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 [PROFILE PICTURE DEBUG] userData full object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl value: https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c
+Console.js:61 Profile Completion Input: {userData: 'User ID: 2', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+Console.js:61 User data being used for calculation: {name: 'Nishant Chopra', photoURL: 'exists', title: 'World', location: 'Gandhinagar, Gujarat, India', industry: 'Hospitality', …}
+Console.js:61 Profile completion percentage: 60
+Console.js:61 [PROFILE NEO DEBUG] userData?.lookingFor: career_advice
+Console.js:61 [PROFILE NEO DEBUG] Found category: {value: 'career_advice', label: 'Career Advice', icon: '💡'}
+Console.js:61 [PROFILE NEO DEBUG] Final label: Career Advice Icon: 💡
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 useProfileServices hook - services found directly: 3
+Console.js:61 useProfileServices hook - processed data {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', servicesCount: 3, isLoading: false, isError: false, error: undefined}
+Console.js:61 Skills component - Using userNumericId: 2
+Console.js:61 ProfilePictureDialog rendered with open: false
+Console.js:61 [API CLIENT DEBUG] === PROFILE PICTURE PUT REQUEST ===
+Console.js:61 [API CLIENT DEBUG] URL: /api/users/Unvhj38FHSg36vbagvGL8MvDJuL2/photo
+Console.js:61 [API CLIENT DEBUG] Method: PUT
+Console.js:61 [API CLIENT DEBUG] Request options: {method: 'PUT', headers: {…}, body: '{"photoURL":"data:image/jpeg;base64,/9j/4AAQSkZJRg…cuZlEdabdVsJHsssf8AmqrKweymU9eDrOm9ZnbdCp+/B//Z"}', credentials: 'include'}
+Console.js:61 [API CLIENT DEBUG] Data keys: ['photoURL']
+Console.js:61 [API CLIENT DEBUG] photoURL length: 43307
+Console.js:61 [API CLIENT DEBUG] photoURL preview: data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCI
+Console.js:61 [API CLIENT DEBUG] About to send fetch request...
+sw.js:40 [SW] *** BYPASSING SERVICE WORKER FOR PUT REQUEST ***
+sw.js:41 [SW] URL: https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/Unvhj38FHSg36vbagvGL8MvDJuL2/photo
+sw.js:42 [SW] Method: PUT
+Console.js:61 Profile page render - user: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', photoURL: 'https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c', …}
+Console.js:61 Profile page render - userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Profile page render - isUserDataLoading: false
+Console.js:61 Profile page render - userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 Profile page render - userDataError: null
+Console.js:61 [PROFILE PICTURE DEBUG] userData?.photoURL: BASE64_EXISTS
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl: HAS_URL
+Console.js:61 [PROFILE PICTURE DEBUG] userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 [PROFILE PICTURE DEBUG] userData full object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl value: https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c
+Console.js:61 Profile Completion Input: {userData: 'User ID: 2', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+Console.js:61 User data being used for calculation: {name: 'Nishant Chopra', photoURL: 'exists', title: 'World', location: 'Gandhinagar, Gujarat, India', industry: 'Hospitality', …}
+Console.js:61 Profile completion percentage: 60
+Console.js:61 [PROFILE NEO DEBUG] userData?.lookingFor: career_advice
+Console.js:61 [PROFILE NEO DEBUG] Found category: {value: 'career_advice', label: 'Career Advice', icon: '💡'}
+Console.js:61 [PROFILE NEO DEBUG] Final label: Career Advice Icon: 💡
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 useProfileServices hook - services found directly: 3
+Console.js:61 useProfileServices hook - processed data {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', servicesCount: 3, isLoading: false, isError: false, error: undefined}
+Console.js:61 Skills component - Using userNumericId: 2
+Console.js:61 ProfilePictureDialog rendered with open: false
+Console.js:61 Profile page render - user: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', photoURL: 'https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c', …}
+Console.js:61 Profile page render - userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Profile page render - isUserDataLoading: false
+Console.js:61 Profile page render - userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 Profile page render - userDataError: null
+Console.js:61 [PROFILE PICTURE DEBUG] userData?.photoURL: BASE64_EXISTS
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl: HAS_URL
+Console.js:61 [PROFILE PICTURE DEBUG] userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 [PROFILE PICTURE DEBUG] userData full object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl value: https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c
+Console.js:61 Profile Completion Input: {userData: 'User ID: 2', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+Console.js:61 User data being used for calculation: {name: 'Nishant Chopra', photoURL: 'exists', title: 'World', location: 'Gandhinagar, Gujarat, India', industry: 'Hospitality', …}
+Console.js:61 Profile completion percentage: 60
+Console.js:61 [PROFILE NEO DEBUG] userData?.lookingFor: career_advice
+Console.js:61 [PROFILE NEO DEBUG] Found category: {value: 'career_advice', label: 'Career Advice', icon: '💡'}
+Console.js:61 [PROFILE NEO DEBUG] Final label: Career Advice Icon: 💡
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 useProfileServices hook - services found directly: 3
+Console.js:61 useProfileServices hook - processed data {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', servicesCount: 3, isLoading: false, isError: false, error: undefined}
+Console.js:61 Skills component - Using userNumericId: 2
+Console.js:61 ProfilePictureDialog rendered with open: false
+Console.js:61 Profile page render - user: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', photoURL: 'https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c', …}
+Console.js:61 Profile page render - userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Profile page render - isUserDataLoading: false
+Console.js:61 Profile page render - userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 Profile page render - userDataError: null
+Console.js:61 [PROFILE PICTURE DEBUG] userData?.photoURL: BASE64_EXISTS
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl: HAS_URL
+Console.js:61 [PROFILE PICTURE DEBUG] userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 [PROFILE PICTURE DEBUG] userData full object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl value: https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c
+Console.js:61 Profile Completion Input: {userData: 'User ID: 2', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+Console.js:61 User data being used for calculation: {name: 'Nishant Chopra', photoURL: 'exists', title: 'World', location: 'Gandhinagar, Gujarat, India', industry: 'Hospitality', …}
+Console.js:61 Profile completion percentage: 60
+Console.js:61 [PROFILE NEO DEBUG] userData?.lookingFor: career_advice
+Console.js:61 [PROFILE NEO DEBUG] Found category: {value: 'career_advice', label: 'Career Advice', icon: '💡'}
+Console.js:61 [PROFILE NEO DEBUG] Final label: Career Advice Icon: 💡
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 useProfileServices hook - services found directly: 3
+Console.js:61 useProfileServices hook - processed data {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', servicesCount: 3, isLoading: false, isError: false, error: undefined}
+Console.js:61 Skills component - Using userNumericId: 2
+Console.js:61 ProfilePictureDialog rendered with open: false
+injected.js:253  PUT https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/Unvhj38FHSg36vbagvGL8MvDJuL2/photo 500 (Internal Server Error)
+window.fetch @ Network.js:219
+apply @ injected.js:253
+apiRequest @ queryClient.ts:163
+await in apiRequest
+mutationFn @ use-profile-picture.tsx:82
+fn @ @tanstack_react-query.js?v=204557f4:1189
+run @ @tanstack_react-query.js?v=204557f4:494
+(anonymous) @ @tanstack_react-query.js?v=204557f4:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=204557f4:515
+Promise.catch
+run @ @tanstack_react-query.js?v=204557f4:498
+start @ @tanstack_react-query.js?v=204557f4:536
+execute @ @tanstack_react-query.js?v=204557f4:1225
+await in execute
+mutate @ @tanstack_react-query.js?v=204557f4:2630
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3295
+handleSaveProfilePicture @ profile-picture-dialog.tsx:114
+img.onload @ profile-upload.tsx:140Understand this error
+Console.js:61 [API CLIENT DEBUG] === RESPONSE RECEIVED ===
+Console.js:61 [API CLIENT DEBUG] Status: 500
+Console.js:61 [API CLIENT DEBUG] Status text: Internal Server Error
+Console.js:61 [API CLIENT DEBUG] Response headers: {access-control-allow-credentials: 'true', access-control-allow-headers: 'Origin, X-Requested-With, Content-Type, Accept, Authorization, X-Frame-Options', access-control-allow-methods: 'GET, POST, PUT, DELETE, OPTIONS, HEAD', access-control-allow-origin: 'https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev', content-length: '46', …}
+Console.js:61 API request failed: PUT /api/users/Unvhj38FHSg36vbagvGL8MvDJuL2/photo - Status: 500
+Mt.forEach.n.<computed> @ Console.js:61
+apiRequest @ queryClient.ts:176
+await in apiRequest
+mutationFn @ use-profile-picture.tsx:82
+fn @ @tanstack_react-query.js?v=204557f4:1189
+run @ @tanstack_react-query.js?v=204557f4:494
+(anonymous) @ @tanstack_react-query.js?v=204557f4:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=204557f4:515
+Promise.catch
+run @ @tanstack_react-query.js?v=204557f4:498
+start @ @tanstack_react-query.js?v=204557f4:536
+execute @ @tanstack_react-query.js?v=204557f4:1225
+await in execute
+mutate @ @tanstack_react-query.js?v=204557f4:2630
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3295
+handleSaveProfilePicture @ profile-picture-dialog.tsx:114
+img.onload @ profile-upload.tsx:140Understand this warning
+Console.js:61 Server error 500, retry 2/3 for: /api/users/Unvhj38FHSg36vbagvGL8MvDJuL2/photo
+Console.js:61 Waiting 600ms before retry 2...
+Console.js:61 Profile page render - user: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', photoURL: 'https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c', …}
+Console.js:61 Profile page render - userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Profile page render - isUserDataLoading: false
+Console.js:61 Profile page render - userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 Profile page render - userDataError: null
+Console.js:61 [PROFILE PICTURE DEBUG] userData?.photoURL: BASE64_EXISTS
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl: HAS_URL
+Console.js:61 [PROFILE PICTURE DEBUG] userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 [PROFILE PICTURE DEBUG] userData full object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl value: https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c
+Console.js:61 Profile Completion Input: {userData: 'User ID: 2', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+Console.js:61 User data being used for calculation: {name: 'Nishant Chopra', photoURL: 'exists', title: 'World', location: 'Gandhinagar, Gujarat, India', industry: 'Hospitality', …}
+Console.js:61 Profile completion percentage: 60
+Console.js:61 [PROFILE NEO DEBUG] userData?.lookingFor: career_advice
+Console.js:61 [PROFILE NEO DEBUG] Found category: {value: 'career_advice', label: 'Career Advice', icon: '💡'}
+Console.js:61 [PROFILE NEO DEBUG] Final label: Career Advice Icon: 💡
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 useProfileServices hook - services found directly: 3
+Console.js:61 useProfileServices hook - processed data {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', servicesCount: 3, isLoading: false, isError: false, error: undefined}
+Console.js:61 Skills component - Using userNumericId: 2
+Console.js:61 ProfilePictureDialog rendered with open: false
+Console.js:61 Profile page render - user: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', photoURL: 'https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c', …}
+Console.js:61 Profile page render - userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Profile page render - isUserDataLoading: false
+Console.js:61 Profile page render - userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 Profile page render - userDataError: null
+Console.js:61 [PROFILE PICTURE DEBUG] userData?.photoURL: BASE64_EXISTS
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl: HAS_URL
+Console.js:61 [PROFILE PICTURE DEBUG] userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 [PROFILE PICTURE DEBUG] userData full object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl value: https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c
+Console.js:61 Profile Completion Input: {userData: 'User ID: 2', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+Console.js:61 User data being used for calculation: {name: 'Nishant Chopra', photoURL: 'exists', title: 'World', location: 'Gandhinagar, Gujarat, India', industry: 'Hospitality', …}
+Console.js:61 Profile completion percentage: 60
+Console.js:61 [PROFILE NEO DEBUG] userData?.lookingFor: career_advice
+Console.js:61 [PROFILE NEO DEBUG] Found category: {value: 'career_advice', label: 'Career Advice', icon: '💡'}
+Console.js:61 [PROFILE NEO DEBUG] Final label: Career Advice Icon: 💡
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 useProfileServices hook - services found directly: 3
+Console.js:61 useProfileServices hook - processed data {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', servicesCount: 3, isLoading: false, isError: false, error: undefined}
+Console.js:61 Skills component - Using userNumericId: 2
+Console.js:61 ProfilePictureDialog rendered with open: false
+Console.js:61 Profile page render - user: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', photoURL: 'https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c', …}
+Console.js:61 Profile page render - userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Profile page render - isUserDataLoading: false
+Console.js:61 Profile page render - userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 Profile page render - userDataError: null
+Console.js:61 [PROFILE PICTURE DEBUG] userData?.photoURL: BASE64_EXISTS
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl: HAS_URL
+Console.js:61 [PROFILE PICTURE DEBUG] userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 [PROFILE PICTURE DEBUG] userData full object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl value: https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c
+Console.js:61 Profile Completion Input: {userData: 'User ID: 2', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+Console.js:61 User data being used for calculation: {name: 'Nishant Chopra', photoURL: 'exists', title: 'World', location: 'Gandhinagar, Gujarat, India', industry: 'Hospitality', …}
+Console.js:61 Profile completion percentage: 60
+Console.js:61 [PROFILE NEO DEBUG] userData?.lookingFor: career_advice
+Console.js:61 [PROFILE NEO DEBUG] Found category: {value: 'career_advice', label: 'Career Advice', icon: '💡'}
+Console.js:61 [PROFILE NEO DEBUG] Final label: Career Advice Icon: 💡
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 useProfileServices hook - services found directly: 3
+Console.js:61 useProfileServices hook - processed data {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', servicesCount: 3, isLoading: false, isError: false, error: undefined}
+Console.js:61 Skills component - Using userNumericId: 2
+Console.js:61 ProfilePictureDialog rendered with open: false
+Console.js:61 [API CLIENT DEBUG] === PROFILE PICTURE PUT REQUEST ===
+Console.js:61 [API CLIENT DEBUG] URL: /api/users/Unvhj38FHSg36vbagvGL8MvDJuL2/photo
+Console.js:61 [API CLIENT DEBUG] Method: PUT
+Console.js:61 [API CLIENT DEBUG] Request options: {method: 'PUT', headers: {…}, body: '{"photoURL":"data:image/jpeg;base64,/9j/4AAQSkZJRg…cuZlEdabdVsJHsssf8AmqrKweymU9eDrOm9ZnbdCp+/B//Z"}', credentials: 'include'}
+Console.js:61 [API CLIENT DEBUG] Data keys: ['photoURL']
+Console.js:61 [API CLIENT DEBUG] photoURL length: 43307
+Console.js:61 [API CLIENT DEBUG] photoURL preview: data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCI
+Console.js:61 [API CLIENT DEBUG] About to send fetch request...
+sw.js:40 [SW] *** BYPASSING SERVICE WORKER FOR PUT REQUEST ***
+sw.js:41 [SW] URL: https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/Unvhj38FHSg36vbagvGL8MvDJuL2/photo
+sw.js:42 [SW] Method: PUT
+Console.js:61 Profile page render - user: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', photoURL: 'https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c', …}
+Console.js:61 Profile page render - userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Profile page render - isUserDataLoading: false
+Console.js:61 Profile page render - userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 Profile page render - userDataError: null
+Console.js:61 [PROFILE PICTURE DEBUG] userData?.photoURL: BASE64_EXISTS
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl: HAS_URL
+Console.js:61 [PROFILE PICTURE DEBUG] userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 [PROFILE PICTURE DEBUG] userData full object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl value: https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c
+Console.js:61 Profile Completion Input: {userData: 'User ID: 2', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+Console.js:61 User data being used for calculation: {name: 'Nishant Chopra', photoURL: 'exists', title: 'World', location: 'Gandhinagar, Gujarat, India', industry: 'Hospitality', …}
+Console.js:61 Profile completion percentage: 60
+Console.js:61 [PROFILE NEO DEBUG] userData?.lookingFor: career_advice
+Console.js:61 [PROFILE NEO DEBUG] Found category: {value: 'career_advice', label: 'Career Advice', icon: '💡'}
+Console.js:61 [PROFILE NEO DEBUG] Final label: Career Advice Icon: 💡
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 useProfileServices hook - services found directly: 3
+Console.js:61 useProfileServices hook - processed data {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', servicesCount: 3, isLoading: false, isError: false, error: undefined}
+Console.js:61 Skills component - Using userNumericId: 2
+Console.js:61 ProfilePictureDialog rendered with open: false
+Console.js:61 Profile page render - user: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', photoURL: 'https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c', …}
+Console.js:61 Profile page render - userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Profile page render - isUserDataLoading: false
+Console.js:61 Profile page render - userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 Profile page render - userDataError: null
+Console.js:61 [PROFILE PICTURE DEBUG] userData?.photoURL: BASE64_EXISTS
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl: HAS_URL
+Console.js:61 [PROFILE PICTURE DEBUG] userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 [PROFILE PICTURE DEBUG] userData full object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl value: https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c
+Console.js:61 Profile Completion Input: {userData: 'User ID: 2', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+Console.js:61 User data being used for calculation: {name: 'Nishant Chopra', photoURL: 'exists', title: 'World', location: 'Gandhinagar, Gujarat, India', industry: 'Hospitality', …}
+Console.js:61 Profile completion percentage: 60
+Console.js:61 [PROFILE NEO DEBUG] userData?.lookingFor: career_advice
+Console.js:61 [PROFILE NEO DEBUG] Found category: {value: 'career_advice', label: 'Career Advice', icon: '💡'}
+Console.js:61 [PROFILE NEO DEBUG] Final label: Career Advice Icon: 💡
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 useProfileServices hook - services found directly: 3
+Console.js:61 useProfileServices hook - processed data {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', servicesCount: 3, isLoading: false, isError: false, error: undefined}
+Console.js:61 Skills component - Using userNumericId: 2
+Console.js:61 ProfilePictureDialog rendered with open: false
+injected.js:253  PUT https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/Unvhj38FHSg36vbagvGL8MvDJuL2/photo 500 (Internal Server Error)
+window.fetch @ Network.js:219
+apply @ injected.js:253
+apiRequest @ queryClient.ts:163
+await in apiRequest
+mutationFn @ use-profile-picture.tsx:82
+fn @ @tanstack_react-query.js?v=204557f4:1189
+run @ @tanstack_react-query.js?v=204557f4:494
+(anonymous) @ @tanstack_react-query.js?v=204557f4:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=204557f4:515
+Promise.catch
+run @ @tanstack_react-query.js?v=204557f4:498
+start @ @tanstack_react-query.js?v=204557f4:536
+execute @ @tanstack_react-query.js?v=204557f4:1225
+await in execute
+mutate @ @tanstack_react-query.js?v=204557f4:2630
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3295
+handleSaveProfilePicture @ profile-picture-dialog.tsx:114
+img.onload @ profile-upload.tsx:140Understand this error
+Console.js:61 [API CLIENT DEBUG] === RESPONSE RECEIVED ===
+Console.js:61 [API CLIENT DEBUG] Status: 500
+Console.js:61 [API CLIENT DEBUG] Status text: Internal Server Error
+Console.js:61 [API CLIENT DEBUG] Response headers: {access-control-allow-credentials: 'true', access-control-allow-headers: 'Origin, X-Requested-With, Content-Type, Accept, Authorization, X-Frame-Options', access-control-allow-methods: 'GET, POST, PUT, DELETE, OPTIONS, HEAD', access-control-allow-origin: 'https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev', content-length: '46', …}
+Console.js:61 API request failed: PUT /api/users/Unvhj38FHSg36vbagvGL8MvDJuL2/photo - Status: 500
+Mt.forEach.n.<computed> @ Console.js:61
+apiRequest @ queryClient.ts:176
+await in apiRequest
+mutationFn @ use-profile-picture.tsx:82
+fn @ @tanstack_react-query.js?v=204557f4:1189
+run @ @tanstack_react-query.js?v=204557f4:494
+(anonymous) @ @tanstack_react-query.js?v=204557f4:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=204557f4:515
+Promise.catch
+run @ @tanstack_react-query.js?v=204557f4:498
+start @ @tanstack_react-query.js?v=204557f4:536
+execute @ @tanstack_react-query.js?v=204557f4:1225
+await in execute
+mutate @ @tanstack_react-query.js?v=204557f4:2630
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3295
+handleSaveProfilePicture @ profile-picture-dialog.tsx:114
+img.onload @ profile-upload.tsx:140Understand this warning
+Console.js:61 Server error 500, retry 3/3 for: /api/users/Unvhj38FHSg36vbagvGL8MvDJuL2/photo
+Console.js:61 Waiting 1200ms before retry 3...
+Console.js:61 Profile page render - user: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', photoURL: 'https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c', …}
+Console.js:61 Profile page render - userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Profile page render - isUserDataLoading: false
+Console.js:61 Profile page render - userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 Profile page render - userDataError: null
+Console.js:61 [PROFILE PICTURE DEBUG] userData?.photoURL: BASE64_EXISTS
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl: HAS_URL
+Console.js:61 [PROFILE PICTURE DEBUG] userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 [PROFILE PICTURE DEBUG] userData full object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl value: https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c
+Console.js:61 Profile Completion Input: {userData: 'User ID: 2', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+Console.js:61 User data being used for calculation: {name: 'Nishant Chopra', photoURL: 'exists', title: 'World', location: 'Gandhinagar, Gujarat, India', industry: 'Hospitality', …}
+Console.js:61 Profile completion percentage: 60
+Console.js:61 [PROFILE NEO DEBUG] userData?.lookingFor: career_advice
+Console.js:61 [PROFILE NEO DEBUG] Found category: {value: 'career_advice', label: 'Career Advice', icon: '💡'}
+Console.js:61 [PROFILE NEO DEBUG] Final label: Career Advice Icon: 💡
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 useProfileServices hook - services found directly: 3
+Console.js:61 useProfileServices hook - processed data {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', servicesCount: 3, isLoading: false, isError: false, error: undefined}
+Console.js:61 Skills component - Using userNumericId: 2
+Console.js:61 ProfilePictureDialog rendered with open: false
+Console.js:61 Profile page render - user: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', photoURL: 'https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c', …}
+Console.js:61 Profile page render - userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Profile page render - isUserDataLoading: false
+Console.js:61 Profile page render - userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 Profile page render - userDataError: null
+Console.js:61 [PROFILE PICTURE DEBUG] userData?.photoURL: BASE64_EXISTS
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl: HAS_URL
+Console.js:61 [PROFILE PICTURE DEBUG] userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 [PROFILE PICTURE DEBUG] userData full object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl value: https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c
+Console.js:61 Profile Completion Input: {userData: 'User ID: 2', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+Console.js:61 User data being used for calculation: {name: 'Nishant Chopra', photoURL: 'exists', title: 'World', location: 'Gandhinagar, Gujarat, India', industry: 'Hospitality', …}
+Console.js:61 Profile completion percentage: 60
+Console.js:61 [PROFILE NEO DEBUG] userData?.lookingFor: career_advice
+Console.js:61 [PROFILE NEO DEBUG] Found category: {value: 'career_advice', label: 'Career Advice', icon: '💡'}
+Console.js:61 [PROFILE NEO DEBUG] Final label: Career Advice Icon: 💡
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 useProfileServices hook - services found directly: 3
+Console.js:61 useProfileServices hook - processed data {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', servicesCount: 3, isLoading: false, isError: false, error: undefined}
+Console.js:61 Skills component - Using userNumericId: 2
+Console.js:61 ProfilePictureDialog rendered with open: false
+Console.js:61 Profile page render - user: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', photoURL: 'https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c', …}
+Console.js:61 Profile page render - userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Profile page render - isUserDataLoading: false
+Console.js:61 Profile page render - userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 Profile page render - userDataError: null
+Console.js:61 [PROFILE PICTURE DEBUG] userData?.photoURL: BASE64_EXISTS
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl: HAS_URL
+Console.js:61 [PROFILE PICTURE DEBUG] userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 [PROFILE PICTURE DEBUG] userData full object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl value: https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c
+Console.js:61 Profile Completion Input: {userData: 'User ID: 2', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+Console.js:61 User data being used for calculation: {name: 'Nishant Chopra', photoURL: 'exists', title: 'World', location: 'Gandhinagar, Gujarat, India', industry: 'Hospitality', …}
+Console.js:61 Profile completion percentage: 60
+Console.js:61 [PROFILE NEO DEBUG] userData?.lookingFor: career_advice
+Console.js:61 [PROFILE NEO DEBUG] Found category: {value: 'career_advice', label: 'Career Advice', icon: '💡'}
+Console.js:61 [PROFILE NEO DEBUG] Final label: Career Advice Icon: 💡
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 useProfileServices hook - services found directly: 3
+Console.js:61 useProfileServices hook - processed data {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', servicesCount: 3, isLoading: false, isError: false, error: undefined}
+Console.js:61 Skills component - Using userNumericId: 2
+Console.js:61 ProfilePictureDialog rendered with open: false
+Console.js:61 Profile page render - user: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', photoURL: 'https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c', …}
+Console.js:61 Profile page render - userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Profile page render - isUserDataLoading: false
+Console.js:61 Profile page render - userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 Profile page render - userDataError: null
+Console.js:61 [PROFILE PICTURE DEBUG] userData?.photoURL: BASE64_EXISTS
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl: HAS_URL
+Console.js:61 [PROFILE PICTURE DEBUG] userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 [PROFILE PICTURE DEBUG] userData full object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl value: https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c
+Console.js:61 Profile Completion Input: {userData: 'User ID: 2', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+Console.js:61 User data being used for calculation: {name: 'Nishant Chopra', photoURL: 'exists', title: 'World', location: 'Gandhinagar, Gujarat, India', industry: 'Hospitality', …}
+Console.js:61 Profile completion percentage: 60
+Console.js:61 [PROFILE NEO DEBUG] userData?.lookingFor: career_advice
+Console.js:61 [PROFILE NEO DEBUG] Found category: {value: 'career_advice', label: 'Career Advice', icon: '💡'}
+Console.js:61 [PROFILE NEO DEBUG] Final label: Career Advice Icon: 💡
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 useProfileServices hook - services found directly: 3
+Console.js:61 useProfileServices hook - processed data {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', servicesCount: 3, isLoading: false, isError: false, error: undefined}
+Console.js:61 Skills component - Using userNumericId: 2
+Console.js:61 ProfilePictureDialog rendered with open: false
+Console.js:61 Profile page render - user: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', photoURL: 'https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c', …}
+Console.js:61 Profile page render - userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Profile page render - isUserDataLoading: false
+Console.js:61 Profile page render - userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 Profile page render - userDataError: null
+Console.js:61 [PROFILE PICTURE DEBUG] userData?.photoURL: BASE64_EXISTS
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl: HAS_URL
+Console.js:61 [PROFILE PICTURE DEBUG] userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 [PROFILE PICTURE DEBUG] userData full object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl value: https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c
+Console.js:61 Profile Completion Input: {userData: 'User ID: 2', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+Console.js:61 User data being used for calculation: {name: 'Nishant Chopra', photoURL: 'exists', title: 'World', location: 'Gandhinagar, Gujarat, India', industry: 'Hospitality', …}
+Console.js:61 Profile completion percentage: 60
+Console.js:61 [PROFILE NEO DEBUG] userData?.lookingFor: career_advice
+Console.js:61 [PROFILE NEO DEBUG] Found category: {value: 'career_advice', label: 'Career Advice', icon: '💡'}
+Console.js:61 [PROFILE NEO DEBUG] Final label: Career Advice Icon: 💡
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 useProfileServices hook - services found directly: 3
+Console.js:61 useProfileServices hook - processed data {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', servicesCount: 3, isLoading: false, isError: false, error: undefined}
+Console.js:61 Skills component - Using userNumericId: 2
+Console.js:61 ProfilePictureDialog rendered with open: false
+Console.js:61 Profile page render - user: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', photoURL: 'https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c', …}
+Console.js:61 Profile page render - userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Profile page render - isUserDataLoading: false
+Console.js:61 Profile page render - userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 Profile page render - userDataError: null
+Console.js:61 [PROFILE PICTURE DEBUG] userData?.photoURL: BASE64_EXISTS
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl: HAS_URL
+Console.js:61 [PROFILE PICTURE DEBUG] userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 [PROFILE PICTURE DEBUG] userData full object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl value: https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c
+Console.js:61 Profile Completion Input: {userData: 'User ID: 2', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+Console.js:61 User data being used for calculation: {name: 'Nishant Chopra', photoURL: 'exists', title: 'World', location: 'Gandhinagar, Gujarat, India', industry: 'Hospitality', …}
+Console.js:61 Profile completion percentage: 60
+Console.js:61 [PROFILE NEO DEBUG] userData?.lookingFor: career_advice
+Console.js:61 [PROFILE NEO DEBUG] Found category: {value: 'career_advice', label: 'Career Advice', icon: '💡'}
+Console.js:61 [PROFILE NEO DEBUG] Final label: Career Advice Icon: 💡
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 useProfileServices hook - services found directly: 3
+Console.js:61 useProfileServices hook - processed data {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', servicesCount: 3, isLoading: false, isError: false, error: undefined}
+Console.js:61 Skills component - Using userNumericId: 2
+Console.js:61 ProfilePictureDialog rendered with open: false
+Console.js:61 [API CLIENT DEBUG] === PROFILE PICTURE PUT REQUEST ===
+Console.js:61 [API CLIENT DEBUG] URL: /api/users/Unvhj38FHSg36vbagvGL8MvDJuL2/photo
+Console.js:61 [API CLIENT DEBUG] Method: PUT
+Console.js:61 [API CLIENT DEBUG] Request options: {method: 'PUT', headers: {…}, body: '{"photoURL":"data:image/jpeg;base64,/9j/4AAQSkZJRg…cuZlEdabdVsJHsssf8AmqrKweymU9eDrOm9ZnbdCp+/B//Z"}', credentials: 'include'}
+Console.js:61 [API CLIENT DEBUG] Data keys: ['photoURL']
+Console.js:61 [API CLIENT DEBUG] photoURL length: 43307
+Console.js:61 [API CLIENT DEBUG] photoURL preview: data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCI
+Console.js:61 [API CLIENT DEBUG] About to send fetch request...
+sw.js:40 [SW] *** BYPASSING SERVICE WORKER FOR PUT REQUEST ***
+sw.js:41 [SW] URL: https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/Unvhj38FHSg36vbagvGL8MvDJuL2/photo
+sw.js:42 [SW] Method: PUT
+Console.js:61 Profile page render - user: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', photoURL: 'https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c', …}
+Console.js:61 Profile page render - userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Profile page render - isUserDataLoading: false
+Console.js:61 Profile page render - userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 Profile page render - userDataError: null
+Console.js:61 [PROFILE PICTURE DEBUG] userData?.photoURL: BASE64_EXISTS
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl: HAS_URL
+Console.js:61 [PROFILE PICTURE DEBUG] userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 [PROFILE PICTURE DEBUG] userData full object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl value: https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c
+Console.js:61 Profile Completion Input: {userData: 'User ID: 2', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+Console.js:61 User data being used for calculation: {name: 'Nishant Chopra', photoURL: 'exists', title: 'World', location: 'Gandhinagar, Gujarat, India', industry: 'Hospitality', …}
+Console.js:61 Profile completion percentage: 60
+Console.js:61 [PROFILE NEO DEBUG] userData?.lookingFor: career_advice
+Console.js:61 [PROFILE NEO DEBUG] Found category: {value: 'career_advice', label: 'Career Advice', icon: '💡'}
+Console.js:61 [PROFILE NEO DEBUG] Final label: Career Advice Icon: 💡
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 useProfileServices hook - services found directly: 3
+Console.js:61 useProfileServices hook - processed data {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', servicesCount: 3, isLoading: false, isError: false, error: undefined}
+Console.js:61 Skills component - Using userNumericId: 2
+Console.js:61 ProfilePictureDialog rendered with open: false
+Console.js:61 Profile page render - user: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', photoURL: 'https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c', …}
+Console.js:61 Profile page render - userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Profile page render - isUserDataLoading: false
+Console.js:61 Profile page render - userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 Profile page render - userDataError: null
+Console.js:61 [PROFILE PICTURE DEBUG] userData?.photoURL: BASE64_EXISTS
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl: HAS_URL
+Console.js:61 [PROFILE PICTURE DEBUG] userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 [PROFILE PICTURE DEBUG] userData full object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl value: https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c
+Console.js:61 Profile Completion Input: {userData: 'User ID: 2', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+Console.js:61 User data being used for calculation: {name: 'Nishant Chopra', photoURL: 'exists', title: 'World', location: 'Gandhinagar, Gujarat, India', industry: 'Hospitality', …}
+Console.js:61 Profile completion percentage: 60
+Console.js:61 [PROFILE NEO DEBUG] userData?.lookingFor: career_advice
+Console.js:61 [PROFILE NEO DEBUG] Found category: {value: 'career_advice', label: 'Career Advice', icon: '💡'}
+Console.js:61 [PROFILE NEO DEBUG] Final label: Career Advice Icon: 💡
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 useProfileServices hook - services found directly: 3
+Console.js:61 useProfileServices hook - processed data {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', servicesCount: 3, isLoading: false, isError: false, error: undefined}
+Console.js:61 Skills component - Using userNumericId: 2
+Console.js:61 ProfilePictureDialog rendered with open: false
+Console.js:61 Profile page render - user: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', photoURL: 'https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c', …}
+Console.js:61 Profile page render - userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Profile page render - isUserDataLoading: false
+Console.js:61 Profile page render - userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 Profile page render - userDataError: null
+Console.js:61 [PROFILE PICTURE DEBUG] userData?.photoURL: BASE64_EXISTS
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl: HAS_URL
+Console.js:61 [PROFILE PICTURE DEBUG] userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 [PROFILE PICTURE DEBUG] userData full object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl value: https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c
+Console.js:61 Profile Completion Input: {userData: 'User ID: 2', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+Console.js:61 User data being used for calculation: {name: 'Nishant Chopra', photoURL: 'exists', title: 'World', location: 'Gandhinagar, Gujarat, India', industry: 'Hospitality', …}
+Console.js:61 Profile completion percentage: 60
+Console.js:61 [PROFILE NEO DEBUG] userData?.lookingFor: career_advice
+Console.js:61 [PROFILE NEO DEBUG] Found category: {value: 'career_advice', label: 'Career Advice', icon: '💡'}
+Console.js:61 [PROFILE NEO DEBUG] Final label: Career Advice Icon: 💡
+injected.js:253  PUT https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/Unvhj38FHSg36vbagvGL8MvDJuL2/photo 500 (Internal Server Error)
+window.fetch @ Network.js:219
+apply @ injected.js:253
+apiRequest @ queryClient.ts:163
+await in apiRequest
+mutationFn @ use-profile-picture.tsx:82
+fn @ @tanstack_react-query.js?v=204557f4:1189
+run @ @tanstack_react-query.js?v=204557f4:494
+(anonymous) @ @tanstack_react-query.js?v=204557f4:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=204557f4:515
+Promise.catch
+run @ @tanstack_react-query.js?v=204557f4:498
+start @ @tanstack_react-query.js?v=204557f4:536
+execute @ @tanstack_react-query.js?v=204557f4:1225
+await in execute
+mutate @ @tanstack_react-query.js?v=204557f4:2630
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3295
+handleSaveProfilePicture @ profile-picture-dialog.tsx:114
+img.onload @ profile-upload.tsx:140Understand this error
+Console.js:61 [API CLIENT DEBUG] === RESPONSE RECEIVED ===
+Console.js:61 [API CLIENT DEBUG] Status: 500
+Console.js:61 [API CLIENT DEBUG] Status text: Internal Server Error
+Console.js:61 [API CLIENT DEBUG] Response headers: {access-control-allow-credentials: 'true', access-control-allow-headers: 'Origin, X-Requested-With, Content-Type, Accept, Authorization, X-Frame-Options', access-control-allow-methods: 'GET, POST, PUT, DELETE, OPTIONS, HEAD', access-control-allow-origin: 'https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev', content-length: '46', …}
+Console.js:61 API request failed: PUT /api/users/Unvhj38FHSg36vbagvGL8MvDJuL2/photo - Status: 500
+Mt.forEach.n.<computed> @ Console.js:61
+apiRequest @ queryClient.ts:176
+await in apiRequest
+mutationFn @ use-profile-picture.tsx:82
+fn @ @tanstack_react-query.js?v=204557f4:1189
+run @ @tanstack_react-query.js?v=204557f4:494
+(anonymous) @ @tanstack_react-query.js?v=204557f4:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=204557f4:515
+Promise.catch
+run @ @tanstack_react-query.js?v=204557f4:498
+start @ @tanstack_react-query.js?v=204557f4:536
+execute @ @tanstack_react-query.js?v=204557f4:1225
+await in execute
+mutate @ @tanstack_react-query.js?v=204557f4:2630
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3295
+handleSaveProfilePicture @ profile-picture-dialog.tsx:114
+img.onload @ profile-upload.tsx:140Understand this warning
+Console.js:61 API Error 500 from https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/Unvhj38FHSg36vbagvGL8MvDJuL2/photo: {"message":"Failed to update profile picture"}
+Mt.forEach.n.<computed> @ Console.js:61
+throwIfResNotOk @ queryClient.ts:11
+await in throwIfResNotOk
+apiRequest @ queryClient.ts:206
+await in apiRequest
+mutationFn @ use-profile-picture.tsx:82
+fn @ @tanstack_react-query.js?v=204557f4:1189
+run @ @tanstack_react-query.js?v=204557f4:494
+(anonymous) @ @tanstack_react-query.js?v=204557f4:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=204557f4:515
+Promise.catch
+run @ @tanstack_react-query.js?v=204557f4:498
+start @ @tanstack_react-query.js?v=204557f4:536
+execute @ @tanstack_react-query.js?v=204557f4:1225
+await in execute
+mutate @ @tanstack_react-query.js?v=204557f4:2630
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3295
+handleSaveProfilePicture @ profile-picture-dialog.tsx:114
+img.onload @ profile-upload.tsx:140Understand this error
+Console.js:61 API request failed: Error: 500: {"message":"Failed to update profile picture"}
+    at throwIfResNotOk (queryClient.ts:12:13)
+    at async apiRequest (queryClient.ts:206:7)
+    at async Object.mutationFn (use-profile-picture.tsx:82:21)
+Mt.forEach.n.<computed> @ Console.js:61
+mutationFn @ use-profile-picture.tsx:100
+await in mutationFn
+fn @ @tanstack_react-query.js?v=204557f4:1189
+run @ @tanstack_react-query.js?v=204557f4:494
+(anonymous) @ @tanstack_react-query.js?v=204557f4:519
+Promise.then
+(anonymous) @ @tanstack_react-query.js?v=204557f4:515
+Promise.catch
+run @ @tanstack_react-query.js?v=204557f4:498
+start @ @tanstack_react-query.js?v=204557f4:536
+execute @ @tanstack_react-query.js?v=204557f4:1225
+await in execute
+mutate @ @tanstack_react-query.js?v=204557f4:2630
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3295
+handleSaveProfilePicture @ profile-picture-dialog.tsx:114
+img.onload @ profile-upload.tsx:140Understand this error
+Console.js:61 Error updating profile picture: Error: 500: {"message":"Failed to update profile picture"}
+    at throwIfResNotOk (queryClient.ts:12:13)
+    at async apiRequest (queryClient.ts:206:7)
+    at async Object.mutationFn (use-profile-picture.tsx:82:21)
+Mt.forEach.n.<computed> @ Console.js:61
+onError @ use-profile-picture.tsx:157
+execute @ @tanstack_react-query.js?v=204557f4:1254
+await in execute
+mutate @ @tanstack_react-query.js?v=204557f4:2630
+(anonymous) @ @tanstack_react-query.js?v=204557f4:3295
+handleSaveProfilePicture @ profile-picture-dialog.tsx:114
+img.onload @ profile-upload.tsx:140Understand this error
+Console.js:61 Profile page render - user: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', photoURL: 'https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c', …}
+Console.js:61 Profile page render - userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Profile page render - isUserDataLoading: false
+Console.js:61 Profile page render - userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 Profile page render - userDataError: null
+Console.js:61 [PROFILE PICTURE DEBUG] userData?.photoURL: BASE64_EXISTS
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl: HAS_URL
+Console.js:61 [PROFILE PICTURE DEBUG] userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 [PROFILE PICTURE DEBUG] userData full object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl value: https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c
+Console.js:61 Profile Completion Input: {userData: 'User ID: 2', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+Console.js:61 User data being used for calculation: {name: 'Nishant Chopra', photoURL: 'exists', title: 'World', location: 'Gandhinagar, Gujarat, India', industry: 'Hospitality', …}
+Console.js:61 Profile completion percentage: 60
+Console.js:61 [PROFILE NEO DEBUG] userData?.lookingFor: career_advice
+Console.js:61 [PROFILE NEO DEBUG] Found category: {value: 'career_advice', label: 'Career Advice', icon: '💡'}
+Console.js:61 [PROFILE NEO DEBUG] Final label: Career Advice Icon: 💡
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 useProfileServices hook - services found directly: 3
+Console.js:61 useProfileServices hook - processed data {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', servicesCount: 3, isLoading: false, isError: false, error: undefined}
+Console.js:61 Skills component - Using userNumericId: 2
+Console.js:61 ProfilePictureDialog rendered with open: false
+Console.js:61 Profile page render - user: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', photoURL: 'https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c', …}
+Console.js:61 Profile page render - userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Profile page render - isUserDataLoading: false
+Console.js:61 Profile page render - userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 Profile page render - userDataError: null
+Console.js:61 [PROFILE PICTURE DEBUG] userData?.photoURL: BASE64_EXISTS
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl: HAS_URL
+Console.js:61 [PROFILE PICTURE DEBUG] userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 [PROFILE PICTURE DEBUG] userData full object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl value: https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c
+Console.js:61 Profile Completion Input: {userData: 'User ID: 2', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+Console.js:61 User data being used for calculation: {name: 'Nishant Chopra', photoURL: 'exists', title: 'World', location: 'Gandhinagar, Gujarat, India', industry: 'Hospitality', …}
+Console.js:61 Profile completion percentage: 60
+Console.js:61 [PROFILE NEO DEBUG] userData?.lookingFor: career_advice
+Console.js:61 [PROFILE NEO DEBUG] Found category: {value: 'career_advice', label: 'Career Advice', icon: '💡'}
+Console.js:61 [PROFILE NEO DEBUG] Final label: Career Advice Icon: 💡
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 useProfileServices hook - services found directly: 3
+Console.js:61 useProfileServices hook - processed data {whatIOffer: 'I am a skilled software developer specializing in …ring a detail-oriented approach to every project.', servicesCount: 3, isLoading: false, isError: false, error: undefined}
+Console.js:61 Skills component - Using userNumericId: 2
+Console.js:61 ProfilePictureDialog rendered with open: false
