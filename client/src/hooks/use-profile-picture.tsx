@@ -123,13 +123,25 @@ export function useProfilePicture(userId: number | string | null = null) {
       console.log('[PROFILE PICTURE] Upload successful, response data:', data);
       console.log('[PROFILE PICTURE] Target user ID for cache invalidation:', targetUserId);
       
-      // Invalidate all user-related queries to force fresh data
-      console.log('[PROFILE PICTURE] Invalidating user caches...');
-      queryClient.invalidateQueries({ queryKey: ['/api/users'] });
+      // Invalidate specific user queries to force fresh data
+      console.log('[PROFILE PICTURE] Invalidating user caches for user:', targetUserId);
       
-      // Also invalidate specific user query
       if (targetUserId) {
+        // Invalidate the specific user endpoint
         queryClient.invalidateQueries({ queryKey: [`/api/users/${targetUserId}`] });
+        
+        // Also invalidate any cached user data by Firebase UID
+        queryClient.invalidateQueries({ 
+          predicate: (query) => {
+            const queryKey = query.queryKey;
+            return Array.isArray(queryKey) && 
+                   queryKey.some(key => 
+                     typeof key === 'string' && 
+                     key.includes('/api/users') &&
+                     key.includes(targetUserId)
+                   );
+          }
+        });
       }
       
       toast({
@@ -137,21 +149,7 @@ export function useProfilePicture(userId: number | string | null = null) {
         description: "Your profile picture has been updated successfully",
       });
       
-      // Force complete cache refresh with a longer delay
-      setTimeout(() => {
-        console.log('[PROFILE PICTURE] Force refreshing all user data...');
-        queryClient.invalidateQueries({ queryKey: ['/api/users'] });
-        queryClient.refetchQueries({ 
-          queryKey: ['/api/users'], 
-          type: 'active' 
-        });
-        
-        // Also force page reload if needed
-        setTimeout(() => {
-          console.log('[PROFILE PICTURE] Final cache cleanup...');
-          queryClient.resetQueries({ queryKey: ['/api/users'] });
-        }, 500);
-      }, 300);
+      console.log('[PROFILE PICTURE] Cache invalidation complete');
     },
     onError: (error: Error) => {
       console.error("Error updating profile picture:", error);
