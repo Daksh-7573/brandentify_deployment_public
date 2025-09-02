@@ -80,7 +80,7 @@ export function ProfilePictureDialog({
         throw new Error("Failed to update profile picture. Please try again.");
       }
     },
-    onSuccess: () => {
+    onSuccess: async (data) => {
       setIsUploading(false);
       toast({
         title: "Success!",
@@ -88,8 +88,20 @@ export function ProfilePictureDialog({
         variant: "default",
       });
       
-      // Simplified cache invalidation 
-      queryClient.invalidateQueries({ queryKey: ['/api/users', actualUserId] });
+      // Simple and reliable cache invalidation
+      await queryClient.invalidateQueries({ 
+        queryKey: ['/api/users', actualUserId],
+        exact: true 
+      });
+      
+      // Also invalidate by numeric ID if different from actualUserId
+      const numericUserId = (data as any)?.id?.toString();
+      if (numericUserId && numericUserId !== actualUserId) {
+        await queryClient.invalidateQueries({ 
+          queryKey: ['/api/users', numericUserId],
+          exact: true 
+        });
+      }
       
       onOpenChange(false);
     },

@@ -22,7 +22,7 @@ export default function Header() {
   
   // Use TanStack Query to fetch and cache user data
   const { data: userData, isError } = useQuery({
-    queryKey: [`/api/users/${userId}`],
+    queryKey: ['/api/users', userId],
     queryFn: async () => {
       if (!userId) return null;
       
@@ -48,7 +48,7 @@ export default function Header() {
     // Immediately trigger a refresh of user data when header loads
     if (userId) {
       console.log("Header mounted - invalidating user query");
-      queryClient.invalidateQueries({ queryKey: [`/api/users/${userId}`] });
+      queryClient.invalidateQueries({ queryKey: ['/api/users', userId] });
     }
   }, [userId]);
   

@@ -123,53 +123,24 @@ export function useProfilePicture(userId: number | string | null = null) {
       console.log('[PROFILE PICTURE] Upload successful, response data:', data);
       console.log('[PROFILE PICTURE] Target user ID for cache invalidation:', targetUserId);
       
-      // Force immediate fresh data fetch for ALL user query formats
-      console.log('[PROFILE PICTURE] Force refreshing user data for:', targetUserId);
-      
+      // Simple and reliable cache invalidation
       if (targetUserId) {
-        // Get both Firebase UID and numeric ID for comprehensive cache clearing
-        const numericUserId = (data as any)?.id?.toString();
-        
-        console.log('[PROFILE PICTURE] Targeting Firebase UID:', targetUserId);
-        console.log('[PROFILE PICTURE] Targeting numeric ID:', numericUserId);
-        
-        // Use ONLY working query key formats that match actual component usage
-        
-        // 1. STRING FORMAT - Used by Header & Right Sidebar 
-        await queryClient.refetchQueries({ 
-          queryKey: [`/api/users/${targetUserId}`],
+        // Invalidate all user queries for this user ID
+        await queryClient.invalidateQueries({ 
+          queryKey: ['/api/users', targetUserId],
           exact: true 
         });
         
+        // Also invalidate by numeric ID if different from targetUserId
+        const numericUserId = (data as any)?.id?.toString();
         if (numericUserId && numericUserId !== targetUserId) {
-          await queryClient.refetchQueries({ 
-            queryKey: [`/api/users/${numericUserId}`],
+          await queryClient.invalidateQueries({ 
+            queryKey: ['/api/users', numericUserId],
             exact: true 
           });
         }
         
-        // 2. ARRAY FORMAT - Used by Profile Page (but causes wrong endpoint calls)
-        // Skip array format refetch to avoid /api/users calls
-        queryClient.invalidateQueries({ queryKey: ['/api/users', targetUserId] });
-        if (numericUserId && numericUserId !== targetUserId) {
-          queryClient.invalidateQueries({ queryKey: ['/api/users', numericUserId] });
-        }
-        
-        // 3. PREDICATE-based invalidation for any other formats
-        queryClient.invalidateQueries({ 
-          predicate: (query) => {
-            const queryKey = query.queryKey;
-            if (!Array.isArray(queryKey)) return false;
-            
-            return queryKey.some(key => 
-              typeof key === 'string' && 
-              key.includes('/api/users') &&
-              (key.includes(String(targetUserId)) || (numericUserId && key.includes(numericUserId)))
-            );
-          }
-        });
-        
-        console.log('[PROFILE PICTURE] Force refresh and cache reset complete');
+        console.log('[PROFILE PICTURE] Cache invalidation complete');
       }
       
       toast({
