@@ -123,14 +123,17 @@ export function useProfilePicture(userId: number | string | null = null) {
       console.log('[PROFILE PICTURE] Upload successful, response data:', data);
       console.log('[PROFILE PICTURE] Target user ID for cache invalidation:', targetUserId);
       
-      // Invalidate specific user queries to force fresh data
+      // Invalidate ALL user query formats to ensure immediate UI refresh
       console.log('[PROFILE PICTURE] Invalidating user caches for user:', targetUserId);
       
       if (targetUserId) {
-        // Invalidate the specific user endpoint
+        // 1. String format: `/api/users/${targetUserId}` (Header & Right Sidebar)
         queryClient.invalidateQueries({ queryKey: [`/api/users/${targetUserId}`] });
         
-        // Also invalidate any cached user data by Firebase UID
+        // 2. Array format: ['/api/users', targetUserId] (Profile Page)
+        queryClient.invalidateQueries({ queryKey: ['/api/users', targetUserId] });
+        
+        // 3. Predicate-based catch-all for any other format
         queryClient.invalidateQueries({ 
           predicate: (query) => {
             const queryKey = query.queryKey;
@@ -142,6 +145,8 @@ export function useProfilePicture(userId: number | string | null = null) {
                    );
           }
         });
+        
+        console.log('[PROFILE PICTURE] Invalidated all user cache formats');
       }
       
       toast({
