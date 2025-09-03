@@ -398,7 +398,7 @@ export default function CareerCapsulePage() {
 
         {/* Dialog for Create Goal */}
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-        <DialogContent className="sm:max-w-[500px] max-w-[95vw] max-h-[90vh] overflow-y-auto neo-glass-card mx-3 sm:mx-auto">
+        <DialogContent className="sm:max-w-[500px] max-w-[95vw] max-h-[90vh] overflow-y-auto bg-white/10 backdrop-blur-md border border-white/20 shadow-xl mx-3 sm:mx-auto">
           <DialogHeader>
             <DialogTitle className="text-white text-lg sm:text-xl">Create New Career Goal</DialogTitle>
             <DialogDescription className="text-gray-300 text-sm sm:text-base">
@@ -521,7 +521,7 @@ export default function CareerCapsulePage() {
       
       {/* Success Dialog after goal and milestone creation */}
       <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
-        <DialogContent className="sm:max-w-[500px] neo-glass-modal">
+        <DialogContent className="sm:max-w-[500px] bg-white/10 backdrop-blur-md border border-white/20 shadow-xl">
           <DialogHeader>
             <DialogTitle className="flex items-center text-white">
               <CheckCircle className="mr-2 h-6 w-6" />
@@ -571,7 +571,7 @@ export default function CareerCapsulePage() {
       
       {/* Details Dialog */}
       <Dialog open={showDetailsDialog} onOpenChange={setShowDetailsDialog}>
-        <DialogContent className="sm:max-w-[700px] w-[95vw] sm:w-full max-h-[95vh] neo-glass-modal">
+        <DialogContent className="sm:max-w-[700px] w-[95vw] sm:w-full max-h-[95vh] bg-white/10 backdrop-blur-md border border-white/20 shadow-xl">
           <DialogHeader>
             <DialogTitle className="text-white">
               {goalDetails && typeof goalDetails === 'object' ? 
@@ -859,7 +859,7 @@ export default function CareerCapsulePage() {
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <DialogContent className="sm:max-w-[425px] neo-glass-modal">
+        <DialogContent className="sm:max-w-[425px] bg-white/10 backdrop-blur-md border border-white/20 shadow-xl">
           <DialogHeader>
             <DialogTitle className="text-white">Delete Career Capsule</DialogTitle>
             <DialogDescription className="text-gray-300">
