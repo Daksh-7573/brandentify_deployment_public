@@ -117,21 +117,19 @@ export function ProfilePictureDialog({
         });
       }
       
-      // Force component re-renders
-      setTimeout(() => {
+      // Force component re-renders immediately after cache update
+      queryClient.invalidateQueries({ 
+        queryKey: ['/api/users', actualUserId],
+        exact: true,
+        refetchType: 'none'
+      });
+      if (numericUserId && numericUserId !== actualUserId) {
         queryClient.invalidateQueries({ 
-          queryKey: ['/api/users', actualUserId],
+          queryKey: ['/api/users', numericUserId],
           exact: true,
           refetchType: 'none'
         });
-        if (numericUserId && numericUserId !== actualUserId) {
-          queryClient.invalidateQueries({ 
-            queryKey: ['/api/users', numericUserId],
-            exact: true,
-            refetchType: 'none'
-          });
-        }
-      }, 100);
+      }
       
       onOpenChange(false);
     },

@@ -158,21 +158,19 @@ export function useProfilePicture(userId: number | string | null = null) {
           });
         }
         
-        // Force all components to re-render by invalidating after the cache update
-        setTimeout(() => {
+        // Force all components to re-render immediately after cache update
+        queryClient.invalidateQueries({ 
+          queryKey: ['/api/users', targetUserId],
+          exact: true,
+          refetchType: 'none' // Don't refetch, just trigger re-renders
+        });
+        if (numericUserId && numericUserId !== targetUserId) {
           queryClient.invalidateQueries({ 
-            queryKey: ['/api/users', targetUserId],
+            queryKey: ['/api/users', numericUserId],
             exact: true,
-            refetchType: 'none' // Don't refetch, just trigger re-renders
+            refetchType: 'none'
           });
-          if (numericUserId && numericUserId !== targetUserId) {
-            queryClient.invalidateQueries({ 
-              queryKey: ['/api/users', numericUserId],
-              exact: true,
-              refetchType: 'none'
-            });
-          }
-        }, 100);
+        }
         
         console.log('[PROFILE PICTURE] Cache data update complete');
       }
