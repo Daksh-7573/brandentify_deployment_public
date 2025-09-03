@@ -77,12 +77,12 @@ ${JSON.stringify(localStorage, null, 2)}
         try {
             // Initialize Firebase with environment variables
             const firebaseConfig = {
-                apiKey: "AIzaSyABCDEF...", // Will be loaded from environment
+                apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
                 authDomain: "brandentifier-app.firebaseapp.com",
                 projectId: "brandentifier-app",
                 storageBucket: "brandentifier-app.firebasestorage.app",
                 messagingSenderId: "364932947264",
-                appId: "1:364932947264:web:..."
+                appId: import.meta.env.VITE_FIREBASE_APP_ID
             };
             
             const app = initializeApp(firebaseConfig);
