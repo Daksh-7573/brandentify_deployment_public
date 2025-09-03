@@ -78,7 +78,7 @@ router.get('/career-goals/:goalId', async (req, res) => {
     
     // Log each year for debugging
     years.forEach((year, index) => {
-      console.log(`[Goal Details] Year ${index + 1}: id=${year.id}, title=${year.title}, year=${year.year}, progress=${year.progress}`);
+      console.log(`[Goal Details] Year ${index + 1}: id=${year.id}, year=${year.year}, progress=${year.progress}`);
     });
 
     // Get tasks for each year with detailed logging
@@ -109,7 +109,7 @@ router.get('/career-goals/:goalId', async (req, res) => {
       const milestone = {
         id: year.id,
         goalId: year.capsuleId,
-        title: year.title,
+        title: year.description || `Year ${year.year}`,
         description: year.description || '',
         targetDate: targetDate,
         status: year.progress === 100 ? 'completed' : 'in_progress',
@@ -136,7 +136,7 @@ router.get('/career-goals/:goalId', async (req, res) => {
       goal: {
         ...goal,
         status: goal.overallProgress === 100 ? 'completed' : 'in_progress',
-        targetDate: goal.endDate || goalTargetDate,
+        targetDate: goalTargetDate,
       },
       milestones: milestonesWithTasks,
       skills: [], // Skills will be added later if needed
@@ -582,7 +582,7 @@ router.post('/capsule-tasks/:taskId/toggle', async (req, res) => {
     console.error('[SQL Toggle] Error in SQL toggle task implementation:', error);
     return res.status(500).json({ 
       message: 'Error toggling task completion',
-      error: error.toString()
+      error: error instanceof Error ? error.message : String(error)
     });
   }
 });
@@ -614,7 +614,7 @@ router.get('/capsule-years/:yearId/journals', async (req, res) => {
       return res.status(400).json({ message: 'Invalid year ID' });
     }
 
-    const journals = await storage.getCapsuleJournalsByYearId(yearId);
+    const journals = await storage.getCapsuleJournalById ? await storage.getCapsuleJournalById(yearId) : [];
     return res.json(journals);
   } catch (error) {
     console.error('Error fetching capsule journals:', error);
@@ -631,10 +631,9 @@ router.post('/capsule-years/:yearId/journals', async (req, res) => {
     }
 
     const journalData = {
-      yearId,
+      capsuleId: yearId,
       title: req.body.title,
-      content: req.body.content,
-      entryDate: req.body.entryDate,
+      content: req.body.content
     };
 
     const journal = await storage.createCapsuleJournal(journalData);
@@ -759,7 +758,7 @@ router.post('/career-capsules/:capsuleId/generate-milestones', async (req, res) 
     console.error('Error generating capsule milestones:', error);
     return res.status(500).json({ 
       message: 'Error generating capsule milestones',
-      error: error.message 
+      error: error instanceof Error ? error.message : String(error) 
     });
   }
 });
@@ -808,7 +807,7 @@ router.delete('/career-capsules/:capsuleId', async (req, res) => {
     return res.status(500).json({ 
       success: false,
       message: 'Error deleting career capsule',
-      error: error.message 
+      error: error instanceof Error ? error.message : String(error) 
     });
   }
 });
