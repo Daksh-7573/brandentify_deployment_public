@@ -138,7 +138,8 @@ export function useProfilePicture(userId: number | string | null = null) {
               ...oldData,
               photoURL: newPhotoURL || oldData.photoURL
             };
-            console.log('[PROFILE PICTURE] Cache updated successfully');
+            console.log('[PROFILE PICTURE] ✅ Cache updated successfully for userId:', targetUserId);
+            console.log('[PROFILE PICTURE] ✅ Updated data includes photoURL:', updatedData.photoURL ? 'YES' : 'NO');
             return updatedData;
           }
           return oldData;
@@ -159,18 +160,21 @@ export function useProfilePicture(userId: number | string | null = null) {
         }
         
         // Force all components to re-render immediately after cache update
+        console.log('[PROFILE PICTURE] 🔄 Triggering component re-renders for userId:', targetUserId);
         queryClient.invalidateQueries({ 
           queryKey: ['/api/users', targetUserId],
           exact: true,
           refetchType: 'none' // Don't refetch, just trigger re-renders
         });
         if (numericUserId && numericUserId !== targetUserId) {
+          console.log('[PROFILE PICTURE] 🔄 Also triggering re-renders for numericUserId:', numericUserId);
           queryClient.invalidateQueries({ 
             queryKey: ['/api/users', numericUserId],
             exact: true,
             refetchType: 'none'
           });
         }
+        console.log('[PROFILE PICTURE] 🎉 All cache updates and re-renders completed!');
         
         console.log('[PROFILE PICTURE] Cache data update complete');
       }

@@ -1,0 +1,30 @@
+Profile page render - user: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', name: 'Nishant Chopra', photoURL: 'https://lh3.googleusercontent.com/a/ACg8ocKYh_UKlyrkMCw7IQ4V5MDmAarOTMq-qaVJJpkwgtOh0EXnmA=s96-c', …}
+Console.js:61 Profile page render - userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Profile page render - isUserDataLoading: false
+Console.js:61 Profile page render - userData: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 Profile page render - userDataError: null
+Console.js:61 [PROFILE PICTURE DEBUG] userData?.photoURL: BASE64_EXISTS
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl: HAS_URL
+Console.js:61 [PROFILE PICTURE DEBUG] userIdentifier: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 [PROFILE PICTURE DEBUG] userData full object: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 [PROFILE PICTURE DEBUG] profilePictureUrl value: data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCI...
+Console.js:61 Profile Completion Input: {userData: 'User ID: 2', experiences: 0, educations: 0, skills: 0, projects: 0, …}
+Console.js:61 User data being used for calculation: {name: 'Nishant Chopra', photoURL: 'exists', title: 'World', location: 'Gandhinagar, Gujarat, India', industry: 'Hospitality', …}
+Console.js:61 Profile completion percentage: 60
+Console.js:61 [PROFILE NEO DEBUG] userData?.lookingFor: career_advice
+Console.js:61 [PROFILE NEO DEBUG] Found category: {value: 'career_advice', label: 'Career Advice', icon: '💡'}
+Console.js:61 [PROFILE NEO DEBUG] Final label: Career Advice Icon: 💡
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 [HEADER IMAGE DEBUG] Image loaded successfully
+Console.js:61 [HEADER IMAGE DEBUG] Image source type: BASE64
+Console.js:61 [HEADER IMAGE DEBUG] Image source length: 27083
+Console.js:61 [PROFILE PICTURE DEBUG] ✅ Image loaded successfully
+Console.js:61 [PROFILE PICTURE DEBUG] Final src: data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCI...
+Console.js:61 [PROFILE PICTURE DEBUG] Image source type: BASE64
+Console.js:61 [PROFILE PICTURE DEBUG] Image size: 27083
+Console.js:61 [PROFILE PICTURE DEBUG] Image dimensions: 400x400
+Console.js:61 [PROFILE PICTURE DEBUG] ✅ Manual image test: SUCCESSFUL
+Console.js:61 [PROFILE PICTURE DEBUG] Manual test dimensions: 400x400

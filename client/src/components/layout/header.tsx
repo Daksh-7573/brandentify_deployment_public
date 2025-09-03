@@ -39,8 +39,8 @@ export default function Header() {
       return data;
     },
     enabled: !!userId, // Only run query if userId exists
-    staleTime: 10000, // Consider data fresh for 10 seconds
-    refetchOnWindowFocus: true // Refresh when window gets focus
+    staleTime: 0, // Always consider data stale so updates show immediately
+    refetchOnWindowFocus: false // Don't auto-refetch to avoid unnecessary calls
   });
   
   // Force refresh data when component mounts
