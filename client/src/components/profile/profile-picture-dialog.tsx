@@ -89,12 +89,15 @@ export function ProfilePictureDialog({
       });
       
       // Direct cache data update instead of invalidation
+      const newPhotoURL = (data as any)?.photoURL;
+      console.log('[PROFILE DIALOG] Updating cache with new photoURL:', newPhotoURL ? 'HAS_DATA' : 'NO_DATA');
+      
       queryClient.setQueryData(['/api/users', actualUserId], (oldData: any) => {
         if (oldData) {
           console.log('[PROFILE DIALOG] Updating cached data with new photoURL');
           return {
             ...oldData,
-            photoURL: (data as any)?.photoURL || oldData.photoURL
+            photoURL: newPhotoURL || oldData.photoURL
           };
         }
         return oldData;
@@ -107,12 +110,28 @@ export function ProfilePictureDialog({
           if (oldData) {
             return {
               ...oldData,
-              photoURL: (data as any)?.photoURL || oldData.photoURL
+              photoURL: newPhotoURL || oldData.photoURL
             };
           }
           return oldData;
         });
       }
+      
+      // Force component re-renders
+      setTimeout(() => {
+        queryClient.invalidateQueries({ 
+          queryKey: ['/api/users', actualUserId],
+          exact: true,
+          refetchType: 'none'
+        });
+        if (numericUserId && numericUserId !== actualUserId) {
+          queryClient.invalidateQueries({ 
+            queryKey: ['/api/users', numericUserId],
+            exact: true,
+            refetchType: 'none'
+          });
+        }
+      }, 100);
       
       onOpenChange(false);
     },

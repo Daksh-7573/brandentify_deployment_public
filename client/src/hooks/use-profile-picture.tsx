@@ -122,17 +122,24 @@ export function useProfilePicture(userId: number | string | null = null) {
       
       console.log('[PROFILE PICTURE] Upload successful, response data:', data);
       console.log('[PROFILE PICTURE] Target user ID for cache update:', targetUserId);
+      console.log('[PROFILE PICTURE] New photoURL from server:', (data as any)?.photoURL ? 'RECEIVED' : 'MISSING');
       
       // Direct cache data update instead of invalidation to prevent wrong API calls
       if (targetUserId) {
+        const newPhotoURL = (data as any)?.photoURL;
+        console.log('[PROFILE PICTURE] About to update cache with photoURL:', newPhotoURL ? 'HAS_DATA' : 'NO_DATA');
+        
         // Update the cached data directly with the new profile picture
         queryClient.setQueryData(['/api/users', targetUserId], (oldData: any) => {
           if (oldData) {
-            console.log('[PROFILE PICTURE] Updating cached data with new photoURL');
-            return {
+            console.log('[PROFILE PICTURE] Updating cached data - old photoURL:', oldData.photoURL ? 'EXISTS' : 'NULL');
+            console.log('[PROFILE PICTURE] Updating cached data - new photoURL:', newPhotoURL ? 'EXISTS' : 'NULL');
+            const updatedData = {
               ...oldData,
-              photoURL: (data as any)?.photoURL || oldData.photoURL
+              photoURL: newPhotoURL || oldData.photoURL
             };
+            console.log('[PROFILE PICTURE] Cache updated successfully');
+            return updatedData;
           }
           return oldData;
         });
@@ -144,12 +151,28 @@ export function useProfilePicture(userId: number | string | null = null) {
             if (oldData) {
               return {
                 ...oldData,
-                photoURL: (data as any)?.photoURL || oldData.photoURL
+                photoURL: newPhotoURL || oldData.photoURL
               };
             }
             return oldData;
           });
         }
+        
+        // Force all components to re-render by invalidating after the cache update
+        setTimeout(() => {
+          queryClient.invalidateQueries({ 
+            queryKey: ['/api/users', targetUserId],
+            exact: true,
+            refetchType: 'none' // Don't refetch, just trigger re-renders
+          });
+          if (numericUserId && numericUserId !== targetUserId) {
+            queryClient.invalidateQueries({ 
+              queryKey: ['/api/users', numericUserId],
+              exact: true,
+              refetchType: 'none'
+            });
+          }
+        }, 100);
         
         console.log('[PROFILE PICTURE] Cache data update complete');
       }
