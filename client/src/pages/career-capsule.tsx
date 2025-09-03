@@ -571,7 +571,7 @@ export default function CareerCapsulePage() {
       
       {/* Details Dialog */}
       <Dialog open={showDetailsDialog} onOpenChange={setShowDetailsDialog}>
-        <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto neo-glass-modal">
+        <DialogContent className="sm:max-w-[700px] w-[95vw] sm:w-full max-h-[95vh] neo-glass-modal">
           <DialogHeader>
             <DialogTitle className="text-white">
               {goalDetails && typeof goalDetails === 'object' ? 
@@ -587,13 +587,14 @@ export default function CareerCapsulePage() {
             </DialogDescription>
           </DialogHeader>
           
-          {isLoadingDetails ? (
-            <div className="flex flex-col items-center justify-center h-40 space-y-3">
-              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-white"></div>
-              <p className="text-gray-300 text-sm">Loading goal details...</p>
-            </div>
-          ) : goalDetails ? (
-            <div className="space-y-6 py-4">
+          <div className="overflow-y-auto max-h-[calc(95vh-200px)] pr-2">
+            {isLoadingDetails ? (
+              <div className="flex flex-col items-center justify-center h-40 space-y-3">
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-white"></div>
+                <p className="text-gray-300 text-sm">Loading goal details...</p>
+              </div>
+            ) : goalDetails ? (
+              <div className="space-y-6 py-4">
               <div className="flex flex-col md:flex-row md:justify-between gap-4 p-4 neo-glass-highlight rounded-lg mb-2">
                 <div className="space-y-1">
                   <p className="text-sm font-medium text-white">Goal Type</p>
@@ -829,11 +830,12 @@ export default function CareerCapsulePage() {
               
 
               
-              {/* Progress Log section removed as requested */}
-            </div>
-          ) : (
-            <p className="text-center py-4 text-gray-300">Failed to load goal details.</p>
-          )}
+                {/* Progress Log section removed as requested */}
+              </div>
+            ) : (
+              <p className="text-center py-4 text-gray-300">Failed to load goal details.</p>
+            )}
+          </div>
           
           <DialogFooter className="flex justify-between items-center">
             <div className="flex gap-2">
