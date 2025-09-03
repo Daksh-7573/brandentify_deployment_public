@@ -88,18 +88,29 @@ export function ProfilePictureDialog({
         variant: "default",
       });
       
-      // Simple and reliable cache invalidation
-      await queryClient.invalidateQueries({ 
-        queryKey: ['/api/users', actualUserId],
-        exact: true 
+      // Direct cache data update instead of invalidation
+      queryClient.setQueryData(['/api/users', actualUserId], (oldData: any) => {
+        if (oldData) {
+          console.log('[PROFILE DIALOG] Updating cached data with new photoURL');
+          return {
+            ...oldData,
+            photoURL: (data as any)?.photoURL || oldData.photoURL
+          };
+        }
+        return oldData;
       });
       
-      // Also invalidate by numeric ID if different from actualUserId
+      // Also update by numeric ID if different from actualUserId
       const numericUserId = (data as any)?.id?.toString();
       if (numericUserId && numericUserId !== actualUserId) {
-        await queryClient.invalidateQueries({ 
-          queryKey: ['/api/users', numericUserId],
-          exact: true 
+        queryClient.setQueryData(['/api/users', numericUserId], (oldData: any) => {
+          if (oldData) {
+            return {
+              ...oldData,
+              photoURL: (data as any)?.photoURL || oldData.photoURL
+            };
+          }
+          return oldData;
         });
       }
       

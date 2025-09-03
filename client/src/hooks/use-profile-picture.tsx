@@ -121,26 +121,37 @@ export function useProfilePicture(userId: number | string | null = null) {
       closeProfilePictureDialog();
       
       console.log('[PROFILE PICTURE] Upload successful, response data:', data);
-      console.log('[PROFILE PICTURE] Target user ID for cache invalidation:', targetUserId);
+      console.log('[PROFILE PICTURE] Target user ID for cache update:', targetUserId);
       
-      // Simple and reliable cache invalidation
+      // Direct cache data update instead of invalidation to prevent wrong API calls
       if (targetUserId) {
-        // Invalidate all user queries for this user ID
-        await queryClient.invalidateQueries({ 
-          queryKey: ['/api/users', targetUserId],
-          exact: true 
+        // Update the cached data directly with the new profile picture
+        queryClient.setQueryData(['/api/users', targetUserId], (oldData: any) => {
+          if (oldData) {
+            console.log('[PROFILE PICTURE] Updating cached data with new photoURL');
+            return {
+              ...oldData,
+              photoURL: (data as any)?.photoURL || oldData.photoURL
+            };
+          }
+          return oldData;
         });
         
-        // Also invalidate by numeric ID if different from targetUserId
+        // Also update by numeric ID if different from targetUserId
         const numericUserId = (data as any)?.id?.toString();
         if (numericUserId && numericUserId !== targetUserId) {
-          await queryClient.invalidateQueries({ 
-            queryKey: ['/api/users', numericUserId],
-            exact: true 
+          queryClient.setQueryData(['/api/users', numericUserId], (oldData: any) => {
+            if (oldData) {
+              return {
+                ...oldData,
+                photoURL: (data as any)?.photoURL || oldData.photoURL
+              };
+            }
+            return oldData;
           });
         }
         
-        console.log('[PROFILE PICTURE] Cache invalidation complete');
+        console.log('[PROFILE PICTURE] Cache data update complete');
       }
       
       toast({
