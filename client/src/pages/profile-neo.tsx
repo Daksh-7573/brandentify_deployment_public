@@ -160,8 +160,8 @@ export default function ProfileNeo() {
   // Force refresh userData after profile picture updates
   const refreshUserData = () => {
     console.log('[PROFILE PICTURE DEBUG] Force refreshing user data...');
-    // Only invalidate the specific user query, never the general /api/users route
-    queryClient.invalidateQueries({ queryKey: ['/api/users', userIdentifier] });
+    // Use refetchQueries instead of invalidateQueries to prevent wrong API calls
+    queryClient.refetchQueries({ queryKey: ['/api/users', userIdentifier], exact: true });
   };
   
   // Update about me mutation
@@ -178,7 +178,12 @@ export default function ProfileNeo() {
         description: "Your professional summary has been updated successfully."
       });
       setShowEditAboutDialog(false);
-      queryClient.invalidateQueries({ queryKey: ['/api/users', userIdentifier] });
+      queryClient.setQueryData(['/api/users', userIdentifier], (oldData: any) => {
+        if (oldData) {
+          return { ...oldData, about: aboutMe };
+        }
+        return oldData;
+      });
     },
     onError: (error) => {
       toast({
@@ -204,7 +209,12 @@ export default function ProfileNeo() {
         description: "Your 'I am looking for' preference has been updated."
       });
       setShowLookingForDialog(false);
-      queryClient.invalidateQueries({ queryKey: ['/api/users', userIdentifier] });
+      queryClient.setQueryData(['/api/users', userIdentifier], (oldData: any) => {
+        if (oldData) {
+          return { ...oldData, lookingFor: selectedLookingFor };
+        }
+        return oldData;
+      });
     },
     onError: (error) => {
       toast({
@@ -231,7 +241,12 @@ export default function ProfileNeo() {
         description: "Your industry and domain preferences have been updated."
       });
       setShowIndustryDialog(false);
-      queryClient.invalidateQueries({ queryKey: ['/api/users', userIdentifier] });
+      queryClient.setQueryData(['/api/users', userIdentifier], (oldData: any) => {
+        if (oldData) {
+          return { ...oldData, industry: industryValue, domain: domainValue };
+        }
+        return oldData;
+      });
     },
     onError: (error) => {
       toast({
