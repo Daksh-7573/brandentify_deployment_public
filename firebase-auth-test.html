@@ -68,7 +68,9 @@
         } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 
         // Get environment variables from Replit
-        const apiKey = "AIzaSyDlvl5iqFRGSJNsA-Ly7nryFrxDPyZsGjY"; // Your actual API key
+        const apiKey = window.location.hostname.includes('replit') 
+            ? 'AIzaSyDlvl5iqFRGSJNsA-Ly7nryFrxDPyZsGjY' // Development key for Replit testing
+            : (window.FIREBASE_API_KEY || 'FIREBASE_API_KEY_NOT_SET'); // Use env var in production
         const projectId = "brandentifier-8b9c3"; // Your project ID
         const appId = "1:486486123456:web:abcd1234efgh5678"; // Your app ID
         
