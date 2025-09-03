@@ -207,7 +207,8 @@ export function ProfileUpload({
           ref={fileInputRef}
           onChange={handleFileChange}
           accept=".jpg,.jpeg,.png,.webp"
-          className="hidden"
+          className="absolute opacity-0 pointer-events-none w-0 h-0 overflow-hidden"
+          style={{ display: 'none' }}
         />
         
         <div className="flex gap-3">
