@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { IStorage } from "./storage";
-import { pool } from "./db";
+import { pool, db, sql } from "./db";
 import { suggestHashtags } from './services/openai-service';
 
 // Helper function to get week number from date
@@ -204,12 +204,12 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
       
       try {
         // Check if database tables exist first
-        const tableCheck = await pool.query(`
+        const tableCheck = await db.execute(sql`
           SELECT EXISTS (
             SELECT 1 
             FROM information_schema.tables 
             WHERE table_name = 'user_quests'
-          );
+          )
         `);
         
         if (!tableCheck.rows[0].exists) {
@@ -231,20 +231,20 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
         // First, let's mark any expired active quests with expired status
         // These would be quests from the previous week that weren't completed
         try {
-          const markExpiredResult = await pool.query(`
+          const markExpiredResult = await db.execute(sql`
             UPDATE user_quests 
             SET status = 'expired'
-            WHERE user_id = $1 
+            WHERE user_id = ${userId} 
             AND status = 'active'
-            AND week_number = $2 
-            AND year = $3
+            AND week_number = ${prevWeek} 
+            AND year = ${prevYear}
             AND progress < (
               SELECT target_count 
               FROM quest_definitions 
               WHERE id = user_quests.quest_definition_id
             )
             RETURNING id
-          `, [userId, prevWeek, prevYear]);
+          `);
           
           const rowCount = markExpiredResult.rowCount || 0;
           if (rowCount > 0) {
@@ -257,7 +257,7 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
         
         // Now get the quests with their updated status
         try {
-          const userQuestsResult = await pool.query(`
+          const userQuestsResult = await db.execute(sql`
             SELECT 
               uq.id,
               uq.user_id as "userId",
@@ -281,11 +281,11 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
               uq.year
             FROM user_quests uq
             JOIN quest_definitions qd ON uq.quest_definition_id = qd.id 
-            WHERE uq.user_id = $1 AND 
-                  ((uq.week_number = $2 AND uq.year = $3) OR 
-                   (uq.week_number = $4 AND uq.year = $5))
+            WHERE uq.user_id = ${userId} AND 
+                  ((uq.week_number = ${weekNumber} AND uq.year = ${year}) OR 
+                   (uq.week_number = ${prevWeek} AND uq.year = ${prevYear}))
             ORDER BY uq.assigned_at DESC
-          `, [userId, weekNumber, year, prevWeek, prevYear]);
+          `);
           
           const weeklyQuests = userQuestsResult.rows;
           console.log(`[GET /users/${userId}/quests/current-week] Found ${weeklyQuests.length} quests for weeks ${prevWeek}-${weekNumber}`);
@@ -325,12 +325,12 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
       
       try {
         // Check if database tables exist first
-        const tableCheck = await pool.query(`
+        const tableCheck = await db.execute(sql`
           SELECT EXISTS (
             SELECT 1 
             FROM information_schema.tables 
             WHERE table_name = 'user_quests'
-          );
+          )
         `);
         
         if (!tableCheck.rows[0].exists) {
@@ -349,19 +349,19 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
         
         // Mark any expired active quests from previous weeks as expired
         try {
-          const markExpiredResult = await pool.query(`
+          const markExpiredResult = await db.execute(sql`
             UPDATE user_quests 
             SET status = 'expired'
-            WHERE user_id = $1 
+            WHERE user_id = ${userId} 
             AND status = 'active'
-            AND (week_number < $2 OR (week_number = $2 AND year < $3))
+            AND (week_number < ${weekNumber} OR (week_number = ${weekNumber} AND year < ${year}))
             AND progress < (
               SELECT target_count 
               FROM quest_definitions 
               WHERE id = user_quests.quest_definition_id
             )
             RETURNING id
-          `, [userId, weekNumber, year]);
+          `);
           
           const rowCount = markExpiredResult.rowCount || 0;
           if (rowCount > 0) {
@@ -377,7 +377,7 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
         console.log(`[GET /users/${userId}/quests-with-definitions] Fetching quests with JOIN`);
         
         try {
-          const combinedResult = await pool.query(`
+          const combinedResult = await db.execute(sql`
             SELECT 
               uq.id,
               uq.user_id as "userId",
@@ -408,12 +408,12 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
               qd.updated_at as "updatedAt"
             FROM user_quests uq
             LEFT JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
-            WHERE uq.user_id = $1
+            WHERE uq.user_id = ${userId}
             ORDER BY uq.assigned_at DESC
-          `, [userId]);
+          `);
           
           // Process the results
-          const questsWithDefinitions = combinedResult.rows.map(row => {
+          const questsWithDefinitions = combinedResult.rows.map((row: any) => {
             // If we have definition data, structure it
             let definition = null;
             if (row.defId) {
