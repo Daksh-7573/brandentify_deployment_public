@@ -171,14 +171,14 @@ export function ProfilePictureDialog({
       if (isUploading && !newOpen) return;
       onOpenChange(newOpen);
     }}>
-      <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto bg-white/10 backdrop-blur-md border border-white/20 shadow-xl">
         <DialogHeader>
-          <DialogTitle>Profile Picture</DialogTitle>
-          <DialogDescription>
+          <DialogTitle className="text-white font-semibold">Profile Picture</DialogTitle>
+          <DialogDescription className="text-white/70">
             Upload a professional photo that clearly shows your face
           </DialogDescription>
         </DialogHeader>
-        <div className="flex flex-col items-center justify-center py-4">
+        <div className="flex flex-col items-center justify-center py-4 bg-white/5 rounded-lg border border-white/10">
           <ProfileUpload 
             currentPhotoURL={currentPhotoURL}
             onImageSelected={handleSaveProfilePicture}

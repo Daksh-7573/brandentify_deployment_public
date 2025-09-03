@@ -163,10 +163,10 @@ export function ProfileUpload({
 
   return (
     <>
-      <div className="w-full flex flex-col items-center gap-4">
+      <div className="w-full flex flex-col items-center gap-6">
         {/* Image Preview */}
         <div 
-          className="relative w-80 h-80 rounded-full overflow-hidden border-4 border-white shadow-lg bg-gray-100"
+          className="relative w-80 h-80 rounded-full overflow-hidden border-4 border-white/30 shadow-2xl bg-white/10 backdrop-blur-sm"
         >
           <div className="absolute inset-0 flex items-center justify-center">
             {selectedImage ? (
@@ -193,7 +193,7 @@ export function ProfileUpload({
           {selectedImage && (
             <button 
               onClick={handleRemove}
-              className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1.5 shadow-md hover:bg-red-600 transition-colors"
+              className="absolute top-2 right-2 bg-red-500/80 backdrop-blur-sm text-white rounded-full p-1.5 shadow-lg hover:bg-red-600/90 transition-all duration-200 border border-white/20"
               aria-label="Remove image"
               type="button"
             >
@@ -210,49 +210,76 @@ export function ProfileUpload({
           className="hidden"
         />
         
-        <div className="flex gap-2">
-          <Button 
-            type="button" 
-            onClick={handleButtonClick}
-            className="flex items-center gap-2"
-            disabled={isUploading}
-          >
-            <Camera size={16} />
-            {selectedImage ? 'Change Photo' : 'Select Photo'}
-          </Button>
-          
-          {selectedImage && (
-            <Button 
-              type="button" 
-              variant="default"
-              onClick={handleSave}
-              disabled={isUploading}
-              className="flex items-center gap-2"
-            >
-              {isUploading ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  <span>Uploading...</span>
-                </>
-              ) : (
-                <span>Save</span>
-              )}
-            </Button>
+        <div className="flex gap-3">
+          {!selectedImage ? (
+            <>
+              <Button 
+                type="button" 
+                onClick={handleButtonClick}
+                className="flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white backdrop-blur-sm transition-all duration-200"
+                disabled={isUploading}
+              >
+                <Camera size={16} />
+                Select Photo
+              </Button>
+              
+              <Button 
+                type="button" 
+                variant="outline"
+                onClick={onCancel}
+                disabled={isUploading}
+                className="bg-white/5 hover:bg-white/10 border border-white/20 text-white/80 hover:text-white transition-all duration-200"
+              >
+                Cancel
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button 
+                type="button" 
+                onClick={handleSave}
+                disabled={isUploading}
+                className="flex items-center gap-2 bg-gradient-to-r from-blue-500/80 to-purple-600/80 hover:from-blue-600/90 hover:to-purple-700/90 border border-white/20 text-white backdrop-blur-sm transition-all duration-200 shadow-lg"
+              >
+                {isUploading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <span>Uploading...</span>
+                  </>
+                ) : (
+                  <>
+                    <Camera size={16} />
+                    <span>Save Photo</span>
+                  </>
+                )}
+              </Button>
+              
+              <Button 
+                type="button" 
+                variant="outline"
+                onClick={handleRemove}
+                disabled={isUploading}
+                className="bg-white/5 hover:bg-white/10 border border-white/20 text-white/80 hover:text-white transition-all duration-200"
+              >
+                Change
+              </Button>
+              
+              <Button 
+                type="button" 
+                variant="outline"
+                onClick={onCancel}
+                disabled={isUploading}
+                className="bg-red-500/20 hover:bg-red-500/30 border border-red-400/30 text-red-200 hover:text-white transition-all duration-200"
+              >
+                Cancel
+              </Button>
+            </>
           )}
-          
-          <Button 
-            type="button" 
-            variant="outline"
-            onClick={onCancel}
-            disabled={isUploading}
-          >
-            Cancel
-          </Button>
         </div>
         
-        <div className="text-xs text-gray-500 mt-2 text-center max-w-sm">
+        <div className="text-xs text-white/60 mt-2 text-center max-w-sm space-y-1">
           <p>Recommended: professional photo with clear background and good lighting.</p>
-          <p className="mt-1">Square crop (1:1), max 5MB, formats: JPG, PNG, WebP.</p>
+          <p>Square crop (1:1), max 5MB, formats: JPG, PNG, WebP.</p>
         </div>
       </div>
       
