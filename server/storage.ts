@@ -11381,12 +11381,12 @@ export class DatabaseStorage implements IStorage {
       console.log(`[db.assignWeeklyQuestsToUser] Assigning weekly quests to user ${userId}`);
       
       // Get 3 random active quest definitions
-      const questDefinitions = await pool.query(`
-        SELECT id, xp_reward FROM quest_definitions 
-        WHERE is_active = true 
-        ORDER BY RANDOM() 
-        LIMIT 3
-      `);
+      const questDefinitions = await db.execute(
+        sql`SELECT id, xp_reward FROM quest_definitions 
+            WHERE is_active = true 
+            ORDER BY RANDOM() 
+            LIMIT 3`
+      );
 
       const assignedQuests: UserQuest[] = [];
       
