@@ -10936,7 +10936,7 @@ export class DatabaseStorage implements IStorage {
   async getAllQuestDefinitions(): Promise<QuestDefinition[]> {
     try {
       console.log('[db.getAllQuestDefinitions] Fetching all quest definitions');
-      const result = await pool.query(`
+      const result = await db.execute(sql`
         SELECT 
           id, title, description, category, difficulty, xp_reward as "xpReward",
           estimated_time_minutes as "estimatedTimeMinutes", instructions,
