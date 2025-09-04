@@ -1,25 +1,17 @@
-import { pool } from './server/db';
-
-async function executeQuery(query: string, params: any[] = []) {
-  try {
-    return await pool.query(query, params);
-  } catch (error) {
-    console.error("Error executing query:", error);
-    throw error;
-  }
-}
+import { db, sql } from './server/db';
+import { questDefinitions } from './shared/schema';
 
 async function updateEngagementQuests() {
   try {
     console.log('Starting: Updating quest definitions to focus on engagement');
 
     // Check if quest_definitions table exists
-    const tableCheck = await pool.query(`
+    const tableCheck = await db.execute(sql`
       SELECT EXISTS (
         SELECT 1 
         FROM information_schema.tables 
         WHERE table_name = 'quest_definitions'
-      );
+      )
     `);
     
     if (!tableCheck.rows[0].exists) {
@@ -31,7 +23,7 @@ async function updateEngagementQuests() {
     }
 
     // First, deactivate all existing quests
-    await executeQuery(`
+    await db.execute(sql`
       UPDATE quest_definitions 
       SET is_active = false
     `);
@@ -142,55 +134,37 @@ async function updateEngagementQuests() {
     // Insert or update quests
     for (const quest of engagementQuests) {
       // Check if the quest already exists
-      const existingQuest = await executeQuery(`
+      const existingQuest = await db.execute(sql`
         SELECT id FROM quest_definitions 
-        WHERE title = $1 AND target_action = $2
-      `, [quest.title, quest.target_action]);
+        WHERE title = ${quest.title} AND target_action = ${quest.target_action}
+      `);
 
       if (existingQuest.rows.length > 0) {
         // Update existing quest
-        await executeQuery(`
+        await db.execute(sql`
           UPDATE quest_definitions 
-          SET description = $1, 
-              type = $2,
-              target_count = $3, 
-              xp_reward = $4, 
-              badge_reward = $5,
-              required_profile_completion = $6,
-              musk_tip = $7,
-              is_active = $8
-          WHERE id = $9
-        `, [
-          quest.description, 
-          quest.type,
-          quest.target_count, 
-          quest.xp_reward, 
-          quest.badge_reward,
-          quest.required_profile_completion,
-          quest.musk_tip,
-          quest.is_active,
-          existingQuest.rows[0].id
-        ]);
+          SET description = ${quest.description}, 
+              type = ${quest.type},
+              target_count = ${quest.target_count}, 
+              xp_reward = ${quest.xp_reward}, 
+              badge_reward = ${quest.badge_reward},
+              required_profile_completion = ${quest.required_profile_completion},
+              musk_tip = ${quest.musk_tip},
+              is_active = ${quest.is_active}
+          WHERE id = ${existingQuest.rows[0].id}
+        `);
         console.log(`Updated existing quest: ${quest.title}`);
       } else {
         // Create new quest
-        await executeQuery(`
+        await db.execute(sql`
           INSERT INTO quest_definitions (
             title, description, type, target_count, target_action, 
             xp_reward, badge_reward, required_profile_completion, musk_tip, is_active
-          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-        `, [
-          quest.title,
-          quest.description,
-          quest.type,
-          quest.target_count,
-          quest.target_action,
-          quest.xp_reward,
-          quest.badge_reward,
-          quest.required_profile_completion,
-          quest.musk_tip,
-          quest.is_active
-        ]);
+          ) VALUES (
+            ${quest.title}, ${quest.description}, ${quest.type}, ${quest.target_count}, ${quest.target_action}, 
+            ${quest.xp_reward}, ${quest.badge_reward}, ${quest.required_profile_completion}, ${quest.musk_tip}, ${quest.is_active}
+          )
+        `);
         console.log(`Added new quest: ${quest.title}`);
       }
     }
