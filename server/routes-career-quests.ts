@@ -501,15 +501,15 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
       
       try {
         // Check if database tables exist first
-        const tableCheck = await pool.query(`
+        const tableCheck = await db.execute(sql`
           SELECT EXISTS (
             SELECT 1 
             FROM information_schema.tables 
             WHERE table_name = 'user_quests'
-          );
+          )
         `);
         
-        if (!tableCheck.rows[0].exists) {
+        if (!tableCheck[0].exists) {
           console.log('[POST /users/:userId/quests] user_quests table does not exist, returning default quest');
           return res.status(201).json({
             id: 0,
