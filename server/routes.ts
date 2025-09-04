@@ -6531,22 +6531,37 @@ ${extractedText.substring(0, 5000)}
       
       console.log(`[POST /pulse-reactions] Created reaction:`, result.rows[0]);
       
-      // Update pulse count
-      const countField = reactionType === "insightful" ? "insightful_count" : "misinformed_count";
-      await pool.query(`
-        UPDATE pulses 
-        SET ${countField} = ${countField} + 1 
-        WHERE id = $1
-      `, [pulseId]);
+      // Update pulse count using conditional SQL
+      if (reactionType === "insightful") {
+        await pool.query(`
+          UPDATE pulses 
+          SET insightful_count = insightful_count + 1 
+          WHERE id = $1
+        `, [pulseId]);
+      } else if (reactionType === "misinformed") {
+        await pool.query(`
+          UPDATE pulses 
+          SET misinformed_count = misinformed_count + 1 
+          WHERE id = $1
+        `, [pulseId]);
+      }
       
       // Update or create quota record
       if (quotaResult.rows.length > 0) {
-        const quotaField = reactionType === "insightful" ? "insightful_quota_used" : "misinformed_quota_used";
-        await pool.query(`
-          UPDATE user_reaction_quotas 
-          SET ${quotaField} = ${quotaField} + 1
-          WHERE user_id = $1 AND date = $2
-        `, [userId, today]);
+        // Update quota using conditional SQL
+        if (reactionType === "insightful") {
+          await pool.query(`
+            UPDATE user_reaction_quotas 
+            SET insightful_quota_used = insightful_quota_used + 1
+            WHERE user_id = $1 AND date = $2
+          `, [userId, today]);
+        } else if (reactionType === "misinformed") {
+          await pool.query(`
+            UPDATE user_reaction_quotas 
+            SET misinformed_quota_used = misinformed_quota_used + 1
+            WHERE user_id = $1 AND date = $2
+          `, [userId, today]);
+        }
       } else {
         const insightfulUsed = reactionType === "insightful" ? 1 : 0;
         const misinformedUsed = reactionType === "misinformed" ? 1 : 0;
@@ -6600,23 +6615,37 @@ ${extractedText.substring(0, 5000)}
       const { pulse_id, user_id, reaction_type } = deleteResult.rows[0];
       console.log(`[DELETE /pulse-reactions/:id] Deleted reaction:`, { pulse_id, user_id, reaction_type });
       
-      // Update pulse count
-      const countField = reaction_type === "insightful" ? "insightful_count" : "misinformed_count";
-      await pool.query(`
-        UPDATE pulses 
-        SET ${countField} = GREATEST(0, ${countField} - 1)
-        WHERE id = $1
-      `, [pulse_id]);
+      // Update pulse count using conditional SQL
+      if (reaction_type === "insightful") {
+        await pool.query(`
+          UPDATE pulses 
+          SET insightful_count = GREATEST(0, insightful_count - 1)
+          WHERE id = $1
+        `, [pulse_id]);
+      } else if (reaction_type === "misinformed") {
+        await pool.query(`
+          UPDATE pulses 
+          SET misinformed_count = GREATEST(0, misinformed_count - 1)
+          WHERE id = $1
+        `, [pulse_id]);
+      }
       
-      // Restore quota - decrease the used count
+      // Restore quota - decrease the used count using conditional SQL
       const today = new Date().toISOString().split('T')[0];
-      const quotaField = reaction_type === "insightful" ? "insightful_quota_used" : "misinformed_quota_used";
       
-      await pool.query(`
-        UPDATE user_reaction_quotas 
-        SET ${quotaField} = GREATEST(0, ${quotaField} - 1)
-        WHERE user_id = $1 AND date = $2
-      `, [user_id, today]);
+      if (reaction_type === "insightful") {
+        await pool.query(`
+          UPDATE user_reaction_quotas 
+          SET insightful_quota_used = GREATEST(0, insightful_quota_used - 1)
+          WHERE user_id = $1 AND date = $2
+        `, [user_id, today]);
+      } else if (reaction_type === "misinformed") {
+        await pool.query(`
+          UPDATE user_reaction_quotas 
+          SET misinformed_quota_used = GREATEST(0, misinformed_quota_used - 1)
+          WHERE user_id = $1 AND date = $2
+        `, [user_id, today]);
+      }
       
       // Get updated quota info to return
       const quotaResult = await pool.query(`

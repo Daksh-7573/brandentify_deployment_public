@@ -3087,13 +3087,20 @@ export class MemStorage implements IStorage {
       
       const reaction = result.rows[0];
       
-      // Update the pulse reaction count
-      const countField = insertReaction.reactionType === "insightful" ? "insightful_count" : "misinformed_count";
-      await pool.query(`
-        UPDATE pulses 
-        SET ${countField} = ${countField} + 1 
-        WHERE id = $1
-      `, [insertReaction.pulseId]);
+      // Update the pulse reaction count using conditional SQL
+      if (insertReaction.reactionType === "insightful") {
+        await pool.query(`
+          UPDATE pulses 
+          SET insightful_count = insightful_count + 1 
+          WHERE id = $1
+        `, [insertReaction.pulseId]);
+      } else if (insertReaction.reactionType === "misinformed") {
+        await pool.query(`
+          UPDATE pulses 
+          SET misinformed_count = misinformed_count + 1 
+          WHERE id = $1
+        `, [insertReaction.pulseId]);
+      }
       
       console.log('[db.createPulseReaction] Created reaction:', reaction);
       return reaction;
@@ -3120,13 +3127,20 @@ export class MemStorage implements IStorage {
       `, [id]);
       
       if (deleteResult.rowCount > 0) {
-        // Update the pulse reaction count
-        const countField = reaction_type === "insightful" ? "insightful_count" : "misinformed_count";
-        await pool.query(`
-          UPDATE pulses 
-          SET ${countField} = GREATEST(0, ${countField} - 1)
-          WHERE id = $1
-        `, [pulse_id]);
+        // Update the pulse reaction count using conditional SQL
+        if (reaction_type === "insightful") {
+          await pool.query(`
+            UPDATE pulses 
+            SET insightful_count = GREATEST(0, insightful_count - 1)
+            WHERE id = $1
+          `, [pulse_id]);
+        } else if (reaction_type === "misinformed") {
+          await pool.query(`
+            UPDATE pulses 
+            SET misinformed_count = GREATEST(0, misinformed_count - 1)
+            WHERE id = $1
+          `, [pulse_id]);
+        }
         
         // Restore the user's reaction quota when they remove a reaction
         await this.decrementReactionQuota(user_id, reaction_type);
@@ -3201,19 +3215,35 @@ export class MemStorage implements IStorage {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       
-      const quotaField = reactionType === "insightful" ? "insightful_quota_used" : "misinformed_quota_used";
-      
-      const result = await pool.query(`
-        UPDATE user_reaction_quotas 
-        SET ${quotaField} = ${quotaField} + 1, updated_at = CURRENT_TIMESTAMP
-        WHERE user_id = $1 AND date = $2
-        RETURNING id, user_id as "userId", date, 
-                  insightful_quota_used as "insightfulQuotaUsed",
-                  misinformed_quota_used as "misinformedQuotaUsed",
-                  insightful_quota_max as "insightfulQuotaMax",
-                  misinformed_quota_max as "misinformedQuotaMax",
-                  updated_at as "updatedAt"
-      `, [userId, today]);
+      // Use conditional SQL to prevent injection
+      let result;
+      if (reactionType === "insightful") {
+        result = await pool.query(`
+          UPDATE user_reaction_quotas 
+          SET insightful_quota_used = insightful_quota_used + 1, updated_at = CURRENT_TIMESTAMP
+          WHERE user_id = $1 AND date = $2
+          RETURNING id, user_id as "userId", date, 
+                    insightful_quota_used as "insightfulQuotaUsed",
+                    misinformed_quota_used as "misinformedQuotaUsed",
+                    insightful_quota_max as "insightfulQuotaMax",
+                    misinformed_quota_max as "misinformedQuotaMax",
+                    updated_at as "updatedAt"
+        `, [userId, today]);
+      } else if (reactionType === "misinformed") {
+        result = await pool.query(`
+          UPDATE user_reaction_quotas 
+          SET misinformed_quota_used = misinformed_quota_used + 1, updated_at = CURRENT_TIMESTAMP
+          WHERE user_id = $1 AND date = $2
+          RETURNING id, user_id as "userId", date, 
+                    insightful_quota_used as "insightfulQuotaUsed",
+                    misinformed_quota_used as "misinformedQuotaUsed",
+                    insightful_quota_max as "insightfulQuotaMax",
+                    misinformed_quota_max as "misinformedQuotaMax",
+                    updated_at as "updatedAt"
+        `, [userId, today]);
+      } else {
+        throw new Error(`Invalid reaction type: ${reactionType}`);
+      }
       
       return result.rows[0];
     } catch (error) {
@@ -3229,19 +3259,35 @@ export class MemStorage implements IStorage {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       
-      const quotaField = reactionType === "insightful" ? "insightful_quota_used" : "misinformed_quota_used";
-      
-      const result = await pool.query(`
-        UPDATE user_reaction_quotas 
-        SET ${quotaField} = GREATEST(0, ${quotaField} - 1), updated_at = CURRENT_TIMESTAMP
-        WHERE user_id = $1 AND date = $2
-        RETURNING id, user_id as "userId", date, 
-                  insightful_quota_used as "insightfulQuotaUsed",
-                  misinformed_quota_used as "misinformedQuotaUsed",
-                  insightful_quota_max as "insightfulQuotaMax",
-                  misinformed_quota_max as "misinformedQuotaMax",
-                  updated_at as "updatedAt"
-      `, [userId, today]);
+      // Use conditional SQL to prevent injection
+      let result;
+      if (reactionType === "insightful") {
+        result = await pool.query(`
+          UPDATE user_reaction_quotas 
+          SET insightful_quota_used = GREATEST(0, insightful_quota_used - 1), updated_at = CURRENT_TIMESTAMP
+          WHERE user_id = $1 AND date = $2
+          RETURNING id, user_id as "userId", date, 
+                    insightful_quota_used as "insightfulQuotaUsed",
+                    misinformed_quota_used as "misinformedQuotaUsed",
+                    insightful_quota_max as "insightfulQuotaMax",
+                    misinformed_quota_max as "misinformedQuotaMax",
+                    updated_at as "updatedAt"
+        `, [userId, today]);
+      } else if (reactionType === "misinformed") {
+        result = await pool.query(`
+          UPDATE user_reaction_quotas 
+          SET misinformed_quota_used = GREATEST(0, misinformed_quota_used - 1), updated_at = CURRENT_TIMESTAMP
+          WHERE user_id = $1 AND date = $2
+          RETURNING id, user_id as "userId", date, 
+                    insightful_quota_used as "insightfulQuotaUsed",
+                    misinformed_quota_used as "misinformedQuotaUsed",
+                    insightful_quota_max as "insightfulQuotaMax",
+                    misinformed_quota_max as "misinformedQuotaMax",
+                    updated_at as "updatedAt"
+        `, [userId, today]);
+      } else {
+        throw new Error(`Invalid reaction type: ${reactionType}`);
+      }
       
       return result.rows[0];
     } catch (error) {
