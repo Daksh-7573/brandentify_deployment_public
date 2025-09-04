@@ -10077,31 +10077,28 @@ export class DatabaseStorage implements IStorage {
     try {
       console.log('[db.getNowboardItems] Fetching all nowboard items');
       
-      const result = await pool.query(`
-        SELECT 
-          ni.id,
-          ni.user_id as "userId",
-          ni.content,
-          ni.category,
-          ni.visibility,
-          ni.inspired_count as "inspiredCount",
-          ni.related_skills as "relatedSkills",
-          ni.related_project as "relatedProject",
-          ni.image_url as "imageUrl",
-          ni.created_at as "createdAt",
-          ni.updated_at as "updatedAt",
-          json_build_object(
-            'name', u.name,
-            'photoURL', u.photo_url
-          ) as "user"
-        FROM nowboard_items ni
-        LEFT JOIN users u ON ni.user_id = u.id
-        ORDER BY ni.created_at DESC
-        LIMIT 50
-      `);
+      const result = await db
+        .select({
+          id: nowboardItems.id,
+          userId: nowboardItems.userId,
+          content: nowboardItems.content,
+          category: nowboardItems.category,
+          visibility: nowboardItems.visibility,
+          inspiredCount: nowboardItems.inspiredCount,
+          relatedSkills: nowboardItems.relatedSkills,
+          relatedProject: nowboardItems.relatedProject,
+          imageUrl: nowboardItems.imageUrl,
+          createdAt: nowboardItems.createdAt,
+          updatedAt: nowboardItems.updatedAt,
+          user: sql<{ name: string | null; photoURL: string | null }>`json_build_object('name', ${users.name}, 'photoURL', ${users.photoURL})`
+        })
+        .from(nowboardItems)
+        .leftJoin(users, eq(nowboardItems.userId, users.id))
+        .orderBy(sql`${nowboardItems.createdAt} DESC`)
+        .limit(50);
       
-      console.log(`[db.getNowboardItems] Found ${result.rows.length} nowboard items`);
-      return result.rows;
+      console.log(`[db.getNowboardItems] Found ${result.length} nowboard items`);
+      return result;
     } catch (error) {
       console.error('[db.getNowboardItems] Error fetching nowboard items:', error);
       return [];
