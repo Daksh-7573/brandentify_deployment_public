@@ -574,12 +574,12 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
       
       try {
         // Check if database tables exist first
-        const tableCheck = await pool.query(`
+        const tableCheck = await db.execute(sql`
           SELECT EXISTS (
             SELECT 1 
             FROM information_schema.tables 
             WHERE table_name = 'user_quests'
-          );
+          )
         `);
         
         if (!tableCheck.rows[0].exists) {
@@ -588,12 +588,12 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
         }
         
         // Also check quest_definitions table
-        const questDefinitionsCheck = await pool.query(`
+        const questDefinitionsCheck = await db.execute(sql`
           SELECT EXISTS (
             SELECT 1 
             FROM information_schema.tables 
             WHERE table_name = 'quest_definitions'
-          );
+          )
         `);
         
         if (!questDefinitionsCheck.rows[0].exists) {
