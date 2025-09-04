@@ -106,7 +106,7 @@ const CookieConsentBanner: React.FC = () => {
   if (!isVisible) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 p-4 bg-background/90 backdrop-blur-sm border-t shadow-lg">
+    <div className="fixed bottom-0 left-0 right-0 z-50 p-4 bg-[rgba(18,18,18,0.9)] backdrop-blur-[15px] border-t border-white/10 shadow-[0_4px_12px_rgba(0,0,0,0.5),_0_0_30px_rgba(0,0,0,0.3)]">
       <div className="max-w-7xl mx-auto">
         {!showDetails ? (
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -116,19 +116,19 @@ const CookieConsentBanner: React.FC = () => {
               </p>
             </div>
             <div className="flex flex-wrap gap-2">
-              <Button variant="outline" size="sm" onClick={() => setShowDetails(true)}>
+              <button className="neo-glass-button secondary text-sm px-4 py-2" onClick={() => setShowDetails(true)}>
                 Cookie Settings
-              </Button>
-              <Button variant="outline" size="sm" onClick={handleAcceptEssential}>
+              </button>
+              <button className="neo-glass-button secondary text-sm px-4 py-2" onClick={handleAcceptEssential}>
                 Essential Only
-              </Button>
-              <Button variant="default" size="sm" onClick={handleAcceptAll}>
+              </button>
+              <button className="neo-glass-button text-sm px-4 py-2" onClick={handleAcceptAll}>
                 Accept All
-              </Button>
+              </button>
             </div>
           </div>
         ) : (
-          <Card className="p-4">
+          <Card className="p-4 bg-[rgba(18,18,18,0.8)] backdrop-blur-[15px] border-white/10 shadow-[0_4px_12px_rgba(0,0,0,0.5),_0_0_30px_rgba(0,0,0,0.3)]">
             <div className="flex justify-between items-start mb-4">
               <div>
                 <h3 className="text-lg font-semibold">Cookie Preferences</h3>
@@ -136,9 +136,9 @@ const CookieConsentBanner: React.FC = () => {
                   Select which cookies you want to accept
                 </p>
               </div>
-              <Button variant="ghost" size="icon" onClick={() => setShowDetails(false)}>
+              <button className="neo-glass-button tertiary p-2 w-8 h-8 flex items-center justify-center" onClick={() => setShowDetails(false)}>
                 <X className="h-4 w-4" />
-              </Button>
+              </button>
             </div>
             
             <div className="space-y-4 mb-4">
@@ -220,12 +220,12 @@ const CookieConsentBanner: React.FC = () => {
             </div>
             
             <div className="flex justify-end gap-2">
-              <Button variant="outline" size="sm" onClick={() => setShowDetails(false)}>
+              <button className="neo-glass-button secondary text-sm px-4 py-2" onClick={() => setShowDetails(false)}>
                 Cancel
-              </Button>
-              <Button variant="default" size="sm" onClick={handleSavePreferences}>
+              </button>
+              <button className="neo-glass-button text-sm px-4 py-2" onClick={handleSavePreferences}>
                 Save Preferences
-              </Button>
+              </button>
             </div>
           </Card>
         )}
@@ -233,11 +233,11 @@ const CookieConsentBanner: React.FC = () => {
         <div className="mt-2 text-xs text-center text-muted-foreground">
           <Dialog>
             <DialogTrigger asChild>
-              <Button variant="link" size="sm" className="p-0 h-auto text-xs underline">
+              <button className="p-0 h-auto text-xs underline text-white/70 hover:text-white transition-colors">
                 Privacy Policy
-              </Button>
+              </button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+            <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto bg-[rgba(18,18,18,0.95)] backdrop-blur-[15px] border-white/10 shadow-[0_4px_12px_rgba(0,0,0,0.5),_0_0_30px_rgba(0,0,0,0.3)]">
               <DialogHeader>
                 <DialogTitle>Privacy Policy</DialogTitle>
                 <DialogDescription>
@@ -303,18 +303,18 @@ const CookieConsentBanner: React.FC = () => {
                 </p>
               </div>
               <DialogFooter>
-                <Button>I Understand</Button>
+                <button className="neo-glass-button px-6 py-2">I Understand</button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
           {' | '}
           <Dialog>
             <DialogTrigger asChild>
-              <Button variant="link" size="sm" className="p-0 h-auto text-xs underline">
+              <button className="p-0 h-auto text-xs underline text-white/70 hover:text-white transition-colors">
                 Cookie Policy
-              </Button>
+              </button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+            <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto bg-[rgba(18,18,18,0.95)] backdrop-blur-[15px] border-white/10 shadow-[0_4px_12px_rgba(0,0,0,0.5),_0_0_30px_rgba(0,0,0,0.3)]">
               <DialogHeader>
                 <DialogTitle>Cookie Policy</DialogTitle>
                 <DialogDescription>
@@ -359,7 +359,7 @@ const CookieConsentBanner: React.FC = () => {
                 </p>
               </div>
               <DialogFooter>
-                <Button>I Understand</Button>
+                <button className="neo-glass-button px-6 py-2">I Understand</button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
