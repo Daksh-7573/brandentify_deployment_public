@@ -40,6 +40,7 @@ const CSRF_SECRET = process.env.CSRF_SECRET || 'brandentifier-csrf-secret-key-20
 const ALLOWED_ORIGINS = [
   'https://brandentifier.com',
   'https://www.brandentifier.com',
+  'https://brandentifier.replit.app',
   'http://localhost:3000',
   'http://localhost:5000'
 ];
@@ -337,7 +338,11 @@ export async function setupSecurity(app: any) {
       // Allow requests with no origin (like mobile apps or curl requests)
       if (!origin) return callback(null, true);
       
-      if (ALLOWED_ORIGINS.indexOf(origin) !== -1 || process.env.NODE_ENV === 'development') {
+      // Allow all Replit domains and development
+      if (ALLOWED_ORIGINS.indexOf(origin) !== -1 || 
+          process.env.NODE_ENV === 'development' ||
+          origin.endsWith('.replit.app') ||
+          origin.endsWith('.replit.dev')) {
         callback(null, true);
       } else {
         callback(new Error('Not allowed by CORS'));
