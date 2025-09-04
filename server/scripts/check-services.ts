@@ -1,11 +1,13 @@
-import { db, pool } from "../db";
+import { db, pool, sql } from "../db";
+import { services, users } from "@shared/schema";
+import { count, eq } from "drizzle-orm";
 
 async function main() {
   try {
     console.log("Checking services in the database...");
     
-    // Query to check services table structure
-    const tableStructure = await pool.query(`
+    // Query to check services table structure using sql template literal
+    const tableStructure = await db.execute(sql`
       SELECT column_name, data_type 
       FROM information_schema.columns 
       WHERE table_name = 'services'
@@ -15,23 +17,25 @@ async function main() {
     console.log("Services table structure:");
     console.table(tableStructure.rows);
     
-    // Check if any services exist
-    const servicesCount = await pool.query('SELECT COUNT(*) FROM services');
-    console.log(`Total services count: ${servicesCount.rows[0].count}`);
+    // Check if any services exist using Drizzle query builder
+    const servicesCountResult = await db.select({ count: count() }).from(services);
+    console.log(`Total services count: ${servicesCountResult[0].count}`);
     
-    // Get all services for inspection
-    const allServices = await pool.query('SELECT * FROM services');
+    // Get all services for inspection using Drizzle query builder
+    const allServices = await db.select().from(services);
     console.log("Services data:");
-    console.log(JSON.stringify(allServices.rows, null, 2));
+    console.log(JSON.stringify(allServices, null, 2));
     
-    // Check services by user
-    const userIds = await pool.query('SELECT id FROM users');
+    // Check services by user using Drizzle query builder
+    const userIds = await db.select({ id: users.id }).from(users);
     
-    if (userIds.rows.length > 0) {
-      for (const userRow of userIds.rows) {
+    if (userIds.length > 0) {
+      for (const userRow of userIds) {
         const userId = userRow.id;
-        const userServices = await pool.query('SELECT COUNT(*) FROM services WHERE user_id = $1', [userId]);
-        console.log(`User ID ${userId} has ${userServices.rows[0].count} services`);
+        const userServicesResult = await db.select({ count: count() })
+          .from(services)
+          .where(eq(services.userId, userId));
+        console.log(`User ID ${userId} has ${userServicesResult[0].count} services`);
       }
     } else {
       console.log("No users found in the database.");
