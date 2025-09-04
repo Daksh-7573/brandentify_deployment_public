@@ -689,7 +689,7 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
       
       try {
         // Check if database tables exist first
-        const tableCheck = await pool.query(`
+        const tableCheck = await db.execute(sql`
           SELECT EXISTS (
             SELECT 1 
             FROM information_schema.tables 
@@ -713,7 +713,7 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
         // Get user XP directly from database
         console.log(`[GET /users/${userId}/xp] Fetching user XP directly from DB`);
         
-        const userXpResult = await pool.query(`
+        const userXpResult = await db.execute(sql`
           SELECT 
             id,
             user_id as "userId",
@@ -722,8 +722,8 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
             current_month_earned as "currentMonthEarned",
             updated_at as "lastUpdated"
           FROM user_xp
-          WHERE user_id = $1
-        `, [userId]);
+          WHERE user_id = ${userId}
+        `);
         
         if (userXpResult.rows.length > 0) {
           const userXp = userXpResult.rows[0];
@@ -800,7 +800,7 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
       
       try {
         // Check if database tables exist first
-        const tableCheck = await pool.query(`
+        const tableCheck = await db.execute(sql`
           SELECT EXISTS (
             SELECT 1 
             FROM information_schema.tables 
@@ -816,7 +816,7 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
         // Get user badges directly from database
         console.log(`[GET /users/${userId}/badges] Fetching user badges directly from DB`);
         
-        const userBadgesResult = await pool.query(`
+        const userBadgesResult = await db.execute(sql`
           SELECT 
             id,
             user_id as "userId",
@@ -826,9 +826,9 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
             display_on_profile as "displayOnProfile",
             display_on_resume as "displayOnResume"
           FROM user_badges
-          WHERE user_id = $1
+          WHERE user_id = ${userId}
           ORDER BY earned_at DESC
-        `, [userId]);
+        `);
         
         const userBadges = userBadgesResult.rows;
         console.log(`[GET /users/${userId}/badges] Found ${userBadges.length} badges`);
@@ -873,7 +873,7 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
         // Get user badges by type directly from database
         console.log(`[GET /users/${userId}/badges/type/${type}] Fetching user badges by type directly from DB`);
         
-        const userBadgesResult = await pool.query(`
+        const userBadgesResult = await db.execute(sql`
           SELECT 
             id,
             user_id as "userId",
@@ -883,9 +883,9 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
             display_on_profile as "displayOnProfile",
             display_on_resume as "displayOnResume"
           FROM user_badges
-          WHERE user_id = $1 AND badge_type = $2
+          WHERE user_id = ${userId} AND badge_type = ${type}
           ORDER BY earned_at DESC
-        `, [userId, type]);
+        `);
         
         const userBadges = userBadgesResult.rows;
         console.log(`[GET /users/${userId}/badges/type/${type}] Found ${userBadges.length} badges`);
@@ -955,7 +955,7 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
       
       try {
         // Check if database tables exist first
-        const tableCheck = await pool.query(`
+        const tableCheck = await db.execute(sql`
           SELECT EXISTS (
             SELECT 1 
             FROM information_schema.tables 
@@ -971,7 +971,7 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
         // Get XP transactions directly from database
         console.log(`[GET /users/${userId}/xp-transactions] Fetching XP transactions directly from DB`);
         
-        const transactionsResult = await pool.query(`
+        const transactionsResult = await db.execute(sql`
           SELECT 
             id,
             user_id as "userId",
@@ -981,9 +981,9 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
             created_at as "createdAt",
             description
           FROM xp_transactions
-          WHERE user_id = $1
+          WHERE user_id = ${userId}
           ORDER BY created_at DESC
-        `, [userId]);
+        `);
         
         const transactions = transactionsResult.rows;
         console.log(`[GET /users/${userId}/xp-transactions] Found ${transactions.length} transactions`);
@@ -1010,7 +1010,7 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
       
       try {
         // Check if database tables exist first
-        const tableCheck = await pool.query(`
+        const tableCheck = await db.execute(sql`
           SELECT EXISTS (
             SELECT 1 
             FROM information_schema.tables 
@@ -1028,7 +1028,7 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
         // Get XP transactions by source directly from database
         console.log(`[GET /users/${userId}/xp-transactions/source/${source}] Fetching XP transactions by source directly from DB`);
         
-        const transactionsResult = await pool.query(`
+        const transactionsResult = await db.execute(sql`
           SELECT 
             id,
             user_id as "userId",
@@ -1038,9 +1038,9 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
             created_at as "createdAt",
             description
           FROM xp_transactions
-          WHERE user_id = $1 AND source = $2
+          WHERE user_id = ${userId} AND source = ${source}
           ORDER BY created_at DESC
-        `, [userId, source]);
+        `);
         
         const transactions = transactionsResult.rows;
         console.log(`[GET /users/${userId}/xp-transactions/source/${source}] Found ${transactions.length} transactions`);
@@ -1062,7 +1062,7 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
   apiRouter.get("/quests/current-week", async (req, res) => {
     try {
       // Check if database tables exist first
-      const tableCheck = await pool.query(`
+      const tableCheck = await db.execute(sql`
         SELECT EXISTS (
           SELECT 1 
           FROM information_schema.tables 
@@ -1083,7 +1083,7 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
       console.log(`[GET /quests/current-week] Fetching quests for week ${weekNumber}, year ${year}`);
       
       // Using direct DB query to get all current week quests
-      const currentWeekQuestsResult = await pool.query(`
+      const currentWeekQuestsResult = await db.execute(sql`
         SELECT 
           uq.id,
           uq.user_id as "userId",
@@ -1105,10 +1105,10 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
         FROM user_quests uq
         JOIN quest_definitions qd ON uq.quest_definition_id = qd.id
         JOIN users u ON uq.user_id = u.id
-        WHERE uq.week_number = $1 AND uq.year = $2
+        WHERE uq.week_number = ${weekNumber} AND uq.year = ${year}
         ORDER BY uq.assigned_at DESC
         LIMIT 50
-      `, [weekNumber, year]);
+      `);
       
       const currentWeekQuests = currentWeekQuestsResult.rows;
       console.log(`[GET /quests/current-week] Found ${currentWeekQuests.length} quests for week ${weekNumber}`);
