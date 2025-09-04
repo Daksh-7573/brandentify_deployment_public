@@ -1,26 +1,18 @@
-import { pool } from './server/db';
-
-async function executeQuery(query: string, params: any[] = []) {
-  try {
-    return await pool.query(query, params);
-  } catch (error) {
-    console.error("Error executing query:", error);
-    throw error;
-  }
-}
+import { db, sql } from './server/db';
+import { questDefinitions } from './shared/schema';
 
 async function updateQuestDefinitions() {
   try {
     console.log('Starting: Updating quest definitions to be more specific and actionable');
 
     // Check if quest_definitions table exists
-    const tableCheck = await pool.query(`
-      SELECT EXISTS (
+    const tableCheck = await db.execute(
+      sql`SELECT EXISTS (
         SELECT 1 
         FROM information_schema.tables 
         WHERE table_name = 'quest_definitions'
-      );
-    `);
+      )`
+    );
     
     if (!tableCheck.rows[0].exists) {
       console.log('quest_definitions table does not exist, please run db-migration-career-quests.ts first');
@@ -31,11 +23,11 @@ async function updateQuestDefinitions() {
     }
 
     // First, check if the photo upload quest exists and update its status to inactive
-    await executeQuery(`
-      UPDATE quest_definitions 
+    await db.execute(
+      sql`UPDATE quest_definitions 
       SET is_active = false 
-      WHERE title = 'Professional Headshot' AND target_action = 'upload_photo'
-    `);
+      WHERE title = 'Professional Headshot' AND target_action = 'upload_photo'`
+    );
     console.log('Updated Professional Headshot quest to inactive status');
 
     // Now update the Skill Showcase quest to be more specific and actionable
@@ -52,57 +44,50 @@ async function updateQuestDefinitions() {
     };
 
     // Check if the quest already exists
-    const skillQuestCheck = await executeQuery(`
-      SELECT id FROM quest_definitions 
-      WHERE title = $1 AND target_action = $2
-    `, [updatedSkillQuest.title, updatedSkillQuest.target_action]);
+    const skillQuestCheck = await db.execute(
+      sql`SELECT id FROM quest_definitions 
+      WHERE title = ${updatedSkillQuest.title} AND target_action = ${updatedSkillQuest.target_action}`
+    );
 
     if (skillQuestCheck.rows.length > 0) {
       // Update existing quest
-      await executeQuery(`
-        UPDATE quest_definitions 
-        SET description = $1, 
-            target_count = $2, 
-            xp_reward = $3, 
-            musk_tip = $4,
+      await db.execute(
+        sql`UPDATE quest_definitions 
+        SET description = ${updatedSkillQuest.description}, 
+            target_count = ${updatedSkillQuest.target_count}, 
+            xp_reward = ${updatedSkillQuest.xp_reward}, 
+            musk_tip = ${updatedSkillQuest.musk_tip},
             is_active = true
-        WHERE id = $5
-      `, [
-        updatedSkillQuest.description, 
-        updatedSkillQuest.target_count, 
-        updatedSkillQuest.xp_reward, 
-        updatedSkillQuest.musk_tip,
-        skillQuestCheck.rows[0].id
-      ]);
+        WHERE id = ${skillQuestCheck.rows[0].id}`
+      );
       console.log(`Updated existing skill quest: ${updatedSkillQuest.title}`);
     } else {
       // Create new quest
-      await executeQuery(`
-        INSERT INTO quest_definitions (
+      await db.execute(
+        sql`INSERT INTO quest_definitions (
           title, description, type, target_count, target_action, 
-          xp_reward, badge_reward, required_profile_completion, musk_tip
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-      `, [
-        updatedSkillQuest.title,
-        updatedSkillQuest.description,
-        updatedSkillQuest.type,
-        updatedSkillQuest.target_count,
-        updatedSkillQuest.target_action,
-        updatedSkillQuest.xp_reward,
-        updatedSkillQuest.badge_reward,
-        updatedSkillQuest.required_profile_completion,
-        updatedSkillQuest.musk_tip
-      ]);
+          xp_reward, badge_reward, musk_tip
+        ) VALUES (
+          ${updatedSkillQuest.title},
+          ${updatedSkillQuest.description},
+          ${updatedSkillQuest.type},
+          ${updatedSkillQuest.target_count},
+          ${updatedSkillQuest.target_action},
+          ${updatedSkillQuest.xp_reward},
+          ${updatedSkillQuest.badge_reward},
+          ${updatedSkillQuest.musk_tip}
+        )`
+      );
       console.log(`Added new skill quest: ${updatedSkillQuest.title}`);
     }
 
     // Also update the generic Skill Showcase quest to be more specific
-    await executeQuery(`
-      UPDATE quest_definitions 
+    await db.execute(
+      sql`UPDATE quest_definitions 
       SET description = 'Categorize your skills by technical and soft skills, with at least 3 of each',
           musk_tip = 'Balanced professionals showcase both technical and soft skills. Technical skills show what you can do, soft skills show how you work with others.'
-      WHERE title = 'Skill Showcase' AND target_action = 'add_skill'
-    `);
+      WHERE title = 'Skill Showcase' AND target_action = 'add_skill'`
+    );
     console.log('Updated Skill Showcase quest to be more specific');
 
     // Add a new specific skill quest for Resume section
@@ -119,47 +104,40 @@ async function updateQuestDefinitions() {
     };
 
     // Check if the quest already exists
-    const resumeQuestCheck = await executeQuery(`
-      SELECT id FROM quest_definitions 
-      WHERE title = $1 AND target_action = $2
-    `, [resumeSkillQuest.title, resumeSkillQuest.target_action]);
+    const resumeQuestCheck = await db.execute(
+      sql`SELECT id FROM quest_definitions 
+      WHERE title = ${resumeSkillQuest.title} AND target_action = ${resumeSkillQuest.target_action}`
+    );
 
     if (resumeQuestCheck.rows.length > 0) {
       // Update existing quest
-      await executeQuery(`
-        UPDATE quest_definitions 
-        SET description = $1, 
-            target_count = $2, 
-            xp_reward = $3, 
-            musk_tip = $4,
+      await db.execute(
+        sql`UPDATE quest_definitions 
+        SET description = ${resumeSkillQuest.description}, 
+            target_count = ${resumeSkillQuest.target_count}, 
+            xp_reward = ${resumeSkillQuest.xp_reward}, 
+            musk_tip = ${resumeSkillQuest.musk_tip},
             is_active = true
-        WHERE id = $5
-      `, [
-        resumeSkillQuest.description, 
-        resumeSkillQuest.target_count, 
-        resumeSkillQuest.xp_reward, 
-        resumeSkillQuest.musk_tip,
-        resumeQuestCheck.rows[0].id
-      ]);
+        WHERE id = ${resumeQuestCheck.rows[0].id}`
+      );
       console.log(`Updated existing resume quest: ${resumeSkillQuest.title}`);
     } else {
       // Create new quest
-      await executeQuery(`
-        INSERT INTO quest_definitions (
+      await db.execute(
+        sql`INSERT INTO quest_definitions (
           title, description, type, target_count, target_action, 
-          xp_reward, badge_reward, required_profile_completion, musk_tip
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-      `, [
-        resumeSkillQuest.title,
-        resumeSkillQuest.description,
-        resumeSkillQuest.type,
-        resumeSkillQuest.target_count,
-        resumeSkillQuest.target_action,
-        resumeSkillQuest.xp_reward,
-        resumeSkillQuest.badge_reward,
-        resumeSkillQuest.required_profile_completion,
-        resumeSkillQuest.musk_tip
-      ]);
+          xp_reward, badge_reward, musk_tip
+        ) VALUES (
+          ${resumeSkillQuest.title},
+          ${resumeSkillQuest.description},
+          ${resumeSkillQuest.type},
+          ${resumeSkillQuest.target_count},
+          ${resumeSkillQuest.target_action},
+          ${resumeSkillQuest.xp_reward},
+          ${resumeSkillQuest.badge_reward},
+          ${resumeSkillQuest.musk_tip}
+        )`
+      );
       console.log(`Added new resume quest: ${resumeSkillQuest.title}`);
     }
 
@@ -177,47 +155,40 @@ async function updateQuestDefinitions() {
     };
 
     // Check if the quest already exists
-    const projectQuestCheck = await executeQuery(`
-      SELECT id FROM quest_definitions 
-      WHERE title = $1 AND target_action = $2
-    `, [projectSkillQuest.title, projectSkillQuest.target_action]);
+    const projectQuestCheck = await db.execute(
+      sql`SELECT id FROM quest_definitions 
+      WHERE title = ${projectSkillQuest.title} AND target_action = ${projectSkillQuest.target_action}`
+    );
 
     if (projectQuestCheck.rows.length > 0) {
       // Update existing quest
-      await executeQuery(`
-        UPDATE quest_definitions 
-        SET description = $1, 
-            target_count = $2, 
-            xp_reward = $3, 
-            musk_tip = $4,
+      await db.execute(
+        sql`UPDATE quest_definitions 
+        SET description = ${projectSkillQuest.description}, 
+            target_count = ${projectSkillQuest.target_count}, 
+            xp_reward = ${projectSkillQuest.xp_reward}, 
+            musk_tip = ${projectSkillQuest.musk_tip},
             is_active = true
-        WHERE id = $5
-      `, [
-        projectSkillQuest.description, 
-        projectSkillQuest.target_count, 
-        projectSkillQuest.xp_reward, 
-        projectSkillQuest.musk_tip,
-        projectQuestCheck.rows[0].id
-      ]);
+        WHERE id = ${projectQuestCheck.rows[0].id}`
+      );
       console.log(`Updated existing project quest: ${projectSkillQuest.title}`);
     } else {
       // Create new quest
-      await executeQuery(`
-        INSERT INTO quest_definitions (
+      await db.execute(
+        sql`INSERT INTO quest_definitions (
           title, description, type, target_count, target_action, 
-          xp_reward, badge_reward, required_profile_completion, musk_tip
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-      `, [
-        projectSkillQuest.title,
-        projectSkillQuest.description,
-        projectSkillQuest.type,
-        projectSkillQuest.target_count,
-        projectSkillQuest.target_action,
-        projectSkillQuest.xp_reward,
-        projectSkillQuest.badge_reward,
-        projectSkillQuest.required_profile_completion,
-        projectSkillQuest.musk_tip
-      ]);
+          xp_reward, badge_reward, musk_tip
+        ) VALUES (
+          ${projectSkillQuest.title},
+          ${projectSkillQuest.description},
+          ${projectSkillQuest.type},
+          ${projectSkillQuest.target_count},
+          ${projectSkillQuest.target_action},
+          ${projectSkillQuest.xp_reward},
+          ${projectSkillQuest.badge_reward},
+          ${projectSkillQuest.musk_tip}
+        )`
+      );
       console.log(`Added new project quest: ${projectSkillQuest.title}`);
     }
 
