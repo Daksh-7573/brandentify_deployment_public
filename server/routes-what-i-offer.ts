@@ -6,7 +6,7 @@
 
 import { Router, Request, Response } from "express";
 import { storage } from "./storage";
-import { pool } from "./db"; // Import pool for direct DB queries when needed
+import { pool, db, sql } from "./db"; // Import db and sql for Drizzle queries
 import { eq } from "drizzle-orm";
 import { users } from "@shared/schema";
 
@@ -308,11 +308,11 @@ router.get("/api/users/:id/what-i-offer", async (req: Request, res: Response) =>
           console.log(`[GET /users/:id/what-i-offer] User not found through regular means, checking backup table...`);
           
           // Check if backup table exists
-          const tableCheck = await pool.query(`
+          const tableCheck = await db.execute(sql`
             SELECT EXISTS (
               SELECT FROM information_schema.tables 
               WHERE table_name = 'user_field_backups'
-            );
+            )
           `);
           
           const tableExists = tableCheck.rows[0].exists;
