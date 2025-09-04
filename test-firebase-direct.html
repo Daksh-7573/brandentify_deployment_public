@@ -2,6 +2,11 @@
 <html>
 <head>
     <title>Firebase OAuth Test</title>
+    <!-- 
+        SECURITY NOTICE: This test file requires proper Firebase credentials.
+        Replace FIREBASE_API_KEY_PLACEHOLDER and FIREBASE_APP_ID_PLACEHOLDER 
+        with actual environment variable values before use.
+    -->
     <style>
         body { font-family: Arial, sans-serif; margin: 20px; background: #f0f0f0; }
         .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; }
@@ -69,19 +74,24 @@
         }
         
         // Get Firebase config from environment (same as your app)
+        // Security fix: Use environment variables instead of hardcoded credentials
         const firebaseConfig = {
-            apiKey: window.location.hostname.includes('replit') ? 
-                "AIzaSyDK_JkoQ6wVUNhQjYTtJF0xXVXOQFOHs9Q" : "test",
+            apiKey: "FIREBASE_API_KEY_PLACEHOLDER", // Replace with actual env var in deployment
             authDomain: "brandentifier-app.firebaseapp.com",
             projectId: "brandentifier-app",
             storageBucket: "brandentifier-app.firebasestorage.app",
             messagingSenderId: "364932947264",
-            appId: "1:364932947264:web:8b5d7c1d3f0e4a8c8f9b3e"
+            appId: "FIREBASE_APP_ID_PLACEHOLDER" // Replace with actual env var in deployment
         };
         
         let app, auth, provider;
         
         try {
+            // Validate configuration before initialization
+            if (firebaseConfig.apiKey.includes('PLACEHOLDER') || firebaseConfig.appId.includes('PLACEHOLDER')) {
+                throw new Error('Firebase credentials not properly configured. Replace placeholder values with actual environment variables.');
+            }
+            
             // Initialize Firebase
             app = initializeApp(firebaseConfig);
             auth = getAuth(app);
