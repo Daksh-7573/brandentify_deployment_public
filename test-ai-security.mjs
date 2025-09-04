@@ -111,7 +111,7 @@ async function testDataLeakagePrevention() {
     {
       name: 'Request with API key',
       payload: {
-        resumeText: 'My OpenAI API key is sk-1234567890abcdef1234567890',
+        resumeText: 'My OpenAI API key is sk-FAKE1234567890TEST1234567890',
         userId: 'test-user-123'
       },
       expectedResult: 'fail'
