@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, timestamp, jsonb, varchar, decimal } from "drizzle-orm/pg-core"; 
+import { pgTable, text, serial, integer, boolean, timestamp, jsonb, varchar, decimal, unique } from "drizzle-orm/pg-core"; 
 import { pgEnum } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
@@ -43,6 +43,18 @@ export const users = pgTable("users", {
   geoLastUpdated: timestamp("geo_last_updated"), // When location was last updated
   createdAt: timestamp("created_at").defaultNow(),
 });
+
+// User field backups for critical data persistence
+export const userFieldBackups = pgTable("user_field_backups", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  fieldName: text("field_name").notNull(),
+  fieldValue: text("field_value"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => ({
+  uniqueUserField: unique().on(table.userId, table.fieldName),
+}));
 
 // Resume theme enum
 export const resumeThemeEnum = pgEnum("resume_theme", [

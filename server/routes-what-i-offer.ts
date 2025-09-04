@@ -7,8 +7,8 @@
 import { Router, Request, Response } from "express";
 import { storage } from "./storage";
 import { pool, db, sql } from "./db"; // Import db and sql for Drizzle queries
-import { eq } from "drizzle-orm";
-import { users } from "@shared/schema";
+import { eq, and } from "drizzle-orm";
+import { users, userFieldBackups } from "@shared/schema";
 
 export const router = Router();
 
@@ -97,35 +97,45 @@ router.put("/api/users/:id/what-i-offer", async (req: Request, res: Response) =>
       
       // As a last resort, try other approaches - try multiple methods to update
       try {
-        console.log(`[PUT /users/:id/what-i-offer] ${prefix} Final attempt: Using raw SQL update...`);
-        const rawResult = await pool.query(
-          'UPDATE users SET what_i_offer = $1 WHERE id = $2 RETURNING *',
-          [whatIOffer, id]
-        );
+        console.log(`[PUT /users/:id/what-i-offer] ${prefix} Final attempt: Using Drizzle SQL update...`);
+        const rawResult = await db.update(users)
+          .set({ whatIOffer })
+          .where(eq(users.id, id))
+          .returning();
         
-        if (rawResult && rawResult.rows && rawResult.rows.length > 0) {
-          console.log(`[PUT /users/:id/what-i-offer] ${prefix} Raw SQL update successful!`);
+        if (rawResult && rawResult.length > 0) {
+          console.log(`[PUT /users/:id/what-i-offer] ${prefix} Drizzle SQL update successful!`);
           
           // Store value in a backup table to ensure persistence
           try {
             // Check if we have the entry already
-            const checkResult = await pool.query(
-              'SELECT * FROM user_field_backups WHERE user_id = $1 AND field_name = $2',
-              [id, 'whatIOffer']
-            );
+            const existingBackup = await db.select()
+              .from(userFieldBackups)
+              .where(and(
+                eq(userFieldBackups.userId, id),
+                eq(userFieldBackups.fieldName, 'whatIOffer')
+              ))
+              .limit(1);
             
-            if (checkResult.rows && checkResult.rows.length > 0) {
+            if (existingBackup.length > 0) {
               // Update existing record
-              await pool.query(
-                'UPDATE user_field_backups SET field_value = $1, updated_at = NOW() WHERE user_id = $2 AND field_name = $3',
-                [whatIOffer, id, 'whatIOffer']
-              );
+              await db.update(userFieldBackups)
+                .set({ 
+                  fieldValue: whatIOffer, 
+                  updatedAt: sql`NOW()` 
+                })
+                .where(and(
+                  eq(userFieldBackups.userId, id),
+                  eq(userFieldBackups.fieldName, 'whatIOffer')
+                ));
             } else {
               // Insert new record
-              await pool.query(
-                'INSERT INTO user_field_backups(user_id, field_name, field_value, created_at, updated_at) VALUES($1, $2, $3, NOW(), NOW())',
-                [id, 'whatIOffer', whatIOffer]
-              );
+              await db.insert(userFieldBackups)
+                .values({
+                  userId: id,
+                  fieldName: 'whatIOffer',
+                  fieldValue: whatIOffer
+                });
             }
             console.log(`[PUT /users/:id/what-i-offer] ${prefix} Backup storage successful`);
           } catch (backupError) {
@@ -138,45 +148,32 @@ router.put("/api/users/:id/what-i-offer", async (req: Request, res: Response) =>
             whatIOffer: whatIOffer,
             success: true,
             timestamp: Date.now(),
-            rawSqlUsed: true
+            drizzleUsed: true
           });
         } else {
-          // If direct update fails, try creating the backup table first then retry
+          // If direct update fails, try one more time with Drizzle
           try {
-            console.log(`[PUT /users/:id/what-i-offer] ${prefix} Creating backup table if not exists...`);
+            console.log(`[PUT /users/:id/what-i-offer] ${prefix} Retrying with Drizzle update...`);
             
-            // Create backup table if doesn't exist
-            await pool.query(`
-              CREATE TABLE IF NOT EXISTS user_field_backups (
-                id SERIAL PRIMARY KEY,
-                user_id INTEGER NOT NULL,
-                field_name TEXT NOT NULL,
-                field_value TEXT,
-                created_at TIMESTAMP DEFAULT NOW(),
-                updated_at TIMESTAMP DEFAULT NOW(),
-                UNIQUE(user_id, field_name)
-              )
-            `);
+            // Try Drizzle update once more
+            const retryResult = await db.update(users)
+              .set({ whatIOffer })
+              .where(eq(users.id, id))
+              .returning();
             
-            // Try raw update once more
-            const retryResult = await pool.query(
-              'UPDATE users SET what_i_offer = $1 WHERE id = $2 RETURNING *',
-              [whatIOffer, id]
-            );
-            
-            if (retryResult.rows && retryResult.rows.length > 0) {
-              console.log(`[PUT /users/:id/what-i-offer] ${prefix} Second raw SQL attempt successful!`);
+            if (retryResult && retryResult.length > 0) {
+              console.log(`[PUT /users/:id/what-i-offer] ${prefix} Second Drizzle attempt successful!`);
               return res.json({
                 userId: id,
                 whatIOffer: whatIOffer,
                 success: true,
                 timestamp: Date.now(),
-                rawSqlUsed: true,
+                drizzleUsed: true,
                 secondAttempt: true
               });
             }
-          } catch (tableError) {
-            console.error(`[PUT /users/:id/what-i-offer] ${prefix} Error creating backup table:`, tableError);
+          } catch (drizzleError) {
+            console.error(`[PUT /users/:id/what-i-offer] ${prefix} Error with Drizzle retry:`, drizzleError);
           }
           
           // If even that fails, give up and return the error
@@ -187,7 +184,7 @@ router.put("/api/users/:id/what-i-offer", async (req: Request, res: Response) =>
           });
         }
       } catch (sqlError) {
-        console.error(`[PUT /users/:id/what-i-offer] ${prefix} Raw SQL update failed:`, sqlError);
+        console.error(`[PUT /users/:id/what-i-offer] ${prefix} Drizzle SQL update failed:`, sqlError);
         return res.status(500).json({ 
           error: 'Failed to update whatIOffer field correctly after all attempts',
           sent: whatIOffer,
@@ -282,22 +279,22 @@ router.get("/api/users/:id/what-i-offer", async (req: Request, res: Response) =>
       } catch (storageError) {
         console.error(`[GET /users/:id/what-i-offer] Storage error:`, storageError);
         
-        // On storage error, try direct SQL as fallback
+        // On storage error, try direct Drizzle as fallback
         try {
-          console.log(`[GET /users/:id/what-i-offer] Attempting direct SQL fallback...`);
-          const results = await pool.query(
-            'SELECT * FROM users WHERE id = $1',
-            [id]
-          );
+          console.log(`[GET /users/:id/what-i-offer] Attempting direct Drizzle fallback...`);
+          const results = await db.select()
+            .from(users)
+            .where(eq(users.id, id))
+            .limit(1);
           
-          if (results && results.rows && results.rows.length > 0) {
-            user = results.rows[0];
-            console.log(`[GET /users/:id/what-i-offer] Direct SQL success`);
+          if (results && results.length > 0) {
+            user = results[0];
+            console.log(`[GET /users/:id/what-i-offer] Direct Drizzle success`);
           } else {
-            console.error(`[GET /users/:id/what-i-offer] Direct SQL returned no results`);
+            console.error(`[GET /users/:id/what-i-offer] Direct Drizzle returned no results`);
           }
         } catch (sqlError) {
-          console.error(`[GET /users/:id/what-i-offer] Direct SQL error:`, sqlError);
+          console.error(`[GET /users/:id/what-i-offer] Direct Drizzle error:`, sqlError);
           // Continue to next attempt
         }
       }
@@ -319,13 +316,16 @@ router.get("/api/users/:id/what-i-offer", async (req: Request, res: Response) =>
           
           if (tableExists) {
             // Try to get the whatIOffer value from backup table
-            const backupResult = await pool.query(
-              'SELECT field_value FROM user_field_backups WHERE user_id = $1 AND field_name = $2',
-              [id, 'whatIOffer']
-            );
+            const backupResult = await db.select({ fieldValue: userFieldBackups.fieldValue })
+              .from(userFieldBackups)
+              .where(and(
+                eq(userFieldBackups.userId, id),
+                eq(userFieldBackups.fieldName, 'whatIOffer')
+              ))
+              .limit(1);
             
-            if (backupResult.rows && backupResult.rows.length > 0) {
-              const backupValue = backupResult.rows[0].field_value;
+            if (backupResult && backupResult.length > 0) {
+              const backupValue = backupResult[0].fieldValue;
               console.log(`[GET /users/:id/what-i-offer] Retrieved value from backup table: "${backupValue}"`);
               
               return res.json({
