@@ -7908,23 +7908,13 @@ export class DatabaseStorage implements IStorage {
     try {
       console.log('[db.getPulses] Fetching all pulses');
       
-      const result = await pool.query(`
-        SELECT 
-          id, user_id as "userId", type, category, title, content, industry, domain,
-          media_type as "mediaType", media_urls as "mediaUrls", 
-          media_local_storage_keys as "mediaLocalStorageKeys",
-          poll_options as "pollOptions", project_id as "projectId",
-          likes, insightful_count as "insightfulCount", 
-          misinformed_count as "misinformedCount", share_count as "shareCount",
-          comments, is_published as "isPublished", expires_at as "expiresAt",
-          created_at as "createdAt", updated_at as "updatedAt"
-        FROM pulses 
-        WHERE is_published = true 
-        ORDER BY created_at DESC
-      `);
+      const result = await db.select()
+        .from(pulses)
+        .where(eq(pulses.isPublished, true))
+        .orderBy(desc(pulses.createdAt));
       
-      console.log(`[db.getPulses] Found ${result.rows.length} pulses`);
-      return result.rows;
+      console.log(`[db.getPulses] Found ${result.length} pulses`);
+      return result;
     } catch (error) {
       console.error('[db.getPulses] Error fetching pulses:', error);
       throw error;
