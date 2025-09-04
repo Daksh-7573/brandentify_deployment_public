@@ -7867,7 +7867,8 @@ export class MemStorage implements IStorage {
 
 // Import the database connection
 import { db, pool, executeWithRetry, sql } from './db';
-import { eq } from 'drizzle-orm';
+import { eq, desc, and, sql as drizzleSql } from 'drizzle-orm';
+import { brandsOfTheDay } from '@shared/schema';
 
 /**
  * DatabaseStorage implementation that connects to a PostgreSQL database via Drizzle ORM
@@ -9730,25 +9731,13 @@ export class DatabaseStorage implements IStorage {
     try {
       console.log('[db.getBrandsOfTheDay] Fetching all brands of the day');
       
-      const result = await pool.query(`
-        SELECT 
-          id,
-          user_id as "userId",
-          industry,
-          domain,
-          brand_value_score as "brandValueScore",
-          musk_comment as "muskComment",
-          score_breakdown as "scoreBreakdown",
-          featured_date as "featuredDate",
-          expires_date as "expiresDate",
-          has_been_shared as "hasBeenShared",
-          created_at as "createdAt"
-        FROM brands_of_the_day
-        ORDER BY featured_date DESC
-      `);
+      const result = await db
+        .select()
+        .from(brandsOfTheDay)
+        .orderBy(desc(brandsOfTheDay.featuredDate));
       
-      console.log(`[db.getBrandsOfTheDay] Found ${result.rows.length} brands of the day`);
-      return result.rows;
+      console.log(`[db.getBrandsOfTheDay] Found ${result.length} brands of the day`);
+      return result;
     } catch (error) {
       console.error('[db.getBrandsOfTheDay] Error fetching brands of the day:', error);
       return [];
@@ -9759,26 +9748,14 @@ export class DatabaseStorage implements IStorage {
     try {
       console.log(`[db.getBrandsOfTheDayByDate] Fetching brands of the day for date ${date.toISOString()}`);
       
-      const result = await pool.query(`
-        SELECT 
-          id,
-          user_id as "userId",
-          industry,
-          domain,
-          brand_value_score as "brandValueScore",
-          musk_comment as "muskComment",
-          score_breakdown as "scoreBreakdown",
-          featured_date as "featuredDate",
-          expires_date as "expiresDate",
-          has_been_shared as "hasBeenShared",
-          created_at as "createdAt"
-        FROM brands_of_the_day
-        WHERE featured_date::date = $1::date
-        ORDER BY industry
-      `, [date.toISOString().split('T')[0]]);
+      const result = await db
+        .select()
+        .from(brandsOfTheDay)
+        .where(drizzleSql`${brandsOfTheDay.featuredDate}::date = ${date.toISOString().split('T')[0]}::date`)
+        .orderBy(brandsOfTheDay.industry);
       
-      console.log(`[db.getBrandsOfTheDayByDate] Found ${result.rows.length} brands of the day for date ${date.toISOString().split('T')[0]}`);
-      return result.rows;
+      console.log(`[db.getBrandsOfTheDayByDate] Found ${result.length} brands of the day for date ${date.toISOString().split('T')[0]}`);
+      return result;
     } catch (error) {
       console.error(`[db.getBrandsOfTheDayByDate] Error fetching brands of the day for date ${date.toISOString()}:`, error);
       return [];
@@ -9789,30 +9766,19 @@ export class DatabaseStorage implements IStorage {
     try {
       console.log(`[db.getBrandOfTheDayById] Looking for brand of the day with ID ${id}`);
       
-      const result = await pool.query(`
-        SELECT 
-          id,
-          user_id as "userId",
-          industry,
-          domain,
-          brand_value_score as "brandValueScore",
-          musk_comment as "muskComment",
-          score_breakdown as "scoreBreakdown",
-          featured_date as "featuredDate",
-          expires_date as "expiresDate",
-          has_been_shared as "hasBeenShared",
-          created_at as "createdAt"
-        FROM brands_of_the_day
-        WHERE id = $1
-      `, [id]);
+      const result = await db
+        .select()
+        .from(brandsOfTheDay)
+        .where(eq(brandsOfTheDay.id, id))
+        .limit(1);
       
-      if (result.rows.length === 0) {
+      if (result.length === 0) {
         console.log(`[db.getBrandOfTheDayById] No brand of the day found with ID ${id}`);
         return undefined;
       }
       
       console.log(`[db.getBrandOfTheDayById] Found brand of the day with ID ${id}`);
-      return result.rows[0];
+      return result[0];
     } catch (error) {
       console.error(`[db.getBrandOfTheDayById] Error fetching brand of the day with ID ${id}:`, error);
       return undefined;
@@ -9823,43 +9789,36 @@ export class DatabaseStorage implements IStorage {
     try {
       console.log(`[db.getBrandOfTheDayByIndustryAndDomain] Looking for brand of the day for industry ${industry} and domain ${domain}`);
       
-      let query = `
-        SELECT 
-          id,
-          user_id as "userId",
-          industry,
-          domain,
-          brand_value_score as "brandValueScore",
-          musk_comment as "muskComment",
-          score_breakdown as "scoreBreakdown",
-          featured_date as "featuredDate",
-          expires_date as "expiresDate",
-          has_been_shared as "hasBeenShared",
-          created_at as "createdAt"
-        FROM brands_of_the_day
-        WHERE industry = $1 AND domain = $2
-      `;
+      let whereConditions = and(
+        eq(brandsOfTheDay.industry, industry),
+        eq(brandsOfTheDay.domain, domain)
+      );
       
-      const params = [industry, domain];
+      // Build the query
+      let query = db
+        .select()
+        .from(brandsOfTheDay);
       
-      // If date is provided, add it to the query
+      // If date is provided, add it to the where condition
       if (date) {
-        query += ` AND featured_date::date = $3::date`;
-        params.push(date.toISOString().split('T')[0]);
+        query = query.where(and(
+          whereConditions!,
+          drizzleSql`${brandsOfTheDay.featuredDate}::date = ${date.toISOString().split('T')[0]}::date`
+        ));
       } else {
         // If no date is provided, get the most recent one
-        query += ` ORDER BY featured_date DESC LIMIT 1`;
+        query = query.where(whereConditions).orderBy(desc(brandsOfTheDay.featuredDate)).limit(1);
       }
       
-      const result = await pool.query(query, params);
+      const result = await query;
       
-      if (result.rows.length === 0) {
+      if (result.length === 0) {
         console.log(`[db.getBrandOfTheDayByIndustryAndDomain] No brand of the day found for industry ${industry} and domain ${domain}`);
         return undefined;
       }
       
       console.log(`[db.getBrandOfTheDayByIndustryAndDomain] Found brand of the day for industry ${industry} and domain ${domain}`);
-      return result.rows[0];
+      return result[0];
     } catch (error) {
       console.error(`[db.getBrandOfTheDayByIndustryAndDomain] Error fetching brand of the day for industry ${industry} and domain ${domain}:`, error);
       return undefined;
@@ -9870,26 +9829,14 @@ export class DatabaseStorage implements IStorage {
     try {
       console.log(`[db.getBrandsOfTheDayByUserId] Fetching brands of the day for user ${userId}`);
       
-      const result = await pool.query(`
-        SELECT 
-          id,
-          user_id as "userId",
-          industry,
-          domain,
-          brand_value_score as "brandValueScore",
-          musk_comment as "muskComment",
-          score_breakdown as "scoreBreakdown",
-          featured_date as "featuredDate",
-          expires_date as "expiresDate",
-          has_been_shared as "hasBeenShared",
-          created_at as "createdAt"
-        FROM brands_of_the_day
-        WHERE user_id = $1
-        ORDER BY featured_date DESC
-      `, [userId]);
+      const result = await db
+        .select()
+        .from(brandsOfTheDay)
+        .where(eq(brandsOfTheDay.userId, userId))
+        .orderBy(desc(brandsOfTheDay.featuredDate));
       
-      console.log(`[db.getBrandsOfTheDayByUserId] Found ${result.rows.length} brands of the day for user ${userId}`);
-      return result.rows;
+      console.log(`[db.getBrandsOfTheDayByUserId] Found ${result.length} brands of the day for user ${userId}`);
+      return result;
     } catch (error) {
       console.error(`[db.getBrandsOfTheDayByUserId] Error fetching brands of the day for user ${userId}:`, error);
       return [];
@@ -9900,46 +9847,26 @@ export class DatabaseStorage implements IStorage {
     try {
       console.log(`[db.createBrandOfTheDay] Creating brand of the day for user ${brand.userId}`);
       
-      const result = await pool.query(`
-        INSERT INTO brands_of_the_day (
-          user_id,
-          industry,
-          domain,
-          brand_value_score,
-          musk_comment,
-          score_breakdown,
-          featured_date,
-          expires_date,
-          has_been_shared,
-          created_at
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-        RETURNING 
-          id,
-          user_id as "userId",
-          industry,
-          domain,
-          brand_value_score as "brandValueScore",
-          musk_comment as "muskComment",
-          score_breakdown as "scoreBreakdown",
-          featured_date as "featuredDate",
-          expires_date as "expiresDate",
-          has_been_shared as "hasBeenShared",
-          created_at as "createdAt"
-      `, [
-        brand.userId,
-        brand.industry,
-        brand.domain,
-        brand.brandValueScore,
-        brand.muskComment,
-        brand.scoreBreakdown,
-        brand.featuredDate,
-        brand.expiresDate,
-        brand.hasBeenShared,
-        brand.createdAt || new Date()
-      ]);
+      const insertData = {
+        userId: brand.userId,
+        industry: brand.industry,
+        domain: brand.domain,
+        brandValueScore: brand.brandValueScore,
+        muskComment: brand.muskComment,
+        scoreBreakdown: brand.scoreBreakdown,
+        featuredDate: brand.featuredDate,
+        expiresDate: brand.expiresDate,
+        hasBeenShared: brand.hasBeenShared,
+        createdAt: brand.createdAt || new Date()
+      };
       
-      console.log(`[db.createBrandOfTheDay] Created brand of the day with ID ${result.rows[0].id}`);
-      return result.rows[0];
+      const result = await db
+        .insert(brandsOfTheDay)
+        .values(insertData)
+        .returning();
+      
+      console.log(`[db.createBrandOfTheDay] Created brand of the day with ID ${result[0].id}`);
+      return result[0];
     } catch (error) {
       console.error(`[db.createBrandOfTheDay] Error creating brand of the day:`, error);
       throw new Error(`Failed to create brand of the day: ${error.message}`);
