@@ -1,13 +1,13 @@
 // Script to apply Nowboard schema directly
 
-import { db, pool } from '../db';
+import { db, pool, sql } from '../db';
 
 async function applyNowboardSchema() {
   try {
     console.log('Creating Nowboard tables...');
     
     // Create the nowboard_category enum type if it doesn't exist
-    await db.execute(`
+    await db.execute(sql`
       DO $$ 
       BEGIN
         IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'nowboard_category') THEN
@@ -21,7 +21,7 @@ async function applyNowboardSchema() {
     console.log('Created nowboard_category enum');
     
     // Create nowboard_items table if it doesn't exist
-    await db.execute(`
+    await db.execute(sql`
       CREATE TABLE IF NOT EXISTS nowboard_items (
         id SERIAL PRIMARY KEY,
         user_id INTEGER NOT NULL REFERENCES users(id),
@@ -40,7 +40,7 @@ async function applyNowboardSchema() {
     console.log('Created nowboard_items table');
     
     // Create nowboard_inspired_by table if it doesn't exist
-    await db.execute(`
+    await db.execute(sql`
       CREATE TABLE IF NOT EXISTS nowboard_inspired_by (
         id SERIAL PRIMARY KEY,
         user_id INTEGER NOT NULL REFERENCES users(id),
