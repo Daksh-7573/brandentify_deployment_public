@@ -1,25 +1,18 @@
-import { pool } from './db';
-
-async function executeQuery(query: string, params: any[] = []) {
-  try {
-    return await pool.query(query, params);
-  } catch (error) {
-    console.error("Error executing query:", error);
-    throw error;
-  }
-}
+import { db } from './db';
+import { sql, count } from 'drizzle-orm';
+import { questDefinitions } from '@shared/schema';
 
 async function populateQuestDefinitions() {
   try {
     console.log('Starting: Populating quest definitions');
 
     // Check if quest_definitions table exists
-    const tableCheck = await pool.query(`
+    const tableCheck = await db.execute(sql`
       SELECT EXISTS (
         SELECT 1 
         FROM information_schema.tables 
         WHERE table_name = 'quest_definitions'
-      );
+      )
     `);
     
     if (!tableCheck.rows[0].exists) {
@@ -31,12 +24,13 @@ async function populateQuestDefinitions() {
     }
 
     // Check if we already have quest definitions
-    const existingQuests = await executeQuery(`SELECT COUNT(*) FROM quest_definitions`);
-    if (parseInt(existingQuests.rows[0].count) > 0) {
-      console.log(`${existingQuests.rows[0].count} quest definitions already exist, skipping population`);
+    const existingQuests = await db.select({ count: count() }).from(questDefinitions);
+    const questCount = existingQuests[0].count;
+    if (questCount > 0) {
+      console.log(`${questCount} quest definitions already exist, skipping population`);
       return {
         success: true,
-        message: `${existingQuests.rows[0].count} quest definitions already exist`
+        message: `${questCount} quest definitions already exist`
       };
     }
 
@@ -192,22 +186,16 @@ async function populateQuestDefinitions() {
 
     // Insert quests into the database
     for (const quest of allQuests) {
-      await executeQuery(`
-        INSERT INTO quest_definitions (
-          title, description, type, target_count, target_action, 
-          xp_reward, badge_reward, required_profile_completion, musk_tip
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-      `, [
-        quest.title,
-        quest.description,
-        quest.type,
-        quest.target_count,
-        quest.target_action,
-        quest.xp_reward,
-        quest.badge_reward,
-        quest.required_profile_completion,
-        quest.musk_tip
-      ]);
+      await db.insert(questDefinitions).values({
+        title: quest.title,
+        description: quest.description,
+        type: quest.type as any,
+        targetCount: quest.target_count,
+        targetAction: quest.target_action,
+        xpReward: quest.xp_reward,
+        badgeReward: quest.badge_reward as any,
+        muskTip: quest.musk_tip
+      });
       console.log(`Added quest definition: ${quest.title}`);
     }
 
