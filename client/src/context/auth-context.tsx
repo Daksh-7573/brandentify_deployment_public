@@ -536,7 +536,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, []); // Remove dependencies to prevent listener recreation
 
-  // Sign in with Google - clean implementation
+  // Sign in with Google - using redirect for Replit domains
   const signInWithGoogle = async () => {
     if (isLoading) return;
     
@@ -547,58 +547,54 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       // Use the globally configured provider from firebase.ts
       const { auth, googleProvider } = await import('@/lib/firebase');
-      const { signInWithPopup } = await import('firebase/auth');
+      const useRedirect = shouldUseRedirectAuth();
       
       console.log("Auth environment:", {
         domain: window.location.hostname,
-        isReplitDomain: window.location.hostname.includes('replit'),
-        usingPopup: true
+        isReplitDomain: isReplitDomain(),
+        useRedirect: useRedirect
       });
       
-      // Clear any old auth flags before starting clean authentication
-      console.log("🔧 Clearing old auth flags for clean start...");
-      sessionStorage.removeItem('redirect_auth_attempt');
-      sessionStorage.removeItem('redirect_auth_time');
-      sessionStorage.removeItem('redirect_auth_success');
-      localStorage.removeItem('redirect_auth_attempt');
-      localStorage.removeItem('redirect_auth_time');
-      localStorage.removeItem('redirect_auth_success');
-      
-      console.log("🔧 Old auth flags cleared, ready for clean popup authentication");
-      
-      // Configure popup with better parameters
-      const { GoogleAuthProvider } = await import('firebase/auth');
-      const enhancedProvider = new GoogleAuthProvider();
-      enhancedProvider.addScope('email');
-      enhancedProvider.addScope('profile');
-      enhancedProvider.setCustomParameters({
-        prompt: 'select_account',
-        display: 'popup'
-      });
-
-      // Use popup method with enhanced error handling and timeout
-      console.log("🚀 Initiating signInWithPopup with enhanced settings...");
-      
-      // Set up popup with specific dimensions for better UX
-      const popupFeatures = 'width=500,height=600,scrollbars=yes,resizable=yes,toolbar=no,menubar=no,location=no,directories=no,status=no';
-      
-      // Use signInWithPopup with custom popup features
-      const result = await signInWithPopup(auth as any, enhancedProvider);
-      
-      if (result && result.user) {
-        console.log("🎉 Popup authentication successful:", result.user.email);
+      if (useRedirect) {
+        console.log("🔄 Using redirect authentication for Replit domain");
+        const { signInWithRedirect } = await import('firebase/auth');
         
-        // Show success toast immediately
+        // Set a flag to track redirect attempt
+        localStorage.setItem('auth_redirect_attempt', Date.now().toString());
+        
         toast({
-          title: "Authentication successful",
-          description: `Welcome ${result.user.displayName || result.user.email}!`,
+          title: "Redirecting to Google",
+          description: "You will be redirected to complete sign-in...",
+          variant: "default",
         });
         
-        // The onAuthStateChanged listener will handle the rest
+        // Start redirect authentication
+        await signInWithRedirect(auth, googleProvider);
+        // Note: This will redirect the page, so code after this won't execute
         return;
+      } else {
+        console.log("🔄 Using popup authentication");
+        const { signInWithPopup } = await import('firebase/auth');
+        
+        // Clear any old auth flags before starting clean authentication
+        console.log("🔧 Clearing old auth flags for clean start...");
+        clearAuthStorageData();
+        
+        const result = await signInWithPopup(auth, googleProvider);
+        
+        if (result && result.user) {
+          console.log("🎉 Popup authentication successful:", result.user.email);
+          
+          // Show success toast immediately
+          toast({
+            title: "Authentication successful",
+            description: `Welcome ${result.user.displayName || result.user.email}!`,
+          });
+          
+          // The onAuthStateChanged listener will handle the rest
+          return;
+        }
       }
-      
-      console.log("Popup authentication completed successfully");
       
     } catch (error: any) {
       console.error("Google sign-in error:", error);
@@ -609,9 +605,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (error.code === 'auth/popup-blocked') {
         errorMessage = "The login popup was blocked by your browser. Please allow popups and try again.";
       } else if (error.code === 'auth/popup-closed-by-user') {
-        console.log("Popup closed by user - implementing automatic redirect fallback");
+        console.log("Popup closed by user - trying redirect as fallback");
         
-        // Show a more user-friendly message and automatically try redirect
         toast({
           title: "Popup was closed",
           description: "Switching to redirect authentication...",
@@ -621,12 +616,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         try {
           console.log("Automatically trying redirect authentication as fallback...");
           const { signInWithRedirect } = await import('firebase/auth');
-          const { GoogleAuthProvider } = await import('firebase/auth');
-          const redirectProvider = new GoogleAuthProvider();
-          redirectProvider.addScope('email');
-          redirectProvider.addScope('profile');
-          
-          await signInWithRedirect(auth as any, redirectProvider);
+          localStorage.setItem('auth_redirect_attempt', Date.now().toString());
+          await signInWithRedirect(auth, googleProvider);
           return; // Exit here as redirect will handle the rest
         } catch (redirectError) {
           console.error("Redirect fallback also failed:", redirectError);
