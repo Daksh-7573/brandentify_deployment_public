@@ -338,29 +338,19 @@ export async function setupSecurity(app: any) {
       // Allow requests with no origin (like mobile apps or curl requests)
       if (!origin) return callback(null, true);
       
-      // Log the origin for debugging
-      console.log('🔍 CORS Origin check:', origin);
-      
-      // Allow all Replit domains and development - be more permissive
+      // Allow all Replit domains and development
       if (ALLOWED_ORIGINS.indexOf(origin) !== -1 || 
           process.env.NODE_ENV === 'development' ||
-          origin.includes('replit.app') ||
-          origin.includes('replit.dev') ||
-          origin.includes('picard.replit.dev') ||
-          origin.includes('localhost') ||
-          origin.includes('127.0.0.1')) {
-        console.log('✅ CORS origin allowed:', origin);
+          origin.endsWith('.replit.app') ||
+          origin.endsWith('.replit.dev')) {
         callback(null, true);
       } else {
-        console.log('❌ CORS origin blocked:', origin);
-        // In production, be more permissive to avoid blocking legitimate requests
-        console.log('⚠️ Allowing origin anyway to prevent deployment issues');
-        callback(null, true); // Allow all origins for now to fix deployment
+        callback(new Error('Not allowed by CORS'));
       }
     },
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-CSRF-Token', 'x-firebase-auth', 'Origin', 'X-Requested-With', 'Accept', 'X-Frame-Options']
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-CSRF-Token', 'x-firebase-auth']
   };
   
   app.use(cors(corsOptions));
