@@ -1,0 +1,83 @@
+[SW] Passing through to network: GET https://brandentifier.replit.app/assets/App-BqNS8wNV.tsx
+sw.js:48 [SW] Passing through to network: GET https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css
+sw.js:48 [SW] Passing through to network: GET https://brandentifier.replit.app/assets/index-DfnrYzO5.js
+sw.js:48 [SW] Passing through to network: GET https://brandentifier.replit.app/assets/index-BtVLuLyg.css
+auth:71 A preload for 'data:application/octet-stream;base64,aW1wb3J0IHsgY3JlYXRlUm9vdCB9IGZyb20gInJlYWN0LWRvbS9jbGllbnQiOwppbXBvcnQgQXBwIGZyb20gIi4vQXBwIjsKaW1wb3J0IFNpbXBsZUFwcCBmcm9tICIuL3NpbXBsZS1hcHAiOwppbXBvcnQgIi4vaW5kZXguY3NzIjsKCi8vIEluaXRpYWxpemUgRmlyZWJhc2UgYW5kIG90aGVyIHNlcnZpY2VzCmltcG9ydCAiLi9saWIvZmlyZWJhc2UiOwoKLy8gUGVyZm9ybWFuY2UgbWVhc3VyZW1lbnQKY29uc3QgYXBwU3RhcnRUaW1lID0gcGVyZm9ybWFuY2Uubm93KCk7CmNvbnNvbGUubG9nKCdbUEVSRl0gUmVhY3QgYXBwIGluaXRpYWxpemF0aW9uIHN0YXJ0ZWQnKTsKCi8vIFJlbW92ZSBIVE1MIGxvYWRlciBpbW1lZGlhdGVseSB3aGVuIFJlYWN0IGFwcCBzdGFydHMKY29uc3QgbG9hZGVyID0gZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ2FwcC1sb2FkZXInKTsKaWYgKGxvYWRlcikgewogIGxvYWRlci5zdHlsZS5vcGFjaXR5ID0gJzAnOwogIGxvYWRlci5zdHlsZS50cmFuc2l0aW9uID0gJ29wYWNpdHkgMC4xNXMgZWFzZS1vdXQnOwogIHNldFRpbWVvdXQoKCkgPT4gewogICAgbG9hZGVyLnN0eWxlLmRpc3BsYXkgPSAnbm9uZSc7CiAgICBjb25zb2xlLmxvZygnW1BFUkZdIFNrZWxldG9uIGxvYWRlciByZW1vdmVkIGluJywgKHBlcmZvcm1hbmNlLm5vdygpIC0gYXBwU3RhcnRUaW1lKS50b0ZpeGVkKDIpLCAnbXMnKTsKICB9LCAxNTApOwp9CgovLyBDaGVjayBpZiB3ZSBzaG91bGQgdXNlIHRoZSBzaW1wbGUgYXBwIG9yIHRoZSBmdWxsIGFwcApjb25zdCB1c2VTaW1wbGVBcHAgPSBmYWxzZTsgLy8gU2V0IHRvIHRydWUgZm9yIHRlc3RpbmcKCi8vIFByb2dyZXNzaXZlIHJlbmRlcmluZyAtIHN0YXJ0IHdpdGggY3JpdGljYWwgY29tcG9uZW50cwpjb25zdCByZW5kZXJBcHAgPSAoKSA9PiB7CiAgY29uc3QgcmVuZGVyU3RhcnRUaW1lID0gcGVyZm9ybWFuY2Uubm93KCk7CiAgY29uc29sZS5sb2coJ1tQRVJGXSBSZWFjdCByZW5kZXJpbmcgc3RhcnRlZCcpOwogIAogIGNyZWF0ZVJvb3QoZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoInJvb3QiKSEpLnJlbmRlcigKICAgIHVzZVNpbXBsZUFwcCA/IDxTaW1wbGVBcHAgLz4gOiA8QXBwIC8+CiAgKTsKICAKICAvLyBSZXBvcnQgcmVuZGVyaW5nIHRpbWUgYWZ0ZXIgUmVhY3QgaGFzIG1vdW50ZWQKICBzZXRUaW1lb3V0KCgpID0+IHsKICAgIGNvbnNvbGUubG9nKCdbUEVSRl0gUmVhY3QgYXBwIHJlbmRlcmVkIGluJywgKHBlcmZvcm1hbmNlLm5vdygpIC0gcmVuZGVyU3RhcnRUaW1lKS50b0ZpeGVkKDIpLCAnbXMnKTsKICAgIGNvbnNvbGUubG9nKCdbUEVSRl0gVG90YWwgaW5pdGlhbGl6YXRpb24gdGltZTonLCAocGVyZm9ybWFuY2Uubm93KCkgLSBhcHBTdGFydFRpbWUpLnRvRml4ZWQoMiksICdtcycpOwogIH0sIDApOwp9OwoKLy8gT3B0aW1pemUgcmVuZGVyaW5nIHRpbWluZwppZiAoZG9jdW1lbnQucmVhZHlTdGF0ZSA9PT0gJ2xvYWRpbmcnKSB7CiAgZG9jdW1lbnQuYWRkRXZlbnRMaXN0ZW5lcignRE9NQ29udGVudExvYWRlZCcsIHJlbmRlckFwcCk7Cn0gZWxzZSB7CiAgcmVuZGVyQXBwKCk7Cn0K' is found, but is not used because the request credentials mode does not match. Consider taking a look at crossorigin attribute.Understand this warning
+data:application/oc…:1 Failed to load module script: Expected a JavaScript-or-Wasm module script but the server responded with a MIME type of "application/octet-stream". Strict MIME type checking is enforced for module scripts per HTML spec.Understand this error
+auth:72 A preload for 'https://brandentifier.replit.app/assets/App-BqNS8wNV.tsx' is found, but is not used because the request credentials mode does not match. Consider taking a look at crossorigin attribute.Understand this warning
+sw.js:48 [SW] Passing through to network: GET https://brandentifier.replit.app/assets/App-BqNS8wNV.tsx
+auth:251 [SW] Service Worker v2 registered: https://brandentifier.replit.app/
+auth:252 [PERF] Service Worker registered in 44.20 ms
+index-DfnrYzO5.js:2307 Firebase Environment Check: {apiKey: 'Present (39 chars)', projectId: 'brandentifier-app', appId: 'Present (41 chars)', envVarsDetected: {…}}
+index-DfnrYzO5.js:2307 Firebase initialization: {environment: 'development', hostname: 'brandentifier.replit.app', projectId: 'brandentifier-app', apiKeyPresent: true, apiKeyLength: 39, …}
+index-DfnrYzO5.js:2307 Using simplified Google auth configuration for maximum compatibility
+index-DfnrYzO5.js:2307 Firebase initialized successfully
+index-DfnrYzO5.js:2307 Firebase config used: {authDomain: 'brandentifier-app.firebaseapp.com', projectId: 'brandentifier-app', currentDomain: 'brandentifier.replit.app', isReplitDomain: true, googleProviderScopes: Array(2), …}
+index-DfnrYzO5.js:2377 [PERF] React app initialization started
+index-DfnrYzO5.js:2377 [PERF] React rendering started
+auth:354 [Skeleton] DOM loaded, preparing smooth transition
+index-DfnrYzO5.js:289 AuthProvider: Current state: {hasUser: false, isAuthenticated: false, isLoading: true, userEmail: undefined}
+sw.js:48 [SW] Passing through to network: GET https://brandentifier.replit.app/assets/auth-page-BiZs_b7l.js
+sw.js:48 [SW] Passing through to network: GET https://brandentifier.replit.app/assets/mail-BIDg33qk.js
+sw.js:48 [SW] Passing through to network: GET https://brandentifier.replit.app/assets/phone-CKXT9qdA.js
+index-DfnrYzO5.js:2377 [PERF] React app rendered in 28.80 ms
+index-DfnrYzO5.js:2377 [PERF] Total initialization time: 29.30 ms
+index-DfnrYzO5.js:289 AuthProvider: Starting auth check, current loading state: true
+index-DfnrYzO5.js:289 AuthProvider: Running checkStoredAuth
+index-DfnrYzO5.js:289 AuthProvider: Current sessionStorage keys: ['firebase:pendingRedirect:AIzaSyDZWdUP8SFzszkNfXC3AdSg2awn2I7jq8o:[DEFAULT]']
+index-DfnrYzO5.js:289 AuthProvider: Raw stored data: null
+index-DfnrYzO5.js:289 AuthProvider: No stored user found in sessionStorage
+index-DfnrYzO5.js:289 AuthProvider: Setting isLoading to false from checkStoredAuth
+index-DfnrYzO5.js:289 AuthProvider: Current state: {hasUser: false, isAuthenticated: false, isLoading: false, userEmail: undefined}
+auth:360 [Skeleton] Starting fade-out transition
+auth:288 🚀 [PERF] COMPLETE PERFORMANCE OPTIMIZATION REPORT:
+auth:289 📊 Total page load time: 183.00ms
+auth:290 🔥 Firebase init time: 183.10ms
+auth:298 ✅ [Strategy 1] Preconnect/Preload: 9 preconnect + 3 preload + 5 modulepreload links active
+auth:299 ⚡ Expected improvement: 100-300ms faster cold starts
+auth:304 ✅ [Strategy 2] Firebase Auth Caching: Active - cached state available
+auth:305 ⚡ Expected improvement: 150-250ms faster auth loads
+auth:320 ✅ [Strategy 4] Service Worker v2: Active with enhanced caching
+auth:321 ⚡ Return visits: Near-instant loading (0-50ms)
+auth:339 🎯 PERFORMANCE STATUS: EXCELLENT - All optimizations operational
+auth:346 📈 Performance Optimization Complete - All 4 strategies active!
+sw.js:48 [SW] Passing through to network: GET https://brandentifier.replit.app/favicon.ico
+sw.js:48 [SW] Passing through to network: GET https://apis.google.com/js/api.js?onload=__iframefcb482854
+index-DfnrYzO5.js:2377 [PERF] Skeleton loader removed in 150.60 ms
+App-BqNS8wNV.tsx:1 Failed to load module script: Expected a JavaScript-or-Wasm module script but the server responded with a MIME type of "application/octet-stream". Strict MIME type checking is enforced for module scripts per HTML spec.Understand this error
+auth:366 [Skeleton] Skeleton loading complete - app ready
+auth:370 ⚡ [PERF] Skeleton-to-app transition: 333.60ms
+auth-page-BiZs_b7l.js:2 AuthPage: Current auth state: {isAuthenticated: false, isLoading: false, hasUser: false, userEmail: undefined}
+auth-page-BiZs_b7l.js:2 🔍 Checking for redirect result from FastGoogleAuth...
+sw.js:48 [SW] Passing through to network: GET https://brandentifier.replit.app/assets/Brandentifier%20Landing_1751376023002-CkhzZ7Ri.png
+index-DfnrYzO5.js:2377 [Progressive Loading] Starting tiered component loading
+index-DfnrYzO5.js:2377 [Progressive Loading] ⚡ Core components ready
+index-DfnrYzO5.js:297  ⚠️ FIREBASE DOMAIN SETUP INFORMATION ⚠️ 
+index-DfnrYzO5.js:297  Add these domains to Firebase Auth > Settings > Authorized domains: 
+index-DfnrYzO5.js:297  1. brandentifier.replit.app 
+index-DfnrYzO5.js:297  2. brandentifier.replit.app.replit.app 
+index-DfnrYzO5.js:297  3. *.replit.dev 
+index-DfnrYzO5.js:297  4. *.replit.app 
+sw.js:48 [SW] Passing through to network: GET https://brandentifier.replit.app/assets/auth-redirect-handler-gxvOQwaR.js
+auth-page-BiZs_b7l.js:2 AuthPage: Current auth state: {isAuthenticated: false, isLoading: false, hasUser: false, userEmail: undefined}
+index-DfnrYzO5.js:2377 [Progressive Loading] 🚀 Secondary components loaded
+auth:314 ✅ [Strategy 3] Progressive Rendering: Core(0) + Secondary(0) components loaded
+auth:315 ⚡ Expected improvement: 50-100ms perceived performance boost
+auth-page-BiZs_b7l.js:2 AuthPage: Current auth state: {isAuthenticated: false, isLoading: false, hasUser: false, userEmail: undefined}
+index-DfnrYzO5.js:2377 [Progressive Loading] 🔧 All components loaded in 201.90ms
+auth-page-BiZs_b7l.js:2 AuthPage: Current auth state: {isAuthenticated: false, isLoading: false, hasUser: false, userEmail: undefined}
+sw.js:48 [SW] Passing through to network: GET https://apis.google.com/_/scs/abc-static/_/js/k=gapi.lb.en.PLtFj_-5DjQ.O/m=gapi_iframes/rt=j/sv=1/d=1/ed=1/rs=AHpOoo-J85zQk73PCqZPyWTydWEIq3_4KA/cb=gapi.loaded_0?le=scs
+auth-redirect-handler-gxvOQwaR.js:2 🔧 initializeRedirectHandler: hasRedirectAttempt = false
+auth-redirect-handler-gxvOQwaR.js:2 ❌ No redirect attempt flag found - not initializing handler
+auth-page-BiZs_b7l.js:2 🔍 No redirect result found
+index-DfnrYzO5.js:289 AuthProvider: Failsafe timeout - forcing loading to false
+(anonymous) @ index-DfnrYzO5.js:289
+setTimeout
+(anonymous) @ index-DfnrYzO5.js:289
+lp @ index-DfnrYzO5.js:41
+Ma @ index-DfnrYzO5.js:41
+(anonymous) @ index-DfnrYzO5.js:41
+S @ index-DfnrYzO5.js:26
+M @ index-DfnrYzO5.js:26Understand this warning
+auth:1 The resource https://brandentifier.replit.app/assets/App-BqNS8wNV.tsx was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.Understand this warning
+auth:1 The resource data:application/octet-stream;base64,aW1wb3J0IHsgY3JlYXRlUm9vdCB9IGZyb20gInJlYWN0LWRvbS9jbGllbnQiOwppbXBvcnQgQXBwIGZyb20gIi4vQXBwIjsKaW1wb3J0IFNpbXBsZUFwcCBmcm9tICIuL3NpbXBsZS1hcHAiOwppbXBvcnQgIi4vaW5kZXguY3NzIjsKCi8vIEluaXRpYWxpemUgRmlyZWJhc2UgYW5kIG90aGVyIHNlcnZpY2VzCmltcG9ydCAiLi9saWIvZmlyZWJhc2UiOwoKLy8gUGVyZm9ybWFuY2UgbWVhc3VyZW1lbnQKY29uc3QgYXBwU3RhcnRUaW1lID0gcGVyZm9ybWFuY2Uubm93KCk7CmNvbnNvbGUubG9nKCdbUEVSRl0gUmVhY3QgYXBwIGluaXRpYWxpemF0aW9uIHN0YXJ0ZWQnKTsKCi8vIFJlbW92ZSBIVE1MIGxvYWRlciBpbW1lZGlhdGVseSB3aGVuIFJlYWN0IGFwcCBzdGFydHMKY29uc3QgbG9hZGVyID0gZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoJ2FwcC1sb2FkZXInKTsKaWYgKGxvYWRlcikgewogIGxvYWRlci5zdHlsZS5vcGFjaXR5ID0gJzAnOwogIGxvYWRlci5zdHlsZS50cmFuc2l0aW9uID0gJ29wYWNpdHkgMC4xNXMgZWFzZS1vdXQnOwogIHNldFRpbWVvdXQoKCkgPT4gewogICAgbG9hZGVyLnN0eWxlLmRpc3BsYXkgPSAnbm9uZSc7CiAgICBjb25zb2xlLmxvZygnW1BFUkZdIFNrZWxldG9uIGxvYWRlciByZW1vdmVkIGluJywgKHBlcmZvcm1hbmNlLm5vdygpIC0gYXBwU3RhcnRUaW1lKS50b0ZpeGVkKDIpLCAnbXMnKTsKICB9LCAxNTApOwp9CgovLyBDaGVjayBpZiB3ZSBzaG91bGQgdXNlIHRoZSBzaW1wbGUgYXBwIG9yIHRoZSBmdWxsIGFwcApjb25zdCB1c2VTaW1wbGVBcHAgPSBmYWxzZTsgLy8gU2V0IHRvIHRydWUgZm9yIHRlc3RpbmcKCi8vIFByb2dyZXNzaXZlIHJlbmRlcmluZyAtIHN0YXJ0IHdpdGggY3JpdGljYWwgY29tcG9uZW50cwpjb25zdCByZW5kZXJBcHAgPSAoKSA9PiB7CiAgY29uc3QgcmVuZGVyU3RhcnRUaW1lID0gcGVyZm9ybWFuY2Uubm93KCk7CiAgY29uc29sZS5sb2coJ1tQRVJGXSBSZWFjdCByZW5kZXJpbmcgc3RhcnRlZCcpOwogIAogIGNyZWF0ZVJvb3QoZG9jdW1lbnQuZ2V0RWxlbWVudEJ5SWQoInJvb3QiKSEpLnJlbmRlcigKICAgIHVzZVNpbXBsZUFwcCA/IDxTaW1wbGVBcHAgLz4gOiA8QXBwIC8+CiAgKTsKICAKICAvLyBSZXBvcnQgcmVuZGVyaW5nIHRpbWUgYWZ0ZXIgUmVhY3QgaGFzIG1vdW50ZWQKICBzZXRUaW1lb3V0KCgpID0+IHsKICAgIGNvbnNvbGUubG9nKCdbUEVSRl0gUmVhY3QgYXBwIHJlbmRlcmVkIGluJywgKHBlcmZvcm1hbmNlLm5vdygpIC0gcmVuZGVyU3RhcnRUaW1lKS50b0ZpeGVkKDIpLCAnbXMnKTsKICAgIGNvbnNvbGUubG9nKCdbUEVSRl0gVG90YWwgaW5pdGlhbGl6YXRpb24gdGltZTonLCAocGVyZm9ybWFuY2Uubm93KCkgLSBhcHBTdGFydFRpbWUpLnRvRml4ZWQoMiksICdtcycpOwogIH0sIDApOwp9OwoKLy8gT3B0aW1pemUgcmVuZGVyaW5nIHRpbWluZwppZiAoZG9jdW1lbnQucmVhZHlTdGF0ZSA9PT0gJ2xvYWRpbmcnKSB7CiAgZG9jdW1lbnQuYWRkRXZlbnRMaXN0ZW5lcignRE9NQ29udGVudExvYWRlZCcsIHJlbmRlckFwcCk7Cn0gZWxzZSB7CiAgcmVuZGVyQXBwKCk7Cn0K was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.Understand this warning
