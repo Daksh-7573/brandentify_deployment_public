@@ -71,6 +71,13 @@ export class APIGateway {
         circuitBreakerThreshold: 3
       },
       {
+        name: 'musk-service',
+        basePath: '/api/musk',
+        timeout: 15000,
+        retries: 1,
+        circuitBreakerThreshold: 2
+      },
+      {
         name: 'notification-service',
         basePath: '/api/notifications',
         timeout: 5000,
@@ -187,7 +194,9 @@ export class APIGateway {
    * Request timeout middleware
    */
   timeoutMiddleware = (req: Request, res: Response, next: NextFunction): void => {
-    const timeout = req.serviceContext?.timeout || 5000;
+    // Increase timeout for AI-related endpoints to allow fallback to work
+    const isAIRequest = req.path.includes('/musk') || req.path.includes('/ai') || req.path.includes('/chat');
+    const timeout = isAIRequest ? 15000 : (req.serviceContext?.timeout || 5000);
     
     const timeoutId = setTimeout(() => {
       if (!res.headersSent) {
