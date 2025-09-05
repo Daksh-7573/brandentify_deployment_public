@@ -1,55 +1,19 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { shouldUseRedirectAuth, isReplitDomain } from '@/utils/auth-popup-fix';
 
 /**
- * Google Authentication Component - Fixed
+ * Google Authentication Component - Fixed with Redirect Support
  */
 export function FastGoogleAuth() {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
-  const handleGoogleAuth = async () => {
-    setIsLoading(true);
-    
+  // Function to process auth result
+  const processAuthResult = async (result: any) => {
     try {
-      console.log('🔄 Starting Google authentication...');
-      
-      // Import Firebase auth
-      const { signInWithPopup, GoogleAuthProvider } = await import('firebase/auth');
-      const firebaseModule = await import('@/lib/firebase');
-      const auth: any = firebaseModule.auth;
-      
-      if (!auth) {
-        throw new Error('Firebase auth not initialized');
-      }
-
-      console.log('🔧 Firebase auth instance ready');
-
-      // Create Google provider with proper configuration
-      const provider = new GoogleAuthProvider();
-      provider.addScope('email');
-      provider.addScope('profile');
-      
-      // Set custom parameters for consistent behavior
-      provider.setCustomParameters({
-        prompt: 'select_account',
-        access_type: 'online'
-      });
-
-      console.log('🔄 Opening Google sign-in popup...');
-      
-      // Sign in with popup - this is where the 9-12 second hang happens
-      const result = await signInWithPopup(auth, provider);
-      
-      console.log('✅ Google popup completed successfully!');
-      console.log('✅ Google auth result:', {
-        email: result.user.email,
-        name: result.user.displayName,
-        uid: result.user.uid
-      });
-      
       // Prepare user data for backend
       const userData = {
         firebaseUid: result.user.uid,
@@ -100,6 +64,126 @@ export function FastGoogleAuth() {
         window.location.href = '/dashboard';
       } else {
         throw new Error(data.message || 'Authentication failed - no user data');
+      }
+    } catch (error) {
+      console.error('❌ Processing auth result failed:', error);
+      setIsLoading(false);
+      throw error;
+    }
+  };
+
+  // Check for redirect results when component mounts
+  useEffect(() => {
+    const checkRedirectResult = async () => {
+      try {
+        const redirectSource = localStorage.getItem('auth_redirect_source');
+        const redirectAttempt = localStorage.getItem('auth_redirect_attempt');
+        
+        if (redirectSource === 'FastGoogleAuth' && redirectAttempt) {
+          console.log('🔍 Checking for redirect result from FastGoogleAuth...');
+          setIsLoading(true);
+          
+          const { getRedirectResult } = await import('firebase/auth');
+          const firebaseModule = await import('@/lib/firebase');
+          const auth: any = firebaseModule.auth;
+          
+          const result = await getRedirectResult(auth);
+          
+          if (result && result.user) {
+            console.log('🎉 Redirect authentication successful!');
+            
+            // Clear redirect tracking
+            localStorage.removeItem('auth_redirect_source');
+            localStorage.removeItem('auth_redirect_attempt');
+            
+            // Process the result
+            await processAuthResult(result);
+          } else {
+            console.log('🔍 No redirect result found');
+            setIsLoading(false);
+          }
+        }
+      } catch (error) {
+        console.error('❌ Redirect result error:', error);
+        setIsLoading(false);
+      }
+    };
+    
+    checkRedirectResult();
+  }, []); // Empty dependency array to run only once
+
+  const handleGoogleAuth = async () => {
+    setIsLoading(true);
+    
+    try {
+      console.log('🔄 Starting Google authentication...');
+      
+      // Check domain and determine auth method
+      const useRedirect = shouldUseRedirectAuth();
+      console.log('🔍 Auth environment:', {
+        domain: window.location.hostname,
+        isReplitDomain: isReplitDomain(),
+        useRedirect: useRedirect
+      });
+      
+      // Import Firebase auth modules based on method
+      const { GoogleAuthProvider } = await import('firebase/auth');
+      const firebaseModule = await import('@/lib/firebase');
+      const auth: any = firebaseModule.auth;
+      
+      if (!auth) {
+        throw new Error('Firebase auth not initialized');
+      }
+
+      console.log('🔧 Firebase auth instance ready');
+
+      // Create Google provider with proper configuration
+      const provider = new GoogleAuthProvider();
+      provider.addScope('email');
+      provider.addScope('profile');
+      
+      // Set custom parameters for consistent behavior
+      provider.setCustomParameters({
+        prompt: 'select_account',
+        access_type: 'online'
+      });
+
+      let result;
+      
+      if (useRedirect) {
+        console.log('🔄 Using redirect authentication for Replit domain');
+        const { signInWithRedirect } = await import('firebase/auth');
+        
+        // Set a flag to track redirect attempt
+        localStorage.setItem('auth_redirect_attempt', Date.now().toString());
+        localStorage.setItem('auth_redirect_source', 'FastGoogleAuth');
+        
+        toast({
+          title: "Redirecting to Google",
+          description: "You will be redirected to complete sign-in...",
+          variant: "default",
+        });
+        
+        // Start redirect authentication
+        await signInWithRedirect(auth, provider);
+        // Note: This will redirect the page, so code after this won't execute
+        return;
+      } else {
+        console.log('🔄 Using popup authentication');
+        const { signInWithPopup } = await import('firebase/auth');
+        
+        // Sign in with popup
+        result = await signInWithPopup(auth, provider);
+        
+        console.log('✅ Google popup completed successfully!');
+        console.log('✅ Google auth result:', {
+          email: result.user.email,
+          name: result.user.displayName,
+          uid: result.user.uid
+        });
+        
+        // Process the authentication result
+        await processAuthResult(result);
       }
       
     } catch (error: any) {
