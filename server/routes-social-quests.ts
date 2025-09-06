@@ -403,6 +403,111 @@ async function storeSocialQuests(userId: number, aiTasks: any[], weekNumber: num
   }
 
   return createdQuests;
+  
+  // GET /api/social-quests/user/:userId - Get user's Social Quests
+  app.get('/api/social-quests/user/:userId', async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const weekNumber = parseInt(req.query.weekNumber as string) || getCurrentWeekNumber();
+      const year = parseInt(req.query.year as string) || getCurrentYear();
+      
+      if (!userId) {
+        return res.status(400).json({ error: 'Invalid user ID' });
+      }
+
+      // Get user's social quests for the specified week
+      const quests = await db.db
+        .select({
+          id: userSocialQuests.id,
+          userId: userQuests.userId,
+          title: questDefinitions.title,
+          description: questDefinitions.description,
+          platform: socialQuestDefinitions.targetPlatform,
+          priority: socialQuestDefinitions.platformPriority,
+          xpReward: questDefinitions.xpReward,
+          status: userQuests.status,
+          progress: userQuests.progress,
+          targetAction: questDefinitions.targetAction,
+          muskTip: questDefinitions.muskTip,
+          aiGeneratedContent: userSocialQuests.aiGeneratedContent,
+          platformRecommendationReason: userSocialQuests.platformRecommendationReason,
+          platformSpecificData: socialQuestDefinitions.platformSpecificData,
+          assignedAt: userQuests.assignedAt,
+          completedAt: userQuests.completedAt,
+          weekNumber: userQuests.weekNumber,
+          year: userQuests.year
+        })
+        .from(userSocialQuests)
+        .innerJoin(userQuests, eq(userSocialQuests.userQuestId, userQuests.id))
+        .innerJoin(questDefinitions, eq(userQuests.questDefinitionId, questDefinitions.id))
+        .innerJoin(socialQuestDefinitions, eq(userSocialQuests.socialQuestDefinitionId, socialQuestDefinitions.id))
+        .where(and(
+          eq(userQuests.userId, userId),
+          eq(userQuests.weekNumber, weekNumber),
+          eq(userQuests.year, year)
+        ))
+        .orderBy(desc(socialQuestDefinitions.platformPriority), desc(userQuests.assignedAt));
+
+      res.json({ quests });
+    } catch (error) {
+      console.error('[Social Quests API] Error fetching user quests:', error);
+      res.status(500).json({ error: 'Failed to fetch social quests' });
+    }
+  });
+
+  // POST /api/social-quests/:questId/complete - Complete a Social Quest
+  app.post('/api/social-quests/:questId/complete', async (req, res) => {
+    try {
+      const questId = parseInt(req.params.questId);
+      const { userId } = req.body;
+      
+      if (!questId || !userId) {
+        return res.status(400).json({ error: 'Quest ID and User ID are required' });
+      }
+
+      // Find the user social quest
+      const [socialQuest] = await db.db
+        .select({
+          userQuestId: userSocialQuests.userQuestId,
+          xpReward: questDefinitions.xpReward
+        })
+        .from(userSocialQuests)
+        .innerJoin(userQuests, eq(userSocialQuests.userQuestId, userQuests.id))
+        .innerJoin(questDefinitions, eq(userQuests.questDefinitionId, questDefinitions.id))
+        .where(and(
+          eq(userSocialQuests.id, questId),
+          eq(userQuests.userId, userId),
+          eq(userQuests.status, 'active')
+        ))
+        .limit(1);
+
+      if (!socialQuest) {
+        return res.status(404).json({ error: 'Active social quest not found' });
+      }
+
+      // Complete the quest
+      await db.db
+        .update(userQuests)
+        .set({
+          status: 'completed',
+          completedAt: new Date(),
+          progress: 100
+        })
+        .where(eq(userQuests.id, socialQuest.userQuestId));
+
+      // Award XP (this would integrate with the XP system)
+      console.log(`[Social Quests] User ${userId} completed quest ${questId}, awarded ${socialQuest.xpReward} XP`);
+
+      res.json({ 
+        success: true, 
+        message: 'Social quest completed successfully',
+        xpAwarded: socialQuest.xpReward
+      });
+    } catch (error) {
+      console.error('[Social Quests API] Error completing quest:', error);
+      res.status(500).json({ error: 'Failed to complete social quest' });
+    }
+  });
 }
 
 /**

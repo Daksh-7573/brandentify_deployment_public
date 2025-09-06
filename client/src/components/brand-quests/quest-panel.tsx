@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { 
   useUserQuestsWithDefinitions, 
@@ -8,7 +9,9 @@ import {
   getCurrentWeekNumber, 
   getCurrentYear
 } from '@/hooks/use-career-quests'; // We'll keep using the same hooks for now
+import { useSocialQuests, useGenerateSocialQuests } from '@/hooks/use-social-quests';
 import { QuestCard } from './quest-card';
+import { SocialQuestCard } from './social-quest-card';
 import { cn } from '@/lib/utils';
 
 interface QuestPanelProps {
@@ -35,6 +38,16 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
     error: allError,
     refetch: refetchAll
   } = useUserQuestsWithDefinitions(userId);
+
+  // Social Quests integration
+  const {
+    data: socialQuests,
+    isLoading: isLoadingSocial,
+    error: socialError,
+    refetch: refetchSocial
+  } = useSocialQuests(userId, currentWeek, currentYear);
+  
+  const generateSocialQuestsMutation = useGenerateSocialQuests(userId);
   
   // Removed XP progress functionality since it's now in the parent component
 
@@ -42,10 +55,11 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
     const refetchInterval = setInterval(() => {
       refetchWeekly();
       refetchAll();
+      refetchSocial();
     }, 60000); // Refetch every minute
     
     return () => clearInterval(refetchInterval);
-  }, [refetchWeekly, refetchAll]);
+  }, [refetchWeekly, refetchAll, refetchSocial]);
   
   useEffect(() => {
     if (weeklyError) {
@@ -65,7 +79,16 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
         variant: 'destructive',
       });
     }
-  }, [weeklyError, allError, toast]);
+
+    if (socialError) {
+      console.log('Error fetching social quests:', socialError);
+      toast({
+        title: 'Error fetching social quests',
+        description: "We're having trouble loading your social quests. Please try again later.",
+        variant: 'destructive',
+      });
+    }
+  }, [weeklyError, allError, socialError, toast]);
   
   // For weekly tab, we'll use the filtered data from the dedicated weekly quests hook
   // For completed and expired tabs, use the data from the all quests hook
@@ -82,6 +105,36 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
            action === 'add_project_technologies';
   }) || [];
   
+  // Handle generating new Social Quests
+  const handleGenerateSocialQuests = () => {
+    generateSocialQuestsMutation.mutate(
+      { weekNumber: currentWeek, year: currentYear },
+      {
+        onSuccess: (response) => {
+          if (response.success) {
+            toast({
+              title: 'Social Quests Generated!',
+              description: `${response.tasks?.length || 0} personalized tasks created based on your profile.`,
+            });
+          } else {
+            toast({
+              title: 'Generation Failed',
+              description: response.error || 'Failed to generate social quests. Please try again.',
+              variant: 'destructive',
+            });
+          }
+        },
+        onError: (error) => {
+          toast({
+            title: 'Error',
+            description: `Failed to generate social quests: ${error.message}`,
+            variant: 'destructive',
+          });
+        }
+      }
+    );
+  };
+
   const renderQuestsList = (quests: typeof weeklyQuests, loading: boolean) => {
     if (loading) {
       return (
@@ -135,10 +188,14 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
         </div>
       ) : (
         <Tabs defaultValue="weekly" value={tabValue} onValueChange={setTabValue}>
-          <TabsList className="grid grid-cols-3 mb-3 sm:mb-4 dark-tabs-list border border-white/5 w-full h-auto">
+          <TabsList className="grid grid-cols-4 mb-3 sm:mb-4 dark-tabs-list border border-white/5 w-full h-auto">
             <TabsTrigger value="weekly" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-1 sm:px-2 text-xs sm:text-sm">
               <span className="text-center">Weekly</span>
               <span className="text-xs">({weeklyQuests?.length || 0})</span>
+            </TabsTrigger>
+            <TabsTrigger value="social" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-1 sm:px-2 text-xs sm:text-sm">
+              <span className="text-center">Social</span>
+              <span className="text-xs">({socialQuests?.length || 0})</span>
             </TabsTrigger>
             <TabsTrigger value="completed" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-1 sm:px-2 text-xs sm:text-sm">
               <span className="text-center">Completed</span>
@@ -155,6 +212,52 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
               Week {currentWeek}, {currentYear} - Weekly quests refresh every Monday
             </div>
             {renderQuestsList(weeklyQuests, isLoadingWeekly)}
+          </TabsContent>
+
+          <TabsContent value="social" className="space-y-3 sm:space-y-4">
+            <div className="flex justify-between items-center mb-2">
+              <div className="text-xs sm:text-sm text-white/70">
+                AI-powered social media tasks personalized to your profile
+              </div>
+              {(!socialQuests || socialQuests.length === 0) && (
+                <Button
+                  size="sm"
+                  onClick={handleGenerateSocialQuests}
+                  disabled={generateSocialQuestsMutation.isPending}
+                  className="bg-white/10 text-white border-white/20 hover:bg-white/20 text-xs"
+                >
+                  {generateSocialQuestsMutation.isPending ? 'Generating...' : '🤖 Generate Tasks'}
+                </Button>
+              )}
+            </div>
+            
+            {isLoadingSocial ? (
+              <div className="space-y-4 mt-4">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <Skeleton key={i} className="w-full h-[220px] rounded-md" />
+                ))}
+              </div>
+            ) : !socialQuests || socialQuests.length === 0 ? (
+              <div className="text-center py-8">
+                <h3 className="text-lg font-medium text-white">No Social Quests Yet</h3>
+                <p className="text-white/70 mt-2 mb-4">
+                  Generate personalized social media tasks based on your profile.
+                </p>
+                <Button
+                  onClick={handleGenerateSocialQuests}
+                  disabled={generateSocialQuestsMutation.isPending}
+                  className="bg-white/10 text-white border-white/20 hover:bg-white/20"
+                >
+                  {generateSocialQuestsMutation.isPending ? 'Generating...' : '🚀 Generate Social Quests'}
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-4 mt-4">
+                {socialQuests.map(quest => (
+                  <SocialQuestCard key={quest.id} quest={quest} userId={userId!} />
+                ))}
+              </div>
+            )}
           </TabsContent>
           
           <TabsContent value="expired" className="space-y-3 sm:space-y-4">
