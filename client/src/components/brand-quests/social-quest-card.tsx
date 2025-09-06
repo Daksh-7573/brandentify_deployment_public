@@ -38,11 +38,21 @@ export function SocialQuestCard({ quest, userId }: SocialQuestCardProps) {
   const completeMutation = useCompleteSocialQuest();
   const platformGuidance = usePlatformGuidance();
   
+  // Add defensive checks
+  if (!quest || !quest.platform || !userId) {
+    return null;
+  }
+  
   const isComplete = quest.status === 'completed';
   const isExpired = quest.status === 'expired';
   const isActive = quest.status === 'active';
   
-  const platformInfo = platformGuidance[quest.platform];
+  const platformInfo = platformGuidance[quest.platform] || {
+    icon: '🔗',
+    name: 'Unknown Platform',
+    color: 'from-gray-500 to-gray-700',
+    focus: 'Platform-specific guidance'
+  };
   
   const handleComplete = () => {
     completeMutation.mutate({
@@ -150,17 +160,17 @@ export function SocialQuestCard({ quest, userId }: SocialQuestCardProps) {
       )}
 
       {/* Platform Specific Data */}
-      {Object.keys(quest.platformSpecificData).length > 0 && (
+      {quest.platformSpecificData && Object.keys(quest.platformSpecificData).length > 0 && (
         <div className="bg-white/5 p-3 rounded-lg border border-white/20 backdrop-blur-md mb-4">
           <div className="flex items-center gap-2 text-sm font-medium mb-2 text-white">
             <span className="text-blue-400">📊</span>
             <span>Task Details</span>
           </div>
           <div className="text-sm text-white/70">
-            {Object.entries(quest.platformSpecificData).map(([key, value]) => (
+            {Object.entries(quest.platformSpecificData || {}).map(([key, value]) => (
               <div key={key} className="flex justify-between">
                 <span className="capitalize">{key.replace(/_/g, ' ')}:</span>
-                <span>{Array.isArray(value) ? value.join(', ') : String(value)}</span>
+                <span>{Array.isArray(value) ? value.join(', ') : String(value || '')}</span>
               </div>
             ))}
           </div>

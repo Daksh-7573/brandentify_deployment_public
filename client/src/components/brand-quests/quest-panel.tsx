@@ -283,8 +283,10 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
             </div>
           ) : (
             <div className="space-y-4 mt-4">
-              {socialQuests.map(quest => (
-                <SocialQuestCard key={quest.id} quest={quest} userId={userId!} />
+              {socialQuests?.map(quest => (
+                quest && quest.id ? (
+                  <SocialQuestCard key={quest.id} quest={quest} userId={userId!} />
+                ) : null
               ))}
             </div>
           )}
