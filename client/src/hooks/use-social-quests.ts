@@ -6,7 +6,7 @@ interface SocialQuestTask {
   id: number;
   title: string;
   description: string;
-  platform: 'brandentifier' | 'linkedin' | 'twitter' | 'instagram' | 'youtube';
+  platform: 'linkedin' | 'twitter' | 'instagram' | 'youtube';
   priority: number;
   xpReward: number;
   status: 'active' | 'completed' | 'expired';
@@ -109,38 +109,32 @@ export function useCompleteSocialQuest() {
   });
 }
 
-// Hook to get platform-specific guidance
+// Hook to get platform-specific guidance - EXTERNAL platforms only
 export function usePlatformGuidance() {
   const platformData = {
-    brandentifier: {
-      icon: '🚀',
-      name: 'Brandentifier',
-      color: 'from-blue-500 to-purple-600',
-      focus: 'Primary Platform - Build your professional brand foundation'
-    },
     linkedin: {
       icon: '💼', 
       name: 'LinkedIn',
       color: 'from-blue-600 to-blue-800',
-      focus: 'Secondary Platform - Cross-promote your achievements'
+      focus: 'Primary External Platform - Cross-promote your Brandentifier achievements'
     },
     twitter: {
       icon: '🐦',
       name: 'Twitter/X', 
       color: 'from-gray-700 to-black',
-      focus: 'Tertiary Platform - Share industry insights'
+      focus: 'Share industry insights and drive traffic to your Brandentifier profile'
     },
     instagram: {
       icon: '📸',
       name: 'Instagram',
       color: 'from-pink-500 to-purple-600', 
-      focus: 'Tertiary Platform - Visual professional content'
+      focus: 'Visual content to showcase your professional brand'
     },
     youtube: {
       icon: '🎥',
       name: 'YouTube',
       color: 'from-red-500 to-red-700',
-      focus: 'Tertiary Platform - Educational content creation'
+      focus: 'Long-form educational content linking back to Brandentifier'
     }
   };
   

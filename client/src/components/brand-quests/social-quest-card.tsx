@@ -11,7 +11,7 @@ interface SocialQuestTask {
   id: number;
   title: string;
   description: string;
-  platform: 'brandentifier' | 'linkedin' | 'twitter' | 'instagram' | 'youtube';
+  platform: 'linkedin' | 'twitter' | 'instagram' | 'youtube';
   priority: number;
   xpReward: number;
   status: 'active' | 'completed' | 'expired';
@@ -78,8 +78,6 @@ export function SocialQuestCard({ quest, userId }: SocialQuestCardProps) {
 
   const getPlatformAction = () => {
     switch (quest.platform) {
-      case 'brandentifier':
-        return 'Go to Profile →';
       case 'linkedin':
         return 'Open LinkedIn →';
       case 'twitter':

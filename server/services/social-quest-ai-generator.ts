@@ -92,12 +92,15 @@ export class SocialQuestAIGenerator {
    */
   private async analyzePlatformRecommendations(userProfile: UserProfile): Promise<PlatformRecommendation[]> {
     const analysisPrompt = `
-You are a career strategy AI analyzing a professional's profile to recommend social media platforms.
+You are a career strategy AI analyzing a professional's profile to recommend EXTERNAL social media platforms for cross-promotion.
+
+IMPORTANT: This is for EXTERNAL platforms only - Brandentifier activities are handled separately in Brand Quests.
 
 PRIORITY SYSTEM (CRITICAL):
-1. Brandentifier: ALWAYS primary platform (60% focus) - internal professional network
-2. LinkedIn: Secondary platform (25% focus) - external professional amplifier  
-3. Other platforms: Tertiary (15% focus) - supporting channels
+1. LinkedIn: PRIMARY external platform (65% focus) - professional networking and achievement sharing
+2. Twitter/X: Secondary platform (20% focus) - thought leadership and industry insights  
+3. Instagram: Tertiary platform (10% focus) - visual professional content
+4. YouTube: Tertiary platform (5% focus) - educational content creation
 
 USER PROFILE:
 - Industry: ${userProfile.industry}
@@ -107,27 +110,27 @@ USER PROFILE:
 - Career Focus: ${userProfile.lookingFor}
 - Location: ${userProfile.location}
 
-Analyze and recommend platforms with the following JSON structure:
+Analyze and recommend EXTERNAL platforms with the following JSON structure:
 {
   "platforms": [
     {
-      "platform": "brandentifier",
+      "platform": "linkedin", 
       "priority": 1,
-      "focus": 60,
-      "reason": "Primary professional hub for profile building and networking",
+      "focus": 65,
+      "reason": "Primary external platform for cross-promoting Brandentifier achievements",
       "suitability": 1.0
     },
     {
-      "platform": "linkedin", 
+      "platform": "twitter", 
       "priority": 2,
-      "focus": 25,
-      "reason": "Industry-specific external amplification",
-      "suitability": 0.9
+      "focus": 20,
+      "reason": "Share industry insights and drive traffic to Brandentifier profile",
+      "suitability": 0.8
     }
   ]
 }
 
-Consider industry-specific platform preferences (visual industries = Instagram, tech = Twitter, etc.) but ALWAYS prioritize Brandentifier first.
+Focus on external platforms that complement the user's Brandentifier profile. Consider industry-specific preferences (visual industries = Instagram, tech = Twitter, etc.).
 `;
 
     try {
@@ -310,24 +313,24 @@ TERTIARY PLATFORM FOCUS:
   private getDefaultPlatformRecommendations(userProfile: UserProfile): PlatformRecommendation[] {
     return [
       {
-        platform: 'brandentifier',
+        platform: 'linkedin',
         priority: 1,
-        focus: 60,
-        reason: 'Primary professional hub for profile building and networking',
+        focus: 65,
+        reason: `Primary external platform for cross-promoting achievements in ${userProfile.industry}`,
         suitability: 1.0
       },
       {
-        platform: 'linkedin',
+        platform: 'twitter',
         priority: 2,
-        focus: 25,
-        reason: `Professional networking in ${userProfile.industry} industry`,
-        suitability: 0.9
+        focus: 20,
+        reason: `Share industry insights and drive traffic to your Brandentifier profile`,
+        suitability: 0.8
       },
       {
         platform: this.getIndustrySpecificPlatform(userProfile.industry),
         priority: 3,
         focus: 15,
-        reason: `Industry-specific content sharing for ${userProfile.industry}`,
+        reason: `Industry-specific external content sharing for ${userProfile.industry}`,
         suitability: 0.7
       }
     ];
@@ -359,28 +362,28 @@ TERTIARY PLATFORM FOCUS:
     
     return [
       {
-        platform: 'brandentifier',
+        platform: 'linkedin',
         priority: 1,
-        title: 'Profile Maximizer',
-        description: 'Complete your professional profile to 100% with industry insights',
-        targetAction: 'update_profile_sections',
+        title: 'LinkedIn Ambassador',
+        description: 'Share your latest Brandentifier achievement or project on LinkedIn',
+        targetAction: 'cross_promote_achievement',
         xpReward: 100,
-        muskTip: 'A complete profile is the foundation of your professional brand. Every section tells your story.',
-        aiGeneratedContent: 'Focus on adding specific achievements and skills relevant to your industry.',
-        platformRecommendationReason: 'Primary platform for professional brand building',
-        platformSpecificData: { sections_to_complete: ['about', 'skills', 'projects'] }
+        muskTip: 'Your external network needs to see your growth. Cross-promotion amplifies your brand.',
+        aiGeneratedContent: 'Share a recent project or milestone with a link back to your Brandentifier profile.',
+        platformRecommendationReason: 'Primary external platform for professional cross-promotion',
+        platformSpecificData: { post_type: 'achievement_share', include_brandentifier_link: true }
       },
       {
-        platform: 'brandentifier',
-        priority: 1,
-        title: 'Community Builder',
-        description: 'Engage meaningfully with 5 professionals in your industry',
-        targetAction: 'engage_with_community',
+        platform: 'twitter',
+        priority: 2,
+        title: 'Industry Voice',
+        description: 'Share 3 valuable insights about your industry on Twitter/X',
+        targetAction: 'share_insights',
         xpReward: 75,
-        muskTip: 'Authentic engagement builds lasting professional relationships. Quality over quantity.',
-        aiGeneratedContent: 'Look for pulses related to your industry and add thoughtful, helpful comments.',
-        platformRecommendationReason: 'Build your network within the Brandentifier community',
-        platformSpecificData: { engagement_target: 5, interaction_types: ['comment', 'reaction'] }
+        muskTip: 'Twitter is perfect for quick, valuable insights that drive traffic to your main profile.',
+        aiGeneratedContent: 'Tweet short, valuable tips or observations from your professional experience.',
+        platformRecommendationReason: 'External platform for thought leadership and profile traffic',
+        platformSpecificData: { tweet_count: 3, include_profile_link: true }
       }
     ];
   }
@@ -390,19 +393,19 @@ TERTIARY PLATFORM FOCUS:
    */
   private getFallbackPlatformTasks(platform: string, userProfile: UserProfile): SocialQuestTask[] {
     const templates = {
-      brandentifier: [
-        {
-          title: 'Pulse Creator',
-          description: `Share insights about ${userProfile.industry} trends`,
-          targetAction: 'create_pulse',
-          xpReward: 75
-        }
-      ],
       linkedin: [
         {
           title: 'Network Expander',
-          description: 'Connect with 3 professionals in your industry',
+          description: 'Connect with 3 professionals in your industry and share your Brandentifier profile',
           targetAction: 'expand_network',
+          xpReward: 75
+        }
+      ],
+      twitter: [
+        {
+          title: 'Insight Sharer',
+          description: `Share valuable insights about ${userProfile.industry} trends`,
+          targetAction: 'share_industry_insights',
           xpReward: 60
         }
       ]
@@ -414,11 +417,11 @@ TERTIARY PLATFORM FOCUS:
     return [{
       ...template,
       platform,
-      priority: platform === 'brandentifier' ? 1 : 2,
-      muskTip: 'Focus on quality connections and meaningful content.',
-      aiGeneratedContent: 'Template-based task - personalize based on your goals.',
-      platformRecommendationReason: `${platform} selected for ${userProfile.industry} professionals`,
-      platformSpecificData: {}
+      priority: platform === 'linkedin' ? 1 : 2,
+      muskTip: 'Focus on quality connections and meaningful content that drives traffic to your Brandentifier profile.',
+      aiGeneratedContent: 'Template-based external platform task - cross-promote your Brandentifier achievements.',
+      platformRecommendationReason: `${platform} selected for ${userProfile.industry} professionals to amplify their Brandentifier presence`,
+      platformSpecificData: { include_brandentifier_reference: true }
     }];
   }
 
