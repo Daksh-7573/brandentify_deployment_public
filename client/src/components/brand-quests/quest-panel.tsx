@@ -259,116 +259,115 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
 
         {/* Social Quests Tab Content */}
         <TabsContent value="social-quests" className="space-y-3 sm:space-y-4">
-          {isLoadingSocial ? (
-            <div className="space-y-2 sm:space-y-3">
-              <Skeleton className="h-20 sm:h-24 w-full rounded-md bg-gray-800/60" />
-              <Skeleton className="h-20 sm:h-24 w-full rounded-md bg-gray-800/60" />
-              <Skeleton className="h-20 sm:h-24 w-full rounded-md bg-gray-800/60" />
-            </div>
-          ) : (
-            <Tabs defaultValue="weekly" value={socialQuestTabValue} onValueChange={setSocialQuestTabValue}>
-              <TabsList className="grid grid-cols-3 mb-3 sm:mb-4 dark-tabs-list border border-white/5 w-full h-auto">
-                <TabsTrigger value="weekly" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-1 sm:px-2 text-xs sm:text-sm">
-                  <span className="text-center">Weekly</span>
-                  <span className="text-xs">({socialQuests?.length || 0})</span>
-                </TabsTrigger>
-                <TabsTrigger value="completed" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-1 sm:px-2 text-xs sm:text-sm">
-                  <span className="text-center">Completed</span>
-                  <span className="text-xs">({completedSocialQuests.length})</span>
-                </TabsTrigger>
-                <TabsTrigger value="expired" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-1 sm:px-2 text-xs sm:text-sm">
-                  <span className="text-center">Missed</span>
-                  <span className="text-xs">({expiredSocialQuests.length})</span>
-                </TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="weekly" className="space-y-3 sm:space-y-4">
-                <div className="flex justify-between items-center mb-2">
-                  <div className="text-xs sm:text-sm text-white/70">
-                    Week {currentWeek}, {currentYear} - AI-powered social media tasks
-                  </div>
-                  {(!socialQuests || socialQuests.length === 0) && (
-                    <Button
-                      size="sm"
-                      onClick={handleGenerateSocialQuests}
-                      disabled={generateSocialQuestsMutation.isPending}
-                      className="bg-white/10 text-white border-white/20 hover:bg-white/20 text-xs"
-                    >
-                      {generateSocialQuestsMutation.isPending ? 'Generating...' : '🤖 Generate Tasks'}
-                    </Button>
-                  )}
+          <Tabs defaultValue="weekly" value={socialQuestTabValue} onValueChange={setSocialQuestTabValue}>
+            <TabsList className="grid grid-cols-3 mb-3 sm:mb-4 dark-tabs-list border border-white/5 w-full h-auto">
+              <TabsTrigger value="weekly" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-1 sm:px-2 text-xs sm:text-sm">
+                <span className="text-center">Weekly</span>
+                <span className="text-xs">({socialQuests?.length || 0})</span>
+              </TabsTrigger>
+              <TabsTrigger value="completed" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-1 sm:px-2 text-xs sm:text-sm">
+                <span className="text-center">Completed</span>
+                <span className="text-xs">({completedSocialQuests.length})</span>
+              </TabsTrigger>
+              <TabsTrigger value="expired" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-1 sm:px-2 text-xs sm:text-sm">
+                <span className="text-center">Missed</span>
+                <span className="text-xs">({expiredSocialQuests.length})</span>
+              </TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="weekly" className="space-y-3 sm:space-y-4">
+              {(isLoadingSocial || isLoadingAllSocial) ? (
+                <div className="space-y-2 sm:space-y-3">
+                  <Skeleton className="h-20 sm:h-24 w-full rounded-md bg-gray-800/60" />
+                  <Skeleton className="h-20 sm:h-24 w-full rounded-md bg-gray-800/60" />
+                  <Skeleton className="h-20 sm:h-24 w-full rounded-md bg-gray-800/60" />
                 </div>
-                
-                {!socialQuests || socialQuests.length === 0 ? (
-                  <div className="text-center py-8">
-                    <h3 className="text-lg font-medium text-white">No Social Quests Yet</h3>
-                    <p className="text-white/70 mt-2 mb-4">
-                      Generate personalized social media tasks based on your profile.
-                    </p>
-                    <Button
-                      onClick={handleGenerateSocialQuests}
-                      disabled={generateSocialQuestsMutation.isPending}
-                      className="bg-white/10 text-white border-white/20 hover:bg-white/20"
-                    >
-                      {generateSocialQuestsMutation.isPending ? 'Generating...' : '🚀 Generate Social Quests'}
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="space-y-4 mt-4">
-                    {socialQuests?.map(quest => (
-                      quest && quest.id ? (
-                        <SocialQuestCard key={quest.id} quest={quest} userId={userId!} />
-                      ) : null
-                    ))}
-                  </div>
-                )}
-              </TabsContent>
-              
-              <TabsContent value="completed" className="space-y-3 sm:space-y-4">
-                <div className="text-xs sm:text-sm text-white/70 mb-2">
-                  Completed social media tasks that earned you XP rewards
+              ) : (
+              <div className="flex justify-between items-center mb-2">
+                <div className="text-xs sm:text-sm text-white/70">
+                  Week {currentWeek}, {currentYear} - AI-powered social media tasks
                 </div>
-                {completedSocialQuests.length === 0 ? (
-                  <div className="text-center py-8">
-                    <h3 className="text-lg font-medium text-white">No completed social quests</h3>
-                    <p className="text-white/70 mt-2">
-                      Complete weekly social quests to see them here.
-                    </p>
-                  </div>
-                ) : (
-                  <div className="space-y-4 mt-4">
-                    {completedSocialQuests.map(quest => (
-                      quest && quest.id ? (
-                        <SocialQuestCard key={quest.id} quest={quest} userId={userId!} />
-                      ) : null
-                    ))}
-                  </div>
+                {(!socialQuests || socialQuests.length === 0) && (
+                  <Button
+                    size="sm"
+                    onClick={handleGenerateSocialQuests}
+                    disabled={generateSocialQuestsMutation.isPending}
+                    className="bg-white/10 text-white border-white/20 hover:bg-white/20 text-xs"
+                  >
+                    {generateSocialQuestsMutation.isPending ? 'Generating...' : '🤖 Generate Tasks'}
+                  </Button>
                 )}
-              </TabsContent>
+              </div>
               
-              <TabsContent value="expired" className="space-y-3 sm:space-y-4">
-                <div className="text-xs sm:text-sm text-white/70 mb-2">
-                  Social quests that expired without completion - missed opportunities
+              {!socialQuests || socialQuests.length === 0 ? (
+                <div className="text-center py-8">
+                  <h3 className="text-lg font-medium text-white">No Social Quests Yet</h3>
+                  <p className="text-white/70 mt-2 mb-4">
+                    Generate personalized social media tasks based on your profile.
+                  </p>
+                  <Button
+                    onClick={handleGenerateSocialQuests}
+                    disabled={generateSocialQuestsMutation.isPending}
+                    className="bg-white/10 text-white border-white/20 hover:bg-white/20"
+                  >
+                    {generateSocialQuestsMutation.isPending ? 'Generating...' : '🚀 Generate Social Quests'}
+                  </Button>
                 </div>
-                {expiredSocialQuests.length === 0 ? (
-                  <div className="text-center py-8">
-                    <h3 className="text-lg font-medium text-white">No missed social quests</h3>
-                    <p className="text-white/70 mt-2">
-                      Complete your weekly tasks to avoid missed opportunities.
-                    </p>
-                  </div>
-                ) : (
-                  <div className="space-y-4 mt-4">
-                    {expiredSocialQuests.map(quest => (
-                      quest && quest.id ? (
-                        <SocialQuestCard key={quest.id} quest={quest} userId={userId!} />
-                      ) : null
-                    ))}
-                  </div>
-                )}
-              </TabsContent>
-            </Tabs>
-          )}
+              ) : (
+                <div className="space-y-4 mt-4">
+                  {socialQuests?.map(quest => (
+                    quest && quest.id ? (
+                      <SocialQuestCard key={quest.id} quest={quest} userId={userId!} />
+                    ) : null
+                  ))}
+                </div>
+              )}
+            </TabsContent>
+            
+            <TabsContent value="completed" className="space-y-3 sm:space-y-4">
+              <div className="text-xs sm:text-sm text-white/70 mb-2">
+                Completed social media tasks that earned you XP rewards
+              </div>
+              {completedSocialQuests.length === 0 ? (
+                <div className="text-center py-8">
+                  <h3 className="text-lg font-medium text-white">No completed social quests</h3>
+                  <p className="text-white/70 mt-2">
+                    Complete weekly social quests to see them here.
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-4 mt-4">
+                  {completedSocialQuests.map(quest => (
+                    quest && quest.id ? (
+                      <SocialQuestCard key={quest.id} quest={quest} userId={userId!} />
+                    ) : null
+                  ))}
+                </div>
+              )}
+            </TabsContent>
+            
+            <TabsContent value="expired" className="space-y-3 sm:space-y-4">
+              <div className="text-xs sm:text-sm text-white/70 mb-2">
+                Social quests that expired without completion - missed opportunities
+              </div>
+              {expiredSocialQuests.length === 0 ? (
+                <div className="text-center py-8">
+                  <h3 className="text-lg font-medium text-white">No missed social quests</h3>
+                  <p className="text-white/70 mt-2">
+                    Complete your weekly tasks to avoid missed opportunities.
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-4 mt-4">
+                  {expiredSocialQuests.map(quest => (
+                    quest && quest.id ? (
+                      <SocialQuestCard key={quest.id} quest={quest} userId={userId!} />
+                    ) : null
+                  ))}
+                </div>
+              )}
+            </TabsContent>
+          </Tabs>
         </TabsContent>
       </Tabs>
     </div>
