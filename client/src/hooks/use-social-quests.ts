@@ -96,13 +96,15 @@ export function useSocialQuests(userId?: number, weekNumber?: number, year?: num
 }
 
 // Hook to fetch ALL Social Quests (for filtering by status)
+// Temporarily disabled - using main endpoint for all status filtering
 export function useAllSocialQuests(userId?: number) {
   return useQuery<SocialQuestTask[]>({
     queryKey: ['all-social-quests', userId],
     queryFn: async () => {
       if (!userId) return [];
       
-      const response = await fetch(`/api/social-quests/user/${userId}/all`);
+      // Use main social quests endpoint with no week/year filter to get all
+      const response = await fetch(`/api/social-quests/user/${userId}`);
       
       if (!response.ok) {
         throw new Error('Failed to fetch all social quests');
