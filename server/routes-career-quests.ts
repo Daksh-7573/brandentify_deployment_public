@@ -284,6 +284,7 @@ export function setupCareerQuestsRoutes(apiRouter: Router, storage: IStorage) {
             WHERE uq.user_id = ${userId} AND 
                   ((uq.week_number = ${weekNumber} AND uq.year = ${year}) OR 
                    (uq.week_number = ${prevWeek} AND uq.year = ${prevYear}))
+                  AND qd.type != 'social_quest'
             ORDER BY uq.assigned_at DESC
           `);
           
