@@ -278,8 +278,7 @@ TERTIARY PLATFORM FOCUS:
   private async getUserProfile(userId: number): Promise<UserProfile | null> {
     try {
       // Get user data using the database connection directly
-      const dbConnection = await db.getDB();
-      const [user] = await dbConnection
+      const [user] = await db.db
         .select()
         .from(users)
         .where(eq(users.id, userId))

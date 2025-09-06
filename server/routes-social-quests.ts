@@ -339,6 +339,7 @@ async function storeSocialQuests(userId: number, aiTasks: any[], weekNumber: num
   const createdQuests = [];
 
   for (const task of aiTasks) {
+    console.log('[Social Quest Debug] Processing task:', JSON.stringify(task, null, 2));
     // Create base quest definition
     const [questDef] = await db
       .insert(questDefinitions)
