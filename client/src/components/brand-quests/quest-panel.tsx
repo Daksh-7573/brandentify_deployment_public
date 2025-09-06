@@ -20,6 +20,7 @@ interface QuestPanelProps {
 }
 
 export function QuestPanel({ userId, className }: QuestPanelProps) {
+  console.log('🔥🔥🔥 BRAND QUEST PANEL COMPONENT LOADED! 🔥🔥🔥');
   console.log('🚀 QuestPanel component rendering, mainTabValue will be logged...');
   const { toast } = useToast();
   const [mainTabValue, setMainTabValue] = useState('brand-quests');
