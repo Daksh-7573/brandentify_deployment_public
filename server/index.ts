@@ -25,8 +25,17 @@ app.set('trust proxy', 1); // Trust only the first proxy (Replit's load balancer
 // Add performance middleware first
 app.use(performanceMiddleware());
 
-// Force removal of X-Frame-Options header - this must run before all other middleware
+// CRITICAL: Static asset bypass MUST run before any middleware that modifies responses
 app.use((req, res, next) => {
+  // Skip ALL middleware interference for static assets - let Vite handle them directly
+  if (req.path.startsWith('/assets/') || req.path.startsWith('/src/') || 
+      req.path.includes('.js') || req.path.includes('.css') || req.path.includes('.tsx') ||
+      req.path.includes('.jsx') || req.path.includes('.ts') || req.path.includes('.mjs')) {
+    console.log(`🚀 STATIC ASSET BYPASS: ${req.method} ${req.path} - skipping all middleware`);
+    return next();
+  }
+
+  // Force removal of X-Frame-Options header - this must run before all other middleware
   // Remove any existing X-Frame-Options header
   res.removeHeader('X-Frame-Options');
   
@@ -56,12 +65,6 @@ app.use((req, res, next) => {
 });
 
 app.use((req, res, next) => {
-  // Skip middleware for static assets - let Vite handle them directly
-  if (req.path.startsWith('/assets/') || req.path.startsWith('/src/') || 
-      req.path.includes('.js') || req.path.includes('.css') || req.path.includes('.tsx')) {
-    return next();
-  }
-  
   // Allow access from Replit domains and external sources
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, HEAD');
