@@ -7,7 +7,8 @@ interface QuestPanelProps {
 }
 
 export function QuestPanelSimple({ userId, className }: QuestPanelProps) {
-  console.log('🎯 SIMPLE QUEST PANEL LOADED! 🎯');
+  console.log('💥💥💥 SIMPLE QUEST PANEL COMPONENT LOADED! 💥💥💥');
+  console.log('🔥 Cache cleared - component should work now! 🔥');
   const [mainTabValue, setMainTabValue] = useState('brand-quests');
   const [socialQuestTabValue, setSocialQuestTabValue] = useState('weekly');
 
