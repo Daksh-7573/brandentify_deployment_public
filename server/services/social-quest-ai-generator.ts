@@ -9,6 +9,7 @@ import { LocalAIService } from './local-ai-service';
 import * as db from '../db';
 import { users } from '../../shared/schema';
 import { eq } from 'drizzle-orm';
+import { platformIntelligenceEngine, UserPlatformProfile } from './platform-intelligence-engine';
 
 interface UserProfile {
   id: number;
@@ -88,9 +89,95 @@ export class SocialQuestAIGenerator {
   }
 
   /**
-   * Analyze user profile and recommend platforms with priorities
+   * Analyze user profile and recommend optimal platforms using Platform Intelligence Engine
+   * Dynamic strategy based on user's goals, industry, domain, and audience
    */
   private async analyzePlatformRecommendations(userProfile: UserProfile): Promise<PlatformRecommendation[]> {
+    console.log(`[Social Quest AI] Analyzing platform recommendations for user ${userProfile.id}`);
+
+    try {
+      // Convert user profile to platform intelligence format
+      const platformProfile: UserPlatformProfile = {
+        goals: userProfile.lookingFor || 'career_advice',
+        industry: userProfile.industry || 'Technology',
+        domain: userProfile.domain || 'Software Development',
+        lookingFor: userProfile.lookingFor || 'career_advice',
+        experienceLevel: this.determineExperienceLevel(userProfile),
+        contentPreference: 'mixed' // Default to mixed content
+      };
+
+      console.log(`[Platform Intelligence] Analyzing profile:`, {
+        industry: platformProfile.industry,
+        domain: platformProfile.domain,
+        goals: platformProfile.goals,
+        experienceLevel: platformProfile.experienceLevel
+      });
+
+      // Get dynamic platform recommendations from intelligence engine
+      const intelligenceRecommendations = platformIntelligenceEngine.generateRecommendations(platformProfile);
+      
+      // Convert to our internal format
+      const recommendations: PlatformRecommendation[] = intelligenceRecommendations.map(rec => ({
+        platform: rec.platform,
+        priority: rec.priority,
+        focus: rec.percentage,
+        reason: rec.reasoning,
+        suitability: rec.expectedROI / 10 // Convert 1-10 scale to 0-1
+      }));
+
+      console.log(`[Platform Intelligence] Generated ${recommendations.length} dynamic recommendations:`, 
+        recommendations.map(r => `${r.platform}: ${r.focus}% (${r.reason})`));
+
+      // Filter to only valid external platforms and limit to top 3
+      const validRecommendations = recommendations
+        .filter(rec => ['linkedin', 'twitter', 'instagram', 'youtube'].includes(rec.platform.toLowerCase()))
+        .slice(0, 3);
+
+      return validRecommendations;
+      
+    } catch (error) {
+      console.error('[Social Quest AI] Error in platform analysis:', error);
+      // Fallback to simple strategy if intelligence engine fails
+      return [
+        {
+          platform: 'linkedin',
+          priority: 1,
+          focus: 70,
+          reason: 'Primary professional platform (fallback strategy)',
+          suitability: 0.9
+        },
+        {
+          platform: 'twitter',
+          priority: 2,
+          focus: 30,
+          reason: 'Industry engagement and networking (fallback strategy)',
+          suitability: 0.7
+        }
+      ];
+    }
+  }
+
+  /**
+   * Determine user experience level based on profile data
+   */
+  private determineExperienceLevel(userProfile: UserProfile): 'entry' | 'mid' | 'senior' | 'executive' {
+    const title = userProfile.title?.toLowerCase() || '';
+    
+    if (title.includes('ceo') || title.includes('cto') || title.includes('vp') || title.includes('director')) {
+      return 'executive';
+    } else if (title.includes('senior') || title.includes('lead') || title.includes('principal')) {
+      return 'senior';
+    } else if (title.includes('junior') || title.includes('intern') || title.includes('assistant')) {
+      return 'entry';
+    } else {
+      return 'mid'; // Default for most professionals
+    }
+  }
+
+  /**
+   * Legacy AI-based platform analysis (kept as fallback)
+   */
+  private async analyzePlatformRecommendationsAI(userProfile: UserProfile): Promise<PlatformRecommendation[]> {
     const analysisPrompt = `
 You are a career strategy AI analyzing a professional's profile to recommend EXTERNAL social media platforms for cross-promotion.
 

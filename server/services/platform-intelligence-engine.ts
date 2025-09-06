@@ -1,8 +1,6 @@
 // Platform Intelligence Engine - Dynamic platform recommendation system
 // Analyzes user profile (goals, industry, domain, audience) to recommend optimal social platforms
 
-import { UserProfile } from '../../shared/types';
-
 export interface PlatformRecommendation {
   platform: 'linkedin' | 'twitter' | 'instagram' | 'youtube';
   priority: number; // 1-4 (1 = highest priority)
@@ -198,8 +196,11 @@ export class PlatformIntelligenceEngine {
       }
     };
 
-    return strategies[platform as keyof typeof strategies]?.[userProfile.lookingFor] || 
-           'Engage authentically with your professional network and share valuable insights';
+    const platformStrategies = strategies[platform as keyof typeof strategies];
+    if (platformStrategies && userProfile.lookingFor in platformStrategies) {
+      return platformStrategies[userProfile.lookingFor as keyof typeof platformStrategies];
+    }
+    return 'Engage authentically with your professional network and share valuable insights';
   }
 
   /**
