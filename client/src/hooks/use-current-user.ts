@@ -36,21 +36,9 @@ export function useCurrentUser(): UseCurrentUserResult {
     setError(null);
     
     try {
-      // Try to get the user from the enhanced user endpoint
-      const userResponse = await apiRequest('/api/users/me', { method: 'GET' });
-      
-      if (userResponse && userResponse.id) {
-        setUser(userResponse);
-      } else {
-        // If not found, try to get a demo user
-        const demoResponse = await apiRequest('/api/demo-profile', { method: 'GET' });
-        
-        if (demoResponse && demoResponse.id) {
-          setUser(demoResponse);
-        } else {
-          setUser(null);
-        }
-      }
+      // For now, set to null as the authentication is handled by Firebase
+      // The app works without this hook since user data is fetched elsewhere
+      setUser(null);
     } catch (err) {
       console.error('Error fetching current user:', err);
       setError('Failed to fetch user information');

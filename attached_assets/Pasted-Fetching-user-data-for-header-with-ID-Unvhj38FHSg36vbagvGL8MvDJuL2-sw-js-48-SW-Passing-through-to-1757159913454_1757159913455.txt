@@ -1,0 +1,95 @@
+Fetching user data for header with ID: Unvhj38FHSg36vbagvGL8MvDJuL2
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/Unvhj38FHSg36vbagvGL8MvDJuL2
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/assets/Brandentifier%20Landing_1751376023002-CkhzZ7Ri.png
+Console.js:61 Header mounted - invalidating user query
+2sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/messaging/unread/count?userId=Unvhj38FHSg36vbagvGL8MvDJuL2
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/2/quests/current-week
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/2/quests-with-definitions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/social-quests/user/2?weekNumber=36&year=2025
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/2/badges
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/2/xp
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/2
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/2/experiences
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/2/educations
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/2/skills
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/2/projects
+Console.js:61 [HEADER IMAGE DEBUG] Image loaded successfully
+Console.js:61 [HEADER IMAGE DEBUG] Image source type: URL
+Console.js:61 [HEADER IMAGE DEBUG] Image source length: 96
+Console.js:61 Cached response for /api/users/Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Found 5 active quests for current week for user 2
+Console.js:61 Cached response for /api/users/2
+Console.js:61 Cached response for /api/users/2/experiences
+Console.js:61 Cached response for /api/users/2/educations
+Console.js:61 Cached response for /api/users/2/skills
+Console.js:61 Cached response for /api/users/2/projects
+Console.js:61 Fetched user data for header: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+2Console.js:61 Error fetching current user: TypeError: s.includes is not a function
+    at Ye (index-BoWpvgOg.js:49:44377)
+    at c (use-current-user-CaeF0TSh.js:1:5947)
+    at use-current-user-CaeF0TSh.js:1:6219
+    at lp (index-BoWpvgOg.js:41:24272)
+    at Ma (index-BoWpvgOg.js:41:42382)
+    at OF (index-BoWpvgOg.js:41:41205)
+    at Xi (index-BoWpvgOg.js:41:40254)
+    at S_ (index-BoWpvgOg.js:41:36864)
+    at Ui (index-BoWpvgOg.js:39:3274)
+    at index-BoWpvgOg.js:41:34246
+Mt.forEach.n.<computed> @ Console.js:61
+c @ use-current-user-CaeF0TSh.js:1
+await in c
+(anonymous) @ use-current-user-CaeF0TSh.js:1
+lp @ index-BoWpvgOg.js:41
+Ma @ index-BoWpvgOg.js:41
+OF @ index-BoWpvgOg.js:41
+Xi @ index-BoWpvgOg.js:41
+S_ @ index-BoWpvgOg.js:41
+Ui @ index-BoWpvgOg.js:39
+(anonymous) @ index-BoWpvgOg.js:41
+setTimeout
+s @ index-BoWpvgOg.js:49
+o @ index-BoWpvgOg.js:49
+batch @ index-BoWpvgOg.js:49
+Qr @ index-BoWpvgOg.js:49
+setData @ index-BoWpvgOg.js:49
+onSuccess @ index-BoWpvgOg.js:49
+f @ index-BoWpvgOg.js:49
+Promise.then
+v @ index-BoWpvgOg.js:49
+start @ index-BoWpvgOg.js:49
+fetch @ index-BoWpvgOg.js:49
+yc @ index-BoWpvgOg.js:49
+onSubscribe @ index-BoWpvgOg.js:49
+subscribe @ index-BoWpvgOg.js:49
+(anonymous) @ index-BoWpvgOg.js:49
+IT @ index-BoWpvgOg.js:39
+lp @ index-BoWpvgOg.js:41
+Ma @ index-BoWpvgOg.js:41
+S_ @ index-BoWpvgOg.js:41
+Ui @ index-BoWpvgOg.js:39
+OF @ index-BoWpvgOg.js:41
+Xi @ index-BoWpvgOg.js:41
+lP @ index-BoWpvgOg.js:41
+S @ index-BoWpvgOg.js:26
+M @ index-BoWpvgOg.js:26Understand this error
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 ✅ [Strategy 3] Progressive Rendering: Core(0) + Secondary(0) components loaded
+Console.js:61 ⚡ Expected improvement: 50-100ms perceived performance boost
+2Console.js:61 Cached response for /api/messaging/unread/count?userId=Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 AuthProvider: Failsafe timeout - forcing loading to false
+Mt.forEach.n.<computed> @ Console.js:61
+(anonymous) @ index-BoWpvgOg.js:289
+setTimeout
+(anonymous) @ index-BoWpvgOg.js:289
+lp @ index-BoWpvgOg.js:41
+Ma @ index-BoWpvgOg.js:41
+S_ @ index-BoWpvgOg.js:41
+Ui @ index-BoWpvgOg.js:39
+OF @ index-BoWpvgOg.js:41
+Xi @ index-BoWpvgOg.js:41
+lP @ index-BoWpvgOg.js:41
+S @ index-BoWpvgOg.js:26
+M @ index-BoWpvgOg.js:26Understand this warning
