@@ -139,7 +139,9 @@ Consider industry-specific platform preferences (visual industries = Instagram, 
         adviceType: 'platform-analysis',
         customAdviceText: analysisPrompt
       });
-      const analysis = JSON.parse(response);
+      // Clean JSON response (remove markdown code blocks)
+      const cleanedResponse = response.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+      const analysis = JSON.parse(cleanedResponse);
       return analysis.platforms as PlatformRecommendation[];
     } catch (error) {
       console.error('[Social Quest AI] Error in platform analysis:', error);
@@ -203,7 +205,9 @@ Make tasks:
         adviceType: 'social-quest-generation',
         customAdviceText: taskPrompt
       });
-      const taskData = JSON.parse(response);
+      // Clean JSON response (remove markdown code blocks)
+      const cleanedResponse = response.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+      const taskData = JSON.parse(cleanedResponse);
       
       return taskData.tasks.map((task: any) => ({
         ...task,
