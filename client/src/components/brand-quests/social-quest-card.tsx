@@ -105,7 +105,10 @@ export function SocialQuestCard({ quest, userId }: SocialQuestCardProps) {
           <div>
             <h3 className="text-lg font-semibold text-white">{quest.title}</h3>
             <p className="text-xs text-white/60 uppercase tracking-wide font-medium">
-              {platformInfo.name} • Priority {quest.priority}
+              {platformInfo.name} • Priority #{quest.priority}
+              {quest.platformSpecificData?.strategy && (
+                <span className="text-yellow-400"> • Personalized</span>
+              )}
             </p>
           </div>
         </div>
@@ -126,13 +129,46 @@ export function SocialQuestCard({ quest, userId }: SocialQuestCardProps) {
         {quest.description}
       </p>
 
-      {/* Platform Focus */}
+      {/* Platform Focus & Intelligence */}
       <div className="bg-white/5 p-3 rounded-lg border border-white/20 backdrop-blur-md mb-4">
         <div className="flex items-center gap-2 text-sm font-medium mb-1 text-white/90">
           <span className="text-yellow-400">🎯</span>
-          <span>Platform Focus</span>
+          <span>Platform Strategy</span>
+          {quest.platformSpecificData?.percentage && (
+            <Badge className="bg-blue-500/20 text-blue-300 border-blue-500/30 text-xs">
+              {quest.platformSpecificData.percentage}% focus
+            </Badge>
+          )}
         </div>
-        <p className="text-sm text-white/70">{platformInfo.focus}</p>
+        <p className="text-sm text-white/70 mb-2">{platformInfo.focus}</p>
+        
+        {/* Dynamic Reasoning */}
+        {quest.platformRecommendationReason && (
+          <div className="bg-purple-500/10 border border-purple-500/20 rounded-lg p-2 mt-2">
+            <div className="flex items-center gap-1 text-xs font-medium text-purple-300 mb-1">
+              <span>🧠</span>
+              <span>Why this platform?</span>
+            </div>
+            <p className="text-xs text-purple-200/80">{quest.platformRecommendationReason}</p>
+          </div>
+        )}
+
+        {/* Platform Performance Metrics */}
+        {quest.platformSpecificData?.expectedROI && (
+          <div className="flex items-center gap-4 mt-2 text-xs">
+            <div className="flex items-center gap-1">
+              <span className="text-green-400">📈</span>
+              <span className="text-white/60">Expected ROI:</span>
+              <span className="text-green-300 font-medium">{quest.platformSpecificData.expectedROI}/10</span>
+            </div>
+            {quest.platformSpecificData?.timeInvestment && (
+              <div className="flex items-center gap-1">
+                <span className="text-blue-400">⏱️</span>
+                <span className="text-white/60">{quest.platformSpecificData.timeInvestment}min/week</span>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* AI-Generated Content */}
