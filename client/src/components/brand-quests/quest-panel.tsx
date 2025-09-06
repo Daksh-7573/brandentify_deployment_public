@@ -283,23 +283,24 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
                   <Skeleton className="h-20 sm:h-24 w-full rounded-md bg-gray-800/60" />
                 </div>
               ) : (
-              <div className="flex justify-between items-center mb-2">
-                <div className="text-xs sm:text-sm text-white/70">
-                  Week {currentWeek}, {currentYear} - AI-powered social media tasks
-                </div>
-                {(!socialQuests || socialQuests.length === 0) && (
-                  <Button
-                    size="sm"
-                    onClick={handleGenerateSocialQuests}
-                    disabled={generateSocialQuestsMutation.isPending}
-                    className="bg-white/10 text-white border-white/20 hover:bg-white/20 text-xs"
-                  >
-                    {generateSocialQuestsMutation.isPending ? 'Generating...' : '🤖 Generate Tasks'}
-                  </Button>
-                )}
-              </div>
-              
-              {!socialQuests || socialQuests.length === 0 ? (
+                <>
+                  <div className="flex justify-between items-center mb-2">
+                    <div className="text-xs sm:text-sm text-white/70">
+                      Week {currentWeek}, {currentYear} - AI-powered social media tasks
+                    </div>
+                    {(!socialQuests || socialQuests.length === 0) && (
+                      <Button
+                        size="sm"
+                        onClick={handleGenerateSocialQuests}
+                        disabled={generateSocialQuestsMutation.isPending}
+                        className="bg-white/10 text-white border-white/20 hover:bg-white/20 text-xs"
+                      >
+                        {generateSocialQuestsMutation.isPending ? 'Generating...' : '🤖 Generate Tasks'}
+                      </Button>
+                    )}
+                  </div>
+                  
+                  {!socialQuests || socialQuests.length === 0 ? (
                 <div className="text-center py-8">
                   <h3 className="text-lg font-medium text-white">No Social Quests Yet</h3>
                   <p className="text-white/70 mt-2 mb-4">
@@ -321,6 +322,8 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
                     ) : null
                   ))}
                 </div>
+              )}
+                </>
               )}
             </TabsContent>
             
