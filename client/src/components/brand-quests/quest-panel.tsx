@@ -63,6 +63,11 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
   const completedSocialQuests = allSocialQuests?.filter(quest => quest.status === 'completed') || [];
   const expiredSocialQuests = allSocialQuests?.filter(quest => quest.status === 'expired') || [];
   
+  // Debug logs for Social Quest data
+  console.log('allSocialQuests:', allSocialQuests);
+  console.log('completedSocialQuests:', completedSocialQuests);
+  console.log('expiredSocialQuests:', expiredSocialQuests);
+  
   // Removed XP progress functionality since it's now in the parent component
 
   useEffect(() => {
