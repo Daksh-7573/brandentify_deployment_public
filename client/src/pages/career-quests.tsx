@@ -21,7 +21,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 
 // Renamed from CareerQuestsPage to BrandQuestsPage
-export default function BrandQuestsPage() {
+export default function CareerQuestsPage() {
+  console.log('🚨🚨🚨 WRONG PAGE LOADING - CAREER QUESTS PAGE! 🚨🚨🚨');
   const { user } = useContext(AuthContext);
   const userId = user?.id;
   
