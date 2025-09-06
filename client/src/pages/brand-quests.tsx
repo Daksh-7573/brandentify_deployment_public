@@ -29,6 +29,7 @@ import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
 export default function BrandQuestsPage() {
   console.log('💫💫💫 BRAND QUESTS PAGE TIMESTAMP: ' + Date.now() + ' 💫💫💫');
   console.log('🎉 TABS SHOULD BE VISIBLE NOW! 🎉');
+  console.log('🔥🔥🔥 BRAND QUESTS PAGE COMPONENT LOADING 🔥🔥🔥');
   const { user } = useContext(AuthContext);
   const { toast } = useToast();
   
