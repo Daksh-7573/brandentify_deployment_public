@@ -100,14 +100,14 @@ export default function BrandQuestsPage() {
             <div className="lg:col-span-2 order-2 lg:order-1">
               {/* Quests Panel */}
               <NeoGlassSection>
-                {/* CRITICAL: Direct Social Quest tabs implementation for guaranteed visibility */}
+              {/* SIMPLE GUARANTEED WORKING TABS - MUST BE VISIBLE! */}
               <Tabs defaultValue="brand-quests" className="w-full">
-                <TabsList className="grid grid-cols-2 mb-4 bg-black/20 border border-white/10 backdrop-blur-sm">
-                  <TabsTrigger value="brand-quests" className="text-white hover:bg-white/10 data-[state=active]:bg-white/20">
+                <TabsList className="grid grid-cols-2 mb-4 bg-white/20 border-2 border-yellow-400 p-2 rounded-lg">
+                  <TabsTrigger value="brand-quests" className="bg-blue-600 text-white p-3 rounded font-bold">
                     Brand Quests
                   </TabsTrigger>
-                  <TabsTrigger value="social-quests" className="text-white hover:bg-white/10 data-[state=active]:bg-white/20">
-                    Social Quests
+                  <TabsTrigger value="social-quests" className="bg-green-600 text-white p-3 rounded font-bold">
+                    🔥 Social Quests 🔥
                   </TabsTrigger>
                 </TabsList>
 
@@ -115,42 +115,46 @@ export default function BrandQuestsPage() {
                   <QuestPanel userId={userId} />
                 </TabsContent>
 
-                <TabsContent value="social-quests">
-                  {/* SOCIAL QUEST SUB-TABS - This should be visible! */}
-                  <Tabs defaultValue="weekly" className="w-full">
-                    <TabsList className="grid grid-cols-3 mb-4 bg-black/20 border border-white/10 backdrop-blur-sm">
-                      <TabsTrigger value="weekly" className="text-white hover:bg-white/10 data-[state=active]:bg-white/20">
-                        Weekly
-                      </TabsTrigger>
-                      <TabsTrigger value="completed" className="text-white hover:bg-white/10 data-[state=active]:bg-white/20">
-                        Completed  
-                      </TabsTrigger>
-                      <TabsTrigger value="missed" className="text-white hover:bg-white/10 data-[state=active]:bg-white/20">
-                        Missed
-                      </TabsTrigger>
-                    </TabsList>
+                <TabsContent value="social-quests" className="min-h-[400px]">
+                  <div className="bg-red-100 border-4 border-red-500 p-6 rounded-lg">
+                    <h2 className="text-2xl font-bold text-red-800 mb-6">🎯 SOCIAL QUEST TABS - YOU SHOULD SEE 3 TABS BELOW! 🎯</h2>
                     
-                    <TabsContent value="weekly">
-                      <div className="p-4 bg-black/20 border border-white/10 rounded-lg">
-                        <h3 className="text-white text-lg font-semibold mb-2">Weekly Social Quests</h3>
-                        <p className="text-white/70">Current week's social media tasks appear here.</p>
-                      </div>
-                    </TabsContent>
-                    
-                    <TabsContent value="completed">
-                      <div className="p-4 bg-black/20 border border-white/10 rounded-lg">
-                        <h3 className="text-white text-lg font-semibold mb-2">Completed Social Quests</h3>
-                        <p className="text-white/70">Finished social quests appear here.</p>
-                      </div>
-                    </TabsContent>
-                    
-                    <TabsContent value="missed">
-                      <div className="p-4 bg-black/20 border border-white/10 rounded-lg">
-                        <h3 className="text-white text-lg font-semibold mb-2">Missed Social Quests</h3>
-                        <p className="text-white/70">Expired social quests appear here.</p>
-                      </div>
-                    </TabsContent>
-                  </Tabs>
+                    {/* SUPER SIMPLE SUB-TABS - GUARANTEED VISIBLE */}
+                    <Tabs defaultValue="weekly" className="w-full">
+                      <TabsList className="grid grid-cols-3 mb-6 bg-yellow-300 border-4 border-orange-500 p-3 rounded-lg">
+                        <TabsTrigger value="weekly" className="bg-red-500 text-white p-4 rounded font-bold text-lg">
+                          📅 Weekly
+                        </TabsTrigger>
+                        <TabsTrigger value="completed" className="bg-green-500 text-white p-4 rounded font-bold text-lg">
+                          ✅ Completed
+                        </TabsTrigger>
+                        <TabsTrigger value="missed" className="bg-gray-500 text-white p-4 rounded font-bold text-lg">
+                          ❌ Missed
+                        </TabsTrigger>
+                      </TabsList>
+                      
+                      <TabsContent value="weekly">
+                        <div className="p-8 bg-blue-100 border-4 border-blue-500 rounded-lg">
+                          <h3 className="text-blue-800 text-2xl font-bold mb-4">📅 WEEKLY SOCIAL QUESTS</h3>
+                          <p className="text-blue-700 text-lg">Current week's social media tasks appear here.</p>
+                        </div>
+                      </TabsContent>
+                      
+                      <TabsContent value="completed">
+                        <div className="p-8 bg-green-100 border-4 border-green-500 rounded-lg">
+                          <h3 className="text-green-800 text-2xl font-bold mb-4">✅ COMPLETED SOCIAL QUESTS</h3>
+                          <p className="text-green-700 text-lg">Finished social quests appear here.</p>
+                        </div>
+                      </TabsContent>
+                      
+                      <TabsContent value="missed">
+                        <div className="p-8 bg-gray-100 border-4 border-gray-500 rounded-lg">
+                          <h3 className="text-gray-800 text-2xl font-bold mb-4">❌ MISSED SOCIAL QUESTS</h3>
+                          <p className="text-gray-700 text-lg">Expired social quests appear here.</p>
+                        </div>
+                      </TabsContent>
+                    </Tabs>
+                  </div>
                 </TabsContent>
               </Tabs>
               </NeoGlassSection>
