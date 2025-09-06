@@ -56,6 +56,12 @@ app.use((req, res, next) => {
 });
 
 app.use((req, res, next) => {
+  // Skip middleware for static assets - let Vite handle them directly
+  if (req.path.startsWith('/assets/') || req.path.startsWith('/src/') || 
+      req.path.includes('.js') || req.path.includes('.css') || req.path.includes('.tsx')) {
+    return next();
+  }
+  
   // Allow access from Replit domains and external sources
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, HEAD');
