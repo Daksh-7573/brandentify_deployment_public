@@ -1,0 +1,40 @@
+[SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/messaging/unread/count?userId=Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Cached response for /api/messaging/unread/count?userId=Unvhj38FHSg36vbagvGL8MvDJuL2
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/messaging/unread/count?userId=Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Cached response for /api/messaging/unread/count?userId=Unvhj38FHSg36vbagvGL8MvDJuL2
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/assets/brand-quests-CDba0Osl.js
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/assets/use-current-user-oPLD0hy8.js
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/assets/brand-quests-RhcZK_UN.css
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Fetching user data for header with ID: Unvhj38FHSg36vbagvGL8MvDJuL2
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Header mounted - invalidating user query
+Console.js:61 Fetching user data for header with ID: Unvhj38FHSg36vbagvGL8MvDJuL2
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/Unvhj38FHSg36vbagvGL8MvDJuL2
+2sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/messaging/unread/count?userId=Unvhj38FHSg36vbagvGL8MvDJuL2
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/2/quests/current-week
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/2/quests-with-definitions
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/social-quests/user/2?weekNumber=36&year=2025
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/2/badges
+sw.js:48 [SW] Passing through to network: GET https://25d68c5d-166d-4f92-b5c1-cdfc68146e33-00-2kol6l2kz9i0s.picard.replit.dev/api/users/2/xp
+Console.js:61 [HEADER IMAGE DEBUG] Image loaded successfully
+Console.js:61 [HEADER IMAGE DEBUG] Image source type: URL
+Console.js:61 [HEADER IMAGE DEBUG] Image source length: 96
+Console.js:61 Cached response for /api/users/Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Fetched user data for header: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 Cached response for /api/users/Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Fetched user data for header: {id: 2, username: 'Unvhj38FHSg36vbagvGL8MvDJuL2', email: 'nishant.brodos@gmail.com', password: null, phoneNumber: '+91 7226004815', …}
+Console.js:61 Cached response for /api/messaging/unread/count?userId=Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Found 3 active quests for current week for user 2
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 [HEADER DEBUG] userData?.photoURL: BASE64_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] user?.photoURL: GOOGLE_IMAGE_EXISTS
+Console.js:61 [HEADER DEBUG] Final photoURL source: USING_BASE64
+Console.js:61 [HEADER DEBUG] userId used for query: Unvhj38FHSg36vbagvGL8MvDJuL2
+Console.js:61 Cached response for /api/messaging/unread/count?userId=Unvhj38FHSg36vbagvGL8MvDJuL2

@@ -1,7 +1,7 @@
 import { useContext, useState, useEffect } from 'react';
 import { AuthContext } from '@/context/simple-auth-context';
 import Header from '@/components/layout/header';
-import { QuestPanelSimple } from '@/components/brand-quests/quest-panel-simple';
+import { QuestPanel } from '@/components/brand-quests/quest-panel';
 import { BadgeDisplay } from '@/components/brand-quests/badge-display';
 import { XpProgressBar } from '@/components/brand-quests/xp-progress-bar';
 // Removed HashtagSuggestions and NowboardSuggestions as they're now integrated into quests
@@ -99,7 +99,7 @@ export default function BrandQuestsPage() {
             <div className="lg:col-span-2 order-2 lg:order-1">
               {/* Quests Panel */}
               <NeoGlassSection>
-                <QuestPanelSimple userId={userId} />
+                <QuestPanel userId={userId} />
               </NeoGlassSection>
             </div>
             
