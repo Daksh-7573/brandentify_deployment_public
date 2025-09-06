@@ -27,6 +27,7 @@ import { NeoGlassSection } from '@/components/ui/neo-glass/index';
 import backgroundImage from "@assets/Brandentifier Landing_1751376023002.png";
 
 export default function BrandQuestsPage() {
+  console.log('🌟🌟🌟 BRAND QUESTS PAGE LOADING! 🌟🌟🌟');
   const { user } = useContext(AuthContext);
   const { toast } = useToast();
   
