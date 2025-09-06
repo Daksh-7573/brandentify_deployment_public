@@ -81,7 +81,15 @@ export function useSocialQuests(userId?: number, weekNumber?: number, year?: num
       }
       
       const data = await response.json();
-      return data.quests || [];
+      
+      // Valid external platforms only - filter out brandentifier or unknown platforms
+      const validPlatforms = ['linkedin', 'twitter', 'instagram', 'youtube'];
+      const filteredQuests = (data.quests || []).filter((quest: any) => {
+        const platform = quest.platform?.toLowerCase();
+        return platform && validPlatforms.includes(platform);
+      });
+      
+      return filteredQuests;
     },
     enabled: !!userId
   });
