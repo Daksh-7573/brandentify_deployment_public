@@ -20,8 +20,10 @@ interface QuestPanelProps {
 }
 
 export function QuestPanel({ userId, className }: QuestPanelProps) {
+  console.log('🚀 QuestPanel component rendering, mainTabValue will be logged...');
   const { toast } = useToast();
   const [mainTabValue, setMainTabValue] = useState('brand-quests');
+  console.log('📊 Current mainTabValue:', mainTabValue);
   const [brandQuestTabValue, setBrandQuestTabValue] = useState('weekly');
   const [socialQuestTabValue, setSocialQuestTabValue] = useState('weekly');
   const currentWeek = getCurrentWeekNumber();
@@ -264,6 +266,7 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
 
         {/* Social Quests Tab Content */}
         <TabsContent value="social-quests" className="space-y-3 sm:space-y-4">
+          {console.log('🔥 SOCIAL QUEST TAB CONTENT RENDERING!')}
           <Tabs defaultValue="weekly" value={socialQuestTabValue} onValueChange={setSocialQuestTabValue}>
             <TabsList className="grid grid-cols-3 mb-3 sm:mb-4 dark-tabs-list border border-white/5 w-full h-auto">
               <TabsTrigger value="weekly" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-1 sm:px-2 text-xs sm:text-sm">
