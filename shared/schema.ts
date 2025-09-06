@@ -1010,7 +1010,8 @@ export const questTypeEnum = pgEnum("quest_type", [
   "learning",
   "portfolio",
   "resume",
-  "visibility"
+  "visibility",
+  "social_quest" // New type for Social Quests
 ]);
 
 // Quest status enum (simplified)
@@ -1155,6 +1156,68 @@ export type InsertUserBadge = z.infer<typeof insertUserBadgeSchema>;
 
 export type XpTransaction = typeof xpTransactions.$inferSelect;
 export type InsertXpTransaction = z.infer<typeof insertXpTransactionSchema>;
+
+// Social Quests Extension - Platform-specific quest management
+// Social platform enum for targeting specific platforms
+export const socialPlatformEnum = pgEnum("social_platform", [
+  "brandentifier", // Primary focus - internal platform
+  "linkedin",      // Secondary platform
+  "instagram",     // Visual content platform
+  "twitter",       // Micro-blogging platform
+  "youtube",       // Video content platform
+  "tiktok",        // Short-form video platform
+  "facebook"       // General social platform
+]);
+
+// Social Quest definitions - extends regular quests with platform-specific data
+export const socialQuestDefinitions = pgTable("social_quest_definitions", {
+  id: serial("id").primaryKey(),
+  questDefinitionId: integer("quest_definition_id").references(() => questDefinitions.id).notNull(),
+  targetPlatform: socialPlatformEnum("target_platform").notNull(),
+  platformPriority: integer("platform_priority").notNull().default(1), // 1=primary, 2=secondary, 3=tertiary
+  contentTemplate: text("content_template"), // Template for AI-generated content
+  platformSpecificData: jsonb("platform_specific_data").default('{}'), // Platform-specific metadata
+  aiGenerationPrompt: text("ai_generation_prompt"), // Prompt for AI task generation
+  requiredIndustries: jsonb("required_industries").default('[]'), // Industries this quest applies to
+  requiredDomains: jsonb("required_domains").default('[]'), // Domains this quest applies to
+  isAiGenerated: boolean("is_ai_generated").default(true), // Whether this quest uses AI generation
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
+// User Social Quest assignments - tracks user-specific platform recommendations and progress
+export const userSocialQuests = pgTable("user_social_quests", {
+  id: serial("id").primaryKey(),
+  userQuestId: integer("user_quest_id").references(() => userQuests.id).notNull(),
+  socialQuestDefinitionId: integer("social_quest_definition_id").references(() => socialQuestDefinitions.id).notNull(),
+  aiGeneratedContent: text("ai_generated_content"), // AI-generated task content specific to user
+  platformRecommendationReason: text("platform_recommendation_reason"), // Why this platform was recommended
+  userFeedbackRating: integer("user_feedback_rating"), // 1-5 user rating of task relevance
+  platformEngagementGoal: integer("platform_engagement_goal"), // Target engagement for this quest
+  actualPlatformEngagement: integer("actual_platform_engagement").default(0), // Actual engagement achieved
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
+// Insert schemas for Social Quests
+export const insertSocialQuestDefinitionSchema = createInsertSchema(socialQuestDefinitions).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+export const insertUserSocialQuestSchema = createInsertSchema(userSocialQuests).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true
+});
+
+// Export types for Social Quests
+export type SocialQuestDefinition = typeof socialQuestDefinitions.$inferSelect;
+export type InsertSocialQuestDefinition = z.infer<typeof insertSocialQuestDefinitionSchema>;
+
+export type UserSocialQuest = typeof userSocialQuests.$inferSelect;
+export type InsertUserSocialQuest = z.infer<typeof insertUserSocialQuestSchema>;
 
 // Brand of the Day model - for storing and tracking featured profiles
 export const brandsOfTheDay = pgTable("brands_of_the_day", {
