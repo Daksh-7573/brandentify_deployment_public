@@ -7,6 +7,8 @@
 
 import { LocalAIService } from './local-ai-service';
 import * as db from '../db';
+import { users } from '../../shared/schema';
+import { eq } from 'drizzle-orm';
 
 interface UserProfile {
   id: number;
@@ -129,7 +131,14 @@ Consider industry-specific platform preferences (visual industries = Instagram, 
 `;
 
     try {
-      const response = await this.localAI.generateCompletion(analysisPrompt, 'platform-analysis');
+      const response = await this.localAI.generateCareerAdvice({
+        user: { industry: userProfile.industry, domain: userProfile.domain },
+        workExperiences: [],
+        skills: [],
+        educations: [],
+        adviceType: 'platform-analysis',
+        customAdviceText: analysisPrompt
+      });
       const analysis = JSON.parse(response);
       return analysis.platforms as PlatformRecommendation[];
     } catch (error) {
@@ -186,7 +195,14 @@ Make tasks:
 `;
 
     try {
-      const response = await this.localAI.generateCompletion(taskPrompt, 'social-quest-generation');
+      const response = await this.localAI.generateCareerAdvice({
+        user: { industry: userProfile.industry, domain: userProfile.domain },
+        workExperiences: [],
+        skills: [],
+        educations: [],
+        adviceType: 'social-quest-generation',
+        customAdviceText: taskPrompt
+      });
       const taskData = JSON.parse(response);
       
       return taskData.tasks.map((task: any) => ({
@@ -261,7 +277,13 @@ TERTIARY PLATFORM FOCUS:
    */
   private async getUserProfile(userId: number): Promise<UserProfile | null> {
     try {
-      const user = await db.getUserById(userId);
+      // Get user data using the database connection directly
+      const dbConnection = await db.getDB();
+      const [user] = await dbConnection
+        .select()
+        .from(users)
+        .where(eq(users.id, userId))
+        .limit(1);
       if (!user) return null;
 
       return {
@@ -397,17 +419,4 @@ TERTIARY PLATFORM FOCUS:
     }];
   }
 
-  /**
-   * Generate AI completion using the local AI service
-   */
-  private async generateCompletion(prompt: string, taskType: string): Promise<string> {
-    return this.localAI.generateCareerAdvice({
-      user: {},
-      workExperiences: [],
-      skills: [],
-      educations: [],
-      adviceType: taskType,
-      customAdviceText: prompt
-    });
-  }
 }
