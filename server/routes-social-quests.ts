@@ -291,6 +291,358 @@ export default function setupSocialQuestRoutes(app: Express) {
       });
     }
   });
+
+  /**
+   * Get current week Social Quests for user
+   * GET /api/social-quests/user/:userId/weekly
+   */
+  app.get('/api/social-quests/user/:userId/weekly', async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      
+      if (!userId) {
+        return res.status(400).json({
+          success: false,
+          error: 'Invalid user ID'
+        });
+      }
+
+      const now = new Date();
+      const weekNumber = getCurrentWeekNumber();
+      const year = now.getFullYear();
+      
+      console.log(`[Social Quests API] Fetching weekly quests for user ${userId}, week ${weekNumber}`);
+
+      // Get active Social Quests for current week using the userQuests table structure
+      const weeklySocialQuests = await db
+        .select({
+          // User Quest data
+          id: userQuests.id,
+          userId: userQuests.userId,
+          questDefinitionId: userQuests.questDefinitionId,
+          status: userQuests.status,
+          progress: userQuests.progress,
+          assignedAt: userQuests.assignedAt,
+          completedAt: userQuests.completedAt,
+          weekNumber: userQuests.weekNumber,
+          year: userQuests.year,
+          xpEarned: userQuests.xpEarned,
+          badgeEarned: userQuests.badgeEarned,
+          muskResponse: userQuests.muskResponse,
+          
+          // Quest Definition data
+          title: questDefinitions.title,
+          description: questDefinitions.description,
+          type: questDefinitions.type,
+          targetCount: questDefinitions.targetCount,
+          targetAction: questDefinitions.targetAction,
+          xpReward: questDefinitions.xpReward,
+          badgeReward: questDefinitions.badgeReward,
+          muskTip: questDefinitions.muskTip,
+          
+          // Social Quest specific data
+          socialQuestId: userSocialQuests.id,
+          aiGeneratedContent: userSocialQuests.aiGeneratedContent,
+          platformRecommendationReason: userSocialQuests.platformRecommendationReason,
+          platformEngagementGoal: userSocialQuests.platformEngagementGoal,
+          actualPlatformEngagement: userSocialQuests.actualPlatformEngagement,
+          userFeedbackRating: userSocialQuests.userFeedbackRating,
+          
+          // Social Quest Definition data  
+          targetPlatform: socialQuestDefinitions.targetPlatform,
+          platformPriority: socialQuestDefinitions.platformPriority,
+          contentTemplate: socialQuestDefinitions.contentTemplate,
+          platformSpecificData: socialQuestDefinitions.platformSpecificData
+        })
+        .from(userQuests)
+        .leftJoin(questDefinitions, eq(userQuests.questDefinitionId, questDefinitions.id))
+        .leftJoin(userSocialQuests, eq(userSocialQuests.userQuestId, userQuests.id))
+        .leftJoin(socialQuestDefinitions, eq(userSocialQuests.socialQuestDefinitionId, socialQuestDefinitions.id))
+        .where(
+          and(
+            eq(userQuests.userId, userId),
+            eq(userQuests.weekNumber, weekNumber),
+            eq(userQuests.year, year),
+            eq(userQuests.status, 'active'),
+            eq(questDefinitions.type, 'social_quest')
+          )
+        )
+        .orderBy(desc(userQuests.assignedAt));
+
+      res.status(200).json({
+        success: true,
+        weekNumber: weekNumber,
+        year: year,
+        quests: weeklySocialQuests
+      });
+
+    } catch (error) {
+      console.error('[Social Quests API] Error fetching weekly quests:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch weekly Social Quests'
+      });
+    }
+  });
+
+  /**
+   * Get completed Social Quests for user
+   * GET /api/social-quests/user/:userId/completed
+   */
+  app.get('/api/social-quests/user/:userId/completed', async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 20;
+      const offset = (page - 1) * limit;
+      
+      if (!userId) {
+        return res.status(400).json({
+          success: false,
+          error: 'Invalid user ID'
+        });
+      }
+
+      console.log(`[Social Quests API] Fetching completed quests for user ${userId}`);
+
+      const completedSocialQuests = await db
+        .select({
+          // User Quest data
+          id: userQuests.id,
+          userId: userQuests.userId,
+          questDefinitionId: userQuests.questDefinitionId,
+          status: userQuests.status,
+          progress: userQuests.progress,
+          assignedAt: userQuests.assignedAt,
+          completedAt: userQuests.completedAt,
+          weekNumber: userQuests.weekNumber,
+          year: userQuests.year,
+          xpEarned: userQuests.xpEarned,
+          badgeEarned: userQuests.badgeEarned,
+          muskResponse: userQuests.muskResponse,
+          
+          // Quest Definition data
+          title: questDefinitions.title,
+          description: questDefinitions.description,
+          type: questDefinitions.type,
+          targetCount: questDefinitions.targetCount,
+          targetAction: questDefinitions.targetAction,
+          xpReward: questDefinitions.xpReward,
+          badgeReward: questDefinitions.badgeReward,
+          muskTip: questDefinitions.muskTip,
+          
+          // Social Quest specific data
+          socialQuestId: userSocialQuests.id,
+          aiGeneratedContent: userSocialQuests.aiGeneratedContent,
+          platformRecommendationReason: userSocialQuests.platformRecommendationReason,
+          platformEngagementGoal: userSocialQuests.platformEngagementGoal,
+          actualPlatformEngagement: userSocialQuests.actualPlatformEngagement,
+          userFeedbackRating: userSocialQuests.userFeedbackRating,
+          
+          // Social Quest Definition data  
+          targetPlatform: socialQuestDefinitions.targetPlatform,
+          platformPriority: socialQuestDefinitions.platformPriority,
+          contentTemplate: socialQuestDefinitions.contentTemplate,
+          platformSpecificData: socialQuestDefinitions.platformSpecificData
+        })
+        .from(userQuests)
+        .leftJoin(questDefinitions, eq(userQuests.questDefinitionId, questDefinitions.id))
+        .leftJoin(userSocialQuests, eq(userSocialQuests.userQuestId, userQuests.id))
+        .leftJoin(socialQuestDefinitions, eq(userSocialQuests.socialQuestDefinitionId, socialQuestDefinitions.id))
+        .where(
+          and(
+            eq(userQuests.userId, userId),
+            eq(userQuests.status, 'completed'),
+            eq(questDefinitions.type, 'social_quest')
+          )
+        )
+        .orderBy(desc(userQuests.completedAt))
+        .limit(limit)
+        .offset(offset);
+
+      res.status(200).json({
+        success: true,
+        quests: completedSocialQuests,
+        pagination: {
+          page: page,
+          limit: limit,
+          hasMore: completedSocialQuests.length === limit
+        }
+      });
+
+    } catch (error) {
+      console.error('[Social Quests API] Error fetching completed quests:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch completed Social Quests'
+      });
+    }
+  });
+
+  /**
+   * Get missed/expired Social Quests for user
+   * GET /api/social-quests/user/:userId/missed
+   */
+  app.get('/api/social-quests/user/:userId/missed', async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 20;
+      const offset = (page - 1) * limit;
+      
+      if (!userId) {
+        return res.status(400).json({
+          success: false,
+          error: 'Invalid user ID'
+        });
+      }
+
+      console.log(`[Social Quests API] Fetching missed quests for user ${userId}`);
+
+      const missedSocialQuests = await db
+        .select({
+          // User Quest data
+          id: userQuests.id,
+          userId: userQuests.userId,
+          questDefinitionId: userQuests.questDefinitionId,
+          status: userQuests.status,
+          progress: userQuests.progress,
+          assignedAt: userQuests.assignedAt,
+          completedAt: userQuests.completedAt,
+          weekNumber: userQuests.weekNumber,
+          year: userQuests.year,
+          xpEarned: userQuests.xpEarned,
+          badgeEarned: userQuests.badgeEarned,
+          muskResponse: userQuests.muskResponse,
+          
+          // Quest Definition data
+          title: questDefinitions.title,
+          description: questDefinitions.description,
+          type: questDefinitions.type,
+          targetCount: questDefinitions.targetCount,
+          targetAction: questDefinitions.targetAction,
+          xpReward: questDefinitions.xpReward,
+          badgeReward: questDefinitions.badgeReward,
+          muskTip: questDefinitions.muskTip,
+          
+          // Social Quest specific data
+          socialQuestId: userSocialQuests.id,
+          aiGeneratedContent: userSocialQuests.aiGeneratedContent,
+          platformRecommendationReason: userSocialQuests.platformRecommendationReason,
+          platformEngagementGoal: userSocialQuests.platformEngagementGoal,
+          actualPlatformEngagement: userSocialQuests.actualPlatformEngagement,
+          userFeedbackRating: userSocialQuests.userFeedbackRating,
+          
+          // Social Quest Definition data  
+          targetPlatform: socialQuestDefinitions.targetPlatform,
+          platformPriority: socialQuestDefinitions.platformPriority,
+          contentTemplate: socialQuestDefinitions.contentTemplate,
+          platformSpecificData: socialQuestDefinitions.platformSpecificData
+        })
+        .from(userQuests)
+        .leftJoin(questDefinitions, eq(userQuests.questDefinitionId, questDefinitions.id))
+        .leftJoin(userSocialQuests, eq(userSocialQuests.userQuestId, userQuests.id))
+        .leftJoin(socialQuestDefinitions, eq(userSocialQuests.socialQuestDefinitionId, socialQuestDefinitions.id))
+        .where(
+          and(
+            eq(userQuests.userId, userId),
+            eq(userQuests.status, 'expired'),
+            eq(questDefinitions.type, 'social_quest')
+          )
+        )
+        .orderBy(desc(userQuests.assignedAt))
+        .limit(limit)
+        .offset(offset);
+
+      res.status(200).json({
+        success: true,
+        quests: missedSocialQuests,
+        pagination: {
+          page: page,
+          limit: limit,
+          hasMore: missedSocialQuests.length === limit
+        }
+      });
+
+    } catch (error) {
+      console.error('[Social Quests API] Error fetching missed quests:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to fetch missed Social Quests'
+      });
+    }
+  });
+
+  /**
+   * Complete a Social Quest
+   * POST /api/social-quests/user/:userId/quest/:questId/complete
+   */
+  app.post('/api/social-quests/user/:userId/quest/:questId/complete', async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const questId = parseInt(req.params.questId);
+      
+      if (!userId || !questId) {
+        return res.status(400).json({
+          success: false,
+          error: 'Invalid user ID or quest ID'
+        });
+      }
+
+      console.log(`[Social Quests API] Completing quest ${questId} for user ${userId}`);
+
+      // First get the quest to check its target count
+      const questInfo = await db
+        .select({
+          targetCount: questDefinitions.targetCount,
+          xpReward: questDefinitions.xpReward,
+          badgeReward: questDefinitions.badgeReward
+        })
+        .from(userQuests)
+        .leftJoin(questDefinitions, eq(userQuests.questDefinitionId, questDefinitions.id))
+        .where(
+          and(
+            eq(userQuests.id, questId),
+            eq(userQuests.userId, userId),
+            eq(userQuests.status, 'active')
+          )
+        )
+        .limit(1);
+
+      if (questInfo.length === 0) {
+        return res.status(404).json({
+          success: false,
+          error: 'Quest not found or already completed'
+        });
+      }
+
+      // Update quest status to completed
+      const completedQuest = await db
+        .update(userQuests)
+        .set({
+          status: 'completed',
+          progress: questInfo[0].targetCount || 1,
+          completedAt: new Date(),
+          xpEarned: questInfo[0].xpReward,
+          badgeEarned: questInfo[0].badgeReward
+        })
+        .where(eq(userQuests.id, questId))
+        .returning();
+
+      res.status(200).json({
+        success: true,
+        message: 'Social Quest completed successfully',
+        quest: completedQuest[0]
+      });
+
+    } catch (error) {
+      console.error('[Social Quests API] Error completing quest:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Failed to complete Social Quest'
+      });
+    }
+  });
 }
 
 // Helper functions for database operations
