@@ -203,7 +203,7 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
   return (
     <div className={cn("w-full", className)}>
       <div className="mb-3 sm:mb-4">
-        <h2 className="text-lg sm:text-xl font-semibold text-white">Career Quests</h2>
+        <h2 className="text-lg sm:text-xl font-semibold text-white">Brand Quests</h2>
         <p className="text-white/70 text-xs sm:text-sm">Complete quests to increase your influence</p>
       </div>
       
