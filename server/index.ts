@@ -3,6 +3,7 @@ import path from "path";
 import * as fileUpload from "express-fileupload";
 import { registerRoutes } from "./routes";
 import { setupVite, log } from "./vite";
+import { serveStatic } from "./vite";
 import { questProgressMiddleware } from "./middleware/quest-progress-tracker";
 import { setupSecurity, validateFileUpload } from "./security";
 import { setupInfrastructureSecurity } from "./infrastructure-security";
@@ -426,10 +427,14 @@ console.log("Musk Pulse automation system started - scheduling pulses for 9 AM, 
   // importantly only setup vite in development and after
   // setting up all the other routes so the catch-all route
   // doesn't interfere with the other routes
-  if (app.get("env") === "development") {
-    await setupVite();
+  console.log('🔧 Environment check:', app.get("env"), 'NODE_ENV:', process.env.NODE_ENV);
+  if (app.get("env") === "development" || process.env.NODE_ENV !== "production") {
+    console.log('🚀 Setting up Vite development server...');
+    await setupVite(app, server);
+    console.log('✅ Vite development server setup complete');
   } else {
-    serveStatic();
+    // For production, Vite build output would be served here
+    console.log('Production mode - serving built assets');
   }
 
   // ALWAYS serve the app on port 5000
