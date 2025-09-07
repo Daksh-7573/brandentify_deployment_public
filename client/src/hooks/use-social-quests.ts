@@ -64,7 +64,7 @@ export function useGenerateSocialQuests(userId?: number) {
   });
 }
 
-// Hook to fetch user's Social Quests for current week (active only)
+// Hook to fetch user's Social Quests
 export function useSocialQuests(userId?: number, weekNumber?: number, year?: number) {
   const currentWeek = weekNumber || getCurrentWeekNumber();
   const currentYear = year || getCurrentYear();
@@ -74,40 +74,10 @@ export function useSocialQuests(userId?: number, weekNumber?: number, year?: num
     queryFn: async () => {
       if (!userId) return [];
       
-      const response = await fetch(`/api/social-quests/user/${userId}?weekNumber=${currentWeek}&year=${currentYear}&status=active`);
+      const response = await fetch(`/api/social-quests/user/${userId}?weekNumber=${currentWeek}&year=${currentYear}`);
       
       if (!response.ok) {
         throw new Error('Failed to fetch social quests');
-      }
-      
-      const data = await response.json();
-      
-      // Valid external platforms only - filter out brandentifier or unknown platforms
-      const validPlatforms = ['linkedin', 'twitter', 'instagram', 'youtube'];
-      const filteredQuests = (data.quests || []).filter((quest: any) => {
-        const platform = quest.platform?.toLowerCase();
-        return platform && validPlatforms.includes(platform);
-      });
-      
-      return filteredQuests;
-    },
-    enabled: !!userId
-  });
-}
-
-// Hook to fetch ALL Social Quests (for filtering by status)
-// Temporarily disabled - using main endpoint for all status filtering
-export function useAllSocialQuests(userId?: number) {
-  return useQuery<SocialQuestTask[]>({
-    queryKey: ['all-social-quests', userId],
-    queryFn: async () => {
-      if (!userId) return [];
-      
-      // Use main social quests endpoint with no week/year filter to get all
-      const response = await fetch(`/api/social-quests/user/${userId}`);
-      
-      if (!response.ok) {
-        throw new Error('Failed to fetch all social quests');
       }
       
       const data = await response.json();

@@ -455,49 +455,6 @@ async function storeSocialQuests(userId: number, aiTasks: any[], weekNumber: num
     }
   });
 
-  // GET /api/social-quests/user/:userId/all - Get ALL user's Social Quests (for status filtering)
-  app.get('/api/social-quests/user/:userId/all', async (req, res) => {
-    try {
-      const userId = parseInt(req.params.userId);
-      
-      if (!userId) {
-        return res.status(400).json({ error: 'Invalid user ID' });
-      }
-
-      const quests = await db.db
-        .select({
-          id: userSocialQuests.id,
-          title: questDefinitions.title,
-          description: questDefinitions.description,
-          platform: socialQuestDefinitions.targetPlatform,
-          priority: socialQuestDefinitions.platformPriority,
-          xpReward: questDefinitions.xpReward,
-          status: userQuests.status,
-          progress: userQuests.progress,
-          targetAction: questDefinitions.targetAction,
-          muskTip: questDefinitions.muskTip,
-          aiGeneratedContent: userSocialQuests.aiGeneratedContent,
-          platformRecommendationReason: userSocialQuests.platformRecommendationReason,
-          platformSpecificData: socialQuestDefinitions.platformSpecificData,
-          assignedAt: userQuests.assignedAt,
-          completedAt: userQuests.completedAt,
-          weekNumber: userQuests.weekNumber,
-          year: userQuests.year
-        })
-        .from(userSocialQuests)
-        .innerJoin(userQuests, eq(userSocialQuests.userQuestId, userQuests.id))
-        .innerJoin(questDefinitions, eq(userQuests.questDefinitionId, questDefinitions.id))
-        .innerJoin(socialQuestDefinitions, eq(userSocialQuests.socialQuestDefinitionId, socialQuestDefinitions.id))
-        .where(eq(userQuests.userId, userId))
-        .orderBy(desc(userQuests.assignedAt));
-
-      res.json({ quests });
-    } catch (error) {
-      console.error('[Social Quests API] Error fetching all user quests:', error);
-      res.status(500).json({ error: 'Failed to fetch all social quests' });
-    }
-  });
-
   // POST /api/social-quests/:questId/complete - Complete a Social Quest
   app.post('/api/social-quests/:questId/complete', async (req, res) => {
     try {

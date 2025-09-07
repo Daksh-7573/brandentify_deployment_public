@@ -30,13 +30,8 @@ app.use((req, res, next) => {
   // Skip ALL middleware interference for static assets - let Vite handle them directly
   if (req.path.startsWith('/assets/') || req.path.startsWith('/src/') || 
       req.path.includes('.js') || req.path.includes('.css') || req.path.includes('.tsx') ||
-      req.path.includes('.jsx') || req.path.includes('.ts') || req.path.includes('.mjs') ||
-      req.path === '/sw.js' || req.path.startsWith('/@')) {
+      req.path.includes('.jsx') || req.path.includes('.ts') || req.path.includes('.mjs')) {
     console.log(`🚀 STATIC ASSET BYPASS: ${req.method} ${req.path} - skipping all middleware`);
-    // Set proper CORS headers for assets
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, HEAD');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
     return next();
   }
 
