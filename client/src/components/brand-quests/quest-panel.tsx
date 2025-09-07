@@ -206,8 +206,9 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
 
         {/* Social Quests Tab Content */}
         <TabsContent value="social-quests" className="space-y-3 sm:space-y-4">
-          <div className="bg-red-500/20 border border-red-400 p-4 rounded-lg mb-4">
-            <p className="text-red-300 font-semibold">🔥 DEBUG: Social Quest Tab Loading... userId={userId}</p>
+          <div className="bg-yellow-500/20 border-2 border-yellow-400 p-6 rounded-lg mb-4">
+            <p className="text-yellow-300 font-bold text-lg">🚀 NUCLEAR CACHE CLEAR TEST - NEW BUILD DETECTED!</p>
+            <p className="text-yellow-200">If you see this, the new component is loading! userId={userId}</p>
           </div>
           <SocialQuestInterface userId={userId} />
         </TabsContent>
