@@ -20,6 +20,9 @@ interface SocialQuestInterfaceProps {
 }
 
 export function SocialQuestInterface({ userId, className }: SocialQuestInterfaceProps) {
+  console.log('🔥🔥🔥 SOCIAL QUEST INTERFACE MOUNTING! 🔥🔥🔥', { userId, className });
+  console.log('🎯 NEW SOCIAL QUEST COMPONENT IS LOADING!!!');
+  
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState('weekly');
   const currentWeek = getCurrentWeekNumber();
