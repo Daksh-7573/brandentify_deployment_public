@@ -174,9 +174,8 @@
   </style>
   
   <div id="root"></div>
-  <!-- Alternative loading approach to bypass MIME type issues -->
   <script>
-    console.log('Loading with alternative approach...');
+    console.log('Loading your original Brandentifier landing page...');
     
     // Remove skeleton loader
     const loader = document.getElementById('app-loader');
@@ -184,143 +183,152 @@
       setTimeout(() => {
         loader.style.display = 'none';
         console.log('Skeleton removed');
-      }, 100);
+      }, 200);
     }
     
-    // Load React and ReactDOM from CDN to bypass module issues
-    const loadScript = (src, callback) => {
-      const script = document.createElement('script');
-      script.src = src;
-      script.onload = callback;
-      script.onerror = () => console.error('Failed to load:', src);
-      document.head.appendChild(script);
-    };
-    
-    // Load React dependencies
-    loadScript('https://unpkg.com/react@18/umd/react.production.min.js', () => {
-      loadScript('https://unpkg.com/react-dom@18/umd/react-dom.production.min.js', () => {
-        console.log('React and ReactDOM loaded from CDN');
-        
-        // Create basic landing page interface
-        const { createElement: e, useState, useEffect } = React;
-        const { createRoot } = ReactDOM;
-        
-        function BrandentifierApp() {
-          return e('div', {
-            style: {
-              minHeight: '100vh',
-              background: 'linear-gradient(135deg, rgba(17, 24, 39, 0.9) 0%, rgba(0, 0, 0, 0.8) 50%, rgba(31, 41, 55, 0.9) 100%)',
-              color: 'white',
-              fontFamily: 'Inter, Arial, sans-serif',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: '20px',
-              textAlign: 'center'
-            }
-          }, [
-            e('div', {
-              key: 'hero',
-              style: {
-                background: 'rgba(255,255,255,0.1)',
-                borderRadius: '20px',
-                padding: '40px',
-                maxWidth: '800px',
-                backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(255,255,255,0.2)'
-              }
-            }, [
-              e('h1', {
-                key: 'title',
-                style: {
-                  fontSize: '3rem',
-                  marginBottom: '20px',
-                  background: 'linear-gradient(45deg, #4f46e5, #06b6d4)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  fontWeight: 'bold'
-                }
-              }, '✨ Brandentifier'),
-              e('p', {
-                key: 'subtitle',
-                style: {
-                  fontSize: '1.2rem',
-                  marginBottom: '20px',
-                  color: '#e5e7eb',
-                  lineHeight: '1.6'
-                }
-              }, 'AI-Powered Career Development Platform that transforms your professional journey with intelligent insights and personalized guidance'),
-              e('div', {
-                key: 'buttons',
-                style: {
-                  display: 'flex',
-                  gap: '15px',
-                  justifyContent: 'center',
-                  flexWrap: 'wrap',
-                  marginTop: '30px'
-                }
-              }, [
-                e('button', {
-                  key: 'auth',
-                  onClick: () => alert('Authentication will be restored once we fix the module loading!'),
-                  style: {
-                    padding: '12px 24px',
-                    background: 'linear-gradient(45deg, #4f46e5, #7c3aed)',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '10px',
-                    cursor: 'pointer',
-                    fontSize: '1rem',
-                    fontWeight: '600'
-                  }
-                }, 'Get Started'),
-                e('button', {
-                  key: 'demo',
-                  onClick: () => alert('Full platform features coming soon!'),
-                  style: {
-                    padding: '12px 24px',
-                    background: 'linear-gradient(45deg, #06b6d4, #0891b2)',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '10px',
-                    cursor: 'pointer',
-                    fontSize: '1rem',
-                    fontWeight: '600'
-                  }
-                }, 'View Features')
-              ]),
-              e('div', {
-                key: 'status',
-                style: {
-                  marginTop: '30px',
-                  padding: '15px',
-                  background: 'rgba(59, 130, 246, 0.1)',
-                  borderRadius: '10px',
-                  border: '1px solid rgba(59, 130, 246, 0.3)'
-                }
-              }, [
-                e('p', {
-                  key: 'status-text',
-                  style: {
-                    color: '#60a5fa',
-                    fontWeight: '600',
-                    margin: '0'
-                  }
-                }, '🔧 Working on restoring full functionality')
-              ])
-            ])
-          ]);
-        }
-        
-        // Mount the app
-        const root = document.getElementById('root');
-        if (root) {
-          createRoot(root).render(e(BrandentifierApp));
-          console.log('Brandentifier loaded with CDN React');
-        }
-      });
-    });
+    // Recreate your exact original landing page
+    const root = document.getElementById('root');
+    if (root) {
+      root.innerHTML = `
+        <div class="min-h-screen w-full relative overflow-hidden">
+          <!-- Glass UI overlay -->
+          <div class="absolute inset-0 bg-gradient-to-br from-gray-900/80 via-black/70 to-gray-800/80 backdrop-blur-sm"></div>
+          
+          <!-- Content layer -->
+          <div class="relative z-10">
+            <div class="container mx-auto px-2 sm:px-4 py-4 sm:py-8 md:py-24 min-h-screen">
+              <div class="neo-glass-panel rounded-lg p-3 sm:p-4 md:p-6 mb-4 sm:mb-6 md:mb-10 mt-0 pt-2 px-4 min-h-screen flex flex-col justify-start py-4">
+                
+                <!-- Hero Section -->
+                <div class="neo-glass-card rounded-lg p-3 sm:p-4 md:p-6 mb-4 sm:mb-6 text-center mb-12">
+                  <div class="space-y-6">
+                    <div class="flex items-center justify-center space-x-2 mb-4">
+                      <svg class="h-8 w-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
+                      </svg>
+                      <h1 class="text-4xl md:text-6xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">Brandentifier</h1>
+                      <svg class="h-8 w-8 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
+                      </svg>
+                    </div>
+                    
+                    <p class="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+                      AI-Powered Career Development Platform that transforms your professional journey with intelligent insights and personalized guidance
+                    </p>
+                    
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mt-8">
+                      <button onclick="window.location.href='/auth'" class="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-8 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 cursor-pointer">
+                        Get Started
+                        <svg class="ml-2 h-5 w-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5-5 5M6 12h12"></path>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Features Section -->
+                <div class="neo-glass-card rounded-lg p-3 sm:p-4 md:p-6 mb-4 sm:mb-6 mb-16">
+                  <h2 class="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-white">Platform Features</h2>
+                  
+                  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <!-- Career Clarity -->
+                    <div class="neo-glass-card p-6 rounded-lg transition-all duration-300 hover:scale-105">
+                      <div class="flex items-center mb-4">
+                        <svg class="h-8 w-8 text-blue-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                        </svg>
+                        <h3 class="text-xl font-semibold text-white">Career Clarity</h3>
+                      </div>
+                      <p class="text-gray-300 leading-relaxed">Confused about your next move? Get smart, personalized career advice instantly.</p>
+                    </div>
+
+                    <!-- AI Mentorship -->
+                    <div class="neo-glass-card p-6 rounded-lg transition-all duration-300 hover:scale-105">
+                      <div class="flex items-center mb-4">
+                        <svg class="h-8 w-8 text-purple-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                        </svg>
+                        <h3 class="text-xl font-semibold text-white">AI Mentorship</h3>
+                      </div>
+                      <p class="text-gray-300 leading-relaxed">Talk to AI mentors modeled after industry legends — anytime, anywhere.</p>
+                    </div>
+
+                    <!-- Smart Resume -->
+                    <div class="neo-glass-card p-6 rounded-lg transition-all duration-300 hover:scale-105">
+                      <div class="flex items-center mb-4">
+                        <svg class="h-8 w-8 text-green-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        <h3 class="text-xl font-semibold text-white">Smart Resume</h3>
+                      </div>
+                      <p class="text-gray-300 leading-relaxed">Upload your resume and get instant feedback, scoring, and styling tips.</p>
+                    </div>
+
+                    <!-- Skill Matching -->
+                    <div class="neo-glass-card p-6 rounded-lg transition-all duration-300 hover:scale-105">
+                      <div class="flex items-center mb-4">
+                        <svg class="h-8 w-8 text-yellow-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                        </svg>
+                        <h3 class="text-xl font-semibold text-white">Skill Matching</h3>
+                      </div>
+                      <p class="text-gray-300 leading-relaxed">Find out which skills you need to grow in your dream career path.</p>
+                    </div>
+
+                    <!-- Pro Network -->
+                    <div class="neo-glass-card p-6 rounded-lg transition-all duration-300 hover:scale-105">
+                      <div class="flex items-center mb-4">
+                        <svg class="h-8 w-8 text-pink-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                        </svg>
+                        <h3 class="text-xl font-semibold text-white">Pro Network</h3>
+                      </div>
+                      <p class="text-gray-300 leading-relaxed">Build a professional network that actually helps — not just connects.</p>
+                    </div>
+
+                    <!-- Portfolio Builder -->
+                    <div class="neo-glass-card p-6 rounded-lg transition-all duration-300 hover:scale-105">
+                      <div class="flex items-center mb-4">
+                        <svg class="h-8 w-8 text-cyan-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                        </svg>
+                        <h3 class="text-xl font-semibold text-white">Portfolio Builder</h3>
+                      </div>
+                      <p class="text-gray-300 leading-relaxed">Showcase your skills with real, categorized projects recruiters care about.</p>
+                    </div>
+
+                    <!-- Experience Tracker -->
+                    <div class="neo-glass-card p-6 rounded-lg transition-all duration-300 hover:scale-105">
+                      <div class="flex items-center mb-4">
+                        <svg class="h-8 w-8 text-orange-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 0V6a2 2 0 012-2h4a2 2 0 012 2v1M8 7h8m0 0a2 2 0 012 2v9a2 2 0 01-2 2H8a2 2 0 01-2-2v-9a2 2 0 012-2z"></path>
+                        </svg>
+                        <h3 class="text-xl font-semibold text-white">Experience Tracker</h3>
+                      </div>
+                      <p class="text-gray-300 leading-relaxed">Add internships, jobs, and learnings — everything that shapes your journey.</p>
+                    </div>
+
+                    <!-- Goal Planner -->
+                    <div class="neo-glass-card p-6 rounded-lg transition-all duration-300 hover:scale-105">
+                      <div class="flex items-center mb-4">
+                        <svg class="h-8 w-8 text-indigo-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+                        </svg>
+                        <h3 class="text-xl font-semibold text-white">Goal Planner</h3>
+                      </div>
+                      <p class="text-gray-300 leading-relaxed">Set milestones and track your progress toward your dream career destination.</p>
+                    </div>
+                  </div>
+                </div>
+                
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      console.log('✅ Original Brandentifier landing page loaded successfully');
+    }
   </script>
   
   <!-- Enhanced Service Worker + Performance Optimization -->
