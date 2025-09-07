@@ -1,51 +1,48 @@
 import { createRoot } from "react-dom/client";
-import { QueryClientProvider } from "@tanstack/react-query";
-import { queryClient } from "./lib/queryClient";
-import { Toaster } from "@/components/ui/toaster";
-import { AuthProvider } from "./context/simple-auth-context";
-import Landing from "@/pages/landing";
+import App from "./App";
+import SimpleApp from "./simple-app";
 import "./index.css";
 
-console.log('🚀 Main.tsx executing - loading Brandentifier app');
+// Initialize Firebase and other services
+import "./lib/firebase";
 
-// Remove loader immediately
+// Performance measurement
+const appStartTime = performance.now();
+console.log('[PERF] React app initialization started');
+
+// Remove HTML loader immediately when React app starts
 const loader = document.getElementById('app-loader');
 if (loader) {
-  loader.style.display = 'none';
-  console.log('✅ Skeleton loader removed');
+  loader.style.opacity = '0';
+  loader.style.transition = 'opacity 0.15s ease-out';
+  setTimeout(() => {
+    loader.style.display = 'none';
+    console.log('[PERF] Skeleton loader removed in', (performance.now() - appStartTime).toFixed(2), 'ms');
+  }, 150);
 }
 
-function App() {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <div>
-          <Landing />
-          <Toaster />
-        </div>
-      </AuthProvider>
-    </QueryClientProvider>
-  );
-}
+// Check if we should use the simple app or the full app
+const useSimpleApp = false; // Set to true for testing
 
-// Mount the React app
-try {
-  const root = createRoot(document.getElementById("root")!);
-  root.render(<App />);
-  console.log('✅ Brandentifier app mounted successfully');
-} catch (error) {
-  console.error('❌ Error mounting app:', error);
+// Progressive rendering - start with critical components
+const renderApp = () => {
+  const renderStartTime = performance.now();
+  console.log('[PERF] React rendering started');
   
-  // Fallback display if React fails
-  const rootEl = document.getElementById("root");
-  if (rootEl) {
-    rootEl.innerHTML = `
-      <div style="padding: 40px; background: #dc3545; color: white; text-align: center;">
-        <h1>App Loading Error</h1>
-        <p>There was an issue loading the Brandentifier app.</p>
-        <p>Error: ${error}</p>
-        <button onclick="location.reload()" style="padding: 10px 20px; margin-top: 20px;">Reload Page</button>
-      </div>
-    `;
-  }
+  createRoot(document.getElementById("root")!).render(
+    useSimpleApp ? <SimpleApp /> : <App />
+  );
+  
+  // Report rendering time after React has mounted
+  setTimeout(() => {
+    console.log('[PERF] React app rendered in', (performance.now() - renderStartTime).toFixed(2), 'ms');
+    console.log('[PERF] Total initialization time:', (performance.now() - appStartTime).toFixed(2), 'ms');
+  }, 0);
+};
+
+// Optimize rendering timing
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', renderApp);
+} else {
+  renderApp();
 }
