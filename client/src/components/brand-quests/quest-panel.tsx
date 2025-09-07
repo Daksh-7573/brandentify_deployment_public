@@ -10,7 +10,7 @@ import {
   getCurrentYear
 } from '@/hooks/use-career-quests'; // We'll keep using the same hooks for now
 import { QuestCard } from './quest-card';
-import { SocialQuestInterface } from './social-quest-interface';
+import { SocialQuestInterfaceV2 } from './social-quest-interface-v2';
 import { cn } from '@/lib/utils';
 
 interface QuestPanelProps {
@@ -210,7 +210,7 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
             <p className="text-yellow-300 font-bold text-lg">🚀 NUCLEAR CACHE CLEAR TEST - NEW BUILD DETECTED!</p>
             <p className="text-yellow-200">If you see this, the new component is loading! userId={userId}</p>
           </div>
-          <SocialQuestInterface userId={userId} />
+          <SocialQuestInterfaceV2 userId={userId} />
         </TabsContent>
       </Tabs>
     </div>
