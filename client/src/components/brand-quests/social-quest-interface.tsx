@@ -93,8 +93,8 @@ export function SocialQuestInterface({ userId, className }: SocialQuestInterface
   return (
     <div className={className}>
       <div className="mb-4">
-        <h2 className="text-xl font-semibold text-white mb-1">Social Quests</h2>
-        <p className="text-white/70 text-sm">AI-powered cross-platform engagement tasks</p>
+        <h2 className="text-xl font-semibold text-white mb-1">✨ NEW Social Quests ✨</h2>
+        <p className="text-white/70 text-sm">🔥 Brand new 3-tab weekly progression system - NO Generate Tasks button!</p>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
