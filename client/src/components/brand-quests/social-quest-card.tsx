@@ -29,17 +29,20 @@ interface SocialQuestTask {
 
 interface SocialQuestCardProps {
   quest: SocialQuestTask;
-  userId: number;
+  userId?: number;
+  onComplete?: (questId: number) => void;
+  showCompletedDate?: boolean;
+  showMissedStatus?: boolean;
 }
 
-export function SocialQuestCard({ quest, userId }: SocialQuestCardProps) {
+export function SocialQuestCard({ quest, userId, onComplete, showCompletedDate, showMissedStatus }: SocialQuestCardProps) {
   const { toast } = useToast();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const completeMutation = useCompleteSocialQuest();
   const platformGuidance = usePlatformGuidance();
   
   // Add defensive checks
-  if (!quest || !quest.platform || !userId) {
+  if (!quest || !quest.platform) {
     return null;
   }
   
@@ -55,24 +58,42 @@ export function SocialQuestCard({ quest, userId }: SocialQuestCardProps) {
   };
   
   const handleComplete = () => {
-    completeMutation.mutate({
-      questId: quest.id,
-      userId: userId
-    }, {
-      onSuccess: () => {
-        toast({
-          title: 'Social Quest completed!',
-          description: `You've completed "${quest.title}" and earned ${quest.xpReward} XP!`,
-        });
-        setConfirmOpen(false);
-      },
-      onError: (error) => {
-        toast({
-          title: 'Error',
-          description: `Failed to complete quest: ${error.message}`,
-          variant: 'destructive',
-        });
-      }
+    if (onComplete) {
+      // Use the provided onComplete handler
+      onComplete(quest.id);
+      setConfirmOpen(false);
+    } else if (userId) {
+      // Fallback to internal completion logic
+      completeMutation.mutate({
+        questId: quest.id,
+        userId: userId
+      }, {
+        onSuccess: () => {
+          toast({
+            title: 'Social Quest completed!',
+            description: `You've completed "${quest.title}" and earned ${quest.xpReward} XP!`,
+          });
+          setConfirmOpen(false);
+        },
+        onError: (error) => {
+          toast({
+            title: 'Error',
+            description: `Failed to complete quest: ${error.message}`,
+            variant: 'destructive',
+          });
+        }
+      });
+    }
+  };
+
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { 
+      month: 'short', 
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
     });
   };
 
@@ -113,15 +134,29 @@ export function SocialQuestCard({ quest, userId }: SocialQuestCardProps) {
           </div>
         </div>
         
-        <Badge 
-          className={
-            isComplete ? "bg-green-500/20 text-green-300 border-green-500/30" : 
-            isExpired ? "bg-red-500/20 text-red-300 border-red-500/30" : 
-            "bg-blue-500/20 text-blue-300 border-blue-500/30"
-          }
-        >
-          {isComplete ? '✓ Complete' : isExpired ? '⏰ Expired' : '🔥 Active'}
-        </Badge>
+        <div className="flex flex-col items-end gap-1">
+          <Badge 
+            className={
+              isComplete ? "bg-green-500/20 text-green-300 border-green-500/30" : 
+              isExpired ? "bg-red-500/20 text-red-300 border-red-500/30" : 
+              "bg-blue-500/20 text-blue-300 border-blue-500/30"
+            }
+          >
+            {isComplete ? '✓ Complete' : isExpired ? '⏰ Expired' : '🔥 Active'}
+          </Badge>
+          
+          {showCompletedDate && quest.completedAt && (
+            <div className="text-xs text-green-400/70">
+              Completed {formatDate(quest.completedAt)}
+            </div>
+          )}
+          
+          {showMissedStatus && isExpired && quest.assignedAt && (
+            <div className="text-xs text-red-400/70">
+              Expired {formatDate(quest.assignedAt)}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Quest Description */}
