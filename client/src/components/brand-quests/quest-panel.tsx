@@ -274,17 +274,17 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
           {(() => { console.log('🔥🔥🔥 SOCIAL QUEST TAB CONTENT RENDERING! 🔥🔥🔥'); return null; })()}
           {(() => { console.log('✅ The 3 sub-tabs should be visible below this!'); return null; })()}
           <Tabs defaultValue="weekly" value={socialQuestTabValue} onValueChange={setSocialQuestTabValue}>
-            <TabsList className="grid grid-cols-3 mb-3 sm:mb-4 dark-tabs-list border border-white/5 w-full h-auto">
-              <TabsTrigger value="weekly" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-1 sm:px-2 text-xs sm:text-sm">
-                <span className="text-center">Weekly</span>
+            <TabsList className="grid grid-cols-3 mb-3 sm:mb-4 bg-white/20 border-2 border-yellow-400 p-2 rounded-lg w-full h-auto">
+              <TabsTrigger value="weekly" className="bg-blue-500 text-white p-2 rounded font-bold flex flex-col sm:flex-row items-center gap-1 sm:gap-2 text-xs sm:text-sm">
+                <span className="text-center">📅 Weekly</span>
                 <span className="text-xs">({socialQuests?.length || 0})</span>
               </TabsTrigger>
-              <TabsTrigger value="completed" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-1 sm:px-2 text-xs sm:text-sm">
-                <span className="text-center">Completed</span>
+              <TabsTrigger value="completed" className="bg-green-500 text-white p-2 rounded font-bold flex flex-col sm:flex-row items-center gap-1 sm:gap-2 text-xs sm:text-sm">
+                <span className="text-center">✅ Completed</span>
                 <span className="text-xs">({completedSocialQuests.length})</span>
               </TabsTrigger>
-              <TabsTrigger value="expired" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-1 sm:px-2 text-xs sm:text-sm">
-                <span className="text-center">Missed</span>
+              <TabsTrigger value="expired" className="bg-red-500 text-white p-2 rounded font-bold flex flex-col sm:flex-row items-center gap-1 sm:gap-2 text-xs sm:text-sm">
+                <span className="text-center">❌ Missed</span>
                 <span className="text-xs">({expiredSocialQuests.length})</span>
               </TabsTrigger>
             </TabsList>
