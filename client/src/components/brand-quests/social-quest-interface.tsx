@@ -196,7 +196,6 @@ export function SocialQuestInterface({ userId, className }: SocialQuestInterface
                   key={quest.id || index} 
                   quest={quest}
                   userId={userId!}
-                  showExpiredDate={true}
                 />
               ))}
             </div>
