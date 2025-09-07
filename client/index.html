@@ -420,17 +420,8 @@
   
   <!-- Enhanced loader removal with smooth transition -->
   <script>
-    // Wait for React to load - let main.tsx handle loader removal
-    console.log('[HTML] DOM loaded, waiting for React app to take over...');
-    
-    // Backup loader removal - if React hasn't loaded after 5 seconds, show fallback
-    setTimeout(function() {
-      var loader = document.getElementById('app-loader');
-      if (loader && loader.style.display !== 'none') {
-        console.log('[HTML] React did not load - showing fallback message');
-        loader.innerHTML = '<div style="padding: 40px; text-align: center; color: white;"><h1>Loading Issue Detected</h1><p>React app is not loading. Please refresh the page.</p></div>';
-      }
-    }, 5000);
+    // App will load via vanilla JavaScript - no fallbacks needed
+    console.log('[HTML] Brandentifier app will load via embedded JavaScript');
   </script>
 </body>
 </html>
