@@ -2,7 +2,7 @@ import express, { Request, Response, NextFunction } from "express";
 import path from "path";
 import * as fileUpload from "express-fileupload";
 import { registerRoutes } from "./routes";
-import { setupVite, serveStatic, log } from "./vite-mock";
+import { setupVite, log } from "./vite";
 import { questProgressMiddleware } from "./middleware/quest-progress-tracker";
 import { setupSecurity, validateFileUpload } from "./security";
 import { setupInfrastructureSecurity } from "./infrastructure-security";
