@@ -13,9 +13,9 @@ const isDevelopment =
   currentHostname.includes('replit.app');
 
 // Check environment variables and log configuration status
-const apiKey = import.meta.env.VITE_FIREBASE_API_KEY;
-const projectId = import.meta.env.VITE_FIREBASE_PROJECT_ID;
-const appId = import.meta.env.VITE_FIREBASE_APP_ID;
+const apiKey = (import.meta as any).env?.VITE_FIREBASE_API_KEY;
+const projectId = (import.meta as any).env?.VITE_FIREBASE_PROJECT_ID;
+const appId = (import.meta as any).env?.VITE_FIREBASE_APP_ID;
 
 // Debug environment variables
 console.log("Firebase Environment Check:", {
@@ -23,9 +23,9 @@ console.log("Firebase Environment Check:", {
   projectId: projectId || 'Missing',
   appId: appId ? `Present (${appId.length} chars)` : 'Missing',
   envVarsDetected: {
-    VITE_FIREBASE_API_KEY: !!import.meta.env.VITE_FIREBASE_API_KEY,
-    VITE_FIREBASE_PROJECT_ID: !!import.meta.env.VITE_FIREBASE_PROJECT_ID,
-    VITE_FIREBASE_APP_ID: !!import.meta.env.VITE_FIREBASE_APP_ID
+    VITE_FIREBASE_API_KEY: !!(import.meta as any).env?.VITE_FIREBASE_API_KEY,
+    VITE_FIREBASE_PROJECT_ID: !!(import.meta as any).env?.VITE_FIREBASE_PROJECT_ID,
+    VITE_FIREBASE_APP_ID: !!(import.meta as any).env?.VITE_FIREBASE_APP_ID
   }
 });
 
