@@ -299,31 +299,34 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
             
             {/* Weekly Social Quests Tab */}
             <TabsContent value="weekly" className="space-y-3 sm:space-y-4">
-              <div className="flex justify-between items-center mb-2">
-                <div className="text-xs sm:text-sm text-white/70">
-                  Week {currentWeek}, {currentYear} - AI-powered external platform tasks
-                </div>
-                <Button
-                  onClick={handleGenerateSocialQuests}
-                  disabled={generateSocialQuestsMutation.isPending || !userId}
-                  size="sm"
-                  className="text-xs bg-blue-600 hover:bg-blue-700 px-2 sm:px-3"
-                >
-                  {generateSocialQuestsMutation.isPending ? 'Generating...' : 'Generate Quests'}
-                </Button>
+              <div className="text-xs sm:text-sm text-white/70 mb-2">
+                Week {currentWeek}, {currentYear} - AI-powered external platform tasks
               </div>
               
-              {isLoadingWeeklySocial ? (
+              {isLoadingWeeklySocial || generateSocialQuestsMutation.isPending ? (
                 <div className="space-y-2 sm:space-y-3">
+                  <Skeleton className="h-32 sm:h-36 w-full rounded-md bg-gray-800/60" />
                   <Skeleton className="h-32 sm:h-36 w-full rounded-md bg-gray-800/60" />
                   <Skeleton className="h-32 sm:h-36 w-full rounded-md bg-gray-800/60" />
                 </div>
               ) : !weeklySocialQuests || weeklySocialQuests.length === 0 ? (
                 <div className="text-center py-6 sm:py-8">
-                  <h3 className="text-lg font-medium text-white">No Weekly Social Quests</h3>
-                  <p className="text-white/70 mt-2 text-sm">
-                    Generate personalized tasks to build your cross-platform presence
-                  </p>
+                  <div className="space-y-3">
+                    <h3 className="text-lg font-medium text-white">Generating Your Weekly Social Quests</h3>
+                    <p className="text-white/70 text-sm">
+                      AI is creating personalized tasks to build your cross-platform presence...
+                    </p>
+                    <div className="flex justify-center">
+                      <Button
+                        onClick={handleGenerateSocialQuests}
+                        disabled={generateSocialQuestsMutation.isPending}
+                        size="sm"
+                        className="text-xs bg-blue-600 hover:bg-blue-700"
+                      >
+                        {generateSocialQuestsMutation.isPending ? 'Generating...' : 'Generate Weekly Quests'}
+                      </Button>
+                    </div>
+                  </div>
                 </div>
               ) : (
                 <div className="space-y-3 sm:space-y-4 mt-4">
