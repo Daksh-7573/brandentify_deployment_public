@@ -157,7 +157,36 @@ export default function setupSocialQuestRoutes(app: Express) {
     }
   });
 
-  // REMOVED: Old endpoint that was showing 4 tasks - replaced with /weekly, /completed, /missed
+  // TEMPORARY: Add old endpoint back but return empty data to fix caching issues
+  app.get('/api/social-quests/user/:userId', async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      
+      if (!userId) {
+        return res.status(400).json({
+          success: false,
+          error: 'Invalid user ID'
+        });
+      }
+
+      // Return empty data to break the old 4-task system
+      res.json({
+        success: true,
+        quests: [], // Empty - forces use of new 3-tab system
+        pagination: {
+          page: 1,
+          limit: 20,
+          hasMore: false
+        }
+      });
+    } catch (error) {
+      console.error('[Social Quests API] Error in old endpoint:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Endpoint deprecated - use /weekly, /completed, /missed endpoints'
+      });
+    }
+  });
 
   /**
    * Update Social Quest progress
