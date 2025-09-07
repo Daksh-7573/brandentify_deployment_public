@@ -174,73 +174,153 @@
   </style>
   
   <div id="root"></div>
-  <!-- Temporarily disable module loading to fix MIME type issues -->
+  <!-- Alternative loading approach to bypass MIME type issues -->
   <script>
-    // Basic app loading without ES modules
-    console.log('Loading Brandentifier without modules...');
+    console.log('Loading with alternative approach...');
     
     // Remove skeleton loader
     const loader = document.getElementById('app-loader');
     if (loader) {
-      loader.style.display = 'none';
+      setTimeout(() => {
+        loader.style.display = 'none';
+        console.log('Skeleton removed');
+      }, 100);
     }
     
-    // Create basic working interface
-    const root = document.getElementById('root');
-    if (root) {
-      root.innerHTML = `
-        <div style="
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-          min-height: 100vh;
-          padding: 40px;
-          text-align: center;
-          background: linear-gradient(135deg, rgba(17, 24, 39, 0.9) 0%, rgba(0, 0, 0, 0.8) 50%, rgba(31, 41, 55, 0.9) 100%);
-          color: white;
-          font-family: 'Inter', Arial, sans-serif;
-        ">
-          <div style="background: rgba(255,255,255,0.1); border-radius: 20px; padding: 40px; max-width: 600px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);">
-            <h1 style="font-size: 3rem; margin-bottom: 20px; background: linear-gradient(45deg, #4f46e5, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">🚀 Brandentifier</h1>
-            <h2 style="font-size: 1.5rem; margin-bottom: 20px; color: #e5e7eb;">AI-Powered Career Development Platform</h2>
-            <p style="font-size: 1.1rem; margin-bottom: 30px; color: #d1d5db; line-height: 1.6;">Your professional networking and career growth platform is now successfully loading!</p>
-            
-            <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-bottom: 30px;">
-              <button onclick="alert('Brandentifier features will be fully restored once we fix the module loading issue!')" style="
-                padding: 12px 24px;
-                background: linear-gradient(45deg, #4f46e5, #7c3aed);
-                color: white;
-                border: none;
-                border-radius: 10px;
-                cursor: pointer;
-                font-size: 1rem;
-                font-weight: 600;
-                transition: all 0.3s ease;
-              ">Professional Network</button>
-              
-              <button onclick="alert('AI Career Assistant ready to help with your professional growth!')" style="
-                padding: 12px 24px;
-                background: linear-gradient(45deg, #06b6d4, #0891b2);
-                color: white;
-                border: none;
-                border-radius: 10px;
-                cursor: pointer;
-                font-size: 1rem;
-                font-weight: 600;
-                transition: all 0.3s ease;
-              ">AI Assistant</button>
-            </div>
-            
-            <div style="background: rgba(34, 197, 94, 0.1); border-radius: 10px; padding: 20px; border: 1px solid rgba(34, 197, 94, 0.3);">
-              <p style="color: #4ade80; font-weight: 600; margin: 0;">✅ Application Status: RESOLVED</p>
-              <p style="color: #d1d5db; margin: 5px 0 0 0; font-size: 0.9rem;">The blank dark page issue has been successfully fixed!</p>
-            </div>
-          </div>
-        </div>
-      `;
-      console.log('✅ Brandentifier basic interface loaded successfully');
-    }
+    // Load React and ReactDOM from CDN to bypass module issues
+    const loadScript = (src, callback) => {
+      const script = document.createElement('script');
+      script.src = src;
+      script.onload = callback;
+      script.onerror = () => console.error('Failed to load:', src);
+      document.head.appendChild(script);
+    };
+    
+    // Load React dependencies
+    loadScript('https://unpkg.com/react@18/umd/react.production.min.js', () => {
+      loadScript('https://unpkg.com/react-dom@18/umd/react-dom.production.min.js', () => {
+        console.log('React and ReactDOM loaded from CDN');
+        
+        // Create basic landing page interface
+        const { createElement: e, useState, useEffect } = React;
+        const { createRoot } = ReactDOM;
+        
+        function BrandentifierApp() {
+          return e('div', {
+            style: {
+              minHeight: '100vh',
+              background: 'linear-gradient(135deg, rgba(17, 24, 39, 0.9) 0%, rgba(0, 0, 0, 0.8) 50%, rgba(31, 41, 55, 0.9) 100%)',
+              color: 'white',
+              fontFamily: 'Inter, Arial, sans-serif',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '20px',
+              textAlign: 'center'
+            }
+          }, [
+            e('div', {
+              key: 'hero',
+              style: {
+                background: 'rgba(255,255,255,0.1)',
+                borderRadius: '20px',
+                padding: '40px',
+                maxWidth: '800px',
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255,255,255,0.2)'
+              }
+            }, [
+              e('h1', {
+                key: 'title',
+                style: {
+                  fontSize: '3rem',
+                  marginBottom: '20px',
+                  background: 'linear-gradient(45deg, #4f46e5, #06b6d4)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  fontWeight: 'bold'
+                }
+              }, '✨ Brandentifier'),
+              e('p', {
+                key: 'subtitle',
+                style: {
+                  fontSize: '1.2rem',
+                  marginBottom: '20px',
+                  color: '#e5e7eb',
+                  lineHeight: '1.6'
+                }
+              }, 'AI-Powered Career Development Platform that transforms your professional journey with intelligent insights and personalized guidance'),
+              e('div', {
+                key: 'buttons',
+                style: {
+                  display: 'flex',
+                  gap: '15px',
+                  justifyContent: 'center',
+                  flexWrap: 'wrap',
+                  marginTop: '30px'
+                }
+              }, [
+                e('button', {
+                  key: 'auth',
+                  onClick: () => alert('Authentication will be restored once we fix the module loading!'),
+                  style: {
+                    padding: '12px 24px',
+                    background: 'linear-gradient(45deg, #4f46e5, #7c3aed)',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '10px',
+                    cursor: 'pointer',
+                    fontSize: '1rem',
+                    fontWeight: '600'
+                  }
+                }, 'Get Started'),
+                e('button', {
+                  key: 'demo',
+                  onClick: () => alert('Full platform features coming soon!'),
+                  style: {
+                    padding: '12px 24px',
+                    background: 'linear-gradient(45deg, #06b6d4, #0891b2)',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '10px',
+                    cursor: 'pointer',
+                    fontSize: '1rem',
+                    fontWeight: '600'
+                  }
+                }, 'View Features')
+              ]),
+              e('div', {
+                key: 'status',
+                style: {
+                  marginTop: '30px',
+                  padding: '15px',
+                  background: 'rgba(59, 130, 246, 0.1)',
+                  borderRadius: '10px',
+                  border: '1px solid rgba(59, 130, 246, 0.3)'
+                }
+              }, [
+                e('p', {
+                  key: 'status-text',
+                  style: {
+                    color: '#60a5fa',
+                    fontWeight: '600',
+                    margin: '0'
+                  }
+                }, '🔧 Working on restoring full functionality')
+              ])
+            ])
+          ]);
+        }
+        
+        // Mount the app
+        const root = document.getElementById('root');
+        if (root) {
+          createRoot(root).render(e(BrandentifierApp));
+          console.log('Brandentifier loaded with CDN React');
+        }
+      });
+    });
   </script>
   
   <!-- Enhanced Service Worker + Performance Optimization -->
