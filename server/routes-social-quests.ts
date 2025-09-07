@@ -157,44 +157,7 @@ export default function setupSocialQuestRoutes(app: Express) {
     }
   });
 
-  /**
-   * Get all Social Quests for a user with pagination
-   * GET /api/social-quests/user/:userId
-   */
-  app.get('/api/social-quests/user/:userId', async (req: Request, res: Response) => {
-    try {
-      const userId = parseInt(req.params.userId);
-      const page = parseInt(req.query.page as string) || 1;
-      const limit = parseInt(req.query.limit as string) || 20;
-      const platform = req.query.platform as string;
-
-      if (!userId) {
-        return res.status(400).json({
-          success: false,
-          error: 'Invalid user ID'
-        });
-      }
-
-      const socialQuests = await getUserSocialQuests(userId, page, limit, platform);
-
-      res.status(200).json({
-        success: true,
-        quests: socialQuests,
-        pagination: {
-          page: page,
-          limit: limit,
-          hasMore: socialQuests.length === limit
-        }
-      });
-
-    } catch (error) {
-      console.error('[Social Quests API] Error fetching user quests:', error);
-      res.status(500).json({
-        success: false,
-        error: 'Failed to fetch user Social Quests'
-      });
-    }
-  });
+  // REMOVED: Old endpoint that was showing 4 tasks - replaced with /weekly, /completed, /missed
 
   /**
    * Update Social Quest progress
