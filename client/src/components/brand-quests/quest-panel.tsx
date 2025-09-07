@@ -10,7 +10,6 @@ import {
   getCurrentYear
 } from '@/hooks/use-career-quests'; // We'll keep using the same hooks for now
 import { 
-  useSocialQuests, 
   useGenerateSocialQuests,
   useWeeklySocialQuests,
   useCompletedSocialQuests,
@@ -48,13 +47,7 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
     refetch: refetchAll
   } = useUserQuestsWithDefinitions(userId);
 
-  // Social Quests integration
-  const {
-    data: socialQuests,
-    isLoading: isLoadingSocial,
-    error: socialError,
-    refetch: refetchSocial
-  } = useSocialQuests(userId, currentWeek, currentYear);
+  // Social Quests integration (old hook removed - using new weekly/completed/missed hooks)
   
   // New Social Quest hooks for Weekly/Completed/Missed
   const {
@@ -87,11 +80,11 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
     const refetchInterval = setInterval(() => {
       refetchWeekly();
       refetchAll();
-      refetchSocial();
+      refetchWeeklySocial();
     }, 60000); // Refetch every minute
     
     return () => clearInterval(refetchInterval);
-  }, [refetchWeekly, refetchAll, refetchSocial]);
+  }, [refetchWeekly, refetchAll, refetchWeeklySocial]);
   
   useEffect(() => {
     if (weeklyError) {
