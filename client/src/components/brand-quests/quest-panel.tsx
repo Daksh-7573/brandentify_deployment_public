@@ -10,7 +10,6 @@ import {
   getCurrentYear
 } from '@/hooks/use-career-quests'; // We'll keep using the same hooks for now
 import { QuestCard } from './quest-card';
-import { SocialQuestInterfaceV2 } from './social-quest-interface-v2';
 import { cn } from '@/lib/utils';
 
 interface QuestPanelProps {
@@ -42,13 +41,13 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
   // Removed XP progress functionality since it's now in the parent component
 
   useEffect(() => {
-    // Clear all social quest caches on mount to ensure fresh data
+    // Cache clearing for quest data
     if (userId) {
-      // Clear any stale social quest cache
+      // Clear any stale quest cache
       const queryClient = (window as any).queryClient;
       if (queryClient) {
-        queryClient.removeQueries({ queryKey: ['social-quests'] });
-        queryClient.invalidateQueries({ queryKey: ['social-quests'] });
+        queryClient.removeQueries({ queryKey: ['career-quests'] });
+        queryClient.invalidateQueries({ queryKey: ['career-quests'] });
       }
     }
     
@@ -143,20 +142,11 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
         <p className="text-white/70 text-xs sm:text-sm">Complete quests to increase your influence</p>
       </div>
       
-      {/* Main Level Tabs: Brand Quests | Social Quests */}
-      <Tabs defaultValue="brand-quests" value={mainTabValue} onValueChange={setMainTabValue}>
-        <TabsList className="grid grid-cols-2 mb-3 sm:mb-4 dark-tabs-list border border-white/5 w-full h-auto">
-          <TabsTrigger value="brand-quests" className="dark-tabs-trigger flex items-center gap-2 py-2 px-3 text-sm">
-            <span>Brand Quests</span>
-            <span className="text-xs">({(weeklyQuests?.length || 0) + completedQuests.length + expiredQuests.length})</span>
-          </TabsTrigger>
-          <TabsTrigger value="social-quests" className="dark-tabs-trigger flex items-center gap-2 py-2 px-3 text-sm">
-            <span>Social Quests</span>
-          </TabsTrigger>
-        </TabsList>
+      {/* Career Quests - Single tab system */}
+      <div>
 
-        {/* Brand Quests Tab Content */}
-        <TabsContent value="brand-quests" className="space-y-3 sm:space-y-4">
+        {/* Career Quests Content */}
+        <div className="space-y-3 sm:space-y-4">
           {isLoadingWeekly ? (
             <div className="space-y-2 sm:space-y-3">
               <Skeleton className="h-20 sm:h-24 w-full rounded-md bg-gray-800/60" />
@@ -202,17 +192,8 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
               </TabsContent>
             </Tabs>
           )}
-        </TabsContent>
-
-        {/* Social Quests Tab Content */}
-        <TabsContent value="social-quests" className="space-y-3 sm:space-y-4">
-          <div className="bg-yellow-500/20 border-2 border-yellow-400 p-6 rounded-lg mb-4">
-            <p className="text-yellow-300 font-bold text-lg">🚀 NUCLEAR CACHE CLEAR TEST - NEW BUILD DETECTED!</p>
-            <p className="text-yellow-200">If you see this, the new component is loading! userId={userId}</p>
-          </div>
-          <SocialQuestInterfaceV2 userId={userId} />
-        </TabsContent>
-      </Tabs>
+        </div>
+      </div>
     </div>
   );
 }

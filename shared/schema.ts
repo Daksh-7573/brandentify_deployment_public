@@ -1011,7 +1011,7 @@ export const questTypeEnum = pgEnum("quest_type", [
   "portfolio",
   "resume",
   "visibility",
-  "social_quest" // New type for Social Quests
+  "content_creation" // Content creation quests
 ]);
 
 // Quest status enum (simplified)
@@ -1157,67 +1157,7 @@ export type InsertUserBadge = z.infer<typeof insertUserBadgeSchema>;
 export type XpTransaction = typeof xpTransactions.$inferSelect;
 export type InsertXpTransaction = z.infer<typeof insertXpTransactionSchema>;
 
-// Social Quests Extension - Platform-specific quest management
-// Social platform enum for targeting specific platforms
-export const socialPlatformEnum = pgEnum("social_platform", [
-  "brandentifier", // Primary focus - internal platform
-  "linkedin",      // Secondary platform
-  "instagram",     // Visual content platform
-  "twitter",       // Micro-blogging platform
-  "youtube",       // Video content platform
-  "tiktok",        // Short-form video platform
-  "facebook"       // General social platform
-]);
-
-// Social Quest definitions - extends regular quests with platform-specific data
-export const socialQuestDefinitions = pgTable("social_quest_definitions", {
-  id: serial("id").primaryKey(),
-  questDefinitionId: integer("quest_definition_id").references(() => questDefinitions.id).notNull(),
-  targetPlatform: socialPlatformEnum("target_platform").notNull(),
-  platformPriority: integer("platform_priority").notNull().default(1), // 1=primary, 2=secondary, 3=tertiary
-  contentTemplate: text("content_template"), // Template for AI-generated content
-  platformSpecificData: jsonb("platform_specific_data").default('{}'), // Platform-specific metadata
-  aiGenerationPrompt: text("ai_generation_prompt"), // Prompt for AI task generation
-  requiredIndustries: jsonb("required_industries").default('[]'), // Industries this quest applies to
-  requiredDomains: jsonb("required_domains").default('[]'), // Domains this quest applies to
-  isAiGenerated: boolean("is_ai_generated").default(true), // Whether this quest uses AI generation
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow()
-});
-
-// User Social Quest assignments - tracks user-specific platform recommendations and progress
-export const userSocialQuests = pgTable("user_social_quests", {
-  id: serial("id").primaryKey(),
-  userQuestId: integer("user_quest_id").references(() => userQuests.id).notNull(),
-  socialQuestDefinitionId: integer("social_quest_definition_id").references(() => socialQuestDefinitions.id).notNull(),
-  aiGeneratedContent: text("ai_generated_content"), // AI-generated task content specific to user
-  platformRecommendationReason: text("platform_recommendation_reason"), // Why this platform was recommended
-  userFeedbackRating: integer("user_feedback_rating"), // 1-5 user rating of task relevance
-  platformEngagementGoal: integer("platform_engagement_goal"), // Target engagement for this quest
-  actualPlatformEngagement: integer("actual_platform_engagement").default(0), // Actual engagement achieved
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow()
-});
-
-// Insert schemas for Social Quests
-export const insertSocialQuestDefinitionSchema = createInsertSchema(socialQuestDefinitions).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true
-});
-
-export const insertUserSocialQuestSchema = createInsertSchema(userSocialQuests).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true
-});
-
-// Export types for Social Quests
-export type SocialQuestDefinition = typeof socialQuestDefinitions.$inferSelect;
-export type InsertSocialQuestDefinition = z.infer<typeof insertSocialQuestDefinitionSchema>;
-
-export type UserSocialQuest = typeof userSocialQuests.$inferSelect;
-export type InsertUserSocialQuest = z.infer<typeof insertUserSocialQuestSchema>;
+// Social Quest functionality removed
 
 // Brand of the Day model - for storing and tracking featured profiles
 export const brandsOfTheDay = pgTable("brands_of_the_day", {
@@ -1507,7 +1447,7 @@ export const platformIntelligence = pgTable("platform_intelligence", {
   id: serial("id").primaryKey(),
   industry: text("industry").notNull(),
   domain: text("domain"),
-  platform: socialPlatformEnum("platform").notNull(),
+  platform: text("platform").notNull(),
   effectivenessScore: decimal("effectiveness_score", { precision: 3, scale: 2 }).notNull(), // 0.00 - 1.00
   audienceSize: integer("audience_size"), // Estimated audience size for this industry-platform combo
   engagementRate: decimal("engagement_rate", { precision: 3, scale: 2 }), // Average engagement rate
@@ -1523,7 +1463,7 @@ export const platformIntelligence = pgTable("platform_intelligence", {
 export const userPlatformPreferences = pgTable("user_platform_preferences", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id).notNull(),
-  platform: socialPlatformEnum("platform").notNull(),
+  platform: text("platform").notNull(),
   preferenceScore: decimal("preference_score", { precision: 3, scale: 2 }).notNull(), // User's preference for this platform
   isActive: boolean("is_active").default(true), // Whether user wants quests for this platform
   experienceLevel: text("experience_level").default("beginner"), // beginner, intermediate, advanced
@@ -1541,8 +1481,8 @@ export const userPlatformPreferences = pgTable("user_platform_preferences", {
 export const platformAnalytics = pgTable("platform_analytics", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id).notNull(),
-  platform: socialPlatformEnum("platform").notNull(),
-  questId: integer("quest_id").references(() => userSocialQuests.id),
+  platform: text("platform").notNull(),
+  questId: integer("quest_id").references(() => userQuests.id),
   engagementMetrics: jsonb("engagement_metrics").default('{}'), // likes, shares, comments, etc.
   completionRate: decimal("completion_rate", { precision: 3, scale: 2 }), // How often user completes quests
   timeToComplete: integer("time_to_complete"), // Average time to complete quests (minutes)
@@ -1560,7 +1500,7 @@ export const goalPlatformStrategies = pgTable("goal_platform_strategies", {
   id: serial("id").primaryKey(),
   userGoal: text("user_goal").notNull(), // career_advice, job_opportunities, networking, thought_leadership, business_growth
   targetAudience: text("target_audience").notNull(), // professionals, executives, entrepreneurs, creatives, technical
-  platform: socialPlatformEnum("platform").notNull(),
+  platform: text("platform").notNull(),
   priorityScore: decimal("priority_score", { precision: 3, scale: 2 }).notNull(), // How important this platform is for this goal
   strategyDescription: text("strategy_description").notNull(), // What strategy to use on this platform
   contentFocus: jsonb("content_focus").default('[]'), // Types of content to focus on

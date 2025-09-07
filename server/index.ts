@@ -1,4 +1,4 @@
-import express, { type Request, Response, NextFunction } from "express";
+import express, { Request, Response, NextFunction } from "express";
 import path from "path";
 import * as fileUpload from "express-fileupload";
 import { registerRoutes } from "./routes";
@@ -427,9 +427,9 @@ console.log("Musk Pulse automation system started - scheduling pulses for 9 AM, 
   // setting up all the other routes so the catch-all route
   // doesn't interfere with the other routes
   if (app.get("env") === "development") {
-    await setupVite(app, server);
+    await setupVite();
   } else {
-    serveStatic(app);
+    serveStatic();
   }
 
   // ALWAYS serve the app on port 5000
