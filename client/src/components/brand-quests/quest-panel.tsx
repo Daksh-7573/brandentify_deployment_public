@@ -55,13 +55,10 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
     const refetchInterval = setInterval(() => {
       refetchWeekly();
       refetchAll();
-      refetchWeeklySocial();
-      refetchCompletedSocial();
-      refetchMissedSocial();
     }, 60000); // Refetch every minute
     
     return () => clearInterval(refetchInterval);
-  }, [userId, refetchWeekly, refetchAll, refetchWeeklySocial, refetchCompletedSocial, refetchMissedSocial]);
+  }, [userId, refetchWeekly, refetchAll]);
   
   useEffect(() => {
     if (weeklyError) {
@@ -155,7 +152,6 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
           </TabsTrigger>
           <TabsTrigger value="social-quests" className="dark-tabs-trigger flex items-center gap-2 py-2 px-3 text-sm">
             <span>Social Quests</span>
-            <span className="text-xs">({(weeklySocialQuests?.length || 0) + (completedSocialQuestsData?.quests?.length || 0) + (missedSocialQuestsData?.quests?.length || 0)})</span>
           </TabsTrigger>
         </TabsList>
 
