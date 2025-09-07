@@ -10,7 +10,6 @@ import {
   getCurrentYear
 } from '@/hooks/use-career-quests'; // We'll keep using the same hooks for now
 import { 
-  useGenerateSocialQuests,
   useWeeklySocialQuests,
   useCompletedSocialQuests,
   useMissedSocialQuests,
@@ -72,7 +71,6 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
   } = useMissedSocialQuests(userId);
   
   const completeSocialQuestMutation = useCompleteSocialQuest(userId);
-  const generateSocialQuestsMutation = useGenerateSocialQuests(userId);
   
   // Removed XP progress functionality since it's now in the parent component
 
@@ -117,15 +115,7 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
       });
     }
 
-    if (socialError) {
-      console.log('Error fetching social quests:', socialError);
-      toast({
-        title: 'Error fetching social quests',
-        description: "We're having trouble loading your social quests. Please try again later.",
-        variant: 'destructive',
-      });
-    }
-  }, [weeklyError, allError, socialError, toast]);
+  }, [weeklyError, allError, toast]);
   
   // For weekly tab, we'll use the filtered data from the dedicated weekly quests hook
   // For completed and expired tabs, use the data from the all quests hook
@@ -142,35 +132,7 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
            action === 'add_project_technologies';
   }) || [];
   
-  // Handle generating new Social Quests
-  const handleGenerateSocialQuests = () => {
-    generateSocialQuestsMutation.mutate(
-      { weekNumber: currentWeek, year: currentYear },
-      {
-        onSuccess: (response) => {
-          if (response.success) {
-            toast({
-              title: 'Social Quests Generated!',
-              description: `${response.tasks?.length || 0} personalized tasks created based on your profile.`,
-            });
-          } else {
-            toast({
-              title: 'Generation Failed',
-              description: response.error || 'Failed to generate social quests. Please try again.',
-              variant: 'destructive',
-            });
-          }
-        },
-        onError: (error) => {
-          toast({
-            title: 'Error',
-            description: `Failed to generate social quests: ${error.message}`,
-            variant: 'destructive',
-          });
-        }
-      }
-    );
-  };
+  // REMOVED: Old generate social quests logic - now using auto-loading 3-tab system
 
   const renderQuestsList = (quests: typeof weeklyQuests, loading: boolean) => {
     if (loading) {
@@ -303,7 +265,7 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
                 Week {currentWeek}, {currentYear} - AI-powered external platform tasks
               </div>
               
-              {isLoadingWeeklySocial || generateSocialQuestsMutation.isPending ? (
+              {isLoadingWeeklySocial ? (
                 <div className="space-y-2 sm:space-y-3">
                   <Skeleton className="h-32 sm:h-36 w-full rounded-md bg-gray-800/60" />
                   <Skeleton className="h-32 sm:h-36 w-full rounded-md bg-gray-800/60" />
@@ -317,14 +279,7 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
                       AI is creating personalized tasks to build your cross-platform presence...
                     </p>
                     <div className="flex justify-center">
-                      <Button
-                        onClick={handleGenerateSocialQuests}
-                        disabled={generateSocialQuestsMutation.isPending}
-                        size="sm"
-                        className="text-xs bg-blue-600 hover:bg-blue-700"
-                      >
-                        {generateSocialQuestsMutation.isPending ? 'Generating...' : 'Generate Weekly Quests'}
-                      </Button>
+                      <p className="text-white/50 text-sm italic">Auto-loading your personalized weekly quests...</p>
                     </div>
                   </div>
                 </div>

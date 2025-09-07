@@ -30,39 +30,7 @@ interface GenerateSocialQuestsResponse {
   error?: string;
 }
 
-// Hook to generate new Social Quests for current week
-export function useGenerateSocialQuests(userId?: number) {
-  const queryClient = useQueryClient();
-  
-  return useMutation<GenerateSocialQuestsResponse, Error, { weekNumber?: number; year?: number }>({
-    mutationFn: async ({ weekNumber, year }) => {
-      if (!userId) throw new Error('User ID is required');
-      
-      const currentWeek = weekNumber || getCurrentWeekNumber();
-      const currentYear = year || getCurrentYear();
-      
-      const response = await fetch(`/api/social-quests/generate`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userId,
-          weekNumber: currentWeek,
-          year: currentYear
-        })
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to generate social quests');
-      }
-      
-      return response.json();
-    },
-    onSuccess: () => {
-      // Invalidate social quests cache to refresh the list
-      queryClient.invalidateQueries({ queryKey: ['social-quests'] });
-    }
-  });
-}
+// REMOVED: Old generate social quests hook - no longer needed with auto-loading 3-tab system
 
 // REMOVED: Old single-tab Social Quests hook - replaced with Weekly/Completed/Missed hooks below
 
