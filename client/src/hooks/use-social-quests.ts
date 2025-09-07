@@ -64,58 +64,9 @@ export function useGenerateSocialQuests(userId?: number) {
   });
 }
 
-// Hook to fetch user's Social Quests
-export function useSocialQuests(userId?: number, weekNumber?: number, year?: number) {
-  const currentWeek = weekNumber || getCurrentWeekNumber();
-  const currentYear = year || getCurrentYear();
-  
-  return useQuery<SocialQuestTask[]>({
-    queryKey: ['social-quests', userId, currentWeek, currentYear],
-    queryFn: async () => {
-      if (!userId) return [];
-      
-      const response = await fetch(`/api/social-quests/user/${userId}?weekNumber=${currentWeek}&year=${currentYear}`);
-      
-      if (!response.ok) {
-        throw new Error('Failed to fetch social quests');
-      }
-      
-      const data = await response.json();
-      
-      // Valid external platforms only - filter out brandentifier or unknown platforms
-      const validPlatforms = ['linkedin', 'twitter', 'instagram', 'youtube'];
-      const filteredQuests = (data.quests || []).filter((quest: any) => {
-        const platform = quest.platform?.toLowerCase();
-        return platform && validPlatforms.includes(platform);
-      });
-      
-      return filteredQuests;
-    },
-    enabled: !!userId
-  });
-}
+// REMOVED: Old single-tab Social Quests hook - replaced with Weekly/Completed/Missed hooks below
 
-// Hook to complete a Social Quest
-export function useCompleteSocialQuest() {
-  const queryClient = useQueryClient();
-  
-  return useMutation<void, Error, { questId: number; userId: number }>({
-    mutationFn: async ({ questId, userId }) => {
-      const response = await fetch(`/api/social-quests/${questId}/complete`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId })
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to complete social quest');
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['social-quests'] });
-    }
-  });
-}
+// REMOVED: Old single-quest completion hook - replaced with new completion hook below
 
 // Hook to get platform-specific guidance - EXTERNAL platforms only
 export function usePlatformGuidance() {

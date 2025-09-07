@@ -765,56 +765,7 @@ async function storeSocialQuests(userId: number, aiTasks: any[], weekNumber: num
 
   return createdQuests;
   
-  // GET /api/social-quests/user/:userId - Get user's Social Quests
-  app.get('/api/social-quests/user/:userId', async (req, res) => {
-    try {
-      const userId = parseInt(req.params.userId);
-      const weekNumber = parseInt(req.query.weekNumber as string) || getCurrentWeekNumber();
-      const year = parseInt(req.query.year as string) || getCurrentYear();
-      
-      if (!userId) {
-        return res.status(400).json({ error: 'Invalid user ID' });
-      }
-
-      // Get user's social quests for the specified week
-      const quests = await db.db
-        .select({
-          id: userSocialQuests.id,
-          userId: userQuests.userId,
-          title: questDefinitions.title,
-          description: questDefinitions.description,
-          platform: socialQuestDefinitions.targetPlatform,
-          priority: socialQuestDefinitions.platformPriority,
-          xpReward: questDefinitions.xpReward,
-          status: userQuests.status,
-          progress: userQuests.progress,
-          targetAction: questDefinitions.targetAction,
-          muskTip: questDefinitions.muskTip,
-          aiGeneratedContent: userSocialQuests.aiGeneratedContent,
-          platformRecommendationReason: userSocialQuests.platformRecommendationReason,
-          platformSpecificData: socialQuestDefinitions.platformSpecificData,
-          assignedAt: userQuests.assignedAt,
-          completedAt: userQuests.completedAt,
-          weekNumber: userQuests.weekNumber,
-          year: userQuests.year
-        })
-        .from(userSocialQuests)
-        .innerJoin(userQuests, eq(userSocialQuests.userQuestId, userQuests.id))
-        .innerJoin(questDefinitions, eq(userQuests.questDefinitionId, questDefinitions.id))
-        .innerJoin(socialQuestDefinitions, eq(userSocialQuests.socialQuestDefinitionId, socialQuestDefinitions.id))
-        .where(and(
-          eq(userQuests.userId, userId),
-          eq(userQuests.weekNumber, weekNumber),
-          eq(userQuests.year, year)
-        ))
-        .orderBy(desc(socialQuestDefinitions.platformPriority), desc(userQuests.assignedAt));
-
-      res.json({ quests });
-    } catch (error) {
-      console.error('[Social Quests API] Error fetching user quests:', error);
-      res.status(500).json({ error: 'Failed to fetch social quests' });
-    }
-  });
+  // REMOVED: Old single-endpoint API - replaced with /weekly, /completed, /missed endpoints
 
   // POST /api/social-quests/:questId/complete - Complete a Social Quest
   app.post('/api/social-quests/:questId/complete', async (req, res) => {
