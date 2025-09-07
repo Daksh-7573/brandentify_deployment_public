@@ -9,7 +9,14 @@ import {
   getCurrentWeekNumber, 
   getCurrentYear
 } from '@/hooks/use-career-quests'; // We'll keep using the same hooks for now
-import { useSocialQuests, useGenerateSocialQuests } from '@/hooks/use-social-quests';
+import { 
+  useSocialQuests, 
+  useGenerateSocialQuests,
+  useWeeklySocialQuests,
+  useCompletedSocialQuests,
+  useMissedSocialQuests,
+  useCompleteSocialQuest
+} from '@/hooks/use-social-quests';
 import { QuestCard } from './quest-card';
 import { SocialQuestCard } from './social-quest-card';
 import { cn } from '@/lib/utils';
@@ -23,6 +30,7 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
   const { toast } = useToast();
   const [mainTabValue, setMainTabValue] = useState('brand-quests');
   const [brandQuestTabValue, setBrandQuestTabValue] = useState('weekly');
+  const [socialQuestTabValue, setSocialQuestTabValue] = useState('weekly');
   const currentWeek = getCurrentWeekNumber();
   const currentYear = getCurrentYear();
   
@@ -48,6 +56,29 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
     refetch: refetchSocial
   } = useSocialQuests(userId, currentWeek, currentYear);
   
+  // New Social Quest hooks for Weekly/Completed/Missed
+  const {
+    data: weeklySocialQuests,
+    isLoading: isLoadingWeeklySocial,
+    error: weeklySocialError,
+    refetch: refetchWeeklySocial
+  } = useWeeklySocialQuests(userId);
+  
+  const {
+    data: completedSocialQuestsData,
+    isLoading: isLoadingCompletedSocial,
+    error: completedSocialError,
+    refetch: refetchCompletedSocial
+  } = useCompletedSocialQuests(userId);
+  
+  const {
+    data: missedSocialQuestsData,
+    isLoading: isLoadingMissedSocial,
+    error: missedSocialError,
+    refetch: refetchMissedSocial
+  } = useMissedSocialQuests(userId);
+  
+  const completeSocialQuestMutation = useCompleteSocialQuest(userId);
   const generateSocialQuestsMutation = useGenerateSocialQuests(userId);
   
   // Removed XP progress functionality since it's now in the parent component
@@ -245,51 +276,147 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
 
         {/* Social Quests Tab Content */}
         <TabsContent value="social-quests" className="space-y-3 sm:space-y-4">
-          <div className="flex justify-between items-center mb-2">
-            <div className="text-xs sm:text-sm text-white/70">
-              AI-powered social media tasks personalized to your profile
-            </div>
-            {(!socialQuests || socialQuests.length === 0) && (
-              <Button
-                size="sm"
-                onClick={handleGenerateSocialQuests}
-                disabled={generateSocialQuestsMutation.isPending}
-                className="bg-white/10 text-white border-white/20 hover:bg-white/20 text-xs"
-              >
-                {generateSocialQuestsMutation.isPending ? 'Generating...' : '🤖 Generate Tasks'}
-              </Button>
-            )}
-          </div>
-          
-          {isLoadingSocial ? (
-            <div className="space-y-4 mt-4">
-              {Array.from({ length: 3 }).map((_, i) => (
-                <Skeleton key={i} className="w-full h-[220px] rounded-md" />
-              ))}
-            </div>
-          ) : !socialQuests || socialQuests.length === 0 ? (
-            <div className="text-center py-8">
-              <h3 className="text-lg font-medium text-white">No Social Quests Yet</h3>
-              <p className="text-white/70 mt-2 mb-4">
-                Generate personalized social media tasks based on your profile.
-              </p>
-              <Button
-                onClick={handleGenerateSocialQuests}
-                disabled={generateSocialQuestsMutation.isPending}
-                className="bg-white/10 text-white border-white/20 hover:bg-white/20"
-              >
-                {generateSocialQuestsMutation.isPending ? 'Generating...' : '🚀 Generate Social Quests'}
-              </Button>
-            </div>
-          ) : (
-            <div className="space-y-4 mt-4">
-              {socialQuests?.map(quest => (
-                quest && quest.id ? (
-                  <SocialQuestCard key={quest.id} quest={quest} userId={userId!} />
-                ) : null
-              ))}
-            </div>
-          )}
+          <Tabs defaultValue="weekly" value={socialQuestTabValue} onValueChange={setSocialQuestTabValue}>
+            <TabsList className="grid grid-cols-3 mb-3 sm:mb-4 dark-tabs-list border border-white/5 w-full h-auto">
+              <TabsTrigger value="weekly" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-1 sm:px-2 text-xs sm:text-sm">
+                <span className="text-center">Weekly</span>
+                <span className="text-xs">({weeklySocialQuests?.length || 0})</span>
+              </TabsTrigger>
+              <TabsTrigger value="completed" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-1 sm:px-2 text-xs sm:text-sm">
+                <span className="text-center">Completed</span>
+                <span className="text-xs">({completedSocialQuestsData?.quests?.length || 0})</span>
+              </TabsTrigger>
+              <TabsTrigger value="missed" className="dark-tabs-trigger flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-1 sm:px-2 text-xs sm:text-sm">
+                <span className="text-center">Missed</span>
+                <span className="text-xs">({missedSocialQuestsData?.quests?.length || 0})</span>
+              </TabsTrigger>
+            </TabsList>
+            
+            {/* Weekly Social Quests Tab */}
+            <TabsContent value="weekly" className="space-y-3 sm:space-y-4">
+              <div className="flex justify-between items-center mb-2">
+                <div className="text-xs sm:text-sm text-white/70">
+                  Week {currentWeek}, {currentYear} - AI-powered external platform tasks
+                </div>
+                <Button
+                  onClick={handleGenerateSocialQuests}
+                  disabled={generateSocialQuestsMutation.isPending || !userId}
+                  size="sm"
+                  className="text-xs bg-blue-600 hover:bg-blue-700 px-2 sm:px-3"
+                >
+                  {generateSocialQuestsMutation.isPending ? 'Generating...' : 'Generate Quests'}
+                </Button>
+              </div>
+              
+              {isLoadingWeeklySocial ? (
+                <div className="space-y-2 sm:space-y-3">
+                  <Skeleton className="h-32 sm:h-36 w-full rounded-md bg-gray-800/60" />
+                  <Skeleton className="h-32 sm:h-36 w-full rounded-md bg-gray-800/60" />
+                </div>
+              ) : !weeklySocialQuests || weeklySocialQuests.length === 0 ? (
+                <div className="text-center py-6 sm:py-8">
+                  <h3 className="text-lg font-medium text-white">No Weekly Social Quests</h3>
+                  <p className="text-white/70 mt-2 text-sm">
+                    Generate personalized tasks to build your cross-platform presence
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-3 sm:space-y-4 mt-4">
+                  {weeklySocialQuests.map((quest, index) => (
+                    <SocialQuestCard 
+                      key={quest.id || index} 
+                      quest={quest}
+                      userId={userId!}
+                      onComplete={(questId) => {
+                        completeSocialQuestMutation.mutate(
+                          { questId },
+                          {
+                            onSuccess: () => {
+                              toast({
+                                title: 'Social Quest Completed!',
+                                description: 'Great work! Your cross-platform presence is growing.',
+                              });
+                            },
+                            onError: (error) => {
+                              toast({
+                                title: 'Error',
+                                description: `Failed to complete quest: ${error.message}`,
+                                variant: 'destructive',
+                              });
+                            }
+                          }
+                        );
+                      }}
+                    />
+                  ))}
+                </div>
+              )}
+            </TabsContent>
+            
+            {/* Completed Social Quests Tab */}
+            <TabsContent value="completed" className="space-y-3 sm:space-y-4">
+              <div className="text-xs sm:text-sm text-white/70 mb-2">
+                Completed social quests that earned you cross-platform influence
+              </div>
+              
+              {isLoadingCompletedSocial ? (
+                <div className="space-y-2 sm:space-y-3">
+                  <Skeleton className="h-32 sm:h-36 w-full rounded-md bg-gray-800/60" />
+                  <Skeleton className="h-32 sm:h-36 w-full rounded-md bg-gray-800/60" />
+                </div>
+              ) : !completedSocialQuestsData?.quests || completedSocialQuestsData.quests.length === 0 ? (
+                <div className="text-center py-6 sm:py-8">
+                  <h3 className="text-lg font-medium text-white">No Completed Social Quests</h3>
+                  <p className="text-white/70 mt-2 text-sm">
+                    Complete weekly social quests to see them here
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-3 sm:space-y-4 mt-4">
+                  {completedSocialQuestsData.quests.map((quest, index) => (
+                    <SocialQuestCard 
+                      key={quest.id || index} 
+                      quest={quest}
+                      userId={userId!}
+                      showCompletedDate={true}
+                    />
+                  ))}
+                </div>
+              )}
+            </TabsContent>
+            
+            {/* Missed Social Quests Tab */}
+            <TabsContent value="missed" className="space-y-3 sm:space-y-4">
+              <div className="text-xs sm:text-sm text-white/70 mb-2">
+                Social quests that expired without completion - missed opportunities
+              </div>
+              
+              {isLoadingMissedSocial ? (
+                <div className="space-y-2 sm:space-y-3">
+                  <Skeleton className="h-32 sm:h-36 w-full rounded-md bg-gray-800/60" />
+                  <Skeleton className="h-32 sm:h-36 w-full rounded-md bg-gray-800/60" />
+                </div>
+              ) : !missedSocialQuestsData?.quests || missedSocialQuestsData.quests.length === 0 ? (
+                <div className="text-center py-6 sm:py-8">
+                  <h3 className="text-lg font-medium text-white">No Missed Social Quests</h3>
+                  <p className="text-white/70 mt-2 text-sm">
+                    Keep up the great work! No missed opportunities yet.
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-3 sm:space-y-4 mt-4">
+                  {missedSocialQuestsData.quests.map((quest, index) => (
+                    <SocialQuestCard 
+                      key={quest.id || index} 
+                      quest={quest}
+                      userId={userId!}
+                      showMissedStatus={true}
+                    />
+                  ))}
+                </div>
+              )}
+            </TabsContent>
+          </Tabs>
         </TabsContent>
       </Tabs>
     </div>
