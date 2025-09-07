@@ -116,6 +116,8 @@ export function useWeeklySocialQuests(userId?: number) {
       return data.quests || [];
     },
     enabled: !!userId,
+    staleTime: 0, // Force fresh data
+    gcTime: 0 // Don't cache
   });
 }
 

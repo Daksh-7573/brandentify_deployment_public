@@ -49,7 +49,7 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
 
   // Social Quests integration (old hook removed - using new weekly/completed/missed hooks)
   
-  // New Social Quest hooks for Weekly/Completed/Missed
+  // New Social Quest hooks for Weekly/Completed/Missed - Force fresh data
   const {
     data: weeklySocialQuests,
     isLoading: isLoadingWeeklySocial,
@@ -77,14 +77,26 @@ export function QuestPanel({ userId, className }: QuestPanelProps) {
   // Removed XP progress functionality since it's now in the parent component
 
   useEffect(() => {
+    // Clear all social quest caches on mount to ensure fresh data
+    if (userId) {
+      // Clear any stale social quest cache
+      const queryClient = (window as any).queryClient;
+      if (queryClient) {
+        queryClient.removeQueries({ queryKey: ['social-quests'] });
+        queryClient.invalidateQueries({ queryKey: ['social-quests'] });
+      }
+    }
+    
     const refetchInterval = setInterval(() => {
       refetchWeekly();
       refetchAll();
       refetchWeeklySocial();
+      refetchCompletedSocial();
+      refetchMissedSocial();
     }, 60000); // Refetch every minute
     
     return () => clearInterval(refetchInterval);
-  }, [refetchWeekly, refetchAll, refetchWeeklySocial]);
+  }, [userId, refetchWeekly, refetchAll, refetchWeeklySocial, refetchCompletedSocial, refetchMissedSocial]);
   
   useEffect(() => {
     if (weeklyError) {
