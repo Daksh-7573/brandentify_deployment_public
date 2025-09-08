@@ -23,28 +23,31 @@ import path from 'path';
 
 const app = express();
 
-console.log('🔧 Removing conflicting HTML route to allow React app to load');
+console.log('🔧 Fixing MIME type issue for main.tsx');
 
-// FIRST PRIORITY: Direct serving for main.tsx BEFORE any other middleware
-app.get('/src/main.tsx', async (req, res) => {
-  console.log('🎯 PRIORITY ROUTE: main.tsx requested - serving directly');
+// ULTIMATE PRIORITY: Catch main.tsx requests IMMEDIATELY
+app.use((req, res, next) => {
+  console.log(`🔍 REQUEST: ${req.method} ${req.url} ${req.path}`);
   
-  try {
-    const mainTsxPath = path.resolve(__dirname, '..', 'client', 'src', 'main.tsx');
-    console.log(`📁 Reading main.tsx from: ${mainTsxPath}`);
+  if (req.url === '/src/main.tsx' || req.path === '/src/main.tsx') {
+    console.log('🚨 INTERCEPTED: main.tsx request - serving with correct MIME type');
     
-    const content = await fs.promises.readFile(mainTsxPath, 'utf-8');
-    
-    res.setHeader('Content-Type', 'text/javascript; charset=utf-8');
-    res.setHeader('Cache-Control', 'no-cache');
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    
-    console.log('✅ SUCCESS: main.tsx served with correct MIME type');
-    res.send(content);
-  } catch (error) {
-    console.error('❌ ERROR serving main.tsx:', error);
-    res.status(500).send('// Error loading main.tsx');
+    try {
+      const mainTsxPath = path.resolve(__dirname, '..', 'client', 'src', 'main.tsx');
+      const content = fs.readFileSync(mainTsxPath, 'utf-8');
+      
+      res.setHeader('Content-Type', 'text/javascript; charset=utf-8');
+      res.setHeader('Cache-Control', 'no-cache');
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      
+      console.log('✅ DIRECT INTERCEPT SUCCESS: main.tsx served with text/javascript');
+      return res.send(content);
+    } catch (error) {
+      console.error('❌ INTERCEPT ERROR:', error);
+    }
   }
+  
+  next();
 });
 
 // Configure MIME types for TypeScript modules - FIXED
