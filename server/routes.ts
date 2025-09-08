@@ -7076,7 +7076,7 @@ ${extractedText.substring(0, 5000)}
   console.log("Quest Progress Tracking Middleware loaded");
 
   // Personalized Quest Assignment API endpoints
-  apiRouter.get('/users/:userId/platform-recommendations', async (req: Request, res: Response) => {
+  apiRouter.get('/quest-platform-recommendations/:userId', async (req: Request, res: Response) => {
     try {
       const userId = parseInt(req.params.userId);
       if (isNaN(userId)) {
@@ -7104,7 +7104,7 @@ ${extractedText.substring(0, 5000)}
     }
   });
 
-  apiRouter.post('/users/:userId/assign-personalized-quests', async (req: Request, res: Response) => {
+  apiRouter.post('/quest-assignment/:userId', async (req: Request, res: Response) => {
     try {
       const userId = parseInt(req.params.userId);
       if (isNaN(userId)) {
@@ -7128,7 +7128,7 @@ ${extractedText.substring(0, 5000)}
     }
   });
 
-  apiRouter.put('/users/:userId/update-quest-visibility', async (req: Request, res: Response) => {
+  apiRouter.put('/quest-visibility/:userId', async (req: Request, res: Response) => {
     try {
       const userId = parseInt(req.params.userId);
       if (isNaN(userId)) {
@@ -7152,7 +7152,7 @@ ${extractedText.substring(0, 5000)}
     }
   });
 
-  apiRouter.get('/users/:userId/quest-summary', async (req: Request, res: Response) => {
+  apiRouter.get('/quest-summary/:userId', async (req: Request, res: Response) => {
     try {
       const userId = parseInt(req.params.userId);
       if (isNaN(userId)) {
